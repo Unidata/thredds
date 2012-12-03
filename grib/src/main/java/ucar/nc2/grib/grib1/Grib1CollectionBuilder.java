@@ -39,7 +39,6 @@ import thredds.inventory.CollectionManagerSingleFile;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -458,7 +457,7 @@ public class Grib1CollectionBuilder {
         } catch (IOException ioe) {
           //logger.warn("GribCollectionBuilder {}: reading/Creating gbx9 index failed err={}", gc.getName(), ioe.getMessage());
           logger.error("Grib1CollectionBuilder "+gc.getName()+" : reading/Creating gbx9 index for file "+ mfile.getPath()+" failed", ioe);
-          f.format("Grib1CollectionBuilder: reading/Creating gbx9 index failed err=%s%n  skipping %s%n", ioe.getMessage(), mfile.getPath() + GribIndex.IDX_EXT);
+          f.format("Grib1CollectionBuilder: reading/Creating gbx9 index failed err=%s%n  skipping %s%n", ioe.getMessage(), mfile.getPath() + GribIndex.GBX9_IDX);
           continue;
         }
 

@@ -65,7 +65,7 @@ import java.util.*;
 @ThreadSafe
 public abstract class GribCollection implements FileCacheable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
-  public static final String IDX_EXT = ".ncx";
+  public static final String NCX_IDX = ".ncx";
   public static final long MISSING_RECORD = -1;
 
   //////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public File getIndexFile(String path) {
-      return cache.getCacheFile(path + IDX_EXT);
+      return cache.getCacheFile(path);
     }
 
   static public void setDiskCache2(DiskCache2 dc) {
@@ -154,7 +154,7 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public File getIndexFile(CollectionManager dcm) {
-    return new File(new File(dcm.getRoot()), dcm.getCollectionName() + IDX_EXT);
+    return new File(new File(dcm.getRoot()), dcm.getCollectionName() + NCX_IDX);
   }
 
   /**
@@ -224,7 +224,7 @@ public abstract class GribCollection implements FileCacheable {
   public File getIndexFile() {
     if (indexFile == null) {
       String nameNoBlanks = StringUtil2.replace(name, ' ', "_");
-      File f = new File(directory, nameNoBlanks + IDX_EXT);
+      File f = new File(directory, nameNoBlanks + NCX_IDX);
       indexFile = cache.getCacheFile(f.getPath());
     }
     return indexFile;

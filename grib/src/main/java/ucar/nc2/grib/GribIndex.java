@@ -56,12 +56,12 @@ import java.util.Formatter;
  * @since 9/5/11
  */
 public abstract class GribIndex {
-  public static final String IDX_EXT = ".gbx9";
+  public static final String GBX9_IDX = ".gbx9";
   public static final boolean debug = false;
 
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
-      File idxFile = GribCollection.getIndexFile(file.getPath());
+      File idxFile = GribCollection.getIndexFile(file.getPath() + GBX9_IDX);
       if (!idxFile.exists()) return true;
       long idxLastModified =  idxFile.lastModified();
       if (idxLastModified < file.getLastModified()) return true;
@@ -69,7 +69,7 @@ public abstract class GribIndex {
       return false;
     }
     public boolean hasntChangedSince(MFile file, long when) {
-      File idxFile = GribCollection.getIndexFile(file.getPath());
+      File idxFile = GribCollection.getIndexFile(file.getPath() + GBX9_IDX);
       if (!idxFile.exists()) return true;
       if (idxFile.lastModified() < file.getLastModified()) return true;
       if (0 < when && idxFile.lastModified() < when) return true;
@@ -110,9 +110,9 @@ public abstract class GribIndex {
     // make or remake the index
     if (!readOk) {
       gribIndex.makeIndex(filename, f);
-      f.format("  Index written: %s%n", filename + IDX_EXT);
+      f.format("  Index written: %s%n", filename + GBX9_IDX);
     } else if (debug) {
-      f.format("  Index read: %s%n", filename + IDX_EXT);
+      f.format("  Index read: %s%n", filename + GBX9_IDX);
     }
 
     // heres where the ncx file date is checked against the data file
@@ -143,9 +143,9 @@ public abstract class GribIndex {
 
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked against the data file
       index.makeIndex(mfile.getPath(), f);
-      f.format("  Index written: %s == %d records %n", mfile.getName() + IDX_EXT, index.getNRecords());
+      f.format("  Index written: %s == %d records %n", mfile.getName() + GBX9_IDX, index.getNRecords());
     } else if (debug) {
-      f.format("  Index read: %s == %d records %n", mfile.getName() + IDX_EXT, index.getNRecords());
+      f.format("  Index read: %s == %d records %n", mfile.getName() + GBX9_IDX, index.getNRecords());
     }
 
     if (!createCollectionIndex) return index;

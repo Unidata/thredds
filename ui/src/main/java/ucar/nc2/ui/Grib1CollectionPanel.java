@@ -364,11 +364,11 @@ public class Grib1CollectionPanel extends JPanel {
     int pos = name.lastIndexOf('/');
     if (pos < 0) pos = name.lastIndexOf('\\');
     if (pos > 0) name = name.substring(pos + 1);
-    File def = new File(dcm.getRoot(), name + GribCollection.IDX_EXT);
+    File def = new File(dcm.getRoot(), name + GribCollection.NCX_IDX);
     String filename = fileChooser.chooseFilename(def);
     if (filename == null) return false;
-    if (!filename.endsWith(GribCollection.IDX_EXT))
-      filename += GribCollection.IDX_EXT;
+    if (!filename.endsWith(GribCollection.NCX_IDX))
+      filename += GribCollection.NCX_IDX;
     File idxFile = new File(filename);
 
     Grib1CollectionBuilder.writeIndexFile(idxFile, dcm, f);

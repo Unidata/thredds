@@ -72,7 +72,7 @@ public class DiskCache2 {
   private boolean alwaysUseCache = true;
   private String cachePathPolicyParam = null;
 
-  private String root = null;
+  private String root;
   private int persistMinutes;
   private Timer timer;
   private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
@@ -283,7 +283,7 @@ public class DiskCache2 {
   private String makeCachePath(String fileLocation) {
 
     // remove ':', '?', '=', replace '\' with '/', leading or trailing '/'
-    String cachePath = StringUtil2.remove(fileLocation, ':');
+    String cachePath = fileLocation;
     cachePath = StringUtil2.remove(cachePath, '?');
     cachePath = StringUtil2.remove(cachePath, '=');
     cachePath = StringUtil2.replace(cachePath, '\\', "/");
@@ -294,6 +294,7 @@ public class DiskCache2 {
 
     // remove directories
     if (cachePathPolicy == CachePathPolicy.OneDirectory) {
+      cachePath = StringUtil2.remove(cachePath, ':');
       cachePath = StringUtil2.replace(cachePath, '/', "-");
     }
 

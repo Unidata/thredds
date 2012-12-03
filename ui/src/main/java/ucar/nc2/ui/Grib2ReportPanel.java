@@ -27,7 +27,6 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -35,8 +34,6 @@ import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.List;
 
@@ -617,7 +614,7 @@ public class Grib2ReportPanel extends JPanel {
 
     GridDataset ncfile = null;
     try {
-      ncfile = GridDataset.open(path + GribCollection.IDX_EXT);
+      ncfile = GridDataset.open(path + GribCollection.NCX_IDX);
       for (GridDatatype dt : ncfile.getGrids()) {
         String currName = dt.getName();
         total++;

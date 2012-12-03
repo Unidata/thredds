@@ -34,13 +34,13 @@ package ucar.nc2.grib;
 
 import org.junit.Test;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.util.DiskCache;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 
 /**
- * Describe
+ * Test GRIB disk caching
  *
  * @author caron
  * @since 2/16/12
@@ -49,18 +49,19 @@ public class TestGribDiskCache {
 
   @Test
   public void testDiskCache() throws Exception {
-    String cacheDir = TestDir.temporaryLocalDataDir +"TestGribDiskCache/";
-    File cache = new File(cacheDir);
-    if (cache.exists()) {
-      for (File data : cache.listFiles()) data.delete();
-      cache.delete();
+    String cacheDirName = TestDir.temporaryLocalDataDir +"TestGribDiskCache/";
+    File cacheDir = new File(cacheDirName);
+    if (cacheDir.exists()) {
+      for (File data : cacheDir.listFiles()) data.delete();
+      cacheDir.delete();
     }
-    assert !cache.exists();
+    assert !cacheDir.exists();
 
-    DiskCache.setCachePolicy(true);
-    DiskCache.setRootDirectory(cacheDir);
-    assert DiskCache.getRootDirectory().equals(cacheDir) : DiskCache.getRootDirectory()+" != " + cacheDir;
-    assert cache.exists();
+    DiskCache2 cache = new DiskCache2(cacheDirName, false, 0, 0);
+    cache.setAlwaysUseCache(true);
+    assert cache.getRootDirectory().equals(cacheDirName) : cache.getRootDirectory()+" != " + cacheDirName;
+    assert new File(cache.getRootDirectory()).exists();
+    GribCollection.setDiskCache2(cache);
 
     String dataDir = TestDir.cdmUnitTestDir + "testCache";
     File dd = new File(dataDir);
@@ -86,9 +87,9 @@ public class TestGribDiskCache {
       assert !data.getName().endsWith(".ncx");
       if (data.getName().endsWith(".grib1") || data.getName().endsWith(".grib2")) {
         String index = data.getPath()+".ncx";
-        File indexFile = DiskCache.getCacheFile(index);
+        File indexFile = cache.getCacheFile(index);
         assert indexFile != null;
-        assert indexFile.exists();
+        assert indexFile.exists() : indexFile.getPath() +" does not exist";
       }
     }
 
