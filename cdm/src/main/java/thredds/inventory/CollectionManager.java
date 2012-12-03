@@ -36,6 +36,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Manages a dynamic collection of MFile objects.
@@ -198,6 +199,8 @@ public interface CollectionManager {
    */
   public long getOlderThanFilterInMSecs();
 
+  public List<String> getFilenames();
+  public MFile getLatestFile();
 
   ////////////////////////////////////////////////////
   // set Strategy for checking if MFile has changed

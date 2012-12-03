@@ -166,7 +166,7 @@ public class DiskCache {
    * Get a File if it exists. If not, get a File that can be written to.
    * Use the standard policy to decide where to place it.
    * <p/>
-   * Things are a bit compilicated, because in order to guarentee a file in an arbitrary
+   * Things are a bit complicated, because in order to guarentee a file in an arbitrary
    * location can be written to, we have to try to open it as a FileOutputStream.
    * If we do, we dont want to open it twice, so we return a WriteableFile that contains an
    * opened FileOutputStream.

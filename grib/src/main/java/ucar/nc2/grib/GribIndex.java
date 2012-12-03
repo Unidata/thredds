@@ -37,11 +37,9 @@ import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
-//import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Index;
-import ucar.nc2.util.DiskCache;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -63,7 +61,7 @@ public abstract class GribIndex {
 
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
-      File idxFile = getIndexFile(file.getPath());
+      File idxFile = GribCollection.getIndexFile(file.getPath());
       if (!idxFile.exists()) return true;
       long idxLastModified =  idxFile.lastModified();
       if (idxLastModified < file.getLastModified()) return true;
@@ -71,17 +69,13 @@ public abstract class GribIndex {
       return false;
     }
     public boolean hasntChangedSince(MFile file, long when) {
-      File idxFile = getIndexFile(file.getPath());
+      File idxFile = GribCollection.getIndexFile(file.getPath());
       if (!idxFile.exists()) return true;
       if (idxFile.lastModified() < file.getLastModified()) return true;
       if (0 < when && idxFile.lastModified() < when) return true;
       return false;
     }
   };
-
-  static public File getIndexFile(String path) {
-    return DiskCache.getFileStandardPolicy(path + IDX_EXT);
-  }
 
   static public CollectionManager.ChangeChecker getChangeChecker() {
     return gribCC;

@@ -6,7 +6,7 @@
   <link href="../../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75">TDS Logging </h1>
+<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="60" width="60">TDS Logging </h1>
 <hr>
 
 <p>All the TDS specific log files are located in the <code>${tomcat_home}/content/thredds/logs</code> directory.</p>
@@ -98,8 +98,8 @@ logging facade to route all log messages to Log4J. (Users of the TDS
 can ignore the SLF4J facade,).</p>
 <p>The <a href="log4j.xml.txt">default log4j configuration file</a>  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/classes/log4j.xml. </strong>You
 can modify this if you want and restart the TDS to have it take
-efffect. However, it will be overwritten when you install an updated
-thredds.war file.</p>
+effect. However, it will be overwritten when you install an updated
+<strong>thredds.war</strong> file.</p>
 <p>You can change the location of the  log4j configuration file with the <em>log4j-init-file</em> context parameter in the TDS war configuration file: <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml.</strong> file. For example:</p>
 <pre> &lt;context-param&gt;<br>   &lt;param-name&gt;<strong>log4j-init-file</strong>&lt;/param-name&gt;<br>   &lt;param-value&gt;<strong>/data/mylog4j.xml</strong>&lt;/param-value&gt;<br> &lt;/context-param&gt; <br></pre>
 <p>The value should be the absolute path to the log4j configuration
@@ -189,7 +189,7 @@ is updated.</p>
 </tbody></table><br><hr width="100%">
 <address>
 <img src="../../images/thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated June 2012.
+  This document is maintained by Unidata and was last updated Dec 2012.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 

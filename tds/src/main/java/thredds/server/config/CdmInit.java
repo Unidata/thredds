@@ -71,7 +71,7 @@ import ucar.nc2.util.cache.FileCache;
 public class CdmInit implements InitializingBean,  DisposableBean{
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  private DiskCache2 aggCache, gcCache;
+  private DiskCache2 aggCache, gribCache;
   private Timer timer;
   private thredds.inventory.MController cacheManager;
   
@@ -88,16 +88,17 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     // prefer cdmRemote when available
     ThreddsDataFactory.setPreferCdm(true);
 
-    /* new for 4.3: grib Collection
-   // persist joinExisting aggregations. default every 24 hours, delete stuff older than 90 days
-    {
-    String dir = ThreddsConfig.get("GribCollection.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/gribCollection/").getPath());
-    int scourSecs = ThreddsConfig.getSeconds("GribCollection.scour", 24 * 60 * 60);
-    int maxAgeSecs = ThreddsConfig.getSeconds("GribCollection.maxAge", 90 * 24 * 60 * 60);
-    gcCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
-    GribCollection.setDiskCache(gcCache);
-    startupLog.info("CdmInit:  GribCollection= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
-    } */
+    /* new for 4.3.15: grib index file placement, using DiskCache2  */
+    String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/grib/").getPath());
+    Boolean gribIndexAlwaysUse = ThreddsConfig.getBoolean("GribIndex.alwaysUse", false);
+    String gribIndexPolicy = ThreddsConfig.get("GribIndex.policy", null);
+    int gribIndexScourSecs = ThreddsConfig.getSeconds("GribIndex.scour", 0);
+    int gribIndexMaxAgeSecs = ThreddsConfig.getSeconds("GribIndex.maxAge", 90 * 24 * 60 * 60);
+    gribCache = new DiskCache2(gribIndexDir, false, gribIndexMaxAgeSecs / 60, gribIndexScourSecs / 60);
+    gribCache.setPolicy(gribIndexPolicy);
+    gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
+    GribCollection.setDiskCache2(gribCache);
+    startupLog.info("CdmInit: GribIndex="+gribCache);
 
     // new for 4.2 - feature collection caching
     String fcCache = ThreddsConfig.get("FeatureCollection.dir", null);
@@ -235,7 +236,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     if (timer != null) timer.cancel();
     FileCache.shutdown();
     if (aggCache != null) aggCache.exit();
-    if (gcCache != null) gcCache.exit();
+    if (gribCache != null) gribCache.exit();
     if (cacheManager != null) cacheManager.close();
     thredds.inventory.bdb.MetadataManager.closeAll();
     CollectionUpdater.INSTANCE.shutdown();

@@ -96,6 +96,14 @@
     </dependency>
 
     <dependency>
+      <groupId>org.itadaki</groupId>
+      <artifactId>bzip2</artifactId>
+      <version>0.9.1</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
       <version>1.4.1</version>

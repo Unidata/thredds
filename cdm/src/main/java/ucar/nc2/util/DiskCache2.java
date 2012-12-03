@@ -50,7 +50,7 @@ import java.net.URLDecoder;
  * DiskCache "home directory". The root directory must be writeable.
  *
  * The DiskCache home directory is set in the following order: <ol>
- * <li>  through the system property "nj22.cachePersistRoot" if it exists
+ * <li>  through the system property "nj22.cache" if it exists
  * <li>  through the system property "user.home" if it exists
  * <li>  through the system property "user.dir" if it exists
  * <li>  to the current working directory
@@ -58,11 +58,18 @@ import java.net.URLDecoder;
  * @author jcaron
  */
 public class DiskCache2 {
+
+  public enum CachePathPolicy {
+    OneDirectory,
+    NestedDirectory,
+    NestedTruncate }
+
   public static int CACHEPATH_POLICY_ONE_DIRECTORY = 0;
   public static int CACHEPATH_POLICY_NESTED_DIRECTORY = 1;
   public static int CACHEPATH_POLICY_NESTED_TRUNCATE = 2;
 
-  private int cachePathPolicy;
+  private CachePathPolicy cachePathPolicy = CachePathPolicy.OneDirectory;
+  private boolean alwaysUseCache = true;
   private String cachePathPolicyParam = null;
 
   private String root = null;
@@ -70,6 +77,29 @@ public class DiskCache2 {
   private Timer timer;
   private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private boolean fail = false;
+
+  /**
+   * Default DiskCache2 strategy: use $user_home/.unidata/cache/, no scouring, alwaysUseCache = false
+   * Mimics default DiskCache static class
+   */
+  public DiskCache2() {
+    String root = System.getProperty("nj22.cache");
+
+    if (root == null) {
+      String home = System.getProperty("user.home");
+
+      if (home == null)
+        home = System.getProperty("user.dir");
+
+      if (home == null)
+        home = ".";
+
+      root = home + "/.unidata/cache/";
+    }
+    setRootDirectory(root);
+    this.alwaysUseCache = false;
+  }
+
 
   /**
    * Create a cache on disk.
@@ -149,18 +179,23 @@ public class DiskCache2 {
   /**
    * Get a File in the cache, corresponding to the fileLocation.
    * File may or may not exist.
-   * If fileLocation has "/" in it, and cachePathPolicy == CACHEPATH_POLICY_NESTED_DIRECTORY, the
+   * If fileLocation has "/" in it, and cachePathPolicy == NestedDirectory, the
    * nested directories will be created.
    *
    * @param fileLocation logical file location
    * @return physical File in the cache.
    */
   public File getCacheFile(String fileLocation) {
+    if (!alwaysUseCache) {
+      File f = new File(fileLocation);
+      if (f.canWrite()) return f;
+    }
+
     File f = new File(makeCachePath(fileLocation));
     //if (f.exists())
     // f.setLastModified( System.currentTimeMillis());
 
-    if (cachePathPolicy == CACHEPATH_POLICY_NESTED_DIRECTORY) {
+    if (cachePathPolicy == CachePathPolicy.NestedDirectory) {
       File dir = f.getParentFile();
       dir.mkdirs();
     }
@@ -191,23 +226,53 @@ public class DiskCache2 {
   /**
    * Set the cache path policy
    * @param cachePathPolicy one of:
-   *   CACHEPATH_POLICY_ONE_DIRECTORY (default) : replace "/" with "-", so all files are in one directory.
-   *   CACHEPATH_POLICY_NESTED_DIRECTORY: cache files are in nested directories under the root.
-   *   CACHEPATH_POLICY_NESTED_TRUNCATE: eliminate leading directories
+   *   OneDirectory (default) : replace "/" with "-", so all files are in one directory.
+   *   NestedDirectory: cache files are in nested directories under the root.
+   *   NestedTruncate: eliminate leading directories
    *
-   * @param cachePathPolicyParam for CACHEPATH_POLICY_NESTED_TRUNCATE, eliminate this string
+   * @param cachePathPolicyParam for NestedTruncate, eliminate this string
    */
-  public void setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) {
+  public void setCachePathPolicy(CachePathPolicy cachePathPolicy, String cachePathPolicyParam) {
     this.cachePathPolicy = cachePathPolicy;
     this.cachePathPolicyParam = cachePathPolicyParam;
   }
 
   /**
-   * Set the cache path policy
-   * @param cachePathPolicy one of CACHEPATH_POLICY__XXXX
+   * @deprecated use setCachePathPolicy(CachePathPolicy cachePathPolicy, String cachePathPolicyParam)
+   */
+  public void setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) {
+    setPolicy(cachePathPolicy);
+    this.cachePathPolicyParam = cachePathPolicyParam;
+  }
+
+  /**
+   * @deprecated use setCachePathPolicy(CachePathPolicy cachePathPolicy, String cachePathPolicyParam)
    */
   public void setPolicy(int cachePathPolicy) {
+    switch (cachePathPolicy) {
+      case 0 : setPolicy(CachePathPolicy.OneDirectory);
+        break;
+      case 1 : setPolicy(CachePathPolicy.NestedDirectory);
+        break;
+      case 2 : setPolicy(CachePathPolicy.NestedTruncate);
+        break;
+    }
+  }
+
+  public void setPolicy(String policy) {
+    if (policy.equalsIgnoreCase("oneDirectory")) setCachePathPolicy(CachePathPolicy.OneDirectory, null);
+    else if (policy.equalsIgnoreCase("nestedDirectory")) setCachePathPolicy(CachePathPolicy.NestedDirectory, null);
+  }
+
+  /**
+   * @deprecated use setCachePathPolicy(CachePathPolicy cachePathPolicy, String cachePathPolicyParam)
+   */
+  public void setPolicy(CachePathPolicy cachePathPolicy) {
     this.cachePathPolicy = cachePathPolicy;
+  }
+
+  public void setAlwaysUseCache(boolean alwaysUseCache) {
+    this.alwaysUseCache = alwaysUseCache;
   }
 
   /**
@@ -228,12 +293,12 @@ public class DiskCache2 {
       cachePath = cachePath.substring(0, cachePath.length()-1);
 
     // remove directories
-    if (cachePathPolicy == CACHEPATH_POLICY_ONE_DIRECTORY) {
+    if (cachePathPolicy == CachePathPolicy.OneDirectory) {
       cachePath = StringUtil2.replace(cachePath, '/', "-");
     }
 
     // eliminate leading directories
-    else if (cachePathPolicy == CACHEPATH_POLICY_NESTED_TRUNCATE) {
+    else if (cachePathPolicy == CachePathPolicy.NestedTruncate) {
       int pos = cachePath.indexOf(cachePathPolicyParam);
       if (pos >= 0)
         cachePath = cachePath.substring(pos+cachePathPolicyParam.length());
@@ -242,7 +307,7 @@ public class DiskCache2 {
     }
 
     // make sure the parent directory exists
-    if (cachePathPolicy != CACHEPATH_POLICY_ONE_DIRECTORY) {
+    if (cachePathPolicy != CachePathPolicy.OneDirectory) {
       File file = new File(root + cachePath);
       File parent = file.getParentFile();
       if (!parent.exists())
@@ -324,6 +389,20 @@ public class DiskCache2 {
       sbuff.append("----------------------\n");
       if (cacheLog != null) cacheLog.info(sbuff.toString());
     }
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("DiskCache2");
+    sb.append("{cachePathPolicy=").append(cachePathPolicy);
+    sb.append(", alwaysUseCache=").append(alwaysUseCache);
+    sb.append(", cachePathPolicyParam='").append(cachePathPolicyParam).append('\'');
+    sb.append(", root='").append(root).append('\'');
+    sb.append(", persistMinutes=").append(persistMinutes);
+    sb.append(", fail=").append(fail);
+    sb.append('}');
+    return sb.toString();
   }
 
   /** debug */

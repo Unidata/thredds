@@ -1,6 +1,7 @@
 package ucar.nc2.ui;
 
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.itadaki.bzip2.BZip2OutputStream;
+import org.itadaki.bzip2.BitOutputStream;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
@@ -184,12 +185,14 @@ public class Grib2ReportPanel extends JPanel {
       RandomAccessFile raf = new RandomAccessFile(mfile.getPath(), "r");
 
       File fileOut = new File(dir+mfile.getName()+".bzip2");
-      FileOutputStream fout = new FileOutputStream(fileOut);
+      OutputStream fout = new BufferedOutputStream(new FileOutputStream(fileOut), 100 * 1000);  // 100K buffer
 
+      int count = 0;
       Grib2RecordScanner scan = new Grib2RecordScanner(raf);
       while (scan.hasNext()) {
         ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
         doCopyCompress(f, gr, raf, fout, nbitsC);
+        if (count++ % 100 == 0) System.out.printf("%s%n", count);
       }
       raf.close();
       fout.close();
@@ -204,6 +207,54 @@ public class Grib2ReportPanel extends JPanel {
     nbitsC.show(f);
   }
 
+  /*
+  http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
+  Packed Data Values
+
+  Packed data is stored in a netCDF file by limiting precision and using a smaller data type than the original data, for example, packing double-precision (64-bit) values into short (16-bit) integers. The C-based netCDF libraries do not do the packing and unpacking. (The netCDF Java library will do automatic unpacking when the VariableEnhanced Interface is used. For details see EnhancedScaleMissing).
+
+  Each variable with packed data has two attributes called scale_factor and add_offset, so that the packed data may be read and unpacked using the formula:
+  unpacked_data_value = packed_data_value * scale_factor + add_offset
+
+  The type of the stored variable is the packed data type, typically byte, short or int.
+  The type of the scale_factor and add_offset attributes should be the type that you want the unpacked data to be, typically float or double.
+  To avoid introducing a bias into the unpacked values due to truncation when packing, the data provider should round to the nearest integer rather than just truncating towards zero before writing the data:
+  packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
+
+  Depending on whether the packed data values are intended to be interpreted by the reader as signed or unsigned integers, there are alternative ways for the data provider to compute the scale_factor and add_offset attributes. In either case, the formulas above apply for unpacking and packing the data.
+
+  A conventional way to indicate whether a byte, short, or int variable is meant to be interpreted as unsigned, even for the netCDF-3 classic model that has no external unsigned integer type, is by providing the special variable attribute _Unsigned with value "true". However, most existing data for which packed values are intended to be interpreted as unsigned are stored without this attribute, so readers must be aware of packing assumptions in this case. In the enhanced netCDF-4 data model, packed integers may be declared to be of the appropriate unsigned type.
+
+  Let n be the number of bits in the packed type, and assume dataMin and dataMax are the minimum and maximum values that will be used for a variable to be packed.
+
+  If the packed values are intended to be interpreted as signed integers (the default assumption for classic model data), you may use:
+
+    scale_factor =(dataMax - dataMin) / (2^n - 1)
+    add_offset = dataMin + 2n - 1 * scale_factor
+
+  If the packed values are intended to be interpreted as unsigned (for example, when read in the C interface using the nc_get_var_uchar() function), use:
+
+    scale_factor =(dataMax - dataMin) / (2^n - 1)
+    add_offset = dataMin
+
+  In either the signed or unsigned case, an alternate formula may be used for the add_offset and scale_factor packing parameters that reserves a packed value for a special value, such as an indicator of missing data. For example, to reserve the minimum packed value (-2n - 1) for use as a special value in the case of signed packed values:
+
+    scale_factor =(dataMax - dataMin) / (2^n - 2)
+    add_offset = (dataMax + dataMin) / 2
+
+  If the packed values are unsigned, then the analogous formula that reserves 0 as the packed form of a special value would be:
+
+    scale_factor =(dataMax - dataMin) / (2^n - 2)
+    add_offset = dataMin - scale_factor
+
+  Example, packing 32-bit floats into 16-bit shorts:
+      variables:
+        short data( z, y, x);
+  	    data:scale_offset = 34.02f;
+  	    data:add_offset = 1.54f;
+  The units attribute applies to unpacked values.
+   */
+
   private void doCopyCompress(Formatter f, ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, OutputStream out, Counter nbitsC) throws IOException {
     float[] data = gr.readData(raf);
 
@@ -214,8 +265,7 @@ public class Grib2ReportPanel extends JPanel {
     int nbits = drs.getNBits();
     nbitsC.count(nbits);
 
-    //int width = (2 << nbits) - 1;
-    int width2 = (2 << (nbits-1)) - 1;
+    int width = (2 << (nbits-1)) - 1;
     //f.format(" nbits = %d%n", nbits);
     //f.format(" width = %d (0x%s) %n", width2, Long.toHexString(width2));
 
@@ -232,8 +282,12 @@ public class Grib2ReportPanel extends JPanel {
     // scale_factor =(dataMax - dataMin) / (2^n - 1)
     // add_offset = dataMin + 2^(n-1) * scale_factor
 
-    float scale_factor = (dataMax - dataMin) / width2;
-    float add_offset = dataMin + width2 * scale_factor / 2;
+    //float scale_factor = (dataMax - dataMin) / width2;
+    //float add_offset = dataMin + width2 * scale_factor / 2;
+
+    float scale_factor =(dataMax - dataMin) / (width - 2);
+    float interval = Math.abs(1/scale_factor);
+    float add_offset = dataMin - scale_factor;
 
     //f.format(" scale_factor = %f%n", scale_factor);
     //f.format(" add_offset = %f%n", add_offset);
@@ -241,31 +295,33 @@ public class Grib2ReportPanel extends JPanel {
     // unpacked_data_value = packed_data_value * scale_factor + add_offset
     // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
 
-    int n = data.length;
-
-    ByteBuffer bb = ByteBuffer.allocate(2*n);
-    ShortBuffer sb = bb.asShortBuffer();
+    BZip2OutputStream zipper = new BZip2OutputStream(out);
+    BitOutputStream bitOut = new BitOutputStream(zipper);
     float diffMax = -Float.MAX_VALUE;
-    float diffTotal = 0;
-    float diffTotal2 = 0;
+    int count = 0;
     for (float fd : data) {
-      short packed_data = (short) Math.round((fd - add_offset) / scale_factor);
+      int packed_data = Math.round((fd - add_offset) / scale_factor);
+      bitOut.writeBits(nbits, packed_data);
+
+      // test
       float unpacked_data = packed_data * scale_factor + add_offset;
       float diff = Math.abs(fd-unpacked_data);
-      if (diff > 100)
+      /* if (diff > interval) {
         f.format("   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+        f.format("     scale_factor=%f add_offset=%f data=[%f,%f]%n", scale_factor, add_offset, dataMin, dataMax);
+        count++;
+        //if (count > 10) return;
+      } */
 
       diffMax = Math.max(diffMax, diff);
-      diffTotal += diff;
-      diffTotal2 += diff*diff;
-      sb.put(packed_data);
     }
+    /*if (diffMax > interval) {
+      System.out.printf("   diffMax=%f interval=%f n=%d%n", diffMax, interval, nbits);
+      System.out.printf("     scale_factor=%f add_offset=%f data=[%f,%f]%n%n", scale_factor, add_offset, dataMin, dataMax);
+    } */
 
-      f.format("%nbzip2%n");
-      BZip2CompressorOutputStream zipper = new BZip2CompressorOutputStream(out);
-      InputStream fin = new ByteArrayInputStream(bb.array());
-      IO.copy(fin, zipper);
-      zipper.finish();
+    bitOut.flush();
+    zipper.finish();
       /* compressedSize = out.size();
       f.format(" compressedSize = %d%n", compressedSize);
       f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));

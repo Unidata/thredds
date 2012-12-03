@@ -154,13 +154,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         return makeCatalogForecasts(catURI, localState);
 
       else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files)) {
-        InvCatalogImpl files   = localState.scan.makeCatalogForDirectory(orgPath, catURI);
-        if (files == null) return null;
-        files.addService(InvService.latest);
-        files.addService(orgService);
-        files.getDataset().getLocalMetadataInheritable().setServiceName(orgService.getName());
-        files.finish();
-        return files;
+        return  makeCatalogFiles(catURI, localState, dcm.getFilenames(), true);
       }
 
     } catch (Exception e) {
@@ -404,9 +398,14 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
        datasets.add(ds);
      }
 
-     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files) && (topDirectory != null)) {
+    if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files) && (topDirectory != null)) {
+      InvCatalogRef filesCat = new InvCatalogRef(this, FILES, getCatalogHref(FILES));
+      filesCat.finish();
+      datasets.add(filesCat);
 
-       // LOOK - replace this with InvDatasetScan( collectionManager) or something
+    }
+    /*
+       /* LOOK - replace this with InvDatasetScan( collectionManager) or something
        long olderThan = dcm.getOlderThanFilterInMSecs();
        ScanFilter scanFilter = new ScanFilter(null, olderThan);
        InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + FILES,
@@ -425,7 +424,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
        // replace all at once
        localState.scan = scanDataset;
-     }
+     }  */
 
      localState.datasets = datasets;
      this.datasets = datasets;

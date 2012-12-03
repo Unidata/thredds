@@ -1099,8 +1099,8 @@ public final class DataRootHandler implements InitializingBean{
       scan = reqDataRoot.scan;
     else if (reqDataRoot.fmrc != null)  // TODO refactor UGLY FMRC HACK
       scan = reqDataRoot.fmrc.getRawFileScan();
-    else if (reqDataRoot.featCollection != null)  // TODO refactor UGLY FMRC HACK
-      scan = reqDataRoot.featCollection.getRawFileScan();
+    //else if (reqDataRoot.featCollection != null)  // TODO refactor UGLY FMRC HACK
+    //  scan = reqDataRoot.featCollection.getRawFileScan();
 
     return scan;
   }

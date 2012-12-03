@@ -113,13 +113,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
         return main;
 
       } else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files)) {
-        InvCatalogImpl files = localState.scan.makeCatalogForDirectory(orgPath, catURI);
-        if (files == null) return null;
-        files.addService(InvService.latest);
-        files.addService(fileService);
-        files.getDataset().getLocalMetadataInheritable().setServiceName(fileService.getName());
-        files.finish();
-        return files;
+        return  makeCatalogFiles(catURI, localState, dcm.getFilenames(), true);
       }
 
     } catch (Exception e) {
@@ -150,8 +144,11 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
      }
 
      if (wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files) && (topDirectory != null)) {
-
-       // LOOK - replace this with InvDatasetScan( collectionManager) or something
+         InvCatalogRef filesCat = new InvCatalogRef(this, FILES, getCatalogHref(FILES));
+         filesCat.finish();
+         datasets.add(filesCat);
+       }
+       /* LOOK - replace this with InvDatasetScan( collectionManager) or something
        //long olderThan = (long) (1000 * fmrc.getOlderThanFilterInSecs());
        ScanFilter scanFilter = new ScanFilter(null, -1);
        InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + FILES,
@@ -170,7 +167,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
        // replace all at once
        localState.scan = scanDataset;
-     }
+     }  */
 
      localState.datasets = datasets;
      this.datasets = datasets;

@@ -107,14 +107,6 @@
   -->
 
   <!--
-  Writing GRIB indexes.
-  <GribIndexing>
-    <setExtendIndex>false</setExtendIndex>
-    <alwaysUseCache>false</alwaysUseCache>
-  </GribIndexing>
-  -->
-
-  <!--
   Persist joinNew aggregations to named directory. scour every 24 hours, delete stuff older than 90 days
   <AggregationCache>
     <scour>24 hours</scour>

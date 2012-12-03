@@ -80,12 +80,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final String COLLECTION = "collection";
   static private final String BEST_DATASET = "best";
   static private final String BEST_DATASET_NAME = "Best Timeseries";
-  static private final String LATEST_DATASET_CATALOG = "latest.xml";
-  static private final String LATEST_DATASET = "latest";
-  static private final String LATEST_DATASET_NAME = "Latest Run";
-  static private final String LATEST_FILE_NAME = "Latest File";
-  static private final String LATEST_SERVICE = "latest";
-  static private final String VARIABLES = "?metadata=variableMap";
+
+  static protected final String LATEST_DATASET = "latest";
+  static protected final String LATEST_DATASET_NAME = "Latest Run";
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -332,13 +329,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     localState.top = top;
   }
 
-  // file datasets of the partition catalog are InvCatalogRef pointing to "FileCatalogs"
+  /* file datasets of the partition catalog are InvCatalogRef pointing to "FileCatalogs"
   private void addFileDatasets(InvDatasetImpl parent, String prefix) {
     String name = (prefix == null) ? FILES : prefix + "/" + FILES;
     InvCatalogRef ds = new InvCatalogRef(this, FILES, getCatalogHref(name));
     ds.finish();
     parent.addDataset(ds);
-  }
+  }  */
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -545,61 +542,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   // this catalog lists the individual files comprising a grib collection.
   // cant use InvDatasetScan because we might have multiple hcs
   private InvCatalogImpl makeCatalogFiles(GribCollection gc, GribCollection.GroupHcs group, URI catURI, State localState, boolean isTimePartition) throws IOException {
-
-    //String collectionName = gc.getName();
-    InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-    //URI myURI = baseURI.resolve(getCatalogHref(collectionName));
-    //URI myURI = baseURI.resolve(getCatalogHref(FILES));
-    InvCatalogImpl result = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
-    InvDatasetImpl top = new InvDatasetImpl(this);
-    top.setParent(null);
-    top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local
-    top.setName(FILES);
-
-    // add Variables, GeospatialCoverage, TimeCoverage
-    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
-    //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
-
-    result.addDataset(top);
-
-    // services need to be local
-    result.addService(orgService);
-    top.getLocalMetadataInheritable().setServiceName(orgService.getName());
-
-    //String id = getID();
-    //if (id == null) id = getPath();
-
-    if (!isTimePartition && gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile)) {
-      InvDatasetImpl ds = new InvDatasetImpl(this, LATEST_FILE_NAME);
-      ds.setUrlPath(LATEST_DATASET_CATALOG);
-      // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
-      ds.setServiceName(LATEST_SERVICE);
-      ds.finish();
-      top.addDataset(ds);
-      result.addService(InvService.latest);
-    }
-
     boolean isSingleGroup = gc.getGroups().size() == 1;
     List<String> filenames = isSingleGroup ? gc.getFilenames() : group.getFilenames();
-    for (String f : filenames) {
-      if (!f.startsWith(topDirectory))
-        logger.warn("File {} doesnt start with topDir {}", f, topDirectory);
 
-      String fname = f.substring(topDirectory.length() + 1);
-      InvDatasetImpl ds = new InvDatasetImpl(this, fname);
-      String lpath = getPath() + "/" + FILES + "/" + fname;
-      ds.setUrlPath(lpath);
-      ds.setID(lpath);
-      ds.tmi.addVariableMapLink(makeMetadataLink(lpath, VARIABLES));
-      File file = new File(f);
-      ds.tm.setDataSize(file.length());
-      ds.finish();
-      top.addDataset(ds);
-    }
-
-    result.finish();
-    return result;
+    boolean addLatest = (!isTimePartition && gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile));
+    return makeCatalogFiles(catURI, localState, filenames, addLatest);
   }
 
   @Override
@@ -694,10 +641,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-
-  private String makeMetadataLink(String datasetName, String metadata) {
-    return context + "/metadata/" + datasetName + metadata;
-  }
 
   private ThreddsMetadata.GeospatialCoverage extractGeospatial(List<GribCollection.GroupHcs> groups) {
     ThreddsMetadata.GeospatialCoverage gcAll = null;

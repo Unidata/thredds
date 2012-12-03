@@ -88,6 +88,20 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
     if (mm != null) mm.close();
   }
 
+  public List<String> getFilenames() {
+    List<String> result = new ArrayList<String>();
+    for (MFile f: getFiles())
+      result.add(f.getPath());
+    return result;
+  }
+
+  public MFile getLatestFile() {
+    MFile result = null;
+    for (MFile f: getFiles()) // only have an Iterable
+      result = f;
+    return result;
+  }
+
   ////////////////////////
   // experimental
   protected ChangeChecker changeChecker = null;

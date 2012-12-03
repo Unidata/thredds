@@ -40,7 +40,6 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -70,6 +69,10 @@ import java.util.regex.Pattern;
 public abstract class InvDatasetFeatureCollection extends InvCatalogRef implements CollectionManager.TriggerListener {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
 
+  static protected final String LATEST_DATASET_CATALOG = "latest.xml";
+  static protected final String LATEST_FILE_NAME = "Latest File";
+  static protected final String LATEST_SERVICE = "latest";
+  static protected final String VARIABLES = "?metadata=variableMap";
   static protected final String FILES = "files";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
 
@@ -138,7 +141,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     protected CalendarDateRange dateRange;
 
     protected List<InvDataset> datasets; // top datasets, ie immediately nested in this catalog
-    protected InvDatasetScan scan;       // optionally used for FILES
+    // protected InvDatasetScan scan;       // optionally used for FILES
     protected long lastInvChange;        // last time dataset inventory was changed
     protected long lastProtoChange;      // last time proto dataset was changed
 
@@ -149,7 +152,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
         this.dateRange = from.dateRange;
         this.lastProtoChange = from.lastProtoChange;
 
-        this.scan = from.scan;
+        // this.scan = from.scan;
         this.datasets = from.datasets;
         this.lastInvChange = from.lastInvChange;
       }
@@ -263,14 +266,14 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return dcm;
   }
 
-  public InvDatasetScan getRawFileScan()  {
+  /* public InvDatasetScan getRawFileScan()  {
      try {
       checkState();
     } catch (IOException e) {
       logger.error("Error in checkState", e);
     }
     return state.scan;
-  }
+  } */
 
   @Override
   public java.util.List<InvDataset> getDatasets() {
@@ -305,10 +308,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * @return containing catalog
    */
   abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI);
-
-  public InvCatalogImpl makeLatest(String match, String orgPath, URI catURI) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
 
   /**
    * Make the containing catalog of this feature collection
@@ -356,6 +355,112 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     return mainCatalog;
   }
+
+  // this catalog lists the individual files comprising the collection.
+  protected InvCatalogImpl makeCatalogFiles(URI catURI, State localState, List<String> filenames, boolean addLatest) throws IOException {
+
+    //String collectionName = gc.getName();
+    InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
+    //URI myURI = baseURI.resolve(getCatalogHref(collectionName));
+    //URI myURI = baseURI.resolve(getCatalogHref(FILES));
+    InvCatalogImpl result = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
+    InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local
+    top.setName(FILES);
+
+    // add Variables, GeospatialCoverage, TimeCoverage
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
+
+    result.addDataset(top);
+
+    // services need to be local
+    result.addService(orgService);
+    top.getLocalMetadataInheritable().setServiceName(orgService.getName());
+
+    //String id = getID();
+    //if (id == null) id = getPath();
+
+    if (addLatest) {
+      InvDatasetImpl ds = new InvDatasetImpl(this, LATEST_FILE_NAME);
+      ds.setUrlPath(LATEST_DATASET_CATALOG);
+      // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
+      ds.setServiceName(LATEST_SERVICE);
+      ds.finish();
+      top.addDataset(ds);
+      result.addService(InvService.latest);
+    }
+
+    for (String f : filenames) {
+      if (!f.startsWith(topDirectory))
+        logger.warn("File {} doesnt start with topDir {}", f, topDirectory);
+
+      String fname = f.substring(topDirectory.length() + 1);
+      InvDatasetImpl ds = new InvDatasetImpl(this, fname);
+      String lpath = getPath() + "/" + FILES + "/" + fname;
+      ds.setUrlPath(lpath);
+      ds.setID(lpath);
+      ds.tmi.addVariableMapLink(makeMetadataLink(lpath, VARIABLES));
+      File file = new File(f);
+      ds.tm.setDataSize(file.length());
+      ds.finish();
+      top.addDataset(ds);
+    }
+
+    result.finish();
+    return result;
+  }
+
+  protected String makeMetadataLink(String datasetName, String metadata) {
+    return context + "/metadata/" + datasetName + metadata;
+  }
+
+  public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) {
+
+     InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
+     InvCatalogImpl result = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
+     InvDatasetImpl top = new InvDatasetImpl(this);
+     top.setParent(null);
+     top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local
+     top.setName(LATEST_FILE_NAME);
+
+     // add Variables, GeospatialCoverage, TimeCoverage
+     // ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+     //if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+     //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
+
+     result.addDataset(top);
+
+     // services need to be local
+     // result.addService(InvService.latest);
+     result.addService(orgService);
+     top.getLocalMetadataInheritable().setServiceName(orgService.getName());
+
+     /* boolean isSingleGroup = gc.getGroups().size() == 1;
+     List<String> filenames = isSingleGroup ? gc.getFilenames() : group.getFilenames();
+     String f = filenames.get(filenames.size()-1);
+     if (!f.startsWith(topDirectory))
+       logger.warn("File {} doesnt start with topDir {}", f, topDirectory);
+
+     String fname = f.substring(topDirectory.length() + 1); */
+
+     MFile mfile = dcm.getLatestFile();
+     String mpath = mfile.getPath();
+     if (!mpath.startsWith(topDirectory))
+      logger.warn("File {} doesnt start with topDir {}", mpath, topDirectory);
+     String fname = mpath.substring(topDirectory.length() + 1);
+
+     String path = FILES + "/" + fname;
+     top.setUrlPath(this.path + "/" + path);
+     top.setID(this.path + "/" + path);
+     top.tmi.addVariableMapLink(makeMetadataLink(this.path + "/" + path, VARIABLES));
+     top.tm.setDataSize(mfile.getLength());
+
+     result.finish();
+     return result;
+   }
 
   /////////////////////////////////////////////////////////////////////////
 

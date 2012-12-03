@@ -34,6 +34,7 @@ package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
+import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
@@ -112,7 +113,7 @@ public class Grib2Index extends GribIndex {
 
   public boolean readIndex(String filename, long gribLastModified, CollectionManager.Force force) throws IOException {
 
-    File idxFile = getIndexFile(filename);
+    File idxFile = GribCollection.getIndexFile(filename);
     if (!idxFile.exists()) return false;
     long idxModified = idxFile.lastModified();
     if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
@@ -215,7 +216,7 @@ public class Grib2Index extends GribIndex {
 
   // LOOK what about extending an index ??
   public boolean makeIndex(String filename, Formatter f) throws IOException {
-    File idxFile = getIndexFile(filename);
+    File idxFile = GribCollection.getIndexFile(filename);
     FileOutputStream fout = new FileOutputStream(idxFile);
     RandomAccessFile raf = null;
     try {
