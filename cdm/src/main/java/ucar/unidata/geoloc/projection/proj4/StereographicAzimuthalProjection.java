@@ -363,13 +363,16 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
       return false;
     }
     StereographicAzimuthalProjection oo = (StereographicAzimuthalProjection) proj;
+    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
+    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
+
     return ((this.projectionLatitude == oo.projectionLatitude)
-            && (this.projectionLongitude == oo.projectionLongitude)
-            && (this.scaleFactor == oo.scaleFactor)
-            && (this.trueScaleLatitude == oo.trueScaleLatitude)
-            && (this.falseEasting == oo.falseEasting)
-            && (this.falseNorthing == oo.falseNorthing)
-            && this.earth.equals(oo.earth));
+          && (this.projectionLongitude == oo.projectionLongitude)
+          && (this.scaleFactor == oo.scaleFactor)
+          && (this.trueScaleLatitude == oo.trueScaleLatitude)
+          && (this.falseEasting == oo.falseEasting)
+          && (this.falseNorthing == oo.falseNorthing)
+          && this.earth.equals(oo.earth));
   }
 
   @Override

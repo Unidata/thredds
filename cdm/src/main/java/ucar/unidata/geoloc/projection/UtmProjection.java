@@ -190,6 +190,9 @@ public class UtmProjection extends ProjectionImpl {
     }
 
     UtmProjection op = (UtmProjection) proj;
+    if ((this.getDefaultMapArea() == null) != (op.defaultMapArea == null)) return false; // common case is that these are null
+    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(op.defaultMapArea)) return false;
+
     return op.getZone() == getZone();
   }
 

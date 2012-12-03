@@ -206,11 +206,14 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
     }
 
     AlbersEqualAreaEllipse oo = (AlbersEqualAreaEllipse) proj;
+    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
+    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
+
     return ((this.getParallelOne() == oo.getParallelOne())
-            && (this.getParallelTwo() == oo.getParallelTwo())
-            && (this.getOriginLat() == oo.getOriginLat())
-            && (this.getOriginLon() == oo.getOriginLon())
-            && this.earth.equals(oo.earth));
+          && (this.getParallelTwo() == oo.getParallelTwo())
+          && (this.getOriginLat() == oo.getOriginLat())
+          && (this.getOriginLon() == oo.getOriginLon())
+          && this.earth.equals(oo.earth));
   }
 
   // bean properties

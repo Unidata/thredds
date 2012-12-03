@@ -398,7 +398,16 @@ public class MSGnavigation extends ProjectionImpl {
 
   @Override
   public boolean equals(Object proj) {
-    return proj instanceof MSGnavigation;
+      if (this == proj) return true;
+      if (proj == null || getClass() != proj.getClass()) return false;
+
+      MSGnavigation that = (MSGnavigation) proj;
+      if (Double.compare(that.lat0, lat0) != 0) return false;
+      if (Double.compare(that.lon0, lon0) != 0) return false;
+      if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+      if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+
+      return proj instanceof MSGnavigation;
   }
 
   /**

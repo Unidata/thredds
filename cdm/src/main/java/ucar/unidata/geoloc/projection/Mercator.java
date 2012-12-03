@@ -258,6 +258,8 @@ public class Mercator extends ProjectionImpl {
     if (Double.compare(mercator.falseNorthing, falseNorthing) != 0) return false;
     if (Double.compare(mercator.lon0, lon0) != 0) return false;
     if (Double.compare(mercator.par, par) != 0) return false;
+    if ((defaultMapArea == null) != (mercator.defaultMapArea == null)) return false; // common case is that these are null
+    if (defaultMapArea != null && !mercator.defaultMapArea.equals(defaultMapArea)) return false;
 
     return true;
   }

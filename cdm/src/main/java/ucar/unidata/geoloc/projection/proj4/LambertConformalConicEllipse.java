@@ -249,6 +249,9 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
       return false;
 
     LambertConformalConicEllipse oo = (LambertConformalConicEllipse) proj;
+
+    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
+    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
     return ((this.getParallelOne() == oo.getParallelOne())
             && (this.getParallelTwo() == oo.getParallelTwo())
             && (this.getOriginLat() == oo.getOriginLat())

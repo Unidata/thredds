@@ -236,10 +236,12 @@ public class PolyconicProjection extends ProjectionImpl {
     }
 
     PolyconicProjection oo = (PolyconicProjection) proj;
-    return ((this.getOriginLatitude() == oo.getOriginLatitude())
-            && (this.getOriginLongitude() == oo.getOriginLongitude())
-            && this.ellipsoid.equals(oo.getEarth()));
+    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
+    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
 
+    return ((this.getOriginLatitude() == oo.getOriginLatitude())
+          && (this.getOriginLongitude() == oo.getOriginLongitude())
+          && this.ellipsoid.equals(oo.getEarth()));
   }
 
   //Beans properties

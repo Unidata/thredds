@@ -240,6 +240,9 @@ public class RotatedPole extends ProjectionImpl {
     }
 
     RotatedPole oo = (RotatedPole) proj;
+    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
+    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
+
     return this.getNorthPole().equals(oo.getNorthPole());
   }
 
