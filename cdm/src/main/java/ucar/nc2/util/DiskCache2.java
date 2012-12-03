@@ -260,6 +260,7 @@ public class DiskCache2 {
   }
 
   public void setPolicy(String policy) {
+    if (policy == null) return;
     if (policy.equalsIgnoreCase("oneDirectory")) setCachePathPolicy(CachePathPolicy.OneDirectory, null);
     else if (policy.equalsIgnoreCase("nestedDirectory")) setCachePathPolicy(CachePathPolicy.NestedDirectory, null);
   }
