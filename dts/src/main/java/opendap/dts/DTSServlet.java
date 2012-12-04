@@ -1332,7 +1332,7 @@ public class DTSServlet extends AbstractServlet
         pw.println(rs.toString());
 
       else if(cmd.equals("showRequest"))
-//        probeRequest(pw, rs);
+        probeRequest(pw, rs);
 
       else if(!doDebugCmd(cmd, tz, pw)) { // for subclasses
         pw.println("  unrecognized command");

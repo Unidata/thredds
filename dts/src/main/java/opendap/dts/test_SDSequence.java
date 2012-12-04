@@ -121,8 +121,7 @@ public class test_SDSequence extends SDSequence {
 
             if (sm.isProject()) {
                 sm.read(datasetName, specialO);
-                if (_Debug)
-//			((BaseType) rv.get(i)).printVal(System.out, "   ");
+//                if (_Debug) ((BaseType) rv.get(i)).printVal(System.out, "   ");
             }
         }
 
