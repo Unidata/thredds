@@ -607,8 +607,8 @@ public class DTSServlet extends AbstractServlet
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       myDAS.print(Out);
       if(Debug.isSet("showResponse")) {
-        log.debug("DAS=\n");
-        myDAS.print(System.out);
+//        log.debug("DAS=\n");
+//        myDAS.print(System.out);
       }
 
     } catch (DAP2Exception de) {
@@ -752,11 +752,11 @@ public class DTSServlet extends AbstractServlet
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if(Debug.isSet("showResponse")) {
         if(rs.getConstraintExpression().equals("")) { // No Constraint Expression?
-          log.debug("Unconstrained DDX=\n");
-          myDDS.printXML(System.out);
+//          log.debug("Unconstrained DDX=\n");
+//          myDDS.printXML(System.out);
         } else {
-          log.debug("Constrained DDX=\n");
-          myDDS.printConstrainedXML(System.out);
+//          log.debug("Constrained DDX=\n");
+//          myDDS.printConstrainedXML(System.out);
         }
       }
     } catch (ParseException pe) {
@@ -1638,7 +1638,7 @@ public class DTSServlet extends AbstractServlet
     RequestDebug reqD = null;
     try {
       if(Debug.isSet("probeRequest"))
-        probeRequest(System.out, rs);
+//        probeRequest(System.out, rs);
 
       rs = getRequestState(request, response);
         assert(rs != null);

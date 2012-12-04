@@ -50,7 +50,7 @@ import java.util.ArrayList;
  * @author caron
  */
 
-public class Dimension implements Comparable {
+public class Dimension extends CDMNode implements Comparable {
   /** A variable-length dimension: the length is not known until the data is read. */
   static public Dimension VLEN = new Dimension( "*", -1, false, false, true).setImmutable(); // for Sequences, HDF5 VarLength
 
@@ -211,6 +211,7 @@ public class Dimension implements Comparable {
    * @param isVariableLength whether the length is unknown until the data is read.
    */
   public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
+    super(CDMSort.DIMENSION);
     setName(name);
     this.isShared = isShared;
     this.isUnlimited = isUnlimited;
@@ -227,6 +228,7 @@ public class Dimension implements Comparable {
    * @param from copy all other fields from here.
    */
   public Dimension(String name, Dimension from) {
+    super(CDMSort.DIMENSION);
     setName(name);
     this.length = from.length;
     this.isUnlimited = from.isUnlimited;

@@ -49,7 +49,7 @@ import net.jcip.annotations.Immutable;
  */
 
 @Immutable
-public class Attribute {
+public class Attribute extends CDMNode {
   private String name;
   private String svalue; // optimization for common case of String valued attribute
   private DataType dataType;
@@ -338,6 +338,7 @@ public class Attribute {
    * @param from copy value from here.
    */
   public Attribute(String name, Attribute from) {
+    super(CDMSort.ATTRIBUTE);
     this.name = name;
     this.dataType = from.dataType;
     this.nelems = from.nelems;
@@ -352,6 +353,7 @@ public class Attribute {
    * @param val  value of Attribute
    */
   public Attribute(String name, String val) {
+    super(CDMSort.ATTRIBUTE);
     this.name = name;
     setStringValue(val);
   }
@@ -363,6 +365,7 @@ public class Attribute {
    * @param val  value of Attribute
    */
   public Attribute(String name, Number val) {
+    super(CDMSort.ATTRIBUTE);
     this.name = name;
     int[] shape = new int[1];
     shape[0] = 1;
@@ -380,6 +383,7 @@ public class Attribute {
    * @param values array of values.
    */
   public Attribute(String name, Array values) {
+    super(CDMSort.ATTRIBUTE);
     this.name = name;
     setValues(values);
   }
@@ -391,6 +395,7 @@ public class Attribute {
    * @param dataType type of Attribute.
    */
   public Attribute(String name, DataType dataType) {
+    super(CDMSort.ATTRIBUTE);
     this.name = name;
     this.dataType = dataType == DataType.CHAR ? DataType.STRING : dataType;
     this.nelems = 0;
@@ -403,6 +408,7 @@ public class Attribute {
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    */
   public Attribute(String name, List values) {
+    super(CDMSort.ATTRIBUTE);
     this.name = name;
     int n = values.size();
     Object pa = null;
@@ -458,6 +464,8 @@ public class Attribute {
    * @param param copy info from here.
    */
   public Attribute(ucar.unidata.util.Parameter param) {
+    super(CDMSort.ATTRIBUTE);
+
     this.name = param.getName();
 
     if (param.isString()) {
@@ -481,6 +489,7 @@ public class Attribute {
    * @param name name of Attribute
    */
   protected Attribute(String name) {
+    super(CDMSort.ATTRIBUTE);
     this.name = name;
   }
 

@@ -142,14 +142,14 @@ public class SDTest {
             switch (c) {
                 case 'f':
                     arg = g.getOptarg();
-                    if (Debug) System.out.print("DDS File: " +
-                            ((arg != null) ? arg : "null") + "\n");
+                    if (Debug)
+//			System.out.print("DDS File: " + ((arg != null) ? arg : "null") + "\n");
                     DDSFile = arg;
                     break;
                 case 'c':
                     arg = g.getOptarg();
-                    if (Debug) System.out.print("Constraint Expression: \"" +
-                            ((arg != null) ? arg : "null") + "\"\n");
+                    if (Debug)
+//			System.out.print("Constraint Expression: \"" + ((arg != null) ? arg : "null") + "\"\n");
 
                     ConstraintExpression = arg;
                     break;
@@ -158,7 +158,8 @@ public class SDTest {
                     break; // getopt() already printed an error
 
                 default:
-                    if (Debug) System.out.print("getopt() returned " + c + "\n");
+                    if (Debug)
+//			System.out.print("getopt() returned " + c + "\n");
             }
         }
 */
@@ -169,14 +170,14 @@ public class SDTest {
             opts = new Getopts("f:c:", args);
             if (opts.getSwitch(new Character('f')).set) {
                 arg = opts.getSwitch(new Character('f')).val;
-                if (Debug) System.out.print("DDS File: " +
-                            ((arg != null) ? arg : "null") + "\n");
+                if (Debug)
+//			System.out.print("DDS File: " + ((arg != null) ? arg : "null") + "\n");
                 DDSFile = arg;
             }
             if (opts.getSwitch(new Character('c')).set) {
                 arg = g.getOptarg();
-                if (Debug) System.out.print("Constraint Expression: \"" +
-                            ((arg != null) ? arg : "null") + "\"\n");
+                if (Debug)
+//		    System.out.print("Constraint Expression: \"" + ((arg != null) ? arg : "null") + "\"\n");
                 ConstraintExpression = arg;
 	    }
         }
@@ -213,7 +214,7 @@ public class SDTest {
             if (Debug) System.out.println("Printing DDS...");
             myDDS.print(System.out);
 
-            print_SDDS(myDDS, false);
+//            print_SDDS(myDDS, false);
 
             if (Debug) System.out.println("Constructing CEEvaluator...");
             CEEvaluator ce = new CEEvaluator(myDDS);
@@ -229,7 +230,7 @@ public class SDTest {
             ce.send(myDDS.getEncodedName(), sink, null);
 
 
-            print_SDDS(myDDS, true);
+//            print_SDDS(myDDS, true);
             myDDS.printConstrained(System.out);
 
             System.out.println("-------------------------------------------");
