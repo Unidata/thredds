@@ -30,7 +30,7 @@ public class TestNc4IospWriting {
     //FileWriter2.setDebugFlags(new DebugFlagsImpl("ncfileWriter2/debug"));
   }
 
-  @Test
+  //@Test
   public void problem() throws IOException {
     copyFile("Q:\\cdmUnitTest\\formats\\netcdf4\\files\\tst_string_data.nc", "C:/temp/tst_string_data.nc4", NetcdfFileWriter.Version.netcdf4);
     //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);

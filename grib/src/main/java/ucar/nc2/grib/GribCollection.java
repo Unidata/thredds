@@ -93,8 +93,8 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public File getIndexFile(String path) {
-      return cache.getCacheFile(path);
-    }
+    return cache.getCacheFile(path);
+  }
 
   static public void setDiskCache2(DiskCache2 dc) {
     cache = dc;
@@ -111,6 +111,7 @@ public abstract class GribCollection implements FileCacheable {
 
   /**
    * Find index in partition dataset when vert and/or ens coordinates dont match with proto
+   *
    * @param timeIdx time index in this partition
    * @param ensIdx  ensemble index in proto dataset
    * @param vertIdx vert index in proto dataset
@@ -124,12 +125,12 @@ public abstract class GribCollection implements FileCacheable {
   public static int calcIndex(int timeIdx, int ensIdx, int vertIdx, int flag, EnsCoord ec, VertCoord vc, EnsCoord ecp, VertCoord vcp) {
     int want_ensIdx = ensIdx;
     if ((flag & TimePartition.ENS_COORDS_DIFFER) != 0) {
-      want_ensIdx =  findEnsIndex(ensIdx, ec.getCoords(), ecp.getCoords());
+      want_ensIdx = findEnsIndex(ensIdx, ec.getCoords(), ecp.getCoords());
       if (want_ensIdx == -1) return -1;
     }
     int want_vertIdx = vertIdx;
     if ((flag & TimePartition.VERT_COORDS_DIFFER) != 0) {
-      want_vertIdx =  findVertIndex(vertIdx, vc.getCoords(), vcp.getCoords());
+      want_vertIdx = findVertIndex(vertIdx, vc.getCoords(), vcp.getCoords());
       if (want_vertIdx == -1) return -1;
     }
     return calcIndex(timeIdx, want_ensIdx, want_vertIdx, (ec == null) ? 0 : ec.getSize(), (vc == null) ? 0 : vc.getSize());
@@ -137,7 +138,7 @@ public abstract class GribCollection implements FileCacheable {
 
   private static int findEnsIndex(int indexp, List<EnsCoord.Coord> coords, List<EnsCoord.Coord> coordsp) {
     EnsCoord.Coord want = coordsp.get(indexp);
-    for (int i=0; i<coords.size(); i++) {
+    for (int i = 0; i < coords.size(); i++) {
       EnsCoord.Coord have = coords.get(i);
       if (have.equals(want)) return i;
     }
@@ -146,7 +147,7 @@ public abstract class GribCollection implements FileCacheable {
 
   private static int findVertIndex(int indexp, List<VertCoord.Level> coords, List<VertCoord.Level> coordsp) {
     VertCoord.Level want = coordsp.get(indexp);
-    for (int i=0; i<coords.size(); i++) {
+    for (int i = 0; i < coords.size(); i++) {
       VertCoord.Level have = coords.get(i);
       if (have.equals(want)) return i;
     }
@@ -159,12 +160,13 @@ public abstract class GribCollection implements FileCacheable {
 
   /**
    * Create a GribCollection from a collection of grib files
+   *
    * @param isGrib1 true if files are grib1, else grib2
-   * @param dcm the file collection : assume its been scanned
-   * @param force should index file be used or remade?
-   * @param f  error messages here
-   * @return  GribCollection
-   * @throws IOException  on io error
+   * @param dcm     the file collection : assume its been scanned
+   * @param force   should index file be used or remade?
+   * @param f       error messages here
+   * @return GribCollection
+   * @throws IOException on io error
    */
   static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, Formatter f) throws IOException {
     if (isGrib1) return Grib1CollectionBuilder.factory(dcm, force, f);
@@ -219,6 +221,7 @@ public abstract class GribCollection implements FileCacheable {
 
   /**
    * get index file; may not exist
+   *
    * @return File, but may not exist
    */
   public File getIndexFile() {
@@ -231,7 +234,7 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   public File makeNewIndexFile() {
-    if (indexFile != null && indexFile.exists())  {
+    if (indexFile != null && indexFile.exists()) {
       if (!indexFile.delete())
         logger.warn("Failed to delete {}", indexFile.getPath());
     }
@@ -321,17 +324,17 @@ public abstract class GribCollection implements FileCacheable {
     // absolute location
     String filename = filenames.get(fileno);
     File dataFile = new File(filename);
- 
+
     // check reletive location - eg may be /upc/share instead of Q:
     if (!dataFile.exists()) {
       if (filenames.size() == 1) {
-        dataFile =  new File(directory, name); // single file case
+        dataFile = new File(directory, name); // single file case
       } else {
-        dataFile =  new File(directory, dataFile.getName()); // must be in same directory as the ncx file
+        dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
       }
     }
 
-       
+
     // data file not here
     if (!dataFile.exists()) {
       throw new FileNotFoundException("data file not found = " + filename);
@@ -385,6 +388,7 @@ public abstract class GribCollection implements FileCacheable {
 
   // these objects are created from the ncx index.
   private Set<String> groupNames = new HashSet<String>(5);
+
   public class GroupHcs implements Comparable<GroupHcs> {
     public GdsHorizCoordSys hcs;
     public byte[] rawGds;
@@ -410,14 +414,14 @@ public abstract class GribCollection implements FileCacheable {
       if (gribConfig != null && gribConfig.gdsNamer != null)
         result = gribConfig.gdsNamer.get(gdsHash);
       if (result != null) {
-        StringBuilder sb = new  StringBuilder(result);
+        StringBuilder sb = new StringBuilder(result);
         StringUtil2.replace(sb, ". :", "p--");
         return sb.toString();
       }
       if (gribConfig != null && gribConfig.groupNamer != null) {
         File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
-        StringBuilder sb = new  StringBuilder(firstFile.getName().substring(15, 26) + "-" + centerPoint.toString());
+        StringBuilder sb = new StringBuilder(firstFile.getName().substring(15, 26) + "-" + centerPoint.toString());
         StringUtil2.replace(sb, ". :", "p--");
         return sb.toString();
       }
@@ -515,8 +519,8 @@ public abstract class GribCollection implements FileCacheable {
 
   }
 
-      //Map<Integer,String> gdsNamer = (Map<Integer,String>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDS_NAMER);
-      //String groupNamer = (String) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAMER);
+  //Map<Integer,String> gdsNamer = (Map<Integer,String>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDS_NAMER);
+  //String groupNamer = (String) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAMER);
 
   /* kludge
   private String setGroupNameOverride(int gdsHash, Map<Integer,String> gdsNamer, String groupNamer, MFile mfile) {
@@ -529,39 +533,38 @@ public abstract class GribCollection implements FileCacheable {
   }   */
 
 
-
   /* public class HorizCoordSys {
-    public Grib2Gds gds;
-    public int template; // GDS Template number (code table 3.1)
-    public int nx, ny, nPoints, scanMode;
+ public Grib2Gds gds;
+ public int template; // GDS Template number (code table 3.1)
+ public int nx, ny, nPoints, scanMode;
 
-    HorizCoordSys(Grib2SectionGridDefinition gdss) {
-      this.template = gdss.getGDSTemplateNumber();
-      this.nPoints = gdss.getNumberPoints();
-      this.gds = gdss.getGDS();
-      this.nx = gds.nx;
-      this.ny = gds.ny;
-      this.scanMode = gds.scanMode;
-    }
+ HorizCoordSys(Grib2SectionGridDefinition gdss) {
+   this.template = gdss.getGDSTemplateNumber();
+   this.nPoints = gdss.getNumberPoints();
+   this.gds = gdss.getGDS();
+   this.nx = gds.nx;
+   this.ny = gds.ny;
+   this.scanMode = gds.scanMode;
+ }
 
-    public String getName() {
-      return gds.getNameShort() + "-" + ny + "X" + nx;
-    }
+ public String getName() {
+   return gds.getNameShort() + "-" + ny + "X" + nx;
+ }
 
-    @Override
-    public String toString() {
-      Formatter f = new Formatter();
-      f.format("name='%s' nc=%d ny=%d", getName(), nx, ny);
-      //for (Parameter p : params)
-      //  f.format("  %s%n", p);
-      return f.toString();
-    }
+ @Override
+ public String toString() {
+   Formatter f = new Formatter();
+   f.format("name='%s' nc=%d ny=%d", getName(), nx, ny);
+   //for (Parameter p : params)
+   //  f.format("  %s%n", p);
+   return f.toString();
+ }
 
-    /* public ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
-      ThreddsMetadata.Range eastwest = new ThreddsMetadata.Range(start, size, )
-      return new ThreddsMetadata.GeospatialCoverage();
-    }
-  }   */
+ /* public ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
+   ThreddsMetadata.Range eastwest = new ThreddsMetadata.Range(start, size, )
+   return new ThreddsMetadata.GeospatialCoverage();
+ }
+}   */
 
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int tableVersion,
                                                         int discipline, int category, int parameter, int levelType, boolean isLayer,
@@ -630,7 +633,7 @@ public abstract class GribCollection implements FileCacheable {
     }
 
     public String id() {
-      return discipline+"-"+category+"-"+parameter;
+      return discipline + "-" + category + "-" + parameter;
     }
 
     @Override
