@@ -292,10 +292,10 @@ public class DiskCache2 {
       cachePath = cachePath.substring(1);
     if (cachePath.endsWith("/"))
       cachePath = cachePath.substring(0, cachePath.length()-1);
+    cachePath = StringUtil2.remove(cachePath, ':');
 
     // remove directories
     if (cachePathPolicy == CachePathPolicy.OneDirectory) {
-      cachePath = StringUtil2.remove(cachePath, ':');
       cachePath = StringUtil2.replace(cachePath, '/', "-");
     }
 

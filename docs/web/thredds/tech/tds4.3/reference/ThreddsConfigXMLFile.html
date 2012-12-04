@@ -375,7 +375,6 @@ pronounced difference with and without this cache. </p>
  </ol>
  <h3>GRIB Index writing<a name="FeatureCollectionCache"></a></h3>
  <p><em>since version 4.3.15</em></p>
- <p>Where should GRIB index files be written?</p>
  <pre> &lt;GribIndex<strong></strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/cache/grib/&lt;/dir&gt;<br>    &lt;<strong>policy</strong>&gt;oneDirectory&lt;/<strong>policy</strong>&gt;
     &lt;<strong>scour</strong>&gt;0 hours&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;90 days&lt;/maxAge&gt;<br> &lt;/GribIndex&gt;</pre>
  <p>These elements control where Grib index files are written. </p>
@@ -388,10 +387,11 @@ pronounced difference with and without this cache. </p>
        the file permissions of the Tomcat user.     </p>
    </li>
    <li>
-     <p>The policy must be set to one of <em>oneDirectory</em> (default) or <em>nestedDirectory</em>. <em>oneDirectory</em> will put all index files into the same directory. <em>nestedDirectory</em> will preserve the directory structure of the index files.</p> 
+     <p>The policy must be set to one of <em>oneDirectory</em> (default) or <em>nestedDirectory</em>. The <em>oneDirectory</em> will put all index files into the same directory, while <em>nestedDirectory</em> will preserve the directory structure of the index files. Use <em>nestedDirectory</em> for large colllections of grib files.</p> 
    </li>
-   <li>every <strong>scour</strong> amount of time, the largest items in the cache will be deleted, until the directory has less than <strong>maxSize</strong> bytes. Note that the directory will sometimes exceed <strong>maxSize</strong>, and will only be knocked back to <strong>maxSize</strong> when the scour thread runs. To turn off scouring, set the scour time to 0 (eg &quot;0 hours&quot;).
-     <p>&nbsp;</p>
+   <li>Every <strong>scour</strong> amount of time, the largest items in the cache will be deleted, until the directory has less than <strong>maxSize</strong> bytes. Note that the directory will sometimes exceed <strong>maxSize</strong>, and will only be knocked back to <strong>maxSize</strong> when the scour thread runs. To turn off scouring, set the scour time to 0 (eg &quot;0 hours&quot;).
+     Default is to not scour.
+       <p>&nbsp;</p>
    </li>
  </ol>
 <hr style="width: 100%; height: 2px;">
