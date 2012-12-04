@@ -512,7 +512,8 @@ public class ArrayStructureBB extends ArrayStructure {
     if (null == heap) heap = new ArrayList<Object>();
     heap.add(s);
     int index = heap.size() - 1;
-    setInt(calcOffsetSetOrder(recnum, m), index);
+    // was  setInt(calcOffsetSetOrder(recnum, m), index) jc 12/4/2012
+    bbuffer.putInt(calcOffsetSetOrder(recnum, m), index);
   }
 
   /**

@@ -49,7 +49,9 @@ public class TestBufrRead {
 
   class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
-      return !pathname.getName().endsWith(".bfx");
+      if (pathname.getPath().indexOf("exclude") > 0) return false;
+      if (pathname.getName().endsWith(".bfx")) return false;
+      return true;
     }
   }
 
