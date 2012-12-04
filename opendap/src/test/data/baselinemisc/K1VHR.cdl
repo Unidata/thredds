@@ -1,55 +1,55 @@
-netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR_05JUL2012_0700_L2B_OLR.h5 {
+netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR.nc {
  dimensions:
-   GeoX = 1400;
-   GeoY = 1400;
+   GeoX = 4;
    time = 1;
+   GeoY = 4;
  variables:
-   int GeoX(GeoX=1400);
+   int GeoX(GeoX=4);
      :long_name = "x-coordinate in Cartesian system";
      :axis = "X";
-     :_lastModified = "1970-01-03T00:34:45.352Z";
-   int GeoY(GeoY=1400);
-     :long_name = "y-coordinate in Cartesian system";
-     :axis = "Y";
-     :_lastModified = "1970-01-03T00:35:02.352Z";
+     :_lastModified = "1970-01-03T00:34:45Z";
    float time(time=1);
      :units = "hours since 2000-01-01 00:00:00";
-     :_lastModified = "1970-01-02T00:02:48.352Z";
+     :_lastModified = "1970-01-02T00:02:48Z";
+   int GeoY(GeoY=4);
+     :long_name = "y-coordinate in Cartesian system";
+     :axis = "Y";
+     :_lastModified = "1970-01-03T00:35:02Z";
 
  Group Science_Data {
 
    Group Geolocation_Information {
      variables:
-       short Latitude(GeoY=1400, GeoX=1400);
+       short Latitude(GeoY=4, GeoX=4);
          :_CoordinateAxes = "GeoY GeoX ";
          :scale_factor = 0.01f; // float
          :units = "degrees_north";
          :_FillValue = 32767S; // short
          :standard_name = "latitude";
          :add_offset = 0.0f; // float
-         :_lastModified = "1970-01-03T00:57:52.352Z";
+         :_lastModified = "1970-01-03T00:57:52Z";
          :_ChunkSize = 1400, 1400; // int
-       short Longitude(GeoY=1400, GeoX=1400);
+       short Longitude(GeoY=4, GeoX=4);
          :_CoordinateAxes = "GeoY GeoX ";
          :_FillValue = 32767S; // short
          :scale_factor = 0.01f; // float
          :units = "degrees_east";
          :add_offset = 0.0f; // float
          :standard_name = "longitude";
-         :_lastModified = "1970-01-03T00:57:35.352Z";
+         :_lastModified = "1970-01-03T00:57:35Z";
          :_ChunkSize = 1400, 1400; // int
    }
 
    Group Geophysical_Parameter {
      variables:
-       float OLR(time=1, GeoY=1400, GeoX=1400);
+       float OLR(time=1, GeoY=4, GeoX=4);
          :_CoordinateAxes = "time GeoY GeoX ";
          :coordinates = "time Latitude Longitude";
          :long_name = "Outgoing Longwave Radiation";
          :standard_name = "Outgoing Longwave Radiation";
          :_FillValue = -999.0f; // float
          :units = "W.m-2";
-         :_lastModified = "1970-01-03T01:58:18.352Z";
+         :_lastModified = "1970-01-03T01:58:18Z";
          :_ChunkSize = 1, 936, 1400; // int
    }
  }

@@ -104,8 +104,9 @@ public class TestGroups extends UnitTestCommon
     }
     if (true) {
       results.add(new Result("External user provided group example",
-              "http://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR_05JUL2012_0700_L2B_OLR.h5",
-              "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/K1VHR_05JUL2012_0700_L2B_OLR.h5.cdl"));
+              "http://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR.nc",
+              "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/K1VHR.cdl")
+              );
     }
     // Run  with usegroups == true
     System.out.println("TestGroups:");
@@ -131,21 +132,26 @@ public class TestGroups extends UnitTestCommon
         pw.close();
         ow.close();
       } catch (IOException ioe) {};
+      String captured = ow.toString();
+      visual(result.title,captured);
+
       // See if the cdl is in a file or a string.
       Reader baserdr = null;
       if(result.cdl.startsWith("file://")) {
           File f = new File(result.cdl.substring("file://".length(),result.cdl.length()));
-          baserdr = new FileReader(f);
+          try {
+              baserdr = new FileReader(f);
+          }  catch (Exception e) {
+              return false;
+          }
       } else
           baserdr = new StringReader(result.cdl);
-      String captured = ow.toString();
       StringReader resultrdr = new StringReader(captured);
       // Diff the two files
       Diff diff = new Diff("Testing " + result.title);
       boolean pass = !diff.doDiff(baserdr, resultrdr);
       baserdr.close();
       resultrdr.close();
-      visual(result.title,captured);
       return pass;
   }
 
@@ -159,5 +165,4 @@ public class TestGroups extends UnitTestCommon
         System.out.println("---------------");
     }
   }
-
 }

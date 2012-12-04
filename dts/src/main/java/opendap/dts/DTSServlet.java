@@ -1637,7 +1637,7 @@ public class DTSServlet extends AbstractServlet
     ReqState rs = null;
     RequestDebug reqD = null;
     try {
-      if(Debug.isSet("probeRequest"))
+//      if(Debug.isSet("probeRequest"))
 //        probeRequest(System.out, rs);
 
       rs = getRequestState(request, response);
