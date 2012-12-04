@@ -358,15 +358,15 @@ public class testDataset implements GuardedDataset {
                 }
 
                 if (gotDAS && gotDDS) {
-                    DTSServlet.log.debug("-------------");
-                    myDAS.print(System.out);
-                    DTSServlet.log.debug("-------------");
+//                    DTSServlet.log.debug("-------------");
+//                    myDAS.print(System.out);
+//                    DTSServlet.log.debug("-------------");
                     myDDS.ingestDAS(myDAS);
-                    DTSServlet.log.debug("DDS ingested DAS.");
+//                    DTSServlet.log.debug("DDS ingested DAS.");
                     myDAS = myDDS.getDAS();
-                    DTSServlet.log.debug("-------------");
-                    myDAS.print(System.out);
-                    DTSServlet.log.debug("-------------");
+//                    DTSServlet.log.debug("-------------");
+//                    myDAS.print(System.out);
+//                    DTSServlet.log.debug("-------------");
                 }
 
             } catch (FileNotFoundException fnfe) { // Ok, no DAS. It's a bum reference.

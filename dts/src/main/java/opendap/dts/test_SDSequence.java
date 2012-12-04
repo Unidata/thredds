@@ -108,7 +108,7 @@ public class test_SDSequence extends SDSequence {
         testEngine te = (testEngine) specialO;
 
         if (_Debug)
-            System.out.println("\nReading row " + sCount + " of Sequence \"" + getEncodedName() + "\" from " + datasetName + ":");
+//            System.out.println("\nReading row " + sCount + " of Sequence \"" + getEncodedName() + "\" from " + datasetName + ":");
 
         rv = getRowVector();
 
@@ -117,11 +117,12 @@ public class test_SDSequence extends SDSequence {
             ServerMethods sm = (ServerMethods) rv.get(i);
 
             if (_Debug)
-                System.out.println("Reading variable: " + ((BaseType) sm).getTypeName() + ", " + ((BaseType) sm).getEncodedName());
+//                System.out.println("Reading variable: " + ((BaseType) sm).getTypeName() + ", " + ((BaseType) sm).getEncodedName());
 
             if (sm.isProject()) {
                 sm.read(datasetName, specialO);
-                if (_Debug) ((BaseType) rv.get(i)).printVal(System.out, "   ");
+                if (_Debug)
+//			((BaseType) rv.get(i)).printVal(System.out, "   ");
             }
         }
 
@@ -136,8 +137,8 @@ public class test_SDSequence extends SDSequence {
 
         setRead(true);
 
-        if (_Debug) System.out.println("Read finished. Returning: " + retVal);
-        if (_Debug && !retVal) System.out.println("\n...........");
+//        if (_Debug) System.out.println("Read finished. Returning: " + retVal);
+//        if (_Debug && !retVal) System.out.println("\n...........");
         return (retVal);
     }
 }
