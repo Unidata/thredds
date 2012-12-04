@@ -48,7 +48,7 @@ import java.io.PrintWriter;
  *
  * @author caron
  */
-public class Group {
+public class Group extends CDMNode {
 
   static List<Group> collectPath(Group g) {
     List<Group> list = new ArrayList<Group>();
@@ -421,6 +421,7 @@ public class Group {
    * @param shortName short name of Group.
    */
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
+    super(CDMSort.GROUP);    
     this.ncfile = ncfile;
     this.parent = parent == null ? ncfile.getRootGroup() : parent;
     setName(shortName);

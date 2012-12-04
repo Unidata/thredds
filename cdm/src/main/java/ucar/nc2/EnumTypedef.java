@@ -45,12 +45,13 @@ import java.util.*;
  * @author caron
  */
 @Immutable
-public class EnumTypedef {
+public class EnumTypedef extends CDMNode {
   private final String name;
   private final Map<Integer, String> map;
   private ArrayList<String> enumStrings;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
+    super(CDMSort.ENUMERATION);
     this.name = NetcdfFile.makeValidCdmObjectName(name);
     this.map = map;
   }

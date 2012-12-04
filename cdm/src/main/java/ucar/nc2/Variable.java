@@ -56,7 +56,7 @@ import java.nio.channels.WritableByteChannel;
  * @see ucar.ma2.DataType
  */
 
-public class Variable implements VariableIF, ProxyReader {
+public class Variable extends CDMNode implements VariableIF, ProxyReader {
 
   static public final int defaultSizeToCache = 4000; // bytes  cache any variable whose size() < defaultSizeToCache
   static public final int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() < defaultSizeToCache
@@ -1132,12 +1132,13 @@ public class Variable implements VariableIF, ProxyReader {
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
    *
+   * @param sort specify the sort of this node
    * @param ncfile    the containing NetcdfFile.
    * @param group     the containing group; if null, use rootGroup
    * @param parent    parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
    */
-  public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
+  public Variable(CDMSort sort, NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     this.ncfile = ncfile;
     if(parent == null)
         setParentGroup((group == null) ? ncfile.getRootGroup() : group);
@@ -1148,9 +1149,48 @@ public class Variable implements VariableIF, ProxyReader {
     //  System.out.println("HEY gotta .");
   }
 
+    /**
+       * Alias Constructor
+       *
+       * @param ncfile    the containing NetcdfFile.
+       * @param group     the containing group; if null, use rootGroup
+       * @param parent    parent Structure, may be null
+       * @param shortName variable shortName, must be unique within the Group
+       */
+    public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName)
+        {this(CDMSort.VARIABLE,ncfile,group,parent,shortName);}
+
+  /**
+   * Alias constructor assuming sort is CDMSort.VARIABLE
+   * @param sort the kind of node this is; {@link Structure}
+   * @param sort specify the sort of this node
+   * @param ncfile    the containing NetcdfFile.
+   * @param group     the containing group; if null, use rootGroup
+   * @param parent    parent Structure, may be null
+   * @param shortName variable shortName, must be unique within the Group
+  public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
+	this(CDMSort.VARIABLE,ncfile,group,parent,shortName);
+  }
+
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
    *
+   * @param sort the kind of node this is; {@link Structure}
+   * @param ncfile    the containing NetcdfFile.
+   * @param group     the containing group; if null, use rootGroup
+   * @param parent    parent Structure, may be null
+   * @param shortName variable shortName, must be unique within the Group
+   * @param dtype     the Variable's DataType
+   * @param dims      space delimited list of dimension names. may be null or "" for scalars.
+   */
+  public Variable(CDMSort sort, NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
+    this(sort, ncfile,group,parent,shortName);
+    setDataType( dtype);
+    setDimensions( dims);
+  }
+
+  /**
+   * Alias constructor assuming sort is CDMSort.VARIABLE
    * @param ncfile    the containing NetcdfFile.
    * @param group     the containing group; if null, use rootGroup
    * @param parent    parent Structure, may be null
@@ -1159,9 +1199,8 @@ public class Variable implements VariableIF, ProxyReader {
    * @param dims      space delimited list of dimension names. may be null or "" for scalars.
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
-    this(ncfile,group,parent,shortName);
-    setDataType( dtype);
-    setDimensions( dims);
+    this(CDMSort.VARIABLE,ncfile,group,parent,shortName,dtype,dims);
+
   }
 
   /**
@@ -1171,9 +1210,11 @@ public class Variable implements VariableIF, ProxyReader {
    * Does not share the proxyReader.
    * Use for section, slice, "logical views" of original variable.
    *
+   * @param sort the kind of node this is; {@link Structure}
    * @param from copy from this Variable.
    */
-  public Variable(Variable from) {
+  public Variable(CDMSort sort, Variable from) {
+    super(sort);
     this.attributes = new ArrayList<Attribute>(from.attributes); // attributes are immutable
     this.cache = from.cache; // caller should do createNewCache() if dont want to share
     this.dataType = from.getDataType();
@@ -1190,6 +1231,13 @@ public class Variable implements VariableIF, ProxyReader {
     this.sizeToCache = from.sizeToCache;
     this.spiObject = from.spiObject;
   }
+
+
+  /**
+   * Alias constructor assuming sort is CDMSort.VARIABLE.
+   * @param from copy from this Variable.
+   */
+  public Variable(Variable from) {this(CDMSort.VARIABLE,from);}
 
   ///////////////////////////////////////////////////
   // the following make this mutable
