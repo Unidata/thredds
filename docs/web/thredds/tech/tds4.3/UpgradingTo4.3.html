@@ -31,6 +31,67 @@
   <li>The <strong>datasetFmrc</strong> element should be <a href="reference/collections/FmrcCollection.html">migrated</a> to a <strong>featureCollection</strong> type=FMRC.</li>
   <li>Stop using NCML or FMRC aggregations on GRIB files. Only  <strong>featureCollection</strong> type=GRIB&nbsp;should be used. <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html">Details</a>.</li>
   <li>If you are loading GRIB tables at runtime, you must make some <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html">changes</a>.</li>
+  <li>If WMS is enabled, update the wmsConfig.xml file:
+  <ul>
+  <li>The document type definition is now external and points to: <a href="http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd">http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd</a><br />
+  So, the internal document type declaration has to be changed from:
+  <pre>
+&lt;!DOCTYPE wmsConfig [
+
+&lt;!ELEMENT wmsConfig (global, overrides?)&gt;
+
+&lt;!ELEMENT global (defaults, standardNames?)&gt;
+
+&lt;!ELEMENT defaults (allowFeatureInfo, defaultColorScaleRange, defaultPaletteName, defaultNumColorBands, logScaling)&gt;
+
+&lt;!ELEMENT standardNames (standardName*)&gt;
+
+&lt;!ELEMENT standardName (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)&gt;
+&lt;!ATTLIST standardName name CDATA #REQUIRED&gt;
+&lt;!ATTLIST standardName units CDATA #REQUIRED&gt;
+
+&lt;!ELEMENT overrides (datasetPath*)&gt;
+
+&lt;!ELEMENT datasetPath (pathDefaults?, variables?)&gt;
+&lt;!ATTLIST datasetPath pathSpec CDATA #REQUIRED&gt;
+
+&lt;!ELEMENT pathDefaults (allowFeatureInfo?, defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)&gt;
+
+&lt;!ELEMENT variables (variable*)&gt;
+
+&lt;!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)&gt;
+&lt;!ATTLIST variable id CDATA #REQUIRED&gt;
+
+&lt;!ELEMENT allowFeatureInfo (#PCDATA)&gt;
+&lt;!ELEMENT defaultColorScaleRange (#PCDATA)&gt;
+&lt;!ELEMENT defaultPaletteName (#PCDATA)&gt;
+&lt;!ELEMENT defaultNumColorBands (#PCDATA)&gt;
+&lt;!ELEMENT logScaling (#PCDATA)&gt;
+]&gt;  
+  </pre>
+  
+  to:
+  <pre>
+  &lt;!DOCTYPE wmsConfig SYSTEM "http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd"&gt;  
+  </pre>
+  </li>
+  <li>
+   WMS supports interval times in the capabilities documents and for setting up this feature that a new configuration tag has to be added into the defaults section:<br/>  
+  	<pre>  	
+    &lt;defaults&gt;
+    	&lt;!-- The global defaults. All elements are mandatory --&gt;
+        &lt;allowFeatureInfo&gt;true&lt;/allowFeatureInfo&gt;
+        &lt;defaultColorScaleRange&gt;-50 50&lt;/defaultColorScaleRange&gt;
+        &lt;defaultPaletteName&gt;rainbow&lt;/defaultPaletteName&gt;
+        &lt;defaultNumColorBands&gt;20&lt;/defaultNumColorBands&gt;
+        &lt;logScaling&gt;false&lt;/logScaling&gt;
+        &lt;intervalTime&gt;false&lt;/intervalTime&gt;
+    &lt;/defaults&gt;
+  	</pre>
+  	</li>
+  	<li>A valid wmsConfig.xml is available for reference in the ${tomcat.home}/webapps/thredds/WEB-INF/altContent/startup directory</li>
+  	</ul> 
+  </li>
 </ul>
 <hr>
 
