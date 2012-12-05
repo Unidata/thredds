@@ -35,7 +35,7 @@ public enum Calendar {
   }
 
   public static Calendar getDefault() {
-    return proleptic_gregorian;
+    return gregorian;
   }
 
   public static boolean isDefaultChronology(Calendar cal) {
