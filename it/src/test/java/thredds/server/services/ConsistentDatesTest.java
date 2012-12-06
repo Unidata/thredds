@@ -97,6 +97,7 @@ public class ConsistentDatesTest {
     //List<String> content = Arrays.asList(dimNode.getText().trim().split(","));
     List<DateTime> content = new ArrayList<DateTime>();
     for (String d : Arrays.asList(dimNode.getText().trim().split(","))) {
+      System.out.printf("Date= %s%n", d);
       content.add(new DateTime(d));
     }
 
@@ -117,6 +118,7 @@ public class ConsistentDatesTest {
     List<Element> timePositionNodes = xPath.selectNodes(doc);
     List<DateTime> timePositionDateTime = new ArrayList<DateTime>();
     for (Element e : timePositionNodes) {
+      System.out.printf("Date= %s%n", e.getText());
       timePositionDateTime.add(new DateTime(e.getText()));
     }
 
@@ -138,6 +140,7 @@ public class ConsistentDatesTest {
     List<Element> dataTimeNodes = xPath.selectNodes(doc);
     List<DateTime> timePositionDateTime = new ArrayList<DateTime>();
     for (Element e : dataTimeNodes) {
+      System.out.printf("Date= %s%n", e.getText());
       timePositionDateTime.add(new DateTime(e.getText()));
     }
 
