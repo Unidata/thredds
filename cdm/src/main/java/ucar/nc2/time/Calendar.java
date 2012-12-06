@@ -35,11 +35,11 @@ public enum Calendar {
   }
 
   public static Calendar getDefault() {
-    return gregorian;
+    return proleptic_gregorian;
   }
 
   public static boolean isDefaultChronology(Calendar cal) {
-    return cal == null || cal.equals(Calendar.proleptic_gregorian) ||  cal.equals(Calendar.none) ;
+    return cal == null || cal.equals(getDefault()) ||  cal.equals(Calendar.none) ;
   }
 
   /**

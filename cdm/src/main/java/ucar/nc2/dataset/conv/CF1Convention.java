@@ -67,6 +67,34 @@ import java.io.IOException;
  */
 
 public class CF1Convention extends CSMConvention {
+  private static final String convName = "CF-1.";
+
+  /**
+   * Get which CF version this is, ie CF-1.x
+   * @param hasName extract from convention name or list of names
+   * @return version, or 0 if not CF
+   */
+  public static int getVersion(String hasName) {
+    int result = extractVersion(hasName);
+    if (result > 0) return result;
+    List<String> names = breakupConventionNames(hasName);
+    for (String name : names) {
+      result = extractVersion(name);
+      if (result > 0) return result;
+    }
+    return 0;
+  }
+
+  private static int extractVersion(String hasName) {
+    if (!hasName.startsWith(convName)) return 0;
+    String versionS = hasName.substring(convName.length());
+    try {
+      return Integer.parseInt(versionS);
+    } catch (Exception e) {
+      return 0;
+    }
+  }
+
 
   /**
    * Guess the value of ZisPositive based on z axis name and units

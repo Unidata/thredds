@@ -84,9 +84,9 @@ public class TestConventions  {
 
     CalendarDate first = time.getCalendarDate(0);
     CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2002-01-01T00:00:00Z");
-    assert first.equals(cd);
+    assert first.equals(cd) : first + " != " + cd;
     CalendarDate last = time.getCalendarDate((int)time.getSize()-1);
     CalendarDate cd2 = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2012-12-02T00:00:00Z");
-    assert last.equals(cd2);
+    assert last.equals(cd2) : last + " != " + cd2;
   }
 }

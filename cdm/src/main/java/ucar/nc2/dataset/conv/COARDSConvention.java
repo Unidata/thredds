@@ -38,6 +38,8 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 
+import java.util.List;
+
 /**
  * COARDS Convention.
  * see http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html
@@ -46,6 +48,16 @@ import ucar.nc2.constants.AxisType;
  */
 
 public class COARDSConvention extends CoordSysBuilder {
+
+  public static boolean isMine(String hasName) {
+    if (hasName.equalsIgnoreCase("COARDS")) return true;
+    List<String> names = breakupConventionNames(hasName);
+    for (String name : names) {
+      if (name.equalsIgnoreCase("COARDS")) return true;
+    }
+    return false;
+  }
+
 
   public COARDSConvention() {
     this.conventionName = "COARDS";
