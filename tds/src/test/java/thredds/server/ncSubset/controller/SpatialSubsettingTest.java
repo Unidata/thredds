@@ -98,8 +98,8 @@ public class SpatialSubsettingTest {
 				//{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(2) }, //bounding box that contains data but doesn't intersect the declared bbox
 				//{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(3) }, //bounding box doesn't intersect the declared bbox
 				
-				//{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
-				//{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
+				{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
+				{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
 				//{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(2) } //bounding box that contains data but doesn't intersect the declared bbox				
 								
 			});

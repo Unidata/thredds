@@ -118,7 +118,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static public interface ConventionNameOk {
 
     /**
-     * Do you own this file? HEYYY
+     * Do you own this file?
      *
      * @param convName name in the file
      * @param wantName name passed into registry
@@ -282,7 +282,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   }
 
   // breakup list of Conventions
-  static private List<String> breakupConventionNames(String convName) {
+  static protected List<String> breakupConventionNames(String convName) {
     List<String> names = new ArrayList<String>();
 
     if ((convName.indexOf(',') > 0) || (convName.indexOf(';') > 0)) {

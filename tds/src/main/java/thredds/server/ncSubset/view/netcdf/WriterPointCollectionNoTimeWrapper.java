@@ -81,7 +81,8 @@ class WriterPointCollectionNoTimeWrapper implements CFPointWriterWrapper {
 		boolean allDone = false;	
 		
 		List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);
-		StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars);
+		//Create the structure with no time!!
+		StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars, false);
 		
 		EarthLocation earthLocation =null;
 		// Iterating vars		

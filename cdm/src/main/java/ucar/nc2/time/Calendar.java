@@ -39,7 +39,7 @@ public enum Calendar {
   }
 
   public static boolean isDefaultChronology(Calendar cal) {
-    return cal == null || cal.equals(Calendar.proleptic_gregorian) ||  cal.equals(Calendar.none) ;
+    return cal == null || cal.equals(getDefault()) ||  cal.equals(Calendar.none) ;
   }
 
   /**

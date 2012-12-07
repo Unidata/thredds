@@ -54,10 +54,6 @@ class DatasetInfoController extends AbstractNcssController{
 	@Autowired
 	private NcssShowDatasetInfo ncssShowDatasetInfo;
 	
-	//@Autowired
-	//private TdsContext tdsContext;
-	
-
 	@RequestMapping(value = { "/ncss/grid/**/dataset.html", "/ncss/grid/**/dataset.xml","/ncss/grid/**/pointDataset.html" })
 	void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws Exception {
 

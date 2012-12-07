@@ -1185,6 +1185,40 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("</ul>\n");
     }
 
+    /*
+    4.2:
+    <h3>Variables:</h3>
+    <ul>
+    <li><em>Vocabulary</em> [DIF]:
+    <ul>
+     <li><strong>Reflectivity</strong> =  <i></i> = EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity (db)
+     <li><strong>Velocity</strong> =  <i></i> = EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity (m/s)
+     <li><strong>SpectrumWidth</strong> =  <i></i> = EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Spectrum Width (m/s)
+     </ul>
+     </ul>
+    </ul>
+
+    4.3:
+    <h3>Variables:</h3>
+    <ul>
+    <li><em>Vocabulary</em> [CF-1.0]:
+    <ul>
+     <li><strong>d3d (meters) </strong> =  <i>3D Depth at Nodes
+    <p>        </i> = depth_at_nodes
+     <li><strong>depth (meters) </strong> =  <i>Bathymetry</i> = depth
+     <li><strong>eta (m) </strong> =  <i></i> =
+     <li><strong>temp (Celsius) </strong> =  <i>Temperature
+    <p>        </i> = sea_water_temperature
+     <li><strong>u (m/s) </strong> =  <i>Eastward Water
+    <p>          Velocity
+    <p>        </i> = eastward_sea_water_velocity
+     <li><strong>v (m/s) </strong> =  <i>Northward Water
+    <p>          Velocity
+    <p>        </i> = northward_sea_water_velocity
+    </ul>
+    </ul>
+     */
+
     java.util.List<ThreddsMetadata.Variables> vars = ds.getVariables();
     if (vars.size() > 0) {
       buff.append("<h3>Variables:</h3>\n<ul>\n");
@@ -1206,7 +1240,7 @@ public class InvDatasetImpl extends InvDataset {
         if (vlist.size() > 0) {
           for (ThreddsMetadata.Variable v : vlist) {
             String units = (v.getUnits() == null || v.getUnits().length() == 0) ? "" : " (" + v.getUnits() + ") ";
-            buff.append(" <li><strong> Variable List Item").append(StringUtil2.quoteHtmlContent(v.getName() + units)).append("</strong> = ");
+            buff.append(" <li><strong>").append(StringUtil2.quoteHtmlContent(v.getName() + units)).append("</strong> = ");
             String desc = (v.getDescription() == null) ? "" : " <i>" + StringUtil2.quoteHtmlContent(v.getDescription()) + "</i> = ";
             buff.append(desc);
             if (v.getVocabularyName() != null)

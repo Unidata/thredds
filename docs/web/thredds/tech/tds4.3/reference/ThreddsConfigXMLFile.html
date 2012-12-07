@@ -54,6 +54,7 @@
           <li><a href="#DiskCache">CDM  Disk cache</a></li>
           <li><a href="#AggregationCache">Aggregation Cache </a></li>
           <li><a href="#FeatureCollectionCache">Feature Collection cache</a></li>
+          <li><a href="#GribIndexWriting">Grib Index writing</a></li>
     </ul>
   </li>
   <li>Object caching
@@ -373,7 +374,7 @@ pronounced difference with and without this cache. </p>
    <li><strong>maxSize</strong>: maximum amount of memory to be used for this cache.</li>
    <li><strong>jvmPercent</strong>: alternately, set the memory use as a percent of JVM memory, ie -Xmx value. <strong>maxSize</strong> will override if present. Default is 2 %.</li>
  </ol>
- <h3>GRIB Index writing<a name="FeatureCollectionCache"></a></h3>
+ <h3>GRIB Index writing<a name="GribIndexWriting" id="GribIndexWriting"></a></h3>
  <p><em>since version 4.3.15</em></p>
  <pre> &lt;GribIndex<strong></strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/cache/grib/&lt;/dir&gt;<br>    &lt;<strong>policy</strong>&gt;oneDirectory&lt;/<strong>policy</strong>&gt;
     &lt;<strong>scour</strong>&gt;0 hours&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;90 days&lt;/maxAge&gt;<br> &lt;/GribIndex&gt;</pre>

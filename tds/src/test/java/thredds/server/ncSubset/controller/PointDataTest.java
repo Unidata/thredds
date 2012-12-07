@@ -54,10 +54,10 @@ public class PointDataTest {
 				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
 				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
 				
-				//{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
-				//{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
-				//{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
-				//{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }				
+				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
+				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
+				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }				
 
 		});				
 	}

@@ -27,7 +27,10 @@ public class GribVariableRenamer {
 
   private static HashMap<String, Renamer> map1;
   private static HashMap<String, Renamer> map2;
-  
+
+  ////////////////////////////////////////////////
+  //Map<String, List<String>> mapr = new HashMap<String, List<String>>();
+
   private void initMap1() {
     List<VariableRenamerBean> beans = readVariableRenameFile("resources/grib1/grib1VarMap.xml");
     map1 = makeMapBeans(beans);
@@ -47,6 +50,15 @@ public class GribVariableRenamer {
     }
     return result;
   }
+
+  /**
+   * Get unique list of old names associated with this new name
+   * @param newName the new name
+   * @return unique list of old names, or null if not exist
+   *
+  private List<String> getOldNames(String newName) {
+    return mapr.get(newName);
+  }  */
 
   /**
    * Look for possible matches of old (4.2) grib names in new (4.3) dataset.
@@ -174,6 +186,7 @@ public class GribVariableRenamer {
     return null; // ??
   }
 
+
   public static String extractDatasetFromLocation(String location) {
     int pos = location.lastIndexOf("/");
     if (pos > 0) location = location.substring(pos+1);
@@ -296,12 +309,25 @@ public class GribVariableRenamer {
   private HashMap<String, Renamer> makeMapBeans(List<VariableRenamerBean> vbeans) {
     HashMap<String, Renamer> map = new HashMap<String, Renamer>(3000);
     for (VariableRenamerBean vbean : vbeans) {
+
+      // construct the old -> new mapping
       Renamer mbean = map.get(vbean.getOldName());
       if (mbean == null) {
         mbean = new Renamer(vbean.getOldName());
         map.put(vbean.getOldName(), mbean);
       }
       mbean.add(vbean);
+
+      /* construct the new -> old  mapping
+      String newName = vbean.getNewName();
+      String oldName = vbean.getOldName();
+      List<String> maprList = mapr.get(newName);
+      if (maprList == null) {
+        maprList = new ArrayList<String>();
+        mapr.put(newName, maprList);
+      }
+      if (!maprList.contains(oldName))
+        maprList.add(oldName);  */
     }
     
     for (Renamer rmap : map.values()) {
@@ -312,7 +338,7 @@ public class GribVariableRenamer {
   }
 
   private class Renamer {
-    String oldName, newName;
+    String oldName, newName; // newName exists when theres only one
     List<VariableRenamerBean> newVars = new ArrayList<VariableRenamerBean>();
     HashMap<String, VariableRenamerBean> newVarsMap = new HashMap<String, VariableRenamerBean>();
 

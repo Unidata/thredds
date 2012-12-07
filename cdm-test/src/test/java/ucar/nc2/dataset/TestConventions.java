@@ -33,10 +33,13 @@
 
 package ucar.nc2.dataset;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -46,12 +49,9 @@ import java.io.IOException;
  *
  * @author caron
  */
-public class TestConventions extends TestCase {
+public class TestConventions  {
 
-  public TestConventions(String name) {
-    super(name);
-  }
-
+  @Test
   public void testWRF() throws IOException {
     testWRF(TestDir.cdmUnitTestDir + "conventions/wrf/wrf-ver1.3.nc");
   }
@@ -61,6 +61,7 @@ public class TestConventions extends TestCase {
     ds.close();
   }
 
+  @Test
   public void testCF() throws IOException {
     GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/twoGridMaps.nc");
     GeoGrid grid = ds.findGridByName("altitude");
@@ -70,6 +71,22 @@ public class TestConventions extends TestCase {
     assert ct.getTransformType() == TransformType.Projection;
     assert ct.getName().equals("projection_stere");
     ds.close();
+  }
 
+  @Test
+  public void testCOARDSdefaultCalendar() throws IOException {
+    GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/coards/olr.day.mean.nc");
+    GeoGrid grid = ds.findGridByName("olr");
+    assert grid != null;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    CoordinateAxis1DTime time = gcs.getTimeAxis1D();
+    assert time != null;
+
+    CalendarDate first = time.getCalendarDate(0);
+    CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2002-01-01T00:00:00Z");
+    assert first.equals(cd) : first + " != " + cd;
+    CalendarDate last = time.getCalendarDate((int)time.getSize()-1);
+    CalendarDate cd2 = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2012-12-02T00:00:00Z");
+    assert last.equals(cd2) : last + " != " + cd2;
   }
 }

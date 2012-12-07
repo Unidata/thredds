@@ -130,7 +130,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
       }
 
-      Native.setProtected(true);
+      //Native.setProtected(true);
+      
       nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
       if (debug)
         System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());

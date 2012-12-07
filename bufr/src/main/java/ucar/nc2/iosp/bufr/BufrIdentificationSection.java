@@ -48,6 +48,7 @@ import java.io.IOException;
  */
 @Immutable
 public class BufrIdentificationSection {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIdentificationSection.class);
 
   /**
    * Master Table number.
@@ -158,8 +159,12 @@ public class BufrIdentificationSection {
       if (lyear > 100)
         lyear -= 100;
       year = lyear + 2000;
-      month = raf.read();
-      day = raf.read();
+      int temp = raf.read();
+      month = (temp == 0) ? 1 : temp; // joda time does not allow 0 month
+      if (temp == 0) log.warn("month is zero");
+      temp = raf.read();
+      day = (temp == 0) ? 1 : temp;   // joda time does not allow 0 day
+      if (temp == 0) log.warn("day is zero");
       hour = raf.read();
       minute = raf.read();
       second = 0;
@@ -259,8 +264,6 @@ public class BufrIdentificationSection {
    * @return referenceTime
    */
   public final CalendarDate getReferenceTime() {
-    //   public static CalendarDate of(Calendar cal, int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute) {
-
     return CalendarDate.of(null, year, month, day, hour, minute, second);
   }
 

@@ -35,11 +35,12 @@ package ucar.nc2.dataset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.dataset.conv.CF1Convention;
+import ucar.nc2.dataset.conv.COARDSConvention;
+import ucar.nc2.time.*;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
@@ -202,6 +203,18 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private ucar.nc2.time.Calendar getCalendarFromAttribute() {
     Attribute cal = findAttribute(CF.CALENDAR);
     String s = (cal == null) ? null : cal.getStringValue();
+    if (s == null) {
+      Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
+      if (convention != null) {
+        String hasName = convention.getStringValue();
+        int version = CF1Convention.getVersion(hasName);
+        if (version > 0) {
+          if (version < 7 ) return Calendar.gregorian;
+          if (version >= 7 ) return Calendar.proleptic_gregorian;
+        }
+        if (COARDSConvention.isMine(hasName)) return Calendar.gregorian;
+      }
+    }
     return ucar.nc2.time.Calendar.get(s);
   }
 
@@ -220,15 +233,12 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription());
     this.ncd = ncd;
     this.orgName = org.orgName;
-
-    Attribute cal = findAttribute(CF.CALENDAR);
-    String calendarName = (cal == null) ? null : cal.getStringValue();
     this.calendar = getCalendarFromAttribute();
 
     if (org.getDataType() == DataType.CHAR)
-      cdates = makeTimesFromChar(calendarName, org, errMessages);
+      cdates = makeTimesFromChar(org, errMessages);
     else
-      cdates = makeTimesFromStrings(calendarName, org, errMessages);
+      cdates = makeTimesFromStrings(org, errMessages);
 
     List<Attribute> atts = org.getAttributes();
     for (Attribute att : atts) {
@@ -236,7 +246,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     }
   }
 
-  private List<CalendarDate> makeTimesFromChar(String calendarName, VariableDS org, Formatter errMessages) throws IOException {
+  private List<CalendarDate> makeTimesFromChar(VariableDS org, Formatter errMessages) throws IOException {
     int ncoords = (int) org.getSize();
     int rank = org.getRank();
     int strlen = org.getShape(rank - 1);
@@ -250,7 +260,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     for (int i = 0; i < ncoords; i++) {
       String coordValue = ii.next();
-      CalendarDate cd = makeCalendarDateFromStringCoord(calendarName, coordValue, org, errMessages);
+      CalendarDate cd = makeCalendarDateFromStringCoord(coordValue, org, errMessages);
       sdata.set(i, coordValue);
       result.add( cd);
     }
@@ -258,7 +268,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return result;
   }
 
-  private List<CalendarDate> makeTimesFromStrings(String calendarName, VariableDS org, Formatter errMessages) throws IOException {
+  private List<CalendarDate> makeTimesFromStrings( VariableDS org, Formatter errMessages) throws IOException {
 
     int ncoords = (int) org.getSize();
     List<CalendarDate> result = new ArrayList<CalendarDate>(ncoords);
@@ -267,15 +277,15 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     IndexIterator ii = data.getIndexIterator();
     for (int i = 0; i < ncoords; i++) {
       String coordValue = (String) ii.getObjectNext();
-      CalendarDate cd = makeCalendarDateFromStringCoord(calendarName, coordValue, org, errMessages);
+      CalendarDate cd = makeCalendarDateFromStringCoord( coordValue, org, errMessages);
       result.add(cd);
     }
 
     return result;
   }
 
-  private CalendarDate makeCalendarDateFromStringCoord(String calendarName, String coordValue, VariableDS org, Formatter errMessages) throws IOException {
-    CalendarDate cd = CalendarDate.parseISOformat(calendarName, coordValue);
+  private CalendarDate makeCalendarDateFromStringCoord(String coordValue, VariableDS org, Formatter errMessages) throws IOException {
+    CalendarDate cd =  CalendarDateFormatter.isoStringToCalendarDate(calendar, coordValue);
     if (cd == null) {
       if (errMessages != null) {
         errMessages.format("String time coordinate must be ISO formatted= %s\n", coordValue);
@@ -297,10 +307,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
     super(ncd, org);
 
-    Attribute cal = findAttribute(CF.CALENDAR);
-    String calName = (cal == null) ? null : cal.getStringValue();
-    CalendarDateUnit dateUnit = CalendarDateUnit.of(calName, getUnitsString()); // this will throw exception on failure
-    this.calendar = dateUnit.getCalendar();
+    this.calendar = getCalendarFromAttribute();
+    CalendarDateUnit dateUnit = CalendarDateUnit.withCalendar(calendar, getUnitsString()); // this will throw exception on failure
 
     // make the coordinates
     int ncoords = (int) org.getSize();

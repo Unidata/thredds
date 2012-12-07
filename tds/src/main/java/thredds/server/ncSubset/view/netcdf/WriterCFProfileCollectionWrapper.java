@@ -101,7 +101,7 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 				
 				if(zAxis == null){
 					//Write no vert levels
-					StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup );		
+					StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, true );		
 					sdata.findMember("date").getDataArray().setObject(0, date.toString());				
 					//sdata.findMember("time").getDataArray().setObject(0, date.toString());
 					gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
@@ -144,7 +144,7 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 					for(double vertLevel : vertCoords){
 						
 						//The zAxis was added to the variables and we need a structure data that contains z-levels  
-						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis);		
+						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis, true);		
 						//sdata.findMember("date").getDataArray().setObject(0, date.toString());
 						
 						sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);

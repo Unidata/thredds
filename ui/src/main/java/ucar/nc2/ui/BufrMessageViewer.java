@@ -115,6 +115,7 @@ public class BufrMessageViewer extends JPanel {
         obsTable.setBeans(new ArrayList());
 
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        if (mb == null) return;
         java.util.List<DdsBean> beanList = new ArrayList<DdsBean>();
         try {
           setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
@@ -145,6 +146,7 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Show DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean vb = (MessageBean) messageTable.getSelectedBean();
+        if (vb == null) return;
         if (!seperateWindow) infoTA.clear();
         Formatter f = new Formatter();
         try {
@@ -177,6 +179,7 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Data Table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        if (mb == null) return;
         try {
           NetcdfDataset ncd = getBufrMessageAsDataset(mb.m);
           Variable v = ncd.findVariable(BufrIosp.obsRecord);
@@ -195,6 +198,7 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Bit Count", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        if (mb == null) return;
         Message m = mb.m;
 
         Formatter out = new Formatter();
@@ -232,6 +236,7 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Write Message", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        if (mb == null) return;
         try {
           String defloc;
           String header = mb.m.getHeader();
@@ -284,6 +289,7 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Show XML", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        if (mb == null) return;
         Message m = mb.m;
 
         ByteArrayOutputStream out = new ByteArrayOutputStream(1000 * 100);
