@@ -204,7 +204,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     Attribute cal = findAttribute(CF.CALENDAR);
     String s = (cal == null) ? null : cal.getStringValue();
     if (s == null) {
-      Attribute convention = (ncd == null) ? null : ncd.findGlobalAttribute(CDM.CONVENTIONS);
+      Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
       if (convention != null) {
         String hasName = convention.getStringValue();
         int version = CF1Convention.getVersion(hasName);
