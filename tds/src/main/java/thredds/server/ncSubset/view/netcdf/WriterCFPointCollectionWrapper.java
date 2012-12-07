@@ -96,7 +96,7 @@ public final class WriterCFPointCollectionWrapper implements CFPointWriterWrappe
 		 		
 		try{
 			for(double targetLevel : targetLevels){
-				StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars, zAxis.getUnitsString());		
+				StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars, zAxis.getUnitsString(), true);		
 				//sdata.findMember("date").getDataArray().setObject(0, date.toString());
 				Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
 				sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);

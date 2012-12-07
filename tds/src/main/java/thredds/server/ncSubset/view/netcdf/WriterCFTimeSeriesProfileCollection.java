@@ -40,6 +40,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayObject;
@@ -266,25 +267,27 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 				Variable v = writer.findVariable(m.getName());
 						
 				if(v != null && !v.getShortName().equals("time")){
-					//DataType v_dt =v.getDataType();
-					DataType m_dt =m.getDataType();
+					
+					if( writer.findVariable(m.getName()) != null){
+					
+						Array arr = CFPointWriterUtils.getArrayFromMember(writer.findVariable(m.getName()), m);
+					    writer.write( writer.findVariable(m.getName()) , origin, arr );
+					}					
+					
 
-					if(m_dt == DataType.DOUBLE ){
-						Double data = m.getDataArray().getDouble(0);
-						//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
-						ArrayDouble.D2 tmpArray = new ArrayDouble.D2(1,1);
-						tmpArray.setDouble(0, data);
-						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-						writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-					}
-
-					if(m_dt == DataType.FLOAT){
-						Float data = m.getDataArray().getFloat(0);
-						ArrayFloat.D2 tmpArray = new ArrayFloat.D2(1,1);
-						tmpArray.setDouble(0, data);
-						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-						writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-					}
+//					if(m_dt == DataType.DOUBLE ){
+//						Double data = m.getDataArray().getDouble(0);
+//						ArrayDouble.D2 tmpArray = new ArrayDouble.D2(1,1);
+//						tmpArray.setDouble(0, data);
+//						writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+//					}
+//
+//					if(m_dt == DataType.FLOAT){
+//						Float data = m.getDataArray().getFloat(0);
+//						ArrayFloat.D2 tmpArray = new ArrayFloat.D2(1,1);
+//						tmpArray.setDouble(0, data);
+//						writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+//					}
 				}	
 			}
 		}catch(InvalidRangeException ire){
@@ -315,23 +318,27 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 				//Its a variable --> 3D (profile, station, z)
 				if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time")){
 
-					DataType m_dt =m.getDataType();
-
-					if(m_dt == DataType.DOUBLE ){
-						Double data = m.getDataArray().getDouble(0);
-						//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
-						ArrayDouble.D3 tmpArray = new ArrayDouble.D3(1,1,1);
-						tmpArray.setDouble(0, data);
-						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
-					}
-
-					if(m_dt == DataType.FLOAT){
-						Float data = m.getDataArray().getFloat(0);
-						ArrayFloat.D3 tmpArray = new ArrayFloat.D3(1,1,1);
-						tmpArray.setFloat(0, data);
-						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
-					}					
+					Array arr = CFPointWriterUtils.getArrayFromMember(writer.findVariable(m.getName()), m);
+				    writer.write( writer.findVariable(m.getName()) , tmp3D, arr );					
+					
+					//DataType m_dt =m.getDataType();
+//					DataType m_dt =v.getDataType();
+//
+//					if(m_dt == DataType.DOUBLE ){
+//						Double data = m.getDataArray().getDouble(0);
+//						//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+//						ArrayDouble.D3 tmpArray = new ArrayDouble.D3(1,1,1);
+//						tmpArray.setDouble(0, data);
+//						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+//						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
+//					}
+//
+//					if(m_dt == DataType.FLOAT){
+//						Float data = m.getDataArray().getFloat(0);
+//						ArrayFloat.D3 tmpArray = new ArrayFloat.D3(1,1,1);
+//						tmpArray.setFloat(0, data);
+//						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
+//					}					
 
 				}
 
@@ -365,23 +372,26 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 				//Its a variable --> 4D (profile, ensemble, station, z)
 				if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time")){
 
-					DataType m_dt =m.getDataType();
-
-					if(m_dt == DataType.DOUBLE ){
-						Double data = m.getDataArray().getDouble(0);
-						//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
-						ArrayDouble.D4 tmpArray = new ArrayDouble.D4(1,1,1,1);
-						tmpArray.setDouble(0, data);
-						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-						writer.write( writer.findVariable(m.getName()) , tmp4D, tmpArray );
-					}
-
-					if(m_dt == DataType.FLOAT){
-						Float data = m.getDataArray().getFloat(0);
-						ArrayFloat.D4 tmpArray = new ArrayFloat.D4(1,1,1,1);
-						tmpArray.setFloat(0, data);
-						writer.write( writer.findVariable(m.getName()) , tmp4D, tmpArray );
-					}					
+					Array arr = CFPointWriterUtils.getArrayFromMember(writer.findVariable(m.getName()), m);
+				    writer.write( writer.findVariable(m.getName()) , tmp4D, arr );					
+					
+//					DataType m_dt =m.getDataType();
+//
+//					if(m_dt == DataType.DOUBLE ){
+//						Double data = m.getDataArray().getDouble(0);
+//						//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+//						ArrayDouble.D4 tmpArray = new ArrayDouble.D4(1,1,1,1);
+//						tmpArray.setDouble(0, data);
+//						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+//						writer.write( writer.findVariable(m.getName()) , tmp4D, tmpArray );
+//					}
+//
+//					if(m_dt == DataType.FLOAT){
+//						Float data = m.getDataArray().getFloat(0);
+//						ArrayFloat.D4 tmpArray = new ArrayFloat.D4(1,1,1,1);
+//						tmpArray.setFloat(0, data);
+//						writer.write( writer.findVariable(m.getName()) , tmp4D, tmpArray );
+//					}					
 
 				}
 
@@ -414,24 +424,27 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 
 				//Its a variable --> 3D (profile, ensemble, station)
 				if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time")){
+					
+					Array arr = CFPointWriterUtils.getArrayFromMember(writer.findVariable(m.getName()), m);
+				    writer.write( writer.findVariable(m.getName()) , tmp3D, arr );					
 
-					DataType m_dt =m.getDataType();
-
-					if(m_dt == DataType.DOUBLE ){
-						Double data = m.getDataArray().getDouble(0);
-						//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
-						ArrayDouble.D3 tmpArray = new ArrayDouble.D3(1,1,1);
-						tmpArray.setDouble(0, data);
-						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
-					}
-
-					if(m_dt == DataType.FLOAT){
-						Float data = m.getDataArray().getFloat(0);
-						ArrayFloat.D3 tmpArray = new ArrayFloat.D3(1,1,1);
-						tmpArray.setFloat(0, data);
-						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
-					}					
+//					DataType m_dt =m.getDataType();
+//
+//					if(m_dt == DataType.DOUBLE ){
+//						Double data = m.getDataArray().getDouble(0);
+//						//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+//						ArrayDouble.D3 tmpArray = new ArrayDouble.D3(1,1,1);
+//						tmpArray.setDouble(0, data);
+//						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+//						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
+//					}
+//
+//					if(m_dt == DataType.FLOAT){
+//						Float data = m.getDataArray().getFloat(0);
+//						ArrayFloat.D3 tmpArray = new ArrayFloat.D3(1,1,1);
+//						tmpArray.setFloat(0, data);
+//						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
+//					}					
 
 				}
 

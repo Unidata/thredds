@@ -317,16 +317,14 @@ public class GridDatasetInfo {
 	    Element grids = new Element("Grid");
 	    grids.addContent(new Element("accept").addContent("netcdf"));
 	    //Check if netcdf4 is available
-	    //Not yet...
-	    //try{
-	    //	if( Nc4Iosp.isClibraryPresent() ){
-	    //		grids.addContent(new Element("accept").addContent("netcdf4"));
-	    //		
-	    		//gridAsPoint.addContent(new Element("accept").addContent("netcdf4"));
-	    //	}    
-	    //}catch(UnsatisfiedLinkError e){
-	    	//So far swallowing the exception...
-	    //}
+//	    try{
+//	    	if( Nc4Iosp.isClibraryPresent() ){
+//	    		grids.addContent(new Element("accept").addContent("netcdf4"));	    		
+//	    		gridAsPoint.addContent(new Element("accept").addContent("netcdf4"));
+//	    	}    
+//	    }catch(UnsatisfiedLinkError e){
+//	    	//Log this in threddsServlet.log ??
+//	    }
 	    
 	    elem.addContent(gridAsPoint);
 	    elem.addContent(grids);	  
