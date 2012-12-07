@@ -59,17 +59,17 @@ import ucar.unidata.geoloc.LatLonPoint;
  * @author mhermida
  *
  */
-public final class WriterCFStationCollectionWrapper implements CFPointWriterWrapper {
+public final class CFStationCollectionWriterWrapper implements CFPointWriterWrapper {
 
-	static private Logger log = LoggerFactory.getLogger(WriterCFStationCollectionWrapper.class);
+	static private Logger log = LoggerFactory.getLogger(CFStationCollectionWriterWrapper.class);
 
 	private WriterCFStationCollection writerCFStationCollection;
 
 	private GridAsPointDataset gap;
 
-	private WriterCFStationCollectionWrapper(){}
+	private CFStationCollectionWriterWrapper(){}
 
-	private WriterCFStationCollectionWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts) throws IOException{
+	private CFStationCollectionWriterWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts) throws IOException{
 
 		writerCFStationCollection = new WriterCFStationCollection(version, filePath, atts);
 
@@ -114,6 +114,7 @@ public final class WriterCFStationCollectionWrapper implements CFPointWriterWrap
 
 		//Ensemble...
 		CoordinateAxis1D ensAxis =  gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getEnsembleAxis();
+		
 		double[] ensCoords = new double[]{-1}; 
 		if( ensAxis != null ){
 			ensCoords = ensAxis.getCoordValues();
@@ -181,9 +182,9 @@ public final class WriterCFStationCollectionWrapper implements CFPointWriterWrap
 
 	}
 
-	public static WriterCFStationCollectionWrapper createWrapper( NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
+	public static CFStationCollectionWriterWrapper createWrapper( NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
 
-		return new WriterCFStationCollectionWrapper(version, filePath, atts);
+		return new CFStationCollectionWriterWrapper(version, filePath, atts);
 	} 	
 
 

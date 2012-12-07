@@ -27,15 +27,15 @@ import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.LatLonPoint;
 
-class WriterPointCollectionNoTimeWrapper implements CFPointWriterWrapper {
+class PointCollectionNoTimeWriterWrapper implements CFPointWriterWrapper {
 
-	static private Logger log = LoggerFactory.getLogger(WriterPointCollectionNoTimeWrapper.class);
+	static private Logger log = LoggerFactory.getLogger(PointCollectionNoTimeWriterWrapper.class);
 	
 	private WriterPointCollectionNoTime writerPointCollectionNoTime;
 	
 	private GridAsPointDataset gap;
 	
-	private WriterPointCollectionNoTimeWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts) throws IOException{
+	private PointCollectionNoTimeWriterWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts) throws IOException{
 
 		writerPointCollectionNoTime = new WriterPointCollectionNoTime(version, filePath, atts);
 	}
@@ -138,9 +138,9 @@ class WriterPointCollectionNoTimeWrapper implements CFPointWriterWrapper {
 	}
 
 	
-	static WriterPointCollectionNoTimeWrapper createWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
+	static PointCollectionNoTimeWriterWrapper createWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
 
-		return new WriterPointCollectionNoTimeWrapper(version, filePath, atts);
+		return new PointCollectionNoTimeWriterWrapper(version, filePath, atts);
 		
 	} 
 	

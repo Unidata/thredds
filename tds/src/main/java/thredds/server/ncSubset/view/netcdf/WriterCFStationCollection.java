@@ -235,7 +235,11 @@ class WriterCFStationCollection  extends CFPointWriter {
 			dimSet.add(ens);
 			List<Dimension> ensDim = new ArrayList<Dimension>();
 			ensDim.add(ens);
-			ensVar = writer.addVariable(null, ensAxis.getShortName() , ensAxis.getDataType() ,  ensDim );	    	
+			
+			//ensVar = writer.addVariable(null, ensAxis.getShortName() , ensAxis.getDataType() ,  ensDim );
+			//We'll write the double values to the new array
+			//DataType is int but the coordinates are stored as double ????			
+			ensVar = writer.addVariable(null, ensAxis.getShortName() , DataType.DOUBLE ,  ensDim );
 	    }
 	    	    
 	    // find all variables already in use 

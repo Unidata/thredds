@@ -32,13 +32,13 @@ import ucar.unidata.geoloc.StationImpl;
  * @author mhermida
  *
  */
-public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPointWriterWrapper {
+final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterWrapper {
 
-	static private Logger log = LoggerFactory.getLogger(WriterCFTimeSeriesProfileCollectionWrapper.class);
+	static private Logger log = LoggerFactory.getLogger(CFTimeSeriesProfileCollectionWriterWrapper.class);
 
 	private WriterCFTimeSeriesProfileCollection writerCFTimeSeriesProfileCollection; 
 
-	private WriterCFTimeSeriesProfileCollectionWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
+	private CFTimeSeriesProfileCollectionWriterWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
 
 		writerCFTimeSeriesProfileCollection = new WriterCFTimeSeriesProfileCollection(version, filePath, atts); 
 	}
@@ -214,8 +214,8 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 	}
 
 
-	public static WriterCFTimeSeriesProfileCollectionWrapper createWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
-		return new WriterCFTimeSeriesProfileCollectionWrapper(version, filePath, atts);
+	public static CFTimeSeriesProfileCollectionWriterWrapper createWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
+		return new CFTimeSeriesProfileCollectionWriterWrapper(version, filePath, atts);
 	}	
 
 }

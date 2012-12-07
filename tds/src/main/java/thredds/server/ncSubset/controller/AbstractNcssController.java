@@ -158,8 +158,10 @@ public abstract class AbstractNcssController implements LastModified{
 			}
 		//We should have a time or a timeRange...
 		if(params.getTime_window()!=null && params.getTime()!=null){
-			DateRange dr = new DateRange( new DateType(params.getTime(), null, null ), null, new TimeDuration(params.getTime_window()), null );
-			time_window = CalendarDateRange.of(dr).getDurationInSecs()*1000;			
+			DateRange dr = new DateRange( new DateType(params.getTime(), null, null ), null, new TimeDuration(params.getTime_window()), null );			
+			//time_window = CalendarDateRange.of(dr).getDurationInSecs()*1000;			
+			time_window = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()).getDurationInSecs()*1000; 
+									
 		}
 		CalendarDateRange dateRange = getRequestedDateRange(params);		
 		return NcssRequestUtils.wantedDates(gap, dateRange, time_window );
@@ -177,15 +179,18 @@ public abstract class AbstractNcssController implements LastModified{
 			CalendarDate date=null;			
 			if( params.getTime().equalsIgnoreCase("present") ){
 				date =CalendarDate.of(new Date());
-			}else{
-				date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );				
+			}else{			
+				
+				//date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );	
+				date =  CalendarDateFormatter.isoStringToCalendarDate(null, params.getTime());
 			}						
 			return CalendarDateRange.of(date,date);		
 		}	
 		//We should have valid params here...
 		CalendarDateRange dates=null;
 		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null), new DateType(params.getTime_end(), null, null), new TimeDuration(params.getTime_duration()), null );		
-	    dates = CalendarDateRange.of(dr);
+	    //dates = CalendarDateRange.of(dr);
+		dates = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()  );
 				
 		return dates;
 	}

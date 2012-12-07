@@ -78,6 +78,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
   @Autowired
   private TdsContext tdsContext;
 
+  
   /* private String fmrcDefinitionDirectory;
   public void setFmrcDefinitionDirectory(String dir) {
     fmrcDefinitionDirectory = dir;
@@ -145,7 +146,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     int secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 11 * 60);
     if (max > 0) {
       NetcdfDataset.initNetcdfFileCache(min, max, secs);
-      startupLog.info("CdmInit: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
+      startupLog.info("CdmInit  private boolean isNetcdf4Available = false;: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
     // GribCollection partitions: default is allow 50 - 100 open files, cleanup every 12 minutes
@@ -219,14 +220,22 @@ public class CdmInit implements InitializingBean,  DisposableBean{
       timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
     }
 
-  /* <Netcdf4Clibrary>
+     /* <Netcdf4Clibrary>
        <libraryPath>C:/cdev/lib/</libraryPath>
        <libraryName>netcdf4</libraryName>
      </Netcdf4Clibrary> */
     String libraryPath = ThreddsConfig.get("Netcdf4Clibrary.libraryPath", null);
     String libraryName = ThreddsConfig.get("Netcdf4Clibrary.libraryName", null);
-    if (libraryPath != null || libraryName != null)
+    if (libraryPath != null || libraryName != null){
       Nc4Iosp.setLibraryAndPath(libraryPath, libraryName);
+      
+      if(!Nc4Iosp.isClibraryPresent() ){
+    	  startupLog.warn("netcdf4 c library not present jna_path='" + libraryPath + "' libname=" + libraryName + "" );    	 
+      }else{
+    	  Netcdf4AvailabilityChecker.setNetcdf4Available(true);
+    	  startupLog.info("netcdf4 c library loaded from jna_path='" + libraryPath + "' libname=" + libraryName + "" );
+      }
+    }
 
     startupLog.info("CdmInit complete");
   }
