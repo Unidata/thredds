@@ -473,7 +473,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/.*grib2$"
-            dateFormatMark="#NAM_CONUS_12km_#yyyyMMdd_HHmm"
+            dateFormatMark="#NAM_CONUS_12km_conduit_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
