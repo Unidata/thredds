@@ -7,14 +7,11 @@ netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR.nc {
    int GeoX(GeoX=4);
      :long_name = "x-coordinate in Cartesian system";
      :axis = "X";
-     :_lastModified = "1970-01-03T00:34:45Z";
    float time(time=1);
      :units = "hours since 2000-01-01 00:00:00";
-     :_lastModified = "1970-01-02T00:02:48Z";
    int GeoY(GeoY=4);
      :long_name = "y-coordinate in Cartesian system";
      :axis = "Y";
-     :_lastModified = "1970-01-03T00:35:02Z";
 
  Group Science_Data {
 
@@ -27,7 +24,6 @@ netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR.nc {
          :_FillValue = 32767S; // short
          :standard_name = "latitude";
          :add_offset = 0.0f; // float
-         :_lastModified = "1970-01-03T00:57:52Z";
          :_ChunkSize = 1400, 1400; // int
        short Longitude(GeoY=4, GeoX=4);
          :_CoordinateAxes = "GeoY GeoX ";
@@ -36,7 +32,6 @@ netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR.nc {
          :units = "degrees_east";
          :add_offset = 0.0f; // float
          :standard_name = "longitude";
-         :_lastModified = "1970-01-03T00:57:35Z";
          :_ChunkSize = 1400, 1400; // int
    }
 
@@ -49,7 +44,6 @@ netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR.nc {
          :standard_name = "Outgoing Longwave Radiation";
          :_FillValue = -999.0f; // float
          :units = "W.m-2";
-         :_lastModified = "1970-01-03T01:58:18Z";
          :_ChunkSize = 1, 936, 1400; // int
    }
  }

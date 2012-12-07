@@ -165,4 +165,29 @@ public class TestGroups extends UnitTestCommon
         System.out.println("---------------");
     }
   }
+
+  /**
+   Remove any _lastModified attributes
+   @param s The string to be modified
+   @return The modified string
+   */
+  String nolastmodified(String s)
+  {
+    StringReader sr = new StringReader(s);
+    StringWriter sw = new StringWriter();
+    BufferedReader br = new BufferedReader(sr);
+    String line;
+    try {
+    while((line=br.readLine()) != null) {
+      if(line.contains("odified"))
+          continue;
+      sw.write(line+"\n");
+    }
+    br.close();
+    sr.close();
+    sw.close();
+    return sw.toString();
+    } catch (IOException ioe) {return null;}
+  }
+
 }
