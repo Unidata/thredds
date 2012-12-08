@@ -45,8 +45,9 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JComboBox" ) {
 							name: "chunking"
 							auxiliary() {
-								"JavaCodeGenerator.customCreateCode": "new JComboBox(Nc4Chunking.Standard.values());"
+								"JavaCodeGenerator.customCreateCode": "new JComboBox(Nc4Chunking.Strategy.values());"
 							}
+							addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "chunkingItemStateChanged", true ) )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 							"gridx": 1
 						} )
@@ -77,18 +78,15 @@ new FormModel {
 					"border": new javax.swing.border.EmptyBorder( 12, 0, 0, 0 )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "okButton"
-						"text": "OK"
+						"text": "Write File"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "okButtonActionPerformed", true ) )
-					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-						"gridx": 1
-						"gridy": 0
-					} )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "cancelButton"
 						"text": "Cancel"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "cancelButtonActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-						"gridx": 2
-						"gridy": 0
+						"gridx": 1
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "South"

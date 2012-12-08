@@ -64,6 +64,31 @@ public class TestNc4IospReading {
   }
 
   @Test
+  public void timeRead() throws IOException {
+    String location = "Q:/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";
+    NetcdfFile jni = openJni(location);
+    Variable v = jni.findVariable("time");
+
+    long start = System.currentTimeMillis();
+    Array data = v.read();
+    long took = System.currentTimeMillis() - start;
+    System.out.printf(" jna took= %d msecs size=%d%n", took, data.getSize());
+
+    jni.close();
+
+    NetcdfFile ncfile = NetcdfFile.open(location);
+    v = ncfile.findVariable("time");
+
+    start = System.currentTimeMillis();
+    data = v.read();
+    took = System.currentTimeMillis() - start;
+    System.out.printf(" java took= %d msecs size=%d%n", took, data.getSize());
+
+    ncfile.close();
+
+  }
+
+  @Test
   public void readAllNetcdf4() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/", new MyFileFilter(), new MyAct(), true);

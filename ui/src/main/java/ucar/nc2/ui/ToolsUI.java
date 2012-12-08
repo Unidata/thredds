@@ -124,6 +124,8 @@ public class ToolsUI extends JPanel {
   private CdmremotePanel cdmremotePanel;
   private CoordSysPanel coordSysPanel;
   private CollectionPanel collectionPanel;
+  private DatasetViewerPanel viewerPanel;
+  private DatasetWriterPanel writerPanel;
   private FeatureScanPanel ftPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
@@ -153,7 +155,6 @@ public class ToolsUI extends JPanel {
   //private TrajectoryTablePanel trajTablePanel;
   private UnitsPanel unitsPanel;
   private URLDumpPane urlPanel;
-  private ViewerPanel viewerPanel;
   private WmoCCPanel wmoCommonCodePanel;
   private WmsPanel wmsPanel;
 
@@ -201,10 +202,11 @@ public class ToolsUI extends JPanel {
     ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
 
     // the widgets in the top level tabbed pane
-    viewerPanel = new ViewerPanel((PreferencesExt) mainPrefs.node("varTable"));
+    viewerPanel = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("varTable"));
     tabbedPane.addTab("Viewer", viewerPanel);
 
-    // all the other component are defferred for fast startup
+    // all the other component are deferred construction for fast startup
+    tabbedPane.addTab("Writer", new JLabel("Writer"));
     tabbedPane.addTab("NCDump", new JLabel("NCDump"));
     tabbedPane.addTab("Iosp", iospTabPane);
     tabbedPane.addTab("CoordSys", new JLabel("CoordSys"));
@@ -644,6 +646,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("Viewer")) {
       c = viewerPanel;
 
+    } else if (title.equals("Writer")) {
+      writerPanel = new DatasetWriterPanel((PreferencesExt) mainPrefs.node("writer"));
+      c = writerPanel;
+
     } else if (title.equals("WMS")) {
       wmsPanel = new WmsPanel((PreferencesExt) mainPrefs.node("wms"));
       c = wmsPanel;
@@ -1036,6 +1042,7 @@ public class ToolsUI extends JPanel {
     if (unitsPanel != null) unitsPanel.save();
     if (urlPanel != null) urlPanel.save();
     if (viewerPanel != null) viewerPanel.save();
+    if (writerPanel != null) writerPanel.save();
     if (wmoCommonCodePanel != null) wmoCommonCodePanel.save();
     if (wmsPanel != null) wmsPanel.save();
   }
@@ -4918,12 +4925,12 @@ public class ToolsUI extends JPanel {
   }
 
   ///////////////////////////////////////////////////////////
-  private class ViewerPanel extends OpPanel {
+  private class DatasetViewerPanel extends OpPanel {
     DatasetViewer dsViewer;
     JSplitPane split;
     NetcdfFile ncfile = null;
 
-    ViewerPanel(PreferencesExt dbPrefs) {
+    DatasetViewerPanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:");
       dsViewer = new DatasetViewer(dbPrefs, fileChooser);
       add(dsViewer, BorderLayout.CENTER);
@@ -5009,172 +5016,69 @@ public class ToolsUI extends JPanel {
 
   }
 
-  /* private class PointObsPanel extends OpPanel {
-    PointObsViewer povTable;
+  ///////////////////////////////////////////////////////////
+  private class DatasetWriterPanel extends OpPanel {
+    DatasetWriter dsWriter;
     JSplitPane split;
-    PointObsDataset pobsDataset = null;
+    NetcdfFile ncfile = null;
 
-    PointObsPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "dataset:", true, false);
-      povTable = new PointObsViewer(dbPrefs);
-      add(povTable, BorderLayout.CENTER);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String info;
-          if ((pobsDataset != null) && ((info = pobsDataset.getDetailInfo()) != null)) {
-            detailTA.setText(info);
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
-        }
-      });
-      buttPanel.add(infoButton);
+    DatasetWriterPanel(PreferencesExt dbPrefs) {
+      super(dbPrefs, "dataset:");
+      dsWriter = new DatasetWriter(dbPrefs, fileChooser);
+      add(dsWriter, BorderLayout.CENTER);
+      dsWriter.addActions(buttPanel);
     }
 
     boolean process(Object o) {
-      String location = (String) o;
-      return setPointObsDataset(location);
-    }
-
-    void save() {
-      super.save();
-      povTable.save();
-    }
-
-    boolean setPointObsDataset(String location) {
-      if (location == null) return false;
+      String command = (String) o;
+      boolean err = false;
 
       try {
-        if (pobsDataset != null) pobsDataset.close();
+        if (ncfile != null) ncfile.close();
       } catch (IOException ioe) {
       }
 
-      StringBuilder log = new StringBuilder();
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        pobsDataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, location, null, log);
-        if (pobsDataset == null) {
-          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
-          return false;
-        }
+        NetcdfFile ncnew = openFile(command, addCoords, null);
+        if (ncnew != null)
+          setDataset(ncnew);
 
-        povTable.setDataset(pobsDataset);
-        setSelectedItem(location);
-        return true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        ta.setText(log.toString());
-        ta.appendLine(bos.toString());
-
-        JOptionPane.showMessageDialog(this, e.getMessage());
-        return false;
-      }
-    }
-
-    boolean setPointObsDataset(PointObsDataset dataset) {
-      if (dataset == null) return false;
-
-      try {
-        if (pobsDataset != null) pobsDataset.close();
-      } catch (IOException ioe) {
+      } catch (Exception ioe) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+        ioe.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
       }
 
-      povTable.setDataset(dataset);
-      pobsDataset = dataset;
-      setSelectedItem(pobsDataset.getLocationURI());
-      return true;
-    }
-  }
-
-  private class StationObsPanel extends OpPanel {
-    StationObsViewer povTable;
-    JSplitPane split;
-    StationObsDataset sobsDataset = null;
-
-    StationObsPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "dataset:", true, false);
-      povTable = new StationObsViewer(dbPrefs);
-      add(povTable, BorderLayout.CENTER);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String info;
-          if ((sobsDataset != null) && ((info = sobsDataset.getDetailInfo()) != null)) {
-            detailTA.setText(info);
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
-        }
-      });
-      buttPanel.add(infoButton);
-    }
-
-    boolean process(Object o) {
-      String location = (String) o;
-      return setStationObsDataset(location);
+      return !err;
     }
 
     void closeOpenFiles() throws IOException {
-      if (sobsDataset != null) sobsDataset.close();
-      sobsDataset = null;
+      if (ncfile != null) ncfile.close();
+      ncfile = null;
+    }
+
+    void setDataset(NetcdfFile nc) {
+      try {
+        if (ncfile != null) ncfile.close();
+        ncfile = null;
+      } catch (IOException ioe) {
+      }
+      ncfile = nc;
+
+      if (ncfile != null) {
+        dsWriter.setDataset(nc);
+        setSelectedItem(nc.getLocation());
+      }
     }
 
     void save() {
       super.save();
-      povTable.save();
+      dsWriter.save();
     }
 
-    boolean setStationObsDataset(String location) {
-      if (location == null) return false;
-
-      try {
-        if (sobsDataset != null) sobsDataset.close();
-      } catch (IOException ioe) {
-      }
-
-      StringBuilder log = new StringBuilder();
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      try {
-        sobsDataset = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, location, null, log);
-        if (sobsDataset == null) {
-          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
-          return false;
-        }
-
-        povTable.setDataset(sobsDataset);
-        setSelectedItem(location);
-        return true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        ta.setText(log.toString());
-        ta.appendLine(bos.toString());
-
-        JOptionPane.showMessageDialog(this, e.getMessage());
-        return false;
-      }
-    }
-
-    boolean setStationObsDataset(StationObsDataset dataset) {
-      if (dataset == null) return false;
-
-      try {
-        if (sobsDataset != null) sobsDataset.close();
-      } catch (IOException ioe) {
-      }
-
-      povTable.setDataset(dataset);
-      sobsDataset = dataset;
-      setSelectedItem(sobsDataset.getLocationURI());
-      return true;
-    }
-  } */
+  }
 
   /////////////////////////////////////////////////////////////////////
   private class FeatureScanPanel extends OpPanel {

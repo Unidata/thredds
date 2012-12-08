@@ -147,7 +147,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private boolean isClosed = false;
   private Map<Integer, UserType> userTypes = new HashMap<Integer, UserType>();  // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<Group, Integer>();  // group, nc4 grpid
-  private Nc4Chunking chunker = new Nc4ChunkingImpl();
+  private Nc4Chunking chunker = new Nc4ChunkingStrategyImpl();
 
   public Nc4Iosp(NetcdfFileWriter.Version version) {
     this.version = version;
@@ -1851,22 +1851,25 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         throw new IOException(nc4.nc_strerror(ret));
       int varid = varidp.getValue();
 
-      //   int nc_def_var_chunking(int ncid, int varid, int storage, long[] chunksizesp); // const size_t *   ??
-      boolean isChunked = chunker.isChunked(v);
-      int storage = isChunked ? Nc4prototypes.NC_CHUNKED : Nc4prototypes.NC_CONTIGUOUS;
-      long[] chunking = isChunked ? chunker.computeChunking(v) : new long[v.getRank()];
-      ret = nc4.nc_def_var_chunking(grpid, varid, storage, chunking);
-      if (ret != 0)
-        throw new IOException(nc4.nc_strerror(ret));
+      if (version == NetcdfFileWriter.Version.netcdf4) {
+        //   int nc_def_var_chunking(int ncid, int varid, int storage, long[] chunksizesp); // const size_t *   ??
+        boolean isChunked = chunker.isChunked(v);
+        int storage = isChunked ? Nc4prototypes.NC_CHUNKED : Nc4prototypes.NC_CONTIGUOUS;
+        long[] chunking = isChunked ? chunker.computeChunking(v) : new long[v.getRank()];
+        ret = nc4.nc_def_var_chunking(grpid, varid, storage, chunking);
+        if (ret != 0) {
+          throw new IOException(nc4.nc_strerror(ret)+" nc_def_var_chunking on variable "+v.getFullName());
+        }
 
-        // int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level);
-      int deflateLevel = isChunked ? chunker.getDeflateLevel(v) : 0;
-      int deflate = deflateLevel > 0 ? 1 : 0;
-      int shuffle = isChunked && chunker.isShuffle(v) ? 1 : 0;
-      if (deflateLevel > 0) {
-        ret = nc4.nc_def_var_deflate(grpid, varid, shuffle, deflate, deflateLevel);
-        if (ret != 0)
-          throw new IOException(nc4.nc_strerror(ret));
+          // int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level);
+        int deflateLevel = isChunked ? chunker.getDeflateLevel(v) : 0;
+        int deflate = deflateLevel > 0 ? 1 : 0;
+        int shuffle = isChunked && chunker.isShuffle(v) ? 1 : 0;
+        if (deflateLevel > 0) {
+          ret = nc4.nc_def_var_deflate(grpid, varid, shuffle, deflate, deflateLevel);
+          if (ret != 0)
+            throw new IOException(nc4.nc_strerror(ret));
+        }
       }
 
       v.setSPobject(new Vinfo(grpid, varid, typid));

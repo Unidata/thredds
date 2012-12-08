@@ -58,6 +58,11 @@ import javax.swing.table.*;
  * <pre>
  *     static public String editableProperties() { return "ID serverName active writeDirectory"; }
  * </pre>
+ *   or as an instance method with a no parameter contructor
+ * <pre>
+ *   MyClass() {}
+ *   public String editableProperties() { return "ID serverName active writeDirectory"; }
+ * </pre>
  *
  *  You may hide properties by listing them in a static method hiddenProperties() in the bean, eg :
  * <pre>
@@ -74,6 +79,7 @@ import javax.swing.table.*;
 
 public class BeanTable extends JPanel {
   protected Class beanClass;
+  protected Object innerbean;
   protected PreferencesExt store;
   protected JTable jtable;
   protected JScrollPane scrollPane;
@@ -85,7 +91,7 @@ public class BeanTable extends JPanel {
   protected boolean debug = false, debugStore = false, debugBean = false, debugSelected = false;
 
   public BeanTable( Class bc, PreferencesExt pstore, boolean canAddDelete) {
-    this( bc, pstore, canAddDelete, null, null);
+    this( bc, pstore, canAddDelete, null, null, null);
   }
   /**
    *  Constructor.
@@ -93,10 +99,13 @@ public class BeanTable extends JPanel {
    * @param pstore store data in this PreferencesExt store.
    * @param canAddDelete allow changes to the jtable - adds a New and Delete button to bottom panel
    * @param header optional header label
+   * @param bean  needed for inner classes to call reflected methods on
+
    */
-  public BeanTable( Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip) {
+  public BeanTable( Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip, Object bean) {
     this.beanClass = bc;
     this.store = pstore;
+    this.innerbean = bean;
 
     beans = (store != null) ? (ArrayList<Object>) store.getBean("beanList", new ArrayList()) : new ArrayList<Object>();
     model = new TableBeanModel( beanClass);
@@ -548,11 +557,22 @@ public class BeanTable extends JPanel {
         Method m = md.getMethod();
         if (m.getName().equals("editableProperties")) {
           try {
-            editableProperties = (String) m.invoke(null, (Object[]) null);
-            if (debugBean) System.out.println(" editableProperties: " + editableProperties);
+            editableProperties = (String) m.invoke(null, (Object[]) null);  // try static
+            if (debugBean) System.out.println(" static editableProperties: " + editableProperties);
           } catch (Exception ee) {
-            System.out.println("BeanTable: Bad editableProperties ");
-            ee.printStackTrace();
+
+            if (innerbean != null) {
+              try {
+                editableProperties = (String) m.invoke(innerbean, (Object[]) null);  // try non static
+                if (debugBean) System.out.println(" editableProperties: " + editableProperties);
+
+               } catch (Exception e2) {
+                e2.printStackTrace();
+              }
+
+            } else {
+              ee.printStackTrace();
+            }
           }
         }
       }
@@ -899,7 +919,7 @@ public class BeanTable extends JPanel {
 
     xstore = XMLStore.createFromFile("C:/dev/prefs/test/data/testBeanTable.xml", null);
     store = xstore.getPreferences();
-    final BeanTable bt = new BeanTable(TestBean.class, store, true, "header", "header\ntooltip");
+    final BeanTable bt = new BeanTable(TestBean.class, store, true, "header", "header\ntooltip", null);
 
     JFrame frame = new JFrame("Test BeanTable");
     frame.addWindowListener(new WindowAdapter() {

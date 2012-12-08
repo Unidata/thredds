@@ -1924,8 +1924,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Ranges must be filled (no nulls)
    */
   protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
-    if (showRequest)
-      System.out.println("Data request for variable: " + v.getFullName() + " section= " + ranges);
+    long start = 0;
+    if (showRequest) {
+      System.out.printf("Data request for variable: %s section %s", v.getFullName(), ranges);
+      start = System.currentTimeMillis();
+    }
+
     if (unlocked) {
       String info = cache.getInfo(this);
       throw new IllegalStateException("File is unlocked - cannot use\n" + info);
@@ -1936,6 +1940,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());
+
+    if (showRequest) {
+      long took = System.currentTimeMillis() - start;
+      System.out.printf(" took= %d msecs%n", took);
+    }
     return result;
   }
 

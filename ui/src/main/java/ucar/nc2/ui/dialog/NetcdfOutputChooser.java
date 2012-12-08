@@ -8,6 +8,7 @@ import java.awt.event.*;
 
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.jni.netcdf.Nc4Chunking;
+import ucar.nc2.util.ListenerManager;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,6 +19,8 @@ import javax.swing.border.*;
  * @author John Caron
  */
 public class NetcdfOutputChooser extends JDialog {
+  private ListenerManager lm = new ListenerManager("java.awt.event.ItemListener", "java.awt.event.ItemEvent", "itemStateChanged");
+
   public NetcdfOutputChooser(Frame owner) {
     super(owner);
     initComponents();
@@ -49,11 +52,11 @@ public class NetcdfOutputChooser extends JDialog {
   public class Data {
     public String outputFilename;
     public NetcdfFileWriter.Version version;
-    public Nc4Chunking.Standard chunkerType;
+    public Nc4Chunking.Strategy chunkerType;
     public int deflate;
     public boolean shuffle;
 
-    private Data(String outputFilename, NetcdfFileWriter.Version version, Nc4Chunking.Standard chunkerType,
+    private Data(String outputFilename, NetcdfFileWriter.Version version, Nc4Chunking.Strategy chunkerType,
                  boolean deflate, boolean shuffle) {
       this.outputFilename = outputFilename;
       this.version = version;
@@ -66,7 +69,7 @@ public class NetcdfOutputChooser extends JDialog {
   private void okButtonActionPerformed(ActionEvent e) {
     Data data = new Data(outputFilename.getText(),
             (NetcdfFileWriter.Version) netcdfVersion.getSelectedItem(),
-            (Nc4Chunking.Standard) chunking.getSelectedItem(),
+            (Nc4Chunking.Strategy) chunking.getSelectedItem(),
             deflate.isSelected(), shuffle.isSelected());
     firePropertyChange("OK", null, data);
     setVisible(false);
@@ -76,6 +79,21 @@ public class NetcdfOutputChooser extends JDialog {
     // TODO: add custom component creation code here
   }
 
+  public void addEventListener(ItemListener l) {
+    lm.addListener(l);
+  }
+
+  public void removeEventListener(ItemListener l) {
+    lm.removeListener(l);
+  }
+
+  private void chunkingItemStateChanged(ItemEvent e) {
+    lm.sendEvent(e);
+  }
+
+  private void cancelButtonActionPerformed(ActionEvent e) {
+    setVisible(false);
+  }
 
   private void initComponents() {
     // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -88,7 +106,7 @@ public class NetcdfOutputChooser extends JDialog {
     netcdfVersion = new JComboBox(NetcdfFileWriter.Version.values());
     panel1 = new JPanel();
     label3 = new JLabel();
-    chunking = new JComboBox(Nc4Chunking.Standard.values());
+    chunking = new JComboBox(Nc4Chunking.Strategy.values());
     deflate = new JCheckBox();
     shuffle = new JCheckBox();
     buttonBar = new JPanel();
@@ -127,6 +145,14 @@ public class NetcdfOutputChooser extends JDialog {
           panel1.add(label3, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets(0, 0, 0, 0), 0, 0));
+
+          //---- chunking ----
+          chunking.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+              chunkingItemStateChanged(e);
+            }
+          });
           panel1.add(chunking, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets(0, 0, 0, 0), 0, 0));
@@ -193,22 +219,28 @@ public class NetcdfOutputChooser extends JDialog {
         ((GridBagLayout)buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
 
         //---- okButton ----
-        okButton.setText("OK");
+        okButton.setText("Write File");
         okButton.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
             okButtonActionPerformed(e);
           }
         });
-        buttonBar.add(okButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+        buttonBar.add(okButton, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
           GridBagConstraints.CENTER, GridBagConstraints.BOTH,
           new Insets(0, 0, 0, 5), 0, 0));
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
-        buttonBar.add(cancelButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
+        cancelButton.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            cancelButtonActionPerformed(e);
+          }
+        });
+        buttonBar.add(cancelButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
           GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-          new Insets(0, 0, 0, 0), 0, 0));
+          new Insets(0, 0, 0, 5), 0, 0));
       }
       dialogPane.add(buttonBar, BorderLayout.SOUTH);
     }

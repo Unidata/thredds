@@ -9,7 +9,8 @@ import ucar.nc2.Variable;
  * @since 11/14/12
  */
 public interface Nc4Chunking {
-  public enum Standard { unlimited, grib }
+
+  public enum Strategy {standard, grib, fromAttribute }
 
   public boolean isChunked(Variable v);
 

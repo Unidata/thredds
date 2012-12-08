@@ -1,75 +1,39 @@
-/*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 package ucar.nc2.ui;
 
+import ucar.ma2.Array;
 import ucar.nc2.*;
-
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.jni.netcdf.Nc4Chunking;
 import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.util.prefs.*;
-import ucar.util.prefs.ui.*;
-import ucar.ma2.Array;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.util.*;
-import java.io.*;
-import java.util.List;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.Debug;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.*;
+import java.util.*;
+import java.util.List;
 
 /**
- * A Swing widget to view the content of a netcdf dataset.
- * It uses a DatasetTree widget and nested BeanTableSorted widget, by
- *  wrapping the Variables in a VariableBean.
- * A pop-up menu allows to view a Structure in a StructureTable.
- *
+ * For writing datasets to netcdf
  *
  * @author caron
+ * @since 12/7/12
  */
-
-public class DatasetViewer extends JPanel {
+public class DatasetWriter extends JPanel {
   private FileManager fileChooser;
 
   private PreferencesExt prefs;
@@ -79,19 +43,19 @@ public class DatasetViewer extends JPanel {
   private BeanTableSorted attTable;
 
   private JPanel tablePanel;
-  private JSplitPane mainSplit;
+  // private JSplitPane mainSplit;
 
   private JComponent currentComponent;
-  private DatasetTreeView datasetTree;
-  private NCdumpPane dumpPane;
+  private NetcdfOutputChooser outputChooser;
 
   private TextHistoryPane infoTA;
   private StructureTable dataTable;
   private IndependentWindow infoWindow, dataWindow, dumpWindow, attWindow;
-
   private boolean eventsOK = true;
 
-  public DatasetViewer(PreferencesExt prefs, FileManager fileChooser) {
+  private Nc4Chunking chunker = Nc4ChunkingStrategyImpl.factory(Nc4Chunking.Strategy.standard, 0, false) ;
+
+  public DatasetWriter(PreferencesExt prefs, FileManager fileChooser) {
     this.prefs = prefs;
     this.fileChooser = fileChooser;
 
@@ -99,24 +63,39 @@ public class DatasetViewer extends JPanel {
     tablePanel = new JPanel( new BorderLayout());
     setNestedTable(0, null);
 
-    // the tree view
+    /* the tree view
     datasetTree = new DatasetTreeView();
     datasetTree.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent e) {
         setSelected((Variable) e.getNewValue());
       }
+    }); */
+
+    outputChooser = new NetcdfOutputChooser((Frame)null);
+    outputChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent evt) {
+        writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
+      }
+    });
+    outputChooser.addEventListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Nc4Chunking.Strategy strategy = (Nc4Chunking.Strategy) e.getItem();
+        chunker = Nc4ChunkingStrategyImpl.factory(strategy, 0, false) ;
+        showChunking();
+      }
     });
 
     // layout
-    mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, datasetTree, tablePanel);
-    mainSplit.setDividerLocation(prefs.getInt("mainSplit", 100));
+    //mainSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, outputChooser, tablePanel);
+    //mainSplit.setDividerLocation(prefs.getInt("mainSplit", 100));
 
     setLayout(new BorderLayout());
-    add(mainSplit, BorderLayout.CENTER);
+    add(outputChooser.getContentPane(), BorderLayout.NORTH);
+    add(tablePanel, BorderLayout.CENTER);
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage( "netcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
 
     // the data Table
@@ -124,41 +103,13 @@ public class DatasetViewer extends JPanel {
     dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "netcdfUI"), dataTable);
     dataWindow.setBounds( (Rectangle) prefs.getBean("dataWindow", new Rectangle( 50, 300, 1000, 600)));
 
-    // the ncdump Pane
+    /* the ncdump Pane
     dumpPane = new NCdumpPane((PreferencesExt) prefs.node("dumpPane"));
     dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage( "netcdfUI"), dumpPane);
-    dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200)));
+    dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200))); */
   }
 
-  NetcdfOutputChooser outChooser;
   public void addActions(JPanel buttPanel) {
-
-    AbstractAction netcdfAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-      if (ds == null) return;
-      if (outChooser == null) {
-        outChooser = new NetcdfOutputChooser((Frame) null);
-        outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
-           public void propertyChange(PropertyChangeEvent evt) {
-             writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
-           }
-         });
-      }
-      outChooser.setOutputFilename(ds.getLocation());
-      outChooser.setVisible(true);
-      }
-    };
-    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF file", false, 'S', -1);
-    BAMutil.addActionToContainer(buttPanel, netcdfAction);
-
-    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to another file", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        compareDataset();
-      }
-    });
-    buttPanel.add(compareButton);
-
     AbstractAction attAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         showAtts();
@@ -168,17 +119,49 @@ public class DatasetViewer extends JPanel {
     BAMutil.addActionToContainer(buttPanel, attAction);
   }
 
+    ///////////////////////////////////////
+
+  private void showChunking() {
+    if (nestedTableList.size() == 0) return;
+    NestedTable t = nestedTableList.get(0);
+    List beans = t.table.getBeans();
+    for (int i=0; i<beans.size(); i++) {
+      VariableBean bean = (VariableBean) beans.get(i);
+      boolean isChunked = chunker.isChunked(bean.vs);
+      bean.setChunked(isChunked);
+      if (isChunked)
+        bean.setChunkArray(chunker.computeChunking(bean.vs));
+      else
+        bean.setChunkArray(null);
+    }
+    t.table.refresh();
+  }
+
+
   ///////////////////////////////////////
 
   void writeNetcdf(NetcdfOutputChooser.Data data) {
+    String filename = data.outputFilename.trim();
+    if (filename.length() == 0) {
+      JOptionPane.showMessageDialog(this, "Filename has not been set");
+      return;
+    }
+    /* File f = new File(filename);
+    if (!f.canWrite())  {
+      JOptionPane.showMessageDialog(this, "Cannot write to "+filename);
+      //return;
+    } */
+
     if (data.version == NetcdfFileWriter.Version.ncstream) {
       writeNcstream(data.outputFilename);
       return;
     }
 
     try {
-      FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version,
-              Nc4ChunkingStrategyImpl.factory(data.chunkerType, data.deflate, data.shuffle));
+      List beans = nestedTableList.get(0).table.getBeans();
+      BeanChunker bc = new BeanChunker(beans, data.deflate, data.shuffle);
+      FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version, bc);
+
       NetcdfFile result = writer.write();
       result.close();
       JOptionPane.showMessageDialog(this, "File successfully written");
@@ -249,7 +232,7 @@ public class DatasetViewer extends JPanel {
         Variable ov = compareFile.findVariable(org.getFullNameEscaped());
         if (ov != null)
           cn.compareVariable(org, ov);
-      }      
+      }
 
       infoTA.setText(f.toString());
       infoTA.gotoTop();
@@ -268,7 +251,8 @@ public class DatasetViewer extends JPanel {
         try {
           compareFile.close();
         }
-        catch (Exception eek) { }
+        catch (Exception eek) {
+        }
     }
   }
 
@@ -279,7 +263,7 @@ public class DatasetViewer extends JPanel {
     if (attTable == null) {
       // global attributes
       attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
-      PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(attTable.getJTable(), "Options");
+      ucar.nc2.ui.widget.PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(attTable.getJTable(), "Options");
       varPopup.addAction("Show Attribute", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           AttributeBean bean = (AttributeBean) attTable.getSelectedBean();
@@ -296,10 +280,10 @@ public class DatasetViewer extends JPanel {
 
     List<AttributeBean> attlist = new ArrayList<AttributeBean>();
     for (Attribute att : ds.getGlobalAttributes()) {
-      attlist.add(new AttributeBean(att));      
+      attlist.add(new AttributeBean(att));
     }
     attTable.setBeans(attlist);
-    attWindow.show();    
+    attWindow.show();
   }
 
   public NetcdfFile getDataset() {
@@ -312,7 +296,7 @@ public class DatasetViewer extends JPanel {
     nt.table.setBeans( getVariableBeans(ds));
     hideNestedTable( 1);
 
-    datasetTree.setFile( ds);
+    showChunking();
   }
 
   private void setSelected( Variable v ) {
@@ -374,10 +358,10 @@ public class DatasetViewer extends JPanel {
       this.level = level;
       myPrefs = (PreferencesExt) prefs.node("NestedTable"+level);
 
-      table = new BeanTableSorted(VariableBean.class, myPrefs, false);
+      table = new BeanTableSorted(VariableBean.class, myPrefs, false, null, null, new VariableBean());
 
       JTable jtable = table.getJTable();
-      PopupMenu csPopup = new PopupMenu(jtable, "Options");
+      ucar.nc2.ui.widget.PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
       csPopup.addAction("Show Declaration", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           showDeclaration(table, false);
@@ -388,11 +372,11 @@ public class DatasetViewer extends JPanel {
           showDeclaration(table, true);
         }
       });
-      csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
+      /* csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           dumpData(table);
         }
-      });
+      });   */
       if (level == 0) {
         csPopup.addAction("Data Table", new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
@@ -412,7 +396,7 @@ public class DatasetViewer extends JPanel {
           } else {
             hideNestedTable(NestedTable.this.level+1);
           }
-          if (eventsOK) datasetTree.setSelected( v);
+          // if (eventsOK) datasetTree.setSelected( v);
         }
       });
 
@@ -497,7 +481,7 @@ public class DatasetViewer extends JPanel {
       try {
         NCdumpW.writeNcMLVariable( v, out);
       } catch (IOException e) {
-        e.printStackTrace(); 
+        e.printStackTrace();
       }
       infoTA.appendLine( out.toString());
 
@@ -505,7 +489,7 @@ public class DatasetViewer extends JPanel {
       infoTA.appendLine( v.toString());
     }
 
-    if (Debug.isSet( "Xdeveloper")) {
+    if (Debug.isSet("Xdeveloper")) {
       infoTA.appendLine("\n");
       infoTA.appendLine( "FULL NAME = "+ v.getFullName());
       infoTA.appendLine("\n");
@@ -515,126 +499,6 @@ public class DatasetViewer extends JPanel {
     infoWindow.setTitle("Variable Info");
     infoWindow.show();
   }
-
-  private void dumpData(BeanTableSorted from) {
-    Variable v = getCurrentVariable(from);
-    if (v == null) return;
-
-    dumpPane.clear();
-    String spec;
-
-    try {
-      spec = ParsedSectionSpec.makeSectionSpecString(v, null);
-      dumpPane.setContext(ds, spec);
-
-    } catch (Exception ex) {
-      StringWriter s = new StringWriter();
-      ex.printStackTrace( new PrintWriter(s));
-      dumpPane.setText( s.toString());
-    }
-
-    dumpWindow.show();
-  }
-
-  /* private void showMissingData(BeanTableSorted from) {
-    VariableBean vb = (VariableBean) from.getSelectedBean();
-    if (vb == null) return;
-    Variable v = vb.vs;
-    if ((v != null) && (v.getDataType() == ucar.nc2.DataType.STRUCTURE)) {
-      showMissingStructureData( (Structure) v);
-    }
-    if (!vb.vs.hasMissing()) return;
-
-    int count = 0, total = 0;
-    infoTA.clear();
-    infoTA.appendLine( v.toString());
-    try {
-
-      Array data = null;
-      if (v.isMemberOfStructure())
-        data = v.readAllStructures((List)null, true);
-      else
-        data = v.read();
-
-      IndexIterator iter = data.getIndexIterator();
-      while (iter.hasNext()) {
-        if (vb.vs.isMissing( iter.getDoubleNext()))
-          count++;
-        total++;
-      }
-
-      double p = ((100.0 * count) / total);
-      infoTA.appendLine( " missing values = "+count);
-      infoTA.appendLine( " total values = "+total);
-      infoTA.appendLine( " percent missing values = "+ Format.d(p, 2) +" %");
-
-    } catch( InvalidRangeException e ) {
-      infoTA.appendLine( "ERROR= "+e.getMessage());
-    } catch( IOException ioe ) {
-      infoTA.appendLine( "ERROR= "+ioe.getMessage());
-    }
-    infoTA.gotoTop();
-    infoWindow.showIfNotIconified();
-  }
-
-  private void showMissingStructureData(Structure s) {
-    ArrayList members = new ArrayList();
-    List allMembers = s.getVariables();
-    for (int i=0; i<allMembers.size(); i++) {
-      Variable vs = (Variable) allMembers.get(i);
-      if (vs.hasMissing())
-        members.add( vs);
-    }
-
-    if (members.size() == 0) return;
-    int[] count = new int[ members.size()];
-    int[] total = new int[ members.size()];
-
-    infoTA.clear();
-    try {
-
-     Structure.Iterator iter = s.getStructureIterator();
-     while (iter.hasNext()) {
-       StructureData sdata = iter.next();
-
-       for (int i=0; i<members.size(); i++) {
-         Variable vs = (Variable) members.get(i);
-
-         Array data = sdata.findMemberArray( vs.getShortName());
-         IndexIterator dataIter = data.getIndexIterator();
-         while (dataIter.hasNext()) {
-           if (vs.isMissing(dataIter.getDoubleNext()))
-             count[i]++;
-           total[i]++;
-         }
-       }
-     }
-     int countAll = 0, totalAll = 0;
-     infoTA.appendLine("      name                missing   total     percent missing");
-     for (int i=0; i<members.size(); i++) {
-       Variable vs = (Variable) members.get(i);
-       double p = ( (100.0 * count[i]) / total[i]);
-       infoTA.appendLine(Format.s(vs.getShortName(), 25) +
-                         " "+ Format.i(count[i], 7) +
-                         "   "+ Format.i(total[i], 7) +
-                         "   "+ Format.d(p, 2) + "%");
-       countAll += count[i];
-       totalAll += total[i];
-     }
-
-     infoTA.appendLine("");
-     double p = ( (100.0 * countAll) / totalAll);
-     infoTA.appendLine(Format.s("TOTAL ALL", 25) +
-                       " "+ Format.i(countAll, 7) +
-                       "   "+ Format.i(totalAll, 7) +
-                       "   "+ Format.d(p, 2) + "%");
-
-    } catch( IOException ioe ) {
-      infoTA.appendLine( "ERROR= "+ioe.getMessage());
-    }
-    infoTA.gotoTop();
-    infoWindow.showIfNotIconified();
-  } */
 
   private void dataTable(BeanTableSorted from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
@@ -662,15 +526,15 @@ public class DatasetViewer extends JPanel {
   public PreferencesExt getPrefs() { return prefs; }
 
   public void save() {
-    dumpPane.save();
+    //dumpPane.save();
     for (NestedTable nt : nestedTableList) {
       nt.saveState();
     }
-    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
-    if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
+   // prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+   // prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
+   // if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
 
-    prefs.putInt("mainSplit", mainSplit.getDividerLocation());
+    //prefs.putInt("mainSplit", mainSplit.getDividerLocation());
   }
 
   public List<VariableBean> getVariableBeans(NetcdfFile ds) {
@@ -689,11 +553,51 @@ public class DatasetViewer extends JPanel {
     return vlist;
   }
 
+  public class BeanChunker implements Nc4Chunking {
+    Map<String, VariableBean> map;
+    int deflate;
+    boolean shuffle;
+
+    BeanChunker(List<VariableBean> beans, int deflate, boolean shuffle) {
+      this.map = new HashMap<String, VariableBean>(2*beans.size());
+      for (VariableBean bean : beans)
+        map.put(bean.vs.getFullName(), bean);
+      this.deflate = deflate;
+      this.shuffle = shuffle;
+    }
+
+    @Override
+    public boolean isChunked(Variable v) {
+      VariableBean bean = map.get(v.getFullName());
+      return (bean == null) ? false : bean.isChunked();
+    }
+
+    @Override
+    public long[] computeChunking(Variable v) {
+      VariableBean bean = map.get(v.getFullName());
+       return (bean == null) ? null : bean.chunked;
+    }
+
+    @Override
+    public int getDeflateLevel(Variable v) {
+      return deflate;
+    }
+
+    @Override
+    public boolean isShuffle(Variable v) {
+      return shuffle;
+    }
+  }
+
   public class VariableBean {
-    // static public String editableProperties() { return "title include logging freq"; }
     private Variable vs;
     private String name, dimensions, desc, units, dataType, shape;
-    private String coordSys;
+    private boolean isChunked;
+    private long[] chunked;
+
+    public String editableProperties() {
+      return "chunked chunkSize";
+    }
 
     // no-arg constructor
     public VariableBean() {}
@@ -701,16 +605,11 @@ public class DatasetViewer extends JPanel {
     // create from a dataset
     public VariableBean( Variable vs) {
       this.vs = vs;
-      //vs = (v instanceof VariableEnhanced) ? (VariableEnhanced) v : new VariableStandardized( v);
 
       setName( vs.getShortName());
       setDescription( vs.getDescription());
       setUnits( vs.getUnitsString());
       setDataType( vs.getDataType().toString());
-
-      //Attribute csAtt = vs.findAttribute("_coordSystems");
-      //if (csAtt != null)
-      //  setCoordSys( csAtt.getStringValue());
 
       // collect dimensions
       StringBuilder lens = new StringBuilder();
@@ -732,33 +631,10 @@ public class DatasetViewer extends JPanel {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
-    public String getGroup() {
-      return vs.getParentGroup().getName(); 
-    }
+    public String getGroup() { return vs.getParentGroup().getName(); }
 
     public String getDimensions() { return dimensions; }
     public void setDimensions(String dimensions) { this.dimensions = dimensions; }
-
-    /* public boolean isCoordVar() { return isCoordVar; }
-    public void setCoordVar(boolean isCoordVar) { this.isCoordVar = isCoordVar; }
-
-    /* public boolean isAxis() { return axis; }
-    public void setAxis(boolean axis) { this.axis = axis; }
-
-    public boolean isGeoGrid() { return isGrid; }
-    public void setGeoGrid(boolean isGrid) { this.isGrid = isGrid; }
-
-    public String getAxisType() { return axisType; }
-    public void setAxisType(String axisType) { this.axisType = axisType; } */
-
-    //public String getCoordSys() { return coordSys; }
-    //public void setCoordSys(String coordSys) { this.coordSys = coordSys; }
-
-    /* public String getPositive() { return positive; }
-    public void setPositive(String positive) { this.positive = positive; }
-
-    */
 
     public String getDescription() { return desc; }
     public void setDescription(String desc) { this.desc = desc; }
@@ -772,11 +648,54 @@ public class DatasetViewer extends JPanel {
     public String getShape() { return shape; }
     public void setShape( String shape) { this.shape = shape; }
 
-    /** Get hasMissing */
-   // public boolean getHasMissing() { return hasMissing; }
-    /** Set hasMissing */
-   // public void setHasMissing( boolean hasMissing) { this.hasMissing = hasMissing; }
+    public boolean isUnlimited() { return vs.isUnlimited(); }
 
+    public String getSize() {
+      Formatter f = new Formatter();
+      f.format("%,d", vs.getSize());
+      return f.toString();
+    }
+
+    public boolean isChunked() { return isChunked; }
+    public void setChunked(boolean chunked) {
+      isChunked = chunked;
+      if (chunked)
+        setChunkArray(chunker.computeChunking(vs));
+      else
+        setChunkArray(null);
+    }
+
+    public long getNChunks() {
+      if (!isChunked) return 1;
+      if (chunked == null) return 1;
+      long elementsPerChunk = 1;
+      for (long c:chunked) elementsPerChunk *= c;
+      return vs.getSize() /  elementsPerChunk;
+    }
+
+    public String getChunkSize() {
+      if (chunked == null) return "";
+      Formatter f = new Formatter();
+      f.format("(");
+      for (int i=0; i<chunked.length;i++) {
+        f.format("%d", chunked[i]);
+        if (i < chunked.length-1) f.format(",");
+      }
+      f.format(")");
+      return f.toString();
+    }
+    public void setChunkSize(String chunkSize) {
+      StringTokenizer stoke = new StringTokenizer(chunkSize, "(), ");
+      this.chunked = new long[stoke.countTokens()];
+      int count = 0;
+      while (stoke.hasMoreTokens())
+        this.chunked[count++] = Long.parseLong(stoke.nextToken());
+    }
+
+    public void setChunkArray(long[] chunked) {
+      this.chunked = chunked;
+      if (chunked != null) isChunked = true;
+    }
   }
 
   public class AttributeBean {
@@ -801,51 +720,5 @@ public class DatasetViewer extends JPanel {
     }
 
   }
-
-
-  /* public class StructureBean {
-    // static public String editableProperties() { return "title include logging freq"; }
-
-    private String name;
-    private int domainRank, rangeRank;
-    private boolean isGeoXY, isLatLon, isProductSet, isZPositive;
-
-    // no-arg constructor
-    public StructureBean() {}
-
-    // create from a dataset
-    public StructureBean( Structure s) {
-
-
-      setName( cs.getName());
-      setGeoXY( cs.isGeoXY());
-      setLatLon( cs.isLatLon());
-      setProductSet( cs.isProductSet());
-      setDomainRank( cs.getDomain().size());
-      setRangeRank( cs.getCoordinateAxes().size());
-      //setZPositive( cs.isZPositive());
-    }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public boolean isGeoXY() { return isGeoXY; }
-    public void setGeoXY(boolean isGeoXY) { this.isGeoXY = isGeoXY; }
-
-    public boolean getLatLon() { return isLatLon; }
-    public void setLatLon(boolean isLatLon) { this.isLatLon = isLatLon; }
-
-    public boolean isProductSet() { return isProductSet; }
-    public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }
-
-    public int getDomainRank() { return domainRank; }
-    public void setDomainRank(int domainRank) { this.domainRank = domainRank; }
-
-    public int getRangeRank() { return rangeRank; }
-    public void setRangeRank(int rangeRank) { this.rangeRank = rangeRank; }
-
-    //public boolean isZPositive() { return isZPositive; }
-    //public void setZPositive(boolean isZPositive) { this.isZPositive = isZPositive; }
-  }  */
 
 }

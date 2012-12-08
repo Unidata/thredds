@@ -39,9 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import ucar.ma2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.jni.netcdf.Nc4Chunking;
-import ucar.nc2.jni.netcdf.Nc4ChunkingImpl;
+import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
 
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
@@ -64,8 +63,8 @@ import ucar.nc2.jni.netcdf.Nc4ChunkingImpl;
 
 public class FileWriter2 {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
-  static private boolean debug = false, debugWrite = false;
-  static private long maxSize = 50 * 1000 * 1000; // 50 Mbytes
+  static private final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
+  static private boolean debug = false, debugWrite = false, debugChunk = true;
 
   /**
    * Set debugging flags
@@ -75,6 +74,7 @@ public class FileWriter2 {
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {
     debug = debugFlags.isSet("ncfileWriter2/debug");
     debugWrite = debugFlags.isSet("ncfileWriter2/debugWrite");
+    debugChunk = debugFlags.isSet("ncfileWriter2/debugChunk");
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ public class FileWriter2 {
   private final List<Variable> varList = new ArrayList<Variable>();        // old Vars
   private final Map<String, Dimension> gdimHash = new HashMap<String, Dimension>(); // name, newDim : global dimensions (classic mode)
 
-  private Nc4Chunking chunker = new Nc4ChunkingImpl();
+  private Nc4Chunking chunker = new Nc4ChunkingStrategyImpl();
 
   /**
    * Use this constructor to copy entire file. Use this.write() to do actual copy.
@@ -174,8 +174,8 @@ public class FileWriter2 {
     else
       addNetcdf3();
 
-    //if (anonCount > 0)
-    //   writer.finish();
+    if (true)
+      System.out.printf("About to write = %n%s%n", writer.getNetcdfFile());
 
     // create the file
     writer.create();
@@ -317,7 +317,14 @@ public class FileWriter2 {
       // set chunking using the oldVar
       if (chunker.isChunked(oldVar)) {
         long[] chunk = chunker.computeChunking(oldVar);
-        v.addAttribute(new Attribute(CDM.CHUNK_SIZE, Array.factory(chunk)));
+        // v.addAttribute(new Attribute(CDM.CHUNK_SIZE, Array.factory(chunk)));
+        if (debugChunk) {
+          System.out.printf("%s is Chunked = (", v.getFullName());
+          for (long c : chunk) System.out.printf("%d,", c);
+          System.out.printf(")%n");
+        }
+      } else if (debugChunk) {
+        System.out.printf("%s is not Chunked, size = %d bytes%n", v.getFullName(), v.getSize()*v.getElementSize());
       }
 
       // attributes

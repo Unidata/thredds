@@ -651,7 +651,7 @@ public class StringUtil2 {
    * Cover for String.split, because who can remember regexp?
    *
    * @param source split this string
-   * @return space-seperated tokens
+   * @return tokens that were seperated by whitespace
    */
   public static String[] splitString(String source) {
     return source.trim().split("\\s+"); // Separated by "whitespace"

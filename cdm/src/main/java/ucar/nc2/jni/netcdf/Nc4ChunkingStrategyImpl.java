@@ -10,21 +10,19 @@ import java.util.List;
 
 /**
  * Default strategy for netcdf-4 chunking
- * <pre>
- * 1) if attribute _ChunkSize exists, use that
- *      :_ChunkSize = 1, 35, 56, 75; // int
- *    FileWriter2 sets these
- * </pre>
+
  * @author caron
  * @since 11/14/12
  */
 @Immutable
-public class Nc4ChunkingImpl implements Nc4Chunking {
+public class Nc4ChunkingStrategyImpl implements Nc4Chunking {
+  private static final boolean debug = true;
 
-  public static Nc4Chunking factory(Nc4Chunking.Standard type, int deflateLevel, boolean shuffle) {
+  public static Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle) {
     switch (type) {
-      case unlimited: return new Nc4ChunkingImpl(deflateLevel, shuffle);
-      case grib: return new Nc4ChunkingGrib(deflateLevel, shuffle);
+      case standard: return new Nc4ChunkingStrategyImpl(deflateLevel, shuffle);
+      case grib: return new Nc4ChunkingStrategyGrib(deflateLevel, shuffle);
+      case fromAttribute: return new Nc4ChunkingStrategyFromAttribute(deflateLevel, shuffle);
     }
     throw new IllegalArgumentException("Illegal Nc4Chunking.Standard " + type);
   }
@@ -35,12 +33,12 @@ public class Nc4ChunkingImpl implements Nc4Chunking {
   private final int deflateLevel;
   private final boolean shuffle;
 
-  public Nc4ChunkingImpl() {
+  public Nc4ChunkingStrategyImpl() {
     this.deflateLevel = 5;
     this.shuffle = true;
   }
 
-  public Nc4ChunkingImpl(int deflateLevel, boolean shuffle) {
+  public Nc4ChunkingStrategyImpl(int deflateLevel, boolean shuffle) {
     this.deflateLevel = deflateLevel;
     this.shuffle = shuffle;
   }
@@ -48,7 +46,6 @@ public class Nc4ChunkingImpl implements Nc4Chunking {
   @Override
   public boolean isChunked(Variable v) {
     if (v.isUnlimited()) return true;
-    if (getChunkAttribute(v) != null) return true;
     long size = v.getSize() * v.getElementSize();
     return size >= DEFAULT_CHUNKSIZE;
   }
@@ -64,23 +61,14 @@ public class Nc4ChunkingImpl implements Nc4Chunking {
 
   @Override
   public long[] computeChunking(Variable v) {
-    // use CHUNK_SIZE attribute if it exists
-    Attribute att = v.findAttribute(CDM.CHUNK_SIZE);
-    if (att != null && att.getDataType().isIntegral() && att.getLength() == v.getRank()) {
-      long[] result = new long[v.getRank()];
-      for (int i=0; i<v.getRank(); i++)
-        result[i] = att.getNumericValue(i).longValue();
-      return result;
-    }
-
     // use entire if small enough
     long size = v.getSize() * v.getElementSize();
     if (size < DEFAULT_CHUNKSIZE) return convert(v.getShape()); // all of it
-
+    if (v.isUnlimited()) return _computeChunkingUnlimited(v);
     return _computeChunking(v);
   }
 
-  protected long[] _computeChunking(Variable v) {
+  private long[] _computeChunkingUnlimited(Variable v) {
     List<Dimension> dims = v.getDimensions();
     long[] result = new long[dims.size()];
     int count = 0;
@@ -91,7 +79,18 @@ public class Nc4ChunkingImpl implements Nc4Chunking {
     return result;
   }
 
-  protected long[] convert(int[] shape) {
+  private long[] _computeChunking(Variable v) {
+    List<Dimension> dims = v.getDimensions();
+    long[] result = new long[dims.size()];
+    int count = 0;
+    for (Dimension d : dims) {
+      if (d.isUnlimited()) result[count++] = 1;
+      else result[count++] = d.getLength();
+    }
+    return result;
+  }
+
+  private long[] convert(int[] shape) {
     if (shape.length == 0) shape = new int[1];
     long[] result = new long[shape.length];
     for (int i=0; i<shape.length; i++)
@@ -99,7 +98,7 @@ public class Nc4ChunkingImpl implements Nc4Chunking {
     return result;
   }
 
-  private Attribute getChunkAttribute(Variable v) {
+  protected Attribute getChunkAttribute(Variable v) {
     return v.findAttribute(CDM.CHUNK_SIZE);
   }
 
