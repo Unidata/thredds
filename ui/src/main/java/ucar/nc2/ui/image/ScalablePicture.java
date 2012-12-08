@@ -398,6 +398,7 @@ public class ScalablePicture implements SourcePictureListener {
   }
 
   private void calcScale() {
+    if (TargetSize == null) return;
 
     int WindowWidth = TargetSize.width;
     int WindowHeight = TargetSize.height;

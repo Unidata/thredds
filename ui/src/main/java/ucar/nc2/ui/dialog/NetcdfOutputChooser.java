@@ -179,7 +179,7 @@ public class NetcdfOutputChooser extends JDialog {
                 .addGroup(contentPanelLayout.createSequentialGroup()
                   .addComponent(label1)
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(outputFilename, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE))
+                  .addComponent(outputFilename, GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
                 .addGroup(contentPanelLayout.createSequentialGroup()
                   .addGroup(contentPanelLayout.createParallelGroup()
                     .addGroup(contentPanelLayout.createSequentialGroup()
@@ -206,7 +206,7 @@ public class NetcdfOutputChooser extends JDialog {
                 .addComponent(netcdfVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
               .addGap(18, 18, 18)
               .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
-              .addContainerGap(14, Short.MAX_VALUE))
+              .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
       }
       dialogPane.add(contentPanel, BorderLayout.CENTER);
@@ -214,9 +214,7 @@ public class NetcdfOutputChooser extends JDialog {
       //======== buttonBar ========
       {
         buttonBar.setBorder(new EmptyBorder(12, 0, 0, 0));
-        buttonBar.setLayout(new GridBagLayout());
-        ((GridBagLayout)buttonBar.getLayout()).columnWidths = new int[] {0, 85, 80};
-        ((GridBagLayout)buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
+        buttonBar.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         //---- okButton ----
         okButton.setText("Write File");
@@ -226,9 +224,7 @@ public class NetcdfOutputChooser extends JDialog {
             okButtonActionPerformed(e);
           }
         });
-        buttonBar.add(okButton, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-          GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-          new Insets(0, 0, 0, 5), 0, 0));
+        buttonBar.add(okButton);
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
@@ -238,9 +234,7 @@ public class NetcdfOutputChooser extends JDialog {
             cancelButtonActionPerformed(e);
           }
         });
-        buttonBar.add(cancelButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-          GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-          new Insets(0, 0, 0, 5), 0, 0));
+        buttonBar.add(cancelButton);
       }
       dialogPane.add(buttonBar, BorderLayout.SOUTH);
     }
