@@ -18,7 +18,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.config.MockJnaLoader;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.util.NcssRequestUtils;
@@ -53,9 +52,7 @@ public class PointDataWriterTest {
 	
 	@Parameters
 	public static List<Object[]> getTestParameters(){
-		
-		 MockJnaLoader.loadJnaLibrary();
-		
+				 		
 		return Arrays.asList(new Object[][]{  
 				{SupportedFormat.CSV, PointDataParameters.getGroupedVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
 				{SupportedFormat.CSV, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },

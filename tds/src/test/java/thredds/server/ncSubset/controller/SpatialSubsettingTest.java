@@ -53,8 +53,6 @@ import org.springframework.validation.BindingResult;
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.config.MockJnaLoader;
-import thredds.server.config.Netcdf4AvailabilityChecker;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
@@ -65,7 +63,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -93,8 +90,7 @@ public class SpatialSubsettingTest {
 	
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
-				
-		MockJnaLoader.loadJnaLibrary();		
+							
 		
 		return Arrays.asList( new Object[][]{
 				{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
@@ -119,8 +115,6 @@ public class SpatialSubsettingTest {
 	
 	@Before
 	public void setUp() throws IOException{
-		
-		Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
 		
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		gridDataController.setGridDataset(gds);

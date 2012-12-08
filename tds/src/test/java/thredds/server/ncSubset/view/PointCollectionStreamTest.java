@@ -17,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.config.MockJnaLoader;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
@@ -28,7 +27,6 @@ import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -52,9 +50,7 @@ public class PointCollectionStreamTest {
 	
 	@Parameters
 	public static List<Object[]> getTestParameters(){
-		
-		MockJnaLoader.loadJnaLibrary();
-		
+						
 		return Arrays.asList(new Object[][]{  
 				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
 				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
@@ -78,8 +74,6 @@ public class PointCollectionStreamTest {
 
 	@Before
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
-		
-		//Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "libnetcdf");
 		
 		gridDataset = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		List<String> keys = new ArrayList<String>( vars.keySet());		
