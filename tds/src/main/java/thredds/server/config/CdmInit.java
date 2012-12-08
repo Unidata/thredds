@@ -46,6 +46,7 @@ import org.springframework.stereotype.Component;
 
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.inventory.CollectionUpdater;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -228,15 +229,17 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     String libraryName = ThreddsConfig.get("Netcdf4Clibrary.libraryName", null);
     if (libraryPath != null || libraryName != null){
       Nc4Iosp.setLibraryAndPath(libraryPath, libraryName);
-      
-      if(!Nc4Iosp.isClibraryPresent() ){
-    	  startupLog.warn("netcdf4 c library not present jna_path='" + libraryPath + "' libname=" + libraryName + "" );    	 
-      }else{
-    	  Netcdf4AvailabilityChecker.setNetcdf4Available(true);
-    	  startupLog.info("netcdf4 c library loaded from jna_path='" + libraryPath + "' libname=" + libraryName + "" );
-      }
     }
-
+    
+    //Netcdf4 library could be set as a environment variable or as a jvm parameter 
+    if(!Nc4Iosp.isClibraryPresent() ){
+      startupLog.warn("netcdf4 c library not present jna_path='" + libraryPath + "' libname=" + libraryName + "" );    	 
+    }else{    	  
+      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);      
+      if(libraryName == null) libraryName="netcdf";
+      startupLog.info("netcdf4 c library loaded from jna_path='" + System.getProperty("jna.library.path") + "' libname=" + libraryName + "" );
+    }
+    
     startupLog.info("CdmInit complete");
   }
 

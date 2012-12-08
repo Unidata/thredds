@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.support.ServletContextResource;
 
+import thredds.server.config.FormatsAvailabilityService;
 import thredds.server.ncSubset.format.SupportedFormat;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridDatasetInfo;
@@ -37,7 +38,7 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 	@Override
 	public String showForm(GridDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint){
 
-		boolean isNetcdf4Availalbe = SupportedFormat.NETCDF4.isAvailable(); 
+		boolean isNetcdf4Availalbe = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4); 
 		
 	    String infoString=null;
 	    GridDatasetInfo writer = new GridDatasetInfo(gds, "path");

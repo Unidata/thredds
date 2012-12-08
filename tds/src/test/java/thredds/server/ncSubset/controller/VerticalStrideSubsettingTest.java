@@ -54,7 +54,6 @@ import org.springframework.validation.BindingResult;
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.config.MockJnaLoader;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
@@ -91,8 +90,7 @@ public class VerticalStrideSubsettingTest {
 	
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
-		
-		MockJnaLoader.loadJnaLibrary();
+				
 				
 		return Arrays.asList( new Object[][]{
 				{SupportedFormat.NETCDF3, new int[][]{ {1,65,93}, {1,65,93} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), 1 }, //No vertical levels 

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import thredds.server.config.FormatsAvailabilityService;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
 
@@ -17,10 +18,7 @@ enum SupportedOperation {
 	
 	DATASET_INFO_REQUEST("Dataset info request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML })),SupportedFormat.XML),
 	POINT_REQUEST("Grid as Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML, SupportedFormat.CSV, SupportedFormat.NETCDF3, SupportedFormat.NETCDF4})),SupportedFormat.XML),
-	//POINT_REQUEST("Grid as Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML, SupportedFormat.CSV, SupportedFormat.NETCDF3})),SupportedFormat.XML),
 	GRID_REQUEST("Grid data request",Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.NETCDF3, SupportedFormat.NETCDF4})),SupportedFormat.NETCDF3);
-	//Disabling netcdf4 on Grid Requests too...
-	//GRID_REQUEST("Grid data request",Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.NETCDF3})),SupportedFormat.NETCDF3);
 	
 	private final String operationName; 
 	private final List<SupportedFormat> supportedFormats;
@@ -55,7 +53,8 @@ enum SupportedOperation {
 		boolean found=false;
 		
 		while (!found && cont < len) {
-			if( supportedFormats.get(cont).getAliases().contains(format) && supportedFormats.get(cont).isAvailable()  ) found = true;
+			//if( supportedFormats.get(cont).getAliases().contains(format) && supportedFormats.get(cont).isAvailable()  ) found = true;
+			if( supportedFormats.get(cont).getAliases().contains(format) &&  FormatsAvailabilityService.isFormatAvailable(supportedFormats.get(cont))) found = true;
 			cont++;
 		} 
  	
