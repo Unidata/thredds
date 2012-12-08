@@ -53,6 +53,8 @@ import org.springframework.validation.BindingResult;
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.config.MockJnaLoader;
+import thredds.server.config.Netcdf4AvailabilityChecker;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
@@ -92,6 +94,8 @@ public class SpatialSubsettingTest {
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
 				
+		MockJnaLoader.loadJnaLibrary();		
+		
 		return Arrays.asList( new Object[][]{
 				{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
 				{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox

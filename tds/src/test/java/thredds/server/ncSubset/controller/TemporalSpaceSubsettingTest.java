@@ -52,6 +52,8 @@ import org.springframework.validation.BindingResult;
 
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.config.MockJnaLoader;
+import thredds.server.config.Netcdf4AvailabilityChecker;
 import thredds.server.ncSubset.exception.InvalidBBOXException;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
@@ -71,6 +73,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 /**
  * @author mhermida
@@ -94,6 +97,7 @@ public class TemporalSpaceSubsettingTest {
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
 		
+		MockJnaLoader.loadJnaLibrary();
 		
 		return Arrays.asList( new Object[][]{
 				{ SupportedFormat.NETCDF3,  1, PathInfoParams.getPatInfo().get(4), null , null, null, null, null, null }, //No time subset provided
