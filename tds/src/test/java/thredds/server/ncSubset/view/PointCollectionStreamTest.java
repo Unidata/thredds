@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.config.MockJnaLoader;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
@@ -52,17 +53,21 @@ public class PointCollectionStreamTest {
 	@Parameters
 	public static List<Object[]> getTestParameters(){
 		
+		MockJnaLoader.loadJnaLibrary();
+		
 		return Arrays.asList(new Object[][]{  
 				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
 				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
-				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
+				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
+				
+				{SupportedFormat.NETCDF4, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF4, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF4, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
 
 		});				
 	}
 	
 	public PointCollectionStreamTest(SupportedFormat supportedFormat,  Map<String,List<String>> vars ,  String pathInfo, LatLonPoint point, Double verticalLevel){
-		
-		//Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
 		
 		this.supportedFormat = supportedFormat;
 		this.vars = vars;

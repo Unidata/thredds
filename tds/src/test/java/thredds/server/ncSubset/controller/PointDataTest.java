@@ -19,6 +19,8 @@ import org.springframework.validation.BindingResult;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.config.MockJnaLoader;
+import thredds.server.config.Netcdf4AvailabilityChecker;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
@@ -28,6 +30,7 @@ import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 
@@ -48,16 +51,18 @@ public class PointDataTest {
 	@Parameters
 	public static List<Object[]> getTestParameters(){
 		
+		MockJnaLoader.loadJnaLibrary();
+		
 		return Arrays.asList(new Object[][]{  
 				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
 				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
 				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
 				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
 				
-				//{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
-				//{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
-				//{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
-				//{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }				
+				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
+				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
+				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }				
 
 		});				
 	}
@@ -72,7 +77,8 @@ public class PointDataTest {
 	
 	@Before
 	public void setUp() throws IOException{
-				
+		
+		
 		
 		pointDataController = new PointDataController(); 
 		pointDataController.setRequestPathInfo(pathInfo);

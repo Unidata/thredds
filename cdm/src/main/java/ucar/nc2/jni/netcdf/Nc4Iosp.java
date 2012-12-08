@@ -72,7 +72,7 @@ import com.sun.jna.ptr.NativeLongByReference;
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
-  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  //static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private Nc4prototypes nc4;
   static private final String JNA_PATH = "jna.library.path";
   static private String jnaPath;
@@ -90,13 +90,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     try {
       load();
       if (warn) {
-        startupLog.info("netcdf4 c library loaded jna_path= '{}' libname='{}'", jnaPath, libName);
+        //startupLog.info("netcdf4 c library loaded jna_path= '{}' libname='{}'", jnaPath, libName);
+    	  log.info("netcdf4 c library loaded jna_path= '{}' libname='{}'", jnaPath, libName);
         warn = false;
       }
     } catch (Throwable t) {
       if (warn) {
-        startupLog.warn("netcdf4 c library not present jna_path='" + jnaPath + "' libname='" + libName + "' " + t.getMessage());
-        warn = false;
+        //startupLog.warn("netcdf4 c library not present jna_path='" + jnaPath + "' libname='" + libName + "' " + t.getMessage());
+    	  log.warn("netcdf4 c library not present jna_path='" + jnaPath + "' libname='" + libName + "' " + t.getMessage());
+          warn = false;
       }
     }
     return (nc4 != null);
@@ -111,6 +113,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @param libname  library name
    */
   static public void setLibraryAndPath(String jna_path, String libname) {
+	    
     if (jna_path != null) {
       jnaPath = jna_path;
       System.setProperty(JNA_PATH, jnaPath);
@@ -120,7 +123,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       libName = libname;
   }
 
-  static private Nc4prototypes load() {
+  static private Nc4prototypes load(){
+	  
+	
     if (nc4 == null) {
       if (jnaPath == null) {
         jnaPath = System.getProperty(JNA_PATH);
@@ -130,8 +135,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
       }
 
-      Native.setProtected(true);
-      nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
+      //Native.setProtected(true);      
+   	  nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
+   	  
+      
       if (debug)
         System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
     }

@@ -54,6 +54,7 @@ import org.springframework.validation.BindingResult;
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.config.MockJnaLoader;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
@@ -90,6 +91,8 @@ public class VerticalStrideSubsettingTest {
 	
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
+		
+		MockJnaLoader.loadJnaLibrary();
 				
 		return Arrays.asList( new Object[][]{
 				{SupportedFormat.NETCDF3, new int[][]{ {1,65,93}, {1,65,93} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), 1 }, //No vertical levels 
@@ -98,11 +101,11 @@ public class VerticalStrideSubsettingTest {
 				{SupportedFormat.NETCDF3, new int[][]{ {1,65,93}, {1,10,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), 3 }, //No vertical levels and vertical levels
 				{SupportedFormat.NETCDF3, new int[][]{ {1,1,65,93}, {1,6,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), 5}, //Different vertical levels
 				
-//				{SupportedFormat.NETCDF4, new int[][]{ {1,65,93}, {1,65,93} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), 1 }, //No vertical levels 
-//				{SupportedFormat.NETCDF4, new int[][]{ {1,1,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), 1}, //Same vertical level (one level)
-//				{SupportedFormat.NETCDF4, new int[][]{ {1,10,65,93}, {1,10,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), 3}, //Same vertical level (multiple level)
-//				{SupportedFormat.NETCDF4, new int[][]{ {1,65,93}, {1,10,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), 3 }, //No vertical levels and vertical levels
-//				{SupportedFormat.NETCDF4, new int[][]{ {1,1,65,93}, {1,6,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), 5}, //Different vertical levels				
+				{SupportedFormat.NETCDF4, new int[][]{ {1,65,93}, {1,65,93} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), 1 }, //No vertical levels 
+				{SupportedFormat.NETCDF4, new int[][]{ {1,1,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), 1}, //Same vertical level (one level)
+				{SupportedFormat.NETCDF4, new int[][]{ {1,10,65,93}, {1,10,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), 3}, //Same vertical level (multiple level)
+				{SupportedFormat.NETCDF4, new int[][]{ {1,65,93}, {1,10,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), 3 }, //No vertical levels and vertical levels
+				{SupportedFormat.NETCDF4, new int[][]{ {1,1,65,93}, {1,6,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), 5}, //Different vertical levels				
 								
 			});
 	}

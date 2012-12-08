@@ -33,13 +33,13 @@ package thredds.server.ncSubset.view.netcdf;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayInt;
@@ -59,7 +59,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.time.CalendarDate;
@@ -236,7 +235,11 @@ class WriterCFStationCollection  extends CFPointWriter {
 			dimSet.add(ens);
 			List<Dimension> ensDim = new ArrayList<Dimension>();
 			ensDim.add(ens);
-			ensVar = writer.addVariable(null, ensAxis.getShortName() , ensAxis.getDataType() ,  ensDim );	    	
+			
+			//ensVar = writer.addVariable(null, ensAxis.getShortName() , ensAxis.getDataType() ,  ensDim );
+			//We'll write the double values to the new array
+			//DataType is int but the coordinates are stored as double ????			
+			ensVar = writer.addVariable(null, ensAxis.getShortName() , DataType.DOUBLE ,  ensDim );
 	    }
 	    	    
 	    // find all variables already in use 
@@ -347,26 +350,28 @@ class WriterCFStationCollection  extends CFPointWriter {
 					for( Member m : sm.getMembers() ){
 						Variable v = writer.findVariable(m.getName());
 						
-						//Its a variable --> 3D (profile, ensemble, station)
 						if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time")){
 
-							DataType m_dt =m.getDataType();
+							//DataType m_dt =m.getDataType();
+							
+							Array arr = CFPointWriterUtils.getArrayFromMember(v, m);
+						    writer.write( v , origin, arr );												
 
-							if(m_dt == DataType.DOUBLE ){
-								Double data = m.getDataArray().getDouble(0);
-								//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
-								ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
-								tmpArray.setDouble(0, data);
-								//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-								writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-							}
-
-							if(m_dt == DataType.FLOAT){
-								Float data = m.getDataArray().getFloat(0);
-								ArrayFloat.D1 tmpArray = new ArrayFloat.D1(1);
-								tmpArray.setFloat(0, data);
-								writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-							}					
+//							if(m_dt == DataType.DOUBLE ){
+//								Double data = m.getDataArray().getDouble(0);
+//								//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+//								ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+//								tmpArray.setDouble(0, data);
+//								//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+//								writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+//							}
+//
+//							if(m_dt == DataType.FLOAT){
+//								Float data = m.getDataArray().getFloat(0);
+//								ArrayFloat.D1 tmpArray = new ArrayFloat.D1(1);
+//								tmpArray.setFloat(0, data);
+//								writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+//							}					
 
 						}					
 						
@@ -418,26 +423,28 @@ class WriterCFStationCollection  extends CFPointWriter {
 				for( Member m : sm.getMembers() ){
 					Variable v = writer.findVariable(m.getName());
 					
-					//Its a variable --> 3D (profile, ensemble, station)
 					if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time")){
+						
+						Array arr = CFPointWriterUtils.getArrayFromMember(v, m);
+					    writer.write( v , twoDIdx, arr );												
 
-						DataType m_dt =m.getDataType();
-
-						if(m_dt == DataType.DOUBLE ){
-							Double data = m.getDataArray().getDouble(0);
-							//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
-							ArrayDouble.D2 tmpArray = new ArrayDouble.D2(1,1);
-							tmpArray.setDouble(0, data);
-							//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-							writer.write( writer.findVariable(m.getName()) , twoDIdx, tmpArray );
-						}
-
-						if(m_dt == DataType.FLOAT){
-							Float data = m.getDataArray().getFloat(0);
-							ArrayFloat.D2 tmpArray = new ArrayFloat.D2(1,1);
-							tmpArray.setFloat(0, data);
-							writer.write( writer.findVariable(m.getName()) , twoDIdx, tmpArray );
-						}					
+//						DataType m_dt =m.getDataType();
+//
+//						if(m_dt == DataType.DOUBLE ){
+//							Double data = m.getDataArray().getDouble(0);
+//							//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+//							ArrayDouble.D2 tmpArray = new ArrayDouble.D2(1,1);
+//							tmpArray.setDouble(0, data);
+//							//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+//							writer.write( writer.findVariable(m.getName()) , twoDIdx, tmpArray );
+//						}
+//
+//						if(m_dt == DataType.FLOAT){
+//							Float data = m.getDataArray().getFloat(0);
+//							ArrayFloat.D2 tmpArray = new ArrayFloat.D2(1,1);
+//							tmpArray.setFloat(0, data);
+//							writer.write( writer.findVariable(m.getName()) , twoDIdx, tmpArray );
+//						}					
 
 					}					
 					

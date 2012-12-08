@@ -149,7 +149,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean {
   
   @Autowired
   private WmsConfig wmsConfig;
-  
+    
   private ServletContext servletContext;
 
   private TdsContext() {}
@@ -526,6 +526,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean {
   {
     return this.jspRequestDispatcher;
   }
+  
+
 
 @Override
 public void setServletContext(ServletContext servletContext) {

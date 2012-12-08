@@ -32,13 +32,13 @@ import ucar.unidata.geoloc.StationImpl;
  * @author mhermida
  *
  */
-public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPointWriterWrapper {
+final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterWrapper {
 
-	static private Logger log = LoggerFactory.getLogger(WriterCFTimeSeriesProfileCollectionWrapper.class);
+	static private Logger log = LoggerFactory.getLogger(CFTimeSeriesProfileCollectionWriterWrapper.class);
 
 	private WriterCFTimeSeriesProfileCollection writerCFTimeSeriesProfileCollection; 
 
-	private WriterCFTimeSeriesProfileCollectionWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
+	private CFTimeSeriesProfileCollectionWriterWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
 
 		writerCFTimeSeriesProfileCollection = new WriterCFTimeSeriesProfileCollection(version, filePath, atts); 
 	}
@@ -106,7 +106,7 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 					if(zAxis == null){ //Variables without vertical levels
 
 						//Write no vert levels
-						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup );		
+						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup,true );		
 						sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);				
 						//sdata.findMember("time").getDataArray().setObject(0, date.toString());
 						gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
@@ -153,7 +153,7 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 						int vertCoordsIndexForFile =0;
 						for(double vertLevel : vertCoords){
 							//The zAxis was added to the variables and we need a structure data that contains z-levels  
-							StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis);		
+							StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis, true);		
 							//sdata.findMember("date").getDataArray().setObject(0, date.toString());						
 							sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
 							sdata.findMember(zAxis.getShortName()).getDataArray().setDouble(0, zAxis.getCoordValues()[vertCoordsIndex]  );
@@ -214,8 +214,8 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 	}
 
 
-	public static WriterCFTimeSeriesProfileCollectionWrapper createWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
-		return new WriterCFTimeSeriesProfileCollectionWrapper(version, filePath, atts);
+	public static CFTimeSeriesProfileCollectionWriterWrapper createWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
+		return new CFTimeSeriesProfileCollectionWriterWrapper(version, filePath, atts);
 	}	
 
 }

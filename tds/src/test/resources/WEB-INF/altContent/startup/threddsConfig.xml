@@ -114,21 +114,24 @@
   </HTTPFileCache>
   -->
 
-  <!--
-  Writing GRIB indexes.
-  <GribIndexing>
-    <setExtendIndex>false</setExtendIndex>
-    <alwaysUseCache>false</alwaysUseCache>
-  </GribIndexing>
-  -->
+    <!--
+    GRIB index caching
+    <GribIndex>
+      <alwaysUse>false</alwaysUse>
+      <dir>/tomcat_home/content/thredds/cache/grib/</dir>
+      <policy>oneDirectory</policy>
+      <scour>0 hours</scour>
+      <maxAge>90 days</maxAge>
+    </GribIndex>
+    -->
 
-  <!--
-  Persist joinNew aggregations to named directory. scour every 24 hours, delete stuff older than 90 days
-  <AggregationCache>
-    <scour>24 hours</scour>
-    <maxAge>90 days</maxAge>
-  </AggregationCache>
-  -->
+    <!--
+    Persist joinNew aggregations to named directory. scour every 24 hours, delete stuff older than 90 days
+    <AggregationCache>
+      <scour>24 hours</scour>
+      <maxAge>90 days</maxAge>
+    </AggregationCache>
+    -->
 
   <!--
   How to choose the template dataset for an aggregation. latest, random, or penultimate

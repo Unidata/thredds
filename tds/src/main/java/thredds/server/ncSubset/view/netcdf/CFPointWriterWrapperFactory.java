@@ -49,19 +49,14 @@ public final class CFPointWriterWrapperFactory {
 	public static final CFPointWriterWrapper getWriterForFeatureType( NetcdfFileWriter.Version version, CF.FeatureType featureType, String filePath, List<Attribute> atts   ) throws IOException{
 		
 		if(featureType == CF.FeatureType.timeSeries){		
-			return WriterCFStationCollectionWrapper.createWrapper(version, filePath, atts);
+			return CFStationCollectionWriterWrapper.createWrapper(version, filePath, atts);
 		}
 		if (featureType == CF.FeatureType.point ) {
 			//return WriterCFPointCollectionWrapper.createWrapper(filePath, atts);
-			return WriterPointCollectionNoTimeWrapper.createWrapper(version, filePath, atts);
-		}
-		
-		if (featureType == CF.FeatureType.profile ) {
-			return WriterCFProfileCollectionWrapper.createWrapper(version, filePath, atts);
-		}
-		
+			return PointCollectionNoTimeWriterWrapper.createWrapper(version, filePath, atts);
+		}		
 		if (featureType == CF.FeatureType.timeSeriesProfile ) {
-			return WriterCFTimeSeriesProfileCollectionWrapper.createWrapper(version, filePath, atts);
+			return CFTimeSeriesProfileCollectionWriterWrapper.createWrapper(version, filePath, atts);
 		}		
 		
 		throw new UnsupportedOperationException("Unsupported FeatureType: "+featureType.name());

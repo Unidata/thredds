@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import thredds.server.config.Netcdf4AvailabilityChecker;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 public enum SupportedFormat{

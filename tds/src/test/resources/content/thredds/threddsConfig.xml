@@ -135,15 +135,21 @@
     <maxSize>1 Gb</maxSize>
   </DiskCache>
 
-  <GribIndexing>
-    <setExtendIndex>false</setExtendIndex>
-    <alwaysUseCache>false</alwaysUseCache>
-  </GribIndexing>
-
-  <!-- AggregationCache>
-    <scour>24 hours</scour>
+    <!--
+  GRIB index caching
+  <GribIndex>
+    <alwaysUse>false</alwaysUse>
+    <dir>/tomcat_home/content/thredds/cache/grib/</dir>
+    <policy>oneDirectory</policy>
+    <scour>0 hours</scour>
     <maxAge>90 days</maxAge>
-  </AggregationCache-->
+  </GribIndex>
+  -->
+
+    <!-- AggregationCache>
+      <scour>24 hours</scour>
+      <maxAge>90 days</maxAge>
+    </AggregationCache-->
 
 
 </threddsConfig>

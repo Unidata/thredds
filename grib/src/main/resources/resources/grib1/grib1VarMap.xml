@@ -79,10 +79,10 @@
     <param oldName="v_wind_layer_between_two_pressure_difference_from_ground" newName="v-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-34_L116_layer" />
     <param oldName="v_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_7-0-2-34_L7" />
   </dataset>
-  <dataset name="GFS_CONUS_95km_20100506_0600.grib1">
+  <dataset name="GFS_CONUS_95km_20121207_0600.grib1">
     <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_7-0-2-41_L100" />
     <param oldName="Best_4_layer_lifted_index" newName="Best_4_layer_lifted_index_surface" varId="VAR_7-0-2-132_L1" />
-    <param oldName="Convective_Available_Potential_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
+    <param oldName="Convective_Avail_Pot_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
     <param oldName="Convective_Available_Potential_Energy_surface" newName="Convective_Available_Potential_Energy_surface" varId="VAR_7-0-2-157_L1" />
     <param oldName="Convective_inhibition" newName="Convective_inhibition_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-156_L116_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_7-0-2-156_L1" />
@@ -102,17 +102,17 @@
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_7-0-2-11_L7" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_6_Hour_Accumulation" varId="VAR_7-0-2-61_L1_I6_Hour_S4" />
     <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_7-0-2-39_L100" />
-    <param oldName="u-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_7-0-2-33_L100" />
+    <param oldName="u_wind" newName="u-component_of_wind_isobaric" varId="VAR_7-0-2-33_L100" />
     <param oldName="u-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_7-0-2-33_L105" />
     <param oldName="u-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="u-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-33_L116_layer" />
     <param oldName="u-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_7-0-2-33_L7" />
-    <param oldName="v-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
+    <param oldName="v_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
     <param oldName="v-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_7-0-2-34_L105" />
     <param oldName="v-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="v-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-34_L116_layer" />
     <param oldName="v-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_7-0-2-34_L7" />
   </dataset>
-  <dataset name="GFS_Hawaii_160km_20100428_0000.grib1">
-    <param oldName="5-wave_geopotential_height" newName="5-wave_geopotential_height_isobaric" varId="VAR_7-0-2-222_L100" />
+  <dataset name="GFS_Hawaii_160km_20121206_0000.grib1">
+    <param oldName="N5-wave_geopotential_height" newName="5-wave_geopotential_height_isobaric" varId="VAR_7-0-2-222_L100" />
     <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_7-0-2-41_L100" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_12_Hour_Accumulation" varId="VAR_7-0-2-63_L1_I12_Hour_S4" />
     <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_7-0-2-7_L100" />
@@ -146,8 +146,8 @@
     <param oldName="v-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
     <param oldName="v-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_7-0-2-34_L7" />
   </dataset>
-  <dataset name="GFS_Puerto_Rico_191km_20100515_0000.grib1">
-    <param oldName="5-wave_geopotential_height" newName="5-wave_geopotential_height_isobaric" varId="VAR_7-0-2-222_L100" />
+  <dataset name="GFS_Puerto_Rico_191km_20121206_0000.grib1">
+    <param oldName="N5-wave_geopotential_height" newName="5-wave_geopotential_height_isobaric" varId="VAR_7-0-2-222_L100" />
     <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_7-0-2-41_L100" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_12_Hour_Accumulation" varId="VAR_7-0-2-63_L1_I12_Hour_S4" />
     <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_7-0-2-7_L100" />
@@ -163,13 +163,13 @@
     <param oldName="v-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
     <param oldName="v-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="v-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-34_L116_layer" />
   </dataset>
-  <dataset name="NAM_Alaska_22km_20100504_0000.grib1">
+  <dataset name="NAM_Alaska_22km_20121206_1200.grib1">
     <param oldName="Best_4_layer_lifted_index" newName="Best_4_layer_lifted_index_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-132_L116_layer" />
     <param oldName="Categorical_freezing_rain_yes1_no0" newName="Categorical_freezing_rain_yes1_no0_surface" varId="VAR_7-0-2-141_L1" />
     <param oldName="Categorical_ice_pellets_yes1_no0" newName="Categorical_ice_pellets_yes1_no0_surface" varId="VAR_7-0-2-142_L1" />
     <param oldName="Categorical_rain_yes1_no0" newName="Categorical_rain_yes1_no0_surface" varId="VAR_7-0-2-140_L1" />
     <param oldName="Categorical_snow_yes1_no0" newName="Categorical_snow_yes1_no0_surface" varId="VAR_7-0-2-143_L1" />
-    <param oldName="Convective_Available_Potential_Energy" newName="Convective_Available_Potential_Energy_surface" varId="VAR_7-0-2-157_L1" />
+    <param oldName="Convective_Avail_Pot_Energy" newName="Convective_Available_Potential_Energy_surface" varId="VAR_7-0-2-157_L1" />
     <param oldName="Convective_inhibition" newName="Convective_inhibition_surface" varId="VAR_7-0-2-156_L1" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_3_Hour_Accumulation" varId="VAR_7-0-2-63_L1_I3_Hour_S4" />
     <param oldName="Mean_Sea_Level_Pressure_NAM_Model_Reduction" newName="Mean_Sea_Level_Pressure_NAM_Model_Reduction_msl" varId="VAR_7-0-2-130_L102" />
@@ -184,10 +184,10 @@
     <param oldName="Temperature_layer_between_two_pressure_difference_from_ground" newName="Temperature_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-11_L116_layer" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_3_Hour_Accumulation" varId="VAR_7-0-2-61_L1_I3_Hour_S4" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_7-0-2-20_L1" />
-    <param oldName="Water_equiv_of_accum_snow_depth" newName="Water_equiv_of_accum_snow_depth_surface_3_Hour_Accumulation" varId="VAR_7-0-2-65_L1_I3_Hour_S4" />
-    <param oldName="u-component_of_wind" newName="u-component_of_wind_height_above_ground" varId="VAR_7-0-2-33_L105" />
+    <param oldName="Accumulated_snow" newName="Water_equiv_of_accum_snow_depth_surface_3_Hour_Accumulation" varId="VAR_7-0-2-65_L1_I3_Hour_S4" />
+    <param oldName="u_wind" newName="u-component_of_wind_height_above_ground" varId="VAR_7-0-2-33_L105" />
     <param oldName="u-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="u-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-33_L116_layer" />
-    <param oldName="v-component_of_wind" newName="v-component_of_wind_height_above_ground" varId="VAR_7-0-2-34_L105" />
+    <param oldName="v_wind" newName="v-component_of_wind_height_above_ground" varId="VAR_7-0-2-34_L105" />
     <param oldName="v-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="v-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-34_L116_layer" />
   </dataset>
   <dataset name="NAM_Alaska_45km_noaaport_20100525_1200.grib1">
@@ -213,10 +213,10 @@
     <param oldName="v-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_7-0-2-34_L6" />
     <param oldName="v-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_7-0-2-34_L7" />
   </dataset>
-  <dataset name="NAM_Alaska_95km_20100502_0000.grib1">
+  <dataset name="NAM_Alaska_95km_20121207_0600.grib1">
     <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_7-0-2-41_L100" />
     <param oldName="Best_4_layer_lifted_index" newName="Best_4_layer_lifted_index_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-132_L116_layer" />
-    <param oldName="Convective_Available_Potential_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
+    <param oldName="Convective_Avail_Pot_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
     <param oldName="Convective_Available_Potential_Energy_surface" newName="Convective_Available_Potential_Energy_surface" varId="VAR_7-0-2-157_L1" />
     <param oldName="Convective_inhibition" newName="Convective_inhibition_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-156_L116_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_7-0-2-156_L1" />
@@ -237,32 +237,32 @@
     <param oldName="Temperature_layer_between_two_pressure_difference_from_ground" newName="Temperature_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-11_L116_layer" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-61_L1_Imixed_S4" />
     <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_7-0-2-39_L100" />
-    <param oldName="u-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_7-0-2-33_L100" />
+    <param oldName="u_wind" newName="u-component_of_wind_isobaric" varId="VAR_7-0-2-33_L100" />
     <param oldName="u-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_7-0-2-33_L105" />
     <param oldName="u-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="u-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-33_L116_layer" />
-    <param oldName="v-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
+    <param oldName="v_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
     <param oldName="v-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_7-0-2-34_L105" />
     <param oldName="v-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="v-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-34_L116_layer" />
   </dataset>
-  <dataset name="NAM_CONUS_20km_noaaport_20100602_0000.grib1">
+  <dataset name="NAM_CONUS_20km_noaaport_20121206_1800.grib1">
     <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_7-0-2-41_L100" />
     <param oldName="Best_4_layer_lifted_index" newName="Best_4_layer_lifted_index_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-132_L116_layer" />
-    <param oldName="Convective_Available_Potential_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
-    <param oldName="Convective_Available_Potential_Energy_surface" newName="Convective_Available_Potential_Energy_surface" varId="VAR_7-0-2-157_L1" />
+    <param oldName="Convective_Avail_Pot_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
+    <param oldName="Convective_Avail_Pot_Energy_surface" newName="Convective_Available_Potential_Energy_surface" varId="VAR_7-0-2-157_L1" />
     <param oldName="Convective_inhibition" newName="Convective_inhibition_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-156_L116_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_7-0-2-156_L1" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-63_L1_Imixed_S4" />
     <param oldName="Dew_point_temperature" newName="Dew_point_temperature_height_above_ground" varId="VAR_7-0-2-17_L105" />
-    <param oldName="Maximum_temperature" newName="Maximum_temperature_height_above_ground" varId="VAR_7-0-2-15_L105" />
+    <param oldName="Max_temperature" newName="Maximum_temperature_height_above_ground" varId="VAR_7-0-2-15_L105" />
     <param oldName="Mean_Sea_Level_Pressure_NAM_Model_Reduction" newName="Mean_Sea_Level_Pressure_NAM_Model_Reduction_msl" varId="VAR_7-0-2-130_L102" />
-    <param oldName="Minimum_temperature" newName="Minimum_temperature_height_above_ground" varId="VAR_7-0-2-16_L105" />
+    <param oldName="Min_temperature" newName="Minimum_temperature_height_above_ground" varId="VAR_7-0-2-16_L105" />
     <param oldName="Parcel_lifted_index_to_500_hPa" newName="Parcel_lifted_index_to_500_hPa_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-24_L116_layer" />
-    <param oldName="Percent_of_frozen_precipitation" newName="Percent_of_frozen_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-194_L1_Imixed_S4" />
+    <param oldName="Prob_of_frozen_precipitation" newName="Percent_of_frozen_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-194_L1_Imixed_S4" />
     <param oldName="Precipitable_water" newName="Precipitable_water_entire_atmosphere" varId="VAR_7-0-2-54_L200" />
     <param oldName="Pressure" newName="Pressure_surface" varId="VAR_7-0-2-1_L1" />
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_7-0-2-2_L102" />
-    <param oldName="Probability_of_freezing_precipitation" newName="Probability_of_freezing_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-195_L1_Imixed_S4" />
-    <param oldName="Probability_of_precipitation" newName="Probability_of_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-193_L1_Imixed_S4" />
+    <param oldName="Prob_of_freezing_precipitation" newName="Probability_of_freezing_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-195_L1_Imixed_S4" />
+    <param oldName="Prob_of_precipitation" newName="Probability_of_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-193_L1_Imixed_S4" />
     <param oldName="Relative_humidity" newName="Relative_humidity_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-52_L116_layer" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_7-0-2-52_L105" />
     <param oldName="Snow_depth" newName="Snow_depth_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-66_L1_Imixed_S4" />
@@ -279,10 +279,10 @@
     <param oldName="v-component_of_wind" newName="v-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-34_L116_layer" />
     <param oldName="v-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_7-0-2-34_L105" />
   </dataset>
-  <dataset name="NAM_CONUS_80km_20100508_1200.grib1">
+  <dataset name="NAM_CONUS_80km_20121207_0600.grib1">
     <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_7-0-2-41_L100" />
     <param oldName="Best_4_layer_lifted_index" newName="Best_4_layer_lifted_index_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-132_L116_layer" />
-    <param oldName="Convective_Available_Potential_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
+    <param oldName="Convective_Avail_Pot_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
     <param oldName="Convective_Available_Potential_Energy_surface" newName="Convective_Available_Potential_Energy_surface" varId="VAR_7-0-2-157_L1" />
     <param oldName="Convective_inhibition" newName="Convective_inhibition_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-156_L116_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_7-0-2-156_L1" />
@@ -311,15 +311,15 @@
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_7-0-2-11_L7" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-61_L1_Imixed_S4" />
     <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_7-0-2-39_L100" />
-    <param oldName="u-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_7-0-2-33_L100" />
+    <param oldName="u_wind" newName="u-component_of_wind_isobaric" varId="VAR_7-0-2-33_L100" />
     <param oldName="u-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_7-0-2-33_L105" />
     <param oldName="u-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="u-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-33_L116_layer" />
-    <param oldName="u-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_7-0-2-33_L6" />
+    <param oldName="u_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_7-0-2-33_L6" />
     <param oldName="u-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_7-0-2-33_L7" />
-    <param oldName="v-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
+    <param oldName="v_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
     <param oldName="v-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_7-0-2-34_L105" />
     <param oldName="v-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="v-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-34_L116_layer" />
-    <param oldName="v-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_7-0-2-34_L6" />
+    <param oldName="v_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_7-0-2-34_L6" />
     <param oldName="v-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_7-0-2-34_L7" />
   </dataset>
   <dataset name="RUC2_CONUS_40km_20100515_0200.grib1">

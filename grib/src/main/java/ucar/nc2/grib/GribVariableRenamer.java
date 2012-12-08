@@ -51,7 +51,17 @@ public class GribVariableRenamer {
     return result;
   }
 
-  /**
+  public List<String> getMappedNamesGrib1(String oldName) {
+    List<String> result = new ArrayList<String>();
+    Renamer mbean = map1.get(oldName);
+    if (mbean == null) return null;
+    for (VariableRenamerBean r : mbean.newVars) {
+      result.add(r.newName);
+    }
+    return result;
+  }
+
+    /**
    * Get unique list of old names associated with this new name
    * @param newName the new name
    * @return unique list of old names, or null if not exist
