@@ -87,7 +87,7 @@ public class GridUI extends JPanel {
   private GridController controller;
   private ColorScale.Panel colorScalePanel;
 
-  private ucar.nc2.ui.GeoGridTable dsTable;
+  private GeoGridTable dsTable;
 
   // UI components that need global scope
   private TextHistoryPane datasetInfoTA, ncmlTA;
@@ -159,7 +159,7 @@ public class GridUI extends JPanel {
       gtWindow = new IndependentWindow("Grid Table Information", BAMutil.getImage( "GDVs"), gridTable.getPanel());
 
       PreferencesExt dsNode = (PreferencesExt) pstore.node("DatasetTable");
-      dsTable = new ucar.nc2.ui.GeoGridTable(dsNode, true);
+      dsTable = new GeoGridTable(dsNode, true);
       dsDialog = dsTable.makeDialog(root, "NetcdfDataset Info", false);
       //dsDialog.setIconImage( BAMutil.getImage( "GDVs"));
       Rectangle bounds = (Rectangle) dsNode.getBean("DialogBounds", new Rectangle(50, 50, 800, 450));

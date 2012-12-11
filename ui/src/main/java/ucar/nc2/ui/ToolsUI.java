@@ -40,6 +40,7 @@ import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
+import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.grib.GribCollection;
@@ -4707,7 +4708,10 @@ public class ToolsUI extends JPanel {
       gridUI.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));
 
       viewerWindow.setComponent(gridUI);
-      viewerWindow.setBounds((Rectangle) mainPrefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
+      Rectangle bounds = (Rectangle) mainPrefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
+      if (bounds.x < 0) bounds.x = 0;
+      if (bounds.y < 0) bounds.x = 0;
+      viewerWindow.setBounds(bounds);
     }
 
     private void makeImageWindow() {

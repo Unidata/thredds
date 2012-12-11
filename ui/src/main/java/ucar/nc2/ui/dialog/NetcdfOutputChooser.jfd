@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "5.1.0.2.64" Java: "1.7.0_05" encoding: "UTF-8"
+JFDML JFormDesigner: "5.1.0.2.64" Java: "1.6.0_31" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -9,8 +9,8 @@ new FormModel {
 				name: "dialogPane"
 				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-					"$horizontalGroup": "par l {seq {par l {seq {comp label1:::p::p, space :::p, comp outputFilename::::466:x}, seq {par l {seq {space :p:18:p, comp label2:::p::p, space u:::p, comp netcdfVersion:::p:243:p}, seq l {space :p:33:p, comp panel1:::p:383:p}}, space :0:143:x}}, space :::p}}"
-					"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp outputFilename::b:p::p}, space s:::p, par b {comp label2::b:p::p, comp netcdfVersion::b:p::p}, space s:::p, comp panel1:::p:86:p, space ::14:x}}"
+					"$horizontalGroup": "par l {seq {par l {seq {comp label1:::p::p, space :::p, comp outputFilename::::450:x}, seq {par l {seq {space :p:18:p, comp label2:::p::p, space u:::p, comp netcdfVersion:::p:243:p}, seq l {space :p:33:p, comp panel1:::p:383:p}}, space :0:143:x}}, space :::p}}"
+					"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp outputFilename::b:p::p}, space s:::p, par b {comp label2::b:p::p, comp netcdfVersion::b:p::p}, space s:::p, comp panel1:::p:86:p, space :::x}}"
 				} ) {
 					name: "contentPanel"
 					add( new FormComponent( "javax.swing.JLabel" ) {
@@ -68,11 +68,8 @@ new FormModel {
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
 				} )
-				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
-					"$columnSpecs": "0:1.0, 80, 80"
-					"$rowSpecs": "0"
-					"$hGap": 5
-					"$vGap": 5
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) {
+					"alignment": 0
 				} ) {
 					name: "buttonBar"
 					"border": new javax.swing.border.EmptyBorder( 12, 0, 0, 0 )
@@ -80,13 +77,11 @@ new FormModel {
 						name: "okButton"
 						"text": "Write File"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "okButtonActionPerformed", true ) )
-					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "cancelButton"
 						"text": "Cancel"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "cancelButtonActionPerformed", true ) )
-					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-						"gridx": 1
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "South"

@@ -2,9 +2,11 @@ package ucar.nc2.ui;
 
 import ucar.ma2.Array;
 import ucar.nc2.*;
+import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.jni.netcdf.Nc4Chunking;
 import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
@@ -41,9 +43,10 @@ public class DatasetWriter extends JPanel {
 
   private List<NestedTable> nestedTableList = new ArrayList<NestedTable>();
   private BeanTableSorted attTable;
+  private BeanTableSorted dimTable;
 
   private JPanel tablePanel;
-  // private JSplitPane mainSplit;
+  private JSplitPane mainSplit;
 
   private JComponent currentComponent;
   private NetcdfOutputChooser outputChooser;
@@ -60,6 +63,8 @@ public class DatasetWriter extends JPanel {
     this.fileChooser = fileChooser;
 
     // create the variable table(s)
+    dimTable = new BeanTableSorted(DimensionBean.class, (PreferencesExt) prefs.node("DimensionBeanTable"), false, null, null, new DimensionBean());
+
     tablePanel = new JPanel( new BorderLayout());
     setNestedTable(0, null);
 
@@ -86,12 +91,12 @@ public class DatasetWriter extends JPanel {
     });
 
     // layout
-    //mainSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, outputChooser, tablePanel);
-    //mainSplit.setDividerLocation(prefs.getInt("mainSplit", 100));
+    mainSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, dimTable, tablePanel);
+    mainSplit.setDividerLocation(prefs.getInt("mainSplit", 300));
 
     setLayout(new BorderLayout());
     add(outputChooser.getContentPane(), BorderLayout.NORTH);
-    add(tablePanel, BorderLayout.CENTER);
+    add(mainSplit, BorderLayout.CENTER);
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -117,6 +122,19 @@ public class DatasetWriter extends JPanel {
     };
     BAMutil.setActionProperties(attAction, "FontDecr", "global attributes", false, 'A', -1);
     BAMutil.addActionToContainer(buttPanel, attAction);
+  }
+
+  public void save() {
+    dimTable.saveState(false);
+
+    for (NestedTable nt : nestedTableList) {
+      nt.saveState();
+    }
+   // prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+   // prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
+   // if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
+
+    prefs.putInt("mainSplit", mainSplit.getDividerLocation());
   }
 
     ///////////////////////////////////////
@@ -155,6 +173,14 @@ public class DatasetWriter extends JPanel {
     if (data.version == NetcdfFileWriter.Version.ncstream) {
       writeNcstream(data.outputFilename);
       return;
+    }
+
+
+    if (data.version.isNetdf4format()) {
+      if (!Nc4Iosp.isClibraryPresent()) {
+        JOptionPane.showMessageDialog(this, "NetCDF=4 C library is not loaded");
+        return;
+      }
     }
 
     try {
@@ -292,10 +318,10 @@ public class DatasetWriter extends JPanel {
 
   public void setDataset(NetcdfFile ds) {
     this.ds = ds;
+    dimTable.setBeans(makeDimensionBeans(ds));
     NestedTable nt = nestedTableList.get(0);
-    nt.table.setBeans( getVariableBeans(ds));
+    nt.table.setBeans( makeVariableBeans(ds));
     hideNestedTable( 1);
-
     showChunking();
   }
 
@@ -318,146 +344,6 @@ public class DatasetWriter extends JPanel {
     }
 
     eventsOK = true;
-  }
-
-  private NestedTable setNestedTable(int level, Structure s) {
-    NestedTable ntable;
-    if (nestedTableList.size() < level+1) {
-      ntable = new NestedTable(level);
-      nestedTableList.add( ntable);
-
-    } else {
-      ntable = nestedTableList.get(level);
-    }
-
-    if (s != null) // variables inside of records
-      ntable.table.setBeans( getStructureVariables( s));
-
-    ntable.show();
-    return ntable;
-  }
-
-  private void hideNestedTable(int level) {
-    int n = nestedTableList.size();
-    for (int i=n-1; i>=level; i--) {
-      NestedTable ntable = nestedTableList.get(i);
-      ntable.hide();
-    }
-  }
-
-  private class NestedTable {
-    int level;
-    PreferencesExt myPrefs;
-
-    BeanTableSorted table; // always the left component
-    JSplitPane split = null; // right component (if exists) is the nested dataset.
-    int splitPos = 100;
-    boolean isShowing = false;
-
-    NestedTable(int level) {
-      this.level = level;
-      myPrefs = (PreferencesExt) prefs.node("NestedTable"+level);
-
-      table = new BeanTableSorted(VariableBean.class, myPrefs, false, null, null, new VariableBean());
-
-      JTable jtable = table.getJTable();
-      ucar.nc2.ui.widget.PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
-      csPopup.addAction("Show Declaration", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          showDeclaration(table, false);
-        }
-      });
-      csPopup.addAction("Show NcML", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          showDeclaration(table, true);
-        }
-      });
-      /* csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          dumpData(table);
-        }
-      });   */
-      if (level == 0) {
-        csPopup.addAction("Data Table", new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-            dataTable(table);
-          }
-        });
-      }
-
-      // get selected variable, see if its a structure
-      table.addListSelectionListener(new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
-          Variable v = getCurrentVariable(table);
-          if ((v != null) && (v instanceof Structure)) {
-            hideNestedTable(NestedTable.this.level+2);
-            setNestedTable(NestedTable.this.level+1, (Structure) v);
-
-          } else {
-            hideNestedTable(NestedTable.this.level+1);
-          }
-          // if (eventsOK) datasetTree.setSelected( v);
-        }
-      });
-
-      // layout
-      if (currentComponent == null) {
-        currentComponent = table;
-        tablePanel.add(currentComponent, BorderLayout.CENTER);
-        isShowing = true;
-
-      } else {
-        split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, currentComponent, table);
-        splitPos = myPrefs.getInt("splitPos"+level, 500);
-        if (splitPos > 0)
-          split.setDividerLocation(splitPos);
-
-        show();
-      }
-    }
-
-    void show() {
-      if (isShowing) return;
-
-      tablePanel.remove( currentComponent);
-      split.setLeftComponent( currentComponent);
-      split.setDividerLocation( splitPos);
-      currentComponent = split;
-      tablePanel.add(currentComponent, BorderLayout.CENTER);
-      tablePanel.revalidate();
-      isShowing = true;
-    }
-
-    void hide() {
-      if (!isShowing) return;
-      tablePanel.remove( currentComponent);
-
-      if (split != null) {
-        splitPos = split.getDividerLocation();
-        currentComponent = (JComponent) split.getLeftComponent();
-        tablePanel.add(currentComponent, BorderLayout.CENTER);
-      }
-
-      tablePanel.revalidate();
-      isShowing = false;
-    }
-
-    void setSelected( Variable vs) {
-
-      List beans = table.getBeans();
-      for (Object bean1 : beans) {
-        VariableBean bean = (VariableBean) bean1;
-        if (bean.vs == vs) {
-          table.setSelectedBean(bean);
-          return;
-        }
-      }
-    }
-
-    void saveState() {
-      table.saveState( false);
-      if (split != null) myPrefs.putInt("splitPos"+level, split.getDividerLocation());
-    }
   }
 
   /* public void showTreeViewWindow() {
@@ -523,21 +409,7 @@ public class DatasetWriter extends JPanel {
     return vb.vs;
   }
 
-  public PreferencesExt getPrefs() { return prefs; }
-
-  public void save() {
-    //dumpPane.save();
-    for (NestedTable nt : nestedTableList) {
-      nt.saveState();
-    }
-   // prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-   // prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
-   // if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
-
-    //prefs.putInt("mainSplit", mainSplit.getDividerLocation());
-  }
-
-  public List<VariableBean> getVariableBeans(NetcdfFile ds) {
+  private List<VariableBean> makeVariableBeans(NetcdfFile ds) {
     List<VariableBean> vlist = new ArrayList<VariableBean>();
     for (Variable v : ds.getVariables()) {
       vlist.add(new VariableBean(v));
@@ -545,13 +417,165 @@ public class DatasetWriter extends JPanel {
     return vlist;
   }
 
-  public List<VariableBean> getStructureVariables(Structure s) {
+  private List<DimensionBean> makeDimensionBeans(NetcdfFile ds) {
+    List<DimensionBean> dlist = new ArrayList<DimensionBean>();
+    for (Dimension d : ds.getDimensions()) {
+      dlist.add(new DimensionBean(d));
+    }
+    return dlist;
+  }
+
+  private List<VariableBean> getStructureVariables(Structure s) {
     List<VariableBean> vlist = new ArrayList<VariableBean>();
     for (Variable v : s.getVariables()) {
       vlist.add( new VariableBean( v));
     }
     return vlist;
   }
+
+  /////////////////////////////////////////////////////////////
+
+  private NestedTable setNestedTable(int level, Structure s) {
+     NestedTable ntable;
+     if (nestedTableList.size() < level+1) {
+       ntable = new NestedTable(level);
+       nestedTableList.add( ntable);
+
+     } else {
+       ntable = nestedTableList.get(level);
+     }
+
+     if (s != null) // variables inside of records
+       ntable.table.setBeans( getStructureVariables( s));
+
+     ntable.show();
+     return ntable;
+   }
+
+   private void hideNestedTable(int level) {
+     int n = nestedTableList.size();
+     for (int i=n-1; i>=level; i--) {
+       NestedTable ntable = nestedTableList.get(i);
+       ntable.hide();
+     }
+   }
+
+   private class NestedTable {
+     int level;
+     PreferencesExt myPrefs;
+
+     BeanTableSorted table; // always the left component
+     JSplitPane split = null; // right component (if exists) is the nested dataset.
+     int splitPos = 100;
+     boolean isShowing = false;
+
+     NestedTable(int level) {
+       this.level = level;
+       myPrefs = (PreferencesExt) prefs.node("NestedTable"+level);
+
+       table = new BeanTableSorted(VariableBean.class, myPrefs, false, null, null, new VariableBean());
+
+       JTable jtable = table.getJTable();
+       ucar.nc2.ui.widget.PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
+       csPopup.addAction("Show Declaration", new AbstractAction() {
+         public void actionPerformed(ActionEvent e) {
+           showDeclaration(table, false);
+         }
+       });
+       csPopup.addAction("Show NcML", new AbstractAction() {
+         public void actionPerformed(ActionEvent e) {
+           showDeclaration(table, true);
+         }
+       });
+       /* csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
+         public void actionPerformed(ActionEvent e) {
+           dumpData(table);
+         }
+       });   */
+       if (level == 0) {
+         csPopup.addAction("Data Table", new AbstractAction() {
+           public void actionPerformed(ActionEvent e) {
+             dataTable(table);
+           }
+         });
+       }
+
+       // get selected variable, see if its a structure
+       table.addListSelectionListener(new ListSelectionListener() {
+         public void valueChanged(ListSelectionEvent e) {
+           Variable v = getCurrentVariable(table);
+           if ((v != null) && (v instanceof Structure)) {
+             hideNestedTable(NestedTable.this.level+2);
+             setNestedTable(NestedTable.this.level+1, (Structure) v);
+
+           } else {
+             hideNestedTable(NestedTable.this.level+1);
+           }
+           // if (eventsOK) datasetTree.setSelected( v);
+         }
+       });
+
+       // layout
+       if (currentComponent == null) {
+         currentComponent = table;
+         tablePanel.add(currentComponent, BorderLayout.CENTER);
+         isShowing = true;
+
+       } else {
+         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, currentComponent, table);
+         splitPos = myPrefs.getInt("splitPos"+level, 500);
+         if (splitPos > 0)
+           split.setDividerLocation(splitPos);
+
+         show();
+       }
+     }
+
+     void show() {
+       if (isShowing) return;
+
+       tablePanel.remove( currentComponent);
+       split.setLeftComponent( currentComponent);
+       split.setDividerLocation( splitPos);
+       currentComponent = split;
+       tablePanel.add(currentComponent, BorderLayout.CENTER);
+       tablePanel.revalidate();
+       isShowing = true;
+     }
+
+     void hide() {
+       if (!isShowing) return;
+       tablePanel.remove( currentComponent);
+
+       if (split != null) {
+         splitPos = split.getDividerLocation();
+         currentComponent = (JComponent) split.getLeftComponent();
+         tablePanel.add(currentComponent, BorderLayout.CENTER);
+       }
+
+       tablePanel.revalidate();
+       isShowing = false;
+     }
+
+     void setSelected( Variable vs) {
+
+       List beans = table.getBeans();
+       for (Object bean1 : beans) {
+         VariableBean bean = (VariableBean) bean1;
+         if (bean.vs == vs) {
+           table.setSelectedBean(bean);
+           return;
+         }
+       }
+     }
+
+     void saveState() {
+       table.saveState( false);
+       if (split != null) myPrefs.putInt("splitPos"+level, split.getDividerLocation());
+     }
+   }
+
+  ////////////////////////////////////////////////////////////
 
   public class BeanChunker implements Nc4Chunking {
     Map<String, VariableBean> map;
@@ -587,6 +611,30 @@ public class DatasetWriter extends JPanel {
     public boolean isShuffle(Variable v) {
       return shuffle;
     }
+  }
+
+  public class DimensionBean {
+    Dimension ds;
+
+    public String editableProperties() {
+      return "unlimited";
+    }
+
+    // no-arg constructor
+    public DimensionBean() {}
+
+    // create from a dataset
+    public DimensionBean( Dimension ds) {
+      this.ds = ds;
+    }
+
+    public String getName() { return ds.getName(); }
+    public int getLength() { return ds.getLength(); }
+    public boolean isUnlimited() { return ds.isUnlimited(); }
+    public void setUnlimited(boolean unlimited) {
+      ds.setUnlimited(unlimited);
+    }
+
   }
 
   public class VariableBean {

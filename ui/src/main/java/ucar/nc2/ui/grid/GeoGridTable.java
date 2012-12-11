@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.grid;
 
 import thredds.wcs.v1_0_0_1.GetCapabilities;
 import ucar.nc2.*;

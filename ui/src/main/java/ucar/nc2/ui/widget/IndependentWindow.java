@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ui.widget;
 
+import ucar.nc2.ui.util.ScreenUtils;
+
 import java.awt.*;
 import java.beans.*;
 import javax.swing.*;
@@ -98,6 +100,15 @@ public class IndependentWindow extends JFrame {
       log.error("Possible problem setting icon (?)", e);
     }
   }
+
+  @Override
+  public void setBounds(Rectangle r) {
+    // keep window on the screen
+    Rectangle screenSize = ScreenUtils.getScreenVirtualSize();
+    Rectangle result = r.intersection(screenSize);
+    super.setBounds(result);
+  }
+
 
   /** show the window. */
   public void show() {

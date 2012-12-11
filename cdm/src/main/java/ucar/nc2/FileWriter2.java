@@ -41,6 +41,7 @@ import java.util.Map;
 import ucar.ma2.*;
 import ucar.nc2.jni.netcdf.Nc4Chunking;
 import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
