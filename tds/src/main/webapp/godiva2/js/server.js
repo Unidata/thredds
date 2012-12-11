@@ -14,8 +14,11 @@ function iso8601ToDate(string)
     var d = string.match(new RegExp(regexp));
 
     var offset = 0;
-    var date = new Date();
-    date.setFullYear(d[1]);
+    
+    // Set the date to the first of January of the desired year.
+    // This avoids problems when setting the month to one with 30 days
+    // if we're on the 31st of the current month
+    var date = new Date(d[1], 0, 1);
 
     if (d[3]) { date.setMonth(d[3] - 1); }
     if (d[5]) { date.setDate(d[5]); }
