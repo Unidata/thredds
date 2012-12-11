@@ -356,7 +356,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
       case 20:
         return "isotherm";
       case 100:
-        return "pressure";
+        return "isobaric";
       case 101:
         return "msl";
       case 102:

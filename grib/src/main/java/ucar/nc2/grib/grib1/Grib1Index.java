@@ -83,7 +83,7 @@ import java.util.*;
 public class Grib1Index extends GribIndex {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
 
-  private static final String MAGIC_START = "Grib1Index";
+  public static final String MAGIC_START = "Grib1Index";
   private static final int version = 5;
   private static final boolean debug = false;
 
@@ -121,7 +121,7 @@ public class Grib1Index extends GribIndex {
     try {
       //// check header is ok
       if (!NcStream.readAndTest(fin, MAGIC_START.getBytes())) {
-        log.debug("Bad magic number of grib index, should be= {}" + MAGIC_START);
+        log.info("Bad magic number of grib index, on file" + idxFile);
         return false;
       }
 
@@ -129,7 +129,7 @@ public class Grib1Index extends GribIndex {
       if (v != version) {
         if ((v == 0) || (v > version))
           throw new IOException("Grib1Index found version " + v + ", want version " + version + " on " + filename);
-        log.debug("Grib1Index found version " + v + ", want version " + version + " on " + filename);
+        if (log.isDebugEnabled()) log.debug("Grib1Index found version " + v + ", want version " + version + " on " + filename);
         return false;
       }
 

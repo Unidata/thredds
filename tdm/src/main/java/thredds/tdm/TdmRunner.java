@@ -392,6 +392,7 @@ public class TdmRunner {
     TdmRunner driver = (TdmRunner) springContext.getBean("testDriver");
     //RandomAccessFile.setDebugLeaks(true);
     HTTPSession.setGlobalUserAgent("TDM v4.3");
+    GribCollection.getDiskCache2().setNeverUseCache(true);
 
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {

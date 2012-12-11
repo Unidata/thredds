@@ -345,11 +345,9 @@ public class URLnaming {
     if (args.length > 0) {
       checkUnEsc(args[0]);
     } else {
-      String s = "catalog=http%3A%2F%2Flocalhost%3A8080%2Fthredds%2Fcatalog%2Fgrib%2FNCEP%2FGFS%2FGlobal_0p5deg%2Fcollection%2Fcatalog.html\n" +
-              "  dataset=grib%2FNCEP%2FGFS%2FGlobal_0p5deg%2FGFS-Global_0p5deg%2Fcollection";
+      String s = "/thredds/cdmremote/grib/NCEP/GFS/Global_0p5deg/best?var=Precipitable_water_entire_atmosphere%280%3A316%2C0%3A360%2C0%3A719%29";
       decode(s);
     }
-
 
   }
 

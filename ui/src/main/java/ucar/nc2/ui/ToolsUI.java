@@ -122,6 +122,7 @@ public class ToolsUI extends JPanel {
   private BufrTableDPanel bufrTableDPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmremotePanel cdmremotePanel;
+  private CdmIndexPanel cdmIdxPanel;
   private CoordSysPanel coordSysPanel;
   private CollectionPanel collectionPanel;
   private DatasetViewerPanel viewerPanel;
@@ -130,8 +131,8 @@ public class ToolsUI extends JPanel {
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
   private GribFilesPanel gribFilesPanel;
+  private GribIndexPanel gribIdxPanel;
   private Grib2CollectionPanel gribNewPanel;
-  private GribCollectionIndexPanel gribIdxPanel;
   private Grib1CollectionPanel grib1RawPanel;
   private Grib1ReportPanel grib1ReportPanel;
   private Grib2ReportPanel grib2ReportPanel;
@@ -239,6 +240,7 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("HDF5", hdf5TabPane);
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addTab("CdmRemote", new JLabel("CdmRemote"));
+    iospTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
     iospTabPane.addTab("NcStream", new JLabel("NcStream"));
     iospTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
@@ -289,7 +291,7 @@ public class ToolsUI extends JPanel {
 
     // nested-2 tab - grib-2
     grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2collection"));
-    grib2TabPane.addTab("GRIBindex", new JLabel("GRIBindex"));
+    grib2TabPane.addTab("GribIndex", new JLabel("GribIndex"));
     grib2TabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
     grib2TabPane.addTab("GRIB2data", new JLabel("GRIB2data"));
     grib2TabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
@@ -522,8 +524,12 @@ public class ToolsUI extends JPanel {
       grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
       c = grib2DataPanel;
 
-    } else if (title.equals("GRIBindex")) {
-      gribIdxPanel = new GribCollectionIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
+    } else if (title.equals("CdmIndex")) {
+      cdmIdxPanel = new CdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
+      c = cdmIdxPanel;
+
+    } else if (title.equals("GribIndex")) {
+      gribIdxPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
       c = gribIdxPanel;
 
     } else if (title.equals("GRIB1-REPORT")) {
@@ -1015,7 +1021,7 @@ public class ToolsUI extends JPanel {
     if (gribFilesPanel != null) gribFilesPanel.save();
     if (gribNewPanel != null) gribNewPanel.save();
     if (grib2DataPanel != null) grib2DataPanel.save();
-    if (gribIdxPanel != null) gribIdxPanel.save();
+    if (cdmIdxPanel != null) cdmIdxPanel.save();
     if (grib1RawPanel != null) grib1RawPanel.save();
     if (grib1ReportPanel != null) grib1ReportPanel.save();
     if (grib2ReportPanel != null) grib2ReportPanel.save();
@@ -2747,14 +2753,14 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
-  private class GribCollectionIndexPanel extends OpPanel {
+  private class CdmIndexPanel extends OpPanel {
     ucar.nc2.ui.GribCollectionIndexPanel gribTable;
 
     void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
     }
 
-    GribCollectionIndexPanel(PreferencesExt p) {
+    CdmIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
       gribTable = new ucar.nc2.ui.GribCollectionIndexPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
@@ -2790,54 +2796,18 @@ public class ToolsUI extends JPanel {
 
   }
 
-  /////////////////////////////////////////////////////////////////////
-  /* raw grib access - dont go through the IOSP
-  private class GribRawPanel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf = null;
-    GribOldRawPanel gribTable;
+ /////////////////////////////////////////////////////////////////////
+  private class GribIndexPanel extends OpPanel {
+    ucar.nc2.ui.GribIndexPanel gribTable;
 
     void closeOpenFiles() throws IOException {
-      if (raf != null) raf.close();
-      raf = null;
+      gribTable.closeOpenFiles();
     }
 
-    GribRawPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
-      gribTable = new GribOldRawPanel(prefs);
+   GribIndexPanel(PreferencesExt p) {
+      super(p, "index file:", true, false);
+      gribTable = new ucar.nc2.ui.GribIndexPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
-
-      AbstractButton grib2dump = BAMutil.makeButtcon("alien", "Grib2 dump", false);
-      grib2dump.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          Grib2Dump dump = new Grib2Dump();
-          String fileIn = (String) cb.getSelectedItem();
-          try {
-            File fileOut = File.createTempFile("temp", "txt");
-            dump.gribDump(new String[]{fileIn, fileOut.getPath(), "false"});
-            detailTA.setText(IO.readFile(fileOut.getPath()));
-            detailWindow.show();
-            fileOut.delete();
-          } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
-            detailWindow.show();
-          }
-        }
-      });
-      buttPanel.add(grib2dump);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
-          gribTable.checkProblems(f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-        }
-      });
-      buttPanel.add(infoButton);
     }
 
     boolean process(Object o) {
@@ -2846,12 +2816,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        if (raf != null)
-          raf.close();
-        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
-        raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-        gribTable.setGribFile(raf);
-        cb.addItem(command);
+        gribTable.setIndexFile(command);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
@@ -2873,7 +2838,7 @@ public class ToolsUI extends JPanel {
       super.save();
     }
 
-  }  */
+  }
 
   /////////////////////////////////////////////////////////////////////
   // raw grib access - dont go through the IOSP

@@ -58,6 +58,7 @@ import java.net.URLDecoder;
  * @author jcaron
  */
 public class DiskCache2 {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiskCache2.class);
 
   public enum CachePathPolicy {
     OneDirectory,
@@ -70,6 +71,7 @@ public class DiskCache2 {
 
   private CachePathPolicy cachePathPolicy = CachePathPolicy.OneDirectory;
   private boolean alwaysUseCache = true;
+  private boolean neverUseCache = false;
   private String cachePathPolicyParam = null;
 
   private String root;
@@ -188,7 +190,7 @@ public class DiskCache2 {
   public File getCacheFile(String fileLocation) {
     if (!alwaysUseCache) {
       File f = new File(fileLocation);
-      if (f.canWrite()) return f;
+      if (canWrite(f)) return f;
     }
 
     File f = new File(makeCachePath(fileLocation));
@@ -201,6 +203,52 @@ public class DiskCache2 {
     }
 
     return f;
+  }
+
+  /**
+   * Get the named File.
+   * If exists or isWritable, return it.
+   * Otherwise get corresponding file in the cache directory.
+   *
+   * If fileLocation has "/" in it, and cachePathPolicy == NestedDirectory, the
+   * nested directories will be created.
+   *
+   * @param fileLocation logical file location
+   * @return physical File as named, or in the cache.
+   */
+  public File getFile(String fileLocation) {
+    if (!alwaysUseCache) {
+      File f = new File(fileLocation);
+      if (f.exists()) return f;
+      if (canWrite(f)) return f;
+    }
+
+    if (neverUseCache) {
+      throw new IllegalStateException("neverUseCache=true, but directory is not writeable ="+fileLocation);
+    }
+
+    File f = new File(makeCachePath(fileLocation));
+    if (cachePathPolicy == CachePathPolicy.NestedDirectory) {
+      File dir = f.getParentFile();
+      if (!dir.mkdirs())
+        log.warn("Cant create directories for file "+dir.getPath());
+    }
+
+    return f;
+  }
+
+  // File.canWrite() appears to be flaky on some systems
+  // will java 7 help ??
+  private static boolean canWrite(File f) {
+    // now comes the tricky part to make sure we can open and write to it
+    try {
+      if (f.createNewFile()) {
+        f.delete();
+        return true;
+      }
+    } catch (IOException e) {
+    }
+    return false;
   }
 
   /**
@@ -274,6 +322,10 @@ public class DiskCache2 {
 
   public void setAlwaysUseCache(boolean alwaysUseCache) {
     this.alwaysUseCache = alwaysUseCache;
+  }
+
+  public void setNeverUseCache(boolean neverUseCache) {
+    this.neverUseCache = neverUseCache;
   }
 
   /**
@@ -413,7 +465,7 @@ public class DiskCache2 {
     System.out.println("make=" + want.getPath() + "; exists = " + want.exists());
     if (!want.exists())
       want.createNewFile();
-    System.out.println(" canRead= " + want.canRead() + " canWrite = " + want.canWrite() + " lastMod = " + new Date(want.lastModified()));
+    System.out.println(" canRead= " + want.canRead() + " canWrite = " + canWrite(want) + " lastMod = " + new Date(want.lastModified()));
     System.out.println(" original=" + EscapeStrings.urlDecode(filename));
   }
 

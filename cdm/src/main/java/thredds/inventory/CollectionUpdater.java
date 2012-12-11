@@ -293,6 +293,10 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
         CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
+        if (manager == null) {
+          logger.error("Update resetProto failed: no manager object on {}", context);
+          return;
+        }
         logger.debug("Update resetProto for {}", manager.getCollectionName());
         manager.resetProto();
       } catch (Throwable e) {

@@ -93,11 +93,15 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public File getIndexFile(String path) {
-    return cache.getCacheFile(path);
+    return cache.getFile(path);
   }
 
   static public void setDiskCache2(DiskCache2 dc) {
     cache = dc;
+  }
+
+  static public DiskCache2 getDiskCache2() {
+    return cache;
   }
 
   //////////////////////////////////////////////////////////
@@ -228,7 +232,7 @@ public abstract class GribCollection implements FileCacheable {
     if (indexFile == null) {
       String nameNoBlanks = StringUtil2.replace(name, ' ', "_");
       File f = new File(directory, nameNoBlanks + NCX_IDX);
-      indexFile = cache.getCacheFile(f.getPath());
+      indexFile = cache.getFile(f.getPath());
     }
     return indexFile;
   }

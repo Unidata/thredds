@@ -83,7 +83,7 @@ import java.util.*;
 public class Grib2Index extends GribIndex {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Index.class);
 
-  private static final String MAGIC_START = "Grib2Index";
+  public static final String MAGIC_START = "Grib2Index";
   private static final boolean debug = false;
   private static final int version = 6;
 
@@ -114,7 +114,7 @@ public class Grib2Index extends GribIndex {
   public boolean readIndex(String filename, long gribLastModified, CollectionManager.Force force) throws IOException {
 
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
-    if (!idxFile.exists()) return false;
+      if (!idxFile.exists()) return false;
     long idxModified = idxFile.lastModified();
     if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
@@ -123,7 +123,7 @@ public class Grib2Index extends GribIndex {
     try {
         //// check header is ok
         if (!NcStream.readAndTest(fin, MAGIC_START.getBytes())) {
-          log.debug("Bad magic number of grib index, should be= {}" + MAGIC_START);
+          log.info("Bad magic number of grib index on file= {}", idxFile);
           return false;
         }
 
@@ -131,13 +131,13 @@ public class Grib2Index extends GribIndex {
       if (v != version) {
         if ((v == 0) || (v > version))
           throw new IOException("GribIndex found version "+v+", want version " + version+ " on " +filename);
-        log.debug("GribIndex found version "+v+", want version " + version+ " on " +filename);
+        if (log.isDebugEnabled()) log.debug("Grib2Index found version "+v+", want version " + version+ " on " +filename);
         return false;
       }
 
       int size = NcStream.readVInt(fin);
       if (size <= 0 || size > 100 * 1000 * 1000) { // try to catch garbage
-        log.warn("Grib2Index bad size = {} for {} ", size, filename);
+        log.warn("Grib2Index bad size = "+size+" for "+filename+" index = " + idxFile.getPath());
         return false;
       }
 

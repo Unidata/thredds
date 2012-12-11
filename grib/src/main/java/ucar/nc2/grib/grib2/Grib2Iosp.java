@@ -786,8 +786,19 @@ public class Grib2Iosp extends GribIosp {
           }
 
           if (recordIndex >= 0)  {
-            GribCollection.Record record = vindex.records[recordIndex];
-            dataReader.addRecord(vindex, partno, record.fileno, record.pos, record.bmsPos, resultIndex);  // add this record to be read
+            if (recordIndex < vindex.records.length)  {
+              GribCollection.Record record = vindex.records[recordIndex];
+              dataReader.addRecord(vindex, partno, record.fileno, record.pos, record.bmsPos, resultIndex);  // add this record to be read
+
+            } else {
+              Formatter f = new Formatter();
+              f.format("recordIndex=%d size=%d%n", recordIndex,  vindex.records.length);
+              if (flag == 0) f.format("time=%d, ens=%d, level=%d, nens=%d, nverts=%d", val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
+              else  f.format("time=%d, ens=%d, level=%d, flag=%d, nens=%s, vert=%s ensp=%s, vertp=%s", val.getIndex(), ensIdx, levelIdx, flag,
+                      vindex.getEnsCoord(), vindex.getVertCoord(), vindexP.getEnsCoord(), vindexP.getVertCoord());
+
+              logger.error("recordIndex out of bounds: "+f.toString());
+            }
           }
         }
       }
