@@ -388,7 +388,7 @@ class GridDataController extends AbstratNcssDataRequestController {
     Random random = new Random(System.currentTimeMillis());
     int randomInt = random.nextInt();
     
-    String filename = getFileNameForResponse();
+    String filename = getFileNameForResponse(version);
     String pathname = Integer.toString(randomInt) + "/" + filename;
     File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
        
@@ -412,11 +412,17 @@ class GridDataController extends AbstratNcssDataRequestController {
 
   }
   
-  private String getFileNameForResponse(){
+  private String getFileNameForResponse(NetcdfFileWriter.Version version){
+	  	String fileExtension =".nc";
+	  	
+	  	if(version == NetcdfFileWriter.Version.netcdf4 ){
+	  		fileExtension =".nc4";
+	  	}
+	  
 	    String[] tmp = requestPathInfo.split("/"); 
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(tmp[tmp.length-2]).append("_").append(tmp[tmp.length-1]);
-	    String filename= sb.toString().split("\\.")[0]+".nc";
+	    String filename= sb.toString().split("\\.")[0]+fileExtension;
 	    return filename; 
   }
 

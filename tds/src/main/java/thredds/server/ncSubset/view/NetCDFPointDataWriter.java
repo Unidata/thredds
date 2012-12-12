@@ -161,14 +161,28 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 //        if (!filename.endsWith(".nc"))
 //          filename = filename + ".nc";
         
-        String[] tmp = pathInfo.split("/"); 
-        StringBuilder sb = new StringBuilder();
-        sb.append(tmp[tmp.length-2]).append("_").append(tmp[tmp.length-1]);
-        String filename= sb.toString().split("\\.")[0]+".nc";        
+       String fileName = getFileNameForResponse(version, pathInfo);
                 
         String url = AbstractNcssController.buildCacheUrl(netcdfResult.getName());
     	httpHeaders.set("Content-Location", url );
-    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+		
+	}
+	
+	private String getFileNameForResponse(NetcdfFileWriter.Version version, String pathInfo){
+
+		String fileExtension = ".nc";
+		
+		if(version == NetcdfFileWriter.Version.netcdf4){
+			fileExtension = ".nc4";
+		}
+		
+        String[] tmp = pathInfo.split("/"); 
+        StringBuilder sb = new StringBuilder();
+        sb.append(tmp[tmp.length-2]).append("_").append(tmp[tmp.length-1]);
+        String filename= sb.toString().split("\\.")[0]+fileExtension;
+        
+        return filename;
 		
 	}
 	
