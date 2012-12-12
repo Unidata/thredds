@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gribVarMap collection="Q:/cdmUnitTest/tds/ncep/.*grib2">
   <dataset name="DGEX_Alaska_12km_20100524_0000.grib2">
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_surface" newName="Geopotential_height_surface" varId="VAR_0-3-5_L1" />
     <param oldName="MSLP_Eta_Reduction" newName="MSLP_Eta_model_reduction_msl" varId="VAR_0-3-192_L101" />
     <param oldName="Maximum_temperature" newName="Maximum_temperature_height_above_ground" varId="VAR_0-0-4_L103" />
@@ -10,23 +10,23 @@
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
     <param oldName="Relative_humidity" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
-    <param oldName="Relative_humidity_pressure" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity_pressure" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
     <param oldName="Temperature" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
-    <param oldName="Temperature_pressure" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature_pressure" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Total_cloud_cover" newName="Total_cloud_cover_entire_atmosphere" varId="VAR_0-6-1_L200" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_6_Hour_Accumulation" varId="VAR_0-1-8_L1_I6_Hour_S1" />
     <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
-    <param oldName="U-component_of_wind_pressure" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind_pressure" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
-    <param oldName="V-component_of_wind_pressure" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="V-component_of_wind_pressure" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
   </dataset>
   <dataset name="DGEX_CONUS_12km_20100514_1800.grib2">
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_surface" newName="Geopotential_height_surface" varId="VAR_0-3-5_L1" />
     <param oldName="MSLP_Eta_Reduction" newName="MSLP_Eta_model_reduction_msl" varId="VAR_0-3-192_L101" />
     <param oldName="Maximum_temperature" newName="Maximum_temperature_height_above_ground" varId="VAR_0-0-4_L103" />
@@ -35,20 +35,20 @@
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
     <param oldName="Relative_humidity" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
-    <param oldName="Relative_humidity_pressure" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity_pressure" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
     <param oldName="Temperature" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
-    <param oldName="Temperature_pressure" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature_pressure" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Total_cloud_cover" newName="Total_cloud_cover_entire_atmosphere" varId="VAR_0-6-1_L200" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_6_Hour_Accumulation" varId="VAR_0-1-8_L1_I6_Hour_S1" />
     <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
-    <param oldName="U-component_of_wind_pressure" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind_pressure" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
-    <param oldName="V-component_of_wind_pressure" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="V-component_of_wind_pressure" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
   </dataset>
   <dataset name="GEFS_Global_1p0deg_Ensemble_20120215_0000.grib2">
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface_6_Hour_Average" varId="VAR_0-1-193_L1_I6_Hour_S0" />
@@ -59,7 +59,7 @@
     <param oldName="Convective_inhibition" newName="Convective_inhibition_pressure_difference_layer" varId="VAR_0-7-7_L108_layer" />
     <param oldName="Downward_Long-Wave_Rad_Flux" newName="Downward_Long-Wave_Radp_Flux_surface_Mixed_intervals_Average" varId="VAR_0-5-192_L1_Imixed_S0" />
     <param oldName="Downward_Short-Wave_Rad_Flux" newName="Downward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-192_L1_Imixed_S0" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_surface" newName="Geopotential_height_surface" varId="VAR_0-3-5_L1" />
     <param oldName="Latent_heat_net_flux" newName="Latent_heat_net_flux_surface_Mixed_intervals_Average" varId="VAR_0-0-10_L1_Imixed_S0" />
     <param oldName="Maximum_temperature" newName="Maximum_temperature_height_above_ground_6_Hour_Maximum" varId="VAR_0-0-4_L103_I6_Hour_S2" />
@@ -67,23 +67,23 @@
     <param oldName="Precipitable_water" newName="Precipitable_water_entire_atmosphere" varId="VAR_0-1-3_L200" />
     <param oldName="Pressure" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Sensible_heat_net_flux" newName="Sensible_heat_net_flux_surface_Mixed_intervals_Average" varId="VAR_0-0-11_L1_Imixed_S0" />
     <param oldName="Snow_depth" newName="Snow_depth_surface" varId="VAR_0-1-11_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_depth_below_surface_layer" newName="Temperature_depth_below_surface_layer" varId="VAR_0-0-0_L106_layer" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Total_cloud_cover" newName="Total_cloud_cover_entire_atmosphere_Mixed_intervals_Average" varId="VAR_0-6-1_L200_Imixed_S0" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_6_Hour_Accumulation" varId="VAR_0-1-8_L1_I6_Hour_S1" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="Upward_Long-Wave_Rad_Flux" newName="Upward_Long-Wave_Radp_Flux_atmosphere_top_Mixed_intervals_Average" varId="VAR_0-5-193_L8_Imixed_S0" />
     <param oldName="Upward_Long-Wave_Rad_Flux_surface" newName="Upward_Long-Wave_Radp_Flux_surface_Mixed_intervals_Average" varId="VAR_0-5-193_L1_Imixed_S0" />
     <param oldName="Upward_Short-Wave_Rad_Flux" newName="Upward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-193_L1_Imixed_S0" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Volumetric_Soil_Moisture_Content" newName="Volumetric_Soil_Moisture_Content_depth_below_surface_layer" varId="VAR_2-0-192_L106_layer" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface" varId="VAR_0-1-13_L1" />
   </dataset>
@@ -160,7 +160,7 @@
     <param oldName="Water_equivalent_of_accumulated_snow_depth_unweightedMean" newName="Water_equivalent_of_accumulated_snow_depth_surface_unweightedMean" varId="VAR_0-1-13_L1_D0" />
   </dataset>
   <dataset name="GFS_Global_0p5deg_20100913_0000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface_Mixed_intervals_Average" varId="VAR_0-19-1_L1_Imixed_S0" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_surface" varId="VAR_0-7-193_L1" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface_Mixed_intervals_Average" varId="VAR_0-1-193_L1_Imixed_S0" />
@@ -168,7 +168,7 @@
     <param oldName="Categorical_Rain" newName="Categorical_Rain_surface_Mixed_intervals_Average" varId="VAR_0-1-192_L1_Imixed_S0" />
     <param oldName="Categorical_Snow" newName="Categorical_Snow_surface_Mixed_intervals_Average" varId="VAR_0-1-195_L1_Imixed_S0" />
     <param oldName="Cloud_Work_Function" newName="Cloud_Work_Function_entire_atmosphere_Mixed_intervals_Average" varId="VAR_0-6-193_L200_Imixed_S0" />
-    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_pressure" varId="VAR_0-1-22_L100" />
+    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_isobaric" varId="VAR_0-1-22_L100" />
     <param oldName="Cloud_water" newName="Cloud_water_entire_atmosphere" varId="VAR_0-6-6_L200" />
     <param oldName="Convective_Precipitation_Rate" newName="Convective_Precipitation_Rate_surface_Mixed_intervals_Average" varId="VAR_0-1-196_L1_Imixed_S0" />
     <param oldName="Convective_available_potential_energy" newName="Convective_available_potential_energy_pressure_difference_layer" varId="VAR_0-7-6_L108_layer" />
@@ -179,8 +179,8 @@
     <param oldName="Downward_Long-Wave_Rad_Flux" newName="Downward_Long-Wave_Radp_Flux_surface_Mixed_intervals_Average" varId="VAR_0-5-192_L1_Imixed_S0" />
     <param oldName="Downward_Short-Wave_Rad_Flux" newName="Downward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-192_L1_Imixed_S0" />
     <param oldName="Field_Capacity" newName="Field_Capacity_surface" varId="VAR_2-3-203_L1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
-    <param oldName="Geopotential_height_anomaly" newName="Geopotential_height_anomaly_pressure" varId="VAR_0-3-9_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height_anomaly" newName="Geopotential_height_anomaly_isobaric" varId="VAR_0-3-9_L100" />
     <param oldName="Geopotential_height_highest_tropospheric_freezing" newName="Geopotential_height_highest_tropospheric_freezing" varId="VAR_0-3-5_L204" />
     <param oldName="Geopotential_height_maximum_wind" newName="Geopotential_height_maximum_wind" varId="VAR_0-3-5_L6" />
     <param oldName="Geopotential_height_potential_vorticity_surface" newName="Geopotential_height_potential_vorticity_surface" varId="VAR_0-3-5_L109" />
@@ -198,9 +198,9 @@
     <param oldName="Minimum_temperature" newName="Minimum_temperature_height_above_ground_Mixed_intervals_Interval" varId="VAR_0-0-5_L103_Imixed_S255" />
     <param oldName="Momentum_flux_u_component" newName="Momentum_flux_u-component_surface_Mixed_intervals_Average" varId="VAR_0-2-17_L1_Imixed_S0" />
     <param oldName="Momentum_flux_v_component" newName="Momentum_flux_v-component_surface_Mixed_intervals_Average" varId="VAR_0-2-18_L1_Imixed_S0" />
-    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_pressure" varId="VAR_0-3-193_L100" />
-    <param oldName="N5-Wave_Geopotential_Height_Anomaly" newName="5-Wave_Geopotential_Height_Anomaly_pressure" varId="VAR_0-3-197_L100" />
-    <param oldName="Ozone_Mixing_Ratio" newName="Ozone_Mixing_Ratio_pressure" varId="VAR_0-14-192_L100" />
+    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_isobaric" varId="VAR_0-3-193_L100" />
+    <param oldName="N5-Wave_Geopotential_Height_Anomaly" newName="5-Wave_Geopotential_Height_Anomaly_isobaric" varId="VAR_0-3-197_L100" />
+    <param oldName="Ozone_Mixing_Ratio" newName="Ozone_Mixing_Ratio_isobaric" varId="VAR_0-14-192_L100" />
     <param oldName="Planetary_Boundary_Layer_Height" newName="Planetary_Boundary_Layer_Height_surface" varId="VAR_0-3-196_L1" />
     <param oldName="Potential_Evaporation_Rate" newName="Potential_Evaporation_Rate_surface" varId="VAR_0-1-200_L1" />
     <param oldName="Potential_temperature" newName="Potential_temperature_sigma" varId="VAR_0-0-2_L104" />
@@ -219,7 +219,7 @@
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
     <param oldName="Pressure_surface" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_entire_atmosphere" newName="Relative_humidity_entire_atmosphere" varId="VAR_0-1-1_L200" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_highest_tropospheric_freezing" newName="Relative_humidity_highest_tropospheric_freezing" varId="VAR_0-1-1_L204" />
@@ -233,7 +233,7 @@
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
     <param oldName="Sunshine_Duration" newName="Sunshine_Duration_surface" varId="VAR_0-6-201_L1" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_surface" varId="VAR_0-7-192_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_altitude_above_msl" newName="Temperature_altitude_above_msl" varId="VAR_0-0-0_L102" />
     <param oldName="Temperature_depth_below_surface_layer" newName="Temperature_depth_below_surface_layer" varId="VAR_0-0-0_L106_layer" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
@@ -255,7 +255,7 @@
     <param oldName="Total_ozone" newName="Total_ozone_entire_atmosphere" varId="VAR_0-14-0_L200" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_altitude_above_msl" newName="u-component_of_wind_altitude_above_msl" varId="VAR_0-2-2_L102" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
@@ -268,7 +268,7 @@
     <param oldName="Upward_Short-Wave_Rad_Flux" newName="Upward_Short-Wave_Radiation_Flux_atmosphere_top_Mixed_intervals_Average" varId="VAR_0-4-193_L8_Imixed_S0" />
     <param oldName="Upward_Short-Wave_Rad_Flux_surface" newName="Upward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-193_L1_Imixed_S0" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_altitude_above_msl" newName="v-component_of_wind_altitude_above_msl" varId="VAR_0-2-3_L102" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
@@ -278,7 +278,7 @@
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_potential_vorticity_surface" varId="VAR_0-2-192_L109" />
     <param oldName="Vertical_speed_sheer_tropopause" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_sigma" newName="Vertical_velocity_pressure_sigma" varId="VAR_0-2-8_L104" />
     <param oldName="Volumetric_Soil_Moisture_Content" newName="Volumetric_Soil_Moisture_Content_depth_below_surface_layer" varId="VAR_2-0-192_L106_layer" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface" varId="VAR_0-1-13_L1" />
@@ -288,7 +288,7 @@
     <param oldName="Zonal_Flux_of_Gravity_Wave_Stress" newName="Zonal_Flux_of_Gravity_Wave_Stress_surface_Mixed_intervals_Average" varId="VAR_0-3-194_L1_Imixed_S0" />
   </dataset>
   <dataset name="GFS_Global_2p5deg_20100602_1200.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface_12_Hour_Average" varId="VAR_0-19-1_L1_I12_Hour_S0" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_surface" varId="VAR_0-7-193_L1" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface_12_Hour_Average" varId="VAR_0-1-193_L1_I12_Hour_S0" />
@@ -296,7 +296,7 @@
     <param oldName="Categorical_Rain" newName="Categorical_Rain_surface_12_Hour_Average" varId="VAR_0-1-192_L1_I12_Hour_S0" />
     <param oldName="Categorical_Snow" newName="Categorical_Snow_surface_12_Hour_Average" varId="VAR_0-1-195_L1_I12_Hour_S0" />
     <param oldName="Cloud_Work_Function" newName="Cloud_Work_Function_entire_atmosphere_12_Hour_Average" varId="VAR_0-6-193_L200_I12_Hour_S0" />
-    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_pressure" varId="VAR_0-1-22_L100" />
+    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_isobaric" varId="VAR_0-1-22_L100" />
     <param oldName="Cloud_water" newName="Cloud_water_entire_atmosphere" varId="VAR_0-6-6_L200" />
     <param oldName="Convective_Precipitation_Rate" newName="Convective_Precipitation_Rate_surface_12_Hour_Average" varId="VAR_0-1-196_L1_I12_Hour_S0" />
     <param oldName="Convective_available_potential_energy" newName="Convective_available_potential_energy_pressure_difference_layer" varId="VAR_0-7-6_L108_layer" />
@@ -307,8 +307,8 @@
     <param oldName="Downward_Long-Wave_Rad_Flux" newName="Downward_Long-Wave_Radp_Flux_surface_12_Hour_Average" varId="VAR_0-5-192_L1_I12_Hour_S0" />
     <param oldName="Downward_Short-Wave_Rad_Flux" newName="Downward_Short-Wave_Radiation_Flux_surface_12_Hour_Average" varId="VAR_0-4-192_L1_I12_Hour_S0" />
     <param oldName="Field_Capacity" newName="Field_Capacity_surface" varId="VAR_2-3-203_L1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
-    <param oldName="Geopotential_height_anomaly" newName="Geopotential_height_anomaly_pressure" varId="VAR_0-3-9_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height_anomaly" newName="Geopotential_height_anomaly_isobaric" varId="VAR_0-3-9_L100" />
     <param oldName="Geopotential_height_highest_tropospheric_freezing" newName="Geopotential_height_highest_tropospheric_freezing" varId="VAR_0-3-5_L204" />
     <param oldName="Geopotential_height_maximum_wind" newName="Geopotential_height_maximum_wind" varId="VAR_0-3-5_L6" />
     <param oldName="Geopotential_height_potential_vorticity_surface" newName="Geopotential_height_potential_vorticity_surface" varId="VAR_0-3-5_L109" />
@@ -326,9 +326,9 @@
     <param oldName="Minimum_temperature" newName="Minimum_temperature_height_above_ground_12_Hour_Interval" varId="VAR_0-0-5_L103_I12_Hour_S255" />
     <param oldName="Momentum_flux_u_component" newName="Momentum_flux_u-component_surface_12_Hour_Average" varId="VAR_0-2-17_L1_I12_Hour_S0" />
     <param oldName="Momentum_flux_v_component" newName="Momentum_flux_v-component_surface_12_Hour_Average" varId="VAR_0-2-18_L1_I12_Hour_S0" />
-    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_pressure" varId="VAR_0-3-193_L100" />
-    <param oldName="N5-Wave_Geopotential_Height_Anomaly" newName="5-Wave_Geopotential_Height_Anomaly_pressure" varId="VAR_0-3-197_L100" />
-    <param oldName="Ozone_Mixing_Ratio" newName="Ozone_Mixing_Ratio_pressure" varId="VAR_0-14-192_L100" />
+    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_isobaric" varId="VAR_0-3-193_L100" />
+    <param oldName="N5-Wave_Geopotential_Height_Anomaly" newName="5-Wave_Geopotential_Height_Anomaly_isobaric" varId="VAR_0-3-197_L100" />
+    <param oldName="Ozone_Mixing_Ratio" newName="Ozone_Mixing_Ratio_isobaric" varId="VAR_0-14-192_L100" />
     <param oldName="Planetary_Boundary_Layer_Height" newName="Planetary_Boundary_Layer_Height_surface" varId="VAR_0-3-196_L1" />
     <param oldName="Potential_Evaporation_Rate" newName="Potential_Evaporation_Rate_surface" varId="VAR_0-1-200_L1" />
     <param oldName="Potential_temperature" newName="Potential_temperature_sigma" varId="VAR_0-0-2_L104" />
@@ -347,7 +347,7 @@
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
     <param oldName="Pressure_surface" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_entire_atmosphere" newName="Relative_humidity_entire_atmosphere" varId="VAR_0-1-1_L200" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_highest_tropospheric_freezing" newName="Relative_humidity_highest_tropospheric_freezing" varId="VAR_0-1-1_L204" />
@@ -361,7 +361,7 @@
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
     <param oldName="Sunshine_Duration" newName="Sunshine_Duration_surface" varId="VAR_0-6-201_L1" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_surface" varId="VAR_0-7-192_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_altitude_above_msl" newName="Temperature_altitude_above_msl" varId="VAR_0-0-0_L102" />
     <param oldName="Temperature_depth_below_surface_layer" newName="Temperature_depth_below_surface_layer" varId="VAR_0-0-0_L106_layer" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
@@ -383,7 +383,7 @@
     <param oldName="Total_ozone" newName="Total_ozone_entire_atmosphere" varId="VAR_0-14-0_L200" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_12_Hour_Accumulation" varId="VAR_0-1-8_L1_I12_Hour_S1" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_altitude_above_msl" newName="u-component_of_wind_altitude_above_msl" varId="VAR_0-2-2_L102" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
@@ -396,7 +396,7 @@
     <param oldName="Upward_Short-Wave_Rad_Flux" newName="Upward_Short-Wave_Radiation_Flux_atmosphere_top_12_Hour_Average" varId="VAR_0-4-193_L8_I12_Hour_S0" />
     <param oldName="Upward_Short-Wave_Rad_Flux_surface" newName="Upward_Short-Wave_Radiation_Flux_surface_12_Hour_Average" varId="VAR_0-4-193_L1_I12_Hour_S0" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_altitude_above_msl" newName="v-component_of_wind_altitude_above_msl" varId="VAR_0-2-3_L102" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
@@ -406,7 +406,7 @@
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_potential_vorticity_surface" varId="VAR_0-2-192_L109" />
     <param oldName="Vertical_speed_sheer_tropopause" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_sigma" newName="Vertical_velocity_pressure_sigma" varId="VAR_0-2-8_L104" />
     <param oldName="Volumetric_Soil_Moisture_Content" newName="Volumetric_Soil_Moisture_Content_depth_below_surface_layer" varId="VAR_2-0-192_L106_layer" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface" varId="VAR_0-1-13_L1" />
@@ -415,7 +415,7 @@
     <param oldName="Zonal_Flux_of_Gravity_Wave_Stress" newName="Zonal_Flux_of_Gravity_Wave_Stress_surface_12_Hour_Average" varId="VAR_0-3-194_L1_I12_Hour_S0" />
   </dataset>
   <dataset name="GFS_Global_onedeg_20100913_0000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface_Mixed_intervals_Average" varId="VAR_0-19-1_L1_Imixed_S0" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_surface" varId="VAR_0-7-193_L1" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface_Mixed_intervals_Average" varId="VAR_0-1-193_L1_Imixed_S0" />
@@ -423,7 +423,7 @@
     <param oldName="Categorical_Rain" newName="Categorical_Rain_surface_Mixed_intervals_Average" varId="VAR_0-1-192_L1_Imixed_S0" />
     <param oldName="Categorical_Snow" newName="Categorical_Snow_surface_Mixed_intervals_Average" varId="VAR_0-1-195_L1_Imixed_S0" />
     <param oldName="Cloud_Work_Function" newName="Cloud_Work_Function_entire_atmosphere_Mixed_intervals_Average" varId="VAR_0-6-193_L200_Imixed_S0" />
-    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_pressure" varId="VAR_0-1-22_L100" />
+    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_isobaric" varId="VAR_0-1-22_L100" />
     <param oldName="Cloud_water" newName="Cloud_water_entire_atmosphere" varId="VAR_0-6-6_L200" />
     <param oldName="Convective_Precipitation_Rate" newName="Convective_Precipitation_Rate_surface_Mixed_intervals_Average" varId="VAR_0-1-196_L1_Imixed_S0" />
     <param oldName="Convective_available_potential_energy" newName="Convective_available_potential_energy_pressure_difference_layer" varId="VAR_0-7-6_L108_layer" />
@@ -434,8 +434,8 @@
     <param oldName="Downward_Long-Wave_Rad_Flux" newName="Downward_Long-Wave_Radp_Flux_surface_Mixed_intervals_Average" varId="VAR_0-5-192_L1_Imixed_S0" />
     <param oldName="Downward_Short-Wave_Rad_Flux" newName="Downward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-192_L1_Imixed_S0" />
     <param oldName="Field_Capacity" newName="Field_Capacity_surface" varId="VAR_2-3-203_L1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
-    <param oldName="Geopotential_height_anomaly" newName="Geopotential_height_anomaly_pressure" varId="VAR_0-3-9_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height_anomaly" newName="Geopotential_height_anomaly_isobaric" varId="VAR_0-3-9_L100" />
     <param oldName="Geopotential_height_highest_tropospheric_freezing" newName="Geopotential_height_highest_tropospheric_freezing" varId="VAR_0-3-5_L204" />
     <param oldName="Geopotential_height_maximum_wind" newName="Geopotential_height_maximum_wind" varId="VAR_0-3-5_L6" />
     <param oldName="Geopotential_height_potential_vorticity_surface" newName="Geopotential_height_potential_vorticity_surface" varId="VAR_0-3-5_L109" />
@@ -453,9 +453,9 @@
     <param oldName="Minimum_temperature" newName="Minimum_temperature_height_above_ground_Mixed_intervals_Interval" varId="VAR_0-0-5_L103_Imixed_S255" />
     <param oldName="Momentum_flux_u_component" newName="Momentum_flux_u-component_surface_Mixed_intervals_Average" varId="VAR_0-2-17_L1_Imixed_S0" />
     <param oldName="Momentum_flux_v_component" newName="Momentum_flux_v-component_surface_Mixed_intervals_Average" varId="VAR_0-2-18_L1_Imixed_S0" />
-    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_pressure" varId="VAR_0-3-193_L100" />
-    <param oldName="N5-Wave_Geopotential_Height_Anomaly" newName="5-Wave_Geopotential_Height_Anomaly_pressure" varId="VAR_0-3-197_L100" />
-    <param oldName="Ozone_Mixing_Ratio" newName="Ozone_Mixing_Ratio_pressure" varId="VAR_0-14-192_L100" />
+    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_isobaric" varId="VAR_0-3-193_L100" />
+    <param oldName="N5-Wave_Geopotential_Height_Anomaly" newName="5-Wave_Geopotential_Height_Anomaly_isobaric" varId="VAR_0-3-197_L100" />
+    <param oldName="Ozone_Mixing_Ratio" newName="Ozone_Mixing_Ratio_isobaric" varId="VAR_0-14-192_L100" />
     <param oldName="Planetary_Boundary_Layer_Height" newName="Planetary_Boundary_Layer_Height_surface" varId="VAR_0-3-196_L1" />
     <param oldName="Potential_Evaporation_Rate" newName="Potential_Evaporation_Rate_surface" varId="VAR_0-1-200_L1" />
     <param oldName="Potential_temperature" newName="Potential_temperature_sigma" varId="VAR_0-0-2_L104" />
@@ -474,7 +474,7 @@
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
     <param oldName="Pressure_surface" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_entire_atmosphere" newName="Relative_humidity_entire_atmosphere" varId="VAR_0-1-1_L200" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_highest_tropospheric_freezing" newName="Relative_humidity_highest_tropospheric_freezing" varId="VAR_0-1-1_L204" />
@@ -488,7 +488,7 @@
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
     <param oldName="Sunshine_Duration" newName="Sunshine_Duration_surface" varId="VAR_0-6-201_L1" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_surface" varId="VAR_0-7-192_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_altitude_above_msl" newName="Temperature_altitude_above_msl" varId="VAR_0-0-0_L102" />
     <param oldName="Temperature_depth_below_surface_layer" newName="Temperature_depth_below_surface_layer" varId="VAR_0-0-0_L106_layer" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
@@ -510,7 +510,7 @@
     <param oldName="Total_ozone" newName="Total_ozone_entire_atmosphere" varId="VAR_0-14-0_L200" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_altitude_above_msl" newName="u-component_of_wind_altitude_above_msl" varId="VAR_0-2-2_L102" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
@@ -523,7 +523,7 @@
     <param oldName="Upward_Short-Wave_Rad_Flux" newName="Upward_Short-Wave_Radiation_Flux_atmosphere_top_Mixed_intervals_Average" varId="VAR_0-4-193_L8_Imixed_S0" />
     <param oldName="Upward_Short-Wave_Rad_Flux_surface" newName="Upward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-193_L1_Imixed_S0" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_altitude_above_msl" newName="v-component_of_wind_altitude_above_msl" varId="VAR_0-2-3_L102" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
@@ -533,7 +533,7 @@
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_potential_vorticity_surface" varId="VAR_0-2-192_L109" />
     <param oldName="Vertical_speed_sheer_tropopause" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_sigma" newName="Vertical_velocity_pressure_sigma" varId="VAR_0-2-8_L104" />
     <param oldName="Volumetric_Soil_Moisture_Content" newName="Volumetric_Soil_Moisture_Content_depth_below_surface_layer" varId="VAR_2-0-192_L106_layer" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface" varId="VAR_0-1-13_L1" />
@@ -543,7 +543,7 @@
     <param oldName="Zonal_Flux_of_Gravity_Wave_Stress" newName="Zonal_Flux_of_Gravity_Wave_Stress_surface_Mixed_intervals_Average" varId="VAR_0-3-194_L1_Imixed_S0" />
   </dataset>
   <dataset name="NAM_Alaska_11km_20100519_0000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface" varId="VAR_0-1-193_L1" />
     <param oldName="Categorical_Ice_Pellets" newName="Categorical_Ice_Pellets_surface" varId="VAR_0-1-194_L1" />
@@ -557,7 +557,7 @@
     <param oldName="Derived_radar_reflectivity" newName="Reflectivity_height_above_ground" varId="VAR_0-16-195_L103" />
     <param oldName="Derived_radar_reflectivity_hybrid" newName="Reflectivity_hybrid" varId="VAR_0-16-195_L105" />
     <param oldName="Dew_point_temperature" newName="Dew-point_temperature_height_above_ground" varId="VAR_0-0-6_L103" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_zeroDegC_isotherm" newName="Geopotential_height_zeroDegC_isotherm" varId="VAR_0-3-5_L4" />
     <param oldName="MSLP_Eta_Reduction" newName="MSLP_Eta_model_reduction_msl" varId="VAR_0-3-192_L101" />
     <param oldName="MaximumComposite_radar_reflectivity" newName="Composite_reflectivity_entire_atmosphere" varId="VAR_0-16-196_L200" />
@@ -572,7 +572,7 @@
     <param oldName="Probability_of_0p01_inch_Precipitation" newName="Probability_of_0p01_inch_of_precipitation_POP_surface_Mixed_intervals_Accumulation" varId="VAR_1-1-2_L1_Imixed_S1" />
     <param oldName="Probability_of_freezing_Precipitation" newName="Probability_of_Freezing_Precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_1-1-192_L1_Imixed_S1" />
     <param oldName="Probability_of_frozen_Precipitation" newName="Probability_of_Frozen_Precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_1-1-193_L1_Imixed_S1" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_sigma_layer" newName="Relative_humidity_sigma_layer" varId="VAR_0-1-1_L104_layer" />
@@ -580,31 +580,31 @@
     <param oldName="Snow_depth" newName="Snow_depth_surface" varId="VAR_0-1-11_L1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_pressure_difference_layer" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_0-0-0_L7" />
     <param oldName="Thunderstorm_probability" newName="Thunderstorm_probability_surface_Mixed_intervals_Accumulation" varId="VAR_0-19-2_L1_Imixed_S1" />
     <param oldName="Total_cloud_cover" newName="Total_cloud_cover_entire_atmosphere" varId="VAR_0-6-1_L200" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_3_Hour_Accumulation" varId="VAR_0-1-8_L1_I3_Hour_S1" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
     <param oldName="U-component_of_wind_pressure_difference_layer" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_0-2-2_L7" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
     <param oldName="V-component_of_wind_pressure_difference_layer" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface" varId="VAR_0-1-13_L1" />
     <param oldName="Wind_direction_from_which_blowing" newName="Wind_direction_from_which_blowing_degree_true_height_above_ground" varId="VAR_0-2-0_L103" />
     <param oldName="Wind_speed" newName="Wind_speed_height_above_ground" varId="VAR_0-2-1_L103" />
   </dataset>
   <dataset name="NAM_CONUS_12km_conduit_20100914_0000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface" varId="VAR_0-19-1_L1" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
@@ -712,7 +712,7 @@
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_hybrid" newName="Temperature_hybrid" varId="VAR_0-0-0_L105" />
     <param oldName="Temperature_parameter_in_canopy_conductance" newName="Temperature_parameter_in_canopy_conductance_surface" varId="VAR_2-0-203_L1" />
-    <param oldName="Temperature_pressure" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature_pressure" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_sigma" newName="Temperature_sigma" varId="VAR_0-0-0_L104" />
     <param oldName="Temperature_surface" newName="Temperature_surface" varId="VAR_0-0-0_L1" />
     <param oldName="Total_Column-Integrated_Cloud_Ice" newName="Total_Column-Integrated_Cloud_Ice_entire_atmosphere" varId="VAR_0-6-197_L200" />
@@ -741,7 +741,7 @@
     <param oldName="V-component_of_wind_planetary_boundary" newName="v-component_of_wind_planetary_boundary" varId="VAR_0-2-3_L220" />
     <param oldName="Vegetation" newName="Vegetation_surface" varId="VAR_2-0-4_L1" />
     <param oldName="Vegetation_Type" newName="Vegetation_Type_surface" varId="VAR_2-0-198_L1" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_hybrid" newName="Vertical_velocity_pressure_hybrid" varId="VAR_0-2-8_L105" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Volumetric_Soil_Moisture_Content" newName="Volumetric_Soil_Moisture_Content_depth_below_surface_layer" varId="VAR_2-0-192_L106_layer" />
@@ -753,7 +753,7 @@
     <param oldName="mixed_layer_depth" newName="Mixed_layer_depth_surface" varId="VAR_0-19-3_L1" />
   </dataset>
   <dataset name="NAM_CONUS_12km_conduit_20100915_1800.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface" varId="VAR_0-19-1_L1" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
@@ -861,7 +861,7 @@
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_hybrid" newName="Temperature_hybrid" varId="VAR_0-0-0_L105" />
     <param oldName="Temperature_parameter_in_canopy_conductance" newName="Temperature_parameter_in_canopy_conductance_surface" varId="VAR_2-0-203_L1" />
-    <param oldName="Temperature_pressure" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature_pressure" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_sigma" newName="Temperature_sigma" varId="VAR_0-0-0_L104" />
     <param oldName="Temperature_surface" newName="Temperature_surface" varId="VAR_0-0-0_L1" />
     <param oldName="Total_Column-Integrated_Cloud_Ice" newName="Total_Column-Integrated_Cloud_Ice_entire_atmosphere" varId="VAR_0-6-197_L200" />
@@ -890,7 +890,7 @@
     <param oldName="V-component_of_wind_planetary_boundary" newName="v-component_of_wind_planetary_boundary" varId="VAR_0-2-3_L220" />
     <param oldName="Vegetation" newName="Vegetation_surface" varId="VAR_2-0-4_L1" />
     <param oldName="Vegetation_Type" newName="Vegetation_Type_surface" varId="VAR_2-0-198_L1" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_hybrid" newName="Vertical_velocity_pressure_hybrid" varId="VAR_0-2-8_L105" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Volumetric_Soil_Moisture_Content" newName="Volumetric_Soil_Moisture_Content_depth_below_surface_layer" varId="VAR_2-0-192_L106_layer" />
@@ -902,7 +902,7 @@
     <param oldName="mixed_layer_depth" newName="Mixed_layer_depth_surface" varId="VAR_0-19-3_L1" />
   </dataset>
   <dataset name="NAM_CONUS_20km_selectsurface_20100913_0000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface" varId="VAR_0-1-193_L1" />
     <param oldName="Categorical_Ice_Pellets" newName="Categorical_Ice_Pellets_surface" varId="VAR_0-1-194_L1" />
@@ -958,7 +958,7 @@
     <param oldName="Wind_speed_gust" newName="Wind_speed_gust_surface" varId="VAR_0-2-22_L1" />
   </dataset>
   <dataset name="NAM_CONUS_20km_surface_20100913_0000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface" varId="VAR_0-1-193_L1" />
     <param oldName="Categorical_Ice_Pellets" newName="Categorical_Ice_Pellets_surface" varId="VAR_0-1-194_L1" />
@@ -1014,7 +1014,7 @@
     <param oldName="Wind_speed_gust" newName="Wind_speed_gust_surface" varId="VAR_0-2-22_L1" />
   </dataset>
   <dataset name="NAM_Firewxnest_20120106_0000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface" varId="VAR_0-19-1_L1" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
@@ -1026,9 +1026,9 @@
     <param oldName="Categorical_Rain" newName="Categorical_Rain_surface" varId="VAR_0-1-192_L1" />
     <param oldName="Categorical_Snow" newName="Categorical_Snow_surface" varId="VAR_0-1-195_L1" />
     <param oldName="Clear_Sky_Downward_Solar_Flux" newName="Clear_Sky_Downward_Solar_Flux_surface" varId="VAR_0-4-196_L1" />
-    <param oldName="Cloud_Ice" newName="Cloud_ice_pressure" varId="VAR_0-6-0_L100" />
+    <param oldName="Cloud_Ice" newName="Cloud_ice_isobaric" varId="VAR_0-6-0_L100" />
     <param oldName="Cloud_Ice_hybrid" newName="Cloud_ice_hybrid" varId="VAR_0-6-0_L105" />
-    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_pressure" varId="VAR_0-1-22_L100" />
+    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_isobaric" varId="VAR_0-1-22_L100" />
     <param oldName="Cloud_mixing_ratio_hybrid" newName="Cloud_mixing_ratio_hybrid" varId="VAR_0-1-22_L105" />
     <param oldName="Convective_Cloud_Efficiency" newName="Convective_Cloud_Efficiency_entire_atmosphere" varId="VAR_0-6-194_L200" />
     <param oldName="Convective_Precipitation_Rate" newName="Convective_Precipitation_Rate_surface" varId="VAR_0-1-196_L1" />
@@ -1048,7 +1048,7 @@
     <param oldName="Derived_radar_reflectivity_backscatter_from_rain" newName="Equivalent_radar_reflectivity_factor_for_rain_height_above_ground" varId="VAR_0-16-192_L103" />
     <param oldName="Derived_radar_reflectivity_backscatter_from_rain_entire_atmosphere" newName="Equivalent_radar_reflectivity_factor_for_rain_entire_atmosphere" varId="VAR_0-16-192_L200" />
     <param oldName="Derived_radar_reflectivity_hybrid" newName="Reflectivity_hybrid" varId="VAR_0-16-195_L105" />
-    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_pressure" varId="VAR_0-0-6_L100" />
+    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_isobaric" varId="VAR_0-0-6_L100" />
     <param oldName="Dew_point_temperature_height_above_ground" newName="Dew-point_temperature_height_above_ground" varId="VAR_0-0-6_L103" />
     <param oldName="Dew_point_temperature_hybrid" newName="Dew-point_temperature_hybrid" varId="VAR_0-0-6_L105" />
     <param oldName="Dew_point_temperature_pressure_difference_layer" newName="Dew-point_temperature_pressure_difference_layer" varId="VAR_0-0-6_L108_layer" />
@@ -1062,7 +1062,7 @@
     <param oldName="Evaporation" newName="Evaporation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-6_L1_Imixed_S1" />
     <param oldName="Exchange_Coefficient" newName="Exchange_Coefficient_surface" varId="VAR_2-0-195_L1" />
     <param oldName="Frictional_Velocity" newName="Frictional_Velocity_surface" varId="VAR_0-2-197_L1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_adiabatic_condensation_lifted" newName="Geopotential_height_adiabatic_condensation_lifted" varId="VAR_0-3-5_L5" />
     <param oldName="Geopotential_height_cloud_base" newName="Geopotential_height_cloud_base" varId="VAR_0-3-5_L2" />
     <param oldName="Geopotential_height_cloud_ceiling" newName="Geopotential_height_cloud_ceiling" varId="VAR_0-3-5_L215" />
@@ -1080,7 +1080,7 @@
     <param oldName="Ground_Heat_Flux" newName="Ground_Heat_Flux_surface" varId="VAR_2-0-193_L1" />
     <param oldName="Ground_Heat_Flux_Average" newName="Ground_Heat_Flux_surface_Mixed_intervals_Average" varId="VAR_2-0-193_L1_Imixed_S0" />
     <param oldName="High_cloud_cover" newName="High_cloud_cover_high_cloud" varId="VAR_0-6-5_L234" />
-    <param oldName="Horizontal_Moisture_Divergence" newName="Horizontal_Moisture_Divergence_pressure" varId="VAR_0-1-197_L100" />
+    <param oldName="Horizontal_Moisture_Divergence" newName="Horizontal_Moisture_Divergence_isobaric" varId="VAR_0-1-197_L100" />
     <param oldName="Horizontal_Moisture_Divergence_entire_atmosphere" newName="Horizontal_Moisture_Divergence_entire_atmosphere" varId="VAR_0-1-197_L200" />
     <param oldName="Horizontal_Moisture_Divergence_pressure_difference_layer" newName="Horizontal_Moisture_Divergence_pressure_difference_layer" varId="VAR_0-1-197_L108_layer" />
     <param oldName="Humidity_parameter_in_canopy_conductance" newName="Humidity_parameter_in_canopy_conductance_surface" varId="VAR_2-0-204_L1" />
@@ -1144,14 +1144,14 @@
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
     <param oldName="Probability_of_frozen_Precipitation" newName="Probability_of_Frozen_Precipitation_surface" varId="VAR_1-1-193_L1" />
     <param oldName="Radar_Echo_Top_18p3_DBZ" newName="Echo_Top_entire_atmosphere" varId="VAR_0-16-197_L200" />
-    <param oldName="Rain_mixing_ratio" newName="Rain_mixing_ratio_pressure" varId="VAR_0-1-24_L100" />
+    <param oldName="Rain_mixing_ratio" newName="Rain_mixing_ratio_isobaric" varId="VAR_0-1-24_L100" />
     <param oldName="Rain_mixing_ratio_hybrid" newName="Rain_mixing_ratio_hybrid" varId="VAR_0-1-24_L105" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_hybrid" newName="Relative_humidity_hybrid" varId="VAR_0-1-1_L105" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_zeroDegC_isotherm" newName="Relative_humidity_zeroDegC_isotherm" varId="VAR_0-1-1_L4" />
-    <param oldName="Rime_Factor" newName="Rime_Factor_pressure" varId="VAR_0-1-203_L100" />
+    <param oldName="Rime_Factor" newName="Rime_Factor_isobaric" varId="VAR_0-1-203_L100" />
     <param oldName="Rime_Factor_hybrid" newName="Rime_Factor_hybrid" varId="VAR_0-1-203_L105" />
     <param oldName="Sensible_heat_net_flux" newName="Sensible_heat_net_flux_surface" varId="VAR_0-0-11_L1" />
     <param oldName="Sensible_heat_net_flux_Average" newName="Sensible_heat_net_flux_surface_Mixed_intervals_Average" varId="VAR_0-0-11_L1_Imixed_S0" />
@@ -1160,7 +1160,7 @@
     <param oldName="Snow_Phase_Change_Heat_Flux" newName="Snow_Phase_Change_Heat_Flux_surface_Mixed_intervals_Average" varId="VAR_0-0-192_L1_Imixed_S0" />
     <param oldName="Snow_depth" newName="Snow_depth_surface" varId="VAR_0-1-11_L1" />
     <param oldName="Snow_melt" newName="Snow_melt_surface_1_Hour_Accumulation" varId="VAR_0-1-16_L1_I1_Hour_S1" />
-    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_pressure" varId="VAR_0-1-25_L100" />
+    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_isobaric" varId="VAR_0-1-25_L100" />
     <param oldName="Snow_mixing_ratio_hybrid" newName="Snow_mixing_ratio_hybrid" varId="VAR_0-1-25_L105" />
     <param oldName="Soil_Porosity" newName="Soil_Porosity_surface" varId="VAR_2-3-197_L1" />
     <param oldName="Soil_moisture_content" newName="Soil_moisture_content_depth_below_surface_layer" varId="VAR_2-0-3_L106_layer" />
@@ -1170,17 +1170,17 @@
     <param oldName="Soil_type_as_in_Zobler" newName="Soil_type_surface" varId="VAR_2-3-0_L1" />
     <param oldName="Solar_Radiative_Heating_Rate" newName="Solar_Radiative_Heating_Rate_entire_atmosphere" varId="VAR_0-4-197_L200" />
     <param oldName="Solar_parameter_in_canopy_conductance" newName="Solar_parameter_in_canopy_conductance_surface" varId="VAR_2-0-202_L1" />
-    <param oldName="Specific_humidity" newName="Specific_humidity_pressure" varId="VAR_0-1-0_L100" />
+    <param oldName="Specific_humidity" newName="Specific_humidity_isobaric" varId="VAR_0-1-0_L100" />
     <param oldName="Specific_humidity_height_above_ground" newName="Specific_humidity_height_above_ground" varId="VAR_0-1-0_L103" />
     <param oldName="Specific_humidity_hybrid" newName="Specific_humidity_hybrid" varId="VAR_0-1-0_L105" />
     <param oldName="Specific_humidity_pressure_difference_layer" newName="Specific_humidity_pressure_difference_layer" varId="VAR_0-1-0_L108_layer" />
     <param oldName="Specific_humidity_surface" newName="Specific_humidity_surface" varId="VAR_0-1-0_L1" />
     <param oldName="Storm_Surface_Runoff" newName="Storm_Surface_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-193_L1_Imixed_S1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
-    <param oldName="Stream_function" newName="Stream_function_pressure" varId="VAR_0-2-4_L100" />
+    <param oldName="Stream_function" newName="Stream_function_isobaric" varId="VAR_0-2-4_L100" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
     <param oldName="Surface_roughness" newName="Surface_roughness_surface" varId="VAR_2-0-1_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_altitude_above_msl" newName="Temperature_altitude_above_msl" varId="VAR_0-0-0_L102" />
     <param oldName="Temperature_cloud_tops" newName="Temperature_cloud_tops" varId="VAR_0-0-0_L3" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
@@ -1203,10 +1203,10 @@
     <param oldName="Total_column-integrated_supercooled_liquid_water" newName="Total_column-integrated_supercooled_liquid_water_entire_atmosphere" varId="VAR_0-1-209_L200" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
     <param oldName="Transpiration_Stress-onset_soil_moisture" newName="Transpiration_Stress-onset_soil_moisture_surface" varId="VAR_2-3-195_L1" />
-    <param oldName="Turbulent_kinetic_energy" newName="Turbulent_kinetic_energy_pressure" varId="VAR_0-19-11_L100" />
+    <param oldName="Turbulent_kinetic_energy" newName="Turbulent_kinetic_energy_isobaric" varId="VAR_0-19-11_L100" />
     <param oldName="Turbulent_kinetic_energy_hybrid" newName="Turbulent_kinetic_energy_hybrid" varId="VAR_0-19-11_L105" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_altitude_above_msl" newName="u-component_of_wind_altitude_above_msl" varId="VAR_0-2-2_L102" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_hybrid" newName="u-component_of_wind_hybrid" varId="VAR_0-2-2_L105" />
@@ -1231,7 +1231,7 @@
     <param oldName="Upward_Short-Wave_Rad_Flux_surface" newName="Upward_Short-Wave_Radiation_Flux_surface" varId="VAR_0-4-193_L1" />
     <param oldName="Upward_Short-Wave_Rad_Flux_surface_Average" newName="Upward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-193_L1_Imixed_S0" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_altitude_above_msl" newName="v-component_of_wind_altitude_above_msl" varId="VAR_0-2-3_L102" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_hybrid" newName="v-component_of_wind_hybrid" varId="VAR_0-2-3_L105" />
@@ -1242,9 +1242,9 @@
     <param oldName="Vegetation" newName="Vegetation_surface" varId="VAR_2-0-4_L1" />
     <param oldName="Vegetation_Type" newName="Vegetation_Type_surface" varId="VAR_2-0-198_L1" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_geometric" newName="Vertical_velocity_geometric_pressure" varId="VAR_0-2-9_L100" />
+    <param oldName="Vertical_velocity_geometric" newName="Vertical_velocity_geometric_isobaric" varId="VAR_0-2-9_L100" />
     <param oldName="Vertical_velocity_geometric_hybrid" newName="Vertical_velocity_geometric_hybrid" varId="VAR_0-2-9_L105" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_hybrid" newName="Vertical_velocity_pressure_hybrid" varId="VAR_0-2-8_L105" />
     <param oldName="Vertical_velocity_pressure_pressure_difference_layer" newName="Vertical_velocity_pressure_pressure_difference_layer" varId="VAR_0-2-8_L108_layer" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
@@ -1256,7 +1256,7 @@
     <param oldName="Wind_speed_gust" newName="Wind_speed_gust_surface" varId="VAR_0-2-22_L1" />
   </dataset>
   <dataset name="NAM_Firewxnest_20120201_0000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface" varId="VAR_0-19-1_L1" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
@@ -1268,9 +1268,9 @@
     <param oldName="Categorical_Rain" newName="Categorical_Rain_surface" varId="VAR_0-1-192_L1" />
     <param oldName="Categorical_Snow" newName="Categorical_Snow_surface" varId="VAR_0-1-195_L1" />
     <param oldName="Clear_Sky_Downward_Solar_Flux" newName="Clear_Sky_Downward_Solar_Flux_surface" varId="VAR_0-4-196_L1" />
-    <param oldName="Cloud_Ice" newName="Cloud_ice_pressure" varId="VAR_0-6-0_L100" />
+    <param oldName="Cloud_Ice" newName="Cloud_ice_isobaric" varId="VAR_0-6-0_L100" />
     <param oldName="Cloud_Ice_hybrid" newName="Cloud_ice_hybrid" varId="VAR_0-6-0_L105" />
-    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_pressure" varId="VAR_0-1-22_L100" />
+    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_isobaric" varId="VAR_0-1-22_L100" />
     <param oldName="Cloud_mixing_ratio_hybrid" newName="Cloud_mixing_ratio_hybrid" varId="VAR_0-1-22_L105" />
     <param oldName="Convective_Cloud_Efficiency" newName="Convective_Cloud_Efficiency_entire_atmosphere" varId="VAR_0-6-194_L200" />
     <param oldName="Convective_Precipitation_Rate" newName="Convective_Precipitation_Rate_surface" varId="VAR_0-1-196_L1" />
@@ -1290,7 +1290,7 @@
     <param oldName="Derived_radar_reflectivity_backscatter_from_rain" newName="Equivalent_radar_reflectivity_factor_for_rain_height_above_ground" varId="VAR_0-16-192_L103" />
     <param oldName="Derived_radar_reflectivity_backscatter_from_rain_entire_atmosphere" newName="Equivalent_radar_reflectivity_factor_for_rain_entire_atmosphere" varId="VAR_0-16-192_L200" />
     <param oldName="Derived_radar_reflectivity_hybrid" newName="Reflectivity_hybrid" varId="VAR_0-16-195_L105" />
-    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_pressure" varId="VAR_0-0-6_L100" />
+    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_isobaric" varId="VAR_0-0-6_L100" />
     <param oldName="Dew_point_temperature_height_above_ground" newName="Dew-point_temperature_height_above_ground" varId="VAR_0-0-6_L103" />
     <param oldName="Dew_point_temperature_hybrid" newName="Dew-point_temperature_hybrid" varId="VAR_0-0-6_L105" />
     <param oldName="Dew_point_temperature_pressure_difference_layer" newName="Dew-point_temperature_pressure_difference_layer" varId="VAR_0-0-6_L108_layer" />
@@ -1304,7 +1304,7 @@
     <param oldName="Evaporation" newName="Evaporation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-6_L1_Imixed_S1" />
     <param oldName="Exchange_Coefficient" newName="Exchange_Coefficient_surface" varId="VAR_2-0-195_L1" />
     <param oldName="Frictional_Velocity" newName="Frictional_Velocity_surface" varId="VAR_0-2-197_L1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_adiabatic_condensation_lifted" newName="Geopotential_height_adiabatic_condensation_lifted" varId="VAR_0-3-5_L5" />
     <param oldName="Geopotential_height_cloud_base" newName="Geopotential_height_cloud_base" varId="VAR_0-3-5_L2" />
     <param oldName="Geopotential_height_cloud_ceiling" newName="Geopotential_height_cloud_ceiling" varId="VAR_0-3-5_L215" />
@@ -1322,7 +1322,7 @@
     <param oldName="Ground_Heat_Flux" newName="Ground_Heat_Flux_surface" varId="VAR_2-0-193_L1" />
     <param oldName="Ground_Heat_Flux_Average" newName="Ground_Heat_Flux_surface_Mixed_intervals_Average" varId="VAR_2-0-193_L1_Imixed_S0" />
     <param oldName="High_cloud_cover" newName="High_cloud_cover_high_cloud" varId="VAR_0-6-5_L234" />
-    <param oldName="Horizontal_Moisture_Divergence" newName="Horizontal_Moisture_Divergence_pressure" varId="VAR_0-1-197_L100" />
+    <param oldName="Horizontal_Moisture_Divergence" newName="Horizontal_Moisture_Divergence_isobaric" varId="VAR_0-1-197_L100" />
     <param oldName="Horizontal_Moisture_Divergence_entire_atmosphere" newName="Horizontal_Moisture_Divergence_entire_atmosphere" varId="VAR_0-1-197_L200" />
     <param oldName="Horizontal_Moisture_Divergence_pressure_difference_layer" newName="Horizontal_Moisture_Divergence_pressure_difference_layer" varId="VAR_0-1-197_L108_layer" />
     <param oldName="Humidity_parameter_in_canopy_conductance" newName="Humidity_parameter_in_canopy_conductance_surface" varId="VAR_2-0-204_L1" />
@@ -1386,14 +1386,14 @@
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
     <param oldName="Probability_of_frozen_Precipitation" newName="Probability_of_Frozen_Precipitation_surface" varId="VAR_1-1-193_L1" />
     <param oldName="Radar_Echo_Top_18p3_DBZ" newName="Echo_Top_entire_atmosphere" varId="VAR_0-16-197_L200" />
-    <param oldName="Rain_mixing_ratio" newName="Rain_mixing_ratio_pressure" varId="VAR_0-1-24_L100" />
+    <param oldName="Rain_mixing_ratio" newName="Rain_mixing_ratio_isobaric" varId="VAR_0-1-24_L100" />
     <param oldName="Rain_mixing_ratio_hybrid" newName="Rain_mixing_ratio_hybrid" varId="VAR_0-1-24_L105" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_hybrid" newName="Relative_humidity_hybrid" varId="VAR_0-1-1_L105" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_zeroDegC_isotherm" newName="Relative_humidity_zeroDegC_isotherm" varId="VAR_0-1-1_L4" />
-    <param oldName="Rime_Factor" newName="Rime_Factor_pressure" varId="VAR_0-1-203_L100" />
+    <param oldName="Rime_Factor" newName="Rime_Factor_isobaric" varId="VAR_0-1-203_L100" />
     <param oldName="Rime_Factor_hybrid" newName="Rime_Factor_hybrid" varId="VAR_0-1-203_L105" />
     <param oldName="Sensible_heat_net_flux" newName="Sensible_heat_net_flux_surface" varId="VAR_0-0-11_L1" />
     <param oldName="Sensible_heat_net_flux_Average" newName="Sensible_heat_net_flux_surface_Mixed_intervals_Average" varId="VAR_0-0-11_L1_Imixed_S0" />
@@ -1402,7 +1402,7 @@
     <param oldName="Snow_Phase_Change_Heat_Flux" newName="Snow_Phase_Change_Heat_Flux_surface_Mixed_intervals_Average" varId="VAR_0-0-192_L1_Imixed_S0" />
     <param oldName="Snow_depth" newName="Snow_depth_surface" varId="VAR_0-1-11_L1" />
     <param oldName="Snow_melt" newName="Snow_melt_surface_1_Hour_Accumulation" varId="VAR_0-1-16_L1_I1_Hour_S1" />
-    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_pressure" varId="VAR_0-1-25_L100" />
+    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_isobaric" varId="VAR_0-1-25_L100" />
     <param oldName="Snow_mixing_ratio_hybrid" newName="Snow_mixing_ratio_hybrid" varId="VAR_0-1-25_L105" />
     <param oldName="Soil_Porosity" newName="Soil_Porosity_surface" varId="VAR_2-3-197_L1" />
     <param oldName="Soil_moisture_content" newName="Soil_moisture_content_depth_below_surface_layer" varId="VAR_2-0-3_L106_layer" />
@@ -1412,17 +1412,17 @@
     <param oldName="Soil_type_as_in_Zobler" newName="Soil_type_surface" varId="VAR_2-3-0_L1" />
     <param oldName="Solar_Radiative_Heating_Rate" newName="Solar_Radiative_Heating_Rate_entire_atmosphere" varId="VAR_0-4-197_L200" />
     <param oldName="Solar_parameter_in_canopy_conductance" newName="Solar_parameter_in_canopy_conductance_surface" varId="VAR_2-0-202_L1" />
-    <param oldName="Specific_humidity" newName="Specific_humidity_pressure" varId="VAR_0-1-0_L100" />
+    <param oldName="Specific_humidity" newName="Specific_humidity_isobaric" varId="VAR_0-1-0_L100" />
     <param oldName="Specific_humidity_height_above_ground" newName="Specific_humidity_height_above_ground" varId="VAR_0-1-0_L103" />
     <param oldName="Specific_humidity_hybrid" newName="Specific_humidity_hybrid" varId="VAR_0-1-0_L105" />
     <param oldName="Specific_humidity_pressure_difference_layer" newName="Specific_humidity_pressure_difference_layer" varId="VAR_0-1-0_L108_layer" />
     <param oldName="Specific_humidity_surface" newName="Specific_humidity_surface" varId="VAR_0-1-0_L1" />
     <param oldName="Storm_Surface_Runoff" newName="Storm_Surface_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-193_L1_Imixed_S1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
-    <param oldName="Stream_function" newName="Stream_function_pressure" varId="VAR_0-2-4_L100" />
+    <param oldName="Stream_function" newName="Stream_function_isobaric" varId="VAR_0-2-4_L100" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
     <param oldName="Surface_roughness" newName="Surface_roughness_surface" varId="VAR_2-0-1_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_altitude_above_msl" newName="Temperature_altitude_above_msl" varId="VAR_0-0-0_L102" />
     <param oldName="Temperature_cloud_tops" newName="Temperature_cloud_tops" varId="VAR_0-0-0_L3" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
@@ -1445,10 +1445,10 @@
     <param oldName="Total_column-integrated_supercooled_liquid_water" newName="Total_column-integrated_supercooled_liquid_water_entire_atmosphere" varId="VAR_0-1-209_L200" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
     <param oldName="Transpiration_Stress-onset_soil_moisture" newName="Transpiration_Stress-onset_soil_moisture_surface" varId="VAR_2-3-195_L1" />
-    <param oldName="Turbulent_kinetic_energy" newName="Turbulent_kinetic_energy_pressure" varId="VAR_0-19-11_L100" />
+    <param oldName="Turbulent_kinetic_energy" newName="Turbulent_kinetic_energy_isobaric" varId="VAR_0-19-11_L100" />
     <param oldName="Turbulent_kinetic_energy_hybrid" newName="Turbulent_kinetic_energy_hybrid" varId="VAR_0-19-11_L105" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_altitude_above_msl" newName="u-component_of_wind_altitude_above_msl" varId="VAR_0-2-2_L102" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_hybrid" newName="u-component_of_wind_hybrid" varId="VAR_0-2-2_L105" />
@@ -1473,7 +1473,7 @@
     <param oldName="Upward_Short-Wave_Rad_Flux_surface" newName="Upward_Short-Wave_Radiation_Flux_surface" varId="VAR_0-4-193_L1" />
     <param oldName="Upward_Short-Wave_Rad_Flux_surface_Average" newName="Upward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-193_L1_Imixed_S0" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_altitude_above_msl" newName="v-component_of_wind_altitude_above_msl" varId="VAR_0-2-3_L102" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_hybrid" newName="v-component_of_wind_hybrid" varId="VAR_0-2-3_L105" />
@@ -1484,9 +1484,9 @@
     <param oldName="Vegetation" newName="Vegetation_surface" varId="VAR_2-0-4_L1" />
     <param oldName="Vegetation_Type" newName="Vegetation_Type_surface" varId="VAR_2-0-198_L1" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_geometric" newName="Vertical_velocity_geometric_pressure" varId="VAR_0-2-9_L100" />
+    <param oldName="Vertical_velocity_geometric" newName="Vertical_velocity_geometric_isobaric" varId="VAR_0-2-9_L100" />
     <param oldName="Vertical_velocity_geometric_hybrid" newName="Vertical_velocity_geometric_hybrid" varId="VAR_0-2-9_L105" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_hybrid" newName="Vertical_velocity_pressure_hybrid" varId="VAR_0-2-8_L105" />
     <param oldName="Vertical_velocity_pressure_pressure_difference_layer" newName="Vertical_velocity_pressure_pressure_difference_layer" varId="VAR_0-2-8_L108_layer" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
@@ -1498,7 +1498,7 @@
     <param oldName="Wind_speed_gust" newName="Wind_speed_gust_surface" varId="VAR_0-2-22_L1" />
   </dataset>
   <dataset name="NAM_Polar_90km_20121206_1800.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface" varId="VAR_0-19-1_L1" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
@@ -1506,9 +1506,9 @@
     <param oldName="Categorical_Ice_Pellets" newName="Categorical_Ice_Pellets_surface" varId="VAR_0-1-194_L1" />
     <param oldName="Categorical_Rain" newName="Categorical_Rain_surface" varId="VAR_0-1-192_L1" />
     <param oldName="Categorical_Snow" newName="Categorical_Snow_surface" varId="VAR_0-1-195_L1" />
-    <param oldName="Cloud_Ice" newName="Cloud_ice_pressure" varId="VAR_0-6-0_L100" />
+    <param oldName="Cloud_Ice" newName="Cloud_ice_isobaric" varId="VAR_0-6-0_L100" />
     <param oldName="Cloud_Ice_hybrid" newName="Cloud_ice_hybrid" varId="VAR_0-6-0_L105" />
-    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_pressure" varId="VAR_0-1-22_L100" />
+    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_isobaric" varId="VAR_0-1-22_L100" />
     <param oldName="Cloud_mixing_ratio_hybrid" newName="Cloud_mixing_ratio_hybrid" varId="VAR_0-1-22_L105" />
     <param oldName="Convective_available_potential_energy" newName="Convective_available_potential_energy_pressure_difference_layer" varId="VAR_0-7-6_L108_layer" />
     <param oldName="Convective_available_potential_energy_surface" newName="Convective_available_potential_energy_surface" varId="VAR_0-7-6_L1" />
@@ -1516,7 +1516,7 @@
     <param oldName="Convective_inhibition" newName="Convective_inhibition_pressure_difference_layer" varId="VAR_0-7-7_L108_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_0-7-7_L1" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-10_L1_Imixed_S1" />
-    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_pressure" varId="VAR_0-0-6_L100" />
+    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_isobaric" varId="VAR_0-0-6_L100" />
     <param oldName="Dew_point_temperature_pressure_difference_layer" newName="Dew-point_temperature_pressure_difference_layer" varId="VAR_0-0-6_L108_layer" />
     <param oldName="Downward_Long-Wave_Rad_Flux" newName="Downward_Long-Wave_Radp_Flux_surface_Mixed_intervals_Average" varId="VAR_0-5-192_L1_Imixed_S0" />
     <param oldName="Downward_Short-Wave_Rad_Flux" newName="Downward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-192_L1_Imixed_S0" />
@@ -1524,7 +1524,7 @@
     <param oldName="East_longitude_0_-_360" newName="East_Longitude_0_to_360_surface" varId="VAR_0-191-193_L1" />
     <param oldName="Evaporation" newName="Evaporation_surface_Mixed_Mixed_intervals_Accumulation" varId="VAR_0-1-6_L1_Imixed_S1" />
     <param oldName="Frictional_Velocity" newName="Frictional_Velocity_surface" varId="VAR_0-2-197_L1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_adiabatic_condensation_lifted" newName="Geopotential_height_adiabatic_condensation_lifted" varId="VAR_0-3-5_L5" />
     <param oldName="Geopotential_height_cloud_base" newName="Geopotential_height_cloud_base" varId="VAR_0-3-5_L2" />
     <param oldName="Geopotential_height_cloud_tops" newName="Geopotential_height_cloud_tops" varId="VAR_0-3-5_L3" />
@@ -1566,7 +1566,7 @@
     <param oldName="Pressure_sigma" newName="Pressure_sigma" varId="VAR_0-3-0_L104" />
     <param oldName="Pressure_surface" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_hybrid" newName="Relative_humidity_hybrid" varId="VAR_0-1-1_L105" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
@@ -1577,19 +1577,19 @@
     <param oldName="Sensible_heat_net_flux" newName="Sensible_heat_net_flux_surface_Mixed_intervals_Average" varId="VAR_0-0-11_L1_Imixed_S0" />
     <param oldName="Snow_Phase_Change_Heat_Flux" newName="Snow_Phase_Change_Heat_Flux_surface_Mixed_intervals_Average" varId="VAR_0-0-192_L1_Imixed_S0" />
     <param oldName="Snow_melt" newName="Snow_melt_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-16_L1_Imixed_S1" />
-    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_pressure" varId="VAR_0-1-25_L100" />
+    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_isobaric" varId="VAR_0-1-25_L100" />
     <param oldName="Soil_temperature" newName="Soil_temperature_depth_below_surface_layer" varId="VAR_2-0-2_L106_layer" />
-    <param oldName="Specific_humidity" newName="Specific_humidity_pressure" varId="VAR_0-1-0_L100" />
+    <param oldName="Specific_humidity" newName="Specific_humidity_isobaric" varId="VAR_0-1-0_L100" />
     <param oldName="Specific_humidity_height_above_ground" newName="Specific_humidity_height_above_ground" varId="VAR_0-1-0_L103" />
     <param oldName="Specific_humidity_hybrid" newName="Specific_humidity_hybrid" varId="VAR_0-1-0_L105" />
     <param oldName="Specific_humidity_pressure_difference_layer" newName="Specific_humidity_pressure_difference_layer" varId="VAR_0-1-0_L108_layer" />
     <param oldName="Specific_humidity_sigma" newName="Specific_humidity_sigma" varId="VAR_0-1-0_L104" />
     <param oldName="Storm_Surface_Runoff" newName="Storm_Surface_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-193_L1_Imixed_S1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
-    <param oldName="Stream_function" newName="Stream_function_pressure" varId="VAR_0-2-4_L100" />
+    <param oldName="Stream_function" newName="Stream_function_isobaric" varId="VAR_0-2-4_L100" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
     <param oldName="Surface_roughness" newName="Surface_roughness_surface" varId="VAR_2-0-1_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_altitude_above_msl" newName="Temperature_altitude_above_msl" varId="VAR_0-0-0_L102" />
     <param oldName="Temperature_cloud_tops" newName="Temperature_cloud_tops" varId="VAR_0-0-0_L3" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
@@ -1602,7 +1602,7 @@
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
     <param oldName="Turbulent_kinetic_energy" newName="Turbulent_kinetic_energy_hybrid" varId="VAR_0-19-11_L105" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_altitude_above_msl" newName="u-component_of_wind_altitude_above_msl" varId="VAR_0-2-2_L102" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_hybrid" newName="u-component_of_wind_hybrid" varId="VAR_0-2-2_L105" />
@@ -1615,7 +1615,7 @@
     <param oldName="Upward_Short-Wave_Rad_Flux" newName="Upward_Short-Wave_Radiation_Flux_atmosphere_top_Mixed_intervals_Average" varId="VAR_0-4-193_L8_Imixed_S0" />
     <param oldName="Upward_Short-Wave_Rad_Flux_surface" newName="Upward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-193_L1_Imixed_S0" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_altitude_above_msl" newName="v-component_of_wind_altitude_above_msl" varId="VAR_0-2-3_L102" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_hybrid" newName="v-component_of_wind_hybrid" varId="VAR_0-2-3_L105" />
@@ -1624,7 +1624,7 @@
     <param oldName="V-component_of_wind_sigma" newName="v-component_of_wind_sigma" varId="VAR_0-2-3_L104" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_pressure_difference_layer" newName="Vertical_velocity_pressure_pressure_difference_layer" varId="VAR_0-2-8_L108_layer" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Volumetric_Soil_Moisture_Content" newName="Volumetric_Soil_Moisture_Content_depth_below_surface_layer" varId="VAR_2-0-192_L106_layer" />
@@ -1735,7 +1735,7 @@
     <param oldName="Water_equivalent_of_accumulated_snow_depth_Accumulation" newName="Water_equivalent_of_accumulated_snow_depth_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-13_L1_Imixed_S1" />
   </dataset>
   <dataset name="RUC2_CONUS_20km_pressure_20100509_1300.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_depth_below_surface" varId="VAR_1-0-192_L106" />
     <param oldName="Best_lifted_index_to_500_hPa" newName="Best_lifted_index_to_500_hPa_surface" varId="VAR_0-7-1_L1" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface" varId="VAR_0-1-193_L1" />
@@ -1752,7 +1752,7 @@
     <param oldName="Dew_point_temperature" newName="Dew-point_temperature_height_above_ground" varId="VAR_0-0-6_L103" />
     <param oldName="Geometric_height" newName="Geometric_height_cloud_base" varId="VAR_0-3-6_L2" />
     <param oldName="Geometric_height_cloud_tops" newName="Geometric_height_cloud_tops" varId="VAR_0-3-6_L3" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_convective_cloud_top" newName="Geopotential_height_convective_cloud_top" varId="VAR_0-3-5_L243" />
     <param oldName="Geopotential_height_equilibrium" newName="Geopotential_height_equilibrium" varId="VAR_0-3-5_L247" />
     <param oldName="Geopotential_height_highest_tropospheric_freezing" newName="Geopotential_height_highest_tropospheric_freezing" varId="VAR_0-3-5_L204" />
@@ -1776,7 +1776,7 @@
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
     <param oldName="Pressure_zeroDegC_isotherm" newName="Pressure_zeroDegC_isotherm" varId="VAR_0-3-0_L4" />
     <param oldName="Pseudo-adiabatic_potential_temperature" newName="Pseudo-adiabatic_potential_temperature_or_equivalent_potential_temperature_surface" varId="VAR_0-0-3_L1" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_highest_tropospheric_freezing" newName="Relative_humidity_highest_tropospheric_freezing" varId="VAR_0-1-1_L204" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
@@ -1787,24 +1787,24 @@
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
     <param oldName="Storm_relative_helicity_surface" newName="Storm_relative_helicity_surface" varId="VAR_0-7-8_L1" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_surface" varId="VAR_0-7-192_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_pressure_difference_layer" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Temperature_surface" newName="Temperature_surface" varId="VAR_0-0-0_L1" />
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_0-0-0_L7" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_surface" varId="VAR_0-2-194_L1" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
     <param oldName="U-component_of_wind_pressure_difference_layer" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_0-2-2_L7" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_surface" varId="VAR_0-2-195_L1" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
     <param oldName="V-component_of_wind_pressure_difference_layer" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_pressure_difference_layer" newName="Vertical_velocity_pressure_pressure_difference_layer" varId="VAR_0-2-8_L108_layer" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-13_L1_Imixed_S1" />
@@ -1985,36 +1985,36 @@
     <param oldName="Wind_speed_weightedMean" newName="Wind_speed_pressure_weightedMean" varId="VAR_0-2-1_L100_D1" />
   </dataset>
   <dataset name="SREF_CONUS_40km_pgrb_biasc_20090228_2100.grib2">
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
   </dataset>
   <dataset name="SREF_CONUS_40km_pgrb_biasc_nmm_n2_20100602_1500.grib2">
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
   </dataset>
   <dataset name="SREF_CONUS_40km_pgrb_biasc_rsm_p2_20120213_1500.grib2">
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
   </dataset>
   <dataset name="SREF_PacificNE_0p4_ensprod_20120213_2100.grib2">
@@ -2277,7 +2277,7 @@
     <param oldName="Wind_speed" newName="Wind_speed_surface" varId="VAR_0-2-1_L1" />
   </dataset>
   <dataset name="RR_CONUS_40km_20121206_2000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface" varId="VAR_0-1-193_L1" />
@@ -2292,7 +2292,7 @@
     <param oldName="Derived_radar_reflectivity" newName="Reflectivity_height_above_ground" varId="VAR_0-16-195_L103" />
     <param oldName="Dew_point_depression_or_deficit" newName="Dew-point_depression_or_deficit_height_above_ground" varId="VAR_0-0-7_L103" />
     <param oldName="Dew_point_temperature" newName="Dew-point_temperature_height_above_ground" varId="VAR_0-0-6_L103" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_cloud_base" newName="Geopotential_height_cloud_base" varId="VAR_0-3-5_L2" />
     <param oldName="Geopotential_height_cloud_tops" newName="Geopotential_height_cloud_tops" varId="VAR_0-3-5_L3" />
     <param oldName="Geopotential_height_convective_cloud_top" newName="Geopotential_height_convective_cloud_top" varId="VAR_0-3-5_L243" />
@@ -2318,7 +2318,7 @@
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
     <param oldName="Pressure_zeroDegC_isotherm" newName="Pressure_zeroDegC_isotherm" varId="VAR_0-3-0_L4" />
     <param oldName="Pseudo-adiabatic_potential_temperature" newName="Pseudo-adiabatic_potential_temperature_or_equivalent_potential_temperature_surface" varId="VAR_0-0-3_L1" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_highest_tropospheric_freezing" newName="Relative_humidity_highest_tropospheric_freezing" varId="VAR_0-1-1_L204" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
@@ -2328,32 +2328,32 @@
     <param oldName="Storm_Surface_Runoff" newName="Storm_Surface_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-193_L1_Imixed_S1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_pressure_difference_layer" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Temperature_surface" newName="Temperature_surface" varId="VAR_0-0-0_L1" />
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_0-0-0_L7" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
     <param oldName="U-component_of_wind_pressure_difference_layer" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_0-2-2_L7" />
     <param oldName="UnknownParameter_D0_C1_242" newName="Relative_Humidity_with_Respect_to_Precipitable_Water_entire_atmosphere" varId="VAR_0-1-242_L200" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
     <param oldName="V-component_of_wind_pressure_difference_layer" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_pressure_difference_layer" newName="Vertical_velocity_pressure_pressure_difference_layer" varId="VAR_0-2-8_L108_layer" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-13_L1_Imixed_S1" />
     <param oldName="Wind_speed_gust" newName="Wind_speed_gust_surface" varId="VAR_0-2-22_L1" />
   </dataset>
   <dataset name="RR_CONUS_20km_20121206_2000.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface" varId="VAR_0-1-193_L1" />
@@ -2368,7 +2368,7 @@
     <param oldName="Derived_radar_reflectivity" newName="Reflectivity_height_above_ground" varId="VAR_0-16-195_L103" />
     <param oldName="Dew_point_depression_or_deficit" newName="Dew-point_depression_or_deficit_height_above_ground" varId="VAR_0-0-7_L103" />
     <param oldName="Dew_point_temperature" newName="Dew-point_temperature_height_above_ground" varId="VAR_0-0-6_L103" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_cloud_base" newName="Geopotential_height_cloud_base" varId="VAR_0-3-5_L2" />
     <param oldName="Geopotential_height_cloud_tops" newName="Geopotential_height_cloud_tops" varId="VAR_0-3-5_L3" />
     <param oldName="Geopotential_height_convective_cloud_top" newName="Geopotential_height_convective_cloud_top" varId="VAR_0-3-5_L243" />
@@ -2394,7 +2394,7 @@
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
     <param oldName="Pressure_zeroDegC_isotherm" newName="Pressure_zeroDegC_isotherm" varId="VAR_0-3-0_L4" />
     <param oldName="Pseudo-adiabatic_potential_temperature" newName="Pseudo-adiabatic_potential_temperature_or_equivalent_potential_temperature_surface" varId="VAR_0-0-3_L1" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_highest_tropospheric_freezing" newName="Relative_humidity_highest_tropospheric_freezing" varId="VAR_0-1-1_L204" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
@@ -2404,25 +2404,25 @@
     <param oldName="Storm_Surface_Runoff" newName="Storm_Surface_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-193_L1_Imixed_S1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_pressure_difference_layer" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Temperature_surface" newName="Temperature_surface" varId="VAR_0-0-0_L1" />
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_0-0-0_L7" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
     <param oldName="U-component_of_wind_pressure_difference_layer" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_0-2-2_L7" />
     <param oldName="UnknownParameter_D0_C1_242" newName="Relative_Humidity_with_Respect_to_Precipitable_Water_entire_atmosphere" varId="VAR_0-1-242_L200" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
     <param oldName="V-component_of_wind_pressure_difference_layer" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_pressure_difference_layer" newName="Vertical_velocity_pressure_pressure_difference_layer" varId="VAR_0-2-8_L108_layer" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-13_L1_Imixed_S1" />
@@ -2439,7 +2439,7 @@
     <param oldName="Convective_inhibition" newName="Convective_inhibition_pressure_difference_layer" varId="VAR_0-7-7_L108_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_0-7-7_L1" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-10_L1_Imixed_S1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_cloud_base" newName="Geopotential_height_cloud_base" varId="VAR_0-3-5_L2" />
     <param oldName="Geopotential_height_cloud_tops" newName="Geopotential_height_cloud_tops" varId="VAR_0-3-5_L3" />
     <param oldName="Geopotential_height_convective_cloud_top" newName="Geopotential_height_convective_cloud_top" varId="VAR_0-3-5_L243" />
@@ -2455,61 +2455,61 @@
     <param oldName="Pressure_surface" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
     <param oldName="Pressure_zeroDegC_isotherm" newName="Pressure_zeroDegC_isotherm" varId="VAR_0-3-0_L4" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_zeroDegC_isotherm" newName="Relative_humidity_zeroDegC_isotherm" varId="VAR_0-1-1_L4" />
     <param oldName="Snow_depth" newName="Snow_depth_surface" varId="VAR_0-1-11_L1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_pressure_difference_layer" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_0-0-0_L7" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
     <param oldName="U-component_of_wind_pressure_difference_layer" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_0-2-2_L7" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
     <param oldName="V-component_of_wind_pressure_difference_layer" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-13_L1_Imixed_S1" />
     <param oldName="Wind_speed_gust" newName="Wind_speed_gust_surface" varId="VAR_0-2-22_L1" />
   </dataset>
   <dataset name="GFS_N_Hemisphere_381km_20121206_1800.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-10_L1_Imixed_S1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_surface" newName="Geopotential_height_surface" varId="VAR_0-3-5_L1" />
-    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_pressure" varId="VAR_0-3-193_L100" />
+    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_isobaric" varId="VAR_0-3-193_L100" />
     <param oldName="Pressure" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_sigma_layer" newName="Relative_humidity_sigma_layer" varId="VAR_0-1-1_L104_layer" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_pressure_difference_layer" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_0-0-0_L7" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_pressure_difference_layer" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_0-2-2_L7" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_pressure_difference_layer" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
   </dataset>
   <dataset name="GFS_Puerto_Rico_0p5deg_20121206_1800.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_surface" varId="VAR_0-7-193_L1" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface_Mixed_intervals_Average" varId="VAR_0-1-193_L1_Imixed_S0" />
     <param oldName="Categorical_Ice_Pellets" newName="Categorical_Ice_Pellets_surface_Mixed_intervals_Average" varId="VAR_0-1-194_L1_Imixed_S0" />
@@ -2520,11 +2520,11 @@
     <param oldName="Convective_inhibition" newName="Convective_inhibition_pressure_difference_layer" varId="VAR_0-7-7_L108_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_0-7-7_L1" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-10_L1_Imixed_S1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_potential_vorticity_surface" newName="Geopotential_height_potential_vorticity_surface" varId="VAR_0-3-5_L109" />
     <param oldName="Geopotential_height_surface" newName="Geopotential_height_surface" varId="VAR_0-3-5_L1" />
     <param oldName="Geopotential_height_zeroDegC_isotherm" newName="Geopotential_height_zeroDegC_isotherm" varId="VAR_0-3-5_L4" />
-    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_pressure" varId="VAR_0-3-193_L100" />
+    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_isobaric" varId="VAR_0-3-193_L100" />
     <param oldName="Precipitable_water" newName="Precipitable_water_entire_atmosphere" varId="VAR_0-1-3_L200" />
     <param oldName="Pressure" newName="Pressure_potential_vorticity_surface" varId="VAR_0-3-0_L109" />
     <param oldName="Pressure_high_cloud_bottom" newName="Pressure_high_cloud_bottom_Mixed_intervals_Average" varId="VAR_0-3-0_L232_Imixed_S0" />
@@ -2534,34 +2534,34 @@
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
     <param oldName="Pressure_surface" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_zeroDegC_isotherm" newName="Relative_humidity_zeroDegC_isotherm" varId="VAR_0-1-1_L4" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_surface" varId="VAR_0-7-192_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_potential_vorticity_surface" newName="Temperature_potential_vorticity_surface" varId="VAR_0-0-0_L109" />
     <param oldName="Temperature_pressure_difference_layer" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
     <param oldName="U-component_of_wind_potential_vorticity_surface" newName="u-component_of_wind_potential_vorticity_surface" varId="VAR_0-2-2_L109" />
     <param oldName="U-component_of_wind_pressure_difference_layer" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_0-2-2_L7" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
     <param oldName="V-component_of_wind_potential_vorticity_surface" newName="v-component_of_wind_potential_vorticity_surface" varId="VAR_0-2-3_L109" />
     <param oldName="V-component_of_wind_pressure_difference_layer" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface" varId="VAR_0-1-13_L1" />
   </dataset>
   <dataset name="GFS_Pacific_40km_20121206_1800.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_surface" varId="VAR_0-7-193_L1" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface_Mixed_intervals_Average" varId="VAR_0-1-193_L1_Imixed_S0" />
     <param oldName="Categorical_Ice_Pellets" newName="Categorical_Ice_Pellets_surface_Mixed_intervals_Average" varId="VAR_0-1-194_L1_Imixed_S0" />
@@ -2572,11 +2572,11 @@
     <param oldName="Convective_inhibition" newName="Convective_inhibition_pressure_difference_layer" varId="VAR_0-7-7_L108_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_0-7-7_L1" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-10_L1_Imixed_S1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_potential_vorticity_surface" newName="Geopotential_height_potential_vorticity_surface" varId="VAR_0-3-5_L109" />
     <param oldName="Geopotential_height_surface" newName="Geopotential_height_surface" varId="VAR_0-3-5_L1" />
     <param oldName="Geopotential_height_zeroDegC_isotherm" newName="Geopotential_height_zeroDegC_isotherm" varId="VAR_0-3-5_L4" />
-    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_pressure" varId="VAR_0-3-193_L100" />
+    <param oldName="N5-Wave_Geopotential_Height" newName="5-Wave_Geopotential_Height_isobaric" varId="VAR_0-3-193_L100" />
     <param oldName="Precipitable_water" newName="Precipitable_water_entire_atmosphere" varId="VAR_0-1-3_L200" />
     <param oldName="Pressure" newName="Pressure_potential_vorticity_surface" varId="VAR_0-3-0_L109" />
     <param oldName="Pressure_high_cloud_bottom" newName="Pressure_high_cloud_bottom_Mixed_intervals_Average" varId="VAR_0-3-0_L232_Imixed_S0" />
@@ -2586,34 +2586,34 @@
     <param oldName="Pressure_reduced_to_MSL" newName="Pressure_reduced_to_MSL_msl" varId="VAR_0-3-1_L101" />
     <param oldName="Pressure_surface" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_zeroDegC_isotherm" newName="Relative_humidity_zeroDegC_isotherm" varId="VAR_0-1-1_L4" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_surface" varId="VAR_0-7-192_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_potential_vorticity_surface" newName="Temperature_potential_vorticity_surface" varId="VAR_0-0-0_L109" />
     <param oldName="Temperature_pressure_difference_layer" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
     <param oldName="U-component_of_wind_potential_vorticity_surface" newName="u-component_of_wind_potential_vorticity_surface" varId="VAR_0-2-2_L109" />
     <param oldName="U-component_of_wind_pressure_difference_layer" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_0-2-2_L7" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
     <param oldName="V-component_of_wind_potential_vorticity_surface" newName="v-component_of_wind_potential_vorticity_surface" varId="VAR_0-2-3_L109" />
     <param oldName="V-component_of_wind_pressure_difference_layer" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface" varId="VAR_0-1-13_L1" />
   </dataset>
   <dataset name="NAM_CONUS_12km_20121206_1800.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
     <param oldName="Categorical_Freezing_Rain" newName="Categorical_Freezing_Rain_surface" varId="VAR_0-1-193_L1" />
     <param oldName="Categorical_Ice_Pellets" newName="Categorical_Ice_Pellets_surface" varId="VAR_0-1-194_L1" />
@@ -2627,7 +2627,7 @@
     <param oldName="Derived_radar_reflectivity" newName="Reflectivity_height_above_ground" varId="VAR_0-16-195_L103" />
     <param oldName="Derived_radar_reflectivity_hybrid" newName="Reflectivity_hybrid" varId="VAR_0-16-195_L105" />
     <param oldName="Dew_point_temperature" newName="Dew-point_temperature_height_above_ground" varId="VAR_0-0-6_L103" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_zeroDegC_isotherm" newName="Geopotential_height_zeroDegC_isotherm" varId="VAR_0-3-5_L4" />
     <param oldName="MSLP_Eta_Reduction" newName="MSLP_Eta_model_reduction_msl" varId="VAR_0-3-192_L101" />
     <param oldName="MaximumComposite_radar_reflectivity" newName="Composite_reflectivity_entire_atmosphere" varId="VAR_0-16-196_L200" />
@@ -2642,7 +2642,7 @@
     <param oldName="Probability_of_0p01_inch_Precipitation" newName="Probability_of_0p01_inch_of_precipitation_POP_surface_Mixed_intervals_Accumulation" varId="VAR_1-1-2_L1_Imixed_S1" />
     <param oldName="Probability_of_freezing_Precipitation" newName="Probability_of_Freezing_Precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_1-1-192_L1_Imixed_S1" />
     <param oldName="Probability_of_frozen_Precipitation" newName="Probability_of_Frozen_Precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_1-1-193_L1_Imixed_S1" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_sigma_layer" newName="Relative_humidity_sigma_layer" varId="VAR_0-1-1_L104_layer" />
@@ -2650,31 +2650,31 @@
     <param oldName="Snow_depth" newName="Snow_depth_surface" varId="VAR_0-1-11_L1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_pressure_difference_layer" newName="Temperature_pressure_difference_layer" varId="VAR_0-0-0_L108_layer" />
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_0-0-0_L7" />
     <param oldName="Thunderstorm_probability" newName="Thunderstorm_probability_surface_Mixed_intervals_Accumulation" varId="VAR_0-19-2_L1_Imixed_S1" />
     <param oldName="Total_cloud_cover" newName="Total_cloud_cover_entire_atmosphere" varId="VAR_0-6-1_L200" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_3_Hour_Accumulation" varId="VAR_0-1-8_L1_I3_Hour_S1" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
     <param oldName="U-component_of_wind_pressure_difference_layer" newName="u-component_of_wind_pressure_difference_layer" varId="VAR_0-2-2_L108_layer" />
     <param oldName="U-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_0-2-2_L7" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
     <param oldName="V-component_of_wind_pressure_difference_layer" newName="v-component_of_wind_pressure_difference_layer" varId="VAR_0-2-3_L108_layer" />
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Water_equivalent_of_accumulated_snow_depth" newName="Water_equivalent_of_accumulated_snow_depth_surface" varId="VAR_0-1-13_L1" />
     <param oldName="Wind_direction_from_which_blowing" newName="Wind_direction_from_which_blowing_degree_true_height_above_ground" varId="VAR_0-2-0_L103" />
     <param oldName="Wind_speed" newName="Wind_speed_height_above_ground" varId="VAR_0-2-1_L103" />
   </dataset>
   <dataset name="NAM_Alaska_45km_conduit_20121206_1800.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface" varId="VAR_0-19-1_L1" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
@@ -2683,16 +2683,16 @@
     <param oldName="Categorical_Ice_Pellets" newName="Categorical_Ice_Pellets_surface" varId="VAR_0-1-194_L1" />
     <param oldName="Categorical_Rain" newName="Categorical_Rain_surface" varId="VAR_0-1-192_L1" />
     <param oldName="Categorical_Snow" newName="Categorical_Snow_surface" varId="VAR_0-1-195_L1" />
-    <param oldName="Cloud_Ice" newName="Cloud_ice_pressure" varId="VAR_0-6-0_L100" />
+    <param oldName="Cloud_Ice" newName="Cloud_ice_isobaric" varId="VAR_0-6-0_L100" />
     <param oldName="Cloud_Ice_hybrid" newName="Cloud_ice_hybrid" varId="VAR_0-6-0_L105" />
-    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_pressure" varId="VAR_0-1-22_L100" />
+    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_isobaric" varId="VAR_0-1-22_L100" />
     <param oldName="Cloud_mixing_ratio_hybrid" newName="Cloud_mixing_ratio_hybrid" varId="VAR_0-1-22_L105" />
     <param oldName="Convective_available_potential_energy" newName="Convective_available_potential_energy_pressure_difference_layer" varId="VAR_0-7-6_L108_layer" />
     <param oldName="Convective_available_potential_energy_surface" newName="Convective_available_potential_energy_surface" varId="VAR_0-7-6_L1" />
     <param oldName="Convective_inhibition" newName="Convective_inhibition_pressure_difference_layer" varId="VAR_0-7-7_L108_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_0-7-7_L1" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-10_L1_Imixed_S1" />
-    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_pressure" varId="VAR_0-0-6_L100" />
+    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_isobaric" varId="VAR_0-0-6_L100" />
     <param oldName="Dew_point_temperature_pressure_difference_layer" newName="Dew-point_temperature_pressure_difference_layer" varId="VAR_0-0-6_L108_layer" />
     <param oldName="Downward_Long-Wave_Rad_Flux" newName="Downward_Long-Wave_Radp_Flux_surface" varId="VAR_0-5-192_L1" />
     <param oldName="Downward_Long-Wave_Rad_Flux_Average" newName="Downward_Long-Wave_Radp_Flux_surface_Mixed_intervals_Average" varId="VAR_0-5-192_L1_Imixed_S0" />
@@ -2702,7 +2702,7 @@
     <param oldName="Evaporation" newName="Evaporation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-6_L1_Imixed_S1" />
     <param oldName="Exchange_Coefficient" newName="Exchange_Coefficient_surface" varId="VAR_2-0-195_L1" />
     <param oldName="Frictional_Velocity" newName="Frictional_Velocity_surface" varId="VAR_0-2-197_L1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_highest_tropospheric_freezing" newName="Geopotential_height_highest_tropospheric_freezing" varId="VAR_0-3-5_L204" />
     <param oldName="Geopotential_height_hybrid" newName="Geopotential_height_hybrid" varId="VAR_0-3-5_L105" />
     <param oldName="Geopotential_height_lowest_level_of_the_wet_bulb_zero" newName="Geopotential_height_lowest_level_of_the_wet_bulb_zero" varId="VAR_0-3-5_L245" />
@@ -2711,7 +2711,7 @@
     <param oldName="Geopotential_height_zeroDegC_isotherm" newName="Geopotential_height_zeroDegC_isotherm" varId="VAR_0-3-5_L4" />
     <param oldName="Ground_Heat_Flux" newName="Ground_Heat_Flux_surface_Mixed_intervals_Average" varId="VAR_2-0-193_L1_Imixed_S0" />
     <param oldName="High_cloud_cover" newName="High_cloud_cover_high_cloud" varId="VAR_0-6-5_L234" />
-    <param oldName="Horizontal_Moisture_Divergence" newName="Horizontal_Moisture_Divergence_pressure" varId="VAR_0-1-197_L100" />
+    <param oldName="Horizontal_Moisture_Divergence" newName="Horizontal_Moisture_Divergence_isobaric" varId="VAR_0-1-197_L100" />
     <param oldName="Horizontal_Moisture_Divergence_pressure_difference_layer" newName="Horizontal_Moisture_Divergence_pressure_difference_layer" varId="VAR_0-1-197_L108_layer" />
     <param oldName="Horizontal_Moisture_Divergence_sigma_layer" newName="Horizontal_Moisture_Divergence_sigma_layer" varId="VAR_0-1-197_L104_layer" />
     <param oldName="Ice_cover_Proportion" newName="Ice_cover_surface" varId="VAR_10-2-0_L1" />
@@ -2743,27 +2743,27 @@
     <param oldName="Pressure_surface" newName="Pressure_surface" varId="VAR_0-3-0_L1" />
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
     <param oldName="Probability_of_frozen_Precipitation" newName="Probability_of_Frozen_Precipitation_surface" varId="VAR_1-1-193_L1" />
-    <param oldName="Rain_mixing_ratio" newName="Rain_mixing_ratio_pressure" varId="VAR_0-1-24_L100" />
+    <param oldName="Rain_mixing_ratio" newName="Rain_mixing_ratio_isobaric" varId="VAR_0-1-24_L100" />
     <param oldName="Rain_mixing_ratio_hybrid" newName="Rain_mixing_ratio_hybrid" varId="VAR_0-1-24_L105" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_hybrid" newName="Relative_humidity_hybrid" varId="VAR_0-1-1_L105" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
     <param oldName="Relative_humidity_sigma" newName="Relative_humidity_sigma" varId="VAR_0-1-1_L104" />
     <param oldName="Relative_humidity_sigma_layer" newName="Relative_humidity_sigma_layer" varId="VAR_0-1-1_L104_layer" />
     <param oldName="Relative_humidity_zeroDegC_isotherm" newName="Relative_humidity_zeroDegC_isotherm" varId="VAR_0-1-1_L4" />
-    <param oldName="Rime_Factor" newName="Rime_Factor_pressure" varId="VAR_0-1-203_L100" />
+    <param oldName="Rime_Factor" newName="Rime_Factor_isobaric" varId="VAR_0-1-203_L100" />
     <param oldName="Rime_Factor_hybrid" newName="Rime_Factor_hybrid" varId="VAR_0-1-203_L105" />
     <param oldName="Sensible_heat_net_flux" newName="Sensible_heat_net_flux_surface" varId="VAR_0-0-11_L1" />
     <param oldName="Sensible_heat_net_flux_Average" newName="Sensible_heat_net_flux_surface_Mixed_intervals_Average" varId="VAR_0-0-11_L1_Imixed_S0" />
     <param oldName="Snow_Phase_Change_Heat_Flux" newName="Snow_Phase_Change_Heat_Flux_surface_Mixed_intervals_Average" varId="VAR_0-0-192_L1_Imixed_S0" />
     <param oldName="Snow_melt" newName="Snow_melt_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-16_L1_Imixed_S1" />
-    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_pressure" varId="VAR_0-1-25_L100" />
+    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_isobaric" varId="VAR_0-1-25_L100" />
     <param oldName="Snow_mixing_ratio_hybrid" newName="Snow_mixing_ratio_hybrid" varId="VAR_0-1-25_L105" />
     <param oldName="Soil_moisture_content" newName="Soil_moisture_content_depth_below_surface_layer" varId="VAR_2-0-3_L106_layer" />
     <param oldName="Soil_temperature" newName="Soil_temperature_depth_below_surface_layer" varId="VAR_2-0-2_L106_layer" />
     <param oldName="Soil_temperature_depth_below_surface" newName="Soil_temperature_depth_below_surface" varId="VAR_2-0-2_L106" />
-    <param oldName="Specific_humidity" newName="Specific_humidity_pressure" varId="VAR_0-1-0_L100" />
+    <param oldName="Specific_humidity" newName="Specific_humidity_isobaric" varId="VAR_0-1-0_L100" />
     <param oldName="Specific_humidity_height_above_ground" newName="Specific_humidity_height_above_ground" varId="VAR_0-1-0_L103" />
     <param oldName="Specific_humidity_hybrid" newName="Specific_humidity_hybrid" varId="VAR_0-1-0_L105" />
     <param oldName="Specific_humidity_pressure_difference_layer" newName="Specific_humidity_pressure_difference_layer" varId="VAR_0-1-0_L108_layer" />
@@ -2771,10 +2771,10 @@
     <param oldName="Specific_humidity_surface" newName="Specific_humidity_surface" varId="VAR_0-1-0_L1" />
     <param oldName="Storm_Surface_Runoff" newName="Storm_Surface_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-193_L1_Imixed_S1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
-    <param oldName="Stream_function" newName="Stream_function_pressure" varId="VAR_0-2-4_L100" />
+    <param oldName="Stream_function" newName="Stream_function_isobaric" varId="VAR_0-2-4_L100" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
     <param oldName="Surface_roughness" newName="Surface_roughness_surface" varId="VAR_2-0-1_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_altitude_above_msl" newName="Temperature_altitude_above_msl" varId="VAR_0-0-0_L102" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_hybrid" newName="Temperature_hybrid" varId="VAR_0-0-0_L105" />
@@ -2791,10 +2791,10 @@
     <param oldName="Total_cloud_cover" newName="Total_cloud_cover_entire_atmosphere" varId="VAR_0-6-1_L200" />
     <param oldName="Total_cloud_cover_Average" newName="Total_cloud_cover_entire_atmosphere_Mixed_intervals_Average" varId="VAR_0-6-1_L200_Imixed_S0" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
-    <param oldName="Turbulent_kinetic_energy" newName="Turbulent_kinetic_energy_pressure" varId="VAR_0-19-11_L100" />
+    <param oldName="Turbulent_kinetic_energy" newName="Turbulent_kinetic_energy_isobaric" varId="VAR_0-19-11_L100" />
     <param oldName="Turbulent_kinetic_energy_hybrid" newName="Turbulent_kinetic_energy_hybrid" varId="VAR_0-19-11_L105" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_altitude_above_msl" newName="u-component_of_wind_altitude_above_msl" varId="VAR_0-2-2_L102" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_hybrid" newName="u-component_of_wind_hybrid" varId="VAR_0-2-2_L105" />
@@ -2809,7 +2809,7 @@
     <param oldName="Upward_Short-Wave_Rad_Flux_surface" newName="Upward_Short-Wave_Radiation_Flux_surface" varId="VAR_0-4-193_L1" />
     <param oldName="Upward_Short-Wave_Rad_Flux_surface_Average" newName="Upward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-193_L1_Imixed_S0" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_altitude_above_msl" newName="v-component_of_wind_altitude_above_msl" varId="VAR_0-2-3_L102" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_hybrid" newName="v-component_of_wind_hybrid" varId="VAR_0-2-3_L105" />
@@ -2819,7 +2819,7 @@
     <param oldName="V-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_0-2-3_L7" />
     <param oldName="Vegetation" newName="Vegetation_surface" varId="VAR_2-0-4_L1" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_hybrid" newName="Vertical_velocity_pressure_hybrid" varId="VAR_0-2-8_L105" />
     <param oldName="Vertical_velocity_pressure_pressure_difference_layer" newName="Vertical_velocity_pressure_pressure_difference_layer" varId="VAR_0-2-8_L108_layer" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
@@ -2830,7 +2830,7 @@
     <param oldName="Wind_speed_gust" newName="Wind_speed_gust_surface" varId="VAR_0-2-22_L1" />
   </dataset>
   <dataset name="NAM_CONUS_40km_conduit_20121206_1800.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface" varId="VAR_0-19-1_L1" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
@@ -2840,9 +2840,9 @@
     <param oldName="Categorical_Ice_Pellets" newName="Categorical_Ice_Pellets_surface" varId="VAR_0-1-194_L1" />
     <param oldName="Categorical_Rain" newName="Categorical_Rain_surface" varId="VAR_0-1-192_L1" />
     <param oldName="Categorical_Snow" newName="Categorical_Snow_surface" varId="VAR_0-1-195_L1" />
-    <param oldName="Cloud_Ice" newName="Cloud_ice_pressure" varId="VAR_0-6-0_L100" />
+    <param oldName="Cloud_Ice" newName="Cloud_ice_isobaric" varId="VAR_0-6-0_L100" />
     <param oldName="Cloud_Ice_hybrid" newName="Cloud_ice_hybrid" varId="VAR_0-6-0_L105" />
-    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_pressure" varId="VAR_0-1-22_L100" />
+    <param oldName="Cloud_mixing_ratio" newName="Cloud_mixing_ratio_isobaric" varId="VAR_0-1-22_L100" />
     <param oldName="Cloud_mixing_ratio_hybrid" newName="Cloud_mixing_ratio_hybrid" varId="VAR_0-1-22_L105" />
     <param oldName="Convective_Cloud_Efficiency" newName="Convective_Cloud_Efficiency_entire_atmosphere" varId="VAR_0-6-194_L200" />
     <param oldName="Convective_Precipitation_Rate" newName="Convective_Precipitation_Rate_surface" varId="VAR_0-1-196_L1" />
@@ -2852,7 +2852,7 @@
     <param oldName="Convective_inhibition" newName="Convective_inhibition_pressure_difference_layer" varId="VAR_0-7-7_L108_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_0-7-7_L1" />
     <param oldName="Convective_precipitation" newName="Convective_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-10_L1_Imixed_S1" />
-    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_pressure" varId="VAR_0-0-6_L100" />
+    <param oldName="Dew_point_temperature" newName="Dew-point_temperature_isobaric" varId="VAR_0-0-6_L100" />
     <param oldName="Dew_point_temperature_pressure_difference_layer" newName="Dew-point_temperature_pressure_difference_layer" varId="VAR_0-0-6_L108_layer" />
     <param oldName="Direct_Evaporation_Cease_soil_moisture" newName="Direct_Evaporation_Cease_soil_moisture_surface" varId="VAR_2-3-196_L1" />
     <param oldName="Downward_Long-Wave_Rad_Flux" newName="Downward_Long-Wave_Radp_Flux_surface" varId="VAR_0-5-192_L1" />
@@ -2863,7 +2863,7 @@
     <param oldName="Evaporation" newName="Evaporation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-6_L1_Imixed_S1" />
     <param oldName="Exchange_Coefficient" newName="Exchange_Coefficient_surface" varId="VAR_2-0-195_L1" />
     <param oldName="Frictional_Velocity" newName="Frictional_Velocity_surface" varId="VAR_0-2-197_L1" />
-    <param oldName="Geopotential_height" newName="Geopotential_height_pressure" varId="VAR_0-3-5_L100" />
+    <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_0-3-5_L100" />
     <param oldName="Geopotential_height_adiabatic_condensation_lifted" newName="Geopotential_height_adiabatic_condensation_lifted" varId="VAR_0-3-5_L5" />
     <param oldName="Geopotential_height_highest_tropospheric_freezing" newName="Geopotential_height_highest_tropospheric_freezing" varId="VAR_0-3-5_L204" />
     <param oldName="Geopotential_height_hybrid" newName="Geopotential_height_hybrid" varId="VAR_0-3-5_L105" />
@@ -2873,7 +2873,7 @@
     <param oldName="Geopotential_height_zeroDegC_isotherm" newName="Geopotential_height_zeroDegC_isotherm" varId="VAR_0-3-5_L4" />
     <param oldName="Ground_Heat_Flux" newName="Ground_Heat_Flux_surface_Mixed_intervals_Average" varId="VAR_2-0-193_L1_Imixed_S0" />
     <param oldName="High_cloud_cover" newName="High_cloud_cover_high_cloud" varId="VAR_0-6-5_L234" />
-    <param oldName="Horizontal_Moisture_Divergence" newName="Horizontal_Moisture_Divergence_pressure" varId="VAR_0-1-197_L100" />
+    <param oldName="Horizontal_Moisture_Divergence" newName="Horizontal_Moisture_Divergence_isobaric" varId="VAR_0-1-197_L100" />
     <param oldName="Horizontal_Moisture_Divergence_pressure_difference_layer" newName="Horizontal_Moisture_Divergence_pressure_difference_layer" varId="VAR_0-1-197_L108_layer" />
     <param oldName="Humidity_parameter_in_canopy_conductance" newName="Humidity_parameter_in_canopy_conductance_surface" varId="VAR_2-0-204_L1" />
     <param oldName="Ice_cover_Proportion" newName="Ice_cover_surface" varId="VAR_10-2-0_L1" />
@@ -2920,7 +2920,7 @@
     <param oldName="Pressure_tropopause" newName="Pressure_tropopause" varId="VAR_0-3-0_L7" />
     <param oldName="Probability_of_frozen_Precipitation" newName="Probability_of_Frozen_Precipitation_surface" varId="VAR_1-1-193_L1" />
     <param oldName="Rain_mixing_ratio" newName="Rain_mixing_ratio_hybrid" varId="VAR_0-1-24_L105" />
-    <param oldName="Relative_humidity" newName="Relative_humidity_pressure" varId="VAR_0-1-1_L100" />
+    <param oldName="Relative_humidity" newName="Relative_humidity_isobaric" varId="VAR_0-1-1_L100" />
     <param oldName="Relative_humidity_height_above_ground" newName="Relative_humidity_height_above_ground" varId="VAR_0-1-1_L103" />
     <param oldName="Relative_humidity_hybrid" newName="Relative_humidity_hybrid" varId="VAR_0-1-1_L105" />
     <param oldName="Relative_humidity_pressure_difference_layer" newName="Relative_humidity_pressure_difference_layer" varId="VAR_0-1-1_L108_layer" />
@@ -2934,7 +2934,7 @@
     <param oldName="Snow_Phase_Change_Heat_Flux" newName="Snow_Phase_Change_Heat_Flux_surface_Mixed_intervals_Average" varId="VAR_0-0-192_L1_Imixed_S0" />
     <param oldName="Snow_depth" newName="Snow_depth_surface" varId="VAR_0-1-11_L1" />
     <param oldName="Snow_melt" newName="Snow_melt_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-16_L1_Imixed_S1" />
-    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_pressure" varId="VAR_0-1-25_L100" />
+    <param oldName="Snow_mixing_ratio" newName="Snow_mixing_ratio_isobaric" varId="VAR_0-1-25_L100" />
     <param oldName="Snow_mixing_ratio_hybrid" newName="Snow_mixing_ratio_hybrid" varId="VAR_0-1-25_L105" />
     <param oldName="Soil_Porosity" newName="Soil_Porosity_surface" varId="VAR_2-3-197_L1" />
     <param oldName="Soil_moisture_content" newName="Soil_moisture_content_depth_below_surface_layer" varId="VAR_2-0-3_L106_layer" />
@@ -2943,17 +2943,17 @@
     <param oldName="Soil_temperature_depth_below_surface" newName="Soil_temperature_depth_below_surface" varId="VAR_2-0-2_L106" />
     <param oldName="Soil_type_as_in_Zobler" newName="Soil_type_surface" varId="VAR_2-3-0_L1" />
     <param oldName="Solar_parameter_in_canopy_conductance" newName="Solar_parameter_in_canopy_conductance_surface" varId="VAR_2-0-202_L1" />
-    <param oldName="Specific_humidity" newName="Specific_humidity_pressure" varId="VAR_0-1-0_L100" />
+    <param oldName="Specific_humidity" newName="Specific_humidity_isobaric" varId="VAR_0-1-0_L100" />
     <param oldName="Specific_humidity_height_above_ground" newName="Specific_humidity_height_above_ground" varId="VAR_0-1-0_L103" />
     <param oldName="Specific_humidity_hybrid" newName="Specific_humidity_hybrid" varId="VAR_0-1-0_L105" />
     <param oldName="Specific_humidity_pressure_difference_layer" newName="Specific_humidity_pressure_difference_layer" varId="VAR_0-1-0_L108_layer" />
     <param oldName="Specific_humidity_surface" newName="Specific_humidity_surface" varId="VAR_0-1-0_L1" />
     <param oldName="Storm_Surface_Runoff" newName="Storm_Surface_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-193_L1_Imixed_S1" />
     <param oldName="Storm_relative_helicity" newName="Storm_relative_helicity_height_above_ground_layer" varId="VAR_0-7-8_L103_layer" />
-    <param oldName="Stream_function" newName="Stream_function_pressure" varId="VAR_0-2-4_L100" />
+    <param oldName="Stream_function" newName="Stream_function_isobaric" varId="VAR_0-2-4_L100" />
     <param oldName="Surface_Lifted_Index" newName="Surface_Lifted_Index_pressure_layer" varId="VAR_0-7-192_L100_layer" />
     <param oldName="Surface_roughness" newName="Surface_roughness_surface" varId="VAR_2-0-1_L1" />
-    <param oldName="Temperature" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_cloud_tops" newName="Temperature_cloud_tops" varId="VAR_0-0-0_L3" />
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_hybrid" newName="Temperature_hybrid" varId="VAR_0-0-0_L105" />
@@ -2971,10 +2971,10 @@
     <param oldName="Total_cloud_cover_Average" newName="Total_cloud_cover_entire_atmosphere_Mixed_intervals_Average" varId="VAR_0-6-1_L200_Imixed_S0" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_0-1-8_L1_Imixed_S1" />
     <param oldName="Transpiration_Stress-onset_soil_moisture" newName="Transpiration_Stress-onset_soil_moisture_surface" varId="VAR_2-3-195_L1" />
-    <param oldName="Turbulent_kinetic_energy" newName="Turbulent_kinetic_energy_pressure" varId="VAR_0-19-11_L100" />
+    <param oldName="Turbulent_kinetic_energy" newName="Turbulent_kinetic_energy_isobaric" varId="VAR_0-19-11_L100" />
     <param oldName="Turbulent_kinetic_energy_hybrid" newName="Turbulent_kinetic_energy_hybrid" varId="VAR_0-19-11_L105" />
     <param oldName="U-Component_Storm_Motion" newName="U-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-194_L103_layer" />
-    <param oldName="U-component_of_wind" newName="u-component_of_wind_pressure" varId="VAR_0-2-2_L100" />
+    <param oldName="U-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_0-2-2_L100" />
     <param oldName="U-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_0-2-2_L103" />
     <param oldName="U-component_of_wind_hybrid" newName="u-component_of_wind_hybrid" varId="VAR_0-2-2_L105" />
     <param oldName="U-component_of_wind_maximum_wind" newName="u-component_of_wind_maximum_wind" varId="VAR_0-2-2_L6" />
@@ -2987,7 +2987,7 @@
     <param oldName="Upward_Short-Wave_Rad_Flux_surface" newName="Upward_Short-Wave_Radiation_Flux_surface" varId="VAR_0-4-193_L1" />
     <param oldName="Upward_Short-Wave_Rad_Flux_surface_Average" newName="Upward_Short-Wave_Radiation_Flux_surface_Mixed_intervals_Average" varId="VAR_0-4-193_L1_Imixed_S0" />
     <param oldName="V-Component_Storm_Motion" newName="V-Component_Storm_Motion_height_above_ground_layer" varId="VAR_0-2-195_L103_layer" />
-    <param oldName="V-component_of_wind" newName="v-component_of_wind_pressure" varId="VAR_0-2-3_L100" />
+    <param oldName="V-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_0-2-3_L100" />
     <param oldName="V-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_0-2-3_L103" />
     <param oldName="V-component_of_wind_hybrid" newName="v-component_of_wind_hybrid" varId="VAR_0-2-3_L105" />
     <param oldName="V-component_of_wind_maximum_wind" newName="v-component_of_wind_maximum_wind" varId="VAR_0-2-3_L6" />
@@ -2996,7 +2996,7 @@
     <param oldName="Vegetation" newName="Vegetation_surface" varId="VAR_2-0-4_L1" />
     <param oldName="Vegetation_Type" newName="Vegetation_Type_surface" varId="VAR_2-0-198_L1" />
     <param oldName="Vertical_speed_sheer" newName="Vertical_Speed_Shear_tropopause" varId="VAR_0-2-192_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_hybrid" newName="Vertical_velocity_pressure_hybrid" varId="VAR_0-2-8_L105" />
     <param oldName="Vertical_velocity_pressure_pressure_difference_layer" newName="Vertical_velocity_pressure_pressure_difference_layer" varId="VAR_0-2-8_L108_layer" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
@@ -3008,7 +3008,7 @@
     <param oldName="Wind_speed_gust" newName="Wind_speed_gust_surface" varId="VAR_0-2-22_L1" />
   </dataset>
   <dataset name="NAM_CONUS_12km_conduit_20121206_1800.grib2">
-    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_pressure" varId="VAR_0-2-10_L100" />
+    <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_0-2-10_L100" />
     <param oldName="Albedo" newName="Albedo_surface" varId="VAR_0-19-1_L1" />
     <param oldName="Baseflow-Groundwater_Runoff" newName="Baseflow-Groundwater_Runoff_surface_Mixed_intervals_Accumulation" varId="VAR_1-0-192_L1_Imixed_S1" />
     <param oldName="Best_Lifted_Index" newName="Best_4_layer_Lifted_Index_pressure_difference_layer" varId="VAR_0-7-193_L108_layer" />
@@ -3122,7 +3122,7 @@
     <param oldName="Temperature_height_above_ground" newName="Temperature_height_above_ground" varId="VAR_0-0-0_L103" />
     <param oldName="Temperature_hybrid" newName="Temperature_hybrid" varId="VAR_0-0-0_L105" />
     <param oldName="Temperature_parameter_in_canopy_conductance" newName="Temperature_parameter_in_canopy_conductance_surface" varId="VAR_2-0-203_L1" />
-    <param oldName="Temperature_pressure" newName="Temperature_pressure" varId="VAR_0-0-0_L100" />
+    <param oldName="Temperature_pressure" newName="Temperature_isobaric" varId="VAR_0-0-0_L100" />
     <param oldName="Temperature_sigma" newName="Temperature_sigma" varId="VAR_0-0-0_L104" />
     <param oldName="Temperature_surface" newName="Temperature_surface" varId="VAR_0-0-0_L1" />
     <param oldName="Total_Column-Integrated_Cloud_Ice" newName="Total_Column-Integrated_Cloud_Ice_entire_atmosphere" varId="VAR_0-6-197_L200" />
@@ -3155,7 +3155,7 @@
     <param oldName="V-component_of_wind_planetary_boundary" newName="v-component_of_wind_planetary_boundary" varId="VAR_0-2-3_L220" />
     <param oldName="Vegetation" newName="Vegetation_surface" varId="VAR_2-0-4_L1" />
     <param oldName="Vegetation_Type" newName="Vegetation_Type_surface" varId="VAR_2-0-198_L1" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_pressure" varId="VAR_0-2-8_L100" />
+    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_0-2-8_L100" />
     <param oldName="Vertical_velocity_pressure_hybrid" newName="Vertical_velocity_pressure_hybrid" varId="VAR_0-2-8_L105" />
     <param oldName="Visibility" newName="Visibility_surface" varId="VAR_0-19-0_L1" />
     <param oldName="Volumetric_Soil_Moisture_Content" newName="Volumetric_Soil_Moisture_Content_depth_below_surface_layer" varId="VAR_2-0-192_L106_layer" />
