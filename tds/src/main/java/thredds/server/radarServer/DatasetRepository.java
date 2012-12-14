@@ -69,7 +69,7 @@ public class DatasetRepository {
     nexrad, terminal
   }
 
-  static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( DatasetRepository.class );
+  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static public InvCatalogImpl cat = null;
   static public final String catName = "radarCollections.xml";
   static public URI catURI;
@@ -120,7 +120,7 @@ public class DatasetRepository {
           InvDatasetScan ds = (InvDatasetScan) datasets.get(j);
           if (ds.getPath() != null) {
             dataLocation.put(ds.getPath(), ds.getScanLocation());
-            log.info("path =" + ds.getPath() + " location =" + ds.getScanLocation());
+            startupLog.info("path =" + ds.getPath() + " location =" + ds.getScanLocation());
           }
           ds.setXlinkHref(ds.getPath() + "/dataset.xml");
         }
@@ -129,7 +129,7 @@ public class DatasetRepository {
          nexradList = readStations( contentPath + getPath() + nexradStations );
          terminalList = readStations( contentPath + getPath() + terminalStations );
          if( nexradList == null || terminalList == null) {
-             log.error( "Station initialization problem using "+
+           startupLog.error( "Station initialization problem using "+
                      contentPath + getPath() + nexradStations +" "+
                      contentPath + getPath() + terminalStations );
              return false;
@@ -137,7 +137,7 @@ public class DatasetRepository {
          nexradMap = getStationMap( nexradList );
          terminalMap = getStationMap( terminalList );
       }
-      log.info( "DatasetRepository initialization done -  " );
+    startupLog.info( "DatasetRepository initialization done -  " );
       return true;
     }
 
@@ -209,18 +209,18 @@ public class DatasetRepository {
       catURI = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
-      log.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
+      startupLog.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
 
     // read the catalog
-    log.info("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
+    startupLog.info("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
     FileInputStream ios = null;
     try {
       ios = new FileInputStream(catalogFullPath);
       acat = factory.readXML(ios, catURI);
     } catch (Throwable t) {
-      log.info("radarServer readCatalog(): Exception on catalog=" +
+      startupLog.info("radarServer readCatalog(): Exception on catalog=" +
           catalogFullPath + " " + t.getMessage()); //+"\n log="+cat.getLog(), t);
       return null;
     }
@@ -230,7 +230,7 @@ public class DatasetRepository {
           ios.close();
         }
         catch (IOException e) {
-          log.info("radarServer readCatalog(): error closing" + catalogFullPath);
+          startupLog.info("radarServer readCatalog(): error closing" + catalogFullPath);
         }
       }
     }
@@ -316,7 +316,7 @@ public class DatasetRepository {
             is.close();
           }
           catch (IOException e) {
-            log.error("radarServer getStations(): error closing" + stnLocation);
+            startupLog.error("radarServer getStations(): error closing" + stnLocation);
           }
         }
       }

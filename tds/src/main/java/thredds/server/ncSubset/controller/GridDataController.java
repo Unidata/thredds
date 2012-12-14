@@ -455,14 +455,22 @@ class GridDataController extends AbstratNcssDataRequestController {
   }
 
   @ExceptionHandler
+  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+  public
+  @ResponseBody
+  String handle(java.net.SocketException ioe) {
+    return "SocketException handled : " + ioe.getMessage();
+  }
+
+  @ExceptionHandler
   @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
   public
   @ResponseBody
   String handle(IOException ioe) {
-    return "I/O xception handled : " + ioe.getMessage();
+    return "I/O Exception handled : " + ioe.getMessage();
   }
 
-  @ExceptionHandler
+ @ExceptionHandler
   @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
   public
   @ResponseBody
@@ -471,3 +479,5 @@ class GridDataController extends AbstratNcssDataRequestController {
   }
 
 }
+
+
