@@ -1484,6 +1484,8 @@ public final class DataRootHandler implements InitializingBean{
       return null;
     }
 
+    if (path.endsWith("/latest.xml")) return null; // latest is not handled here
+
     InvDatasetScan dscan = match.dataRoot.scan;
     if (log.isDebugEnabled())
       log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
