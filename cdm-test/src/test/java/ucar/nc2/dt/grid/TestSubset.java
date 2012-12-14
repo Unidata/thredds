@@ -201,7 +201,7 @@ public class TestSubset extends TestCase {
 
     GridDataset dataset = (GridDataset) result.featureDataset;
 
-    GeoGrid grid = dataset.findGridByName("Temperature_pressure");
+    GeoGrid grid = dataset.findGridByName("Temperature_isobaric");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
@@ -314,7 +314,7 @@ public class TestSubset extends TestCase {
     // GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/NCEP-NAM-CONUS_12km_best.ncd");
     GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:9080/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
 
-    GeoGrid grid = dataset.findGridByName("Relative_humidity_pressure");
+    GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
