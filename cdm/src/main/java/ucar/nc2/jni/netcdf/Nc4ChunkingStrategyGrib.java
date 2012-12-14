@@ -9,6 +9,7 @@ import ucar.nc2.Variable;
  * @since 11/26/12
  */
 public class Nc4ChunkingStrategyGrib extends Nc4ChunkingStrategyImpl {
+
   public Nc4ChunkingStrategyGrib(int deflateLevel, boolean shuffle) {
     super(deflateLevel, shuffle);
   }

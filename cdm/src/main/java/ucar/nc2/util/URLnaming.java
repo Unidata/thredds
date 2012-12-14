@@ -345,7 +345,7 @@ public class URLnaming {
     if (args.length > 0) {
       checkUnEsc(args[0]);
     } else {
-      String s = "/thredds/cdmremote/grib/NCEP/GFS/Global_0p5deg/best?var=Precipitable_water_entire_atmosphere%280%3A316%2C0%3A360%2C0%3A719%29";
+      String s = "/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best.dods?Relative_humidity_pressure%5b0:1:0%5d%5b0:1:24%5d%5b0:10:420%5d%5b0:10:610%5d";
       decode(s);
     }
 

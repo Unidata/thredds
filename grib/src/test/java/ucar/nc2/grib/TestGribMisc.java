@@ -49,8 +49,9 @@ public class TestGribMisc {
   @Test
   public void pdsScaleOverflow() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/pdsScale.grib2";
+    System.out.printf("%s%n", filename);
     NetcdfFile ncfile = NetcdfFile.open(filename, null);
-    Variable v = ncfile.findVariable("pressure");
+    Variable v = ncfile.findVariable("isobaric");
     float val = v.readScalarFloat();
     assert Misc.closeEnough(val, 92500.0) : val;
     ncfile.close();
@@ -60,6 +61,7 @@ public class TestGribMisc {
   public void pdsGenType() throws Exception {
     // this one has a analysis and forecast in same variable
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/08Aug08.12z.cras45_NA.grib2";
+    System.out.printf("%s%n", filename);
     NetcdfFile ncfile = NetcdfFile.open(filename, null);
     Variable v = ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
     assert v != null : ncfile.getLocation();
