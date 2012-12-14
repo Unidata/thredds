@@ -42,7 +42,12 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.FileWriter2;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -57,6 +62,8 @@ import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.jni.netcdf.Nc4Chunking;
+import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyGrib;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -268,7 +275,15 @@ public class NetcdfCFWriter {
 
     // check size is ok
     boolean isLargeFile = isLargeFile(total_size);
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, null);
+    
+    //Default chunking strategy for NCSS will be used if chunking = null
+    Nc4Chunking chunking = null;
+    if( version == NetcdfFileWriter.Version.netcdf4 ){
+    	//version = NetcdfFileWriter.Version.netcdf4_classic;
+        //use grib chunking as default --> one chunk for each (y,x)-slide
+    	chunking = new Nc4ChunkingStrategyGrib(5, true);    
+    }
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, chunking);
     writer.setLargeFile(isLargeFile);
 
     writeGlobalAttributes(writer, gds);
@@ -389,9 +404,19 @@ public class NetcdfCFWriter {
     // check size is ok
     boolean isLargeFile = isLargeFile(total_size);
 
-    if (version == NetcdfFileWriter.Version.netcdf4)
-      version = NetcdfFileWriter.Version.netcdf4_classic;
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, null);
+    //Default chunking strategy for NCSS
+    Nc4Chunking chunking = null;
+   
+    if (version == NetcdfFileWriter.Version.netcdf4){
+      //version = NetcdfFileWriter.Version.netcdf4_classic;
+      //use grib chunking as default --> one chunk for each (y,x)-slide	
+      chunking = new Nc4ChunkingStrategyGrib(5, true);
+    }
+    
+ 
+    
+    //NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, null);
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, chunking);
     writer.setLargeFile(isLargeFile);
 
     writeGlobalAttributes(writer, gds);

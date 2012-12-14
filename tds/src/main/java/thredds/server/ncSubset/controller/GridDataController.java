@@ -87,6 +87,11 @@ class GridDataController extends AbstratNcssDataRequestController {
 
   static private final Logger log = LoggerFactory.getLogger(GridDataController.class);
 
+  /*
+   * Compression rate used to estimate the filesize of netcdf4 compressed files
+   */
+  static private final short ESTIMATED_C0MPRESION_RATE =5; 
+  
   private HttpHeaders httpHeaders = new HttpHeaders();
   private File netcdfResult;
   private long maxFileDownloadSize = -1L;
@@ -155,6 +160,9 @@ class GridDataController extends AbstratNcssDataRequestController {
       maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
       if (maxFileDownloadSize > 0) {
         long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon());
+        if(version == NetcdfFileWriter.Version.netcdf4){
+        	estimatedSize /= ESTIMATED_C0MPRESION_RATE;
+        }
         if (estimatedSize > maxFileDownloadSize) {
           throw new RequestTooLargeException("NCSS request too large = " + estimatedSize + " max = " + maxFileDownloadSize);
         }
@@ -207,6 +215,9 @@ class GridDataController extends AbstratNcssDataRequestController {
     maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
     if (maxFileDownloadSize > 0) {
       long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon());
+      if(version == NetcdfFileWriter.Version.netcdf4){
+      	estimatedSize /= ESTIMATED_C0MPRESION_RATE;
+      }      
       if (estimatedSize > maxFileDownloadSize) {
         throw new RequestTooLargeException("NCSS request too large = " + estimatedSize + " max = " + maxFileDownloadSize);
       }
