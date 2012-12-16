@@ -21,7 +21,7 @@
 </ul>
 <h3>TDS 4.3 Dataset Access Changes</h3>
 <ul>
-  <li>Upgrades to the way GRIB variables are named, as well as changes to the main Unidata TDS access URLs, will require <a href="reference/AccessChangesTds4.3.html">modifications</a> to software designed to access data from a TDS. This includes various scripts used to interface with the TDS hosted at Unidata and elsewhere (running TDS 4.3).</li>
+  <li>Upgrades to the way GRIB variables are named, as well as changes to the main Unidata TDS access URLs, will require <a href="AccessChangesTds4.3.html">modifications</a> to software designed to access data from a TDS. This includes various scripts used to interface with the TDS hosted at Unidata and elsewhere (running TDS 4.3).</li>
 </ul>
 <h3>Release Engineering</h3>
 <ul>
@@ -35,7 +35,7 @@
   <li>The <strong>datasetFmrc</strong> element should be <a href="reference/collections/FmrcCollection.html">migrated</a> to a <strong>featureCollection</strong> type=FMRC.</li>
   <li>Stop using NCML or FMRC aggregations on GRIB files. Only  <strong>featureCollection</strong> type=GRIB&nbsp;should be used. <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html">Details</a>.</li>
   <li>If you are loading GRIB tables at runtime, you must make some <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html">changes</a>.</li>
-  <li>If WMS is enabled, update the wmsConfig.xml file:
+  <li>If WMS is enabled, update the <strong>wmsConfig.xml</strong> file:
   <ul>
   <li>The document type definition is now external and points to: <a href="http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd">http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd</a><br />
   So, the internal document type declaration has to be changed from:

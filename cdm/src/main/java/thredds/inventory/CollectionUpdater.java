@@ -214,7 +214,7 @@ public enum CollectionUpdater {
     FeatureCollectionConfig.ProtoConfig pconfig = config.protoConfig;
     if (pconfig.change != null) {
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
-      map.put(DCM_NAME, manager);
+      pmap.put(DCM_NAME, manager);
       JobDetail protoJob = JobBuilder.newJob(ChangeProtoJob.class)
               .withIdentity(jobName, "UpdateProto")
               .usingJobData(pmap)

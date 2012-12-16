@@ -55,7 +55,8 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.xml", 133, -1, -1, 21);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_onedeg/files/latest.xml", 133, 26, 27, 21);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_2p5deg/files/latest.xml", 133, 24, 25, 21);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/N_Hemisphere_381km/files/latest.xml", 23, 9, 11, 6);
+    // flipping between 23, 9, 11, 6 and 23, 12, 14, 6
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/N_Hemisphere_381km/files/latest.xml", 23, -1, -1, 6);
     // flipping between 50, 14, 15, 8 and  50, 11, 13, 8
     TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Pacific_40km/files/latest.xml", 50, -1, -1, 8);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.xml", 50, 11, 13, 8);
