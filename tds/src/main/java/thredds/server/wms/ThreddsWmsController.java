@@ -118,7 +118,7 @@ public final class ThreddsWmsController extends AbstractWmsController
     ThreddsServerConfig tdsWmsServerConfig = (ThreddsServerConfig) this.serverConfig;
     if ( ! tdsWmsServerConfig.isAllow() )
     {
-      log.info( "dispatchWmsRequest(): WMS service not supported." );
+      log.debug( "dispatchWmsRequest(): WMS service not supported." );
       httpServletResponse.sendError( HttpServletResponse.SC_FORBIDDEN, "WMS service not supported." );
       return null;
     }
@@ -129,7 +129,7 @@ public final class ThreddsWmsController extends AbstractWmsController
       TdsRequestedDataset reqDataset = new TdsRequestedDataset( httpServletRequest );
       if ( reqDataset.isRemote() && ! tdsWmsServerConfig.isAllowRemote() )
       {
-        log.info( "dispatchWmsRequest(): WMS service not supported for remote datasets." );
+        log.debug( "dispatchWmsRequest(): WMS service not supported for remote datasets." );
         throw new WmsException( "WMS service not supported for remote (non-server-resident) datasets.", "LayerNotDefined");
       }
 
@@ -138,7 +138,7 @@ public final class ThreddsWmsController extends AbstractWmsController
       }
       catch ( FileNotFoundException e ) {
         // LOOK ToDo Instead could catch FileNotFoundExceptions below and also add to exceptionResolver in wms-servlet.xml 
-        log.info( "dispatchWmsRequest(): File not found [" + reqDataset.getPath() + "]:" + e.getMessage() + "." );
+        log.debug( "dispatchWmsRequest(): File not found [" + reqDataset.getPath() + "]:" + e.getMessage() + "." );
         throw new LayerNotDefinedException( reqDataset.getPath());
       }
       if ( gd == null )
