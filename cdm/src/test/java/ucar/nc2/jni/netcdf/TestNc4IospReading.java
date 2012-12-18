@@ -60,7 +60,7 @@ public class TestNc4IospReading {
 
   //@Test
   public void problem() throws IOException {
-    doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\files\\tst_strings.nc", true, true, true);
+    doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\tst\\test_enum_type.nc", true, true, true);
   }
 
   @Test

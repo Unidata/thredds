@@ -331,6 +331,7 @@ public class CompareNetcdf2 {
     boolean ok = true;
 
     for (EnumTypedef enum1 : org.getEnumTypedefs()) {
+      if (showCompare) f.format("compare Enum %s%n", enum1.getName());
       EnumTypedef enum2 = copy.findEnumeration(enum1.getName());
       if (enum2 == null) {
         f.format("  ** Enum %s not in file2 %n", enum1.getName());

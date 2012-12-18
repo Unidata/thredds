@@ -460,12 +460,21 @@ public class H5header {
           ncGroup.addVariable(v);
 
           if (v.getDataType().isEnum()) {
-            EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+            EnumTypedef enumTypedef = v.getEnumTypedef();
             if (enumTypedef == null) {
-              enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
-              ncGroup.addEnumeration(enumTypedef);
+              log.error("EnumTypedef is missing for variable: "+v.getFullName());
+              throw new IllegalStateException("EnumTypedef is missing for variable: "+v.getFullName());
             }
-            v.setEnumTypedef(enumTypedef);
+            // This code apparently addresses the possibility of an anonymous enum LOOK ??
+            String ename = enumTypedef.getShortName();
+            if (ename == null || ename.length() == 0) {
+              enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+              if (enumTypedef == null) {
+                enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
+                ncGroup.addEnumeration(enumTypedef);
+              }
+              v.setEnumTypedef(enumTypedef);
+            }
           }
 
           Vinfo vinfo = (Vinfo) v.getSPobject();
@@ -2526,7 +2535,7 @@ public class H5header {
       if (debugPos) debugOut.println("  --> Message Data starts at=" + raf.getFilePointer());
 
       if ((headerMessageFlags & 2) != 0) { // shared
-        messData = getSharedDataObject(mtype).mdt; // LOOK ??
+        messData = getSharedDataObject(mtype).mdt; // eg a shared datatype, eg enums
         return header_length + size;
       }
 
@@ -3825,7 +3834,7 @@ public class H5header {
       for (HeaderMessage mess : dobj.messages) {
         if (mess.mtype == MessageType.Link) {
           MessageLink linkMessage = (MessageLink) mess.messData;
-          if (linkMessage.linkType == 0) {
+          if (linkMessage.linkType == 0) { // hard link
             group.nestedObjects.add(new DataObjectFacade(group, linkMessage.linkName, linkMessage.linkAddress));
           }
         }
