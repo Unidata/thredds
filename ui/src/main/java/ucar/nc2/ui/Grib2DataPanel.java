@@ -32,8 +32,8 @@
 
 package ucar.nc2.ui;
 
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
+//import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+//import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
@@ -880,7 +880,7 @@ public class Grib2DataPanel extends JPanel {
     f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
     f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
 
-    /* try {
+    try {
       f.format("%nbzip2%n");
       ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
       org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
@@ -894,9 +894,9 @@ public class Grib2DataPanel extends JPanel {
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
-    }  */
+    }
 
-    try {
+    /* try {
       f.format("%nbzip2%n");
       ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
       BZip2CompressorOutputStream zipper = new BZip2CompressorOutputStream(out);
@@ -926,7 +926,7 @@ public class Grib2DataPanel extends JPanel {
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
-    }
+    } */
 
   }
 
