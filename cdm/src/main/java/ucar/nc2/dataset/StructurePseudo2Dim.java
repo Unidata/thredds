@@ -114,7 +114,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
 
   @Override
   public Structure select(List<String> memberNames) {
-    StructurePseudo2Dim result = new StructurePseudo2Dim((NetcdfDataset) ncfile, group, getShortName(), memberNames, getDimension(0), getDimension(1));
+    StructurePseudo2Dim result = new StructurePseudo2Dim((NetcdfDataset) ncfile, getParentGroup(), getShortName(), memberNames, getDimension(0), getDimension(1));
     result.isSubset = true;
     return result;
   }

@@ -46,18 +46,16 @@ import java.util.*;
  */
 @Immutable
 public class EnumTypedef extends CDMNode {
-  private final String name;
   private final Map<Integer, String> map;
   private ArrayList<String> enumStrings;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
-    super(CDMSort.ENUMERATION);
-    this.name = NetcdfFile.makeValidCdmObjectName(name);
+    super(NetcdfFile.makeValidCdmObjectName(name));
     this.map = map;
   }
 
-  public String getName() { return name; }
-  public String getShortName() { return name; }
+  public String getName() { return getShortName(); }
+
   public List<String> getEnumStrings() {
     if (enumStrings != null) {
       enumStrings = new ArrayList<String>(map.values());
@@ -105,13 +103,16 @@ public class EnumTypedef extends CDMNode {
     EnumTypedef that = (EnumTypedef) o;
 
     if (map != null ? !map.equals(that.map) : that.map != null) return false;
-    if (name != null ? !name.equals(that.name) : that.name != null) return false;
+    String name = getShortName();
+    String thatname = that.getShortName();
+    if (name != null ? !name.equals(thatname) : thatname != null) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
+    String name = getShortName();
     int result = name != null ? name.hashCode() : 0;
     result = 31 * result + (map != null ? map.hashCode() : 0);
     return result;
@@ -120,7 +121,7 @@ public class EnumTypedef extends CDMNode {
   @Override
   public String toString() {
     final Formatter f = new Formatter();
-    f.format("EnumTypedef %s: ", name);
+    f.format("EnumTypedef %s: ", getShortName());
     for (int key : map.keySet()) {
       f.format("%d=%s,", key, map.get(key));
     }

@@ -50,21 +50,21 @@ import net.jcip.annotations.Immutable;
 
 @Immutable
 public class Attribute extends CDMNode {
-  private String name;
   private String svalue; // optimization for common case of String valued attribute
   private DataType dataType;
   private int nelems; // can be 0 or greater
   private Array values;
 
   /**
-   * Get the name of this Attribute.
+   * Alias for getShortName
    * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
    *
    * @return name
    */
   public String getName() {
-    return name;
+    return getShortName();
   }
+
   /**
    * Set the name of this Attribute.
    * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
@@ -72,7 +72,7 @@ public class Attribute extends CDMNode {
    * @param name
    */
   public synchronized void setName(String name) {
-      this.name = name;
+      setShortName(name);
   }
   /**
    * Get the data type of the Attribute value.
@@ -233,7 +233,8 @@ public class Attribute extends CDMNode {
 
     final Attribute att = (Attribute) o;
 
-    if (!name.equals(att.name)) return false;
+    String name = getShortName();
+    if (!name.equals(att.getShortName())) return false;
     if (nelems != att.nelems) return false;
     if (!dataType.equals(att.dataType)) return false;
 
@@ -259,7 +260,7 @@ public class Attribute extends CDMNode {
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
-      result = 37 * result + getName().hashCode();
+      result = 37 * result + getShortName().hashCode();
       result = 37 * result + nelems;
       result = 37 * result + getDataType().hashCode();
       if (svalue != null)
@@ -295,7 +296,7 @@ public class Attribute extends CDMNode {
    */
   public String toString(boolean strict) {
     StringBuilder buff = new StringBuilder();
-    buff.append(strict ? NetcdfFile.escapeNameCDL(getName()) : getName());
+    buff.append(strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName());
     if (isString()) {
       buff.append(" = ");
       for (int i = 0; i < getLength(); i++) {
@@ -338,8 +339,7 @@ public class Attribute extends CDMNode {
    * @param from copy value from here.
    */
   public Attribute(String name, Attribute from) {
-    super(CDMSort.ATTRIBUTE);
-    this.name = name;
+    super(name);
     this.dataType = from.dataType;
     this.nelems = from.nelems;
     this.svalue = from.svalue;
@@ -353,8 +353,7 @@ public class Attribute extends CDMNode {
    * @param val  value of Attribute
    */
   public Attribute(String name, String val) {
-    super(CDMSort.ATTRIBUTE);
-    this.name = name;
+    super(name);
     setStringValue(val);
   }
 
@@ -365,8 +364,7 @@ public class Attribute extends CDMNode {
    * @param val  value of Attribute
    */
   public Attribute(String name, Number val) {
-    super(CDMSort.ATTRIBUTE);
-    this.name = name;
+    super(name);
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass());
@@ -383,8 +381,7 @@ public class Attribute extends CDMNode {
    * @param values array of values.
    */
   public Attribute(String name, Array values) {
-    super(CDMSort.ATTRIBUTE);
-    this.name = name;
+    super(name);
     setValues(values);
   }
 
@@ -395,8 +392,7 @@ public class Attribute extends CDMNode {
    * @param dataType type of Attribute.
    */
   public Attribute(String name, DataType dataType) {
-    super(CDMSort.ATTRIBUTE);
-    this.name = name;
+    super(name);
     this.dataType = dataType == DataType.CHAR ? DataType.STRING : dataType;
     this.nelems = 0;
   }
@@ -408,8 +404,7 @@ public class Attribute extends CDMNode {
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    */
   public Attribute(String name, List values) {
-    super(CDMSort.ATTRIBUTE);
-    this.name = name;
+    super(name);
     int n = values.size();
     Object pa = null;
 
@@ -464,9 +459,7 @@ public class Attribute extends CDMNode {
    * @param param copy info from here.
    */
   public Attribute(ucar.unidata.util.Parameter param) {
-    super(CDMSort.ATTRIBUTE);
-
-    this.name = param.getName();
+    super(param.getName());
 
     if (param.isString()) {
       setStringValue(param.getStringValue());
@@ -489,8 +482,7 @@ public class Attribute extends CDMNode {
    * @param name name of Attribute
    */
   protected Attribute(String name) {
-    super(CDMSort.ATTRIBUTE);
-    this.name = name;
+    super(name);
   }
 
   /**

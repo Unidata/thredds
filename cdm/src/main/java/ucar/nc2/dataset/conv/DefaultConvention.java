@@ -129,7 +129,7 @@ public class DefaultConvention extends CoordSysBuilder {
           if (!(ncvar instanceof VariableDS)) continue; // cant be a structure
           String unit = ncvar.getUnitsString();
 
-          if (SimpleUnit.isDateUnit(unit)) {
+          if (unit != null && SimpleUnit.isDateUnit(unit)) {
             vp.isCoordinateAxis = true;
             map.put(AxisType.Time, vp);
             parseInfo.format(" Time Coordinate Axis added (unit) = %s from unit %s\n", vp.v.getFullName(), unit);

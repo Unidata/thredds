@@ -63,37 +63,24 @@ public class Structure extends Variable {
 
    /* Create a Structure "from scratch". Also must call setDimensions().
    *
-   * @param sort the kind of node this is
    * @param ncfile    the containing NetcdfFile.
    * @param group     the containing group; if null, use rootGroup
    * @param parent    parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
    */
-  public Structure(CDMSort sort, NetcdfFile ncfile, Group group, Structure parent, String shortName) {
-    super(sort, ncfile, group, parent, shortName);
+  public Structure(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
+    super(ncfile, group, parent, shortName);
     this.dataType = DataType.STRUCTURE;
     this.elementSize = -1; // gotta wait before calculating
     members = new ArrayList<Variable>();
     memberHash = new HashMap<String, Variable>();
   }
 
-   /* Alias constructor 
-   *
-   * @param ncfile    the containing NetcdfFile.
-   * @param group     the containing group; if null, use rootGroup
-   * @param parent    parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   */
-  public Structure( NetcdfFile ncfile, Group group, Structure parent, String shortName) {
-	this(CDMSort.STRUCTURE,ncfile,group,parent,shortName);
-  }
-
   /** Copy constructor.
-   * @param sort the kind of node this is
    * @param from  copy from this
    */
-  protected Structure(CDMSort sort, Structure from) { // , boolean reparent) {
-    super(sort, from);
+  protected Structure(Structure from) { // , boolean reparent) {
+    super(from);
 
     members = new ArrayList<Variable>(from.members);
     memberHash = new HashMap<String, Variable>(from.memberHash);
@@ -104,13 +91,6 @@ public class Structure extends Variable {
         v.setParentStructure(this);
       }
     } */
-  }
-
-  /** Copy constructor.
-   * @param from  copy from this
-   */
-  protected Structure( Structure from) { // , boolean reparent) {
-    this(CDMSort.STRUCTURE, from);
   }
 
   /**

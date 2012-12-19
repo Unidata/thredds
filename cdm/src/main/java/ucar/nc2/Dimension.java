@@ -64,10 +64,7 @@ public class Dimension extends CDMNode implements Comparable {
   private boolean isUnlimited = false;
   private boolean isVariableLength = false;
   private boolean isShared = true; // shared means its in a group dimension list.
-  private String name;
   private int length;
-  private boolean immutable = false;
-  private Group g; // null if !isShared
 
   /**
    * Returns the name of this Dimension; may be null.
@@ -75,7 +72,7 @@ public class Dimension extends CDMNode implements Comparable {
    * Dimension names are unique within a Group.
    * @return name of Dimension, may be null for anonymous dimension
    */
-  public String getName() { return name; }
+  public String getName() { return getShortName(); }
 
   /**
    * Get the length of the Dimension.
@@ -108,9 +105,10 @@ public class Dimension extends CDMNode implements Comparable {
    * Get the Group that owns this Dimension.
    * @return owning group or null if !isShared
    */
-  public Group getGroup() { return g; }
+  public Group getGroup() { return getParentGroup(); }
 
   public String makeFullName() {
+    Group g = getGroup();
     if (((g == null) || g.isRoot())) return getName();
     return g.getName() +"/" + this.getName();
   }
@@ -124,6 +122,7 @@ public class Dimension extends CDMNode implements Comparable {
     if (this == oo) return true;
     if ( !(oo instanceof Dimension)) return false;
     Dimension other = (Dimension) oo;
+    Group g = getGroup();
     if ((g != null) && !g.equals(other.getGroup())) return false;
     if ((getName() == null) && (other.getName() != null)) return false;
     if ((getName() != null) && !getName().equals(other.getName())) return false;
@@ -138,6 +137,7 @@ public class Dimension extends CDMNode implements Comparable {
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
+      Group g = getGroup();
       if (g != null) result += 37 * result + g.hashCode();
       if (null != getName()) result += 37 * result + getName().hashCode();
       result += 37 * result + getLength();
@@ -163,7 +163,7 @@ public class Dimension extends CDMNode implements Comparable {
    */
   public int compareTo(Object o) {
     Dimension odim = (Dimension) o;
-    return name.compareTo(odim.getName());
+    return getShortName().compareTo(odim.getShortName());
   }
 
   /** CDL representation.
@@ -211,15 +211,14 @@ public class Dimension extends CDMNode implements Comparable {
    * @param isVariableLength whether the length is unknown until the data is read.
    */
   public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
-    super(CDMSort.DIMENSION);
-    setName(name);
+    super(name);
     this.isShared = isShared;
     this.isUnlimited = isUnlimited;
     this.isVariableLength = isVariableLength;
     if (isVariableLength && (isUnlimited || isShared))
       throw new IllegalArgumentException("variable length dimension cannot be shared or unlimited") ;
     setLength(length);
-    assert (this.name != null) || !this.isShared;
+    assert (name != null) || !this.isShared;
   }
 
   /**
@@ -228,8 +227,7 @@ public class Dimension extends CDMNode implements Comparable {
    * @param from copy all other fields from here.
    */
   public Dimension(String name, Dimension from) {
-    super(CDMSort.DIMENSION);
-    setName(name);
+    super(name);
     this.length = from.length;
     this.isUnlimited = from.isUnlimited;
     this.isVariableLength = from.isVariableLength;
@@ -295,9 +293,9 @@ public class Dimension extends CDMNode implements Comparable {
    */
   public String setName(String name) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.name = (name == null || name.length() == 0) ? null : NetcdfFile.makeValidCdmObjectName(name);
+    setShortName((name == null || name.length() == 0) ? null : NetcdfFile.makeValidCdmObjectName(name));
     hashCode = 0;
-    return this.name;
+    return getShortName();
   }
 
   /**
@@ -306,7 +304,7 @@ public class Dimension extends CDMNode implements Comparable {
    */
   public void setGroup( Group g) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.g = g;
+    setParentGroup(g);
     hashCode = 0;
   }
 

@@ -157,7 +157,6 @@ public class TestSubset extends TestCase {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);
     System.out.printf("open %s%n", filename);
-
     GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib2Iosp.VARIABLE_ID_ATTNAME, "VAR_3-0-8"); // "Pixel_scene_type");
     assert null != grid : dataset.getLocation();
     GridCoordSystem gcs = grid.getCoordinateSystem();
