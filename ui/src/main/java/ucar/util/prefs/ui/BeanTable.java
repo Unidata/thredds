@@ -99,8 +99,8 @@ public class BeanTable extends JPanel {
    * @param pstore store data in this PreferencesExt store.
    * @param canAddDelete allow changes to the jtable - adds a New and Delete button to bottom panel
    * @param header optional header label
+   * @param tooltip optional tooltip label
    * @param bean  needed for inner classes to call reflected methods on
-
    */
   public BeanTable( Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip, Object bean) {
     this.beanClass = bc;

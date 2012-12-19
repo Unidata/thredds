@@ -121,7 +121,7 @@ public class GribCollectionIndexPanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    groupTable = new BeanTableSorted(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false);
+    groupTable = new BeanTableSorted(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group", "GribCollection.GroupHcs", null);
     groupTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
@@ -145,7 +145,7 @@ public class GribCollectionIndexPanel extends JPanel {
       }
     });
 
-    varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false);
+    varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
     
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
     varPopup.addAction("Show Variable", new AbstractAction() {
@@ -171,7 +171,7 @@ public class GribCollectionIndexPanel extends JPanel {
       }
     });
 
-    vertCoordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false);
+    vertCoordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Vertical Coordinates", "VertCoord", null);
     varPopup = new PopupMenu(vertCoordTable.getJTable(), "Options");
 
     varPopup.addAction("Show", new AbstractAction() {
@@ -185,7 +185,7 @@ public class GribCollectionIndexPanel extends JPanel {
       }
     });
 
-    timeCoordTable = new BeanTableSorted(TimeCoordBean.class, (PreferencesExt) prefs.node("TimeCoordBean"), false);
+    timeCoordTable = new BeanTableSorted(TimeCoordBean.class, (PreferencesExt) prefs.node("TimeCoordBean"), false, "Time Coordinates", "TimeCoord", null);
     varPopup = new PopupMenu(timeCoordTable.getJTable(), "Options");
 
     varPopup.addAction("Show", new AbstractAction() {

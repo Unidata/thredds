@@ -235,4 +235,11 @@ public enum DataType {
     return (short) (b & 0xff);
   }
 
+  public static void main(String[] args) {
+    for (int i=0; i<260; i++) {
+      byte b = (byte) i;
+      System.out.printf("%d = %d = %d%n", i, b, unsignedByteToShort(b));
+    }
+  }
+
 }

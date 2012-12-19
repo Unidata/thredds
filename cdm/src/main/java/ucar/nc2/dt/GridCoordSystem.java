@@ -41,6 +41,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.unidata.geoloc.LatLonPoint;
 
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -318,4 +319,6 @@ public interface GridCoordSystem {
   public CalendarDateRange getCalendarDateRange();
 
   public String getHorizStaggerType();
+
+  public void show(Formatter buff, boolean showCoords);
 }

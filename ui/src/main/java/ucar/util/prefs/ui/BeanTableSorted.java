@@ -62,6 +62,15 @@ public class BeanTableSorted extends BeanTable {
     this( bc, pstore, canAddDelete, header, tooltip, null);
   }
 
+  /**
+   * Constructor
+   * @param bc           bean class
+   * @param pstore       store
+   * @param canAddDelete allow user to add and delete rows
+   * @param header       optional header label
+   * @param tooltip      optional tooltip label
+   * @param bean         needed for inner classes to call reflected methods on
+   */
   public BeanTableSorted( Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip, Object bean) {
     super( bc, pstore, canAddDelete, header, tooltip, bean);
 
