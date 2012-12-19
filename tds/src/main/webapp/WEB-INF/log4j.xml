@@ -168,17 +168,17 @@
 
   <!-- featureCollection debugging -->
   <logger name="thredds.inventory.MFileCollectionManager" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
   <logger name="thredds.inventory.CollectionUpdater" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
   <logger name="thredds.server.root.CollectionController" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
@@ -193,22 +193,22 @@
   </logger>
 
   <logger name="ucar.nc2.grib.grib2.Grib2CollectionBuilder" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
   <logger name="thredds.catalog.InvDatasetFeatureCollection" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
   <logger name="thredds.catalog.InvDatasetFcGrib" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
   <logger name="org.quartz" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 

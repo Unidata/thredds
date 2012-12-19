@@ -84,13 +84,13 @@ public class GeoGridTable extends JPanel {
   public GeoGridTable(PreferencesExt prefs, boolean showCS) {
     this.prefs = prefs;
 
-    varTable = new BeanTableSorted(GeogridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
+    varTable = new BeanTableSorted(GeoGridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
     JTable jtable = varTable.getJTable();
 
     PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
+        GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
         Variable v = vb.geogrid.getVariable();
         infoTA.clear();
         if (v == null)
@@ -104,9 +104,20 @@ public class GeoGridTable extends JPanel {
       }
     });
 
+    csPopup.addAction("Show Coordinates", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
+        Formatter f = new Formatter();
+        showCoordinates(vb, f);
+        infoTA.setText(f.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
+
     csPopup.addAction("WCS DescribeCoverage", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
+        GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
         if (gridDataset.findGridDatatype(vb.getName()) != null) {
           List<String> coverageIdList = Collections.singletonList(vb.getName());
           try {
@@ -276,6 +287,11 @@ public class GeoGridTable extends JPanel {
  BAMutil.addActionToContainer(buttPanel, writeAction);  */
   }
 
+  private void showCoordinates(GeoGridBean vb, Formatter f) {
+    GridCoordSystem gcs = vb.geogrid.getCoordinateSystem();
+    gcs.show(f, true);
+  }
+
   private void writeNetcdf(NetcdfOutputChooser.Data data) {
     if (data.version == NetcdfFileWriter.Version.ncstream) return;
 
@@ -304,10 +320,10 @@ public class GeoGridTable extends JPanel {
   public void setDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
     this.gridDataset = new ucar.nc2.dt.grid.GridDataset(ds, parseInfo);
 
-    List<GeogridBean> beanList = new ArrayList<GeogridBean>();
+    List<GeoGridBean> beanList = new ArrayList<GeoGridBean>();
     java.util.List<GridDatatype> list = gridDataset.getGrids();
     for (GridDatatype g : list)
-      beanList.add(new GeogridBean(g));
+      beanList.add(new GeoGridBean(g));
     varTable.setBeans(beanList);
 
     if (csTable != null) {
@@ -333,10 +349,10 @@ public class GeoGridTable extends JPanel {
   public void setDataset(GridDataset gds) throws IOException {
     this.gridDataset = gds;
 
-    List<GeogridBean> beanList = new ArrayList<GeogridBean>();
+    List<GeoGridBean> beanList = new ArrayList<GeoGridBean>();
     java.util.List<GridDatatype> list = gridDataset.getGrids();
     for (GridDatatype g : list)
-      beanList.add(new GeogridBean(g));
+      beanList.add(new GeoGridBean(g));
     varTable.setBeans(beanList);
 
     if (csTable != null) {
@@ -373,7 +389,7 @@ public class GeoGridTable extends JPanel {
     List grids = varTable.getSelectedBeans();
     List<String> result = new ArrayList<String>();
     for (Object bean : grids) {
-      GeogridBean gbean = (GeogridBean) bean;
+      GeoGridBean gbean = (GeoGridBean) bean;
       result.add(gbean.getName());
     }
     return result;
@@ -381,7 +397,7 @@ public class GeoGridTable extends JPanel {
 
 
   public GridDatatype getGrid() {
-    GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
+    GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
     if (vb == null) {
       List grids = gridDataset.getGrids();
       if (grids.size() > 0)
@@ -392,19 +408,19 @@ public class GeoGridTable extends JPanel {
     return gridDataset.findGridDatatype(vb.getName());
   }
 
-  public class GeogridBean {
+  public class GeoGridBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
-    private GridDatatype geogrid;
-    private String name, desc, units, csys;
-    private String dims, x, y, z, t, ens, rt;
+    GridDatatype geogrid;
+    String name, desc, units, csys;
+    String dims, x, y, z, t, ens, rt;
 
     // no-arg constructor
-    public GeogridBean() {
+    public GeoGridBean() {
     }
 
     // create from a dataset
-    public GeogridBean(GridDatatype geogrid) {
+    public GeoGridBean(GridDatatype geogrid) {
       this.geogrid = geogrid;
       setName(geogrid.getFullName());
       setDescription(geogrid.getDescription());

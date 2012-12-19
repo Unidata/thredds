@@ -63,7 +63,7 @@ public class DatasetWriter extends JPanel {
     this.fileChooser = fileChooser;
 
     // create the variable table(s)
-    dimTable = new BeanTableSorted(DimensionBean.class, (PreferencesExt) prefs.node("DimensionBeanTable"), false, null, null, new DimensionBean());
+    dimTable = new BeanTableSorted(DimensionBean.class, (PreferencesExt) prefs.node("DimensionBeanTable"), false, "Dimensions", null, new DimensionBean());
 
     tablePanel = new JPanel( new BorderLayout());
     setNestedTable(0, null);
@@ -473,7 +473,7 @@ public class DatasetWriter extends JPanel {
        this.level = level;
        myPrefs = (PreferencesExt) prefs.node("NestedTable"+level);
 
-       table = new BeanTableSorted(VariableBean.class, myPrefs, false, null, null, new VariableBean());
+       table = new BeanTableSorted(VariableBean.class, myPrefs, false, "Variables", null, new VariableBean());
 
        JTable jtable = table.getJTable();
        ucar.nc2.ui.widget.PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");

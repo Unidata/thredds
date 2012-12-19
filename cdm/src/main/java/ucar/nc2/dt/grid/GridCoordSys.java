@@ -1339,18 +1339,72 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   @Override
   public String toString() {
     Formatter buff = new Formatter();
-    buff.format("(%s) ", getName());
+    show(buff, false);
+    return buff.toString();
+  }
 
-    if (runTimeAxis != null) buff.format("rt=%s,", runTimeAxis.getFullName());
-    if (ensembleAxis != null) buff.format("ens=%s,", ensembleAxis.getFullName());
-    if (timeTaxis != null) buff.format("t=%s,", timeTaxis.getFullName());
-    if (vertZaxis != null) buff.format("z=%s,", vertZaxis.getFullName());
-    if (horizYaxis != null) buff.format("y=%s,", horizYaxis.getFullName());
-    if (horizXaxis != null) buff.format("x=%s,", horizXaxis.getFullName());
+  @Override
+  public void show(Formatter f, boolean showCoords) {
+    f.format("Coordinate System (%s)%n%n", getName());
+
+    if (getRunTimeAxis() != null) {
+      f.format("rt=%s (%s)", runTimeAxis.getFullName(), runTimeAxis.getClass().getName());
+      if (showCoords) showCoords(runTimeAxis, f);
+      f.format("%n");
+    }
+    if (getEnsembleAxis() != null) {
+      f.format("ens=%s (%s)", ensembleAxis.getFullName(), ensembleAxis.getClass().getName());
+      if (showCoords) showCoords(ensembleAxis, f);
+      f.format("%n");
+    }
+    if (getTimeAxis() != null) {
+      f.format("t=%s (%s)", timeTaxis.getFullName(), timeTaxis.getClass().getName());
+      if (showCoords) showCoords(timeTaxis, f);
+      f.format("%n");
+    }
+    if (getVerticalAxis() != null) {
+      f.format("z=%s (%s)", vertZaxis.getFullName(), vertZaxis.getClass().getName());
+      if (showCoords) showCoords(vertZaxis, f);
+      f.format("%n");
+    }
+    if (getYHorizAxis() != null) {
+      f.format("y=%s (%s)", horizYaxis.getFullName(), horizYaxis.getClass().getName());
+      if (showCoords) showCoords(horizYaxis, f);
+      f.format("%n");
+    }
+    if (getXHorizAxis() != null) {
+      f.format("x=%s (%s)", horizXaxis.getFullName(), horizXaxis.getClass().getName());
+      if (showCoords) showCoords(horizXaxis, f);
+      f.format("%n");
+    }
 
     if (proj != null)
-      buff.format("  Projection: %s %s", proj.getName(), proj.getClassName());
-    return buff.toString();
+      f.format("  Projection: %s %s%n", proj.getName(), proj.paramsToString());
+  }
+
+  private void showCoords(CoordinateAxis axis, Formatter f) {
+    try {
+      if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
+        CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
+        if (!axis1D.isInterval()) {
+          double[] e = axis1D.getCoordEdges();
+          for (double anE : e) {
+            f.format("%f,", anE);
+          }
+        } else {
+          double[] b1 = axis1D.getBound1();
+          double[] b2 = axis1D.getBound2();
+          for (int i=0; i<b1.length; i++) {
+            f.format("(%f,%f) = %f%n", b1[i], b2[i], b2[i] - b1[i]);
+          }
+        }
+      } else {
+        f.format("%s", NCdumpW.printVariableData(axis, null));
+      }
+    } catch (IOException ioe) {
+      f.format(ioe.getMessage());
+    }
+    f.format(" %s%n", axis.getUnitsString());
   }
 
   /////////////////////////////////////////////////////////////////
