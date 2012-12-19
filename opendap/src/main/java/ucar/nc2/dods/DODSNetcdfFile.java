@@ -1207,7 +1207,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
             Dimension myd;
 
             if (name == null) { // if no name, make an anonymous dimension
-                myd = new Dimension("", dad.getSize(), false);
+                myd = new Dimension(null, dad.getSize(), false);
 
             } else { // see if shared
                 if (RC.getUseGroups()) {

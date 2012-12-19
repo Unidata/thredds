@@ -1853,7 +1853,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   protected Group makeRootGroup() {
     Group root = new Group(this, null, "");
-    root.parent = null;
+    root.setParentGroup(null);
     return root;
   }
 

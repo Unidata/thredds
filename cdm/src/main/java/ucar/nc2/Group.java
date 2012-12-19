@@ -60,14 +60,11 @@ public class Group extends CDMNode {
   }
 
   protected NetcdfFile ncfile;
-  protected Group parent;
-  protected String shortName;
   protected List<Variable> variables = new ArrayList<Variable>();
   protected List<Dimension> dimensions = new ArrayList<Dimension>();
   protected List<Group> groups = new ArrayList<Group>();
   protected List<Attribute> attributes = new ArrayList<Attribute>();
   protected List<EnumTypedef> enumTypedefs = new ArrayList<EnumTypedef>();
-  private boolean immutable = false;
   private int hashCode = 0;
 
   /**
@@ -75,17 +72,28 @@ public class Group extends CDMNode {
    *
    * @return group full name
    */
-  public String getName() {
-    return (parent == null) || (parent == ncfile.getRootGroup()) ? shortName : parent.getName() + "/" + shortName;
+  public String getFullName() {
+    String name = getShortName();
+    Group parent = getParentGroup();
+    return (parent == null) || (parent == ncfile.getRootGroup()) ? name : parent.getFullName() + "/" + name;
   }
 
+  /**
+   * Alias for getFullName
+   *
+   * @return group full name
+   */
+   public String getName() {
+    return getFullName();
+   }
+ 
   /**
    * Is this the root group?
    *
    * @return true if root group
    */
   public boolean isRoot() {
-    return parent == null;
+    return getParentGroup() == null;
   }
 
   /**
@@ -95,15 +103,6 @@ public class Group extends CDMNode {
    */
   public String getShortName() {
     return shortName;
-  }
-
-  /**
-   * Get its parent Group, or null if its the root group.
-   *
-   * @return parent Group
-   */
-  public Group getParentGroup() {
-    return parent;
   }
 
   /**
@@ -153,6 +152,7 @@ public class Group extends CDMNode {
     if (varShortName == null) return null;
 
     Variable v = findVariable(varShortName);
+    Group parent = getParentGroup();
     if ((v == null) && (parent != null))
       v = parent.findVariableOrInParent(varShortName);
     return v;
@@ -224,7 +224,7 @@ public class Group extends CDMNode {
     // name = NetcdfFile.unescapeName(name);
     Dimension d = findDimensionLocal(name);
     if (d != null) return d;
-
+    Group parent = getParentGroup();
     if (parent != null)
       return parent.findDimension(name);
 
@@ -268,7 +268,7 @@ public class Group extends CDMNode {
     // name = NetcdfFile.unescapeName(name);
 
     for (Attribute a : attributes) {
-      if (name.equals(a.getName()))
+      if (name.equals(a.getShortName()))
         return a;
     }
     return null;
@@ -284,7 +284,7 @@ public class Group extends CDMNode {
     if (name == null) return null;
     //name =  NetcdfFile.unescapeName(name);
     for (Attribute a : attributes) {
-      if (name.equalsIgnoreCase(a.getName()))
+      if (name.equalsIgnoreCase(a.getShortName()))
         return a;
     }
     return null;
@@ -301,10 +301,10 @@ public class Group extends CDMNode {
     if (name == null) return null;
     // name =  NetcdfFile.unescapeName(name);
     for (EnumTypedef d : enumTypedefs) {
-      if (name.equals(d.getName()))
+      if (name.equals(d.getShortName()))
         return d;
     }
-
+    Group parent = getParentGroup();
     if (parent != null)
       return parent.findEnumeration(name);
 
@@ -421,10 +421,9 @@ public class Group extends CDMNode {
    * @param shortName short name of Group.
    */
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
-    super(CDMSort.GROUP);    
+    super(shortName);    
     this.ncfile = ncfile;
-    this.parent = parent == null ? ncfile.getRootGroup() : parent;
-    setName(shortName);
+    setParentGroup(parent == null ? ncfile.getRootGroup() : parent);
   }
 
   /**
@@ -434,7 +433,7 @@ public class Group extends CDMNode {
    */
   public void setParentGroup(Group parent) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.parent = parent == null ? ncfile.getRootGroup() : parent;
+    super.setParentGroup(parent == null ? ncfile.getRootGroup() : parent);
   }
 
 
@@ -446,8 +445,9 @@ public class Group extends CDMNode {
    */
   public String setName(String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.shortName = NetcdfFile.makeValidCdmObjectName(shortName);
-    return this.shortName;
+    shortName = NetcdfFile.makeValidCdmObjectName(shortName);
+    setShortName(shortName);
+    return shortName;
   }
 
   /**
@@ -475,8 +475,8 @@ public class Group extends CDMNode {
   public void addDimension(Dimension d) {
     if (immutable) throw new IllegalStateException("Cant modify");
 
-    if (findDimensionLocal(d.getName()) != null)
-      throw new IllegalArgumentException("Variable name (" + d.getName() + ") must be unique within Group " + getName());
+    if (findDimensionLocal(d.getShortName()) != null)
+      throw new IllegalArgumentException("Variable name (" + d.getShortName() + ") must be unique within Group " + getShortName());
 
     dimensions.add(d);
     d.setGroup(this);
@@ -485,7 +485,7 @@ public class Group extends CDMNode {
   public boolean addDimensionIfNotExists(Dimension d) {
     if (immutable) throw new IllegalStateException("Cant modify");
 
-    if (findDimensionLocal(d.getName()) != null)
+    if (findDimensionLocal(d.getShortName()) != null)
       return false;
 
     dimensions.add(d);
@@ -502,10 +502,10 @@ public class Group extends CDMNode {
     if (immutable) throw new IllegalStateException("Cant modify");
 
     if (findGroup(g.getShortName()) != null)
-      throw new IllegalArgumentException("Variable name (" + g.getShortName() + ") must be unique within Group " + getName());
+      throw new IllegalArgumentException("Variable name (" + g.getShortName() + ") must be unique within Group " + getShortName());
 
     groups.add(g);
-    g.parent = this; // groups are a tree - only one parent
+    g.setParentGroup(this); // groups are a tree - only one parent
   }
 
   /**
@@ -516,7 +516,7 @@ public class Group extends CDMNode {
   public void addEnumeration(EnumTypedef e) {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (e == null) return;
-
+    e.setParentGroup(this);
     enumTypedefs.add(e);
   }
 
@@ -530,7 +530,7 @@ public class Group extends CDMNode {
     if (v == null) return;
 
     if (findVariable(v.getShortName()) != null)
-      throw new IllegalArgumentException("Variable name (" + v.getShortName() + ") must be unique within Group " + getName());
+      throw new IllegalArgumentException("Variable name (" + v.getShortName() + ") must be unique within Group " + getShortName());
 
     variables.add(v);
     v.setParentGroup(this); // variable can only be in one group
@@ -590,7 +590,7 @@ public class Group extends CDMNode {
     if (immutable) throw new IllegalStateException("Cant modify");
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension d = dimensions.get(i);
-      if (dimName.equals(d.getName())) {
+      if (dimName.equals(d.getShortName())) {
         dimensions.remove(d);
         return true;
       }
@@ -622,7 +622,7 @@ public class Group extends CDMNode {
    * @return this
    */
   public Group setImmutable() {
-    immutable = true;
+    super.setImmutable(true);
     variables = Collections.unmodifiableList(variables);
     dimensions = Collections.unmodifiableList(dimensions);
     groups = Collections.unmodifiableList(groups);
@@ -632,7 +632,7 @@ public class Group extends CDMNode {
 
   @Override
   public String toString() {
-    return getName();
+    return getShortName();
   }
 
   /**

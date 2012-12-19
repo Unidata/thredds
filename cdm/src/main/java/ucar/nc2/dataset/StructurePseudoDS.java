@@ -136,7 +136,7 @@ public class StructurePseudoDS extends StructureDS {
 
   @Override
   public Structure select(List<String> memberNames) {
-    StructurePseudoDS result = new StructurePseudoDS((NetcdfDataset) ncfile, group, getShortName(), memberNames, getDimension(0));   
+    StructurePseudoDS result = new StructurePseudoDS((NetcdfDataset) ncfile, getParentGroup(), getShortName(), memberNames, getDimension(0));   
     result.isSubset = true;
     return result;
   }

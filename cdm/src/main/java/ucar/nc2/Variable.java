@@ -68,9 +68,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   {
     if(RC.getUseGroups()) {
          // leave off leading '/' for root entries
-        if(!context.getParentGroup().isRoot()) {
+        Group xg = context.getParentGroup();
+        if(!xg.isRoot()) {
             // Get the list of parent groups
-            List<Group> path = Group.collectPath(context.getParentGroup());
+            List<Group> path = Group.collectPath(xg);
             StringBuilder dapname = new StringBuilder();
             for(int i=1;i<path.size();i++) {   // start at 1 to skip root group
                 Group g = path.get(i);
@@ -92,8 +93,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   // Instance data and methods
 
   protected NetcdfFile ncfile; // physical container for this Variable; where the I/O happens. may be null if Variable is self contained.
-  protected Group group; // logical container for this Variable. may not be null.
-  protected String shortName; // may not be blank; must not be escaped
   protected int[] shape;
   protected Section shapeAsSection;  // derived from the shape, immutable; used for every read, deferred creation
 
@@ -104,7 +103,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
 
   protected boolean isVariableLength = false;
   protected boolean isMetadata = false;
-  private boolean immutable = false; // cache can change
 
   protected Cache cache = new Cache();
   protected int sizeToCache = -1; // bytes
@@ -137,13 +135,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public String getFullNameEscaped() {
     return NetcdfFile.makeFullNameEscaped(this);
-  }
-
-  /**
-   * Get the short name of this Variable. The name is unique within its parent group.
-   */
-  public String getShortName() {
-    return shortName;
   }
 
   /**
@@ -221,8 +212,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   */
   public Group getParentGroup()
   {
-   if(this.group == null) this.group = ncfile.getRootGroup();
-   return this.group;
+   Group g = super.getParentGroup();
+   if(g == null) {g = ncfile.getRootGroup(); super.setParentGroup(g);}
+   return g;
  }
 
   /**
@@ -852,7 +844,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
      memList.add(this.getShortName());
      Structure s = parent.select(memList);
      ArrayStructure as = (ArrayStructure) s.read();
-     return as.extractMemberArray( as.findMember( shortName));
+     return as.extractMemberArray( as.findMember( getShortName()));
    }
 
     try {
@@ -1132,65 +1124,25 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
    *
-   * @param sort specify the sort of this node
    * @param ncfile    the containing NetcdfFile.
    * @param group     the containing group; if null, use rootGroup
    * @param parent    parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
    */
-  public Variable(CDMSort sort, NetcdfFile ncfile, Group group, Structure parent, String shortName) {
+  public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
+    super(shortName);
     this.ncfile = ncfile;
     if(parent == null)
         setParentGroup((group == null) ? ncfile.getRootGroup() : group);
     else
         setParentStructure(parent);
-    this.shortName = shortName;
     //if (shortName.indexOf(".") >= 0)
     //  System.out.println("HEY gotta .");
-  }
-
-    /**
-       * Alias Constructor
-       *
-       * @param ncfile    the containing NetcdfFile.
-       * @param group     the containing group; if null, use rootGroup
-       * @param parent    parent Structure, may be null
-       * @param shortName variable shortName, must be unique within the Group
-       */
-    public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName)
-        {this(CDMSort.VARIABLE,ncfile,group,parent,shortName);}
-
-  /**
-   * Alias constructor assuming sort is CDMSort.VARIABLE
-   * @param sort the kind of node this is; {@link Structure}
-   * @param sort specify the sort of this node
-   * @param ncfile    the containing NetcdfFile.
-   * @param group     the containing group; if null, use rootGroup
-   * @param parent    parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-  public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
-	this(CDMSort.VARIABLE,ncfile,group,parent,shortName);
   }
 
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
    *
-   * @param sort the kind of node this is; {@link Structure}
-   * @param ncfile    the containing NetcdfFile.
-   * @param group     the containing group; if null, use rootGroup
-   * @param parent    parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @param dtype     the Variable's DataType
-   * @param dims      space delimited list of dimension names. may be null or "" for scalars.
-   */
-  public Variable(CDMSort sort, NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
-    this(sort, ncfile,group,parent,shortName);
-    setDataType( dtype);
-    setDimensions( dims);
-  }
-
-  /**
-   * Alias constructor assuming sort is CDMSort.VARIABLE
    * @param ncfile    the containing NetcdfFile.
    * @param group     the containing group; if null, use rootGroup
    * @param parent    parent Structure, may be null
@@ -1199,8 +1151,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @param dims      space delimited list of dimension names. may be null or "" for scalars.
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
-    this(CDMSort.VARIABLE,ncfile,group,parent,shortName,dtype,dims);
-
+    this(ncfile,group,parent,shortName);
+    setDataType( dtype);
+    setDimensions( dims);
   }
 
   /**
@@ -1210,11 +1163,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * Does not share the proxyReader.
    * Use for section, slice, "logical views" of original variable.
    *
-   * @param sort the kind of node this is; {@link Structure}
    * @param from copy from this Variable.
    */
-  public Variable(CDMSort sort, Variable from) {
-    super(sort);
+  public Variable(Variable from) {
+    super(from.getShortName());
     this.attributes = new ArrayList<Attribute>(from.attributes); // attributes are immutable
     this.cache = from.cache; // caller should do createNewCache() if dont want to share
     this.dataType = from.getDataType();
@@ -1227,17 +1179,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
     this.shape = from.getShape();
-    this.shortName = from.shortName;
     this.sizeToCache = from.sizeToCache;
     this.spiObject = from.spiObject;
   }
 
-
-  /**
-   * Alias constructor assuming sort is CDMSort.VARIABLE.
-   * @param from copy from this Variable.
-   */
-  public Variable(Variable from) {this(CDMSort.VARIABLE,from);}
 
   ///////////////////////////////////////////////////
   // the following make this mutable
@@ -1261,8 +1206,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public String setName(String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.shortName = NetcdfFile.makeValidCdmObjectName(shortName);
-    return this.shortName;
+    setShortName(NetcdfFile.makeValidCdmObjectName(shortName));
+    return getShortName();
   }
 
     /**
@@ -1272,7 +1217,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
        */
       public void setParentGroup(Group group) {
         if (immutable) throw new IllegalStateException("Cant modify");
-        this.group = group;
+	super.setParentGroup(group);
       }
 
 
@@ -1496,7 +1441,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @return this
    */
   public Variable setImmutable() {
-    immutable = true;
+    super.setImmutable(true);
     dimensions = Collections.unmodifiableList(dimensions);
     attributes = Collections.unmodifiableList(attributes);
     return this;
@@ -1853,7 +1798,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     int n = getRank();
     if (n == 1 && dimensions.size() == 1) {
       Dimension firstd = dimensions.get(0);
-      if (shortName.equals(firstd.getName())) { //  : short names match
+      if (getShortName().equals(firstd.getShortName())) { //  : short names match
         return true;
       }
     }

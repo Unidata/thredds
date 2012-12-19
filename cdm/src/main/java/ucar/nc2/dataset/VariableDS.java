@@ -151,7 +151,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    */
   public VariableDS(Group g, Variable orgVar, boolean enhance) {
     super(orgVar);
-    if (g != null) this.group = g; // otherwise super() sets group; this affects the long name and the dimensions.
+    if (g != null) setParentGroup(g); // otherwise super() sets group; this affects the long name and the dimensions.
     setDimensions( getDimensionsString()); // reset the dimensions
 
     if (orgVar instanceof Structure)
@@ -472,8 +472,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
   @Override
   public String setName(String newName) {
-    this.orgName = shortName;
-    return super.setName(newName);
+    this.orgName = getShortName();
+    super.setShortName(newName);
+    return newName;
   }
 
   public String toStringDebug() {
@@ -617,6 +618,5 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     }
     return result;
   }
-
-
 }
+

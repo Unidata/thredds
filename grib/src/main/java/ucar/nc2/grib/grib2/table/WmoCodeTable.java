@@ -213,7 +213,10 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       String[] elems = version.getElemNames();
 
       List<Element> featList = root.getChildren(elems[0]); // main element
-      for (Element elem : featList) {
+      //for (Element elem : featList) {
+      for (int i=0;i<featList.size();i++) {
+        Element elem = featList.get(i);
+        //i == 1332
         String line = elem.getChildTextNormalize("No");
         String tableName = elem.getChildTextNormalize(elems[1]); // 1 = table name
         String code = elem.getChildTextNormalize("CodeFlag");

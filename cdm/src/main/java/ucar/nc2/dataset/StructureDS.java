@@ -94,7 +94,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    */
   public StructureDS(Group g, ucar.nc2.Structure orgVar) { // , boolean reparent) {
     super(orgVar);
-    this.group = g;
+    setParentGroup(g);
     this.orgVar = orgVar;
     this.proxy = new EnhancementsImpl(this);
 
@@ -158,14 +158,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   @Override
   protected Variable copy() {
-    return new StructureDS(this.group, this);
+    return new StructureDS(getParentGroup(), this);
   }
 
   // copy() doesnt work because convert gets called twice
 
   @Override
   public Structure select(List<String> memberNames) {
-    StructureDS result = new StructureDS(this.group, orgVar);
+    StructureDS result = new StructureDS(getParentGroup(), orgVar);
     List<Variable> members = new ArrayList<Variable>();
     for (String name : memberNames) {
       Variable m = findVariable(name);
@@ -216,8 +216,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   @Override
   public String setName(String newName) {
-    this.orgName = shortName;
-    return super.setName(newName);
+    this.orgName = getShortName();
+    setShortName(newName);
+    return newName;
   }
 
   // regular Variables.

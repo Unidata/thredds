@@ -39,22 +39,92 @@ package ucar.nc2;
  * 2. avoid use of instanceof
  * 3. Use container classes that have more than one kind of node
  *
+ * Also move various common fields and methods to here.
+ *
  * @author Heimbigner
  */
 
 public class CDMNode
 {
     CDMSort sort = null;
+    Group group = null;
+    boolean immutable = false;
+    String shortName = null;
 
     // Constructors
 
-    protected CDMNode() {}
+    protected CDMNode()
+    {
+	// Use Instanceof to figure out the sort
+	if(this instanceof Attribute)
+	    setSort(CDMSort.ATTRIBUTE);
+	else if(this instanceof Dimension)
+	    setSort(CDMSort.DIMENSION);
+	else if(this instanceof EnumTypedef)
+	    setSort(CDMSort.ENUMERATION);
+	else if(this instanceof Sequence)
+	    setSort(CDMSort.SEQUENCE);
+	else if(this instanceof Structure)
+	    setSort(CDMSort.STRUCTURE);
+	else if(this instanceof Group)
+	    setSort(CDMSort.GROUP);
+	else if(this instanceof Variable) // Only case left is atomic var
+	    setSort(CDMSort.VARIABLE);
+    }
 
-    public CDMNode(CDMSort sort) {setSort(sort);}
+    public CDMNode(String name) {this(); setShortName(name);}
 
     // Get/Set
     public CDMSort getSort() {return this.sort;}    
 
-    public void setSort(CDMSort sort) {this.sort = sort;}
+    public void setSort(CDMSort sort) {if(!immutable) this.sort = sort;}
 
+    /**
+     * Get the short name of this Variable. The name is unique within its parent group.
+     */
+    public String getShortName() {return this.shortName;}    
+
+    /**
+     * Set the short name of this Variable. The name is unique within its parent group.
+     * @param name new short name
+     */
+    public void setShortName(String name)
+	{if(!immutable) this.shortName = name;}
+
+   /**
+    * Get its parent Group, or null if its the root group.
+    *
+    * @return parent Group
+    */
+    public Group getParentGroup() {return this.group;}    
+
+   /**
+    * Alias for getParentGroup
+    *
+    * @return parent Group
+    */
+    public Group getGroup() {return getParentGroup();}    
+
+   /**
+    * Set the parent Group
+    *
+    * @param parent The new parent group
+    */
+    public void setParentGroup(Group parent)
+	{if(!immutable) this.group = parent;}
+
+   /**
+    * Get immutable flag
+    * As a rule, subclasses will access directly
+    *
+    * @return Immutable flag
+    */
+    public boolean getImmutable() {return this.immutable;}    
+
+   /**
+    * Set the immutable flag
+    *
+    * @param tf The new value for the immutable flag
+    */
+    public void setImmutable(boolean tf) {this.immutable = tf;}
 }

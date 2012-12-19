@@ -750,7 +750,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
     if ((null == boundsAtt) || !boundsAtt.isString()) return false;
     String boundsVarName = boundsAtt.getStringValue();
-    VariableDS boundsVar = (VariableDS) ncd.findVariable(group, boundsVarName);
+    VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
     if (null == boundsVar) return false;
     if (2 != boundsVar.getRank()) return false;
 

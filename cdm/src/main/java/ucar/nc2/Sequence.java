@@ -56,7 +56,7 @@ public class Sequence extends Structure {
   * @param shortName variable shortName, must be unique within the Group
   */
   public Sequence(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
-    super(CDMSort.SEQUENCE, ncfile, group, parent, shortName);
+    super(ncfile, group, parent, shortName);
 
     List<Dimension> dims = new ArrayList<Dimension>();
     dims.add(Dimension.VLEN);
