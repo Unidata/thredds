@@ -77,7 +77,7 @@ public class Group extends CDMNode {
     Group parent = getParentGroup();
     if(parent == null) // we are the root group
 	return name;
-    else if(parent = ncfile.getRootGroup()) {// we are just below root group
+    else if(parent == ncfile.getRootGroup()) // we are just below root group
 	return name; // this does not seem right; should it not return /name?
     else
 	return parent.getFullName() + "/" + name;

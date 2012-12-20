@@ -1194,6 +1194,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public void setDataType(DataType dataType) {
     if (immutable) throw new IllegalStateException("Cant modify");
+    if(getShortName().equals("IR") && dataType == DataType.SHORT) {
+      DataType old = getDataType();
+    }
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
   }
