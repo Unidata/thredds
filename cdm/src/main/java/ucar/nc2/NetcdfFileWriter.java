@@ -196,8 +196,10 @@ public class NetcdfFileWriter {
     }
 
     this.ncfile = new NetcdfFile(spiw, location);  // package private
-    if (isExisting) spiw.open(raf, ncfile, null);
-    defineMode = true;
+    if (isExisting)
+      spiw.open(raf, ncfile, null);
+    else
+      defineMode = true;
   }
 
   /**
