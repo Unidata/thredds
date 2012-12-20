@@ -979,31 +979,30 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     if (strict) name = NetcdfFile.escapeNameCDL( getShortName());
     buf.format("%s", name);
 
-    if (getRank() > 0) buf.format("(");
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension myd = dimensions.get(i);
-      String dimName = myd.getName();
-      if ((dimName != null) && strict)
-        dimName = NetcdfFile.escapeNameCDL(dimName);
-
-      if (i != 0) buf.format(", ");
-
-      if (myd.isVariableLength()) {
-        buf.format("*");
-      } else if (myd.isShared()) {
-        if (!strict)
-          buf.format("%s=%d",dimName,myd.getLength());
-        else
-          buf.format("%s",dimName);
-      } else {
-        if (dimName != null) {
-          buf.format("%s=", dimName);
-        }
-        buf.format("%d", myd.getLength());
-      }
+    if (shape != null) {
+        if(getRank() > 0) buf.format("(");
+        for (int i = 0; i < dimensions.size(); i++) {
+            Dimension myd = dimensions.get(i);
+            String dimName = myd.getName();
+            if ((dimName != null) && strict)
+                dimName = NetcdfFile.escapeNameCDL(dimName);
+            if (i != 0) buf.format(", ");
+            if (myd.isVariableLength()) {
+               buf.format("*");
+            } else if (myd.isShared()) {
+               if (!strict)
+                buf.format("%s=%d",dimName,myd.getLength());
+               else
+                buf.format("%s",dimName);
+            } else {
+                if (dimName != null) {
+                    buf.format("%s=", dimName);
+                }
+                buf.format("%d", myd.getLength());
+            }
+          }
+          if (getRank() > 0) buf.format(")");
     }
-
-    if (getRank() > 0) buf.format(")");
   }
 
   /**
@@ -1029,7 +1028,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
 
   protected void writeCDL(Formatter buf, String indent, boolean useFullName, boolean strict) {
     buf.format(indent);
-    if (dataType.isEnum()) {
+    if(dataType == null)
+        buf.format("Unknown");
+    else if (dataType.isEnum()) {
       if (enumTypedef == null)
         buf.format("enum UNKNOWN");
       else
