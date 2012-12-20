@@ -602,7 +602,7 @@ public class Structure extends Variable {
     for (Attribute att : getAttributes()) {
       buf.format("%s  ", nestedSpace);
       if (strict) buf.format( NetcdfFile.escapeNameCDL(getShortName()));
-      buf.format(":%s;", att.toString(strict));
+      buf.format(":%s;", att.toString(strict, getShortName()));
       if (!strict && (att.getDataType() != DataType.STRING))
         buf.format(" // %s", att.getDataType());
       buf.format("\n");

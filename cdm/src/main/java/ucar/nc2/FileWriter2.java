@@ -65,7 +65,7 @@ import ucar.nc2.jni.netcdf.Nc4Iosp;
 public class FileWriter2 {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
   static private final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
-  static private boolean debug = false, debugWrite = false, debugChunk = true;
+  static private boolean debug = false, debugWrite = false, debugChunk = false;
 
   /**
    * Set debugging flags
@@ -175,7 +175,7 @@ public class FileWriter2 {
     else
       addNetcdf3();
 
-    if (true)
+    if (debugWrite)
       System.out.printf("About to write = %n%s%n", writer.getNetcdfFile());
 
     // create the file

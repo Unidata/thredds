@@ -285,17 +285,19 @@ public class Attribute extends CDMNode {
    */
   @Override
   public String toString() {
-    return toString(false);
+    return toString(false, null);
   }
 
   /**
    * CDL representation
    *
    * @param strict if true, create strict CDL, escaping names
+   * @param owner name of owner, used only if strict == true
    * @return CDL representation
    */
-  public String toString(boolean strict) {
+  public String toString(boolean strict, String owner) {
     StringBuilder buff = new StringBuilder();
+    if (strict && owner != null) buff.append(owner).append(":");
     buff.append(strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName());
     if (isString()) {
       buff.append(" = ");
