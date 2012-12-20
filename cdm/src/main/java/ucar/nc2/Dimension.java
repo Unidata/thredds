@@ -163,7 +163,8 @@ public class Dimension extends CDMNode implements Comparable {
    */
   public int compareTo(Object o) {
     Dimension odim = (Dimension) o;
-    return getShortName().compareTo(odim.getShortName());
+    String name = getShortName();
+    return name.compareTo(odim.getName());
   }
 
   /** CDL representation.
@@ -293,7 +294,8 @@ public class Dimension extends CDMNode implements Comparable {
    */
   public String setName(String name) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    setShortName((name == null || name.length() == 0) ? null : NetcdfFile.makeValidCdmObjectName(name));
+    String newname = (name == null || name.length() == 0) ? null : NetcdfFile.makeValidCdmObjectName(name);
+    setShortName(newname);
     hashCode = 0;
     return getShortName();
   }

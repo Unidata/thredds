@@ -1847,7 +1847,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     variables = new ArrayList<Variable>();
     gattributes = new ArrayList<Attribute>();
     dimensions = new ArrayList<Dimension>();
-    rootGroup = makeRootGroup();
+    if(rootGroup == null)
+        rootGroup = makeRootGroup(); //  only make the root group once
     // addedRecordStructure = false;
   }
 
