@@ -460,6 +460,7 @@ public class Grib1Iosp extends GribIosp {
   @Override
   public String getDetailInfo() {
     Formatter f = new Formatter();
+    f.format("%s",super.getDetailInfo());
     if (gribCollection != null)
       gribCollection.showIndex(f);
     return f.toString();

@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -70,7 +71,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     protected NetcdfFile ncfile;
 
     /** the file we are reading */
-    protected RandomAccessFile raf;
+    //protected RandomAccessFile raf;
 
     /** Gempak file reader */
     protected AbstractGempakStationFileReader gemreader;
@@ -214,7 +215,10 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
      * @return the detail info
      */
     public String getDetailInfo() {
-        return parseInfo.toString();
+      Formatter ff = new Formatter();
+      ff.format("%s",super.getDetailInfo());
+      ff.format("%s",parseInfo);
+      return ff.toString();
     }
 
     /**

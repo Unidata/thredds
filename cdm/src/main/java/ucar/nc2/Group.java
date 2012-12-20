@@ -411,7 +411,7 @@ public class Group extends CDMNode {
     for (Attribute att : attributes) {
       String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
       out.print(indent + " " + name + ":");
-      out.print(att.toString(strict));
+      out.print(att.toString(strict, getShortName()));
       out.print(";");
       if (!strict && (att.getDataType() != DataType.STRING)) out.print(" // " + att.getDataType());
       out.print("\n");

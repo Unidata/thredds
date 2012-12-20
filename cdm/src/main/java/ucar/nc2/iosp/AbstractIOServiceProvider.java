@@ -40,10 +40,12 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.Format;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
+import java.util.Formatter;
 
 /**
  * Abstract base class for IOSP implementations that provides default implementations
@@ -144,8 +146,19 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   @Override
   public String getDetailInfo() {
-    return "";
+    if (raf == null) return "";
+    try {
+      Formatter fout = new Formatter();
+      double size = raf.length() / (1000.0 * 1000.0);
+      fout.format(" raf = %s%n", raf.getLocation());
+      fout.format(" size= %d (%s Mb)%n%n", raf.length(), Format.dfrac(size, 3));
+      return fout.toString();
+
+    } catch (IOException e) {
+      return e.getMessage();
+    }
   }
+
 
   @Override
   public String getFileTypeVersion() {

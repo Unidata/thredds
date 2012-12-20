@@ -179,8 +179,15 @@ public class Dimension extends CDMNode implements Comparable {
       buff.append(" = UNLIMITED;   // (").append(getLength()).append(" currently)");
     else if (isVariableLength())
       buff.append(" = UNKNOWN;" );
-    else
-      buff.append(" = ").append(getLength()).append(";");
+    else {
+      if (strict) {
+        if (name.length() == 0) buff.append(getLength()); // CDL doesnt allow anon dimensions?
+      } else {
+        if (name.length() > 0) buff.append(" = "); // skip for anon dimensions
+        buff.append(getLength());
+      }
+      buff.append(";");
+    }
     return buff.toString();
   }
 

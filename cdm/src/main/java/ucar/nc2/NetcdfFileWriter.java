@@ -252,8 +252,8 @@ public class NetcdfFileWriter {
    */
   public boolean isDefineMode() { return defineMode; }
 
-  NetcdfFile getNetcdfFile() { return ncfile; }
-  Version getVersion() { return version; }
+  public NetcdfFile getNetcdfFile() { return ncfile; }
+  public Version getVersion() { return version; }
 
   public Variable findVariable(String fullNameEscaped) {
     return ncfile.findVariable(fullNameEscaped);

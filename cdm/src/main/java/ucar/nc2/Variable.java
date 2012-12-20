@@ -1048,7 +1048,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     for (Attribute att : getAttributes()) {
       buf.format("%s  ", indent);
       if (strict) buf.format( NetcdfFile.escapeNameCDL(getShortName()));
-      buf.format(":%s;", att.toString(strict));
+      buf.format(":%s;", att.toString(strict, getShortName()));
       if (!strict && (att.getDataType() != DataType.STRING))
         buf.format(" // %s", att.getDataType());
       buf.format("\n");

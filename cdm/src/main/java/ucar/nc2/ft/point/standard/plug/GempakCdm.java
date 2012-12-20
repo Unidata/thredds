@@ -139,7 +139,7 @@ public class GempakCdm extends TableConfigurerImpl {
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.featureType = FeatureType.STATION;
     stnTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
-    stnTable.dimName = stationDim.getName();
+    if (!stnIsScalar) stnTable.dimName = stationDim.getName();
 
     stnTable.lat= lat.getFullName();
     stnTable.lon= lon.getFullName();
