@@ -115,7 +115,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     assert g.getShape()[0] == ntimes;
     assert g.getShape()[1] == 1008;
     assert g.getShape()[2] == 1536;
-    assert g.getDataType() == DataType.SHORT;
+    assert g.getDataType() == DataType.BYTE;
 
     GridCoordSystem gsys = g.getCoordinateSystem();
     assert gsys.getXHorizAxis() != null;
@@ -128,7 +128,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     assert data.getRank() == 2;
     assert data.getShape()[0] == 1008;
     assert data.getShape()[1] == 1536;
-    assert data.getElementType() == short.class;
+    assert data.getElementType() == byte.class;
   }
 
 

@@ -143,7 +143,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ScaleMissing, Enhance.CoordSystems, Enhance.ConvertEnums));
   static private Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   static private Set<Enhance> defaultEnhanceMode = EnhanceAll;
-  static private Set<Enhance> coordSysEnhanceMode = null;
+  //static private Set<Enhance> coordSysEnhanceMode = null;
 
   static public Set<Enhance> getEnhanceAll() {
     return EnhanceAll;
@@ -166,20 +166,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return defaultEnhanceMode;
   }
 
-// Not used locally.
-//  /**
-//   * Get the default set of Enhancements, and add CoordSystems if not present
-//   *
-//   * @return EnhanceMode including CoordSystems
-//   */
-//  static public Set<Enhance> getCoordSysEnhanceMode() {
-//    if (coordSysEnhanceMode == null) {
-//      EnumSet<NetcdfDataset.Enhance> mode = EnumSet.copyOf(defaultEnhanceMode);
-//      mode.add(NetcdfDataset.Enhance.CoordSystems);
-//      coordSysEnhanceMode = Collections.unmodifiableSet(mode);
-//    }
-//    return coordSysEnhanceMode;
-//  }
+  /**
+   * Set the default set of Enhancements to do for all subsequent dataset opens and acquires.
+   *
+   * @param mode the default set of Enhancements for open and acquire factory methods
+   */
+  static public void setDefaultEnhanceMode(Set<Enhance> mode) {
+    defaultEnhanceMode = Collections.unmodifiableSet(mode);
+  }
 
   /**
    * Find the set of Enhancements that matches the String. For backwards compatibility, 'true' = All.

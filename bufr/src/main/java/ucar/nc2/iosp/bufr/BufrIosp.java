@@ -366,6 +366,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   public String getDetailInfo() {
     Formatter ff = new Formatter();
+    ff.format("%s",super.getDetailInfo());
     try {
       protoMessage.dump(ff);
     } catch (IOException e) {

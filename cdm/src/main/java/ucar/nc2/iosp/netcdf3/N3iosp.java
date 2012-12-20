@@ -383,17 +383,17 @@ public String NC_check_name(String name) {
 
   @Override
   public String getDetailInfo() {
+    Formatter f = new Formatter();
+    f.format("%s",super.getDetailInfo());
+
     try {
-      Formatter fout = new Formatter();
-      double size = raf.length() / (1000.0 * 1000.0);
-      fout.format(" raf = %s%n", raf.getLocation());
-      fout.format(" size= %d (%s Mb)%n%n", raf.length(), Format.dfrac(size, 3));
-      header.showDetail(fout);
-      return fout.toString();
-      
+      header.showDetail(f);
     } catch (IOException e) {
       return e.getMessage();
     }
+
+    return f.toString();
+
   }
 
   // properties

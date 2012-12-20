@@ -660,19 +660,21 @@ public class DatasetWriter extends JPanel {
       setDataType( vs.getDataType().toString());
 
       // collect dimensions
-      StringBuilder lens = new StringBuilder();
-      StringBuilder names = new StringBuilder();
-      java.util.List dims = vs.getDimensions();
+      Formatter lens = new Formatter();
+      Formatter names = new Formatter();
+      lens.format("(");
+      java.util.List<Dimension> dims = vs.getDimensions();
       for (int j=0; j<dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
+        ucar.nc2.Dimension dim = dims.get(j);
         if (j>0) {
-          lens.append(",");
-          names.append(",");
+          lens.format(",");
+          names.format(",");
         }
         String name = dim.isShared() ? dim.getName() : "anon";
-        names.append(name);
-        lens.append(dim.getLength());
+        names.format("%s", name);
+        lens.format("%d",dim.getLength());
       }
+      lens.format(")");
       setDimensions( names.toString());
       setShape( lens.toString());
     }
@@ -720,6 +722,29 @@ public class DatasetWriter extends JPanel {
       for (long c:chunked) elementsPerChunk *= c;
       return vs.getSize() /  elementsPerChunk;
     }
+
+    public long getOverHang() {
+      if (!isChunked) return 0;
+      if (chunked == null) return 0;
+      long total = 1;
+      int[] shape = vs.getShape();
+      for (int i=0; i<chunked.length; i++) {
+        int overhang = (int) (shape[i] % chunked[i]);
+        total *= overhang;
+      }
+      return total;
+    }
+
+    public String getOHPercent() {
+       if (!isChunked) return "";
+       if (chunked == null) return "";
+       long total = getOverHang();
+       float p = 100.0f * total / vs.getSize();
+       Formatter f= new Formatter();
+       f.format("%6.3f", p);
+       return f.toString();
+     }
+
 
     public String getChunkSize() {
       if (chunked == null) return "";
