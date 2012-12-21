@@ -58,7 +58,7 @@ public class TestNc4IospReading {
     return v.read(section) ;
   }
 
-  @Test
+  // @Test
   public void problem() throws IOException {
     doCompare("Q:\\cdmUnitTest\\formats\\hdf5\\grid_1_3d_xyz_aug.h5", true, false, true);
   }
@@ -97,7 +97,7 @@ public class TestNc4IospReading {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  @Test
+  //@Test
   public void readAllHDF5() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/", new MyFileFilter(), new MyAct(), true);
