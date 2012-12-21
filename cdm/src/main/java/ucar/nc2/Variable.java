@@ -37,6 +37,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Indent;
 import ucar.nc2.util.rc.RC;
 
 import java.io.OutputStream;
@@ -1009,50 +1010,53 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * CDL representation of Variable, not strict.
    */
   public String toString() {
-    return writeCDL("   ", false, false);
+    return writeCDL(false, false);
   }
 
   /**
    * CDL representation of a Variable.
    *
-   * @param indent      start each line with this much space
    * @param useFullName use full name, else use short name
    * @param strict      strictly comply with ncgen syntax
    * @return CDL representation of the Variable.
    */
-  public String writeCDL(String indent, boolean useFullName, boolean strict) {
+  public String writeCDL(boolean useFullName, boolean strict) {
     Formatter buf = new Formatter();
-    writeCDL(buf, indent, useFullName, strict);
+    writeCDL(buf, new Indent(2), useFullName, strict);
     return buf.toString();
   }
 
-  protected void writeCDL(Formatter buf, String indent, boolean useFullName, boolean strict) {
-    buf.format(indent);
-    if(dataType == null)
-        buf.format("Unknown");
+  protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
+    buf.format("%s", indent);
+    if (dataType == null)
+      buf.format("Unknown");
     else if (dataType.isEnum()) {
       if (enumTypedef == null)
         buf.format("enum UNKNOWN");
       else
         buf.format("enum %s", NetcdfFile.escapeNameCDL(enumTypedef.getName()));
     } else
-      buf.format(dataType.toString());
+      buf.format("%s", dataType.toString());
 
     //if (isVariableLength) buf.append("(*)"); // LOOK
     buf.format(" ");
     getNameAndDimensions(buf, useFullName, strict);
     buf.format(";");
     if (!strict) buf.format(extraInfo());
-    buf.format("\n");
+    buf.format("%n");
 
+    indent.incr();
     for (Attribute att : getAttributes()) {
-      buf.format("%s  ", indent);
-      if (strict) buf.format( NetcdfFile.escapeNameCDL(getShortName()));
-      buf.format(":%s;", att.toString(strict, getShortName()));
+      buf.format("%s", indent);
+      if (strict) buf.format(NetcdfFile.escapeNameCDL(getShortName()));
+      buf.format(":");
+      att.writeCDL(buf,  strict);
+      buf.format(";");
       if (!strict && (att.getDataType() != DataType.STRING))
         buf.format(" // %s", att.getDataType());
-      buf.format("\n");
+      buf.format("%n");
     }
+    indent.decr();
   }
 
   /**

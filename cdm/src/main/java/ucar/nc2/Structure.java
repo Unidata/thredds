@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.util.Indent;
 
 import java.util.*;
 import java.io.IOException;
@@ -588,21 +589,24 @@ public class Structure extends Variable {
   }
 
   @Override
-  protected void writeCDL(Formatter buf, String indent, boolean useFullName, boolean strict) {
-    buf.format("\n%s%s {\n", indent, dataType);
+  protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
+    buf.format("%n%s%s {%n", indent, dataType);
 
-    String nestedSpace = "  "+indent;
+    indent.incr();
     for (Variable v : members)
-      v.writeCDL(buf, nestedSpace, useFullName, strict);
+      v.writeCDL(buf, indent, useFullName, strict);
+    indent.decr();
 
     buf.format("%s} ", indent);
     getNameAndDimensions(buf, useFullName, strict);
-    buf.format(";%s\n", extraInfo());
+    buf.format(";%s%n", extraInfo());
 
     for (Attribute att : getAttributes()) {
-      buf.format("%s  ", nestedSpace);
+      buf.format("%s  ", indent);
       if (strict) buf.format( NetcdfFile.escapeNameCDL(getShortName()));
-      buf.format(":%s;", att.toString(strict, getShortName()));
+      buf.format(":");
+      att.writeCDL(buf,  strict);
+      buf.format(";");
       if (!strict && (att.getDataType() != DataType.STRING))
         buf.format(" // %s", att.getDataType());
       buf.format("\n");

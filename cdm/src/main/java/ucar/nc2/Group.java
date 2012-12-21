@@ -33,11 +33,12 @@
 package ucar.nc2;
 
 import ucar.ma2.DataType;
+import ucar.nc2.util.Indent;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Collections;
-import java.io.PrintWriter;
 
 /**
  * A Group is a logical collection of Variables.
@@ -367,7 +368,7 @@ public class Group extends CDMNode {
     return sbuff.toString();
   }
 
-  protected void writeCDL(PrintWriter out, String indent, boolean strict) {
+  protected void writeCDL(Formatter out, Indent indent, boolean strict) {
     boolean hasE = (enumTypedefs.size() > 0);
     boolean hasD = (dimensions.size() > 0);
     boolean hasV = (variables.size() > 0);
@@ -375,47 +376,65 @@ public class Group extends CDMNode {
     boolean hasA = (attributes.size() > 0);
 
     if (hasE) {
-      out.print(indent + " types:\n");
+      out.format("%stypes:%n", indent);
+      indent.incr();
       for (EnumTypedef e : enumTypedefs) {
-        out.print(indent + e.writeCDL(strict));
-        out.print(indent + "\n");
+        e.writeCDL(out, indent, strict);
+        out.format("%n");
       }
-      out.print(indent + "\n");
+      indent.decr();
+      out.format("%n");
     }
 
-    if (hasD)
-      out.print(indent + " dimensions:\n");
-    for (Dimension myd : dimensions) {
-      out.print(indent + myd.writeCDL(strict));
-      out.print(indent + "\n");
+    if (hasD) {
+      out.format("%sdimensions:%n", indent);
+      indent.incr();
+      for (Dimension myd : dimensions) {
+        myd.writeCDL(out, indent, strict);
+        out.format("%n");
+      }
+      indent.decr();
     }
 
-    if (hasV)
-      out.print(indent + " variables:\n");
-    for (Variable v : variables) {
-      out.print(v.writeCDL(indent + "   ", false, strict));
+    if (hasV) {
+      out.format("%svariables:%n", indent);
+      indent.incr();
+      for (Variable v : variables) {
+        v.writeCDL(out, indent, false, strict);
+        out.format("%n");
+      }
+      indent.decr();
     }
 
     for (Group g : groups) {
       String gname = strict ? NetcdfFile.escapeNameCDL(g.getShortName()) : g.getShortName();
-      out.print("\n " + indent + "Group " + gname + " {\n");
-      g.writeCDL(out, indent + "  ", strict);
-      out.print(indent + " }\n");
+      out.format("%n%sgroup: %s {%n", indent, gname);
+      indent.incr();
+      g.writeCDL(out, indent, strict);
+      indent.decr();
+      out.format("%s}%n", indent);
     }
 
-    if (hasA && (hasE || hasD || hasV || hasG))
-      out.print("\n");
+    //if (hasA && (hasE || hasD || hasV || hasG))
+    //  out.format("%n");
 
-    if (hasA && strict)
-      out.print(indent + " // global attributes:\n");
-    for (Attribute att : attributes) {
-      String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
-      out.print(indent + " " + name + ":");
-      out.print(att.toString(strict, getShortName()));
-      out.print(";");
-      if (!strict && (att.getDataType() != DataType.STRING)) out.print(" // " + att.getDataType());
-      out.print("\n");
+    if (hasA) {
+      if (isRoot())
+        out.format("%s// global attributes:%n", indent);
+      else
+        out.format("%s// group attributes:%n", indent);
+      indent.incr();
+      for (Attribute att : attributes) {
+        //String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
+        out.format("%s:", indent);
+        att.writeCDL(out, strict);
+        out.format(";");
+        if (!strict && (att.getDataType() != DataType.STRING)) out.format(" // %s", att.getDataType());
+        out.format("%n");
+      }
+      indent.decr();
     }
+
   }
 
 

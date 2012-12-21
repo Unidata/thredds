@@ -238,7 +238,7 @@ public enum DataType {
   public static void main(String[] args) {
     for (int i=0; i<260; i++) {
       byte b = (byte) i;
-      System.out.printf("%d = %d = %d%n", i, b, unsignedByteToShort(b));
+      System.out.printf("%4d = %4d%n", b, unsignedByteToShort(b));
     }
   }
 

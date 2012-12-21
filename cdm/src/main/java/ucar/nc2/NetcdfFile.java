@@ -32,6 +32,7 @@
  */
 package ucar.nc2;
 
+import ucar.nc2.util.Indent;
 import ucar.nc2.util.net.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.util.rc.RC;
@@ -1270,6 +1271,17 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
 
   //////////////////////////////////////////////////////////////////////////////////////
+  /**
+   * CDL representation of Netcdf header info, non strict
+   */
+  public String toString() {
+    Formatter f = new Formatter();
+    writeCDL(f, new Indent(2), false);
+    return f.toString();
+  }
+
+  ///////////////////////////////////////////////////////////////////
+  // old stuff for backwards compatilibilty, esp with NCdumpW
 
   /**
    * Write CDL representation to OutputStream.
@@ -1296,30 +1308,35 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     pw.flush();
   }
 
-  /**
-   * CDL representation of Netcdf header info.
-   */
-  public String toString() {
-    StringWriter writer = new StringWriter(50000);
-    writeCDL(new PrintWriter(writer), false);
-    return writer.toString();
-  }
-
-  protected void toStringStart(PrintWriter pw, boolean strict) {
-    String name = getLocation();
-    if (strict) {
-      int pos = name.lastIndexOf('/');
-      if (pos < 0) pos = name.lastIndexOf('\\');
-      if (pos >= 0) name = name.substring(pos + 1);
-      if (name.endsWith(".nc")) name = name.substring(0, name.length() - 3);
-      if (name.endsWith(".cdl")) name = name.substring(0, name.length() - 4);
-    }
-    pw.print("netcdf " + name + " {\n");
-    rootGroup.writeCDL(pw, "", strict);
+  public void toStringStart(PrintWriter pw, boolean strict) {
+    Formatter f = new Formatter();
+    toStringStart(f, new Indent(2), strict);
+    pw.write(f.toString());
   }
 
   protected void toStringEnd(PrintWriter pw) {
     pw.print("}\n");
+  }
+
+  //////////////////////////////////////////////////////////
+  // the actual work is here
+
+  protected void writeCDL(Formatter f, Indent indent, boolean strict) {
+    toStringStart(f, indent, strict);
+    f.format("%s}%n",indent);
+  }
+
+  protected void toStringStart(Formatter f, Indent indent, boolean strict) {
+    String name = getLocation();
+    if (strict) {
+      if (name.endsWith(".nc")) name = name.substring(0, name.length() - 3);
+      if (name.endsWith(".cdl")) name = name.substring(0, name.length() - 4);
+      name = NetcdfFile.escapeNameCDL(name);
+    }
+    f.format("%snetcdf %s {%n", indent, name);
+    indent.incr();
+    rootGroup.writeCDL(f, indent, strict);
+    indent.decr();
   }
 
   /**

@@ -32,6 +32,9 @@
  */
 package ucar.nc2;
 
+import ucar.nc2.util.Indent;
+
+import java.util.Formatter;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -172,23 +175,29 @@ public class Dimension extends CDMNode implements Comparable {
    * @return CDL representation.
    */
   public String writeCDL(boolean strict) {
-    StringBuilder buff = new StringBuilder();
+    Formatter f = new Formatter();
+    writeCDL(f, new Indent(2), strict);
+    return f.toString();
+  }
+
+  protected void writeCDL(Formatter out, Indent indent, boolean strict) {
     String name = strict ? NetcdfFile.escapeNameCDL(getName()) : getName();
-    buff.append("   ").append(name);
+    out.format("%s%s", indent, name);
     if (isUnlimited())
-      buff.append(" = UNLIMITED;   // (").append(getLength()).append(" currently)");
+      out.format(" = UNLIMITED;   // (%d currently", getLength());
     else if (isVariableLength())
-      buff.append(" = UNKNOWN;" );
-    else {
-      if (strict) {
+      out.format(" = UNKNOWN;");
+    else
+      out.format(" = %d;", getLength());
+
+      /* { if (strict) {
         if (name.length() == 0) buff.append(getLength()); // CDL doesnt allow anon dimensions?
       } else {
         if (name.length() > 0) buff.append(" = "); // skip for anon dimensions
         buff.append(getLength());
       }
       buff.append(";");
-    }
-    return buff.toString();
+    } */
   }
 
   /**

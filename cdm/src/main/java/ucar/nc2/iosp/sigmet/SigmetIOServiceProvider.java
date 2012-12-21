@@ -65,6 +65,9 @@ import ucar.unidata.io.RandomAccessFile;
  * <ray_header(data_type_2)><ray_data(data_type_2)>... <ray_header(data_type_n)><ray_data(data_type_n)>...
  * <ray_header> and <ray_data> are encoded with the compression algorithm
  * ("IRIS Programmer's Manual" 3.5.4.1)
+ *
+ * @author yuanho
+ * @see "ftp://ftp.sigmet.com/outgoing/manuals/program/3data.pdf" esp section 3.5
  */
 
 public class SigmetIOServiceProvider extends AbstractIOServiceProvider {

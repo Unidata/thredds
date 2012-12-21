@@ -1402,7 +1402,7 @@ public class H5header {
 
   private void processSystemAttributes(List<HeaderMessage> messages, List<Attribute> attributes) {
     for (HeaderMessage mess : messages) {
-      if (mess.mtype == MessageType.LastModified) {
+      /* if (mess.mtype == MessageType.LastModified) {
         MessageLastModified m = (MessageLastModified) mess.messData;
         CalendarDate cd = CalendarDate.of((long) (m.secs * 1000));
         attributes.add(new Attribute("_lastModified", cd.toString()));
@@ -1418,7 +1418,8 @@ public class H5header {
           debugOut.println("ERROR parsing date from MessageLastModifiedOld = " + m.datemod);
         }
 
-      } else if (mess.mtype == MessageType.Comment) {
+      } else */
+      if (mess.mtype == MessageType.Comment) {
         MessageComment m = (MessageComment) mess.messData;
         attributes.add(new Attribute("_comment", m.comment));
       }

@@ -179,7 +179,7 @@ public class NCdumpW {
           showValues = WantValues.coordsOnly;
         if (toke.equalsIgnoreCase("-ncml"))
           ncml = true;
-        if (toke.equalsIgnoreCase("-cdl"))
+        if (toke.equalsIgnoreCase("-cdl") || toke.equalsIgnoreCase("-strict"))
           strict = true;
         if (toke.equalsIgnoreCase("-v") && stoke.hasMoreTokens())
           varNames = stoke.nextToken();
