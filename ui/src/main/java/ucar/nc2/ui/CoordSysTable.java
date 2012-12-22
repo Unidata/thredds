@@ -136,7 +136,7 @@ public class CoordSysTable extends JPanel {
         infoTA.clear();
         infoTA.appendLine("Coordinate System = " + coordSys.getName());
         for (CoordinateAxis axis : coordSys.getCoordinateAxes()) {
-          infoTA.appendLine("  " + axis.getAxisType() + " " + axis.writeCDL("   ", true, false));
+          infoTA.appendLine("  " + axis.getAxisType() + " " + axis.writeCDL(true, false));
         }
         infoTA.appendLine(" Coordinate Transforms");
         for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
