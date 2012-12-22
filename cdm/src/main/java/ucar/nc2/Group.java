@@ -423,7 +423,7 @@ public class Group extends CDMNode {
         out.format("%s// global attributes:%n", indent);
       else
         out.format("%s// group attributes:%n", indent);
-      indent.incr();
+      //indent.incr();
       for (Attribute att : attributes) {
         //String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
         out.format("%s:", indent);
@@ -432,7 +432,7 @@ public class Group extends CDMNode {
         if (!strict && (att.getDataType() != DataType.STRING)) out.format(" // %s", att.getDataType());
         out.format("%n");
       }
-      indent.decr();
+      //indent.decr();
     }
 
   }
@@ -472,9 +472,8 @@ public class Group extends CDMNode {
    */
   public String setName(String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    shortName = NetcdfFile.makeValidCdmObjectName(shortName);
     setShortName(shortName);
-    return shortName;
+    return getShortName();
   }
 
   /**

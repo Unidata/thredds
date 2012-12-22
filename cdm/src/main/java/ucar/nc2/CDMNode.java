@@ -46,10 +46,10 @@ package ucar.nc2;
 
 public class CDMNode
 {
-    CDMSort sort = null;
-    Group group = null;
-    boolean immutable = false;
-    String shortName = null;
+  CDMSort sort = null;
+  Group group = null;
+  boolean immutable = false;
+  String shortName = null;
 
     // Constructors
 
@@ -88,8 +88,9 @@ public class CDMNode
      * Set the short name of this Variable. The name is unique within its parent group.
      * @param name new short name
      */
-    public void setShortName(String name)
-	{if(!immutable) this.shortName = name;}
+    public void setShortName(String name) {
+      if (!immutable) this.shortName = NetcdfFile.makeValidCdmObjectName(name);
+    }
 
    /**
     * Get its parent Group, or null if its the root group.

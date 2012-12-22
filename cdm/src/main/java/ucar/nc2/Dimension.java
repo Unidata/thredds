@@ -310,8 +310,8 @@ public class Dimension extends CDMNode implements Comparable {
    */
   public String setName(String name) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    String newname = (name == null || name.length() == 0) ? null : NetcdfFile.makeValidCdmObjectName(name);
-    setShortName(newname);
+    if (name.length() == 0) name = null;
+    setShortName(name);
     hashCode = 0;
     return getShortName();
   }

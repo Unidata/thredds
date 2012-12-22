@@ -178,7 +178,10 @@ public class ComboBox extends JComboBox {
     if (item == null) return;
     for (int i=0; i<getItemCount(); i++) {
       if (item.equals( getItemAt(i))) {
-        if (i == 0) return; // already there
+        if (i == 0) {
+          setSelectedIndex(0);
+          return; // already there
+        }
         removeItemAt(i);
       }
     }

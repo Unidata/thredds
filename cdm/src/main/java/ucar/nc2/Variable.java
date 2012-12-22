@@ -1214,7 +1214,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public String setName(String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    setShortName(NetcdfFile.makeValidCdmObjectName(shortName));
+    setShortName(shortName);
     return getShortName();
   }
 

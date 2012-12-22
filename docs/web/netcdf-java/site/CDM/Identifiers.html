@@ -72,7 +72,7 @@ idescaped =[ !"#$%&amp;'()*,:;&lt;=&gt;?\[\\\]^`{|}~]</pre>
 <ol>
   <li>Control chars (&lt; 0x20) are not allowed, these are removed.</li>
   <li>Trailing and leading blanks are not allowed and are removed.</li>
-  <li> a forward slash <strong>&quot;/&quot;</strong> is converted into an underscore<strong> &quot;_&quot;.</strong> <em>(Or maybe it should be something else?)</em></li>
+  <li> a forward slash <strong>&quot;/&quot;</strong> is converted into an underscore<strong> &quot;_&quot;.</strong></li>
 </ol>
 <h3>Object Full Name as a String</h3>
 <p>A CDM object has a <strong>short name</strong> (a String) and a <strong>full name</strong>, consisting of the parent groups and structures that it belongs to. Internally, only short names are used, along with the enclosing Group or Structure objects. So there is generally no problem in comparing or searching for short names. In certain places in the CDM / NetCDF-Java library API (eg <em>NetcdfFile.findVariable()</em>), a full  name can be passed in as a single String, of the form</p>
@@ -270,7 +270,7 @@ Charx=[ !"#$%&amp;'()*+,-0123456789:;&lt;=&gt;?@\[\\\]^`{|}~\x00-\x1e,\x7f]
 <p> <a href="http://www.w3schools.com/TAGS/ref_urlencode.asp">http://www.w3schools.com/TAGS/ref_urlencode.asp</a> </p>
 <hr WIDTH="100%">
 <address>
-    <img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 25, 2011
+    <img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  December 2012
 </address>
 </body>
 </html>

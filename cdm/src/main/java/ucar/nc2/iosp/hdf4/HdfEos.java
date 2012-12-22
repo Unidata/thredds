@@ -145,7 +145,7 @@ public class HdfEos {
           log.warn("No SwathName element in {} {} ", elemSwath.getName(), ncfile.getLocation());
           continue;
         }
-        String swathName = swathNameElem.getText();
+        String swathName = NetcdfFile.makeValidCdmObjectName(swathNameElem.getText());
         Group swathGroup = findGroupNested(rootg, swathName);
         //if (swathGroup == null)
         //  swathGroup = findGroupNested(rootg, H4header.createValidObjectName(swathName));
@@ -168,7 +168,7 @@ public class HdfEos {
           log.warn("Ne GridName element in {} {} ", elemGrid.getName(), ncfile.getLocation());
           continue;
         }
-        String gridName = gridNameElem.getText();
+        String gridName = NetcdfFile.makeValidCdmObjectName(gridNameElem.getText());
         Group gridGroup = findGroupNested(rootg, gridName);
         //if (gridGroup == null)
         //  gridGroup = findGroupNested(rootg, H4header.createValidObjectName(gridName));
@@ -218,7 +218,7 @@ public class HdfEos {
     List<Element> dims = (List<Element>) d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
-      name = H4header.createValidObjectName(name);
+      name = NetcdfFile.makeValidCdmObjectName(name);
 
       if (name.equalsIgnoreCase("scalar"))
         continue;
@@ -233,8 +233,7 @@ public class HdfEos {
           }
         } else {
           dim = new Dimension(name, length);
-          if (parent.addDimensionIfNotExists(dim) && showWork)
-            System.out.printf(" Add dimension %s %n",dim);
+          if (parent.addDimensionIfNotExists(dim) && showWork) System.out.printf(" Add dimension %s %n",dim);
         }
       } else {
         log.warn("Dimension "+name+" has size "+sizeS, ncfile.getLocation());
@@ -250,9 +249,9 @@ public class HdfEos {
     List<Element> dimMaps = (List<Element>) dmap.getChildren();
     for (Element elem : dimMaps) {
       String geoDimName = elem.getChild("GeoDimension").getText();
-      geoDimName = H4header.createValidObjectName(geoDimName);
+      geoDimName = NetcdfFile.makeValidCdmObjectName(geoDimName);
       String dataDimName = elem.getChild("DataDimension").getText();
-      dataDimName = H4header.createValidObjectName(dataDimName);
+      dataDimName = NetcdfFile.makeValidCdmObjectName(dataDimName);
 
       String offsetS = elem.getChild("Offset").getText();
       String incrS = elem.getChild("Increment").getText();
@@ -308,7 +307,7 @@ public class HdfEos {
       for (Element elem : vars) {
         Element dataFieldNameElem = elem.getChild("DataFieldName");
         if (dataFieldNameElem == null) continue;
-        String varname = dataFieldNameElem.getText();
+        String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText());
         Variable v = dataG.findVariable(varname);
         //if (v == null)
         //  v = dataG.findVariable( H4header.createValidObjectName(varname));
@@ -374,7 +373,7 @@ public class HdfEos {
     List<Element> dims = (List<Element>) d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
-      name = H4header.createValidObjectName(name);
+      name = NetcdfFile.makeValidCdmObjectName(name);
       if (name.equalsIgnoreCase("scalar"))
         continue;
 
@@ -425,7 +424,7 @@ public class HdfEos {
       List<Element> vars = (List<Element>) f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText();
-        varname = H4header.createValidObjectName( varname);
+        varname = NetcdfFile.makeValidCdmObjectName( varname);
         Variable v = dataG.findVariable(varname);
         //if (v == null)
         //  v = dataG.findVariable( H4header.createValidObjectName(varname));
@@ -486,7 +485,7 @@ public class HdfEos {
     for (int i=0; i<values.size(); i++) {
       Element value = values.get(i);
       String dimName = value.getText();
-      dimName = H4header.createValidObjectName(dimName);
+      dimName = NetcdfFile.makeValidCdmObjectName( dimName);
 
       Dimension dim = group.findDimension(dimName);
       Dimension oldDim = oldDims.get(i);

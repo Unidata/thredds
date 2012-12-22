@@ -51,7 +51,7 @@ public class EnumTypedef extends CDMNode {
   private ArrayList<String> enumStrings;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
-    super(NetcdfFile.makeValidCdmObjectName(name));
+    super(name);
     this.map = map;
   }
 

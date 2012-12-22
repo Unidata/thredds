@@ -270,14 +270,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Create a valid CDM object name.
    * Control chars (< 0x20) are not allowed.
    * Trailing and leading blanks are not allowed and are stripped off.
+   * A space is converted into an underscore "_".
    * A forward slash "/" is converted into an underscore "_".
    *
-   * @param name from this name
+   * @param shortName from this name
    * @return valid CDM object name
    */
-  static public String makeValidCdmObjectName(String name) {
-    return StringUtil2.makeValidCdmObjectName(name);
-    //return StringUtil.replace(name.trim(), "/", "_");
+  static public String makeValidCdmObjectName(String shortName) {
+    if (shortName == null) return null;
+    return StringUtil2.makeValidCdmObjectName(shortName);
   }
 
   /*
@@ -339,13 +340,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return makeFullName(v, reservedSectionSpec);
   }
 
-  static protected String makeFullName(Variable v, String reserved) {
+  static protected String makeFullName(Variable v, String reservedChars) {
     Group parent = v.getParentGroup();
-    if (((parent == null) || parent.isRoot()) && !v.isMemberOfStructure()) return v.getShortName(); // common case
+    if (((parent == null) || parent.isRoot()) && !v.isMemberOfStructure())  // common case
+      return EscapeStrings.backslashEscape(v.getShortName(), reservedChars);
 
     StringBuilder sbuff = new StringBuilder();
-    appendGroupName(sbuff, parent, reserved);
-    appendStructureName(sbuff, v, reserved);
+    appendGroupName(sbuff, parent, reservedChars);
+    appendStructureName(sbuff, v, reservedChars);
     return sbuff.toString();
   }
 
@@ -1897,7 +1899,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (g == rootGroup) {
         gattributes.add(oldAtt);
       } else {
-        String newName = makeFullNameWithString(g, oldAtt.getName());
+        String newName = makeFullNameWithString(g, oldAtt.getName()); // LOOK fishy
         gattributes.add(new Attribute(newName, oldAtt));
       }
     }
@@ -1908,7 +1910,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
         if (g == rootGroup) {
           dimensions.add(oldDim);
         } else {
-          String newName = makeFullNameWithString(g, oldDim.getName());
+          String newName = makeFullNameWithString(g, oldDim.getName()); // LOOK fishy
           dimensions.add(new Dimension(newName, oldDim));
         }
       }
@@ -1925,7 +1927,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent, null);
     sbuff.append(name);
-    return makeValidCdmObjectName(sbuff.toString());
+    return sbuff.toString();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

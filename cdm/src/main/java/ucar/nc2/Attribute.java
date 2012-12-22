@@ -70,7 +70,7 @@ public class Attribute extends CDMNode {
    * Set the name of this Attribute.
    * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
    *
-   * @param name
+   * @param name name of attribute
    */
   public synchronized void setName(String name) {
       setShortName(name);
