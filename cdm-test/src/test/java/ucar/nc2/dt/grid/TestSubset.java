@@ -642,13 +642,14 @@ public class TestSubset extends TestCase {
 
   public void testAggByteGiniSubsetStride() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/giniAggByte.ncml"); // R:\testdata2\satellite\gini
+    System.out.printf("Test %s%n", dataset.getLocation());
     GeoGrid grid = dataset.findGridByName("IR");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 3;
     int[] org_shape = grid.getShape();
-    assert grid.getDataType() == DataType.BYTE;
+    assert grid.getDataType() == DataType.SHORT;
 
     Array data_org = grid.readDataSlice(0, 0, -1, -1);
     assert data_org != null;
@@ -656,7 +657,7 @@ public class TestSubset extends TestCase {
     int[] data_shape = data_org.getShape();
     assert org_shape[1] == data_shape[0];
     assert org_shape[2] == data_shape[1];
-    assert data_org.getElementType() == byte.class : data_org.getElementType();
+    assert data_org.getElementType() == short.class : data_org.getElementType();
 
     System.out.println("original bbox= " + gcs.getBoundingBox());
 
@@ -670,7 +671,7 @@ public class TestSubset extends TestCase {
     GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
     assert null != gcs2;
     assert grid_section.getRank() == 3;
-    assert grid_section.getDataType() == DataType.BYTE;
+    assert grid_section.getDataType() == DataType.SHORT;
 
     ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
     System.out.println(" resulting bbox= " + subset_prect);
@@ -680,7 +681,7 @@ public class TestSubset extends TestCase {
     Array data = grid_section.readVolumeData(1);
     assert data != null;
     assert data.getRank() == 2;
-    assert data.getElementType() == byte.class;
+    assert data.getElementType() == short.class;
 
     int[] shape = data.getShape();
     assert Math.abs(org_shape[1] - 2 * shape[0]) < 2 : org_shape[2] + " != " + (2 * shape[0]);
