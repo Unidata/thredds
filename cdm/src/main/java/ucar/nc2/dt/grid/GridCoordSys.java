@@ -259,12 +259,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       }
     }
 
-    // Set the primary temporal axis - either Time or Runtime
-    if (t != null) {
+    if (t != null)
       testAxis.add(t);
-    } else if (rt != null) {
+    if (rt != null)
       testAxis.add(rt);
-    }
 
     CoordinateAxis ens = cs.getEnsembleAxis();
     if (ens != null)
@@ -1358,8 +1356,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       f.format("%n");
     }
     if (getTimeAxis() != null) {
-      f.format("t=%s (%s)", timeTaxis.getFullName(), timeTaxis.getClass().getName());
-      if (showCoords) showCoords(timeTaxis, f);
+      f.format("t=%s (%s)", tAxis.getFullName(), tAxis.getClass().getName());
+      if (showCoords) showCoords(tAxis, f);
       f.format("%n");
     }
     if (getVerticalAxis() != null) {

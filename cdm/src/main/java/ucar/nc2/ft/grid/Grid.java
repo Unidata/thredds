@@ -45,9 +45,6 @@ import java.util.List;
 /**
  * Experimental Grid feature type.
  * Can we do this without indexed reads?
- * TODO
- *  has extra dimension(s)
- *
  * @author caron
  * @since Jan 19, 2010
  */
@@ -113,23 +110,10 @@ public interface Grid {
     public List<Dimension> getDimensions();
 
     /**
-     * get the ith dimension
-     * @param i index of dimension
-     * @return the ith dimension
-     */
-    public Dimension getDimension(int i);
-
-    /**
      * get the Grid's Coordinate System.
      * @return the Grid's Coordinate System.
      */
     public GridCoordSystem getCoordinateSystem();
-
-    /**
-     * get the Projection, if it exists.
-     * @return the Projection, or null
-     */
-    public ProjectionImpl getProjection();
 
     /**
      * true if there may be missing data
@@ -157,30 +141,20 @@ public interface Grid {
      * This reads an arbitrary data slice, returning the data in
      * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
      *
-     * @param rt_index if < 0, get all of runtime dim; if valid index, fix slice to that value.
-     * @param e_index  if < 0, get all of ensemble dim; if valid index, fix slice to that value.
-     * @param t_index  if < 0, get all of time dim; if valid index, fix slice to that value.
-     * @param z_index  if < 0, get all of z dim; if valid index, fix slice to that value.
-     * @param y_index  if < 0, get all of y dim; if valid index, fix slice to that value.
-     * @param x_index  if < 0, get all of x dim; if valid index, fix slice to that value.
+     * @param subset subset that you want
      * @return data[rt,e,t,z,y,x], eliminating missing or fixed dimension.
      * @throws java.io.IOException on io error
      */
-    public Array readDataSlice(int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
+    public Array readDataSlice(Subset subset) throws java.io.IOException;
 
     /**
      * Create a new GeoGrid that is a logical subset of this GeoGrid.
      *
-     * @param rt_range subset the runtime dimension, or null if you want all of it
-     * @param e_range  subset the ensemble dimension, or null if you want all of it
-     * @param t_range  subset the time dimension, or null if you want all of it
-     * @param z_range  subset the vertical dimension, or null if you want all of it
-     * @param y_range  subset the y dimension, or null if you want all of it
-     * @param x_range  subset the x dimension, or null if you want all of it
+     * @param subset subset that you want
      * @return subsetted GeoGrid
-     * @throws ucar.ma2.InvalidRangeException if ranges are invlaid
+     * @throws ucar.ma2.InvalidRangeException if ranges are invalid
      */
-    public Grid makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException;
+    public Grid makeSubset(Subset subset) throws ucar.ma2.InvalidRangeException;
 
     /**
      * human readable information about this Grid.
@@ -188,11 +162,6 @@ public interface Grid {
      */
     public String getInfo();
 
-    /**
-     * Get the underlying Variable, if it exists.
-     * @return the underlying Variable, if it exists, else null
-     */
-    public VariableDS getVariable();
 
   }
 

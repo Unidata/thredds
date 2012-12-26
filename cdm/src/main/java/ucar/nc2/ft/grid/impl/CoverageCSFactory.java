@@ -1,0 +1,309 @@
+package ucar.nc2.ft.grid.impl;
+
+import ucar.nc2.Dimension;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.*;
+import ucar.nc2.ft.grid.CoverageCS;
+import ucar.nc2.units.SimpleUnit;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.projection.RotatedPole;
+
+import java.util.*;
+
+/**
+ * Factory for Coverages.
+ * WIll eventually replace ucar.nc2.dt.grid
+ *
+ * @author John
+ * @since 12/23/12
+ */
+public class CoverageCSFactory {
+
+  public static String describe(Formatter f, NetcdfDataset ds) {
+    CoverageCSFactory fac = new CoverageCSFactory(f, ds);
+    fac.type =  fac.classify();
+    return fac.toString();
+  }
+
+  public static String describe(Formatter f, CoordinateSystem cs) {
+    CoverageCSFactory fac = new CoverageCSFactory(f, null);
+    fac.type = fac.doClassify(f, cs);
+    return fac.toString();
+  }
+
+  /////////
+
+  NetcdfDataset ds;
+  Formatter sbuff;
+  CoverageCS.Type type;
+  List<CoordinateAxis> standardAxes;
+  List<CoordinateAxis> otherAxes;
+
+  private CoverageCSFactory(Formatter f, NetcdfDataset ds) {
+    this.sbuff = f;
+    this.ds = ds;
+  }
+
+  private CoverageCS.Type classify() {
+    if (sbuff != null) sbuff.format("CoverageFactory for '%s'%n", ds.getLocation());
+
+    // sort by largest size first
+    List<CoordinateSystem> css = new ArrayList<CoordinateSystem>(ds.getCoordinateSystems());
+    Collections.sort(css, new Comparator<CoordinateSystem>() {
+      public int compare(CoordinateSystem o1, CoordinateSystem o2) {
+        return o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size();
+      }
+    });
+
+    CoverageCS.Type isMine = null;
+    for (CoordinateSystem cs : css) {
+      isMine = doClassify(sbuff, cs);
+      if (isMine != null) break;
+    }
+    if (sbuff != null) sbuff.format("coverage = %s%n", isMine);
+    return isMine;
+  }
+
+
+  private CoverageCS.Type doClassify(Formatter sbuff, CoordinateSystem cs) {
+    // must be at least 2 axes
+    if (cs.getRankDomain() < 2) {
+      if (sbuff != null) sbuff.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
+      return null;
+    }
+
+    // must be lat/lon or have x,y and projection
+    if (!cs.isLatLon()) {
+      // do check for GeoXY ourself
+      if ((cs.getXaxis() == null) || (cs.getYaxis() == null)) {
+        if (sbuff != null) {
+          sbuff.format("%s: NO Lat,Lon or X,Y axis%n", cs.getName());
+        }
+        return null;
+      }
+      if (null == cs.getProjection()) {
+        if (sbuff != null) {
+          sbuff.format("%s: NO projection found%n", cs.getName());
+        }
+        return null;
+      }
+    }
+
+    // obtain the x,y or lat/lon axes. x,y normally must be convertible to km
+    CoordinateAxis xaxis, yaxis;
+    if (cs.isGeoXY()) {
+      xaxis = cs.getXaxis();
+      yaxis = cs.getYaxis();
+
+      ProjectionImpl p = cs.getProjection();
+      if (!(p instanceof RotatedPole)) {
+        if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
+          if (sbuff != null) {
+            sbuff.format("%s: X axis units are not convertible to km%n", cs.getName());
+          }
+          //return false;
+        }
+        if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
+          if (sbuff != null) {
+            sbuff.format("%s: Y axis units are not convertible to km%n", cs.getName());
+          }
+          //return false;
+        }
+      }
+    } else {
+      xaxis = cs.getLonAxis();
+      yaxis = cs.getLatAxis();
+    }
+
+    // check x,y rank <= 2
+    if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
+      if (sbuff != null)
+        sbuff.format("%s: X or Y axis rank must be <= 2%n", cs.getName());
+      return null;
+    }
+
+    // check x,y with size 1
+    if ((xaxis.getSize() < 2) || (yaxis.getSize() < 2)) {
+      if (sbuff != null)
+        sbuff.format("%s: X or Y axis size must be >= 2%n", cs.getName());
+      return null;
+    }
+
+    // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
+    List<Dimension> xyDomain = CoordinateSystem.makeDomain(new CoordinateAxis[]{xaxis, yaxis});
+    if (xyDomain.size() < 2) {
+      if (sbuff != null)
+        sbuff.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
+      return null;
+    }
+
+    standardAxes = new ArrayList<CoordinateAxis>();
+    standardAxes.add(xaxis);
+    standardAxes.add(yaxis);
+
+    //int countRangeRank = 2;
+
+    CoordinateAxis z = cs.getHeightAxis();
+    if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getPressureAxis();
+    if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getZaxis();
+    if ((z != null) && !(z instanceof CoordinateAxis1D)) {
+      if (sbuff != null) {
+        sbuff.format("%s: Z axis must be 1D%n", cs.getName());
+      }
+      return null;
+    }
+    if (z != null)
+      standardAxes.add(z);
+
+    /*
+    CoordinateAxis t = cs.getTaxis();
+    if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
+      CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
+      if (rt == null) {
+        if (sbuff != null) sbuff.format("%s: T axis must be 1D%n", cs.getName());
+        return false;
+      }
+      if (!(rt instanceof CoordinateAxis1D)) {
+        if (sbuff != null) {
+          sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
+        }
+        return false;
+      }
+
+      if (t.getRank() != 2) {
+        if (sbuff != null) {
+          sbuff.format("%s: Time axis must be 2D when used with RunTime dimension%n", cs.getName());
+        }
+        return false;
+      }
+
+      CoordinateAxis1D rt1D = (CoordinateAxis1D) rt;
+      Dimension rtdim = rt1D.getDimension(0);
+      Dimension tdim = t.getDimension(0);
+
+      if (!rtdim.equals(tdim)) {
+        if (sbuff != null) {
+          sbuff.format("%s: Time axis must use RunTime dimension%n", cs.getName());
+        }
+        return false;
+      }
+    }
+    if (t != null)
+      testAxis.add(t);
+    */
+
+    // tom margolis 3/2/2010
+    // allow runtime independent of time
+    CoordinateAxis t = cs.getTaxis();
+    CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
+
+    // A runtime axis must be one-dimensional
+    if (rt != null && !(rt instanceof CoordinateAxis1D)) {
+      if (sbuff != null) {
+        sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
+      }
+      return null;
+    }
+
+    // If time axis is two-dimensional...
+    if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
+      // ... a runtime axis is required
+      if (rt == null) {
+        if (sbuff != null) sbuff.format("%s: T axis must be 1D%n", cs.getName());
+        return null;
+      }
+
+      if (t.getRank() != 2) {
+        if (sbuff != null) {
+          sbuff.format("%s: Time axis must be 2D when used with RunTime dimension%n", cs.getName());
+        }
+        return null;
+      }
+
+      CoordinateAxis1D rt1D = (CoordinateAxis1D) rt;
+      if (!rt1D.getDimension(0).equals(t.getDimension(0))) {
+        if (sbuff != null) {
+          sbuff.format("%s: Time axis must use RunTime dimension%n", cs.getName());
+        }
+        return null;
+      }
+    }
+
+    // Set the primary temporal axis - either Time or Runtime
+    if (t != null) {
+      standardAxes.add(t);
+    } else if (rt != null) {
+      standardAxes.add(rt);
+    }
+
+    // construct list of non standard axes
+    List<CoordinateAxis> css = cs.getCoordinateAxes();
+    if (standardAxes.size() < css.size()) {
+      otherAxes = new  ArrayList<CoordinateAxis>(3);
+      for (CoordinateAxis axis : css)
+        if (!standardAxes.contains(axis)) otherAxes.add(axis);
+    }
+
+    // now to classify
+    CoverageCS.Type result = null;
+
+    // 2D x,y
+    if (cs.isLatLon() && (xaxis.getRank() == 2) && (yaxis.getRank()== 2)) {
+      if ( (rt != null) && (t != null && t.getRank() == 2) )  // fmrc with curvilinear coordinates LOOK
+        result = CoverageCS.Type.Fmrc;
+
+      else if (t != null) {  // is t independent or not
+        if (CoordinateSystem.isSubset(t.getDimensionsAll(), xyDomain))
+          result = CoverageCS.Type.Swath;
+        else
+          result = CoverageCS.Type.Curvilinear;
+      } else
+        result = CoverageCS.Type.Curvilinear;   // guess that theres always a time coordinate for swath
+
+    } else {
+      if ( (xaxis.getRank() == 1) && (yaxis.getRank()== 1) && (z == null || z.getRank() == 1) ) {
+        if ( (rt != null) && (t != null && t.getRank() == 2) )
+          result = CoverageCS.Type.Fmrc;
+        else
+          result = CoverageCS.Type.Grid;
+      } else {
+        result = CoverageCS.Type.Coverage;
+      }
+    }
+
+    return result;
+  }
+
+  public String toString() {
+    if (type == null) return "";
+    Formatter f2 = new Formatter();
+    f2.format("%s", type);
+
+    f2.format("(");
+    int count = 0;
+    Collections.sort(standardAxes, new Comparator<CoordinateAxis>() {  // sort by axis type
+      public int compare(CoordinateAxis o1, CoordinateAxis o2) {
+        AxisType t1 = o1.getAxisType();
+        AxisType t2 = o2.getAxisType();
+        return t1.axisOrder() - t2.axisOrder();
+      }
+    });
+    for (CoordinateAxis axis : standardAxes) {
+      if (count++ > 0) f2.format(",");
+      f2.format("%s", axis.getAxisType().getCFAxisName());
+    }
+    f2.format(")");
+
+
+    if (otherAxes != null && otherAxes.size() > 0) {
+      f2.format(": ");
+      count = 0;
+      for (CoordinateAxis axis : otherAxes) {
+        if (count++ > 0) f2.format(",");
+        f2.format("%s", axis.getShortName());
+      }
+    }
+    return f2.toString();
+
+  }
+}

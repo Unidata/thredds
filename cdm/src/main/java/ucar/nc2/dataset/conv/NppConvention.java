@@ -47,7 +47,18 @@ import java.io.IOException;
  * note this is almost same as Avhrr ??
  * @author caron
  * @since Sep 11, 2009
- * @see "http://npp.gsfc.nasa.gov/"
+ * @see "http://jointmission.gsfc.nasa.gov/science/documents.html"  CDFCB-X
+ */
+/*
+ * NPP Common Data Format Control Book – External (CDFCB-X)
+ – Volume I – Overview
+ – Volume II – RDR Formats
+ – Volume III – SDR/TDR Formats
+ – Volume IV – EDR/IP/ARP and Geolocation Formats
+ – Volume V – Metadata
+ – Volume VI – Ancillary Data, Auxiliary Data, Messages, and Reports
+ – Volume VII – Downlink Formats (Application Packets)
+ – Volume VIII – Look Up Table Formats
  */
 public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
   private static final String SPECTRAL_COORD_NAME = "Surface_Emissivity_Wavelengths";
@@ -81,7 +92,7 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    ds.addAttribute(null, new Attribute("FeatureType", FeatureType.IMAGE.toString())); // LOOK
+    ds.addAttribute(null, new Attribute("FeatureType", FeatureType.SWATH.toString()));
 
     boolean hasPressureLevels = false;
     Variable spectralCoord = null;
@@ -151,6 +162,33 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
       }
 
     }
+
+    /*
+     F:\data\cdmUnitTest\ft\image\npp\GMTCO_npp_d20030125_t084705_e084830_b00015_c20071212222807_den_OPS_SEG.h5
+
+          :AggregateBeginningTime = "084705.090560Z";
+          :AggregateEndingDate = "20030125";
+          :AggregateEndingTime = "084830.543424Z";
+
+          probably
+
+          YYYYMMDDHHMMSSssssss
+          20030125084705090560
+          2003-01-25T08:47:05
+
+          mysterious is
+
+          long ScanMidTime(=48);
+            :_FillValue = -993L; // long
+            :_ChunkSize = 48; // int
+
+           data:
+            {1422175657912747, 1422175659699117, 1422175661485487, 1422175663271857, 1422175665058227, ...
+
+           what is 48 ?
+           data is byte QF2_VIIRSMODGEOTC(scan=768, xscan=3200);
+
+     */
 
     /* Group PRODUCT_METADATA {
 

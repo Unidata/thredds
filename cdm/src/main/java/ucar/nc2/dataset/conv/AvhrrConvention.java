@@ -79,7 +79,7 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    ds.addAttribute(null, new Attribute("FeatureType", FeatureType.IMAGE.toString())); // LOOK
+    ds.addAttribute(null, new Attribute("FeatureType", FeatureType.SWATH.toString()));
 
     Group vhrr = ds.findGroup("VHRR");
     Group loc = vhrr.findGroup("Geo-Location");

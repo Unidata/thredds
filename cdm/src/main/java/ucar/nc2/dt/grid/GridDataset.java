@@ -392,7 +392,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     buff.format("\n\n----------------------------------------------------\n");
     NetcdfDatasetInfo info = null;
     try {
-      info = new NetcdfDatasetInfo( ds.getLocation());
+      info = new NetcdfDatasetInfo( ds);
       buff.format("%s", info.getParseInfo());
     } catch (IOException e) {
       buff.format("NetcdfDatasetInfo failed");

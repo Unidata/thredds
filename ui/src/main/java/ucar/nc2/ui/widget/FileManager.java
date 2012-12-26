@@ -114,19 +114,15 @@ public class FileManager {
       defaultDirs.add(dirName);
     }
 
-    // funky windows workaround
+    /* funky windows workaround
     String osName = System.getProperty("os.name");
     //System.out.println("OS ==  "+ osName+" def ="+defDir);
     boolean isWindose = (0 <= osName.indexOf("Windows"));
     if (isWindose)
-      defaultDirs.add("C:/");
+      defaultDirs.add("C:/"); */
 
     File defaultDirectory = findDefaultDirectory(defaultDirs);
     try {
-      if (isWindose) {
-        if (test) System.out.println("FileManager 1 = " + defaultDirectory);
-        chooser = new javax.swing.JFileChooser(defaultDirectory); // new WindowsAltFileSystemView());
-      } else
         chooser = new javax.swing.JFileChooser(defaultDirectory);
 
     } catch (SecurityException se) {
