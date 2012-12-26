@@ -2,7 +2,7 @@ subprojects {
   apply plugin: 'java'
 
   sourceCompatibility = 1.6
-  version = '4.3.15'
+  version = '4.3.16'
 
   repositories {
     maven {
