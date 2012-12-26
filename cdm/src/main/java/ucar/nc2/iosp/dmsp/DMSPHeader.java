@@ -43,7 +43,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 /**
- * A description
+ * DMSP header parser
  * <p/>
  * User: edavis
  * Date: Aug 6, 2004
@@ -52,7 +52,7 @@ import java.text.ParseException;
 public class DMSPHeader
 {
   private String[] header = null;
-  private HashMap headerInfo = new HashMap();
+  private Map<String, String> headerInfo = new HashMap<String, String>();
   private int headerSizeInBytes = 0;
   private int headerSizeInBytesGuess = 5000;
 
@@ -307,7 +307,7 @@ public class DMSPHeader
 
     // Add some general metadata in global attributes.
     this.ncFile.addAttribute( null, new Attribute( "title",
-                                                   new StringBuffer("NGDC archived ")
+                                                   new StringBuilder("NGDC archived ")
                                                    .append( datasetIdAtt.getStringValue())
                                                    .append( " data with start time ")
                                                    .append( startDateAtt.getStringValue())
@@ -322,7 +322,7 @@ public class DMSPHeader
     this.ncFile.addAttribute( null, new Attribute( "thredds_publisher_url", "http://dmsp.ngdc.noaa.gov/"));
     this.ncFile.addAttribute( null, new Attribute( "thredds_publisher_email", "ngdc.dmsp@noaa.gov"));
     this.ncFile.addAttribute( null, new Attribute( "thredds_summary",
-                                                   new StringBuffer("This dataset contains data from the DMSP ").append( spacecraftIdAtt.getStringValue())
+                                                   new StringBuilder("This dataset contains data from the DMSP ").append( spacecraftIdAtt.getStringValue())
                                                    .append( " satellite OLS instrument and includes both visible smooth and thermal smooth imagery with 2.7km resolution.")
                                                    .append( " The start time for this data is ").append( startDateAtt.getStringValue())
                                                    .append( " and the northerly equatorial crossing longitude is ").append( startLongitudeAtt.getNumericValue())
@@ -333,7 +333,7 @@ public class DMSPHeader
     this.ncFile.addAttribute( null, new Attribute( "thredds_timeCoverage_start", startDateAtt.getStringValue()));
     this.ncFile.addAttribute( null, new Attribute( "thredds_timeCoverage_end", endDateAtt.getStringValue()));
     this.ncFile.addAttribute( null, new Attribute( "thredds_geospatialCoverage",
-                                                   new StringBuffer("Polar orbit with northerly equatorial crossing at longitude ")
+                                                   new StringBuilder("Polar orbit with northerly equatorial crossing at longitude ")
                                                    .append( ascendingNodeAtt.getNumericValue()).append( ".")
                                                    .toString()));
 
@@ -379,21 +379,25 @@ public class DMSPHeader
     String curHeaderLine = null;
     String curHeaderTitle = null;
     String curHeaderValue = null;
-    for ( int i = 0; i < this.header.length; i++ )
-    {
-      curHeaderLine = this.header[i].trim();
-      lineSeperatorIndex = curHeaderLine.indexOf( ':' );
-      if ( lineSeperatorIndex == -1 ) throw new IOException( "Invalid DMSP file: header line <" + curHeaderLine + "> contains no seperator <:>." );
-      if ( lineSeperatorIndex == 0 ) throw new IOException( "Invalid DMSP file: header line <" + curHeaderLine + "> contains no title." );
-      if ( lineSeperatorIndex == curHeaderLine.length() - 1 ) throw new IOException( "Invalid DMSP file: header line <" + curHeaderLine + "> contains no value." );
+    for (String aHeader : this.header) {
+      curHeaderLine = aHeader.trim();
+      lineSeperatorIndex = curHeaderLine.indexOf(':');
+      if (lineSeperatorIndex == -1)
+        throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains no seperator <:>.");
+      if (lineSeperatorIndex == 0)
+        throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains no title.");
+      if (lineSeperatorIndex == curHeaderLine.length() - 1)
+        throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains no value.");
 
-      curHeaderTitle = curHeaderLine.substring( 0, lineSeperatorIndex ).trim();
-      if ( HeaderInfoTitle.getTitle( curHeaderTitle ) == null ) throw new IOException( "Invalid DMSP file: header line <" + curHeaderLine + "> contains invalid title." );
+      curHeaderTitle = curHeaderLine.substring(0, lineSeperatorIndex).trim();
+      if (HeaderInfoTitle.getTitle(curHeaderTitle) == null)
+        throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains invalid title.");
 
-      curHeaderValue = curHeaderLine.substring( lineSeperatorIndex + 1 ).trim();
-      if ( curHeaderValue.equals( "")) throw new IOException( "Invalid DMSP file: header line <" + curHeaderLine + "> contains no value." );
+      curHeaderValue = curHeaderLine.substring(lineSeperatorIndex + 1).trim();
+      if (curHeaderValue.equals(""))
+        throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains no value.");
 
-      headerInfo.put( curHeaderTitle, curHeaderValue );
+      headerInfo.put(curHeaderTitle, curHeaderValue);
     }
   }
 
@@ -407,17 +411,14 @@ public class DMSPHeader
   private void handleFileInformation()
           throws IOException
   {
-    fileIdAtt = new Attribute( this.fileIdAttName,
-                               (String) headerInfo.get( HeaderInfoTitle.FILE_ID.toString() ) );
-    datasetIdAtt = new Attribute( this.datasetIdAttName,
-                                  (String) headerInfo.get( HeaderInfoTitle.DATA_SET_ID.toString() ) );
-    recordSizeInBytes = Integer.parseInt( (String) headerInfo.get( HeaderInfoTitle.RECORD_BYTES.toString() ) );
-    numRecords = Integer.parseInt( (String) headerInfo.get( HeaderInfoTitle.NUM_RECORDS.toString() ) );
-    numHeaderRecords = Integer.parseInt( (String) headerInfo.get( HeaderInfoTitle.NUM_HEADER_RECORDS.toString() ) );
-    numDataRecords = Integer.parseInt( (String) headerInfo.get( HeaderInfoTitle.NUM_DATA_RECORDS.toString() ) );
-    numDataRecordsDim = new Dimension( this.numDataRecordsDimName,
-                                       numDataRecords, true, true, false );
-    numArtificialDataRecords = Integer.parseInt( (String) headerInfo.get( HeaderInfoTitle.NUM_ARTIFICIAL_DATA_RECORDS.toString() ) );
+    fileIdAtt = new Attribute( this.fileIdAttName, headerInfo.get(HeaderInfoTitle.FILE_ID.toString() ) );
+    datasetIdAtt = new Attribute( this.datasetIdAttName, headerInfo.get(HeaderInfoTitle.DATA_SET_ID.toString() ) );
+    recordSizeInBytes = Integer.parseInt( headerInfo.get( HeaderInfoTitle.RECORD_BYTES.toString() ) );
+    numRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_RECORDS.toString() ) );
+    numHeaderRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_HEADER_RECORDS.toString() ) );
+    numDataRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_DATA_RECORDS.toString() ) );
+    numDataRecordsDim = new Dimension( this.numDataRecordsDimName, numDataRecords, true, true, false);
+    numArtificialDataRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_ARTIFICIAL_DATA_RECORDS.toString() ) );
     if ( numHeaderRecords + numDataRecordsDim.getLength() + numArtificialDataRecords != numRecords )
     {
       throw new IOException( "Invalid DMSP file: the number of header records <" + this.numHeaderRecords + ">, data records <" + this.numDataRecordsDim.getLength() + ">, and artificial data records <" + this.numArtificialDataRecords + "> is not equal to total records <" + this.numRecords + ">." );
@@ -471,28 +472,23 @@ public class DMSPHeader
   private void handleOrbitInformation() throws IOException
   {
     // Read the start date UTC information.
-    String time = (String) headerInfo.get(  HeaderInfoTitle.START_TIME_UTC.toString());
-    String startDateTimeUTC = (String) headerInfo.get(  HeaderInfoTitle.START_DATE_UTC.toString())
-                              + "T" + time.substring( 0, time.indexOf( '.')+4)
-                              + "GMT";
-    try
-    {
+    String time = headerInfo.get(  HeaderInfoTitle.START_TIME_UTC.toString());
+    String startDateTimeUTC = headerInfo.get(  HeaderInfoTitle.START_DATE_UTC.toString())
+                              + "T" + time.substring( 0, time.indexOf( '.')+4) + "Z";
+    try {
       this.startDate = DateFormatHandler.ISO_DATE_TIME.getDateFromDateTimeString( startDateTimeUTC);
     }
     catch ( ParseException e )
     {
       throw new IOException( "Invalid DMSP file: start date/time string <" + startDateTimeUTC + "> not parseable: " + e.getMessage() );
     }
-    this.startDateAtt = new Attribute( this.startDateAttName,
-                                       DateFormatHandler.ISO_DATE_TIME.getDateTimeStringFromDate( this.startDate));
+    this.startDateAtt = new Attribute( this.startDateAttName, DateFormatHandler.ISO_DATE_TIME.getDateTimeStringFromDate( this.startDate));
 
     // Read the end date UTC information.
-    time = (String) headerInfo.get(  HeaderInfoTitle.END_TIME_UTC.toString());
-    String endDateTimeUTC = (String) headerInfo.get(  HeaderInfoTitle.END_DATE_UTC.toString())
-                            + "T" + time.substring( 0, time.indexOf( '.')+4)
-                            + "GMT";
-    try
-    {
+    time = headerInfo.get(  HeaderInfoTitle.END_TIME_UTC.toString());
+    String endDateTimeUTC = headerInfo.get(  HeaderInfoTitle.END_DATE_UTC.toString())
+                            + "T" + time.substring( 0, time.indexOf( '.')+4) + "Z";
+    try {
       this.endDate = DateFormatHandler.ISO_DATE_TIME.getDateFromDateTimeString( endDateTimeUTC);
     }
     catch ( ParseException e )
@@ -503,13 +499,11 @@ public class DMSPHeader
                                        DateFormatHandler.ISO_DATE_TIME.getDateTimeStringFromDate( this.endDate));
 
     // Read the local start/end date/time
-    this.startDateLocalAtt = new Attribute( this.startDateLocalAttName,
-                                            (String) HeaderInfoTitle.START_DATE_LOCAL.toString());
-    this.startTimeLocalAtt = new Attribute( this.startTimeLocalAttName,
-                                            (String) HeaderInfoTitle.START_TIME_LOCAL.toString());
+    this.startDateLocalAtt = new Attribute( this.startDateLocalAttName, HeaderInfoTitle.START_DATE_LOCAL.toString());
+    this.startTimeLocalAtt = new Attribute( this.startTimeLocalAttName, HeaderInfoTitle.START_TIME_LOCAL.toString());
 
     // Read the start latitude/longitude information.
-    String startLatLon = (String) headerInfo.get(  HeaderInfoTitle.START_LAT_LON.toString());
+    String startLatLon = headerInfo.get(  HeaderInfoTitle.START_LAT_LON.toString());
     String[] latLon = startLatLon.split( " ");
     Double lat, lon;
     if ( latLon.length != 2) throw new IOException( "Invalid DMSP file: start lat/lon <" + startLatLon + "> invalid.");
@@ -526,7 +520,7 @@ public class DMSPHeader
     this.startLongitudeAtt = new Attribute( this.startLongitudeAttName, lon);
 
     // Read the end latitude/longitude information.
-    String endLatLon = (String) headerInfo.get(  HeaderInfoTitle.END_LAT_LON.toString());
+    String endLatLon = headerInfo.get(  HeaderInfoTitle.END_LAT_LON.toString());
     latLon = endLatLon.split( " ");
     if ( latLon.length != 2) throw new IOException( "Invalid DMSP file: end lat/lon <" + endLatLon + "> invalid.");
     try
@@ -542,26 +536,22 @@ public class DMSPHeader
     this.endLongitudeAtt = new Attribute( this.endLongitudeAttName, lon);
 
     // Read the start sub-solar coordinates.
-    this.startSubsolarCoordsAtt = new Attribute( this.startSubsolarCoordsAttName,
-                                                 (String) headerInfo.get( HeaderInfoTitle.START_SUBSOLAR_COORD.toString()));
+    this.startSubsolarCoordsAtt = new Attribute( this.startSubsolarCoordsAttName, headerInfo.get(HeaderInfoTitle.START_SUBSOLAR_COORD.toString()));
 
     // Read the end sub-solar coordinates.
-    this.endSubsolarCoordsAtt = new Attribute( this.endSubsolarCoordsAttName,
-                                               (String) headerInfo.get( HeaderInfoTitle.END_SUBSOLAR_COORD.toString()));
+    this.endSubsolarCoordsAtt = new Attribute( this.endSubsolarCoordsAttName, headerInfo.get(HeaderInfoTitle.END_SUBSOLAR_COORD.toString()));
 
     // Read the start lunar coordinates.
-    this.startLunarCoordsAtt = new Attribute( this.startLunarCoordsAttName,
-                                              (String) headerInfo.get( HeaderInfoTitle.START_LUNAR_COORD.toString()));
+    this.startLunarCoordsAtt = new Attribute( this.startLunarCoordsAttName, headerInfo.get(HeaderInfoTitle.START_LUNAR_COORD.toString()));
 
     // Read the end lunar coordinates.
-    this.endLunarCoordsAtt = new Attribute( this.endLunarCoordsAttName,
-                                            (String) headerInfo.get( HeaderInfoTitle.END_LUNAR_COORD.toString()));
+    this.endLunarCoordsAtt = new Attribute( this.endLunarCoordsAttName, headerInfo.get(HeaderInfoTitle.END_LUNAR_COORD.toString()));
 
     // Read the ascending node.
-    Double ascendingNode = Double.valueOf( (String) headerInfo.get( HeaderInfoTitle.ASCENDING_NODE.toString()) );
+    Double ascendingNode = Double.valueOf( headerInfo.get( HeaderInfoTitle.ASCENDING_NODE.toString()) );
     this.ascendingNodeAtt = new Attribute( this.ascendingNodeAttName, ascendingNode);
 
-    Double nodeHeading = Double.valueOf( (String) headerInfo.get( HeaderInfoTitle.NODE_HEADING.toString()) );
+    Double nodeHeading = Double.valueOf( headerInfo.get( HeaderInfoTitle.NODE_HEADING.toString()) );
     this.nodeHeadingAtt = new Attribute( this.nodeHeadingAttName, nodeHeading);
   }
 
@@ -570,60 +560,49 @@ public class DMSPHeader
    */
   private void handleSensorInformation()
   {
-    numSamplesPerBand = Integer.parseInt( (String) headerInfo.get( HeaderInfoTitle.SAMPLES_PER_BAND.toString()) );
+    numSamplesPerBand = Integer.parseInt( headerInfo.get( HeaderInfoTitle.SAMPLES_PER_BAND.toString()) );
     numSamplesPerBandDim = new Dimension(
             this.numSamplesPerBandDimName,
             numSamplesPerBand);
 
     // Read nominal resolution information
-    nominalResolutionAtt = new Attribute( nominalResolutionAttName,
-                                          (String) headerInfo.get( HeaderInfoTitle.NOMINAL_RESOLUTION.toString()));
+    nominalResolutionAtt = new Attribute( nominalResolutionAttName, headerInfo.get(HeaderInfoTitle.NOMINAL_RESOLUTION.toString()));
 
     // Read bands per scanlin information.
-    bandsPerScanlineAtt = new Attribute( bandsPerScanlineAttName,
-                                         Integer.valueOf( (String) headerInfo.get( HeaderInfoTitle.BANDS_PER_SCANLINE.toString())));
+    bandsPerScanlineAtt = new Attribute( bandsPerScanlineAttName, Integer.valueOf(headerInfo.get(HeaderInfoTitle.BANDS_PER_SCANLINE.toString())));
 
     // Read bytes per smaple information
-    bytesPerSampleAtt = new Attribute( bytesPerSampleAttName,
-                                       Integer.valueOf( (String) headerInfo.get( HeaderInfoTitle.BYTES_PER_SAMPLE.toString())));;
+    bytesPerSampleAtt = new Attribute( bytesPerSampleAttName, Integer.valueOf(headerInfo.get(HeaderInfoTitle.BYTES_PER_SAMPLE.toString())));
 
     // Read byte offset for band 1 information.
-    byteOffsetBand1Att = new Attribute( byteOffsetBand1AttName,
-                                        Integer.valueOf( (String) headerInfo.get( HeaderInfoTitle.BYTE_OFFSET_BAND_1.toString())));
+    byteOffsetBand1Att = new Attribute( byteOffsetBand1AttName, Integer.valueOf(headerInfo.get(HeaderInfoTitle.BYTE_OFFSET_BAND_1.toString())));
 
     // Read byte offset for band 2 information.
-    byteOffsetBand2Att = new Attribute( byteOffsetBand2AttName,
-                                        Integer.valueOf( (String) headerInfo.get( HeaderInfoTitle.BYTE_OFFSET_BAND_2.toString())));
+    byteOffsetBand2Att = new Attribute( byteOffsetBand2AttName, Integer.valueOf(headerInfo.get(HeaderInfoTitle.BYTE_OFFSET_BAND_2.toString())));
 
     // Band 1 description
-    band1Att = new Attribute( band1AttName, (String) headerInfo.get( HeaderInfoTitle.BAND_1.toString()));
+    band1Att = new Attribute( band1AttName, headerInfo.get( HeaderInfoTitle.BAND_1.toString()));
 
     // Band 2 description
-    band2Att = new Attribute( band2AttName, (String) headerInfo.get( HeaderInfoTitle.BAND_2.toString()));
+    band2Att = new Attribute( band2AttName, headerInfo.get( HeaderInfoTitle.BAND_2.toString()));
 
     // Band organization
-    bandOrganizationAtt = new Attribute( bandOrganizationAttName,
-                                         (String) headerInfo.get( HeaderInfoTitle.ORGANIZATION.toString()));
+    bandOrganizationAtt = new Attribute( bandOrganizationAttName, headerInfo.get(HeaderInfoTitle.ORGANIZATION.toString()));
 
     // thermal offset
-    thermalOffsetAtt = new Attribute( thermalOffsetAttName,
-                                      (String) headerInfo.get( HeaderInfoTitle.THERMAL_OFFSET.toString()));
+    thermalOffsetAtt = new Attribute( thermalOffsetAttName, headerInfo.get(HeaderInfoTitle.THERMAL_OFFSET.toString()));
 
     // thermal scale
-    thermalScaleAtt = new Attribute( thermalScaleAttName,
-                                      (String) headerInfo.get( HeaderInfoTitle.THERMAL_SCALE.toString()));
+    thermalScaleAtt = new Attribute( thermalScaleAttName, headerInfo.get(HeaderInfoTitle.THERMAL_SCALE.toString()));
 
     // percent daylight
-    percentDaylightAtt = new Attribute( percentDaylightAttName,
-                                        Double.valueOf( (String) headerInfo.get( HeaderInfoTitle.PERCENT_DAYLIGHT.toString())));
+    percentDaylightAtt = new Attribute( percentDaylightAttName, Double.valueOf(headerInfo.get(HeaderInfoTitle.PERCENT_DAYLIGHT.toString())));
 
     // percent full moon
-    percentFullMoonAtt = new Attribute( percentFullMoonAttName,
-                                        Double.valueOf( (String) headerInfo.get( HeaderInfoTitle.PERCENT_FULL_MOON.toString())));
+    percentFullMoonAtt = new Attribute( percentFullMoonAttName, Double.valueOf(headerInfo.get(HeaderInfoTitle.PERCENT_FULL_MOON.toString())));
 
     // percent terminator evident
-    percentTerminatorEvidentAtt = new Attribute( percentTerminatorEvidentAttName,
-                                        Double.valueOf( (String) headerInfo.get( HeaderInfoTitle.PERCENT_TERMINATOR_EVIDENT.toString())));
+    percentTerminatorEvidentAtt = new Attribute( percentTerminatorEvidentAttName, Double.valueOf(headerInfo.get(HeaderInfoTitle.PERCENT_TERMINATOR_EVIDENT.toString())));
   }
 
   /**
@@ -632,9 +611,7 @@ public class DMSPHeader
   private void handleQCInformation()
   {
     // QC flags
-    qcFlagsAtt = new Attribute( qcFlagsAttName,
-                                (String) headerInfo.get( HeaderInfoTitle.QC_FLAGS.toString()));
-
+    qcFlagsAtt = new Attribute( qcFlagsAttName, headerInfo.get(HeaderInfoTitle.QC_FLAGS.toString()));
   }
 
   /**
@@ -645,14 +622,8 @@ public class DMSPHeader
   protected String headerInfoDump()
   {
     StringBuilder retVal = new StringBuilder( );
-
-    Iterator it = this.headerInfo.keySet().iterator();
-    String curHeaderTitle = null;
-    String curHeaderValue = null;
-    while ( it.hasNext() )
-    {
-      curHeaderTitle = (String) it.next();
-      curHeaderValue = (String) this.headerInfo.get( curHeaderTitle );
+    for ( String curHeaderTitle : this.headerInfo.keySet() ) {
+      String curHeaderValue = this.headerInfo.get( curHeaderTitle );
       retVal.append( curHeaderTitle );
       retVal.append( ":::::" );
       retVal.append( curHeaderValue );
@@ -669,7 +640,7 @@ public class DMSPHeader
    */
   public String toString()
   {
-    StringBuffer retVal = new StringBuffer();
+    StringBuilder retVal = new StringBuilder();
 
     retVal.append( HeaderInfoTitle.FILE_ID.toString() );
     retVal.append( ": ");
@@ -732,7 +703,7 @@ public class DMSPHeader
     // Available date format handlers.
     public final static DateFormatHandler ISO_DATE = new DateFormatHandler( "yyyy-MM-dd");
     public final static DateFormatHandler ISO_TIME = new DateFormatHandler( "HH:mm:ss.SSSz" );
-    public final static DateFormatHandler ISO_DATE_TIME = new DateFormatHandler( "yyyy-MM-dd\'T\'HH:mm:ss.SSSz" );
+    public final static DateFormatHandler ISO_DATE_TIME = new DateFormatHandler( "yyyy-MM-dd\'T\'HH:mm:ss.SSS'Z'" );
     public final static DateFormatHandler ALT_DATE_TIME = new DateFormatHandler( "EEE MMM dd HH:mm:ss yyyy" );
 
     private String dateTimeFormatString = null;
@@ -786,7 +757,7 @@ public class DMSPHeader
    */
   static class HeaderInfoTitle
   {
-    private static java.util.HashMap hash = new java.util.HashMap( 20 );
+    private static java.util.Map<String, HeaderInfoTitle> hash = new java.util.HashMap<String, HeaderInfoTitle>( 20 );
 
     public final static HeaderInfoTitle FILE_ID = new HeaderInfoTitle( "file ID");                  // /dmsp/moby-1-3/subscriptions/IBAMA/1353226646955.tmp
     public final static HeaderInfoTitle DATA_SET_ID = new HeaderInfoTitle( "data set ID" );              // DMSP F14 OLS LS & TS
@@ -853,7 +824,7 @@ public class DMSPHeader
       {
         return null;
       }
-      return (HeaderInfoTitle) hash.get( title );
+      return hash.get( title );
     }
 
     /**

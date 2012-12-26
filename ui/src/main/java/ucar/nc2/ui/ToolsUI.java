@@ -1359,7 +1359,8 @@ public class ToolsUI extends JPanel {
       if ((null == message) && (ioe instanceof EOFException))
         message = "Premature End of File";
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location + "\n" + message);
-      //ioe.printStackTrace();
+      if (!(ioe instanceof FileNotFoundException))
+        ioe.printStackTrace();
 
       try {
         if (ncfile != null) ncfile.close();
@@ -3372,6 +3373,25 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(infoButton2);
+
+      AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
+      eosdump.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            Formatter f = new Formatter();
+            hdf5Table.getEosInfo(f);
+            detailTA.setText(f.toString());
+            detailWindow.show();
+          } catch (IOException ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace(new PrintStream(bos));
+            detailTA.setText(bos.toString());
+            detailWindow.show();
+          }
+        }
+      });
+      buttPanel.add(eosdump);
+
     }
 
     boolean process(Object o) {

@@ -56,6 +56,7 @@ import org.jdom.Element;
  * @since Jul 23, 2007
  */
 public class HdfEos {
+  static public final String HDF5_GROUP = "HDFEOS_INFORMATION";
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
   static boolean showWork = false; // set in debug
   static private final String GEOLOC_FIELDS = "Geolocation Fields";
@@ -272,6 +273,7 @@ public class HdfEos {
 
     // Geolocation Variables
     Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
+    if (geoFieldsG == null) geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
     if (geoFieldsG != null) {
       Variable latAxis = null, lonAxis = null;
       Element floc = swathElem.getChild("GeoField");
@@ -300,8 +302,8 @@ public class HdfEos {
 
     // Data Variables
     Group dataG = parent.findGroup(DATA_FIELDS);
+    if (dataG == null) dataG = parent.findGroup(DATA_FIELDS2);
     if (dataG != null) {
-
       Element f = swathElem.getChild("DataField");
       List<Element> vars = (List<Element>) f.getChildren();
       for (Element elem : vars) {

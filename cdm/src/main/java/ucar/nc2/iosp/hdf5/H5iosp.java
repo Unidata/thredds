@@ -100,6 +100,16 @@ public class H5iosp extends AbstractIOServiceProvider {
     return "Hierarchical Data Format, version 5";
   }
 
+  public void getEosInfo(Formatter f) throws IOException {
+    NetcdfFile ncfile = headerParser.ncfile;
+    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
+    if (eosInfo != null) {
+      HdfEos.getEosInfo(ncfile, eosInfo, f);
+    } else {
+      f.format("Cant find GROUP '%s'", HdfEos.HDF5_GROUP);
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////////
 
   //private RandomAccessFile raf;
@@ -118,7 +128,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     headerParser.read(null);
 
     // check if its an HDF5-EOS file
-    Group eosInfo = ncfile.getRootGroup().findGroup("HDFEOS INFORMATION");
+    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
     if (eosInfo != null && !skipEos) {
       isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }
