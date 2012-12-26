@@ -40,6 +40,7 @@ import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 import ucar.unidata.geoloc.LatLonPoint;
 
+import java.util.Formatter;
 import java.util.List;
 import java.util.Date;
 
@@ -69,6 +70,8 @@ import java.util.Date;
  */
 
 public interface CoverageCS {
+  void show(Formatter f, boolean showCoords);
+
   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
   /**
@@ -93,7 +96,7 @@ public interface CoverageCS {
   public List<CoordinateAxis> getCoordinateAxes();
 
   /**
-   * Get the list of axes that are not x,y,z,t,rt.
+   * Get the list of axes that are not x,y,z,t.
    *
    * @return List of CoordinateAxis.
    */
@@ -240,7 +243,7 @@ public interface CoverageCS {
    *
    * @return DateRange or null if no time coordinate
    */
-  public CalendarDateRange getDateRange();
+  public CalendarDateRange getCalendarDateRange();
 
 
 }

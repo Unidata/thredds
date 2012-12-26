@@ -19,33 +19,42 @@ import java.util.*;
  */
 public class CoverageCSFactory {
 
+  public static CoverageCS make(NetcdfDataset ds, CoordinateSystem cs) {
+    CoverageCSFactory fac = new CoverageCSFactory();
+    fac.type = fac.classify(null, cs);
+    switch (fac.type) {
+      case Coverage : return new CoverageCSImpl(ds, cs, fac);
+      case Grid : return new GridCSImpl(ds, cs, fac);
+      case Fmrc: return new FmrcCSImpl(ds, cs, fac);
+      case Swath : return new SwathCSImpl(ds, cs, fac);
+    }
+    return null;
+  }
+
   public static String describe(Formatter f, NetcdfDataset ds) {
-    CoverageCSFactory fac = new CoverageCSFactory(f, ds);
-    fac.type =  fac.classify();
+    CoverageCSFactory fac = new CoverageCSFactory();
+    fac.type =  fac.classify(f, ds);
     return fac.toString();
   }
 
   public static String describe(Formatter f, CoordinateSystem cs) {
-    CoverageCSFactory fac = new CoverageCSFactory(f, null);
-    fac.type = fac.doClassify(f, cs);
+    CoverageCSFactory fac = new CoverageCSFactory();
+    fac.type = fac.classify(f, cs);
     return fac.toString();
   }
 
   /////////
 
-  NetcdfDataset ds;
-  Formatter sbuff;
+  //NetcdfDataset ds;
   CoverageCS.Type type;
   List<CoordinateAxis> standardAxes;
   List<CoordinateAxis> otherAxes;
 
-  private CoverageCSFactory(Formatter f, NetcdfDataset ds) {
-    this.sbuff = f;
-    this.ds = ds;
+  CoverageCSFactory() {
   }
 
-  private CoverageCS.Type classify() {
-    if (sbuff != null) sbuff.format("CoverageFactory for '%s'%n", ds.getLocation());
+  CoverageCS.Type classify(Formatter errlog, NetcdfDataset ds) {
+    if (errlog != null) errlog.format("CoverageFactory for '%s'%n", ds.getLocation());
 
     // sort by largest size first
     List<CoordinateSystem> css = new ArrayList<CoordinateSystem>(ds.getCoordinateSystems());
@@ -57,33 +66,33 @@ public class CoverageCSFactory {
 
     CoverageCS.Type isMine = null;
     for (CoordinateSystem cs : css) {
-      isMine = doClassify(sbuff, cs);
+      isMine = classify(errlog, cs);
       if (isMine != null) break;
     }
-    if (sbuff != null) sbuff.format("coverage = %s%n", isMine);
+    if (errlog != null) errlog.format("coverage = %s%n", isMine);
     return isMine;
   }
 
 
-  private CoverageCS.Type doClassify(Formatter sbuff, CoordinateSystem cs) {
+  CoverageCS.Type classify(Formatter errlog, CoordinateSystem cs) {
     // must be at least 2 axes
     if (cs.getRankDomain() < 2) {
-      if (sbuff != null) sbuff.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
+      if (errlog != null) errlog.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
       return null;
     }
 
     // must be lat/lon or have x,y and projection
     if (!cs.isLatLon()) {
-      // do check for GeoXY ourself
+      // do check for GeoXY
       if ((cs.getXaxis() == null) || (cs.getYaxis() == null)) {
-        if (sbuff != null) {
-          sbuff.format("%s: NO Lat,Lon or X,Y axis%n", cs.getName());
+        if (errlog != null) {
+          errlog.format("%s: NO Lat,Lon or X,Y axis%n", cs.getName());
         }
         return null;
       }
       if (null == cs.getProjection()) {
-        if (sbuff != null) {
-          sbuff.format("%s: NO projection found%n", cs.getName());
+        if (errlog != null) {
+          errlog.format("%s: NO projection found%n", cs.getName());
         }
         return null;
       }
@@ -98,14 +107,14 @@ public class CoverageCSFactory {
       ProjectionImpl p = cs.getProjection();
       if (!(p instanceof RotatedPole)) {
         if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
-          if (sbuff != null) {
-            sbuff.format("%s: X axis units are not convertible to km%n", cs.getName());
+          if (errlog != null) {
+            errlog.format("%s: X axis units are not convertible to km%n", cs.getName());
           }
           //return false;
         }
         if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
-          if (sbuff != null) {
-            sbuff.format("%s: Y axis units are not convertible to km%n", cs.getName());
+          if (errlog != null) {
+            errlog.format("%s: Y axis units are not convertible to km%n", cs.getName());
           }
           //return false;
         }
@@ -117,23 +126,23 @@ public class CoverageCSFactory {
 
     // check x,y rank <= 2
     if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
-      if (sbuff != null)
-        sbuff.format("%s: X or Y axis rank must be <= 2%n", cs.getName());
+      if (errlog != null)
+        errlog.format("%s: X or Y axis rank must be <= 2%n", cs.getName());
       return null;
     }
 
     // check x,y with size 1
     if ((xaxis.getSize() < 2) || (yaxis.getSize() < 2)) {
-      if (sbuff != null)
-        sbuff.format("%s: X or Y axis size must be >= 2%n", cs.getName());
+      if (errlog != null)
+        errlog.format("%s: X or Y axis size must be >= 2%n", cs.getName());
       return null;
     }
 
     // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
     List<Dimension> xyDomain = CoordinateSystem.makeDomain(new CoordinateAxis[]{xaxis, yaxis});
     if (xyDomain.size() < 2) {
-      if (sbuff != null)
-        sbuff.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
+      if (errlog != null)
+        errlog.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
       return null;
     }
 
@@ -147,8 +156,8 @@ public class CoverageCSFactory {
     if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getPressureAxis();
     if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getZaxis();
     if ((z != null) && !(z instanceof CoordinateAxis1D)) {
-      if (sbuff != null) {
-        sbuff.format("%s: Z axis must be 1D%n", cs.getName());
+      if (errlog != null) {
+        errlog.format("%s: Z axis must be 1D%n", cs.getName());
       }
       return null;
     }
@@ -199,8 +208,8 @@ public class CoverageCSFactory {
 
     // A runtime axis must be one-dimensional
     if (rt != null && !(rt instanceof CoordinateAxis1D)) {
-      if (sbuff != null) {
-        sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
+      if (errlog != null) {
+        errlog.format("%s: RunTime axis must be 1D%n", cs.getName());
       }
       return null;
     }
@@ -209,21 +218,21 @@ public class CoverageCSFactory {
     if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
       // ... a runtime axis is required
       if (rt == null) {
-        if (sbuff != null) sbuff.format("%s: T axis must be 1D%n", cs.getName());
+        if (errlog != null) errlog.format("%s: T axis must be 1D%n", cs.getName());
         return null;
       }
 
       if (t.getRank() != 2) {
-        if (sbuff != null) {
-          sbuff.format("%s: Time axis must be 2D when used with RunTime dimension%n", cs.getName());
+        if (errlog != null) {
+          errlog.format("%s: Time axis must be 2D when used with RunTime dimension%n", cs.getName());
         }
         return null;
       }
 
       CoordinateAxis1D rt1D = (CoordinateAxis1D) rt;
       if (!rt1D.getDimension(0).equals(t.getDimension(0))) {
-        if (sbuff != null) {
-          sbuff.format("%s: Time axis must use RunTime dimension%n", cs.getName());
+        if (errlog != null) {
+          errlog.format("%s: Time axis must use RunTime dimension%n", cs.getName());
         }
         return null;
       }
@@ -258,7 +267,7 @@ public class CoverageCSFactory {
         else
           result = CoverageCS.Type.Curvilinear;
       } else
-        result = CoverageCS.Type.Curvilinear;   // guess that theres always a time coordinate for swath
+        result = CoverageCS.Type.Curvilinear;   // if no time coordinate. call it curvilinear
 
     } else {
       if ( (xaxis.getRank() == 1) && (yaxis.getRank()== 1) && (z == null || z.getRank() == 1) ) {

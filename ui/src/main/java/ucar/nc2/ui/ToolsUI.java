@@ -37,10 +37,12 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
+import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.ui.coverage.CoverageTable;
 import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.net.HTTPSession;
@@ -127,6 +129,7 @@ public class ToolsUI extends JPanel {
   private CdmIndexPanel cdmIdxPanel;
   private CoordSysPanel coordSysPanel;
   private CollectionPanel collectionPanel;
+  private CoveragePanel coveragePanel;
   private DatasetViewerPanel viewerPanel;
   private DatasetWriterPanel writerPanel;
   private FeatureScanPanel ftPanel;
@@ -374,6 +377,7 @@ public class ToolsUI extends JPanel {
 
     // nested tab - features
     ftTabPane.addTab("Grids", new JLabel("Grids"));
+    ftTabPane.addTab("Coverages", new JLabel("Coverages"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
     //ftTabPane.addTab("PointObs", new JLabel("PointObs"));
@@ -581,6 +585,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("Grids")) {
       gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
       c = gridPanel;
+
+    } else if (title.equals("Coverages")) {
+      coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage"));
+      c = coveragePanel;
 
     } else if (title.equals("HDF5-Objects")) {
       hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"));
@@ -1019,6 +1027,7 @@ public class ToolsUI extends JPanel {
     if (ftPanel != null) ftPanel.save();
     if (fmrcPanel != null) fmrcPanel.save();
     if (collectionPanel != null) collectionPanel.save();
+    if (coveragePanel != null) coveragePanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribFilesPanel != null) gribFilesPanel.save();
     if (gribNewPanel != null) gribNewPanel.save();
@@ -4668,6 +4677,8 @@ public class ToolsUI extends JPanel {
     }
   }
 
+  /////////////////////////////////
+
   private class GeoGridPanel extends OpPanel {
     GeoGridTable dsTable;
     JSplitPane split;
@@ -4819,6 +4830,135 @@ public class ToolsUI extends JPanel {
     }
 
   }
+
+    /////////////////////////////////
+
+  private class CoveragePanel extends OpPanel {
+    CoverageTable dsTable;
+    JSplitPane split;
+    IndependentWindow viewerWindow, imageWindow;
+
+    NetcdfDataset ds = null;
+
+    CoveragePanel(PreferencesExt prefs) {
+      super(prefs, "dataset:", true, false);
+      dsTable = new CoverageTable(prefs, true);
+      add(dsTable, BorderLayout.CENTER);
+
+      /* AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
+      viewButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (ds != null) {
+            GridDataset gridDataset = dsTable.getGridDataset();
+            if (gridUI == null) makeGridUI();
+            gridUI.setDataset(gridDataset);
+            viewerWindow.show();
+          }
+        }
+      });
+      buttPanel.add(viewButton);
+
+      AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
+      imageButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (ds != null) {
+            GridDatatype grid = dsTable.getGrid();
+            if (grid == null) return;
+            if (imageWindow == null) makeImageWindow();
+            imageViewer.setImageFromGrid(grid);
+            imageWindow.show();
+          }
+        }
+      });
+      buttPanel.add(imageButton);   */
+
+      dsTable.addExtra(buttPanel, fileChooser);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      NetcdfDataset newds;
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        newds = NetcdfDataset.openDataset(command, true, null);
+        if (newds == null) {
+          JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command);
+          return false;
+        }
+        setDataset(newds);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + ioe.getMessage());
+        //ioe.printStackTrace();
+        err = true;
+
+      } catch (Throwable ioe) {
+        ioe.printStackTrace();
+        ioe.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void closeOpenFiles() throws IOException {
+      if (ds != null) ds.close();
+      ds = null;
+    }
+
+    void setDataset(NetcdfDataset newds) {
+      if (newds == null) return;
+      try {
+        if (ds != null) ds.close();
+      } catch (IOException ioe) {
+      }
+
+      Formatter parseInfo = new Formatter();
+      this.ds = newds;
+      try {
+        dsTable.setDataset(newds, parseInfo);
+      } catch (IOException e) {
+        String info = parseInfo.toString();
+        if (info.length() > 0) {
+          detailTA.setText(info);
+          detailWindow.show();
+        }
+        e.printStackTrace();
+        return;
+      }
+      setSelectedItem(newds.getLocation());
+    }
+
+    void setDataset(CoverageDataset gds) {
+      if (gds == null) return;
+      try {
+        if (ds != null) ds.close();
+      } catch (IOException ioe) {
+      }
+
+      try {
+        dsTable.setDataset(gds);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return;
+      }
+      setSelectedItem(gds.getLocation());
+    }
+
+    void save() {
+      super.save();
+      dsTable.save();
+      if (viewerWindow != null) mainPrefs.putBeanObject(GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
+      if (imageWindow != null) mainPrefs.putBeanObject(GRIDIMAGE_FRAME_SIZE, imageWindow.getBounds());
+    }
+
+  }
+
+  /////////////////////////////////////////////////
 
   private class RadialPanel extends OpPanel {
     RadialDatasetTable dsTable;

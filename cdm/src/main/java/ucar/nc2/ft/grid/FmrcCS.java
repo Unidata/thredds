@@ -11,7 +11,7 @@ import java.util.Date;
  * @author John
  * @since 12/23/12
  */
-public interface FmrcCS {
+public interface FmrcCS extends CoverageCS {
 
   /**
    * Get the RunTime axis. Must be 1 dimensional.

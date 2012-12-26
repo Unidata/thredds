@@ -33,61 +33,19 @@
 package ucar.nc2.ft.grid;
 
 import ucar.ma2.*;
-import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.nc2.VariableSimpleIF;
 
 import java.util.List;
 
 /**
- * Experimental Grid feature type.
+ * Experimental Coverage feature type.
+ * Superclass of gridded data types
  * Can we do this without indexed reads?
  * @author caron
  * @since Jan 19, 2010
  */
-public interface Grid {
-
-    /**
-     * Get the name of the Grid
-     *
-     * @return the name of the Grid
-     */
-    public String getName();
-
-    /**
-     * Get the description/long_name of the Grid
-     * @return the description/long_name of the Grid
-     */
-    public String getDescription();
-
-    /**
-     * Get the unit string
-     * @return the unit string
-     */
-    public String getUnitsString();
-
-    /**
-     * get the data type
-     * @return the data type
-     */
-    public DataType getDataType();
-
-    /**
-     * Get a List of Attribute specific to the Grid
-     * @return a List of Attribute
-     */
-    public List<Attribute> getAttributes();
-
-    /**
-     * Convenience function; lookup Attribute by name.
-     *
-     * @param name the name of the attribute
-     * @return the attribute, or null if not found
-     */
-    public Attribute findAttributeIgnoreCase(String name);
+public interface Coverage extends VariableSimpleIF {
 
     /**
      * Convenience function; lookup Attribute value by name. Must be String valued
@@ -99,7 +57,7 @@ public interface Grid {
     public String findAttValueIgnoreCase(String attName, String defaultValue);
 
     /**
-     * Returns a List of Dimension containing the dimensions used by this grid.
+     * Returns a List of Dimension containing the dimensions used by this Coverage.
      * The dimension are put into canonical order: (rt, e, t, z, y, x).
      * Only the x and y are required.
      * If the Horizontal axes are 2D, the x and y dimensions are arbitrarily chosen to be
@@ -110,10 +68,10 @@ public interface Grid {
     public List<Dimension> getDimensions();
 
     /**
-     * get the Grid's Coordinate System.
-     * @return the Grid's Coordinate System.
+     * get the Coverage's Coordinate System.
+     * @return the Coverage's Coordinate System.
      */
-    public GridCoordSystem getCoordinateSystem();
+    public CoverageCS getCoordinateSystem();
 
     /**
      * true if there may be missing data
@@ -154,11 +112,11 @@ public interface Grid {
      * @return subsetted GeoGrid
      * @throws ucar.ma2.InvalidRangeException if ranges are invalid
      */
-    public Grid makeSubset(Subset subset) throws ucar.ma2.InvalidRangeException;
+    public Coverage makeSubset(Subset subset) throws ucar.ma2.InvalidRangeException;
 
     /**
-     * human readable information about this Grid.
-     * @return human readable information about this Grid.
+     * human readable information about this Coverage.
+     * @return human readable information about this Coverage.
      */
     public String getInfo();
 
