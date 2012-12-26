@@ -23,19 +23,19 @@ public class GridCSImpl extends CoverageCSImpl implements GridCS {
   }
 
   public CoordinateAxis1D getXHorizAxis() {
-    return (CoordinateAxis1D) cs.getXaxis();
+    return (CoordinateAxis1D) super.getXHorizAxis();
   }
 
   public CoordinateAxis1D getYHorizAxis() {
-    return (CoordinateAxis1D) cs.getYaxis();
+    return (CoordinateAxis1D) super.getYHorizAxis();
   }
 
   public CoordinateAxis1D getVerticalAxis() {
-    return (CoordinateAxis1D) cs.getZaxis();
+    return (CoordinateAxis1D) super.getVerticalAxis();
   }
 
   public CoordinateAxis1D getTimeAxis() {
-    return (CoordinateAxis1D) cs.getTaxis();
+    return (CoordinateAxis1D) super.getTimeAxis();
   }
 
 }

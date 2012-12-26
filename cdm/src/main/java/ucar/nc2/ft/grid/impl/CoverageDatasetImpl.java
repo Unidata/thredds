@@ -43,6 +43,7 @@ public class CoverageDatasetImpl implements CoverageDataset {
     coverageSets = new ArrayList<CoverageSet> (ds.getVariables().size());
     for (CoordinateSystem cs : ds.getCoordinateSystems())  {
       CoverageCS ccs = CoverageCSFactory.make(ds, cs);
+      if (ccs == null) continue;
       CoverageSet cset = new CoverageSetImpl(ccs);
       coverageSets.add(cset);
     }
@@ -69,7 +70,8 @@ public class CoverageDatasetImpl implements CoverageDataset {
 
   private CoverageSetImpl findCoverageSet( CoordinateSystem cs) {
     for (CoverageSet ccs : coverageSets) {
-      if (ccs.getCoverageCS().getName().equals(cs.getName())) return (CoverageSetImpl) ccs;
+      if (ccs.getCoverageCS().getName().equals(cs.getName()))
+        return (CoverageSetImpl) ccs;
     }
     return null;
   }
@@ -254,6 +256,8 @@ public class CoverageDatasetImpl implements CoverageDataset {
 
     CoverageSetImpl(CoverageCS ccs) {
       this.ccs = ccs;
+      if (ccs == null)
+        System.out.println("HEY");
     }
 
     @Override

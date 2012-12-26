@@ -1127,6 +1127,13 @@ public class ToolsUI extends JPanel {
     ftTabPane.setSelectedComponent(gridPanel);
   }
 
+  private void openCoverageDataset(String datasetName) {
+    makeComponent(ftTabPane, "Coverages");
+    coveragePanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(coveragePanel);
+  }
+
   private void openGridDataset(NetcdfDataset dataset) {
     makeComponent(ftTabPane, "Grids");
     gridPanel.setDataset(dataset);
@@ -4842,7 +4849,7 @@ public class ToolsUI extends JPanel {
 
     CoveragePanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);
-      dsTable = new CoverageTable(prefs, true);
+      dsTable = new CoverageTable(prefs);
       add(dsTable, BorderLayout.CENTER);
 
       /* AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
@@ -5230,6 +5237,9 @@ public class ToolsUI extends JPanel {
           } else if (e.getPropertyName().equals("openGridDataset")) {
             String datasetName = (String) e.getNewValue();
             openGridDataset(datasetName);
+          } else if (e.getPropertyName().equals("openCoverageDataset")) {
+            String datasetName = (String) e.getNewValue();
+            openCoverageDataset(datasetName);
           } else if (e.getPropertyName().equals("openRadialDataset")) {
             String datasetName = (String) e.getNewValue();
             openRadialDataset(datasetName);

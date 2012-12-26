@@ -132,4 +132,9 @@ public class CoverageImpl implements Coverage {
   public int compareTo(VariableSimpleIF o) {
     return getShortName().compareTo(o.getShortName());
   }
+
+  @Override
+  public String toString() {
+    return ve.toString();
+  }
 }

@@ -59,9 +59,9 @@ public class HdfEos {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
   static boolean showWork = false; // set in debug
   static private final String GEOLOC_FIELDS = "Geolocation Fields";
-  //static private final String GEOLOC_FIELDS2 = "Geolocation_Fields";
+  static private final String GEOLOC_FIELDS2 = "Geolocation_Fields";
   static private final String DATA_FIELDS = "Data Fields";
-  //static private final String DATA_FIELDS2 = "Data_Fields";
+  static private final String DATA_FIELDS2 = "Data_Fields";
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata.
@@ -397,7 +397,7 @@ public class HdfEos {
 
     // Geolocation Variables
     Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
-    //if (geoFieldsG == null)  geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
+    if (geoFieldsG == null)  geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
 
     if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
@@ -417,7 +417,7 @@ public class HdfEos {
 
     // Data Variables
     Group dataG = parent.findGroup(DATA_FIELDS);
-    //if (dataG == null) dataG = parent.findGroup(DATA_FIELDS2);
+    if (dataG == null) dataG = parent.findGroup(DATA_FIELDS2);  // eg C:\data\formats\hdf4\eos\mopitt\MOP03M-200501-L3V81.0.1.hdf
 
     if (dataG != null) {
       Element f = gridElem.getChild("DataField");
@@ -434,27 +434,26 @@ public class HdfEos {
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims, location);
       }
-    }
 
-    // get projection
-    String projS = null;
-    Element projElem = gridElem.getChild("Projection");
-    if (projElem != null)
-      projS = projElem.getText();
-    boolean isLatLon = "GCTP_GEO".equals(projS);
+      // get projection
+      String projS = null;
+      Element projElem = gridElem.getChild("Projection");
+      if (projElem != null)
+        projS = projElem.getText();
+      boolean isLatLon = "GCTP_GEO".equals(projS);
 
-    // look for XDim, YDim coordinate variables
-    if (isLatLon) {
-      for (Variable v : dataG.getVariables()) {
-        if (v.isCoordinateVariable()) {
-          if (v.getShortName().equals("YDim"))
-            v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-          if (v.getShortName().equals("XDim"))
-            v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+      // look for XDim, YDim coordinate variables
+      if (isLatLon) {
+        for (Variable v : dataG.getVariables()) {
+          if (v.isCoordinateVariable()) {
+            if (v.getShortName().equals("YDim"))
+              v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+            if (v.getShortName().equals("XDim"))
+              v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+          }
         }
       }
-
-    }
+  }
     return FeatureType.GRID;
   }
 

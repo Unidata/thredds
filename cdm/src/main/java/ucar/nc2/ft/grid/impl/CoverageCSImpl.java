@@ -16,7 +16,7 @@ import ucar.unidata.geoloc.vertical.VerticalTransform;
 import java.util.*;
 
 /**
- * Description
+ * Coverage Coordinate System implementation.
  *
  * @author John
  * @since 12/25/12
@@ -104,7 +104,7 @@ public class CoverageCSImpl implements CoverageCS {
 
   @Override
   public CoordinateAxis getVerticalAxis() {
-    return cs.getZaxis();
+    return fac.vertAxis;
   }
 
   @Override

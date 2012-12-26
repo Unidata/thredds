@@ -23,6 +23,7 @@ public class CoverageCSFactory {
     CoverageCSFactory fac = new CoverageCSFactory();
     fac.type = fac.classify(null, cs);
     switch (fac.type) {
+      case Curvilinear:
       case Coverage : return new CoverageCSImpl(ds, cs, fac);
       case Grid : return new GridCSImpl(ds, cs, fac);
       case Fmrc: return new FmrcCSImpl(ds, cs, fac);
@@ -47,6 +48,7 @@ public class CoverageCSFactory {
 
   //NetcdfDataset ds;
   CoverageCS.Type type;
+  CoordinateAxis vertAxis;
   List<CoordinateAxis> standardAxes;
   List<CoordinateAxis> otherAxes;
 
@@ -152,17 +154,15 @@ public class CoverageCSFactory {
 
     //int countRangeRank = 2;
 
-    CoordinateAxis z = cs.getHeightAxis();
-    if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getPressureAxis();
-    if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getZaxis();
-    if ((z != null) && !(z instanceof CoordinateAxis1D)) {
-      if (errlog != null) {
-        errlog.format("%s: Z axis must be 1D%n", cs.getName());
-      }
-      return null;
+    vertAxis = cs.getHeightAxis();
+    if ((vertAxis == null) || (vertAxis.getRank() > 1)) {
+      if (cs.getPressureAxis() != null) vertAxis = cs.getPressureAxis();
     }
-    if (z != null)
-      standardAxes.add(z);
+    if ((vertAxis == null) || (vertAxis.getRank() > 1)) {
+      if (cs.getZaxis() != null) vertAxis = cs.getZaxis();
+    }
+    if (vertAxis != null)
+      standardAxes.add(vertAxis);
 
     /*
     CoordinateAxis t = cs.getTaxis();
@@ -208,33 +208,24 @@ public class CoverageCSFactory {
 
     // A runtime axis must be one-dimensional
     if (rt != null && !(rt instanceof CoordinateAxis1D)) {
-      if (errlog != null) {
-        errlog.format("%s: RunTime axis must be 1D%n", cs.getName());
-      }
+      if (errlog != null) errlog.format("%s: RunTime axis must be 1D%n", cs.getName());
       return null;
     }
 
     // If time axis is two-dimensional...
     if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
-      // ... a runtime axis is required
-      if (rt == null) {
-        if (errlog != null) errlog.format("%s: T axis must be 1D%n", cs.getName());
-        return null;
-      }
 
-      if (t.getRank() != 2) {
-        if (errlog != null) {
-          errlog.format("%s: Time axis must be 2D when used with RunTime dimension%n", cs.getName());
-        }
-        return null;
-      }
+       if (rt != null) { // runtime needs 2d time with first dimension == runtime dimension
+         if (rt.getRank() != 1) {
+           if (errlog != null) errlog.format("%s: Runtime axis must be 1D%n", cs.getName());
+           return null;
+         }
 
-      CoordinateAxis1D rt1D = (CoordinateAxis1D) rt;
-      if (!rt1D.getDimension(0).equals(t.getDimension(0))) {
-        if (errlog != null) {
-          errlog.format("%s: Time axis must use RunTime dimension%n", cs.getName());
+         // time may be 1 or 2 dimensional, but first dimension must agree
+        if (!rt.getDimension(0).equals(t.getDimension(0))) {
+          if (errlog != null) errlog.format("%s: Time axis must use first RunTime dimension%n", cs.getName());
+          return null;
         }
-        return null;
       }
     }
 
@@ -258,7 +249,7 @@ public class CoverageCSFactory {
 
     // 2D x,y
     if (cs.isLatLon() && (xaxis.getRank() == 2) && (yaxis.getRank()== 2)) {
-      if ( (rt != null) && (t != null && t.getRank() == 2) )  // fmrc with curvilinear coordinates LOOK
+      if ( (rt != null) && (t != null && t.getRank() == 2) )  // fmrc with curvilinear coordinates
         result = CoverageCS.Type.Fmrc;
 
       else if (t != null) {  // is t independent or not
@@ -270,7 +261,7 @@ public class CoverageCSFactory {
         result = CoverageCS.Type.Curvilinear;   // if no time coordinate. call it curvilinear
 
     } else {
-      if ( (xaxis.getRank() == 1) && (yaxis.getRank()== 1) && (z == null || z.getRank() == 1) ) {
+      if ( (xaxis.getRank() == 1) && (yaxis.getRank()== 1) && (vertAxis == null || vertAxis.getRank() == 1) ) {
         if ( (rt != null) && (t != null && t.getRank() == 2) )
           result = CoverageCS.Type.Fmrc;
         else

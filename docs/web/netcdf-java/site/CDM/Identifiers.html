@@ -72,7 +72,7 @@ idescaped =[ !"#$%&amp;'()*,:;&lt;=&gt;?\[\\\]^`{|}~]</pre>
 <ol>
   <li>Control chars (&lt; 0x20) are not allowed, these are removed.</li>
   <li>Trailing and leading blanks are not allowed and are removed.</li>
-  <li> a forward slash <strong>&quot;/&quot;</strong> is converted into an underscore<strong> &quot;_&quot;.</strong></li>
+  <li> a forward slash <strong>&quot;/&quot;</strong> and embedded space are converted into an underscore<strong> &quot;_&quot;.</strong></li>
 </ol>
 <h3>Object Full Name as a String</h3>
 <p>A CDM object has a <strong>short name</strong> (a String) and a <strong>full name</strong>, consisting of the parent groups and structures that it belongs to. Internally, only short names are used, along with the enclosing Group or Structure objects. So there is generally no problem in comparing or searching for short names. In certain places in the CDM / NetCDF-Java library API (eg <em>NetcdfFile.findVariable()</em>), a full  name can be passed in as a single String, of the form</p>
