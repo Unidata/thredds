@@ -427,12 +427,12 @@ class ConstructNC {
   private void annotate(Variable v, DataDescriptor dkey) {
     String id = dkey.getFxyName();
     if (id.equals("0-5-1") || id.equals("0-5-2")) {
-      v.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+      v.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     }
 
     if (id.equals("0-6-1") || id.equals("0-6-2")) {
-      v.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+      v.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     }
 

@@ -551,7 +551,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
     CoordinateAxis makeXCoordAxis( NetcdfDataset ds, String xname) {
       CoordinateAxis v = new CoordinateAxis1D( ds, null, xname, DataType.DOUBLE, xname,
-          (0 == grid_code) ? "degrees_east" : "km", "synthesized X coord");
+          (0 == grid_code) ? CDM.LON_UNITS : "km", "synthesized X coord");
       v.addAttribute( new Attribute( _Coordinate.AxisType, (0 == grid_code) ? AxisType.Lon.toString() : AxisType.GeoX.toString()));
       ds.setValues( v, nx, startx, dx);
       ds.addCoordinateAxis( v);
@@ -560,7 +560,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
     CoordinateAxis makeYCoordAxis( NetcdfDataset ds, String yname) {
       CoordinateAxis v = new CoordinateAxis1D( ds, null, yname, DataType.DOUBLE, yname,
-            ((0 == grid_code) ? "degrees_north" : "km"), "synthesized Y coord");
+            ((0 == grid_code) ? CDM.LAT_UNITS : "km"), "synthesized Y coord");
       v.addAttribute( new Attribute( _Coordinate.AxisType, (0 == grid_code) ? AxisType.Lat.toString() : AxisType.GeoY.toString()));
       ds.setValues( v, ny, starty, dy);
       ds.addCoordinateAxis( v);

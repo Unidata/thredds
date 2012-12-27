@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -218,8 +219,10 @@ public class DefaultConvention extends CoordSysBuilder {
           return AxisType.Height;
     }
 
-      if (vname.equalsIgnoreCase("time") || findAlias(ds, v).equalsIgnoreCase("time"))
-        return AxisType.Time;
+      if (vname.equalsIgnoreCase("time") || findAlias(ds, v).equalsIgnoreCase("time"))  {
+        if (SimpleUnit.isDateUnit(unit))
+          return AxisType.Time;
+      }
 
       return null;
     }

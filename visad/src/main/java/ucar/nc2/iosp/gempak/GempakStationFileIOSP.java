@@ -521,12 +521,12 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
             type     = DataType.INT;
         } else if (varname.equals(GempakStation.SLAT)) {
             longName = "latitude";
-            unit     = "degrees_north";
+            unit     = CDM.LAT_UNITS;
             type     = DataType.FLOAT;
             attrs.add(new Attribute("standard_name", "latitude"));
         } else if (varname.equals(GempakStation.SLON)) {
             longName = "longitude";
-            unit     = "degrees_east";
+            unit     = CDM.LON_UNITS;
             type     = DataType.FLOAT;
             attrs.add(new Attribute("standard_name", "longitude"));
         } else if (varname.equals(GempakStation.SELV)) {

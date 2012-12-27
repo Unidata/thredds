@@ -5427,6 +5427,7 @@ public class ToolsUI extends JPanel {
         return false;
 
       } catch (Throwable e) {
+        e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
         detailTA.setText(log.toString());
         detailTA.appendLine(bos.toString());

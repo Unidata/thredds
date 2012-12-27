@@ -641,9 +641,9 @@ public class DMSPiosp extends AbstractIOServiceProvider {
             "time", "time of scan", "seconds since ??? (see above)", DataType.FLOAT, -1, 1 );
 
     public final static VariableInfo SAT_EPHEM_LATITUDE = new VariableInfo(
-            "satEphemLatitude", "geodetic latitude of the satellite for this scan", "degrees_north", DataType.FLOAT, 16, 1);
+            "satEphemLatitude", "geodetic latitude of the satellite for this scan", CDM.LAT_UNITS, DataType.FLOAT, 16, 1);
     public final static VariableInfo SAT_EPHEM_LONGITUDE = new VariableInfo(
-            "satEphemLongitude", "longitude of the satellite for this scan", "degrees_east", DataType.FLOAT, 20, 1);
+            "satEphemLongitude", "longitude of the satellite for this scan", CDM.LON_UNITS, DataType.FLOAT, 20, 1);
     public final static VariableInfo SAT_EPHEM_ALTITUDE = new VariableInfo(
             "satEphemAltitude", "altitude of the satellite for this scan", "kilometers", DataType.FLOAT, 24, 1);
     public final static VariableInfo SAT_EPHEM_HEADING = new VariableInfo(

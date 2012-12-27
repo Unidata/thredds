@@ -107,10 +107,10 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
     }
 
     Variable lat = group.findVariable("Latitude");
-    lat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+    lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     Variable lon = group.findVariable("Longitude");
-    lon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+    lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
     lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     int[] shape = lat.getShape();

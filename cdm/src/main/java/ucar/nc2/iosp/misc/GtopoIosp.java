@@ -103,7 +103,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     Variable lat = new Variable(ncfile, null, null, "lat");
     lat.setDataType(DataType.FLOAT);
     lat.setDimensions("lat");
-    lat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+    lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     ncfile.addVariable(null, lat);
     Array data = Array.makeArray(DataType.FLOAT, nlats, starty, -incr);
     lat.setCachedData(data, false);
@@ -111,7 +111,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     Variable lon = new Variable(ncfile, null, null, "lon");
     lon.setDataType(DataType.FLOAT);
     lon.setDimensions("lon");
-    lon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+    lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
     ncfile.addVariable(null, lon);
     Array lonData = Array.makeArray(DataType.FLOAT, nlons, startx, incr);
     lon.setCachedData(lonData, false);

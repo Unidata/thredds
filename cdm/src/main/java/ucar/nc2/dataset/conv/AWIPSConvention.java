@@ -489,7 +489,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     double d = findAttributeDouble(ds, "dx");
     if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d)) return null;
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, "degrees_east", "longitude");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, CDM.LON_UNITS, "longitude");
     ds.setValues(v, n, min, d);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
@@ -507,7 +507,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     double d = findAttributeDouble(ds, "dy");
     if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d)) return null;
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, "degrees_north", "latitude");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, CDM.LAT_UNITS, "latitude");
     ds.setValues(v, n, min, d);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 

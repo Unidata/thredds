@@ -78,11 +78,11 @@ public class IFPSConvention extends CoordSysBuilder {
 
    // Figure out projection info. Assume the same for all variables
     Variable lonVar = ds.findVariable("longitude");
-    lonVar.addAttribute( new Attribute(CDM.UNITS, "degrees_east"));
+    lonVar.addAttribute( new Attribute(CDM.UNITS, CDM.LON_UNITS));
     lonVar.addAttribute( new Attribute(_Coordinate.AxisType, "Lon"));
     Variable latVar = ds.findVariable("latitude");
     latVar.addAttribute( new Attribute(_Coordinate.AxisType, "Lat"));
-    latVar.addAttribute( new Attribute(CDM.UNITS, "degrees_north"));
+    latVar.addAttribute( new Attribute(CDM.UNITS, CDM.LAT_UNITS));
 
     projVar = latVar;
     String projName = ds.findAttValueIgnoreCase(projVar, "projectionType", null);

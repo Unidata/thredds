@@ -1044,8 +1044,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       return rootGroup;
 
     Group g = rootGroup;
-    String[] groupNames = fullName.split("/");
-    for (String groupName : groupNames) {
+    StringTokenizer stoke = new StringTokenizer(fullName, "/");
+    while (stoke.hasMoreTokens()) {
+      String groupName = NetcdfFile.unescapeName(stoke.nextToken());
       g = g.findGroup(groupName);
       if (g == null) return null;
     }
@@ -1212,6 +1213,71 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
     return null;
   }
+
+  /**
+   * Find an attribute, with the specified (escaped full) name.
+   * It may possibly be nested in multiple groups and/or structures.
+   * An embedded "." is interpreted as structure.member.
+   * An embedded "/" is interpreted as group/group or group/variable.
+   * If the name actually has a ".", you must escape it (call NetcdfFile.escapeName(varname))
+   * Any other chars may also be escaped, as they are removed before testing.
+   *
+   * @param fullNameEscaped eg "@attName", "/group/subgroup/@attName" or "/group/subgroup/varname.name2.name@attName"
+   * @return Attribute or null if not found.
+   * @see NetcdfFile#escapeName
+   * @see NetcdfFile#unescapeName
+   */
+  public Attribute findAttribute(String fullNameEscaped) {
+    if (fullNameEscaped == null || fullNameEscaped.length() == 0) {
+      return null;
+    }
+
+    int posAtt = fullNameEscaped.indexOf('@');
+    if (posAtt < 0 || posAtt >= fullNameEscaped.length()-1)
+      return null;
+    if (posAtt == 0) {
+      return findGlobalAttribute(fullNameEscaped.substring(1));
+    }
+
+    String path = fullNameEscaped.substring(0, posAtt);
+    String attName = fullNameEscaped.substring(posAtt+1);
+
+     // find the group
+    Group g = rootGroup;
+    int pos = path.lastIndexOf('/');
+    String varName = (pos > 0 && pos < path.length()-1) ?  path.substring(pos + 1) : null;
+    if (pos >= 0) {
+      String groups = path.substring(0, pos);
+      StringTokenizer stoke = new StringTokenizer(groups, "/");
+      while (stoke.hasMoreTokens()) {
+        String token = NetcdfFile.unescapeName( stoke.nextToken());
+        g = g.findGroup(token);
+        if (g == null) return null;
+      }
+    }
+    if (varName == null) // group attribute
+      return g.findAttribute(attName);
+
+    // heres var.var - tokenize respecting the possible escaped '.'
+    List<String> snames = EscapeStrings.tokenizeEscapedName(varName);
+    if (snames.size() == 0) return null;
+
+    String varShortName = NetcdfFile.unescapeName(snames.get(0));
+    Variable v = g.findVariable(varShortName);
+    if (v == null) return null;
+
+    int memberCount = 1;
+    while (memberCount < snames.size()) {
+      if (!(v instanceof Structure)) return null;
+      String name = NetcdfFile.unescapeName(snames.get(memberCount++));
+      v = ((Structure) v).findVariable(name);
+      if (v == null) return null;
+    }
+
+    return v.findAttribute(attName);
+  }
+
+
 
   /**
    * Find a String-valued global or variable Attribute by

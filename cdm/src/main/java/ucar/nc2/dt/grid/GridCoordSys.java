@@ -411,8 +411,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
         } catch (Exception e) {
           if (sbuff != null)
-            sbuff.format("Error reading time coord= %s err= %s\n", t.getFullName(), e.getMessage());
-          log.error("Error reading time coord= "+t.getFullName(), e);
+            sbuff.format("%s: Error reading time coord= %s err= %s\n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
+          log.error(t.getDatasetLocation()+": Error reading time coord= "+t.getFullName(), e);
         }
 
       } else { // 2d

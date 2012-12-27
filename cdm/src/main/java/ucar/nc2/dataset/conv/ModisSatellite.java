@@ -41,14 +41,13 @@ import ucar.nc2.dataset.*;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayLong;
 
-import java.util.List;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.io.IOException;
 
 /**
- * Class Description.
+ * Modis satellite conventions
  *
  * @author caron
  * @since Jan 26, 2009

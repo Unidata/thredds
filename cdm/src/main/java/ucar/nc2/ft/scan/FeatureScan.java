@@ -156,9 +156,8 @@ public class FeatureScan {
   public class Bean {
     public File f;
     String fileType;
-    //IOServiceProvider iosp;
     String coordMap;
-    FeatureType featureType;
+    FeatureType featureType, ftFromMetadata;
     String ftype;
     StringBuilder info = new StringBuilder();
     String coordSysBuilder;
@@ -167,7 +166,6 @@ public class FeatureScan {
     String isCoverage;
 
     // no-arg constructor
-
     public Bean() {
     }
 
@@ -186,9 +184,15 @@ public class FeatureScan {
         isCoverage = CoverageCSFactory.describe(errlog, ds);
         info.append(errlog.toString());
 
+        ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
+
         try {
           errlog = new Formatter();
           FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
+          info.append("FeatureDatasetFactoryManager errlog = ");
+          info.append(errlog.toString());
+          info.append("\n\n");
+
           if (featureDataset != null) {
             featureType = featureDataset.getFeatureType();
             if (featureType != null)
@@ -198,8 +202,9 @@ public class FeatureScan {
             featureDataset.getDetailInfo(infof);
             info.append(infof.toString());
           } else {
-            ftype = " FAIL: " + errlog.toString();
+            ftype = "";
           }
+
         } catch (Throwable t) {
           ftype = " ERR: " + t.getMessage();
           info.append(errlog.toString());
@@ -237,10 +242,6 @@ public class FeatureScan {
       return fm.toString();
     }
 
-    /* public String getIosp() {
-      return (iosp == null) ? "none" : iosp.getClass().getName();
-    } */
-
     public String getCoordMap() {
       return coordMap;
     }
@@ -261,6 +262,10 @@ public class FeatureScan {
 
     public String getFeatureType() {
       return ftype;
+    }
+
+    public String getFtMetadata() {
+      return (ftFromMetadata == null) ? "" : ftFromMetadata.toString();
     }
 
     public String getFeatureImpl() {

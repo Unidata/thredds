@@ -427,14 +427,14 @@ public class Grib2Iosp extends GribIosp {
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
 
       Variable cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "lat", DataType.FLOAT, "lat"));
-      cv.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+      cv.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       if (hcs.gaussLats != null)
         cv.setCachedData(hcs.gaussLats); //  LOOK do we need to make a copy?
       else
         cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
 
       cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "lon", DataType.FLOAT, "lon"));
-      cv.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+      cv.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx));
 
     } else {
@@ -525,7 +525,7 @@ public class Grib2Iosp extends GribIosp {
         String s = searchCoord(gribCollection, Grib2Utils.getLatLon2DcoordType(desc), gHcs.varIndex);
         if (s == null) { // its a lat/lon coordinate
           v.setDimensions(horizDims); // LOOK make this 2D and munge the units
-          String units = desc.contains("Latitude of") ? "degrees_north" : "degrees_east";
+          String units = desc.contains("Latitude of") ? CDM.LAT_UNITS : CDM.LON_UNITS;
           v.addAttribute(new Attribute(CDM.UNITS, units));
 
         } else {

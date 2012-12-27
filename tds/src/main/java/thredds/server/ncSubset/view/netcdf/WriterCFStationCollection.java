@@ -167,11 +167,11 @@ class WriterCFStationCollection  extends CFPointWriter {
 
 	    // add the station Variables using the station dimension
 	    lat = writer.addVariable(null, latName, DataType.DOUBLE, stationDimName);
-	    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, "degrees_north"));
+	    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, CDM.LAT_UNITS));
 	    writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "station latitude"));
 
 	    lon = writer.addVariable(null, lonName, DataType.DOUBLE, stationDimName);
-	    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, "degrees_east"));
+	    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, CDM.LON_UNITS));
 	    writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "station longitude"));
 
 	    if (useAlt) {

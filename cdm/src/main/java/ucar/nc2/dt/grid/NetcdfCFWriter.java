@@ -473,7 +473,7 @@ public class NetcdfCFWriter {
     Variable latVar = new Variable(ncfile, null, null, "lat");
     latVar.setDataType(DataType.DOUBLE);
     latVar.setDimensions(dims);
-    latVar.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+    latVar.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     latVar.addAttribute(new Attribute(CDM.LONG_NAME, "latitude coordinate"));
     latVar.addAttribute(new Attribute("standard_name", "latitude"));
     latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
@@ -481,7 +481,7 @@ public class NetcdfCFWriter {
     Variable lonVar = new Variable(ncfile, null, null, "lon");
     lonVar.setDataType(DataType.DOUBLE);
     lonVar.setDimensions(dims);
-    lonVar.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+    lonVar.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
     lonVar.addAttribute(new Attribute(CDM.LONG_NAME, "longitude coordinate"));
     lonVar.addAttribute(new Attribute("standard_name", "longitude"));
     lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));

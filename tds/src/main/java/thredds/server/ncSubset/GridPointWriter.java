@@ -35,6 +35,7 @@ package thredds.server.ncSubset;
 
 import ucar.ma2.*;
 import ucar.nc2.Dimension;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.point.WriterStationObsDataset;
 import ucar.nc2.dt.point.WriterProfileObsDataset;
@@ -138,9 +139,9 @@ public class GridPointWriter {
     ArrayObject.D0 stnData = new ArrayObject.D0(String.class);
     StructureMembers.Member timeMember = members.addMember("date", null, null, DataType.STRING, scalarShape);
     ArrayObject.D0 timeData = new ArrayObject.D0(String.class);
-    StructureMembers.Member latMember = members.addMember("lat", null, "degrees_north", DataType.DOUBLE, scalarShape);
+    StructureMembers.Member latMember = members.addMember("lat", null, CDM.LAT_UNITS, DataType.DOUBLE, scalarShape);
     ArrayDouble.D0 latData = new ArrayDouble.D0();
-    StructureMembers.Member lonMember = members.addMember("lon", null, "degrees_east", DataType.DOUBLE, scalarShape);
+    StructureMembers.Member lonMember = members.addMember("lon", null, CDM.LON_UNITS, DataType.DOUBLE, scalarShape);
     ArrayDouble.D0 lonData = new ArrayDouble.D0();
 
     StructureDataW sdata = new StructureDataW(members);

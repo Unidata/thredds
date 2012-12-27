@@ -356,18 +356,18 @@ class FmrcDataset {
               coordV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
           }
           if (axis.getAxisType() == AxisType.Lat) {
-            coordV.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
-            coordV.addAttribute(new Attribute("standard_name", "latitude"));
+            coordV.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+            coordV.addAttribute(new Attribute(CF.STANDARD_NAME, "latitude"));
           }
           if (axis.getAxisType() == AxisType.Lon) {
-            coordV.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
-            coordV.addAttribute(new Attribute("standard_name", "longitude"));
+            coordV.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+            coordV.addAttribute(new Attribute(CF.STANDARD_NAME, "longitude"));
           }
           if (axis.getAxisType() == AxisType.GeoX) {
-            coordV.addAttribute(new Attribute("standard_name", "projection_x_coordinate"));
+            coordV.addAttribute(new Attribute(CF.STANDARD_NAME, "projection_x_coordinate"));
           }
           if (axis.getAxisType() == AxisType.GeoY) {
-            coordV.addAttribute(new Attribute("standard_name", "projection_y_coordinate"));
+            coordV.addAttribute(new Attribute(CF.STANDARD_NAME, "projection_y_coordinate"));
           }
           if (axis.getAxisType() == AxisType.Time) {
             Attribute att = axis.findAttribute("bounds");  // LOOK nasty : remove time bounds from proto

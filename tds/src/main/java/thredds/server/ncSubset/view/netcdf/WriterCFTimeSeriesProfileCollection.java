@@ -197,12 +197,12 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 
 		//Lon
 		lat = writer.addVariable(null, latName, DataType.DOUBLE, STATION_DIM_NAME);
-		writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, "degrees_north"));
+		writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, CDM.LAT_UNITS));
 		writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "profile latitude"));
 
 		//Lat
 		lon = writer.addVariable(null, lonName, DataType.DOUBLE, STATION_DIM_NAME);
-		writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, "degrees_east"));
+		writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, CDM.LON_UNITS));
 		writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "profile longitude"));	    
 
 		//TIME

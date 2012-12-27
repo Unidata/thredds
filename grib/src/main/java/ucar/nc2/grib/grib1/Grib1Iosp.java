@@ -236,14 +236,14 @@ public class Grib1Iosp extends GribIosp {
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
 
       Variable cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "lat", DataType.FLOAT, "lat"));
-      cv.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+      cv.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       if (hcs.gaussLats != null)
         cv.setCachedData(hcs.gaussLats); //  LOOK do we need to make a copy?
       else
         cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
 
       cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "lon", DataType.FLOAT, "lon"));
-      cv.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+      cv.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx));
 
     } else {

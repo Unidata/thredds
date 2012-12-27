@@ -621,8 +621,8 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
     v = makeMember(stnSeq, STNID, DataType.LONG, null, "station id", null, null, null);
     v.addAttribute(new Attribute(CF.CF_ROLE, CF.TIMESERIES_ID));
-    makeMember(stnSeq, LAT, DataType.FLOAT, null, "latitude", "degrees_north", null, null);
-    makeMember(stnSeq, LON, DataType.FLOAT, null, "longitude", "degrees_east", null, null);
+    makeMember(stnSeq, LAT, DataType.FLOAT, null, "latitude", CDM.LAT_UNITS, null, null);
+    makeMember(stnSeq, LON, DataType.FLOAT, null, "longitude", CDM.LON_UNITS, null, null);
     makeMember(stnSeq, STELEV, DataType.FLOAT, null, "elevation", "m", null, null);
     v = makeMember(stnSeq, NAME, DataType.STRING, null, "station name", null, null, null);
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_DESC));

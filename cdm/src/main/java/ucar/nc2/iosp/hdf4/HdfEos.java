@@ -206,6 +206,7 @@ public class HdfEos {
     if (featureType != null) {
       if (showWork) System.out.println("***EOS featureType= "+featureType.toString());
       rootg.addAttribute(new Attribute(CF.FEATURE_TYPE, featureType.toString()));
+      // rootg.addAttribute(new Attribute(CDM.CONVENTIONS, "HDFEOS"));
     }
 
   }
@@ -284,7 +285,7 @@ public class HdfEos {
         //if (v == null)
         //  v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
         assert v != null : varname;
-        AxisType axis = addAxisType(v);
+        AxisType axis = addAxisType(ncfile, v);
         if (axis == AxisType.Lat) latAxis = v;
         if (axis == AxisType.Lon) lonAxis = v;
 
@@ -327,22 +328,30 @@ public class HdfEos {
     return featureType;
   }
 
-  private AxisType addAxisType(Variable v) {
+  private AxisType addAxisType(NetcdfFile ncfile, Variable v) {
     String name = v.getShortName();
     if (name.equalsIgnoreCase("Latitude") || name.equalsIgnoreCase("GeodeticLatitude")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      v.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+      v.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       return AxisType.Lat;
 
     } else if (name.equalsIgnoreCase("Longitude")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      v.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+      v.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       return AxisType.Lon;
 
     } else if (name.equalsIgnoreCase("Time")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-      if (v.findAttribute(CDM.UNITS) == null)
-        v.addAttribute(new Attribute(CDM.UNITS, "secs since 1970-01-01 00:00:00")); // default units I hope
+      if (v.findAttribute(CDM.UNITS) == null) {
+        String tit = ncfile.findAttValueIgnoreCase(v, "Title", null);
+        if (tit != null && tit.contains("TAI93")) {
+          // Time is given in the TAI-93 format, i.e. the number of seconds passed since 01-01-1993, 00:00 UTC.
+          v.addAttribute(new Attribute(CDM.UNITS, "seconds since 1993-01-01T00:00:00Z"));
+          v.addAttribute(new Attribute(CF.CALENDAR, "TAI"));
+        } else { // who the hell knows ??
+          v.addAttribute(new Attribute(CDM.UNITS, "seconds since 1970=01-01T00:00:00Z"));
+        }
+      }
       return AxisType.Time;
 
     } else if (name.equalsIgnoreCase("Pressure")) {
@@ -448,8 +457,10 @@ public class HdfEos {
       if (isLatLon) {
         for (Variable v : dataG.getVariables()) {
           if (v.isCoordinateVariable()) {
-            if (v.getShortName().equals("YDim"))
+            if (v.getShortName().equals("YDim")) {
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+              v.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+            }
             if (v.getShortName().equals("XDim"))
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
           }

@@ -34,6 +34,8 @@
 package ucar.nc2.iosp.grads;
 
 
+import ucar.nc2.constants.CDM;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,9 +83,9 @@ public class GradsDimension {
         this.mapping = mapping;
         levels       = new ArrayList<String>();
         if (name.equalsIgnoreCase(GradsDataDescriptorFile.XDEF)) {
-            unitName = "degrees_east";
+            unitName = CDM.LON_UNITS;
         } else if (name.equalsIgnoreCase(GradsDataDescriptorFile.YDEF)) {
-            unitName = "degrees_north";
+            unitName = CDM.LAT_UNITS;
         } else if (name.equalsIgnoreCase(GradsDataDescriptorFile.ZDEF)) {
             unitName = "hPa";
         }

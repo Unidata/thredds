@@ -128,23 +128,20 @@ public class CoverageCSFactory {
 
     // check x,y rank <= 2
     if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
-      if (errlog != null)
-        errlog.format("%s: X or Y axis rank must be <= 2%n", cs.getName());
+      if (errlog != null) errlog.format("%s: X and Y axis rank must be <= 2%n", cs.getName());
       return null;
     }
 
     // check x,y with size 1
     if ((xaxis.getSize() < 2) || (yaxis.getSize() < 2)) {
-      if (errlog != null)
-        errlog.format("%s: X or Y axis size must be >= 2%n", cs.getName());
+      if (errlog != null) errlog.format("%s: X and Y axis size must be >= 2%n", cs.getName());
       return null;
     }
 
     // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
     List<Dimension> xyDomain = CoordinateSystem.makeDomain(new CoordinateAxis[]{xaxis, yaxis});
     if (xyDomain.size() < 2) {
-      if (errlog != null)
-        errlog.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
+      if (errlog != null) errlog.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
       return null;
     }
 

@@ -10,6 +10,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -48,10 +49,10 @@ public final class StructureDataFactory {
 		ArrayDouble.D3 vertData = new ArrayDouble.D3(arrLen,vertLevelsLen, vars.size());
 		vertCoordMember.setDataArray(vertData);
 
-		StructureMembers.Member latMember = members.addMember("lat", null, 	"degrees_north", DataType.DOUBLE, coordsShape);
+		StructureMembers.Member latMember = members.addMember("lat", null, 	CDM.LAT_UNITS, DataType.DOUBLE, coordsShape);
 		ArrayDouble.D3 latData = new ArrayDouble.D3(arrLen, vertLevelsLen, vars.size());
 		latMember.setDataArray(latData);
-		StructureMembers.Member lonMember = members.addMember("lon", null, "degrees_east", DataType.DOUBLE, coordsShape);
+		StructureMembers.Member lonMember = members.addMember("lon", null, CDM.LON_UNITS, DataType.DOUBLE, coordsShape);
 		ArrayDouble.D3 lonData = new ArrayDouble.D3(arrLen, vertLevelsLen, vars.size());
 		lonMember.setDataArray(lonData);
 
@@ -86,10 +87,10 @@ public final class StructureDataFactory {
 		ArrayObject.D1 timeData = new ArrayObject.D1(String.class, arrLen);
 		timeMember.setDataArray(timeData);
 
-		StructureMembers.Member latMember = members.addMember("lat", null, "degrees_north", DataType.DOUBLE, dataShape);
+		StructureMembers.Member latMember = members.addMember("lat", null, CDM.LAT_UNITS, DataType.DOUBLE, dataShape);
 		ArrayDouble.D1 latData = new ArrayDouble.D1(arrLen);
 		latMember.setDataArray(latData);
-		StructureMembers.Member lonMember = members.addMember("lon", null, "degrees_east", DataType.DOUBLE, dataShape);
+		StructureMembers.Member lonMember = members.addMember("lon", null, CDM.LON_UNITS, DataType.DOUBLE, dataShape);
 		ArrayDouble.D1 lonData = new ArrayDouble.D1(arrLen);
 		lonMember.setDataArray(lonData);
 
@@ -132,8 +133,8 @@ public final class StructureDataFactory {
 	 * @param gds
 	 * @param point
 	 * @param vars
-	 * @param hasZ
-	 * @return
+	 * @param hasTime
+	 * @return  StructureData
 	 */
 	public StructureData createSingleStructureData(GridDataset gds, LatLonPoint point, List<String> vars, boolean hasTime) {
 		

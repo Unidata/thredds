@@ -201,7 +201,7 @@ map_proj =  1: Lambert Conformal
         if (gridE) glat.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glat.setDimensions("south_north west_east");
         glat.setCachedData(convertToDegrees(glat), false);
-        glat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+        glat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       }
 
       Variable glon = ds.findVariable("GLON");
@@ -212,7 +212,7 @@ map_proj =  1: Lambert Conformal
         if (gridE) glon.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glon.setDimensions("south_north west_east");
         glon.setCachedData(convertToDegrees(glon), false);
-        glon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+        glon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       }
 
       VariableDS v = new VariableDS(ds, null, null, "LatLonCoordSys", DataType.CHAR, "", null, null);

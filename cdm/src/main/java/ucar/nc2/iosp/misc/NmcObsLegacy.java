@@ -177,7 +177,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     pos += 6;
 
     v = station.addMemberVariable(new Variable(ncfile, null, station, "lat", DataType.FLOAT, ""));
-    v.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+    v.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     v.addAttribute(new Attribute(CDM.LONG_NAME, "geographic latitude"));
     v.addAttribute(new Attribute("accuracy", "degree/100"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
@@ -185,7 +185,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     pos += 4;
 
     v = station.addMemberVariable(new Variable(ncfile, null, station, "lon", DataType.FLOAT, ""));
-    v.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+    v.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
     v.addAttribute(new Attribute(CDM.LONG_NAME, "geographic longitude"));
     v.addAttribute(new Attribute("accuracy", "degree/100"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
