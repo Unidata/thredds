@@ -583,8 +583,17 @@ public class NcMLReader {
    */
   public static ucar.ma2.Array readAttributeValues(Element s) throws IllegalArgumentException {
     String valString = s.getAttributeValue("value");
-    if (valString == null) throw new IllegalArgumentException("No value specified");
-    valString = StringUtil2.unquoteXmlAttribute(valString);
+    if (valString != null)
+      valString = StringUtil2.unquoteXmlAttribute(valString);
+
+    // can also be element text
+    if (valString == null) {
+      valString = s.getTextNormalize();
+    }
+
+    // no value specified  hmm technically this is not ilegal !!
+    if (valString == null)
+      throw new IllegalArgumentException("No value specified");
 
     String type = s.getAttributeValue("type");
     DataType dtype = (type == null) ? DataType.STRING : DataType.getType(type);
