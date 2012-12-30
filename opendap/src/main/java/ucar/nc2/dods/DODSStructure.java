@@ -34,6 +34,7 @@ package ucar.nc2.dods;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.DODSNode;
 import opendap.dap.*;
 
 import java.util.*;
@@ -45,7 +46,8 @@ import java.io.IOException;
  * @author caron
  */
 
-public class DODSStructure extends ucar.nc2.Structure {
+public class DODSStructure extends ucar.nc2.Structure implements DODSNode
+{
   private DConstructor ds;
   protected DODSNetcdfFile dodsfile; // so we dont have to cast everywhere
   protected String dodsShortName;
@@ -54,10 +56,10 @@ public class DODSStructure extends ucar.nc2.Structure {
   DODSStructure( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName,
          DodsV dodsV) throws IOException {
 
-    super(dodsfile, parentGroup, parentStructure,  DODSNetcdfFile.makeNetcdfName( dodsShortName));
+    super(dodsfile, parentGroup, parentStructure,  DODSNetcdfFile.makeShortName(dodsShortName));
+    setDODSName(DODSNetcdfFile.makeDODSName(dodsShortName));
     this.dodsfile = dodsfile;
     this.ds = (DConstructor) dodsV.bt;
-    this.dodsShortName = dodsShortName;
 
     if (ds instanceof DSequence) {
       this.dimensions.add( Dimension.VLEN);
@@ -91,7 +93,7 @@ public class DODSStructure extends ucar.nc2.Structure {
     super( from);
 
     dodsfile = from.dodsfile;
-    dodsShortName = from.dodsShortName;
+    setDODSName(from.getDODSName());
     ds = from.ds;
   }
 
@@ -169,5 +171,12 @@ public class DODSStructure extends ucar.nc2.Structure {
         // ignored
       }
   }
+
+
+  //////////////////////////////////////////////////
+  // DODSNode Interface
+  String dodsName = null;
+  public String getDODSName() {return dodsName;}
+  public void setDODSName(String name) {this.dodsName = name;}
 
 }
