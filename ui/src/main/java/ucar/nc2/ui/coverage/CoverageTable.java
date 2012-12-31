@@ -333,7 +333,7 @@ public class CoverageTable extends JPanel {
     return false;
   }
 
-  public CoverageDataset getGridDataset() {
+  public CoverageDataset getCoverageDataset() {
     return gridDataset;
   }
 

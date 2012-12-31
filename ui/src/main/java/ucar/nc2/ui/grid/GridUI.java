@@ -569,16 +569,16 @@ public class GridUI extends JPanel {
 
     minmaxHorizAction =  new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        csDataMinMax.setSelectedItem(GridRenderer.MinMaxType.horiz);
-        controller.setDataMinMaxType(GridRenderer.MinMaxType.horiz);
+        csDataMinMax.setSelectedItem(ColorScale.MinMaxType.horiz);
+        controller.setDataMinMaxType(ColorScale.MinMaxType.horiz);
       }
     };
     BAMutil.setActionProperties( minmaxHorizAction, null, "Horizontal plane", false, 'H', 0);
 
     minmaxLogAction =  new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        csDataMinMax.setSelectedItem(GridRenderer.MinMaxType.log);
-        controller.setDataMinMaxType(GridRenderer.MinMaxType.log);
+        csDataMinMax.setSelectedItem(ColorScale.MinMaxType.log);
+        controller.setDataMinMaxType(ColorScale.MinMaxType.log);
       }
     };
     BAMutil.setActionProperties( minmaxLogAction, null, "log horiz plane", false, 'V', 0);
@@ -593,8 +593,8 @@ public class GridUI extends JPanel {
 
     minmaxHoldAction =  new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        csDataMinMax.setSelectedItem(GridRenderer.MinMaxType.hold);
-        controller.setDataMinMaxType(GridRenderer.MinMaxType.hold);
+        csDataMinMax.setSelectedItem(ColorScale.MinMaxType.hold);
+        controller.setDataMinMaxType(ColorScale.MinMaxType.hold);
       }
     };
     BAMutil.setActionProperties( minmaxHoldAction, null, "Hold scale constant", false, 'C', 0);
@@ -758,11 +758,11 @@ public class GridUI extends JPanel {
 
     // colorscale panel
     colorScalePanel = new ColorScale.Panel(this, controller.getColorScale());
-    csDataMinMax = new JComboBox( GridRenderer.MinMaxType.values());
+    csDataMinMax = new JComboBox<ColorScale.MinMaxType>( ColorScale.MinMaxType.values());
     csDataMinMax.setToolTipText("ColorScale Min/Max setting");
     csDataMinMax.addActionListener( new AbstractAction () {
       public void actionPerformed(ActionEvent e) {
-        controller.setDataMinMaxType( ( GridRenderer.MinMaxType) csDataMinMax.getSelectedItem());
+        controller.setDataMinMaxType( ( ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
       }
     });
     JPanel westPanel = new JPanel(new BorderLayout());

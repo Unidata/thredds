@@ -70,7 +70,6 @@ import java.util.Date;
  */
 
 public interface CoverageCS {
-  void show(Formatter f, boolean showCoords);
 
   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
@@ -158,12 +157,12 @@ public interface CoverageCS {
    */
   public ucar.unidata.geoloc.ProjectionRect getBoundingBox();
 
-  /**
+  /*
    * Get the Projection CoordinateTransform. It must exist if !isLatLon().
    *
    * @return ProjectionCT or null.
-   */
-  public ProjectionCT getProjectionCT();
+   *
+  public ProjectionCT getProjectionCT();   */
 
   /**
    * Get the Projection that performs the transform math.
@@ -172,17 +171,6 @@ public interface CoverageCS {
    * @return ProjectionImpl or null.
    */
   public ucar.unidata.geoloc.ProjectionImpl getProjection();
-
-  /**
-   * Get Index Ranges for the given lat, lon bounding box.
-   * For projection, only an approximation based on corners.
-   * Must have CoordinateAxis1D or 2D for x and y axis.
-   *
-   * @param llbb a lat/lon bounding box.
-   * @return list of 2 Range objects, first y then x.
-   * @throws ucar.ma2.InvalidRangeException if llbb generates bad ranges
-   */
-  public Subset makeSubsetFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb) throws InvalidRangeException;
 
 
   /////////////////
@@ -245,5 +233,31 @@ public interface CoverageCS {
    */
   public CalendarDateRange getCalendarDateRange();
 
+  /**
+   * Show information about this
+   * @param f put info here
+   * @param showCoordValues  optionally show the coordinate values
+   */
+  public void show(Formatter f, boolean showCoordValues);
+
+  ///////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Get Index Ranges for the given lat, lon bounding box.
+   * For projection, only an approximation based on corners.
+   * Must have CoordinateAxis1D or 2D for x and y axis.
+   *
+   * @param llbb a lat/lon bounding box.
+   * @return list of 2 Range objects, first y then x.
+   * @throws ucar.ma2.InvalidRangeException if llbb generates bad ranges
+   */
+  public Subset makeSubsetFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb) throws InvalidRangeException;
+  public Subset getSubset();
+
+
+  public interface Subset {
+    void setLevel(int idx);
+    void setTime(int idx);
+  }
 
 }

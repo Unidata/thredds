@@ -1,18 +1,18 @@
 package ucar.nc2.ft.grid.impl;
 
+import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft.grid.CoverageCS;
-import ucar.nc2.ft.grid.Subset;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -25,11 +25,20 @@ public class CoverageCSImpl implements CoverageCS {
   protected NetcdfDataset ds;
   protected CoordinateSystem cs;
   protected CoverageCSFactory fac;
+  protected ProjectionImpl projection;
+  protected ProjectionRect mapArea;
 
   protected CoverageCSImpl(NetcdfDataset ds, CoordinateSystem cs, CoverageCSFactory fac) {
     this.ds = ds;
     this.cs = cs;
     this.fac = fac;
+
+    // set canonical area
+    ProjectionImpl projOrig = cs.getProjection();
+    if (projOrig != null) {
+      projection = projOrig.constructCopy();
+      projection.setDefaultMapArea(getBoundingBox());  // LOOK too expensive for 2D
+    }
   }
 
   @Override
@@ -84,24 +93,53 @@ public class CoverageCSImpl implements CoverageCS {
 
   @Override
   public ProjectionRect getBoundingBox() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    if (mapArea == null) makeBoundingBox();
+    return mapArea;
   }
 
-  @Override
-  public ProjectionCT getProjectionCT() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  private void makeBoundingBox() {
+
+    // x,y may be 2D
+    if (!(getXHorizAxis() instanceof CoordinateAxis1D) || !(getYHorizAxis() instanceof CoordinateAxis1D)) {
+      CoordinateAxis xaxis = getXHorizAxis();
+      CoordinateAxis yaxis = getYHorizAxis();
+
+
+      /*  could try to optimize this - just get cord=ners or something
+      CoordinateAxis2D xaxis2 = (CoordinateAxis2D) horizXaxis;
+      CoordinateAxis2D yaxis2 = (CoordinateAxis2D) horizYaxis;
+      MAMath.MinMax
+      */
+
+      mapArea = new ProjectionRect(xaxis.getMinValue(), yaxis.getMinValue(),
+              xaxis.getMaxValue(), yaxis.getMaxValue());
+
+    } else {
+
+      CoordinateAxis1D xaxis1 = (CoordinateAxis1D) getXHorizAxis();
+      CoordinateAxis1D yaxis1 = (CoordinateAxis1D) getYHorizAxis();
+
+      /* add one percent on each side if its a projection. WHY?
+        double dx = 0.0, dy = 0.0;
+        if (!isLatLon()) {
+        dx = .01 * (xaxis1.getCoordEdge((int) xaxis1.getSize()) - xaxis1.getCoordEdge(0));
+        dy = .01 * (yaxis1.getCoordEdge((int) yaxis1.getSize()) - yaxis1.getCoordEdge(0));
+        }
+
+        mapArea = new ProjectionRect(xaxis1.getCoordEdge(0) - dx, yaxis1.getCoordEdge(0) - dy,
+          xaxis1.getCoordEdge((int) xaxis1.getSize()) + dx,
+          yaxis1.getCoordEdge((int) yaxis1.getSize()) + dy); */
+
+      mapArea = new ProjectionRect(xaxis1.getCoordEdge(0), yaxis1.getCoordEdge(0),
+              xaxis1.getCoordEdge((int) xaxis1.getSize()),
+              yaxis1.getCoordEdge((int) yaxis1.getSize()));
+    }
   }
 
   @Override
   public ProjectionImpl getProjection() {
-    return cs.getProjection();
+    return projection;
   }
-
-  @Override
-  public Subset makeSubsetFromLatLonRect(LatLonRect llbb) throws InvalidRangeException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
   @Override
   public CoordinateAxis getVerticalAxis() {
     return fac.vertAxis;
@@ -137,7 +175,7 @@ public class CoverageCSImpl implements CoverageCS {
 
   @Override
   public CoordinateAxis getTimeAxis() {
-    return cs.getTaxis();
+    return fac.timeAxis;
   }
 
   @Override
@@ -146,7 +184,7 @@ public class CoverageCSImpl implements CoverageCS {
 
     CoordinateAxis timeAxis = getTimeAxis();
     if (timeAxis instanceof CoordinateAxis1DTime)
-      return ((CoordinateAxis1DTime)timeAxis).getCalendarDateRange();
+      return ((CoordinateAxis1DTime) timeAxis).getCalendarDateRange();
 
     // bail out for now
     return null;
@@ -161,6 +199,53 @@ public class CoverageCSImpl implements CoverageCS {
   @Override
   public void show(Formatter f, boolean showCoords) {
     f.format("Coordinate System (%s)%n%n", getName());
+  }
+
+  ///////////////////
+
+
+  @Override
+  public Subset makeSubsetFromLatLonRect(LatLonRect llbb) throws InvalidRangeException {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+
+
+  @Override
+  public Subset getSubset() {
+    return new SubsetImpl();
+  }
+
+
+
+  class SubsetImpl implements Subset {
+    int level = -1;
+    int time = -1;
+
+    @Override
+    public void setLevel(int idx) {
+      this.level = idx;
+    }
+
+    @Override
+    public void setTime(int idx) {
+      this.time = idx;
+    }
+
+    // kludge
+    Array readData(VariableEnhanced ve) throws IOException, InvalidRangeException {
+      int n = ve.getRank();
+      int[] origin = new int[n];
+      int[] shape = new int[n];
+      System.arraycopy(ve.getShape(), 0, shape, 0, n);
+
+      // assume canonical ordering
+      if (level >= 0) {
+      }
+
+      Array result = ve.read(origin, shape);
+      return result.reduce();
+    }
   }
 
 }

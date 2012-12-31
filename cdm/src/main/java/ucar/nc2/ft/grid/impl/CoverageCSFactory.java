@@ -21,7 +21,7 @@ public class CoverageCSFactory {
 
   public static CoverageCS make(NetcdfDataset ds, CoordinateSystem cs) {
     CoverageCSFactory fac = new CoverageCSFactory();
-    fac.type = fac.classify(null, cs);
+    fac.type = fac.classify(ds, cs, null);
     switch (fac.type) {
       case Curvilinear:
       case Coverage : return new CoverageCSImpl(ds, cs, fac);
@@ -34,13 +34,13 @@ public class CoverageCSFactory {
 
   public static String describe(Formatter f, NetcdfDataset ds) {
     CoverageCSFactory fac = new CoverageCSFactory();
-    fac.type =  fac.classify(f, ds);
+    fac.type =  fac.classify(ds, f);
     return fac.toString();
   }
 
   public static String describe(Formatter f, CoordinateSystem cs) {
     CoverageCSFactory fac = new CoverageCSFactory();
-    fac.type = fac.classify(f, cs);
+    fac.type = fac.classify(null, cs, f);
     return fac.toString();
   }
 
@@ -49,13 +49,14 @@ public class CoverageCSFactory {
   //NetcdfDataset ds;
   CoverageCS.Type type;
   CoordinateAxis vertAxis;
+  CoordinateAxis timeAxis;
   List<CoordinateAxis> standardAxes;
   List<CoordinateAxis> otherAxes;
 
   CoverageCSFactory() {
   }
 
-  CoverageCS.Type classify(Formatter errlog, NetcdfDataset ds) {
+  CoverageCS.Type classify(NetcdfDataset ds, Formatter errlog) {
     if (errlog != null) errlog.format("CoverageFactory for '%s'%n", ds.getLocation());
 
     // sort by largest size first
@@ -68,7 +69,7 @@ public class CoverageCSFactory {
 
     CoverageCS.Type isMine = null;
     for (CoordinateSystem cs : css) {
-      isMine = classify(errlog, cs);
+      isMine = classify(ds, cs, errlog);
       if (isMine != null) break;
     }
     if (errlog != null) errlog.format("coverage = %s%n", isMine);
@@ -76,7 +77,7 @@ public class CoverageCSFactory {
   }
 
 
-  CoverageCS.Type classify(Formatter errlog, CoordinateSystem cs) {
+  CoverageCS.Type classify(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
     // must be at least 2 axes
     if (cs.getRankDomain() < 2) {
       if (errlog != null) errlog.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
@@ -161,43 +162,6 @@ public class CoverageCSFactory {
     if (vertAxis != null)
       standardAxes.add(vertAxis);
 
-    /*
-    CoordinateAxis t = cs.getTaxis();
-    if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
-      CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
-      if (rt == null) {
-        if (sbuff != null) sbuff.format("%s: T axis must be 1D%n", cs.getName());
-        return false;
-      }
-      if (!(rt instanceof CoordinateAxis1D)) {
-        if (sbuff != null) {
-          sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
-        }
-        return false;
-      }
-
-      if (t.getRank() != 2) {
-        if (sbuff != null) {
-          sbuff.format("%s: Time axis must be 2D when used with RunTime dimension%n", cs.getName());
-        }
-        return false;
-      }
-
-      CoordinateAxis1D rt1D = (CoordinateAxis1D) rt;
-      Dimension rtdim = rt1D.getDimension(0);
-      Dimension tdim = t.getDimension(0);
-
-      if (!rtdim.equals(tdim)) {
-        if (sbuff != null) {
-          sbuff.format("%s: Time axis must use RunTime dimension%n", cs.getName());
-        }
-        return false;
-      }
-    }
-    if (t != null)
-      testAxis.add(t);
-    */
-
     // tom margolis 3/2/2010
     // allow runtime independent of time
     CoordinateAxis t = cs.getTaxis();
@@ -223,6 +187,28 @@ public class CoverageCSFactory {
           if (errlog != null) errlog.format("%s: Time axis must use first RunTime dimension%n", cs.getName());
           return null;
         }
+      }
+    }
+
+    // convert time axis if possible
+    if (ds != null && t != null) {
+
+      if (t instanceof CoordinateAxis1D) {
+
+        try {
+          if (t instanceof CoordinateAxis1DTime)
+            timeAxis = t;
+          else {
+            t = timeAxis = CoordinateAxis1DTime.factory(ds, t, errlog);
+          }
+
+        } catch (Exception e) {
+          if (errlog != null)
+            errlog.format("%s: Error reading time coord= %s err= %s\n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
+        }
+
+      } else { // 2d LOOK ??
+        timeAxis = t;
       }
     }
 

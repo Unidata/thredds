@@ -42,6 +42,7 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.ui.coverage.CoverageDisplay;
 import ucar.nc2.ui.coverage.CoverageTable;
 import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.util.cache.FileCache;
@@ -4862,6 +4863,7 @@ public class ToolsUI extends JPanel {
 
   private class CoveragePanel extends OpPanel {
     CoverageTable dsTable;
+    CoverageDisplay display;
     JSplitPane split;
     IndependentWindow viewerWindow, imageWindow;
 
@@ -4872,20 +4874,21 @@ public class ToolsUI extends JPanel {
       dsTable = new CoverageTable(prefs);
       add(dsTable, BorderLayout.CENTER);
 
-      /* AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
+      AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
       viewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            GridDataset gridDataset = dsTable.getGridDataset();
-            if (gridUI == null) makeGridUI();
-            gridUI.setDataset(gridDataset);
+            CoverageDataset gridDataset = dsTable.getCoverageDataset();
+            if (gridDataset == null) return;
+            if (display == null) makeDisplay();
+            display.setDataset(gridDataset);
             viewerWindow.show();
           }
         }
       });
       buttPanel.add(viewButton);
 
-      AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
+      /* AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
       imageButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
@@ -4901,6 +4904,22 @@ public class ToolsUI extends JPanel {
 
       dsTable.addExtra(buttPanel, fileChooser);
     }
+
+    private void makeDisplay() {
+      viewerWindow = new IndependentWindow("Coverage Viewer", BAMutil.getImage("netcdfUI"));
+
+      display = new CoverageDisplay((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
+      display.addMapBean(new WorldMapBean());
+      display.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", WorldDetailMap));
+      display.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));
+
+      viewerWindow.setComponent(display);
+      Rectangle bounds = (Rectangle) mainPrefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
+      if (bounds.x < 0) bounds.x = 0;
+      if (bounds.y < 0) bounds.x = 0;
+      viewerWindow.setBounds(bounds);
+    }
+
 
     boolean process(Object o) {
       String command = (String) o;

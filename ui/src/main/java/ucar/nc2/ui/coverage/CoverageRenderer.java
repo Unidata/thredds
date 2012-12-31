@@ -1,62 +1,29 @@
-/*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-package ucar.nc2.ui.grid;
+package ucar.nc2.ui.coverage;
 
 import ucar.ma2.*;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.*;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.nc2.ft.grid.Coverage;
+import ucar.nc2.ft.grid.CoverageCS;
+import ucar.nc2.ui.grid.ColorScale;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
-
-import ucar.unidata.util.Format;
-import ucar.unidata.util.Parameter;
+import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
 import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
 
 /**
- * Render grids using Java2D API.
+ * Render coverages using Java2D API.
  *
- * @author caron
+ * @author John
+ * @since 12/27/12
  */
-
-public class GridRenderer {
+public class CoverageRenderer {
 
   private PreferencesExt store;
 
@@ -70,9 +37,9 @@ public class GridRenderer {
   private ColorScale cs = null;
   private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
   private ProjectionImpl drawProjection = null;    // current drawing Projection
-  private ProjectionImpl dataProjection = null;    // current GridDatatype Projection
-  private GridDatatype orgGrid = null;
-  private GridDatatype stridedGrid = null;
+  private ProjectionImpl dataProjection = null;    // current data Projection
+  private Coverage orgGrid = null;
+  private Coverage stridedGrid = null;
 
   // data stuff
   private Array dataH, dataV;
@@ -80,7 +47,7 @@ public class GridRenderer {
   private int wantRunTime = -1, wantEnsemble = -1;
   private int lastLevel = -1, lastTime = -1, lastSlice = -1, lastStride = -1;   // last data read
   private int lastRunTime = -1, lastEnsemble = -1;   // last data read
-  private GridDatatype lastGrid = null;
+  private Coverage lastGrid = null;
 
   // drawing optimization
   private boolean colorScaleChanged = true, dataVolumeChanged = true;
@@ -101,7 +68,7 @@ public class GridRenderer {
   /**
    * constructor
    */
-  public GridRenderer(PreferencesExt store) {
+  public CoverageRenderer(PreferencesExt store) {
     this.store = store;
     rects[0] = new ProjectionRect();
   }
@@ -125,6 +92,7 @@ public class GridRenderer {
 
   /**
    * set the ColorScale data min/max type
+   *
    * @param type MinMaxType
    */
   public void setDataMinMaxType(ColorScale.MinMaxType type) {
@@ -135,19 +103,12 @@ public class GridRenderer {
   }
 
   /**
-   * get the current GridDatatype
-   */
-  public GridDatatype getGeoGrid() {
-    return orgGrid;
-  }
-
-  /**
    * set the Grid
    */
-  public void setGeoGrid(GridDatatype grid) {
+  public void setCoverage(Coverage grid) {
     this.orgGrid = grid;
     this.lastGrid = null;
-    dataProjection = grid.getProjection();
+    dataProjection = grid.getCoordinateSystem().getProjection();
     makeStridedGrid();
     isNewField = true;
   }
@@ -166,7 +127,7 @@ public class GridRenderer {
   /**
    * get the current display projection
    */
-  public ProjectionImpl getProjection() {
+  public ProjectionImpl getDisplayProjection() {
     return drawProjection;
   }
 
@@ -267,40 +228,42 @@ public class GridRenderer {
   }
 
   void makeStridedGrid() {
+    stridedGrid = orgGrid;
 
-    if (horizStride > 1) {
+    /* if (horizStride > 1) {
       try {
-        stridedGrid = orgGrid.makeSubset(null, null, null, 1, horizStride, horizStride);
+        //stridedGrid = orgGrid.makeSubset(null, null, null, 1, horizStride, horizStride);
+        stridedGrid = orgGrid.makeSubset(null);
       } catch (InvalidRangeException e) {
         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       }
     } else {
       stridedGrid = orgGrid;
-    }
+    } */
 
   }
 
   /// info at a point
 
-  /**
+  /*
    * find the level (z) index that is represented by this point
    *
    * @param pos coord in data z coordinate space.
-   */
+   *
   public int findLevelCoordElement(double pos) {
     if (null == orgGrid)
       return -1;
 
     // find the grid index
-    GridCoordSystem geocs = orgGrid.getCoordinateSystem();
+    CoverageCS geocs = orgGrid.getCoordinateSystem();
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
     return (zaxis == null) ? -1 : zaxis.findCoordElement(pos);
-  }
+  }  */
 
-  /**
+  /*
    * @param pp
    * @return x index for this point
-   */
+   *
   public int findSliceFromPoint(ProjectionPoint pp) {
     if ((null == drawProjection) || (null == stridedGrid))
       return -1;
@@ -312,20 +275,20 @@ public class GridRenderer {
     }
 
     // find the grid index
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoverageCS geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis xaxis = geocs.getXHorizAxis();
     if (xaxis == null || !(xaxis instanceof CoordinateAxis1D))
       return -1;
     int[] index = geocs.findXYindexFromCoord(pp.getX(), pp.getY(), null);
     return index[0];
-  }
+  } */
 
-  /**
+  /*
    * Get the data value at this projection (x,y) point.
    *
    * @param loc : point in display projection coordinates (plan view)
    * @return String representation of value
-   */
+   *
   public String getXYvalueStr(ProjectionPoint loc) {
     if ((stridedGrid == null) || (dataH == null))
       return "";
@@ -337,7 +300,7 @@ public class GridRenderer {
     }
 
     // find the grid indexes
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoverageCS geocs = stridedGrid.getCoordinateSystem();
     valueIndex = geocs.findXYindexFromCoord(loc.getX(), loc.getY(), valueIndex);
     int wantx = valueIndex[0];
     int wanty = valueIndex[1];
@@ -355,27 +318,27 @@ public class GridRenderer {
         return "error " + wantx + " " + wanty;
       }
     }
-  }
+  } */
 
   private int[] valueIndex = new int[2];
 
-  /**
+  /*
    * Get the (y,z) position from the vertical view coordinates.
    *
    * @param loc : point in display projection coordinates (vertical view)
    * @return String representation of position
-   */
+   *
   public String getYZpositionStr(Point2D loc) {
     if ((stridedGrid == null) || (dataV == null))
       return "";
 
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoverageCS geocs = stridedGrid.getCoordinateSystem();
     /* CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
     double x = (xaxis == null) ? 0.0 : xaxis.getCoordValue(lastSlice);
     double y = loc.getX();
     LatLonPointImpl lpt = dataProjection.projToLatLon(x, y);
     sbuff.setLength(0);
-    sbuff.append(LatLonPointImpl.latToString(lpt.getLatitude(), 3)); */
+    sbuff.append(LatLonPointImpl.latToString(lpt.getLatitude(), 3));
 
     StringBuilder sbuff = new StringBuilder();
     sbuff.setLength(0);
@@ -388,20 +351,20 @@ public class GridRenderer {
     sbuff.append(" " + zaxis.getUnitsString());
 
     return sbuff.toString();
-  }
+  } */
 
-  /**
+  /*
    * find the data value at this point
    *
    * @param loc : point in display projection coordinates (vertical view)
    * @return String representation of value
-   */
+   *
   public String getYZvalueStr(Point2D loc) {
     if ((stridedGrid == null) || (dataV == null))
       return "";
 
     // find the grid indexes
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoverageCS geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
     if (zaxis == null)
       return "";
@@ -435,7 +398,7 @@ public class GridRenderer {
     sbuff.append(Format.d(value, 6));
     sbuff.append(" " + stridedGrid.getUnitsString());
 
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoverageCS geocs = stridedGrid.getCoordinateSystem();
     if (!(geocs.getXHorizAxis() instanceof CoordinateAxis1D) || !(geocs.getXHorizAxis() instanceof CoordinateAxis1D)) {
       if (Debug.isSet("pick/showGridIndexes"))
         sbuff.append("@ (" + wantx + "," + wanty + ")");
@@ -491,7 +454,7 @@ public class GridRenderer {
     }
 
     return sbuff.toString();
-  }
+  }   */
 
   //////// data routines
 
@@ -510,10 +473,10 @@ public class GridRenderer {
    dataVolumeChanged = true;
  } */
 
-  private Array makeHSlice(GridDatatype useG, int level, int time, int ensemble, int runtime) {
+  private Array makeHSlice(Coverage useG, int level, int time, int ensemble, int runtime) {
 
     // make sure x, y exists
-    GridCoordSystem gcs = useG.getCoordinateSystem();
+    CoverageCS gcs = useG.getCoordinateSystem();
     CoordinateAxis xaxis = gcs.getXHorizAxis();
     CoordinateAxis yaxis = gcs.getYHorizAxis();
     if ((xaxis == null) || (yaxis == null))    // doesnt exist
@@ -528,10 +491,14 @@ public class GridRenderer {
 
     // get the data slice
     try {
-      dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
+      //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
+      CoverageCS.Subset subset = gcs.getSubset();
+      subset.setLevel(level);
+      subset.setTime(time);
+      dataH = useG.readData(subset);
       // imaH = dataH.getIndex();
-    } catch (java.io.IOException e) {
-      System.out.println("GridRender.makeHSlice Error reading netcdf file= " + e);
+    } catch (Exception e) {
+      e.printStackTrace();
       return null;
     }
 
@@ -559,9 +526,9 @@ public class GridRenderer {
     return dataH;
   }
 
-  private Array makeVSlice(GridDatatype g, int vSlice, int time, int ensemble, int runtime) {
+ /*  private Array makeVSlice(Coverage g, int vSlice, int time, int ensemble, int runtime) {
     // make sure we have x, z
-    GridCoordSystem gcs = g.getCoordinateSystem();
+    CoverageCS gcs = g.getCoordinateSystem();
     CoordinateAxis xaxis = gcs.getXHorizAxis();
     CoordinateAxis zaxis = gcs.getVerticalAxis();
     if ((xaxis == null) || (zaxis == null))    // doesnt exist
@@ -595,7 +562,7 @@ public class GridRenderer {
     }
 
     return dataV;
-  }
+  }   */
 
   //////////// Renderer stuff
 
@@ -616,7 +583,7 @@ public class GridRenderer {
 
   // set colorscale limits, missing data
   private void setColorScaleParams() {
-       if (dataMinMaxType == ColorScale.MinMaxType.hold && !isNewField)
+    if (dataMinMaxType == ColorScale.MinMaxType.hold && !isNewField)
       return;
     isNewField = false;
 
@@ -626,7 +593,7 @@ public class GridRenderer {
     //  dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
 
     if (dataArr != null) {
-      MAMath.MinMax minmax = stridedGrid.hasMissingData() ? stridedGrid.getMinMaxSkipMissingData(dataArr) : MAMath.getMinMax(dataArr);
+      MAMath.MinMax minmax = MAMath.getMinMaxSkipMissingData(dataArr, stridedGrid);
       cs.setMinMax(minmax.min, minmax.max);
       cs.setGeoGrid(stridedGrid);
     }
@@ -635,12 +602,12 @@ public class GridRenderer {
     colorScaleChanged = false;
   }
 
-  /**
+  /*
    * Do the rendering to the given Graphics2D object.
    *
    * @param g      Graphics2D object: has clipRect and AffineTransform set.
    * @param dFromN transforms "Normalized Device" to Device coordinates
-   */
+   *
   public void renderVertView(java.awt.Graphics2D g, AffineTransform dFromN) {
     if ((stridedGrid == null) || (cs == null) || (drawProjection == null))
       return;
@@ -655,7 +622,7 @@ public class GridRenderer {
     if (Debug.isSet("GridRenderer/vert"))
       System.out.println("GridRenderer/vert: redraw grid");
 
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoverageCS geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
     CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
     if ((yaxis == null) || (zaxis == null))
@@ -693,8 +660,7 @@ public class GridRenderer {
       long startTime = System.currentTimeMillis();
       ContourFeatureRenderer contourRendererV;
       try {
-        ContourGrid conGrid = new ContourGrid(dataV.transpose(0, 1), levels, yedges, zedges,
-                stridedGrid);
+        ContourGrid conGrid = new ContourGrid(dataV.transpose(0, 1), levels, yedges, zedges, stridedGrid);
         contourRendererV = new ContourFeatureRenderer(conGrid, null);
 
         //contourRendererV.setProjection(drawProjection);
@@ -714,7 +680,7 @@ public class GridRenderer {
     if ((lastLevel >= 0) && (lastLevel < nz))
       drawXORline(g, yaxis.getCoordEdge(0), zaxis.getCoordValue(lastLevel),
               yaxis.getCoordEdge(ny), zaxis.getCoordValue(lastLevel));
-  }
+  } */
 
   /**
    * Do the rendering to the given Graphics2D object.
@@ -740,8 +706,8 @@ public class GridRenderer {
 
     if (drawGrid)
       drawGridHoriz(g, dataH);
-    if (drawContours)
-      drawContours(g, dataH.transpose(0, 1), dFromN);
+    //if (drawContours)
+    //  drawContours(g, dataH.transpose(0, 1), dFromN);
     if (drawGridLines)
       drawGridLines(g);
   }
@@ -749,7 +715,7 @@ public class GridRenderer {
   private void drawGridHoriz(java.awt.Graphics2D g, Array data) {
     int count = 0;
 
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoverageCS geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis xaxis = geocs.getXHorizAxis();
     CoordinateAxis yaxis = geocs.getYHorizAxis();
 
@@ -769,11 +735,11 @@ public class GridRenderer {
     CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
     CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
 
-    String stag = geocs.getHorizStaggerType();
+    /* String stag = geocs.getHorizStaggerType();
     if (stag != null && stag.equals(CDM.ARAKAWA_E)) {
       drawGridHorizRotated(g, data, xaxis2D, yaxis2D);
       return;
-    }
+    } */
 
     ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdges(xaxis2D.getMidpoints());
     ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdges(yaxis2D.getMidpoints());
@@ -805,7 +771,7 @@ public class GridRenderer {
   private void drawGridLines(java.awt.Graphics2D g) {
     int count = 0;
 
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoverageCS geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis xaxis = geocs.getXHorizAxis();
     CoordinateAxis yaxis = geocs.getYHorizAxis();
 
@@ -826,9 +792,9 @@ public class GridRenderer {
     int ny = shape[0];
     int nx = shape[1];
 
-    for (int y = 0; y < ny+1; y += 10) {
+    for (int y = 0; y < ny + 1; y += 10) {
       gp.reset();
-      for (int x = 0; x < nx+1; x++) {
+      for (int x = 0; x < nx + 1; x++) {
         if (x == 0)
           gp.moveTo((float) edgex.get(y, x), (float) edgey.get(y, x));
         else
@@ -837,9 +803,9 @@ public class GridRenderer {
       g.draw(gp);
     }
 
-    for (int x = 0; x < nx+1; x += 10) {
+    for (int x = 0; x < nx + 1; x += 10) {
       gp.reset();
-      for (int y = 0; y < ny+1; y++) {
+      for (int y = 0; y < ny + 1; y++) {
         if (y == 0)
           gp.moveTo((float) edgex.get(y, x), (float) edgey.get(y, x));
         else
@@ -1188,9 +1154,9 @@ onePixel = 0;  */
 
   //////// contouring
 
-  private void drawContours(java.awt.Graphics2D g, Array hslice, AffineTransform dFromN) {
+  /* private void drawContours(java.awt.Graphics2D g, Array hslice, AffineTransform dFromN) {
     // make ContourGrid object
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoverageCS geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
     CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
     double[] xedges = xaxis.getCoordValues();
@@ -1230,6 +1196,6 @@ onePixel = 0;  */
       long tookTime = System.currentTimeMillis() - startTime;
       System.out.println("timing/contourDraw: " + tookTime*.001 + " seconds");
     }
-  }
+  }  */
 
 }

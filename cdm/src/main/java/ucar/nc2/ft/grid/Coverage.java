@@ -35,6 +35,7 @@ package ucar.nc2.ft.grid;
 import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.util.NamedObject;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ import java.util.List;
  * @author caron
  * @since Jan 19, 2010
  */
-public interface Coverage extends VariableSimpleIF {
+public interface Coverage extends IsMissingEvaluator, VariableSimpleIF, NamedObject {
 
     /**
      * Convenience function; lookup Attribute value by name. Must be String valued
@@ -77,23 +78,23 @@ public interface Coverage extends VariableSimpleIF {
      * true if there may be missing data
      * @return true if there may be missing data
      */
-    public boolean hasMissingData();
+    public boolean hasMissing();
 
     /**
      * if val is missing data
      * @param val test this value
      * @return true if val is missing data
      */
-    public boolean isMissingData(double val);
+    public boolean isMissing(double val);
 
-    /**
+    /*
      * Get the minimum and the maximum data value of the previously read Array,
      * skipping missing values as defined by isMissingData(double val).
      *
      * @param data Array to get min/max values
      * @return both min and max value.
-     */
-    public MAMath.MinMax getMinMaxSkipMissingData(Array data);
+     *
+    public MAMath.MinMax getMinMaxSkipMissingData(Array data); */
 
     /**
      * This reads an arbitrary data slice, returning the data in
@@ -103,23 +104,22 @@ public interface Coverage extends VariableSimpleIF {
      * @return data[rt,e,t,z,y,x], eliminating missing or fixed dimension.
      * @throws java.io.IOException on io error
      */
-    public Array readDataSlice(Subset subset) throws java.io.IOException;
+    public Array readData(CoverageCS.Subset subset) throws java.io.IOException, InvalidRangeException;
 
-    /**
+    /*
      * Create a new GeoGrid that is a logical subset of this GeoGrid.
      *
      * @param subset subset that you want
      * @return subsetted GeoGrid
      * @throws ucar.ma2.InvalidRangeException if ranges are invalid
-     */
-    public Coverage makeSubset(Subset subset) throws ucar.ma2.InvalidRangeException;
+     *
+    public Coverage makeSubset(Subset subset) throws ucar.ma2.InvalidRangeException;  */
 
     /**
      * human readable information about this Coverage.
      * @return human readable information about this Coverage.
      */
     public String getInfo();
-
 
   }
 

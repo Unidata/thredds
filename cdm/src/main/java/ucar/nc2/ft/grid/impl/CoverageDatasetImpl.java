@@ -38,7 +38,7 @@ public class CoverageDatasetImpl implements CoverageDataset {
     this.ds = ds;
 
     CoverageCSFactory fac = new CoverageCSFactory();
-    type =  fac.classify(parseInfo, ds);
+    type =  fac.classify(ds, parseInfo);
 
     coverageSets = new ArrayList<CoverageSet> (ds.getVariables().size());
     for (CoordinateSystem cs : ds.getCoordinateSystems())  {

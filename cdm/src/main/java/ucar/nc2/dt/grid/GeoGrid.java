@@ -383,6 +383,14 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return vs.isMissing(val);
   }
 
+  public boolean hasMissing() {
+    return vs.hasMissing();
+  }
+
+  public boolean isMissing(double val) {
+    return vs.isMissing(val);
+  }
+
   /**
    * Convert (in place) all values in the given array that are considered
    * as "missing" to Float.NaN, according to isMissingData(val).
@@ -409,22 +417,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return both min and max value.
    */
   public MAMath.MinMax getMinMaxSkipMissingData(Array a) {
-    if (!hasMissingData())
-      return MAMath.getMinMax(a);
-
-    IndexIterator iter = a.getIndexIterator();
-    double max = -Double.MAX_VALUE;
-    double min = Double.MAX_VALUE;
-    while (iter.hasNext()) {
-      double val = iter.getDoubleNext();
-      if (isMissingData(val))
-        continue;
-      if (val > max)
-        max = val;
-      if (val < min)
-        min = val;
-    }
-    return new MAMath.MinMax(min, max);
+    return MAMath.getMinMaxSkipMissingData(a, this);
   }
 
   /**

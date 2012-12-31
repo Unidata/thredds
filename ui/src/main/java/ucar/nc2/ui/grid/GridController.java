@@ -894,7 +894,7 @@ public class GridController {
     redrawLater();
   }
 
-  public void setDataMinMaxType( GridRenderer.MinMaxType type) {
+  public void setDataMinMaxType( ColorScale.MinMaxType type) {
     renderGrid.setDataMinMaxType( type);
     redrawLater();
   }
