@@ -1423,14 +1423,14 @@ public class CeParser extends Ceparse
 					 )
             throws DAP2Exception, ParseException
     {
-	CeParser parser = new CeParser(factory);
-	parser.setURL(url);
-	parser.setConstraint(constraint);
+        CeParser parser = new CeParser(factory);
+        parser.setURL(url);
+        parser.setConstraint(constraint);
         ServerDDS sdds = ceEval.getDDS();
         if(!parser.parse(constraint)) return false;
         ASTconstraint root = (ASTconstraint)parser.getAST();
-	root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
-	root.walkConstraint();
+        root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
+        root.walkConstraint();
         return true;
     }
 

@@ -51,9 +51,7 @@ public class DODSGrid extends DODSVariable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSGrid.class);
 
   DODSGrid( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DodsV dodsV) throws IOException {
-    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName), dodsV);
-
-    this.dodsShortName = dodsShortName;
+    super(dodsfile, parentGroup, parentStructure, dodsShortName, dodsV);
 
     DodsV array = dodsV.children.get(0);
     /* if (!shortName.equals(array.bt.getName())) {
@@ -67,7 +65,7 @@ public class DODSGrid extends DODSVariable {
     Formatter sbuff = new Formatter();
     for (int i = 1; i < dodsV.children.size(); i++) {
       DodsV map = dodsV.children.get(i);
-      String name = DODSNetcdfFile.makeNetcdfName( map.bt.getEncodedName());
+      String name = DODSNetcdfFile.makeShortName(map.bt.getEncodedName());
       Dimension dim = parentGroup.findDimension(name);
       if (dim == null) {
         logger.warn("DODSGrid cant find dimension = <"+name+">");

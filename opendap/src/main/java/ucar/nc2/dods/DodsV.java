@@ -316,7 +316,7 @@ class DodsV implements Comparable {
   }
 
   String getNetcdfShortName() {
-    return DODSNetcdfFile.makeNetcdfName( getClearName());
+    return DODSNetcdfFile.makeShortName(getClearName());
   }
 
   String getType() { return bt == null ? "" : bt.getTypeName(); }

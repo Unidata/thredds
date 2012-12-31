@@ -52,9 +52,9 @@ public class ConvertD2N {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
 
   /* Difficult cases.
-    V is a top variable vs member of a structure (or group ??)
-    Dgrid.member request may or may not get returned inside a Structure.
-    Structures may have arbitrary nesting.
+    - V is a top variable vs member of a structure (or group ??)
+    - Dgrid.member request may or may not get returned inside a Structure.
+    - Structures may have arbitrary nesting.
   */
 
   /*

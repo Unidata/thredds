@@ -53,7 +53,7 @@ netcdf dods://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/do
      :add_offset = 327.65f; // float
      :missing_value = 32766S; // short
      :unpacked_valid_range = 0.0f, 500.0f; // float
-
+ // global attributes:
  :reference = "Liebmann and Smith (Bulletin of the American Meteorological Society 1996)";
  :references = "Liebmann_Smith1996";
  :dataset_documentation.html = "http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/.dataset_documentation.html";

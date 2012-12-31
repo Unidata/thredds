@@ -32,14 +32,15 @@
  */
 package ucar.nc2.dods;
 
+import sun.font.CreatedFontTracker;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
-import ucar.nc2.util.rc.RC;
+import ucar.nc2.DODSNode;
+
 
 import opendap.dap.*;
-import ucar.nc2.util.rc.RC;
 
 import java.util.*;
 
@@ -52,27 +53,26 @@ import java.util.*;
  * @author caron
  */
 
-public class DODSVariable extends ucar.nc2.Variable {
+public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
   protected String CE;        // projection is allowed
   protected DODSNetcdfFile dodsfile; // so we dont have to cast everywhere
-  protected String dodsShortName;
 
   // used by subclasses and the other constructors
   DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DodsV dodsV) {
-    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
+    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeShortName(dodsShortName));
+    setDODSName(DODSNetcdfFile.makeDODSName(dodsShortName));
     this.dodsfile = dodsfile;
-    this.dodsShortName = dodsShortName;
     setSPobject(dodsV);
   }
 
     // use when a dods variable is a scalar
   DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, opendap.dap.BaseType dodsScalar, DodsV dodsV) {
-    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
+    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeShortName(dodsShortName));
+    setDODSName(DODSNetcdfFile.makeDODSName(dodsShortName));
     this.dodsfile = dodsfile;
-    this.dodsShortName = dodsShortName;
     setDataType( DODSNetcdfFile.convertToNCType( dodsScalar));
     if (DODSNetcdfFile.isUnsigned( dodsScalar)) {
-      addAttribute(new Attribute("_Unsigned", "true"));
+      addAttribute(new DODSAttribute("_Unsigned", "true"));
     }
 
     // check for netcdf char array
@@ -98,11 +98,12 @@ public class DODSVariable extends ucar.nc2.Variable {
 
     // name is already properly decoded: super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     super(dodsfile, parentGroup, parentStructure,dodsShortName);
+    setDODSName(DODSNetcdfFile.makeDODSName(dodsShortName));
     this.dodsfile = dodsfile;
-    this.dodsShortName = dodsShortName;
     setDataType( DODSNetcdfFile.convertToNCType( elemType));
     if (DODSNetcdfFile.isUnsigned( elemType)) {
-      addAttribute(new Attribute("_Unsigned", "true"));
+      // create _Unsigned attribute
+      addAttribute(new DODSAttribute("_Unsigned", "true"));
     }
 
     List<Dimension> dims = dodsfile.constructDimensions( parentGroup, dodsArray);
@@ -129,9 +130,9 @@ public class DODSVariable extends ucar.nc2.Variable {
 
   protected DODSVariable(DODSVariable from) {
     super(from);
+    setDODSName(from.getDODSName());
 
     dodsfile = from.dodsfile;
-    dodsShortName = from.dodsShortName;
     CE = from.CE;
   }
 
@@ -143,5 +144,11 @@ public class DODSVariable extends ucar.nc2.Variable {
   protected boolean hasCE(){ return CE != null; }
   protected String nameWithCE() { return hasCE() ? getShortName() + CE : getShortName(); }
 
-  protected String getDODSshortName() { return dodsShortName; }
+
+  //////////////////////////////////////////////////
+  // DODSNode Interface
+  String dodsName = null;
+  public String getDODSName() {return dodsName;}
+  public void setDODSName(String name) {this.dodsName = name;}
+
 }

@@ -7,15 +7,18 @@ netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR.nc {
    int GeoX(GeoX=4);
      :long_name = "x-coordinate in Cartesian system";
      :axis = "X";
+
    float time(time=1);
      :units = "hours since 2000-01-01 00:00:00";
+
    int GeoY(GeoY=4);
      :long_name = "y-coordinate in Cartesian system";
      :axis = "Y";
 
- Group Science_Data {
 
-   Group Geolocation_Information {
+ group: Science_Data {
+
+   group: Geolocation_Information {
      variables:
        short Latitude(GeoY=4, GeoX=4);
          :_CoordinateAxes = "GeoY GeoX ";
@@ -35,7 +38,7 @@ netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR.nc {
          :_ChunkSize = 1400, 1400; // int
    }
 
-   Group Geophysical_Parameter {
+   group: Geophysical_Parameter {
      variables:
        float OLR(time=1, GeoY=4, GeoX=4);
          :_CoordinateAxes = "time GeoY GeoX ";
@@ -47,7 +50,7 @@ netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR.nc {
          :_ChunkSize = 1, 936, 1400; // int
    }
  }
-
+ // global attributes:
  :institute = "Space Applications Center, ISRO";
  :source = "Very High Resolution Radiometer (VHRR)";
  :conventions = "CF-1.6";

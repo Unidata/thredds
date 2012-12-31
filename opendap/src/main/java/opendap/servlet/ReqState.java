@@ -40,6 +40,7 @@
 
 package opendap.servlet;
 
+import opendap.dap.DAP2Exception;
 import ucar.nc2.util.net.HTTPSession;
 
 import java.util.Enumeration;
@@ -160,17 +161,18 @@ public class ReqState {
         defaultDAScache  = rootpath + testdatasetspath + "/das";
         defaultINFOcache = rootpath + testdatasetspath + "/info";
 
-        int index = myHttpRequest.getRequestURL().lastIndexOf(
-                myHttpRequest.getServletPath());
+        StringBuffer url = myHttpRequest.getRequestURL();
+        if(url == null || url.length() == 0)
+            AbstractServlet.log.error("ReqState: no url specified");
 
-        defaultSchemaLocation = myHttpRequest.getRequestURL().substring(0, index) +
+        int index = url.lastIndexOf(myHttpRequest.getServletPath());
+        if(index < 0) index = url.length(); //USe whole thing
+        defaultSchemaLocation = url.substring(0, index) +
                 "/schema/" +
                 defaultSchemaName;
 
         //System.out.println("Default Schema Location: "+defaultSchemaLocation);
         //System.out.println("Schema Location: "+getSchemaLocation());
-
-
 
         requestURL = (encodedurl);
 
