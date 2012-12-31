@@ -36,9 +36,9 @@ package opendap.test;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
-import opendap.dts.*;
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
+//import opendap.dts.*;
 
 import java.util.*;
 import java.io.*;
@@ -520,7 +520,7 @@ public class TestCeParser extends UnitTestCommon
     int nconstraints = constraintlist.length;
     for (int i = 0; i < nconstraints; i++) {
       // Parse the DDS to produce a ServerDDS object
-      ServerDDS sdds = new ServerDDS(new test_ServerFactory());
+      ServerDDS sdds = new ServerDDS(new test_SDFactory());
       StringBufferInputStream teststream = new StringBufferInputStream(testDDS);
       if (!sdds.parse(teststream))
         throw new ParseException("Cannot parse DDS");
