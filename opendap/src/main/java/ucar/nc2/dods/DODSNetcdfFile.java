@@ -1280,14 +1280,26 @@ if(OLDGROUPCODE) {
 
     // kludge for single inheritence
 
+    /**
+     * Return a variable name suitable for use in a DAP constraint expression.
+     * [This code seems wrong because structures can be nested and hence
+     *  would have to use the full name just like non-structures: fix]
+     *  [Also, is the name properly escaped?]
+     * @param var The variable whose name will appear in the CE
+     * @return    The name in a form suitable for use in a cE
+     */
     static public String getDODSshortName(Variable var)
     {
+        String vname = ((DODSNode)var).getDODSName();
+        return vname;
+        /*
         if (var instanceof DODSVariable)
             return ((DODSVariable) var).getDODSName();
         else if (var instanceof DODSStructure)
             return ((DODSStructure) var).getDODSshortName();
         else
             return null;
+        */
     }
 
     /* full name
