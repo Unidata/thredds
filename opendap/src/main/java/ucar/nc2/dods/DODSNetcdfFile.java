@@ -643,7 +643,7 @@ if(false) {    // This should have been done by computegroup()
         // So, we should use that to adjust the attribute to attach to that
         // variable.
         for (Object var : varlist) {
-            reGroupVariableAttributes(rootgroup, (DODSVariable) var);
+            reGroupVariableAttributes(rootgroup, (Variable)var);
         }
     }
 
@@ -670,12 +670,12 @@ if(OLDGROUPCODE) {
         }
     }
 
-    protected void reGroupVariableAttributes(Group rootgroup, DODSVariable dodsv)
+    protected void reGroupVariableAttributes(Group rootgroup, Variable v)
             throws opendap.dap.DAP2Exception
     {
-        String vname = dodsv.getShortName();
-        Group vgroup = dodsv.getParentGroup();
-        Object[] attlist = dodsv.getAttributes().toArray();
+        String vname = v.getShortName();
+        Group vgroup = v.getParentGroup();
+        Object[] attlist = v.getAttributes().toArray();
         for (Object att : attlist) {
             DODSAttribute ncatt = (DODSAttribute) att;
             String adodsname = ncatt.getDODSName();
@@ -700,7 +700,7 @@ if(OLDGROUPCODE) {
                 if (newvar != null) {// if not found leave the attribute as is
                     // otherwise, move the attribute and rename
                     newvar.addAttribute(ncatt);
-                    dodsv.remove(ncatt);
+                    v.remove(ncatt);
                     ncatt.setShortName(pieces.name);
                 }
             }
@@ -873,8 +873,8 @@ if(OLDGROUPCODE) {
             if (parentStructure != null)
                 parentStructure.addMemberVariable(v);
             else {
-                DODSVariable dv = (DODSVariable)v;
-                parentGroup = computeGroup(dv.getDODSName(), v, parentGroup);
+                DODSNode dn = (DODSNode)v;
+                parentGroup = computeGroup(dn.getDODSName(), v, parentGroup);
                 parentGroup.addVariable(v);
             }
             dodsV.isDone = true;
@@ -893,8 +893,8 @@ if(OLDGROUPCODE) {
             if (v.getParentStructure() == null) {
                 // HACK: Since only the grid array is used in converting
                 // to netcdf-3, we look for group info on the array.
-                DODSVariable dv = (DODSVariable)v;
-                String dodsname = dv.getDODSName();
+                DODSNode dn = (DODSNode)v;
+                String dodsname = dn.getDODSName();
                 int sindex = dodsname.indexOf('/');
                 if (sindex >= 0) {
                     assert (parentGroup != null);
