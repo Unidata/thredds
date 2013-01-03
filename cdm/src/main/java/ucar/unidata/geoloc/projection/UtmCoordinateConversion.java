@@ -60,7 +60,8 @@ package ucar.unidata.geoloc.projection;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class UtmCoordinateConversion {
+// doesnt seem to be used
+class UtmCoordinateConversion {
 
   public UtmCoordinateConversion() {
 

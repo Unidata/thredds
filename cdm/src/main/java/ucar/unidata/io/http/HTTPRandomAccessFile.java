@@ -45,7 +45,7 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
 
 /**
- * Gives access to files over HTTP, using jakarta commons HttpClient library.
+ * Gives access to files over HTTP, using "Accept-Ranges" HTTP header to do random access.
  * This version uses a single instance of HttpClient, following performance guidelines at
  * http://jakarta.apache.org/commons/httpclient/performance.html
  * Plus other improvements.

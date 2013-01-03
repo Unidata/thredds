@@ -1575,6 +1575,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   }
 
   // this indirection allows us to share the cache among the variable's sections and copies
+
+  /**
+   * Public by accident.
+   */
   static protected class Cache {
     public Array data;
     public boolean isCaching = false;

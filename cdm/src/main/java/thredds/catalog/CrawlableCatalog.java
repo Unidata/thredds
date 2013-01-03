@@ -45,6 +45,7 @@ import org.jdom.Element;
 import ucar.nc2.ncml.NcMLReader;
 
 /**
+ * A CrawlableDataset from a THREDDS catalog.
  * @author caron
  * @since Aug 10, 2007
  */

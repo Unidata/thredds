@@ -60,6 +60,9 @@ import java.nio.ByteBuffer;
 public class NCdumpW {
   private static String usage = "usage: NCdumpW <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
+  /**
+   * Tell NCdumpW if you want values printed.
+   */
   public enum WantValues {
     none, coordsOnly, all
   }

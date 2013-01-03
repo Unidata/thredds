@@ -96,7 +96,7 @@ public class TestH4eos extends TestCase {
   public void testUnsigned() throws IOException, InvalidRangeException {
     String filename = testDir + "MOD021KM.A2004328.1735.004.2004329164007.hdf";
     NetcdfFile ncfile = NetcdfFile.open(filename);
-    String vname = "/MODIS_SWATH_Type_L1B/Data Fields/EV_250_Aggr1km_RefSB";
+    String vname = "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB";
     Variable v = ncfile.findVariable(vname);
     assert v != null : filename+" "+vname;
 

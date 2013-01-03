@@ -57,33 +57,33 @@ public class TestH5subset extends TestCase {
     int ntrials = 3;
 
     // H5tiledLayoutBB
-    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRDLS2-Aura12h_b033_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/GRIDS/O3Descending/Data Fields/L3dmValue", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/SWATHS/O3AscendingResiduals/Data Fields/L2gpValue", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", "HDFEOS/GRIDS/OMI Column Amount O3/Data Fields/ColumnAmountO3", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "ssec-h5/I3A_CCD_13FEB2007_0501_L1B_STD.h5", "CCD/Image Data/CCD_VIS", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "ssec-h5/K01_VHR_28AUG2007_0000_L02_IND.h5", "VHRR/Image Data/VHRR_WV", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/Temperature", ntrials); // */
+    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRDLS2-Aura12h_b033_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation_Fields/CloudContamination", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/GRIDS/O3Descending/Data_Fields/L3dmValue", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/SWATHS/O3AscendingResiduals/Data_Fields/L2gpValue", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", "HDFEOS/GRIDS/OMI_Column_Amount_O3/Data_Fields/ColumnAmountO3", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation_Fields/CloudContamination", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation_Fields/CloudContamination", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "ssec-h5/I3A_CCD_13FEB2007_0501_L1B_STD.h5", "CCD/Image_Data/CCD_VIS", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "ssec-h5/K01_VHR_28AUG2007_0000_L02_IND.h5", "VHRR/Image_Data/VHRR_WV", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data_Fields/Temperature", ntrials); // */
 
     // H5tiledLayout
-    TestSubsettingUtils.subsetVariables(dirName + "aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO/Data Fields/L2gpValue", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO column/Geolocation Fields/Latitude", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO/Data_Fields/L2gpValue", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO_column/Geolocation_Fields/Latitude", ntrials);
     TestSubsettingUtils.subsetVariables(dirName + "IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5","U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_DATA", ntrials);
 
     // LayoutRegular
-    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIR2ARSP_c3_na.he5", "HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data Fields/EXTC", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/AERO01", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7\\.10MicronAerosolExtinction", ntrials);
-    TestSubsettingUtils.subsetVariables(dirName + "aura/TES-Aura_L3-CH4-M2007m08_F01_04.he5", "HDFEOS/GRIDS/NadirGrid/Data Fields/CH4", ntrials); // */
+    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIR2ARSP_c3_na.he5", "HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data_Fields/EXTC", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data_Fields/AERO01", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data_Fields/7\\.10MicronAerosolExtinction", ntrials);
+    TestSubsettingUtils.subsetVariables(dirName + "aura/TES-Aura_L3-CH4-M2007m08_F01_04.he5", "HDFEOS/GRIDS/NadirGrid/Data_Fields/CH4", ntrials); // */
 
     // netcdf4
     TestSubsettingUtils.subsetVariables(TestDir.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4", "water_temp", ntrials); // */
  }
 
   public void testProblem() throws IOException, InvalidRangeException {
-    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7\\.10MicronAerosolExtinction", 1);
+    TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data_Fields/7\\.10MicronAerosolExtinction", 1);
   }
 
   private void testVariableSubset(String filename, String varName, Section s) throws InvalidRangeException, IOException {

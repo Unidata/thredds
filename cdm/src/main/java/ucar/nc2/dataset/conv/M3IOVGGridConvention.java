@@ -61,7 +61,8 @@ import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 
-/*
+/**
+ * M3IO VG scheme, 5D gridded scalar data, cell-based hexahedra.
  * Describes NetCDF files that follow M3IO (Models-3) conventions for
  * structured (in projected, e.g., Lambert space) 5D gridded scalar data.
  * These are similar to Vis5D data sets except that the data are
@@ -71,11 +72,10 @@ import ucar.unidata.geoloc.projection.*;
  * the same height varying rectilinearly based on pressure.
  * The pressure-based levels are converted into approximate z in meters above
  * mean sea level.
- * @invariant ncfile != null implies isValidM3IOFile()
  *
  * 09/2010 plessel.todd@epa.gov add projection types 6,7,8,9,10
  *
- * @HISTORY: 2003/06/26
+ * HISTORY: 2003/06/26
  * @author plessel.todd@epa.gov, based on WRFConvention.java
  * @author caron - convert to new CoordSysBuilder
  */

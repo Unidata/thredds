@@ -60,6 +60,9 @@ public class NetcdfFileWriter {
   static private final boolean debug = false, debugWrite = false;
 
 
+  /**
+   * The kinds of netcdf file that can be written.
+   */
   public enum Version {
     netcdf3(".nc"),              // java iosp
     netcdf4(".nc4"),             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4

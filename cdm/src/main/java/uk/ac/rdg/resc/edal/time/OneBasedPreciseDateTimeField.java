@@ -34,7 +34,7 @@ import org.joda.time.DurationField;
 import org.joda.time.field.PreciseDateTimeField;
 
 /**
- * A {@link DateTimeField} whose values start at 1 instead of 0
+ * A {@link DateTimeField} whose values start at 1 instead of 0.
  * @author Jon
  */
 final class OneBasedPreciseDateTimeField extends PreciseDateTimeField {

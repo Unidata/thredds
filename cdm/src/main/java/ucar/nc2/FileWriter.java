@@ -55,7 +55,7 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
  * <p> Use the static methods writeToFile() to copy an entire file. Create a FileWriter object to control exactly
  * what gets written to the file.
  *
- * @deprecated use FileWriter2 to allow netcdf4 writing also
+ * @deprecated use FileWriter2
  * @author caron
  * @author Steve Ansari
  * @see ucar.nc2.NetcdfFile
@@ -343,6 +343,9 @@ public class FileWriter {
    * An index that computes chunk shapes. It is intended to be used to compute the origins and shapes for a series
    * of contiguous writes to a multidimensional array.
    * It writes the first n elements (n < maxChunkElems), then the next, etc.
+   */
+  /**
+   * @deprecated use FileWriter2.ChunkingIndex
    */
   public static class ChunkingIndex extends Index {
     public ChunkingIndex(int[] shape) {
@@ -648,6 +651,9 @@ public class FileWriter {
     System.out.println("usage: ucar.nc2.FileWriter -in <fileIn> -out <fileOut> [-delay <millisecs>]");
   }
 
+  /**
+   * @deprecated use FileWriter2.FileWriterProgressEvent
+   */
   public static class FileWriterProgressEvent {
     private double progressPercent;
     private long bytesWritten;

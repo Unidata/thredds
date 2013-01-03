@@ -47,7 +47,7 @@ import java.io.IOException;
  * note this is almost same as Avhrr ??
  * @author caron
  * @since Sep 11, 2009
- * @see "http://jointmission.gsfc.nasa.gov/science/documents.html"  CDFCB-X
+ * @see "http://jointmission.gsfc.nasa.gov/science/documents.html"
  */
 /*
  * NPP Common Data Format Control Book – External (CDFCB-X)

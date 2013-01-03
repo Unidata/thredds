@@ -90,8 +90,8 @@ public class TestH4subset {
     int ntrials = 3;
 
     // LayoutRegular
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "MI1B2T_B54_O003734_AN_05.hdf", "Infrared Radiance_RDQI", ntrials);
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf", "High_Res_B_Swath/Data Fields/Cold_Sky_Mirror_Count_89B", ntrials);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "MI1B2T_B54_O003734_AN_05.hdf", "Infrared_Radiance_RDQI", ntrials);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf", "High_Res_B_Swath/Data_Fields/Cold_Sky_Mirror_Count_89B", ntrials);
 
     // LayoutSegmented (linked)
     TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "96108_08.hdf", "BlackBody1Temperature", ntrials);
@@ -99,22 +99,22 @@ public class TestH4subset {
     //testVariableSubset(TestH4read.testDir + "ncidc/AMSR_E_L2_Land_T06_200801012345_A.hdf", "AMSR-E Level 2B Land Data/Data Vgroup/Land Parameters");
 
     // PositioningDataInputStream (not linked, compressed)
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "DC Restore Change for Reflective 1km Bands", ntrials);
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Cloud_Top_Pressure", ntrials);
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Quality_Assurance_1km", ntrials);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "DC_Restore_Change_for_Reflective_1km_Bands", ntrials);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data_Fields/Cloud_Top_Pressure", ntrials);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data_Fields/Quality_Assurance_1km", ntrials);
 
     // PositioningDataInputStream (linked, compressed)
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data Fields/Surface_Pressure_Day", ntrials);
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data Fields/Averaging_Kernel_Night", ntrials);
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf", "MOD_Grid_Snow_500m/Data Fields/Fractional_Snow_Cover", ntrials); // */
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data_Fields/Surface_Pressure_Day", ntrials);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data_Fields/Averaging_Kernel_Night", ntrials);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf", "MOD_Grid_Snow_500m/Data_Fields/Fractional_Snow_Cover", ntrials); // */
 
      // LayoutBBTiled (chunked and compressed)
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", "GeometricParameters/Data Fields/CaZenith", ntrials);
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB_Uncert_Indexes", ntrials);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", "GeometricParameters/Data_Fields/CaZenith", ntrials);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "MODIS_SWATH_Type_L1B/Data_Fields/EV_500_RefSB_Uncert_Indexes", ntrials);
 
  }
 
   public void problemSubset() throws IOException, InvalidRangeException {
-    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "DC Restore Change for Reflective 1km Bands", 10);
+    TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "DC_Restore_Change_for_Reflective_1km_Bands", 10);
   }
 }
