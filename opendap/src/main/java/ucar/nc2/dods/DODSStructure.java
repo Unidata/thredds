@@ -109,7 +109,7 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
   // need package access
   //protected void calcIsCoordinateVariable() { super.calcIsCoordinateVariable(); }
 
-  protected String getDODSshortName() { return dodsShortName; }
+  protected String getDODSshortName() { return getShortName(); }
 
 
   ///////////////////////////////////////////////////////////////////////
