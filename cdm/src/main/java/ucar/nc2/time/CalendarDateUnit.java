@@ -43,7 +43,7 @@ There’s an alternative proposition, in which the new units of calendar_month a
 public class CalendarDateUnit {
   private static final String byCalendarString = "calendar ";
   //                                                  1                     2             3    4             5
-  private static final String udunitPatternString = "(\\w*)\\s*since\\s*"+CalendarDateFormatter.isodatePatternString;
+  public static final String udunitPatternString = "(\\w*)\\s*since\\s*"+CalendarDateFormatter.isodatePatternString;
   //                                                                     "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing
   private static final Pattern udunitPattern = Pattern.compile(udunitPatternString);
 

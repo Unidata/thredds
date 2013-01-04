@@ -57,6 +57,7 @@ public class TestAggSynGrid extends TestCase {
     public void setUp() throws IOException {
       if (gds != null) return;
       gds = ucar.nc2.dt.grid.GridDataset.open(filename);
+      System.out.printf("open %s%n", filename);
     }
 
     public void tearDown() throws IOException {

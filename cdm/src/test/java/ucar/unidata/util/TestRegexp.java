@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateUnit;
 
 /**
  * Class Description.
@@ -301,12 +302,11 @@ public class TestRegexp {
     testMatch(p, m, true);
   }
 
-  @Test
    public void testCalendarDate() {
      String m = "sec since 1970-1-1 00:00:00Z";
      //String m = "1422175657634555 microsecs since 1970-1-1T0:0:0Z";
      String p = "(\\w*)\\s*since\\s*([\\+\\-\\d]+)([ t]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
-     testMatch(p, m, true);
+     testMatch(CalendarDateUnit.udunitPatternString, m, true);
    }
 
   // {7, "Geopotential height", "gpm", "ZGEO"},

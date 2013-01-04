@@ -66,7 +66,7 @@ public class TestDmspIosp extends TestCase
   private int testDataFileNumSamplesPerBandDimAttValue = 1465;
   private String testDataFileSuborbitHistoryAttValue = "F14200307192230.OIS (1,691)";
   private String testDataFileProcessingSystemAttValue = "v2.1b";
-  private String testDataFileProcessingDateAttValue = "2003-07-19T19:33:23.000GMT";
+  private String testDataFileProcessingDateAttValue = "2003-07-19T19:33:23.000Z";
                                               //"Sat Jul 19 19:33:23 2003";
   private String testDataFileSpacecraftIdAttValue = "F14";
   private String testDataFileNoradIdAttValue = "24753";
