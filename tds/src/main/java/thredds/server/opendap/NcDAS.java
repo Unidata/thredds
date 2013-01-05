@@ -84,7 +84,7 @@ public class NcDAS extends opendap.dap.DAS {
       if (d.isUnlimited()) {
         opendap.dap.AttributeTable table = new opendap.dap.AttributeTable("DODS_EXTRA");
         try {
-          table.appendAttribute("Unlimited_Dimension", opendap.dap.Attribute.STRING, d.getName());
+          table.appendAttribute("Unlimited_Dimension", opendap.dap.Attribute.STRING, d.getShortName());
           addAttributeTable("DODS_EXTRA", table);
         } catch (Exception e) {
           log.error("Error adding Unlimited_Dimension =" + e);
@@ -98,10 +98,10 @@ public class NcDAS extends opendap.dap.DAS {
     iter = ncfile.getDimensions().iterator();
     while (iter.hasNext()) {
       Dimension d = (Dimension) iter.next();
-      if (null == usedDims.get(d.getName())) {
+      if (null == usedDims.get(d.getShortName())) {
         if (dimTable == null) dimTable = new opendap.dap.AttributeTable("EXTRA_DIMENSION");
         try {
-          dimTable.appendAttribute(d.getName(), opendap.dap.Attribute.INT32, Integer.toString(d.getLength()));
+          dimTable.appendAttribute(d.getShortName(), opendap.dap.Attribute.INT32, Integer.toString(d.getLength()));
         } catch (Exception e) {
           log.error("Error adding Unlimited_Dimension =" + e);
         }
@@ -122,7 +122,7 @@ public class NcDAS extends opendap.dap.DAS {
     for (int i = 0; i < dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
       if (dim.isShared())
-        usedDims.put(dim.getName(), dim);
+        usedDims.put(dim.getShortName(), dim);
     }
 
     //if (v.getAttributes().size() == 0) return; // LOOK DAP 2 say must have empty
@@ -167,7 +167,7 @@ public class NcDAS extends opendap.dap.DAS {
       try {
           // The attribute names as taken from the variable,
           // are not escaped, so we need to make sure that happens.
-          String attName = att.getName();
+          String attName = att.getShortName();
         if (att.isString()) {
           /* FIX String value = escapeAttributeStringValues(att.getStringValue());
           table.appendAttribute(attName, dods_type, "\""+value+"\"");
@@ -191,7 +191,7 @@ public class NcDAS extends opendap.dap.DAS {
         count++;
 
       } catch (Exception e) {
-        log.error("Error appending attribute " + att.getName() + " = " + att.getStringValue() + "\n" + e);
+        log.error("Error appending attribute " + att.getShortName() + " = " + att.getStringValue() + "\n" + e);
       }
     } // loop over variable attributes
 
@@ -204,7 +204,7 @@ public class NcDAS extends opendap.dap.DAS {
         opendap.dap.AttributeTable dodsTable = table.appendContainer("DODS");
         dodsTable.appendAttribute("strlen", opendap.dap.Attribute.INT32, Integer.toString(strlen));
         if ((dim != null) && dim.isShared())
-          dodsTable.appendAttribute("dimName", opendap.dap.Attribute.STRING, dim.getName());
+          dodsTable.appendAttribute("dimName", opendap.dap.Attribute.STRING, dim.getShortName());
         count++;
       } catch (Exception e) {
         log.error("Error appending attribute strlen\n" + e);

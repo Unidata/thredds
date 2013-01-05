@@ -109,13 +109,13 @@ public class TestNcMLModifyAtts extends TestCase {
 
     Dimension latDim = ncfile.findDimension("lat");
     assert null != latDim;
-    assert latDim.getName().equals("lat");
+    assert latDim.getShortName().equals("lat");
     assert latDim.getLength() == 3;
     assert !latDim.isUnlimited();
 
     Dimension timeDim = ncfile.findDimension("time");
     assert null != timeDim;
-    assert timeDim.getName().equals("time");
+    assert timeDim.getShortName().equals("time");
     assert timeDim.getLength() == 2;
     assert timeDim.isUnlimited();
   }

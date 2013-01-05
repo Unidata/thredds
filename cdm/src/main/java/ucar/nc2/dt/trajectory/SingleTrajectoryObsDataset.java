@@ -855,7 +855,7 @@ public class SingleTrajectoryObsDataset
       rank = super.getRank() - 1;
       int[] varShape = super.getShape();
       shape = new int[ varShape.length - 1];
-      int trajDimIndex = v.findDimensionIndex( SingleTrajectoryObsDataset.this.timeDim.getName());
+      int trajDimIndex = v.findDimensionIndex( SingleTrajectoryObsDataset.this.timeDim.getShortName());
       for ( int i = 0, j = 0; i < varShape.length; i++)
       {
         if ( i == trajDimIndex) continue;

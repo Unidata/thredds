@@ -74,7 +74,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
 
     // set dimensions
     for (Dimension dim : v.getDimensions()) {
-      appendDim(dim.getLength(), dim.getName());
+      appendDim(dim.getLength(), dim.getShortName());
     }
 
     // this seems to be how you set the type

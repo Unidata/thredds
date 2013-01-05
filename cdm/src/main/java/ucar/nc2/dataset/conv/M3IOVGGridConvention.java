@@ -230,7 +230,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     final String newUnits = units.equals( "m" ) ? "km" : units;
     String desc = "synthesized x coordinate from XORIG, XCELL global attributes";
 
-    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "x", DataType.DOUBLE, dim.getName(), newUnits, desc );
+    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "x", DataType.DOUBLE, dim.getShortName(), newUnits, desc );
 
     final double scale = units.equals("m") ? 0.001 : 1.0;//IDV BUG m->km
     final double xorig = doubleAttribute( "XORIG" ) * scale;
@@ -257,7 +257,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     final String newUnits = units.equals( "m" ) ? "km" : units;
     String desc = "synthesized y coordinate from YORIG, YCELL global attributes";
 
-    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "y", DataType.DOUBLE, dim.getName(), newUnits, desc );
+    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "y", DataType.DOUBLE, dim.getShortName(), newUnits, desc );
     final double scale = units.equals("m") ? 0.001 : 1.0;//IDV BUG m->km
     final double yorig = doubleAttribute( "YORIG" ) * scale;
     final double ycell = doubleAttribute( "YCELL" ) * scale;
@@ -282,7 +282,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     Dimension dim = ds.findDimension( "LAY" );
 
     String desc = "synthesized z coordinate from VGTYP, VGTOP, VGLVLS global attributes";
-    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "z", DataType.DOUBLE, dim.getName(), "km", desc ); // IDV?
+    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "z", DataType.DOUBLE, dim.getShortName(), "km", desc ); // IDV?
     final int vgtyp = intAttribute( "VGTYP" );
     final double vgtop = doubleAttribute( "VGTOP" );
     final double[] vglvls = doubleArrayAttribute( "VGLVLS" );
@@ -674,7 +674,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
 
     while ( result && iter.hasNext() ) {
       Dimension d = (Dimension) iter.next();
-      result = index < count && d.getName().equals( dims[ index ] );
+      result = index < count && d.getShortName().equals( dims[ index ] );
       ++index;
     }
 

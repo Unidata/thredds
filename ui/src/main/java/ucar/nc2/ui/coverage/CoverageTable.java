@@ -400,7 +400,7 @@ public class CoverageTable extends JPanel {
       for (ucar.nc2.Dimension d : geogrid.getDimensions()) {
         if (!domain.contains(d)) {
           if (count++ > 0) f.format(",");
-          f.format("%s",d.getName());
+          f.format("%s",d.getShortName());
         }
       }
       extra = f.toString();
@@ -464,7 +464,7 @@ public class CoverageTable extends JPanel {
 
     private String getAxisName(CoordinateAxis axis) {
       if (axis != null)
-        return (axis.isCoordinateVariable()) ? axis.getName() : axis.getNameAndDimensions(false);
+        return (axis.isCoordinateVariable()) ? axis.getShortName() : axis.getNameAndDimensions(false);
       return "";
     }
   }
@@ -582,7 +582,7 @@ public class CoverageTable extends JPanel {
           lens.append(",");
           names.append(",");
         }
-        String name = dim.isShared() ? dim.getName() : "anon";
+        String name = dim.isShared() ? dim.getShortName() : "anon";
         names.append(name);
         lens.append(dim.getLength());
       }

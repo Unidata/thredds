@@ -236,7 +236,7 @@ public class StructureMembers {
     }
 
     public String getFullNameEscaped() {
-      return NetcdfFile.escapeName(StructureMembers.this.getName()) + "." +  NetcdfFile.escapeName(name);
+      return NetcdfFile.makeValidPathName(StructureMembers.this.getName()) + "." +  NetcdfFile.makeValidPathName(name);
     }
 
     public String getFullName() {

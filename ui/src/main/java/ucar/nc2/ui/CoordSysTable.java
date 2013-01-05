@@ -37,7 +37,6 @@ import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.grid.CoverageCS;
 import ucar.nc2.ft.grid.impl.CoverageCSFactory;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.widget.*;
@@ -553,7 +552,7 @@ public class CoordSysTable extends JPanel {
           lens.append(",");
           names.append(",");
         }
-        String name = dim.isShared() ? dim.getName() : "anon";
+        String name = dim.isShared() ? dim.getShortName() : "anon";
         names.append(name);
         lens.append(dim.getLength());
       }
@@ -788,7 +787,7 @@ public class CoordSysTable extends JPanel {
       this.att = att;
     }
 
-    public String getName() { return att.getName(); }
+    public String getName() { return att.getShortName(); }
     public String getValue() {
       Array value = att.getValues();
       try {
@@ -836,7 +835,7 @@ public class CoordSysTable extends JPanel {
           lens.append(",");
           names.append(",");
         }
-        String name = dim.isShared() ? dim.getName() : "anon";
+        String name = dim.isShared() ? dim.getShortName() : "anon";
         names.append(name);
         lens.append(dim.getLength());
       }

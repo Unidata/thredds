@@ -121,7 +121,7 @@ public class TestConvertD2N {
     List vars = dodsfile.getVariables();
     for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      String name = DODSNetcdfFile.getDODSshortName(v);
+      String name = DODSNetcdfFile.getDODSConstraintName(v);
       DodsV dodsV = root.findByDodsShortName( name);
       if (dodsV == null) {
         System.out.println("Cant find "+name);

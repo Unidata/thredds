@@ -722,7 +722,7 @@ public class DatasetViewer extends JPanel {
           lens.append(",");
           names.append(",");
         }
-        String name = dim.isShared() ? dim.getName() : "anon";
+        String name = dim.isShared() ? dim.getShortName() : "anon";
         names.append(name);
         lens.append(dim.getLength());
       }
@@ -734,7 +734,7 @@ public class DatasetViewer extends JPanel {
     public void setName(String name) { this.name = name; }
 
     public String getGroup() {
-      return vs.getParentGroup().getName(); 
+      return vs.getParentGroup().getFullName();
     }
 
     public String getDimensions() { return dimensions; }
@@ -790,7 +790,7 @@ public class DatasetViewer extends JPanel {
       this.att = att;
     }
 
-    public String getName() { return att.getName(); }
+    public String getName() { return att.getShortName(); }
     public String getValue() {
       Array value = att.getValues();
       try {

@@ -138,11 +138,11 @@ public class CompareNetcdf {
   }
 
   private boolean compareGroups(Group org, Group copy, Formatter f) {
-    if (showCompare) f.format("compare Group %s to %s %n", org.getName(), copy.getName());
+    if (showCompare) f.format("compare Group %s to %s %n", org.getFullName(), copy.getFullName());
     boolean ok = true;
 
-    if (!org.getName().equals(copy.getName())) {
-      f.format(" ** names are different %s != %s %n", org.getName(), copy.getName());
+    if (!org.getFullName().equals(copy.getFullName())) {
+      f.format(" ** names are different %s != %s %n", org.getShortName(), copy.getShortName());
       ok = false;
     }
 

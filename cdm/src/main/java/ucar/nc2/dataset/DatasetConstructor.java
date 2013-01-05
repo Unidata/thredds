@@ -67,8 +67,8 @@ public class DatasetConstructor {
 
     // dimensions
     for (Dimension d : src.getDimensions()) {
-      if (null == targetGroup.findDimensionLocal(d.getName())) {
-        Dimension newd = new Dimension(d.getName(), d.getLength(), d.isShared(), unlimitedOK && d.isUnlimited(), d.isVariableLength());
+      if (null == targetGroup.findDimensionLocal(d.getShortName())) {
+        Dimension newd = new Dimension(d.getShortName(), d.getLength(), d.isShared(), unlimitedOK && d.isUnlimited(), d.isVariableLength());
         targetGroup.addDimension(newd);
       }
     }
@@ -117,7 +117,7 @@ public class DatasetConstructor {
    */
   static public void transferVariableAttributes(Variable src, Variable target) {
     for (Attribute a : src.getAttributes()) {
-      if (null == target.findAttribute(a.getName()))
+      if (null == target.findAttribute(a.getShortName()))
         target.addAttribute(a);
     }
   }
@@ -129,7 +129,7 @@ public class DatasetConstructor {
    */
   static public void transferGroupAttributes(Group src, Group target) {
     for (Attribute a : src.getAttributes()) {
-      if (null == target.findAttribute(a.getName()))
+      if (null == target.findAttribute(a.getShortName()))
         target.addAttribute(a);
     }
   }

@@ -239,7 +239,7 @@ public class NcMLWriter {
 
   public static Element writeAttribute(ucar.nc2.Attribute att, String elementName, Namespace ns) {
     Element attElem = new Element(elementName, ns);
-    attElem.setAttribute("name", att.getName());
+    attElem.setAttribute("name", att.getShortName());
 
     DataType dt = att.getDataType();
     if ((dt != null) && (dt != DataType.STRING))
@@ -327,7 +327,7 @@ public class NcMLWriter {
 
   public static Element writeDimension(Dimension dim, Namespace ns) {
     Element dimElem = new Element("dimension", ns);
-    dimElem.setAttribute("name", dim.getName());
+    dimElem.setAttribute("name", dim.getShortName());
     dimElem.setAttribute("length", Integer.toString(dim.getLength()));
     if (dim.isUnlimited())
       dimElem.setAttribute("isUnlimited", "true");
@@ -431,7 +431,7 @@ public class NcMLWriter {
       Dimension dim = (Dimension) dims.get(i);
       if (i > 0) buff.append(" ");
       if (dim.isShared())
-        buff.append(dim.getName());
+        buff.append(dim.getShortName());
       else
         buff.append(dim.getLength());
     }

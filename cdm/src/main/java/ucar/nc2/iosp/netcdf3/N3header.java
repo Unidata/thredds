@@ -212,7 +212,7 @@ public class N3header {
       if (fout != null) {
         fout.format("---name=<%s> dims = [", name);
         for ( Dimension dim : dims)
-          fout.format("%s ", dim.getName());
+          fout.format("%s ", dim.getShortName());
         fout.format("]\n");
       }
 
@@ -389,7 +389,7 @@ public class N3header {
     // create record structure
     if (uvars.size() > 0) {
       Structure recordStructure = new Structure(ncfile, ncfile.getRootGroup(), null, "record");
-      recordStructure.setDimensions(udim.getName());
+      recordStructure.setDimensions(udim.getShortName());
       for (Variable v : uvars) {
         Variable memberV;
         try {
@@ -638,7 +638,7 @@ public class N3header {
     for (int i = 0; i < numdims; i++) {
       Dimension dim = (Dimension) dims.get(i);
       if (fout != null) fout.format("  dim %d pos %d\n", i, raf.getFilePointer());
-      writeString(dim.getName());
+      writeString(dim.getShortName());
       raf.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
       if (dim.isUnlimited()) udim = dim;
     }
@@ -727,7 +727,7 @@ public class N3header {
     // dims
     size += 8; // magic, ndims
     for (Dimension dim  : ncfile.getDimensions())
-      size += sizeString(dim.getName()) + 4; // name, len
+      size += sizeString(dim.getShortName()) + 4; // name, len
 
     // global attributes
     size += sizeAtts(ncfile.getGlobalAttributes());
@@ -766,7 +766,7 @@ public class N3header {
       if (fout != null) fout.format("***att %d pos= %d\n", i, raf.getFilePointer());
       Attribute att = atts.get(i);
 
-      writeString(att.getName());
+      writeString(att.getShortName());
       int type = getType(att.getDataType());
       raf.writeInt(type);
 
@@ -789,7 +789,7 @@ public class N3header {
     int size = 8; // magic, natts
 
     for (Attribute att : atts) {
-      size += sizeString(att.getName());
+      size += sizeString(att.getShortName());
       size += 4; // type
 
       int type = getType(att.getDataType());
@@ -1026,10 +1026,10 @@ public class N3header {
   void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
     long pos;
     if (v2 == null)
-      pos = findAtt(globalAttsPos, att.getName());
+      pos = findAtt(globalAttsPos, att.getShortName());
     else {
       N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-      pos = findAtt(vinfo.attsPos, att.getName());
+      pos = findAtt(vinfo.attsPos, att.getShortName());
     }
 
     raf.seek(pos);

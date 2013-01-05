@@ -37,7 +37,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.ma2.*;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -582,7 +581,7 @@ public class H4header {
     }
 
     if (debugConstruct) {
-      System.out.println("added group " + group.getName() + " from VG " + tagGroup.refno);
+      System.out.println("added group " + group.getFullName() + " from VG " + tagGroup.refno);
     }
 
     return group;
@@ -983,7 +982,7 @@ public class H4header {
           Attribute att = makeAttribute(vh);
           if (null != att) {
             vinfo.v.addAttribute(att);
-            if (att.getName().equals(CDM.FILL_VALUE))
+            if (att.getShortName().equals(CDM.FILL_VALUE))
               vinfo.setFillValue(att);
           }
         }

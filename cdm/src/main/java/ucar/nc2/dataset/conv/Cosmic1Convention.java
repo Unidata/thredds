@@ -133,7 +133,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
         String timeUnits = "seconds since 1980-01-06 00:00:00";
         Variable timeVar = new VariableDS(ds, null, null, "time",
-                DataType.DOUBLE, dim.getName(),
+                DataType.DOUBLE, dim.getShortName(),
                 timeUnits, null);
         ds.addVariable(null, timeVar);
         timeVar.addAttribute(new Attribute(CDM.UNITS, timeUnits));
@@ -177,19 +177,19 @@ public class Cosmic1Convention extends CoordSysBuilder {
       Dimension dim = ds.findDimension("time");
       int n = dim.getLength();
       Variable latVar = new VariableDS(ds, null, null, "Lat",
-              DataType.FLOAT, dim.getName(),
+              DataType.FLOAT, dim.getShortName(),
               "degree", null);
       latVar.addAttribute(new Attribute(_Coordinate.AxisType,
               AxisType.Lat.toString()));
       ds.addVariable(null, latVar);
       Variable lonVar = new VariableDS(ds, null, null, "Lon",
-              DataType.FLOAT, dim.getName(),
+              DataType.FLOAT, dim.getShortName(),
               "degree", null);
       lonVar.addAttribute(new Attribute(_Coordinate.AxisType,
               AxisType.Lon.toString()));
       ds.addVariable(null, lonVar);
       Variable altVar = new VariableDS(ds, null, null, "MSL_alt",
-              DataType.FLOAT, dim.getName(),
+              DataType.FLOAT, dim.getShortName(),
               "meter", null);
       altVar.addAttribute(new Attribute(_Coordinate.AxisType,
               AxisType.Height.toString()));

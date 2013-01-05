@@ -590,7 +590,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       if (taxis1D != null) {
         Dimension tDim = taxis1D.getDimension(0);
         Dimension rtDim = rtaxis.getDimension(0);
-        if (tDim.getName().equals(rtDim.getName())) { // must usetime subset range if dims match - FMRC 1D has this a lot
+        if (tDim.getShortName().equals(rtDim.getShortName())) { // must usetime subset range if dims match - FMRC 1D has this a lot
           runTimeAxis = (t_range == null) ? rtaxis : (CoordinateAxis1DTime) rtaxis.section(t_range);
         }
       }

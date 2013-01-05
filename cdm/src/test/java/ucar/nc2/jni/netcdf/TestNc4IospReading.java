@@ -121,7 +121,7 @@ public class TestNc4IospReading {
     @Override
     public boolean attOk(Variable v, Attribute att) {
       // if (v != null && v.isMemberOfStructure()) return false;
-      String name = att.getName();
+      String name = att.getShortName();
 
       // added by cdm
       if (name.equals(CDM.CHUNK_SIZE)) return false;

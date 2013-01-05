@@ -119,7 +119,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     // add them
     for (Dimension d : dimSet) {
       if (!d.isUnlimited())
-        writer.addDimension(null, d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength());
+        writer.addDimension(null, d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength());
     }
 
     // add the data variables all using the record dimension
@@ -128,7 +128,7 @@ public class WriterCFPointCollection extends CFPointWriter {
       StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
         if (!d.isUnlimited())
-          dimNames.append(" ").append(d.getName());
+          dimNames.append(" ").append(d.getShortName());
       }
       Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
 

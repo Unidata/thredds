@@ -793,7 +793,7 @@ public class NcMLReader {
     java.util.List<Element> groupList = groupElem.getChildren("group", ncNS);
     for (Element gElem : groupList) {
       readGroup(newds, refds, g, refg, gElem);
-      if (debugConstruct) System.out.println(" add group = " + g.getName());
+      if (debugConstruct) System.out.println(" add group = " + g.getFullName());
     }
   }
 

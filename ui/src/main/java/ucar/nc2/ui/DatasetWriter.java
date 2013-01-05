@@ -628,7 +628,7 @@ public class DatasetWriter extends JPanel {
       this.ds = ds;
     }
 
-    public String getName() { return ds.getName(); }
+    public String getName() { return ds.getShortName(); }
     public int getLength() { return ds.getLength(); }
     public boolean isUnlimited() { return ds.isUnlimited(); }
     public void setUnlimited(boolean unlimited) {
@@ -670,7 +670,7 @@ public class DatasetWriter extends JPanel {
           lens.format(",");
           names.format(",");
         }
-        String name = dim.isShared() ? dim.getName() : "anon";
+        String name = dim.isShared() ? dim.getShortName() : "anon";
         names.format("%s", name);
         lens.format("%d",dim.getLength());
       }
@@ -681,7 +681,7 @@ public class DatasetWriter extends JPanel {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public String getGroup() { return vs.getParentGroup().getName(); }
+    public String getGroup() { return vs.getParentGroup().getFullName(); }
 
     public String getDimensions() { return dimensions; }
     public void setDimensions(String dimensions) { this.dimensions = dimensions; }
@@ -782,7 +782,7 @@ public class DatasetWriter extends JPanel {
       this.att = att;
     }
 
-    public String getName() { return att.getName(); }
+    public String getName() { return att.getShortName(); }
     public String getValue() {
       Array value = att.getValues();
       try {

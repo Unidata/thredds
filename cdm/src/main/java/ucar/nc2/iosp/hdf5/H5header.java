@@ -30,6 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.nc2.iosp.hdf5;
 
 import ucar.nc2.constants.CDM;
@@ -428,7 +429,7 @@ public class H5header {
         Formatter f = new Formatter();
         for (int i=0 ;i<facade.netcdf4CoordinatesAtt.getLength(); i++) {
           int dimIndex = facade.netcdf4CoordinatesAtt.getNumericValue(i).intValue();
-          f.format("%s ", h5group.dimList.get(dimIndex).getName());
+          f.format("%s ", h5group.dimList.get(dimIndex).getShortName());
         }
         facade.dimList = f.toString();
       }
@@ -447,7 +448,7 @@ public class H5header {
       if (facadeNested.isGroup) {
         ucar.nc2.Group nestedGroup = new ucar.nc2.Group(ncfile, ncGroup, facadeNested.name);
         ncGroup.addGroup(nestedGroup);
-        if (debug1) debugOut.println("--made Group " + nestedGroup.getName() + " add to " + ncGroup.getName());
+        if (debug1) debugOut.println("--made Group " + nestedGroup.getFullName() + " add to " + ncGroup.getFullName());
         H5Group h5groupNested = new H5Group(facadeNested);
         makeNetcdfGroup(nestedGroup, h5groupNested);
 
@@ -578,14 +579,13 @@ public class H5header {
             facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
             if (! h5iosp.includeOriginalAttributes) iter.remove();
             if (debugDimensionScales)
-              System.out.printf("Found dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getName(), matt);
-
+              System.out.printf("Found dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getFullName(), matt);
           } else {  // multiD dimension scale
             int dimIndex = findCoordinateDimensionIndex(facade, h5group);
             addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[dimIndex], facade.dobj.mds.maxLength[dimIndex] == -1);
             if (! h5iosp.includeOriginalAttributes) iter.remove();
             if (debugDimensionScales)
-              System.out.printf("Found multidim dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getName(), matt);
+              System.out.printf("Found multidim dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getFullName(), matt);
           }
 
         }
@@ -672,7 +672,7 @@ public class H5header {
           }
           facade.dimList = sbuff.toString();
           if (debugDimensionScales) System.out.printf("Found dimList '%s' for group '%s' matt=%s %n",
-                  facade.dimList, g.getName(), matt);
+                  facade.dimList, g.getFullName(), matt);
           if (! h5iosp.includeOriginalAttributes) iter.remove();
         }
 
@@ -713,7 +713,7 @@ public class H5header {
         throw new IllegalStateException("addDimension: DimScale has different length than dimension it references dimScale="+dimName);
     }
 
-    return d.getName();
+    return d.getShortName();
   }
 
   // look for unlimited dimensions without dimension scale - must get length from the variable
@@ -732,7 +732,7 @@ public class H5header {
       if (!d.isUnlimited() && (length != d.getLength())) {
         throw new IllegalStateException("extendDimension: DimScale has different length than dimension it references dimScale="+dimName);
       }
-      return d.getName();
+      return d.getShortName();
     }
 
     return dimName;

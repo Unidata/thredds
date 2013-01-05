@@ -217,7 +217,7 @@ public class DatasetTreeView extends JPanel {
     GroupNode( GroupNode parent, Group group) {
       this.parent = parent;
       this.group = group;
-      if (debugTree) System.out.println("new="+group.getName()+" ");
+      if (debugTree) System.out.println("new="+group.getFullName()+" ");
       //firePropertyChangeEvent(new PropertyChangeEvent(this, "TreeNode", null, group));
     }
 
@@ -249,11 +249,11 @@ public class DatasetTreeView extends JPanel {
       for (int i=0; i<groups.size(); i++)
         children.add( new GroupNode( this, (Group) groups.get(i)));
 
-      if (debugTree) System.out.println("children="+group.getName()+" ");
+      if (debugTree) System.out.println("children="+group.getFullName()+" ");
     }
 
     public int getIndex(TreeNode child) {
-      if (debugTree) System.out.println("getIndex="+group.getName()+" "+child);
+      if (debugTree) System.out.println("getIndex="+group.getFullName()+" "+child);
       return children.indexOf(child);
     }
 
@@ -376,7 +376,7 @@ public class DatasetTreeView extends JPanel {
 
     public TreeNode getParent() { return parent; }
     public boolean isLeaf() { return true; }
-    public String toString() { return d.getName(); }
+    public String toString() { return d.getShortName(); }
 
     public String getToolTipText() {
       return d.toString();

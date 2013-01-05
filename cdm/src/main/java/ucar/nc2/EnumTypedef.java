@@ -55,7 +55,9 @@ public class EnumTypedef extends CDMNode {
     this.map = map;
   }
 
+  /*Obsolete
   public String getName() { return getShortName(); }
+  */
 
   public List<String> getEnumStrings() {
     if (enumStrings != null) {
@@ -84,7 +86,7 @@ public class EnumTypedef extends CDMNode {
   }
 
   protected void writeCDL(Formatter out, Indent indent, boolean strict) {
-    String name = strict ? NetcdfFile.escapeNameCDL(getName()) : getName();
+    String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
     out.format("%senum %s { ", indent, name);
     int count = 0;
     List<Object> keyset = Arrays.asList(map.keySet().toArray());
@@ -93,7 +95,7 @@ public class EnumTypedef extends CDMNode {
       String s = map.get(key);
       if (0 < count++) out.format(", ");
       if (strict)
-        out.format("%s = %s", NetcdfFile.escapeNameCDL(s), key);
+        out.format("%s = %s", NetcdfFile.makeValidCDLName(s), key);
       else
         out.format("'%s' = %s", s, key);
     }

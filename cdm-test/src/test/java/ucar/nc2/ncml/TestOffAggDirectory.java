@@ -90,19 +90,19 @@ public class TestOffAggDirectory extends TestCase {
   public void testDimensions(NetcdfFile ncfile) {
     Dimension latDim = ncfile.findDimension("latitude");
     assert null != latDim;
-    assert latDim.getName().equals("latitude");
+    assert latDim.getShortName().equals("latitude");
     assert latDim.getLength() == 630;
     assert !latDim.isUnlimited();
 
     Dimension lonDim = ncfile.findDimension("longitude");
     assert null != lonDim;
-    assert lonDim.getName().equals("longitude");
+    assert lonDim.getShortName().equals("longitude");
     assert lonDim.getLength() == 630;
     assert !lonDim.isUnlimited();
 
     Dimension timeDim = ncfile.findDimension("time");
     assert null != timeDim;
-    assert timeDim.getName().equals("time");
+    assert timeDim.getShortName().equals("time");
     assert timeDim.getLength() == 6;
   }
 

@@ -62,9 +62,10 @@ public class Attribute extends CDMNode {
    *
    * @return name
    */
+  /*
   public String getName() {
     return getShortName();
-  }
+  }  */
 
   /**
    * Set the name of this Attribute.
@@ -307,7 +308,7 @@ public class Attribute extends CDMNode {
    * @param strict if true, create strict CDL, escaping names
    */
   protected void writeCDL(Formatter f, boolean strict) {
-    f.format("%s", strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName());
+    f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
     if (isString()) {
       f.format(" = ");
       for (int i = 0; i < getLength(); i++) {

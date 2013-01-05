@@ -470,10 +470,10 @@ public class TableAnalyzer {
     // lat, lon, time all use same dimension - use it
     if (dimSet.size() == 1) {
       Dimension obsDim = (Dimension) dimSet.toArray()[0];
-      TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getName());
+      TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getShortName());
       st.structureType = obsDim.isUnlimited() ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
-      st.structName = obsDim.isUnlimited() ? "record" : obsDim.getName();
-      st.dimName = obsDim.getName();
+      st.structName = obsDim.isUnlimited() ? "record" : obsDim.getShortName();
+      st.dimName = obsDim.getShortName();
       CoordSysEvaluator.findCoordWithDimension(st, ds, obsDim);
 
       CoordinateAxis time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
@@ -497,9 +497,9 @@ public class TableAnalyzer {
     }
     if (time != null) {
       Dimension obsDim = (Dimension) time.getDimension(0);
-      TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getName());
+      TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getShortName());
       st.structureType = TableConfig.StructureType.PsuedoStructure;
-      st.dimName = obsDim.getName();
+      st.dimName = obsDim.getShortName();
       CoordSysEvaluator.findCoords(st, ds);
 
       addTable( st);

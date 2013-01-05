@@ -70,19 +70,19 @@ public class TestOffAggFmrcNonuniform extends TestCase {
   private void testDimensions(NetcdfFile ncfile, int nagg, int y, int x) {
     Dimension latDim = ncfile.findDimension("x");
     assert null != latDim;
-    assert latDim.getName().equals("x");
+    assert latDim.getShortName().equals("x");
     assert latDim.getLength() == x;
     assert !latDim.isUnlimited();
 
     Dimension lonDim = ncfile.findDimension("y");
     assert null != lonDim;
-    assert lonDim.getName().equals("y");
+    assert lonDim.getShortName().equals("y");
     assert lonDim.getLength() == y;
     assert !lonDim.isUnlimited();
 
     Dimension runDim = ncfile.findDimension("run");
     assert null != runDim;
-    assert runDim.getName().equals("run");
+    assert runDim.getShortName().equals("run");
     assert runDim.getLength() == nagg : runDim.getLength();
   }
 

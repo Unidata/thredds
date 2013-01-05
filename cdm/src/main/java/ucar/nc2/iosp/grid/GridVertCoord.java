@@ -341,7 +341,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
 
       Variable b = new Variable(ncfile, g, null, bname);
       b.setDataType(DataType.DOUBLE);
-      b.setDimensions(getVariableName() + " " + bd.getName());
+      b.setDimensions(getVariableName() + " " + bd.getShortName());
       b.addAttribute(new Attribute("long_name",
           "bounds for " + v.getFullName()));
       b.addAttribute(new Attribute("units",

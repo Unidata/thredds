@@ -60,7 +60,7 @@ public class Dimension extends CDMNode implements Comparable {
   static public String makeDimensionList(List<Dimension> dimList) {
     StringBuilder out = new StringBuilder();
     for (Dimension dim : dimList)
-      out.append(dim.getName()).append(" ");
+      out.append(dim.getShortName()).append(" ");
     return out.toString();
   }
 
@@ -75,7 +75,9 @@ public class Dimension extends CDMNode implements Comparable {
    * Dimension names are unique within a Group.
    * @return name of Dimension, may be null for anonymous dimension
    */
+  /* @Obsolete
   public String getName() { return getShortName(); }
+  */
 
   /**
    * Get the length of the Dimension.
@@ -111,9 +113,11 @@ public class Dimension extends CDMNode implements Comparable {
   public Group getGroup() { return getParentGroup(); }
 
   public String makeFullName() {
-    Group g = getGroup();
-    if (((g == null) || g.isRoot())) return getName();
-    return g.getName() +"/" + this.getName();
+	return super.getFullName();
+/*    Group g = getGroup();
+    if (((g == null) || g.isRoot())) return getShortName();
+    return g.getFullName() +"/" + this.getShortName();
+*/
   }
 
   /**
@@ -127,8 +131,8 @@ public class Dimension extends CDMNode implements Comparable {
     Dimension other = (Dimension) oo;
     Group g = getGroup();
     if ((g != null) && !g.equals(other.getGroup())) return false;
-    if ((getName() == null) && (other.getName() != null)) return false;
-    if ((getName() != null) && !getName().equals(other.getName())) return false;
+    if ((getShortName() == null) && (other.getShortName() != null)) return false;
+    if ((getShortName() != null) && !getShortName().equals(other.getShortName())) return false;
     return (getLength() == other.getLength()) &&
            (isUnlimited() == other.isUnlimited()) &&
            (isVariableLength() == other.isVariableLength()) &&
@@ -142,7 +146,7 @@ public class Dimension extends CDMNode implements Comparable {
       int result = 17;
       Group g = getGroup();
       if (g != null) result += 37 * result + g.hashCode();
-      if (null != getName()) result += 37 * result + getName().hashCode();
+      if (null != getShortName()) result += 37 * result + getShortName().hashCode();
       result += 37 * result + getLength();
       result += 37 * result + (isUnlimited() ? 0 : 1);
       result += 37 * result + (isVariableLength() ? 0 : 1);
@@ -167,7 +171,7 @@ public class Dimension extends CDMNode implements Comparable {
   public int compareTo(Object o) {
     Dimension odim = (Dimension) o;
     String name = getShortName();
-    return name.compareTo(odim.getName());
+    return name.compareTo(odim.getShortName());
   }
 
   /** CDL representation.
@@ -181,7 +185,7 @@ public class Dimension extends CDMNode implements Comparable {
   }
 
   protected void writeCDL(Formatter out, Indent indent, boolean strict) {
-    String name = strict ? NetcdfFile.escapeNameCDL(getName()) : getName();
+    String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
     out.format("%s%s", indent, name);
     if (isUnlimited())
       out.format(" = UNLIMITED;   // (%d currently", getLength());
@@ -350,7 +354,7 @@ public class Dimension extends CDMNode implements Comparable {
 
   /**
    * Use
-   *  Variable cv = ncfile.findVariable(dim.getName());
+   *  Variable cv = ncfile.findVariable(dim.getShortName());
    *  if ((cv != null) && cv.isCoordinateVariable()) ...
    * @deprecated - do not use
    * @return an empty list

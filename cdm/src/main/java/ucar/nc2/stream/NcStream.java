@@ -103,7 +103,7 @@ public class NcStream {
 
   static NcStreamProto.Attribute.Builder encodeAtt(Attribute att) {
     NcStreamProto.Attribute.Builder attBuilder = NcStreamProto.Attribute.newBuilder();
-    attBuilder.setName(att.getName());
+    attBuilder.setName(att.getShortName());
     attBuilder.setType(encodeAttributeType(att.getDataType()));
     attBuilder.setLen(att.getLength());
 
@@ -125,7 +125,7 @@ public class NcStream {
 
   static NcStreamProto.Dimension.Builder encodeDim(Dimension dim) {
     NcStreamProto.Dimension.Builder dimBuilder = NcStreamProto.Dimension.newBuilder();
-    dimBuilder.setName(dim.getName() == null ? "" : dim.getName());
+    dimBuilder.setName(dim.getShortName() == null ? "" : dim.getShortName());
     dimBuilder.setLength(dim.getLength());
     if (!dim.isShared()) dimBuilder.setIsPrivate(true);
     if (dim.isVariableLength())
@@ -137,7 +137,7 @@ public class NcStream {
   static NcStreamProto.EnumTypedef.Builder encodeEnumTypedef(EnumTypedef enumType) throws IOException {
     NcStreamProto.EnumTypedef.Builder builder = NcStreamProto.EnumTypedef.newBuilder();
 
-    builder.setName(enumType.getName());
+    builder.setName(enumType.getShortName());
     Map<Integer, String> map = enumType.getMap();
     NcStreamProto.EnumTypedef.EnumType.Builder b2 = NcStreamProto.EnumTypedef.EnumType.newBuilder();
     for (int code : map.keySet()) {
@@ -158,7 +158,7 @@ public class NcStream {
     if (var.getDataType().isEnum()) {
       EnumTypedef enumType = var.getEnumTypedef();
       if (enumType != null)
-        builder.setEnumType(enumType.getName());
+        builder.setEnumType(enumType.getShortName());
     }
 
     for (Dimension dim : var.getDimensions()) {

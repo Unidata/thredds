@@ -159,11 +159,11 @@ public class CompareNetcdf2 {
   }
 
   private boolean compareGroups(Group org, Group copy, ObjFilter filter) {
-    if (showCompare) f.format("compare Group %s to %s %n", org.getName(), copy.getName());
+    if (showCompare) f.format("compare Group %s to %s %n", org.getShortName(), copy.getShortName());
     boolean ok = true;
 
-    if (!org.getName().equals(copy.getName())) {
-      f.format(" ** names are different %s != %s %n", org.getName(), copy.getName());
+    if (!org.getShortName().equals(copy.getShortName())) {
+      f.format(" ** names are different %s != %s %n", org.getShortName(), copy.getShortName());
       ok = false;
     }
 
@@ -331,28 +331,27 @@ public class CompareNetcdf2 {
     boolean ok = true;
 
     for (EnumTypedef enum1 : org.getEnumTypedefs()) {
-      if (showCompare) f.format("compare Enum %s%n", enum1.getName());
-      EnumTypedef enum2 = copy.findEnumeration(enum1.getName());
+      if (showCompare) f.format("compare Enum %s%n", enum1.getShortName());
+      EnumTypedef enum2 = copy.findEnumeration(enum1.getShortName());
       if (enum2 == null) {
-        f.format("  ** Enum %s not in file2 %n", enum1.getName());
+        f.format("  ** Enum %s not in file2 %n", enum1.getShortName());
         ok = false;
         continue;
       }
       if (!enum1.equals(enum2)) {
-        f.format("  ** Enum %s not equal%n  %s%n  %s%n", enum1.getName(), enum1, enum2);
+        f.format("  ** Enum %s not equal%n  %s%n  %s%n", enum1.getShortName(), enum1, enum2);
         ok = false;
       }
     }
 
     for (EnumTypedef enum2 : copy.getEnumTypedefs()) {
-      EnumTypedef enum1 = org.findEnumeration(enum2.getName());
+      EnumTypedef enum1 = org.findEnumeration(enum2.getShortName());
       if (enum1 == null) {
-        f.format("  ** Enum %s not in file1 %n", enum2.getName());
+        f.format("  ** Enum %s not in file1 %n", enum2.getShortName());
         ok = false;
         continue;
       }
     }
-
     return ok;
   }
 

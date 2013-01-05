@@ -116,7 +116,7 @@ public class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset implemen
     List list = ncd.getRootGroup().getDimensions();
     if ( list.size() != 1 ) return null;
     Dimension d = (Dimension) list.get( 0 );
-    if ( ! d.getName().equals( timeDimName ) ) return null;
+    if ( ! d.getShortName().equals( timeDimName ) ) return null;
 
     Config trajConfig = new Config();
     trajConfig.setTimeDim( d);
@@ -127,7 +127,7 @@ public class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset implemen
     list = var.getDimensions();
     if ( list.size() != 1 ) return null;
     d = (Dimension) list.get( 0 );
-    if ( ! d.getName().equals( timeDimName ) ) return null;
+    if ( ! d.getShortName().equals( timeDimName ) ) return null;
     String units = var.findAttribute( "units" ).getStringValue();
     Date date = DateUnit.getStandardDate( "0 " + units );
     if ( date == null ) return null;
@@ -140,7 +140,7 @@ public class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset implemen
     list = var.getDimensions();
     if ( list.size() != 1 ) return null;
     d = (Dimension) list.get( 0 );
-    if ( ! d.getName().equals( timeDimName ) ) return null;
+    if ( ! d.getShortName().equals( timeDimName ) ) return null;
     units = var.findAttribute( "units" ).getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "degrees_north" ) ) return null;
 
@@ -152,7 +152,7 @@ public class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset implemen
     list = var.getDimensions();
     if ( list.size() != 1 ) return null;
     d = (Dimension) list.get( 0 );
-    if ( ! d.getName().equals( timeDimName ) ) return null;
+    if ( ! d.getShortName().equals( timeDimName ) ) return null;
     units = var.findAttribute( "units" ).getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "degrees_east" ) ) return null;
 
@@ -164,7 +164,7 @@ public class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset implemen
     list = var.getDimensions();
     if ( list.size() != 1 ) return null;
     d = (Dimension) list.get( 0 );
-    if ( ! d.getName().equals( timeDimName ) ) return null;
+    if ( ! d.getShortName().equals( timeDimName ) ) return null;
     units = var.findAttribute( "units" ).getStringValue();
     if ( units.indexOf( "meters" ) == -1 ) return null; // "meters above Mean Sea Level" not udunits convertible
     // if ( ! SimpleUnit.isCompatible( units, "m")) return( false);

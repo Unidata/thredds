@@ -163,7 +163,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 				writer.addVariableAttribute(zVar, new Attribute(CDM.UNITS , zAxis.getUnitsString() ));
 				writer.addVariableAttribute(zVar, new Attribute(CF.POSITIVE , zAxis.getPositive() ));
 				writer.addVariableAttribute(zVar, new Attribute(CF.AXIS , "Z"  ));
-				coordinates = coordinates +" "+d.getName();
+				coordinates = coordinates +" "+d.getShortName();
 			}
 
 			for(String var : vars){

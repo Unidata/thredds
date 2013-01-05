@@ -90,9 +90,9 @@ public class TestH5eos extends TestCase {
     assert v != null;
     Dimension dim = v.getDimension(0);
     assert dim != null;
-    assert dim.getName() != null;
+    assert dim.getShortName() != null;
 
-    assert dim.getName().equals("nChans");
+    assert dim.getShortName().equals("nChans");
     ncfile.close();
   }
 
@@ -102,10 +102,10 @@ public class TestH5eos extends TestCase {
     Variable v =  ncfile.findVariable("HDFEOS/SWATHS/HIRDLS_L1_Swath/Data_Fields/Elevation_Angle");
     assert v != null;
     assert v.getRank() == 4;
-    assert v.getDimension(0).getName().equals("MaF");
-    assert v.getDimension(1).getName().equals("MiF");
-    assert v.getDimension(2).getName().equals("CR");
-    assert v.getDimension(3).getName().equals("CC");
+    assert v.getDimension(0).getShortName().equals("MaF");
+    assert v.getDimension(1).getShortName().equals("MiF");
+    assert v.getDimension(2).getShortName().equals("CR");
+    assert v.getDimension(3).getShortName().equals("CC");
 
     ncfile.close();
   }

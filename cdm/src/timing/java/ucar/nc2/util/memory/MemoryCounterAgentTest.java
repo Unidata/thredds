@@ -34,13 +34,9 @@
 package ucar.nc2.util.memory;
 
 import ucar.nc2.*;
-import ucar.nc2.ncml.TestNcML;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
-import ucar.ma2.Array;
 
-import java.util.*;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.io.IOException;
 
 public class MemoryCounterAgentTest {
@@ -149,11 +145,11 @@ public class MemoryCounterAgentTest {
     for (Variable v : ncfile.getVariables()) {
       measureSize(v.getFullName(), v, Group.class, false);
       for (Attribute att : v.getAttributes())
-        measureSize(att.getName(), att, null, false);
+        measureSize(att.getShortName(), att, null, false);
     }
 
     for (Attribute att : ncfile.getGlobalAttributes())
-      measureSize(att.getName(), att, null, false);
+      measureSize(att.getShortName(), att, null, false);
 
     Group root = ncfile.getRootGroup();
     measureSize("rootGroup", root, null, false);

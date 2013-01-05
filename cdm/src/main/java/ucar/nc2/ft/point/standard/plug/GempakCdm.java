@@ -139,7 +139,7 @@ public class GempakCdm extends TableConfigurerImpl {
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.featureType = FeatureType.STATION;
     stnTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
-    if (!stnIsScalar) stnTable.dimName = stationDim.getName();
+    if (!stnIsScalar) stnTable.dimName = stationDim.getShortName();
 
     stnTable.lat= lat.getFullName();
     stnTable.lon= lon.getFullName();
@@ -195,8 +195,8 @@ public class GempakCdm extends TableConfigurerImpl {
         return null;
     }
 
-    TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
-    obs.dimName = obsDim.getName();
+    TableConfig obs = new TableConfig(obsTableType, obsDim.getShortName());
+    obs.dimName = obsDim.getShortName();
     obs.time = time.getFullName();
     obs.missingVar = "_isMissing";
     stnTable.addChild(obs);
@@ -211,7 +211,7 @@ public class GempakCdm extends TableConfigurerImpl {
     }
 
     if (obsTableType == Table.Type.MultidimInner) {
-      obs.dimName = obsDim.getName();
+      obs.dimName = obsDim.getShortName();
     }
 
     if (needFinish) ds.finish();
@@ -272,8 +272,8 @@ public class GempakCdm extends TableConfigurerImpl {
         return null;
     }
 
-    TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
-    obs.dimName = obsDim.getName();
+    TableConfig obs = new TableConfig(obsTableType, obsDim.getShortName());
+    obs.dimName = obsDim.getShortName();
     obs.structName = multidimStruct.getFullName();
     obs.structureType = TableConfig.StructureType.Structure;
     obs.featureType = FeatureType.POINT;
@@ -319,7 +319,7 @@ public class GempakCdm extends TableConfigurerImpl {
         return null;
     }
 
-    TableConfig timeTable = new TableConfig(Table.Type.MultidimStructure, obsDim.getName());
+    TableConfig timeTable = new TableConfig(Table.Type.MultidimStructure, obsDim.getShortName());
     timeTable.missingVar = "_isMissing";
     timeTable.structName = multidimStruct.getFullName();
     timeTable.structureType = TableConfig.StructureType.Structure;
@@ -328,7 +328,7 @@ public class GempakCdm extends TableConfigurerImpl {
     timeTable.feature_id = time.getFullName();
     stnTable.addChild(timeTable);
 
-    TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, obsDim.getName());
+    TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, obsDim.getShortName());
     Structure nestedStruct = Evaluator.findNestedStructure(multidimStruct);
     if (nestedStruct == null) {
         errlog.format("GempakCdm: Cannot find nested Structure for profile");
@@ -380,7 +380,7 @@ public class GempakCdm extends TableConfigurerImpl {
     Table.Type stationTableType = Table.Type.Structure;
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.structureType = TableConfig.StructureType.PsuedoStructure;
-    stnTable.dimName = stationDim.getName();
+    stnTable.dimName = stationDim.getShortName();
 
     stnTable.lat= lat.getFullName();
     stnTable.lon= lon.getFullName();

@@ -49,7 +49,7 @@ import ucar.unidata.util.StringUtil2;
  */
 
 @Immutable
-public class DODSAttribute extends ucar.nc2.Attribute implements ucar.nc2.DODSNode
+public class DODSAttribute extends ucar.nc2.Attribute
 {
 
   /** constructor: adapter around dods.dap.Attribute

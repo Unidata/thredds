@@ -122,7 +122,7 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
         int[] origin = new int[v.getRank()];
 
         if (getTimeDimension() != null) {
-            int dimIndex = v.findDimensionIndex(getTimeDimension().getName());
+            int dimIndex = v.findDimensionIndex(getTimeDimension().getShortName());
             if (dimIndex >= 0) {
                 shape[dimIndex]  = 1;
                 origin[dimIndex] = timeIndex;

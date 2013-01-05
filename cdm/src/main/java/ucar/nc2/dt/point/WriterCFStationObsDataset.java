@@ -241,7 +241,7 @@ public class WriterCFStationObsDataset {
     // add them
     for (Dimension d : dimSet) {
       if (!d.isUnlimited())
-        ncfile.addDimension(null, new Dimension(d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength()));
+        ncfile.addDimension(null, new Dimension(d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength()));
     }
 
     // add the data variables all using the record dimension
@@ -250,7 +250,7 @@ public class WriterCFStationObsDataset {
       StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
         if (!d.isUnlimited())
-          dimNames.append(" ").append(d.getName());
+          dimNames.append(" ").append(d.getShortName());
       }
       Variable newVar = ncfile.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
       recordVars.add(newVar);
