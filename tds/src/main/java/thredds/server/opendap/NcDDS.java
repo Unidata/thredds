@@ -83,11 +83,11 @@ public class NcDDS extends ServerDDS {
     // get coordinate variables
     for (Object o : ncfile.getDimensions()) {
       Dimension dim = (Dimension) o;
-      Variable cv = findvariable(dim.getName());
+      Variable cv = findvariable(dim.getShortName());
       if ((cv != null) && cv.isCoordinateVariable()) {
-        coordvars.put(dim.getName(),cv);
+        coordvars.put(dim.getShortName(),cv);
         if (log.isDebugEnabled())
-          log.debug(" NcDDS adding coordinate variable " + cv.getFullName() + " for dimension " + dim.getName());
+          log.debug(" NcDDS adding coordinate variable " + cv.getFullName() + " for dimension " + dim.getShortName());
       }
     }
 
@@ -98,10 +98,10 @@ public class NcDDS extends ServerDDS {
             Iterator iter = v.getDimensions().iterator();
             while (isgridarray && iter.hasNext()) {
                 Dimension dim = (Dimension) iter.next();
-                if (dim.getName() == null)
+                if (dim.getShortName() == null)
                   isgridarray = false;
                 else {
-                  Variable gv = coordvars.get(dim.getName());
+                  Variable gv = coordvars.get(dim.getShortName());
                   if (gv == null)
                      isgridarray = false;
 		}
@@ -110,7 +110,7 @@ public class NcDDS extends ServerDDS {
                 gridarrays.put(v.getFullName(),v);
                 for(iter=v.getDimensions().iterator();iter.hasNext();) {
                     Dimension dim = (Dimension) iter.next();
-                    Variable gv = coordvars.get(dim.getName());
+                    Variable gv = coordvars.get(dim.getShortName());
                     if (gv != null)
                         used.put(gv.getFullName(),gv);
                 }
@@ -197,7 +197,7 @@ public class NcDDS extends ServerDDS {
     list.add(arr); // Array is first element in the list
     for(Iterator iter = v.getDimensions().iterator();iter.hasNext();) {
       Dimension dim = (Dimension) iter.next();
-      Variable v1 = used.get(dim.getName());
+      Variable v1 = used.get(dim.getShortName());
       assert(v1 != null);
       BaseType bt = null;
       if ((v1.getDataType() == DataType.CHAR))

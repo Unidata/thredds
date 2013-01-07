@@ -364,9 +364,9 @@ public class NetcdfFileWriter {
   public Attribute addGroupAttribute(Group g, Attribute att) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
 
-    if (!isValidObjectName(att.getName())) {
-      String attName = createValidObjectName(att.getName());
-      log.warn("illegal attribute name= "+att.getName() + " change to "+ attName);
+    if (!isValidObjectName(att.getShortName())) {
+      String attName = createValidObjectName(att.getShortName());
+      log.warn("illegal attribute name= "+att.getShortName() + " change to "+ attName);
       att = new Attribute(attName, att.getValues());
     }
 
@@ -470,7 +470,7 @@ public class NetcdfFileWriter {
       for (int i=0; i<dims.size(); i++) {
         Dimension d = dims.get(i);
         if (d.isUnlimited() && (i != 0))
-          throw new IllegalArgumentException("Unlimited dimension "+d.getName()+" must be first (outermost) in netcdf-3 ");
+          throw new IllegalArgumentException("Unlimited dimension "+d.getShortName()+" must be first (outermost) in netcdf-3 ");
       }
     }
 
@@ -537,16 +537,16 @@ public class NetcdfFileWriter {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
-    if (!isValidObjectName(att.getName())) {
-      String attName = createValidObjectName(att.getName());
-      log.warn("illegal netCDF-3 attribute name= "+att.getName() + " change to "+ attName);
+    if (!isValidObjectName(att.getShortName())) {
+      String attName = createValidObjectName(att.getShortName());
+      log.warn("illegal netCDF-3 attribute name= "+att.getShortName() + " change to "+ attName);
       att = new Attribute(attName, att.getValues());
     }
 
     //if (att.getLength() == 0)
     //  System.out.println("HEY");
 
-    //if (v.getDataType() == DataType.CHAR && att.getName().equals("_FillValue"))
+    //if (v.getDataType() == DataType.CHAR && att.getShortName().equals("_FillValue"))
     //  System.out.println("HEY");
 
     v.addAttribute(att);

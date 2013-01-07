@@ -146,7 +146,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
         Date[] runDates = runtimeCoord.getTimeDates();
         baseDate = runDates[0];
         runtimes = Arrays.asList(runDates);
-        runtimeDimName = runtimeCoord.getDimension(0).getName();
+        runtimeDimName = runtimeCoord.getDimension(0).getShortName();
         coordSet.add(runtimeCoord.getFullName());
       }
     }
@@ -263,15 +263,15 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     Gridset(CoordinateAxis timeAxis, ucar.nc2.dt.GridCoordSystem gcs) {
       this.gcs = gcs;
       this.timeAxis = timeAxis;
-      timeDimName = timeAxis.getDimension(1).getName();
+      timeDimName = timeAxis.getDimension(1).getShortName();
     }
 
     String makeDimensions(List<Dimension> dims) {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append(timeDimName);
       for (Dimension d : dims) {
-        if (d.getName().equals(runtimeDimName) || d.getName().equals(timeDimName)) continue;
-        sbuff.append(" ").append(d.getName());
+        if (d.getShortName().equals(runtimeDimName) || d.getShortName().equals(timeDimName)) continue;
+        sbuff.append(" ").append(d.getShortName());
       }
       return sbuff.toString();
     }
@@ -536,7 +536,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
 
     // dimensions
     for (Dimension d : src.getDimensions()) {
-      target.addDimension(new Dimension(d.getName(), d));
+      target.addDimension(new Dimension(d.getShortName(), d));
     }
 
     // take each gridset seperately

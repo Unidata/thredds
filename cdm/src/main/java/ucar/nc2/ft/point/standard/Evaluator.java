@@ -301,7 +301,7 @@ public class Evaluator {
    */
   static public String getDimensionName(NetcdfDataset ds, String key, Formatter errlog) {
     Dimension d = getDimension(ds, key, errlog);
-    return (d == null) ? null : d.getName();
+    return (d == null) ? null : d.getShortName();
   }
 
   /////////////////////////////////

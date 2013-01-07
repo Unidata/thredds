@@ -107,8 +107,8 @@ public class AWIPSConvention extends CoordSysBuilder {
     if (timeCoord != null) {
       ds.addCoordinateAxis(timeCoord);
       Dimension d = timeCoord.getDimension(0);
-      if (!d.getName().equals(timeCoord.getShortName()))
-        timeCoord.addAttribute(new Attribute(_Coordinate.AliasForDimension, d.getName()));
+      if (!d.getShortName().equals(timeCoord.getShortName()))
+        timeCoord.addAttribute(new Attribute(_Coordinate.AliasForDimension, d.getShortName()));
     }
 
     // AWIPS cleverly combines multiple z levels into a single variable (!!)
@@ -321,7 +321,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     int[] shape = ncVar.getShape();
     int count = 0;
     for (Dimension dim : newDims) {
-      String name = ncVar.getShortName() + "-" + dim.getName();
+      String name = ncVar.getShortName() + "-" + dim.getShortName();
 
       origin[newDimIndex] = count;
       shape[newDimIndex] = dim.getLength();
@@ -332,7 +332,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
       // synthesize long name
       String long_name = ds.findAttValueIgnoreCase(ncVar, CDM.LONG_NAME, ncVar.getShortName());
-      long_name = long_name + "-" + dim.getName();
+      long_name = long_name + "-" + dim.getShortName();
       ds.addVariableAttribute(varNew, new Attribute(CDM.LONG_NAME, long_name));
 
       ds.addVariable(null, varNew);
@@ -368,7 +368,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     if (vname.equalsIgnoreCase("record"))
       return AxisType.Time;
     Dimension dim = v.getDimension(0);
-    if ((dim != null) && dim.getName().equalsIgnoreCase("record"))
+    if ((dim != null) && dim.getShortName().equalsIgnoreCase("record"))
       return AxisType.Time;
 
     String unit = ve.getUnitsString();

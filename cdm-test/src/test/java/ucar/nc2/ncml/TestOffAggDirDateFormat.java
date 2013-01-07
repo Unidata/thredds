@@ -68,19 +68,19 @@ public class TestOffAggDirDateFormat extends TestCase {
   public void testDimensions(NetcdfFile ncfile) {
     Dimension latDim = ncfile.findDimension("y");
     assert null != latDim;
-    assert latDim.getName().equals("y");
+    assert latDim.getShortName().equals("y");
     assert latDim.getLength() == 1008 : latDim.getLength() +"!="+ 1008;
     assert !latDim.isUnlimited();
 
     Dimension lonDim = ncfile.findDimension("x");
     assert null != lonDim;
-    assert lonDim.getName().equals("x");
+    assert lonDim.getShortName().equals("x");
     assert lonDim.getLength() == 1536;
     assert !lonDim.isUnlimited();
 
     Dimension timeDim = ncfile.findDimension("time");
     assert null != timeDim;
-    assert timeDim.getName().equals("time");
+    assert timeDim.getShortName().equals("time");
     assert timeDim.getLength() == ntimes : timeDim.getLength() +"!="+ ntimes;
   }
 

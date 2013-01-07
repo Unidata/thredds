@@ -712,7 +712,7 @@ public class NCdump {
     List<Dimension> dimList = g.getDimensions();
     for (Dimension dim : dimList) {
       out.print(indent);
-      out.print("<dimension name='" + StringUtil2.quoteXmlAttribute(dim.getName()) + "' length='" + dim.getLength() + "'");
+      out.print("<dimension name='" + StringUtil2.quoteXmlAttribute(dim.getShortName()) + "' length='" + dim.getLength() + "'");
       if (dim.isUnlimited())
         out.print(" isUnlimited='true'");
       out.print(" />\n");
@@ -834,7 +834,7 @@ public class NCdump {
       if (j != 0)
         out.print(" ");
       if (dim.isShared())
-        out.print(StringUtil2.quoteXmlAttribute(dim.getName()));
+        out.print(StringUtil2.quoteXmlAttribute(dim.getShortName()));
       else
         out.print(dim.getLength());
     }
@@ -844,7 +844,7 @@ public class NCdump {
   @SuppressWarnings({"ObjectToString"})
   static private void writeNcMLAtt(Attribute att, PrintStream out, Indent indent) {
     out.print(indent);
-    out.print("<attribute name='"+ StringUtil2.quoteXmlAttribute(att.getName())+"' value='");
+    out.print("<attribute name='"+ StringUtil2.quoteXmlAttribute(att.getShortName())+"' value='");
     if (att.isString()) {
       for (int i=0; i<att.getLength(); i++) {
         if (i > 0) out.print("\\, "); // ??

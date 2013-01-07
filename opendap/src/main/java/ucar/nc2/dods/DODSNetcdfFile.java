@@ -36,7 +36,6 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.util.net.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.DODSNode;
 import ucar.nc2.Attribute;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.constants._Coordinate;
@@ -529,7 +528,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
     {
 
         List<DODSAttribute> atts = root.attributes;
-        for (DODSAttribute ncatt : atts) {
+        for (ucar.nc2.Attribute ncatt : atts) {
             rootGroup.addAttribute(ncatt);
         }
 
@@ -595,7 +594,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
         // to variables, instead get made global with name var.att.
         Object[] gattlist = rootgroup.getAttributes().toArray();
         for (Object att : gattlist) {
-            DODSAttribute ncatt = (DODSAttribute) att;
+            Attribute ncatt = (Attribute) att;
             String dodsname = ncatt.getDODSName();
             NamePieces pieces = parseName(dodsname);
             if (pieces.var != null) {
@@ -677,7 +676,7 @@ if(OLDGROUPCODE) {
         Group vgroup = v.getParentGroup();
         Object[] attlist = v.getAttributes().toArray();
         for (Object att : attlist) {
-            DODSAttribute ncatt = (DODSAttribute) att;
+            Attribute ncatt = (Attribute) att;
             String adodsname = ncatt.getDODSName();
             NamePieces pieces = parseName(adodsname);
             Group agroup = null;
@@ -873,8 +872,7 @@ if(OLDGROUPCODE) {
             if (parentStructure != null)
                 parentStructure.addMemberVariable(v);
             else {
-                DODSNode dn = (DODSNode)v;
-                parentGroup = computeGroup(dn.getDODSName(), v, parentGroup);
+                parentGroup = computeGroup(v.getDODSName(), v, parentGroup);
                 parentGroup.addVariable(v);
             }
             dodsV.isDone = true;
@@ -893,8 +891,7 @@ if(OLDGROUPCODE) {
             if (v.getParentStructure() == null) {
                 // HACK: Since only the grid array is used in converting
                 // to netcdf-3, we look for group info on the array.
-                DODSNode dn = (DODSNode)v;
-                String dodsname = dn.getDODSName();
+                String dodsname = v.getDODSName();
                 int sindex = dodsname.indexOf('/');
                 if (sindex >= 0) {
                     assert (parentGroup != null);
@@ -1082,14 +1079,14 @@ if(OLDGROUPCODE) {
      v.addAttribute( ncatt);
        } else if (v instanceof Structure) {
      Structure s = (Structure) v;
-     Variable member = s.findVariable( att.getName());
+     Variable member = s.findVariable( att.getShortName());
      if (member != null) {
        addAttributes(member, att.getContainer());
      } else {
-       if (debugAttributes) System.out.println("Cant find nested Variable "+ att.getName()+" in "+v.getName());
+       if (debugAttributes) System.out.println("Cant find nested Variable "+ att.getShortName()+" in "+v.getName());
      }
        } else {
-     if (debugAttributes) System.out.println("Container attribute "+ att.getName()+" in non structure variables"+v.getName());
+     if (debugAttributes) System.out.println("Container attribute "+ att.getShortName()+" in non structure variables"+v.getName());
        }
      }
    } */
@@ -1097,7 +1094,7 @@ if(OLDGROUPCODE) {
     private void addAttributes(Variable v, DodsV dodsV)
     {
         List<DODSAttribute> atts = dodsV.attributes;
-        for (DODSAttribute ncatt : atts) {
+        for (Attribute ncatt : atts) {
             v.addAttribute(ncatt);
         }
 
@@ -1113,7 +1110,7 @@ if(OLDGROUPCODE) {
     private void addAttributes(Group g, DodsV dodsV)
     {
         List<DODSAttribute> atts = dodsV.attributes;
-        for (DODSAttribute ncatt : atts) {
+        for (Attribute ncatt : atts) {
             g.addAttribute(ncatt);
         }
     }
@@ -1195,11 +1192,11 @@ if(OLDGROUPCODE) {
      */
     Dimension getSharedDimension(Group group, Dimension d)
     {
-        if (d.getName() == null) return d;
+        if (d.getShortName() == null) return d;
 
         if (group == null) group = rootGroup;
         for (Dimension sd : group.getDimensions()) {
-            if (sd.getName().equals(d.getName()) && sd.getLength() == d.getLength())
+            if (sd.getShortName().equals(d.getShortName()) && sd.getLength() == d.getLength())
                 return sd;
         }
         d.setShared(true);
@@ -1282,21 +1279,24 @@ if(OLDGROUPCODE) {
 
     /**
      * Return a variable name suitable for use in a DAP constraint expression.
-     * [This code seems wrong because structures can be nested and hence
-     *  would have to use the full name just like non-structures: fix]
-     *  [Also, is the name properly escaped?]
+     * [Original code seemed wrong because structures can be nested and hence
+     *  would have to use the full name just like non-structures]
+     *
      * @param var The variable whose name will appear in the CE
      * @return    The name in a form suitable for use in a cE
      */
-    static public String getDODSshortName(Variable var)
+    static public String getDODSConstraintName(Variable var)
     {
-        String vname = ((DODSNode)var).getDODSName();
-        return vname;
+        String vname = var.getDODSName();
+	// The vname is backslash escaped, so we need to
+	// modify to use DAP %xx escapes.
+        return EscapeStrings.backslashToDAP(vname);
+
         /*
         if (var instanceof DODSVariable)
             return ((DODSVariable) var).getDODSName();
         else if (var instanceof DODSStructure)
-            return ((DODSStructure) var).getDODSshortName();
+            return ((DODSStructure) var).getDODSConstraintName();
         else
             return null;
         */
@@ -1305,13 +1305,13 @@ if(OLDGROUPCODE) {
     /* full name
    private String makeDODSname(Variable dodsV) {
      if (dodsV.isMemberOfStructure())
-       return makeDODSname(dodsV.getParentStructure()) + "." + getDODSshortName(dodsV);
+       return makeDODSname(dodsV.getParentStructure()) + "." + getDODSConstraintName(dodsV);
 
      Group parent = dodsV.getParentGroup();
      if (parent != rootGroup)
-       return parent.getShortName() + "." + getDODSshortName(dodsV);
+       return parent.getShortName() + "." + getDODSConstraintName(dodsV);
      else
-       return getDODSshortName(dodsV);
+       return getDODSConstraintName(dodsV);
    } */
 
     // full name
@@ -1635,7 +1635,7 @@ if(OLDGROUPCODE) {
         // create the constraint expression
         StringBuilder buff = new StringBuilder(100);
         buff.setLength(0);
-        buff.append(getDODSshortName(v));
+        buff.append(getDODSConstraintName(v));
 
         // add the selector if not a Sequence
         if (!v.isVariableLength()) {
@@ -1747,7 +1747,7 @@ if(OLDGROUPCODE) {
 
         List<Range> subSection = section.subList(start, start + s.getRank());
 
-        buff.append(getDODSshortName(s));
+        buff.append(getDODSConstraintName(s));
 
         if (!s.isVariableLength()) // have to get the whole thing for a sequence !!
             makeSelector(buff, subSection);
@@ -1880,10 +1880,10 @@ if(OLDGROUPCODE) {
     // extract top dodsVar from dataDDS
     BaseType dodsVar = dataV.darray == null ? dataV.bt : dataV.darray;
     /*try {
-      dodsVar = dds.getVariable( getDODSshortName( topVar));
+      dodsVar = dds.getVariable( getDODSConstraintName( topVar));
     } catch (NoSuchVariableException e) {
       // can happen when the f**ing thing is a Grid
-      dodsVar = dds.getVariable( getDODSshortName( ncVar));
+      dodsVar = dds.getVariable( getDODSConstraintName( ncVar));
       topVar = ncVar;
     } *
 
@@ -2060,7 +2060,7 @@ if(OLDGROUPCODE) {
     else if (dodsVar instanceof DGrid) { // scalar grid
       DGrid ds = (DGrid) dodsVar;
       try {
-    DArray da = (DArray) ds.getVariable(getDODSshortName( ncVar));
+    DArray da = (DArray) ds.getVariable(getDODSConstraintName( ncVar));
     return convertArray(da, ncVar);
       } catch (NoSuchVariableException e) {
     e.printStackTrace();

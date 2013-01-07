@@ -129,8 +129,8 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     for ( int i = 0; i < 2; i++)
     {
       d = (Dimension) list.get(i);
-      if ( ! d.getName().equals( timeDimNameDefault) &&
-           ! d.getName().equals( trajDimNameDefault)) return( false);
+      if ( ! d.getShortName().equals( timeDimNameDefault) &&
+           ! d.getShortName().equals( trajDimNameDefault)) return( false);
     }
 
     // Check that has a trajectory coordinate variable.
@@ -139,7 +139,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     list = var.getDimensions();
     if ( list.size() != 1) return( false);
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( trajDimNameDefault)) return( false);
+    if ( ! d.getShortName().equals( trajDimNameDefault)) return( false);
 
     // Check that has a time coordinate variable with units that are udunits time
     var = ds.getRootGroup().findVariable( timeVarNameDefault);
@@ -147,7 +147,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     list = var.getDimensions();
     if ( list.size() != 1) return( false);
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( timeDimNameDefault)) return( false);
+    if ( ! d.getShortName().equals( timeDimNameDefault)) return( false);
     String units = var.findAttribute( "units").getStringValue();
     Date date = DateUnit.getStandardDate( "0 " + units);
     if ( date == null) return( false);
@@ -160,8 +160,8 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     for ( int i = 0; i < 2; i++)
     {
       d = (Dimension) list.get(i);
-      if ( ! d.getName().equals( timeDimNameDefault) &&
-           ! d.getName().equals( trajDimNameDefault)) return( false);
+      if ( ! d.getShortName().equals( timeDimNameDefault) &&
+           ! d.getShortName().equals( trajDimNameDefault)) return( false);
     }
 //    units = var.findAttribute( "units").getStringValue();
 //    if ( ! SimpleUnit.isCompatible( units, "degrees_north")) return( false);
@@ -174,8 +174,8 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     for ( int i = 0; i < 2; i++)
     {
       d = (Dimension) list.get(i);
-      if ( ! d.getName().equals( timeDimNameDefault) &&
-           ! d.getName().equals( trajDimNameDefault)) return( false);
+      if ( ! d.getShortName().equals( timeDimNameDefault) &&
+           ! d.getShortName().equals( trajDimNameDefault)) return( false);
     }
 //    units = var.findAttribute( "units").getStringValue();
 //    if ( ! SimpleUnit.isCompatible( units, "degrees_east")) return( false);
@@ -188,8 +188,8 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     for ( int i = 0; i < 2; i++)
     {
       d = (Dimension) list.get(i);
-      if ( ! d.getName().equals( timeDimNameDefault) &&
-           ! d.getName().equals( trajDimNameDefault)) return( false);
+      if ( ! d.getShortName().equals( timeDimNameDefault) &&
+           ! d.getShortName().equals( trajDimNameDefault)) return( false);
     }
     units = var.findAttribute( "units").getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "m")) return( false);
@@ -197,7 +197,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     return( true);
   }
 
-    /////////////////////////////////////////////////
+  /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
   public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {

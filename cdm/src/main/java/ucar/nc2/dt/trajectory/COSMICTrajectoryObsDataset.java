@@ -72,7 +72,7 @@ public class COSMICTrajectoryObsDataset  extends TrajectoryObsDatasetImpl implem
     List list = ncd.getRootGroup().getDimensions();
     if ( list.size() != 1) return null;
     Dimension d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( dimName)) return null;
+    if ( ! d.getShortName().equals( dimName)) return null;
 
     TrajectoryObsDatasetImpl.Config trajConfig = new TrajectoryObsDatasetImpl.Config();
     trajConfig.setTrajectoryDim( d);
@@ -83,7 +83,7 @@ public class COSMICTrajectoryObsDataset  extends TrajectoryObsDatasetImpl implem
     list = var.getDimensions();
     if ( list.size() != 1) return null;
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( dimName)) return null;
+    if ( ! d.getShortName().equals( dimName)) return null;
     String units = var.findAttribute( "units").getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "km")) return null;
 
@@ -95,7 +95,7 @@ public class COSMICTrajectoryObsDataset  extends TrajectoryObsDatasetImpl implem
     list = var.getDimensions();
     if ( list.size() != 1) return null;
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( dimName)) return null;
+    if ( ! d.getShortName().equals( dimName)) return null;
     units = var.findAttribute( "units").getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "deg")) return null;
 
@@ -107,7 +107,7 @@ public class COSMICTrajectoryObsDataset  extends TrajectoryObsDatasetImpl implem
     list = var.getDimensions();
     if ( list.size() != 1) return null;
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( dimName)) return null;
+    if ( ! d.getShortName().equals( dimName)) return null;
     units = var.findAttribute( "units").getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "deg")) return null;
 
@@ -119,7 +119,7 @@ public class COSMICTrajectoryObsDataset  extends TrajectoryObsDatasetImpl implem
     list = var.getDimensions();
     if ( list.size() != 1) return null;
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( dimName)) return null;
+    if ( ! d.getShortName().equals( dimName)) return null;
     units = var.findAttribute( "units").getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "km")) return null;
 

@@ -455,9 +455,9 @@ public class Fysatiosp extends AbstractIOServiceProvider {
           || dt == DataType.LONG
           || dt == DataType.FLOAT
           || dt == DataType.DOUBLE) {
-        System.out.print(att.getName() + " : " + att.getNumericValue() + "\n");
+        System.out.print(att.getShortName() + " : " + att.getNumericValue() + "\n");
       } else {
-        System.out.print(att.getName() + " : " + att.getStringValue() + "\n");
+        System.out.print(att.getShortName() + " : " + att.getStringValue() + "\n");
       }
     }
 

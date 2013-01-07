@@ -138,7 +138,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
   private boolean isTiled(Variable v) {
     for (Dimension d : v.getDimensions()) {
       for (Range r : section.getRanges()) {
-        if (d.getName().equals(r.getName()))
+        if (d.getShortName().equals(r.getName()))
           return true;
       }
     }

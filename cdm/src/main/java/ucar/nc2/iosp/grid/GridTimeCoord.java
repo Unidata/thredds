@@ -225,7 +225,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
 
       Variable vb = new Variable(ncfile, g, null, getName() + "_bounds");
       vb.setDataType(DataType.INT);
-      vb.setDimensions(getName() + " "+ bd.getName());
+      vb.setDimensions(getName() + " "+ bd.getShortName());
       vb.addAttribute(new Attribute("long_name", "bounds for " + getName()));
       vb.addAttribute(new Attribute("units", timeUdunit + " since " + refDate));
 

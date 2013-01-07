@@ -329,7 +329,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   // must check by name, not object equality
   private boolean contains(List<Dimension> dims, Dimension want) {
     for (Dimension have : dims)
-      if (have.getName().equals(want.getName())) return true;
+      if (have.getShortName().equals(want.getShortName())) return true;
     return false;
   }
 
@@ -1828,9 +1828,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // dimensions
     for (Dimension dim : g4.g.getDimensions()) {
-      int dimid = addDimension(grpid, dim.getName(), dim.getLength());
+      int dimid = addDimension(grpid, dim.getShortName(), dim.getLength());
       g4.dimHash.put(dim, dimid);
-      if (debugWrite) System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getName(), dimid, g4.g.getName());
+      if (debugWrite) System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
     }
 
     // variables
@@ -1845,7 +1845,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           dimid = findDimensionId(g4, d);
         }
         if (debugWrite)
-          System.out.printf("  use dim '%s' (%d) in variable '%s'%n", d.getName(), dimid, v.getShortName());
+          System.out.printf("  use dim '%s' (%d) in variable '%s'%n", d.getShortName(), dimid, v.getShortName());
         dimids[count++] = dimid;
       }
 
@@ -1916,7 +1916,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
 
   private void writeAttribute(int grpid, int varid, Attribute att, Variable v) throws IOException {
-    if (v != null && att.getName().equals(CDM.FILL_VALUE)) {
+    if (v != null && att.getShortName().equals(CDM.FILL_VALUE)) {
       if (att.getLength() != 1) {
         log.warn("_FillValue length must be one on var = " + v.getFullName());
         return;
@@ -1928,44 +1928,44 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     // dont propagate these - handles internally
-    if (att.getName().equals(H5header.HDF5_CLASS)) return;
-    if (att.getName().equals(H5header.HDF5_DIMENSION_LIST)) return;
-    if (att.getName().equals(H5header.HDF5_DIMENSION_SCALE)) return;
-    if (att.getName().equals(H5header.HDF5_DIMENSION_LABELS)) return;
+    if (att.getShortName().equals(H5header.HDF5_CLASS)) return;
+    if (att.getShortName().equals(H5header.HDF5_DIMENSION_LIST)) return;
+    if (att.getShortName().equals(H5header.HDF5_DIMENSION_SCALE)) return;
+    if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS)) return;
 
     int ret = 0;
     Array values = att.getValues();
     switch (att.getDataType()) {
       case STRING: // problem may be that we are mapping char * atts to string type
-        if (att.getLength() == 1 && !att.getName().equals(CDM.FILL_VALUE)) {
+        if (att.getLength() == 1 && !att.getShortName().equals(CDM.FILL_VALUE)) {
           byte[] svalb = att.getStringValue().getBytes(CDM.utf8Charset);
-          ret = nc4.nc_put_att_text(grpid, varid, att.getName(), svalb.length, svalb);
+          ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), svalb.length, svalb);
         } else {
           String[] svalues = new String[att.getLength()];
           for (int i = 0; i < att.getLength(); i++) svalues[i] = (String) att.getValue(i);
-          ret = nc4.nc_put_att_string(grpid, varid, att.getName(), att.getLength(), svalues);
+          ret = nc4.nc_put_att_string(grpid, varid, att.getShortName(), att.getLength(), svalues);
         }
         break;
       case BYTE:
-        ret = nc4.nc_put_att_schar(grpid, varid, att.getName(), Nc4prototypes.NC_BYTE, att.getLength(), (byte[]) values.getStorage());
+        ret = nc4.nc_put_att_schar(grpid, varid, att.getShortName(), Nc4prototypes.NC_BYTE, att.getLength(), (byte[]) values.getStorage());
         break;
       case CHAR:
-        ret = nc4.nc_put_att_text(grpid, varid, att.getName(), att.getLength(), IospHelper.convertCharToByte((char[]) values.getStorage()));
+        ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), att.getLength(), IospHelper.convertCharToByte((char[]) values.getStorage()));
         break;
       case DOUBLE:
-        ret = nc4.nc_put_att_double(grpid, varid, att.getName(), Nc4prototypes.NC_DOUBLE, att.getLength(), (double[]) values.getStorage());
+        ret = nc4.nc_put_att_double(grpid, varid, att.getShortName(), Nc4prototypes.NC_DOUBLE, att.getLength(), (double[]) values.getStorage());
         break;
       case FLOAT:
-        ret = nc4.nc_put_att_float(grpid, varid, att.getName(), Nc4prototypes.NC_FLOAT, att.getLength(), (float[]) values.getStorage());
+        ret = nc4.nc_put_att_float(grpid, varid, att.getShortName(), Nc4prototypes.NC_FLOAT, att.getLength(), (float[]) values.getStorage());
         break;
       case INT:
-        ret = nc4.nc_put_att_int(grpid, varid, att.getName(), Nc4prototypes.NC_INT, att.getLength(), (int[]) values.getStorage());
+        ret = nc4.nc_put_att_int(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT, att.getLength(), (int[]) values.getStorage());
         break;
       case LONG:
-        ret = nc4.nc_put_att_longlong(grpid, varid, att.getName(), Nc4prototypes.NC_INT64, att.getLength(), (long[]) values.getStorage());
+        ret = nc4.nc_put_att_longlong(grpid, varid, att.getShortName(), Nc4prototypes.NC_INT64, att.getLength(), (long[]) values.getStorage());
         break;
       case SHORT:
-        ret = nc4.nc_put_att_short(grpid, varid, att.getName(), Nc4prototypes.NC_SHORT, att.getLength(), (short[]) values.getStorage());
+        ret = nc4.nc_put_att_short(grpid, varid, att.getShortName(), Nc4prototypes.NC_SHORT, att.getLength(), (short[]) values.getStorage());
         break;
     }
 

@@ -75,7 +75,7 @@ public class TestAggExistingPromote extends TestCase {
     assert pv.getShape()[0] == 3;
     assert pv.getDataType() == DataType.STRING;
     Dimension d = pv.getDimension(0);
-    assert d.getName().equals("time");
+    assert d.getShortName().equals("time");
 
     Array datap = pv.read();
     assert datap.getRank() == 1;
@@ -200,7 +200,7 @@ public class TestAggExistingPromote extends TestCase {
     assert pv.getSize() == dim.getLength();
     assert pv.getDataType() == DataType.STRING;
     Dimension d = pv.getDimension(0);
-    assert d.getName().equals("time");
+    assert d.getShortName().equals("time");
 
     Array datap = pv.read();
     assert datap.getRank() == 1;
@@ -221,7 +221,7 @@ public class TestAggExistingPromote extends TestCase {
     assert pv.getSize() == dim.getLength();
     assert pv.getDataType() == DataType.STRING;
     d = pv.getDimension(0);
-    assert d.getName().equals("time");
+    assert d.getShortName().equals("time");
 
     datap = pv.read();
     assert datap.getRank() == 1;

@@ -73,6 +73,7 @@ public class Group extends CDMNode {
    *
    * @return group full name
    */
+/* see CDMNode.getFullName()
   public String getFullName() {
     String name = getShortName();
     Group parent = getParentGroup();
@@ -83,6 +84,7 @@ public class Group extends CDMNode {
     else
 	return parent.getFullName() + "/" + name;
   }
+*/
 
   /**
    * Alias for getFullName
@@ -91,10 +93,12 @@ public class Group extends CDMNode {
    *
    * @return group full name
    */
+/*
    @Deprecated
    public String getName() {
     return getFullName();
    }
+*/
  
   /**
    * Is this the root group?
@@ -148,7 +152,7 @@ public class Group extends CDMNode {
    *
   public Variable findVariableEscaped(String varShortNameEscaped) {
     if (varShortNameEscaped == null) return null;
-    return findVariable( NetcdfFile.unescapeName(varShortNameEscaped));
+    return findVariable( NetcdfFile.makeNameUnescaped(varShortNameEscaped));
   } */
 
   /**
@@ -193,7 +197,7 @@ public class Group extends CDMNode {
    */
   public Group findGroup(String groupShortName) {
     if (groupShortName == null) return null;
-    // groupShortName = NetcdfFile.unescapeName(groupShortName);
+    // groupShortName = NetcdfFile.makeNameUnescaped(groupShortName);
 
     for (Group group : groups) {
       if (groupShortName.equals(group.getShortName()))
@@ -230,7 +234,7 @@ public class Group extends CDMNode {
    */
   public Dimension findDimension(String name) {
     if (name == null) return null;
-    // name = NetcdfFile.unescapeName(name);
+    // name = NetcdfFile.makeNameUnescaped(name);
     Dimension d = findDimensionLocal(name);
     if (d != null) return d;
     Group parent = getParentGroup();
@@ -248,9 +252,9 @@ public class Group extends CDMNode {
    */
   public Dimension findDimensionLocal(String name) {
     if (name == null) return null;
-    // name =  NetcdfFile.unescapeName(name);
+    // name =  NetcdfFile.makeNameUnescaped(name);
     for (Dimension d : dimensions) {
-      if (name.equals(d.getName()))
+      if (name.equals(d.getShortName()))
         return d;
     }
 
@@ -274,7 +278,7 @@ public class Group extends CDMNode {
    */
   public Attribute findAttribute(String name) {
     if (name == null) return null;
-    // name = NetcdfFile.unescapeName(name);
+    // name = NetcdfFile.makeNameUnescaped(name);
 
     for (Attribute a : attributes) {
       if (name.equals(a.getShortName()))
@@ -291,7 +295,7 @@ public class Group extends CDMNode {
    */
   public Attribute findAttributeIgnoreCase(String name) {
     if (name == null) return null;
-    //name =  NetcdfFile.unescapeName(name);
+    //name =  NetcdfFile.makeNameUnescaped(name);
     for (Attribute a : attributes) {
       if (name.equalsIgnoreCase(a.getShortName()))
         return a;
@@ -308,7 +312,7 @@ public class Group extends CDMNode {
    */
   public EnumTypedef findEnumeration(String name) {
     if (name == null) return null;
-    // name =  NetcdfFile.unescapeName(name);
+    // name =  NetcdfFile.makeNameUnescaped(name);
     for (EnumTypedef d : enumTypedefs) {
       if (name.equals(d.getShortName()))
         return d;
@@ -407,7 +411,7 @@ public class Group extends CDMNode {
     }
 
     for (Group g : groups) {
-      String gname = strict ? NetcdfFile.escapeNameCDL(g.getShortName()) : g.getShortName();
+      String gname = strict ? NetcdfFile.makeValidCDLName(g.getShortName()) : g.getShortName();
       out.format("%n%sgroup: %s {%n", indent, gname);
       indent.incr();
       g.writeCDL(out, indent, strict);
@@ -485,7 +489,7 @@ public class Group extends CDMNode {
     if (immutable) throw new IllegalStateException("Cant modify");
     for (int i = 0; i < attributes.size(); i++) {
       Attribute a = attributes.get(i);
-      if (att.getName().equals(a.getName())) {
+      if (att.getShortName().equals(a.getShortName())) {
         attributes.set(i, att); // replace
         return;
       }
@@ -713,7 +717,7 @@ public class Group extends CDMNode {
     Group current = (isabsolute ? ncfile.getRootGroup() : this);
     for (String name : pieces) {
       if (name == null) continue;
-      String clearname = NetcdfFile.unescapeName(name);  //??
+      String clearname = NetcdfFile.makeNameUnescaped(name);  //??
       Group next = current.findGroup(clearname);
       if (next == null) {
         next = new Group(ncf, current, clearname);

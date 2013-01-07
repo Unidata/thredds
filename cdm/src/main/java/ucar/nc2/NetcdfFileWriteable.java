@@ -308,9 +308,9 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
-    if (!N3iosp.isValidNetcdfObjectName(att.getName())) {
-      String attName = N3iosp.makeValidNetcdfObjectName(att.getName());
-      log.warn("illegal netCDF-3 attribute name= "+att.getName() + " change to "+ attName);
+    if (!N3iosp.isValidNetcdfObjectName(att.getShortName())) {
+      String attName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
+      log.warn("illegal netCDF-3 attribute name= "+att.getShortName() + " change to "+ attName);
       att = new Attribute(attName, att.getValues());
     }
 
@@ -510,9 +510,9 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
-    if (!N3iosp.isValidNetcdfObjectName(att.getName())) {
-      String attName = N3iosp.makeValidNetcdfObjectName(att.getName());
-      log.warn("illegal netCDF-3 attribute name= "+att.getName() + " change to "+ attName);
+    if (!N3iosp.isValidNetcdfObjectName(att.getShortName())) {
+      String attName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
+      log.warn("illegal netCDF-3 attribute name= "+att.getShortName() + " change to "+ attName);
       att = new Attribute(attName, att.getValues());
     }
 

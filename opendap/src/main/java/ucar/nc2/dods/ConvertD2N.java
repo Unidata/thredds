@@ -375,7 +375,7 @@ public class ConvertD2N {
     /* else if (dodsVar instanceof DGrid) { // scalar grid
       DGrid ds = (DGrid) dodsVar;
       try {
-        DArray da = (DArray) ds.getVariable(getDODSshortName( ncVar));
+        DArray da = (DArray) ds.getVariable(getDODSName( ncVar));
         return convertArray(da, ncVar);
       } catch (NoSuchVariableException e) {
         e.printStackTrace();

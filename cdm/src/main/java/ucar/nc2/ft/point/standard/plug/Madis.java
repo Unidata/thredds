@@ -118,12 +118,12 @@ public class Madis extends TableConfigurerImpl  {
 
     // points
     if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
-      TableConfig ptTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName() );
+      TableConfig ptTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName() );
       ptTable.structName = "record";
       ptTable.featureType = FeatureType.POINT;
       ptTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
 
-      ptTable.dimName = obsDim.getName();
+      ptTable.dimName = obsDim.getShortName();
       ptTable.time = vn.obsTime;
       ptTable.timeNominal = vn.nominalTime;
       ptTable.lat = vn.lat;

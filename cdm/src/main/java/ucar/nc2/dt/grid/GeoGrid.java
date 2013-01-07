@@ -593,7 +593,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     if (debugArrayShape) {
       System.out.println("read shape from org variable = ");
       for (int i = 0; i < rank; i++)
-        System.out.println("   start = " + start[i] + " shape = " + shape[i] + " name = " + vs.getDimension(i).getName());
+        System.out.println("   start = " + start[i] + " shape = " + shape[i] + " name = " + vs.getDimension(i).getShortName());
     }
 
     // read it
@@ -619,7 +619,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
     if (debugArrayShape) {
       System.out.println("oldDims = ");
-      for (Dimension oldDim : oldDims) System.out.println("   oldDim = " + oldDim.getName());
+      for (Dimension oldDim : oldDims) System.out.println("   oldDim = " + oldDim.getShortName());
       System.out.println("permute dims = ");
       for (int aPermuteIndex : permuteIndex) System.out.println("   oldDim index = " + aPermuteIndex);
     }

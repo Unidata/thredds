@@ -96,7 +96,7 @@ public class IFPSConvention extends CoordSysBuilder {
     List<Variable> vars = ds.getVariables();
     for (Variable ncvar : vars) {
         //variables that are used but not displayable or have no data have DIM_0, also don't want history, since those are just how the person edited the grids
-        if ((!ncvar.getDimension(0).getName().equals("DIM_0")) && !ncvar.getShortName().endsWith("History")
+        if ((!ncvar.getDimension(0).getShortName().equals("DIM_0")) && !ncvar.getShortName().endsWith("History")
               && (ncvar.getRank() > 2) && !ncvar.getShortName().startsWith("Tool")) {
             createTimeCoordinate(ds, ncvar);
         } else if (ncvar.getShortName().equals("Topo")){
@@ -235,12 +235,12 @@ public class IFPSConvention extends CoordSysBuilder {
       yData.setDouble( yIndex.set(i), pp.getY());
     }
 
-    VariableDS xaxis = new VariableDS(ds, null, null, "xCoord", DataType.FLOAT, x_dim.getName(), "km", "x on projection");
+    VariableDS xaxis = new VariableDS(ds, null, null, "xCoord", DataType.FLOAT, x_dim.getShortName(), "km", "x on projection");
     xaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "x on projection"));
     xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
-    VariableDS yaxis = new VariableDS(ds, null, null, "yCoord", DataType.FLOAT, y_dim.getName(), "km", "y on projection");
+    VariableDS yaxis = new VariableDS(ds, null, null, "yCoord", DataType.FLOAT, y_dim.getShortName(), "km", "y on projection");
     yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "y on projection"));
     yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));

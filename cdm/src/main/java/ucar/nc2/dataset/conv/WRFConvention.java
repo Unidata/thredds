@@ -439,11 +439,11 @@ map_proj =  1: Lambert Conformal
     int nx = dim.getLength();
     double startx = centerX - dx * (nx - 1) / 2;
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "degrees_east", "synthesized longitude coordinate");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "degrees_east", "synthesized longitude coordinate");
     ds.setValues(v, nx, startx, dx);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Lon"));
-    if (!axisName.equals(dim.getName()))
-      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    if (!axisName.equals(dim.getShortName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
     return v;
   }
@@ -454,11 +454,11 @@ map_proj =  1: Lambert Conformal
     int ny = dim.getLength();
     double starty = centerY - dy * (ny - 1) / 2;
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "degrees_north", "synthesized latitude coordinate");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "degrees_north", "synthesized latitude coordinate");
     ds.setValues(v, ny, starty, dy);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Lat"));
-    if (!axisName.equals(dim.getName()))
-      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    if (!axisName.equals(dim.getShortName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
     return v;
   }
@@ -470,11 +470,11 @@ map_proj =  1: Lambert Conformal
     double startx = centerX - dx * (nx - 1) / 2; // ya just gotta know
     //System.out.println(" originX= "+originX+" startx= "+startx);
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoX coordinate from DX attribute");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "km", "synthesized GeoX coordinate from DX attribute");
     v.setValues(nx, startx, dx);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
-    if (!axisName.equals(dim.getName()))
-      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    if (!axisName.equals(dim.getShortName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
     if (gridE) v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
     return v;
@@ -487,11 +487,11 @@ map_proj =  1: Lambert Conformal
     double starty = centerY - dy * (ny - 1) / 2; // - dy/2; // ya just gotta know
     //System.out.println(" originY= "+originY+" starty= "+starty);
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoY coordinate from DY attribute");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "km", "synthesized GeoY coordinate from DY attribute");
     v.setValues(ny, starty, dy);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
-    if (!axisName.equals(dim.getName()))
-      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    if (!axisName.equals(dim.getShortName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
     if (gridE) v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
     return v;
@@ -502,10 +502,10 @@ map_proj =  1: Lambert Conformal
 
     String fromWhere = axisName.endsWith("stag") ? "ZNW" : "ZNU";
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "", "eta values from variable " + fromWhere);
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "", "eta values from variable " + fromWhere);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
-    if (!axisName.equals(dim.getName()))
-      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    if (!axisName.equals(dim.getShortName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
     // create eta values from file variables: ZNU, ZNW
     // But they are a function of time though the values are the same in the sample file
@@ -535,10 +535,10 @@ map_proj =  1: Lambert Conformal
 
   private CoordinateAxis makeFakeCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.SHORT, dim.getName(), "", "synthesized coordinate: only an index");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.SHORT, dim.getShortName(), "", "synthesized coordinate: only an index");
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
-    if (!axisName.equals(dim.getName()))
-      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    if (!axisName.equals(dim.getShortName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
     ds.setValues(v, dim.getLength(), 0, 1);
     return v;
@@ -596,11 +596,11 @@ map_proj =  1: Lambert Conformal
 
     }
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(),
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(),
             "secs since 1970-01-01 00:00:00", "synthesized time coordinate from Times(time)");
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
-    if (!axisName.equals(dim.getName()))
-      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    if (!axisName.equals(dim.getShortName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
     v.setCachedData(values, true);
     return v;
@@ -614,7 +614,7 @@ map_proj =  1: Lambert Conformal
     Dimension soilDim = null;
     List<Dimension> dims = coordVar.getDimensions();
     for (Dimension d : dims) {
-      if (d.getName().startsWith("soil_layers"))
+      if (d.getShortName().startsWith("soil_layers"))
         soilDim = d;
     }
     if (null == soilDim)
@@ -622,18 +622,18 @@ map_proj =  1: Lambert Conformal
 
     if (coordVar.getRank() == 1) {
       coordVar.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
-      if (!coordVarName.equals(soilDim.getName()))
-        coordVar.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
+      if (!coordVarName.equals(soilDim.getShortName()))
+        coordVar.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getShortName()));
       return (VariableDS) coordVar;
     }
 
     String units = ds.findAttValueIgnoreCase(coordVar, CDM.UNITS, "");
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, "soilDepth", DataType.DOUBLE, soilDim.getName(), units, "soil depth");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, "soilDepth", DataType.DOUBLE, soilDim.getShortName(), units, "soil depth");
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     v.addAttribute(new Attribute(CDM.UNITS, CDM.UNITS));
-    if (!v.getShortName().equals(soilDim.getName()))
-      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
+    if (!v.getShortName().equals(soilDim.getShortName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getShortName()));
 
     //read first time slice
     int n = coordVar.getShape(1);

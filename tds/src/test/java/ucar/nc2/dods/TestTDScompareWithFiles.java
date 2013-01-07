@@ -132,8 +132,8 @@ public class TestTDScompareWithFiles extends TestCase {
   }
 
   private void compareGroups(Group org, Group dods) {
-    if (showCompare) System.out.println("compareGroups  "+org.getName()+" "+dods.getName());
-    assert org.getName().equals( dods.getName());
+    if (showCompare) System.out.println("compareGroups  "+org.getFullName()+" "+dods.getFullName());
+    assert org.getFullName().equals( dods.getFullName());
 
     // dimensions
     checkAll( org.getDimensions(), dods.getDimensions(), true);
@@ -218,9 +218,9 @@ public class TestTDScompareWithFiles extends TestCase {
     List atts = dods.getAttributes();
     for (int i = 0; i < atts.size(); i++) {
       Attribute dodsAtt =  (Attribute) atts.get(i);
-      if (dodsAtt.getName().startsWith(_Coordinate.Axes)) continue; // ok
+      if (dodsAtt.getShortName().startsWith(_Coordinate.Axes)) continue; // ok
 
-      Attribute orgAtt =  dods.findAttribute( dodsAtt.getName());
+      Attribute orgAtt =  dods.findAttribute( dodsAtt.getShortName());
       assert orgAtt != null;
       assert dodsAtt.equals( orgAtt);
     }

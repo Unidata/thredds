@@ -184,7 +184,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
         Attribute at = null;
         while(it.hasNext()){
            at = (Attribute)it.next();
-           if(attName.equalsIgnoreCase(at.getName()))
+           if(attName.equalsIgnoreCase(at.getShortName()))
               break;
         }
         return at;

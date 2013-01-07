@@ -153,11 +153,11 @@ public class FileWriter2 {
 
     // dimensions
     for (Dimension oldD : oldVar.getDimensions()) {
-      Dimension newD = gdimHash.get(oldD.getName());
+      Dimension newD = gdimHash.get(oldD.getShortName());
       if (newD == null) {
-        newD = writer.addDimension(null, oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+        newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
                 oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-        gdimHash.put(oldD.getName(), newD);
+        gdimHash.put(oldD.getShortName(), newD);
         if (debug) System.out.println("add dim= " + newD);
       }
       result.add(newD);
@@ -213,9 +213,9 @@ public class FileWriter2 {
     // dimensions
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : fileIn.getDimensions()) {
-      Dimension newD = writer.addDimension(null, oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+      Dimension newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
               oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-      dimHash.put(oldD.getName(), newD);
+      dimHash.put(oldD.getShortName(), newD);
       if (debug) System.out.println("add dim= " + newD);
     }
 
@@ -231,11 +231,11 @@ public class FileWriter2 {
           dims.add(newD);
 
         } else {
-          Dimension dim = dimHash.get(oldD.getName());
+          Dimension dim = dimHash.get(oldD.getShortName());
           if (dim != null)
             dims.add(dim);
           else
-            throw new IllegalStateException("Unknown dimension= " + oldD.getName());
+            throw new IllegalStateException("Unknown dimension= " + oldD.getShortName());
         }
       }
 
@@ -289,9 +289,9 @@ public class FileWriter2 {
     // dimensions
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : oldGroup.getDimensions()) {
-      Dimension newD = writer.addDimension(newGroup, oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+      Dimension newD = writer.addDimension(newGroup, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
               oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-      dimHash.put(oldD.getName(), newD);
+      dimHash.put(oldD.getShortName(), newD);
       if (debug) System.out.println("add dim= " + newD);
     }
 
@@ -300,11 +300,11 @@ public class FileWriter2 {
       List<Dimension> dims = new ArrayList<Dimension>();
       for (Dimension oldD : oldVar.getDimensions()) {
         // in case the name changed
-        Dimension newD = oldD.isShared() ? dimHash.get(oldD.getName()) : oldD;
+        Dimension newD = oldD.isShared() ? dimHash.get(oldD.getShortName()) : oldD;
         if (newD == null)
-          newD = newParent.findDimension(oldD.getName());
+          newD = newParent.findDimension(oldD.getShortName());
         if (newD == null)
-          throw new IllegalStateException("Cant find dimension " + oldD.getName());
+          throw new IllegalStateException("Cant find dimension " + oldD.getShortName());
         dims.add(newD);
       }
 

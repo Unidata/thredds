@@ -1209,7 +1209,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       g.addEnumeration(et);
 
     for (Dimension d : from.getDimensions())
-      g.addDimension(new Dimension(d.getName(), d));
+      g.addDimension(new Dimension(d.getShortName(), d));
 
     for (Attribute a : from.getAttributes())
       g.addAttribute(a);
@@ -1253,7 +1253,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (udim == null) return false;
 
     Group root = getRootGroup();
-    StructureDS newStructure = new StructureDS(this, root, null, "record", udim.getName(), null, null);
+    StructureDS newStructure = new StructureDS(this, root, null, "record", udim.getShortName(), null, null);
     newStructure.setOriginalVariable(orgStructure);
 
     for (Variable v : getVariables()) {
@@ -1562,12 +1562,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     out.println("Dimensions:");
     for (Dimension ds : g.getDimensions()) {
-      out.println("  " + ds.getName() + " " + ds.getClass().getName());
+      out.println("  " + ds.getShortName() + " " + ds.getClass().getName());
     }
 
     out.println("Atributes:");
     for (Attribute a : g.getAttributes()) {
-      out.println("  " + a.getName() + " " + a.getClass().getName());
+      out.println("  " + a.getShortName() + " " + a.getClass().getName());
     }
 
     out.println("Variables:");
@@ -1575,7 +1575,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     out.println("Groups:");
     for (Group nested : g.getGroups()) {
-      out.println("  " + nested.getName() + " " + nested.getClass().getName());
+      out.println("  " + nested.getFullName() + " " + nested.getClass().getName());
       dumpClasses(nested, out);
     }
   }

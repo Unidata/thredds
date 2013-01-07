@@ -94,7 +94,7 @@ public class GeoGridTable extends JPanel {
         Variable v = vb.geogrid.getVariable();
         infoTA.clear();
         if (v == null)
-          infoTA.appendLine("Cant find variable " + vb.getName() + " escaped= (" + NetcdfFile.escapeName(vb.getName()) + ")");
+          infoTA.appendLine("Cant find variable " + vb.getName() + " escaped= (" + NetcdfFile.makeValidPathName(vb.getName()) + ")");
         else {
           infoTA.appendLine("Variable " + v.getFullName() + " :");
           infoTA.appendLine(v.toString());
@@ -538,7 +538,7 @@ public class GeoGridTable extends JPanel {
 
     private String getAxisName(CoordinateAxis axis) {
       if (axis != null)
-        return (axis.isCoordinateVariable()) ? axis.getName() : axis.getNameAndDimensions(false);
+        return (axis.isCoordinateVariable()) ? axis.getShortName() : axis.getNameAndDimensions(false);
       return "";
     }
   }
@@ -667,7 +667,7 @@ public class GeoGridTable extends JPanel {
           lens.append(",");
           names.append(",");
         }
-        String name = dim.isShared() ? dim.getName() : "anon";
+        String name = dim.isShared() ? dim.getShortName() : "anon";
         names.append(name);
         lens.append(dim.getLength());
       }

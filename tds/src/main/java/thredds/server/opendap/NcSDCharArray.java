@@ -73,7 +73,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
     for (int i = 0; i < dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
       if (i < dims.size() - 1)
-        appendDim(dim.getLength(), dim.getName());
+        appendDim(dim.getLength(), dim.getShortName());
       else
         strLen = dim.getLength();
     }

@@ -85,7 +85,7 @@ public class HdfEos {
   static public boolean getEosInfo(NetcdfFile ncfile, Group eosGroup, Formatter f) throws IOException {
     String smeta = getStructMetadata(eosGroup);
     if (smeta == null) {
-      f.format("No StructMetadata variables in group %s %n", eosGroup.getName());
+      f.format("No StructMetadata variables in group %s %n", eosGroup.getFullName());
       return false;
     }
     f.format("raw = %n%s%n", smeta);
@@ -509,7 +509,7 @@ public class HdfEos {
         return;
       }
       if (dim.getLength() != oldDim.getLength()) {
-        log.error("Shared dimension ("+dim.getName()+") has different length than data dimension ("+oldDim.getName()+
+        log.error("Shared dimension ("+dim.getShortName()+") has different length than data dimension ("+oldDim.getShortName()+
             ") shared="+ dim.getLength() + " org=" + oldDim.getLength() + " for "+ v+" "+location);
         return;
       }
@@ -522,7 +522,7 @@ public class HdfEos {
   // look if the wanted dimension is in the  unknownDims list.
   private Dimension checkUnknownDims(String wantDim, List<Dimension> unknownDims, Dimension oldDim, String location) {
     for (Dimension dim : unknownDims) {
-      if (dim.getName().equals(wantDim)) {
+      if (dim.getShortName().equals(wantDim)) {
         int len = oldDim.getLength();
         if (len == 0)
           dim.setUnlimited( true); // allow zero length dimension !!

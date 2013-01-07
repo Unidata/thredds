@@ -83,7 +83,7 @@ public class StructurePseudoDS extends StructureDS {
    */
   public StructurePseudoDS(NetcdfDataset ncfile, Group group, String shortName, List<String> varNames, Dimension outerDim) {
     super(ncfile, group, shortName); // cant do this for nested structures
-    setDimensions(outerDim.getName());
+    setDimensions(outerDim.getShortName());
 
     if (group == null)
       group = ncfile.getRootGroup();

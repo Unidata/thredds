@@ -94,7 +94,7 @@ public class TestGribEnsembles {
 
     Dimension ensDim = gridDatatype.getDimension(ensIndex); //ensIndex = 0
     assertEquals(1, ensDim.getLength());
-    assertEquals("ens0", ensDim.getName());
+    assertEquals("ens0", ensDim.getShortName());
 
     Variable variable = gridDatatype.getVariable().getOriginalVariable();
     ensDim = variable.getDimension(ensIndex); //ensIndex = 0

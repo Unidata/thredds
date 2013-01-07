@@ -125,7 +125,7 @@ public class GridTable {
       this.gg = gg;
       Formatter f = new Formatter();
       for (Dimension dim : gg.getDimensions())
-        f.format("%s ", dim.getName());
+        f.format("%s ", dim.getShortName());
       dims = f.toString();
     }
 

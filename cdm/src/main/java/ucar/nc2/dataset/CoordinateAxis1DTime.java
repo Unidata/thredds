@@ -68,7 +68,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
     if (org.getDataType() == DataType.CHAR)
-      return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimension(0).getName());
+      return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimension(0).getShortName());
 
     else if (org.getDataType() == DataType.STRING)
       return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimensionsString());

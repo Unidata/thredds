@@ -65,10 +65,10 @@ public class RafNimbus extends TableConfigurerImpl {
     Dimension innerDim = coordAxis.getDimension(0);
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && innerDim.isUnlimited();
 
-    TableConfig obsTable = new TableConfig(Table.Type.Structure, innerDim.getName());
-    obsTable.dimName = innerDim.getName();
+    TableConfig obsTable = new TableConfig(Table.Type.Structure, innerDim.getShortName());
+    obsTable.dimName = innerDim.getShortName();
     obsTable.time = coordAxis.getFullName();
-    obsTable.structName = obsIsStruct ? "record" : innerDim.getName();
+    obsTable.structName = obsIsStruct ? "record" : innerDim.getShortName();
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
     CoordSysEvaluator.findCoordWithDimension(obsTable, ds, innerDim); 
 

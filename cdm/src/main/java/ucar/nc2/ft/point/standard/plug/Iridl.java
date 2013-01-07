@@ -64,7 +64,7 @@ public class Iridl extends TableConfigurerImpl  {
       return null;
     }
 
-    Variable stationVar = ds.findVariable(stationDim.getName());
+    Variable stationVar = ds.findVariable(stationDim.getShortName());
     if (stationVar == null) {
       errlog.format("Must have a station coordinate variable");
       return null;
@@ -81,7 +81,7 @@ public class Iridl extends TableConfigurerImpl  {
     stationTable.structName = "station";
     stationTable.structureType = TableConfig.StructureType.PsuedoStructure;
     stationTable.featureType = FeatureType.STATION;
-    stationTable.dimName = stationDim.getName();
+    stationTable.dimName = stationDim.getShortName();
 
     stationTable.stnId = stationVar.getShortName();
 
@@ -93,8 +93,8 @@ public class Iridl extends TableConfigurerImpl  {
     TableConfig obsTable;
     obsTable = new TableConfig(Table.Type.MultidimInner, "obs");
     obsTable.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
-    obsTable.outerName = stationDim.getName();
-    obsTable.dimName = obsDim.getName();
+    obsTable.outerName = stationDim.getShortName();
+    obsTable.dimName = obsDim.getShortName();
 
     stationTable.addChild(obsTable);
     return stationTable;

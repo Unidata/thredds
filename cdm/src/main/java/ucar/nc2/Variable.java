@@ -108,7 +108,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   protected Cache cache = new Cache();
   protected int sizeToCache = -1; // bytes
 
-  protected Structure parent = null; // for variables inside a Structure, aka "structure members"
   protected ProxyReader proxyReader = this;
 
   /**
@@ -116,27 +115,32 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @return full unescaped name
    * @deprecated use getFullName or getShortName
    */
+/*
   public String getName() {
     return getFullName();
   }
+*/
 
   /**
    * Get the full, unescaped name of this Variable, starting from rootGroup.
    * The name is unique within the entire NetcdfFile.
    * @return  full, unescaped name
    */
+/* see CDMNode.getFullName
   public String getFullName() {
     return NetcdfFile.makeFullName(this);
   }
+*/
 
   /**
    * Get the full, escaped name of this Variable. Use for NetcdfFile.findVariable().
    * @return  full, escaped name
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/CDM/Identifiers.html"
    */
+  /* suppress
   public String getFullNameEscaped() {
     return NetcdfFile.makeFullNameEscaped(this);
-  }
+  }  */
 
   /**
    * Get the data type of the Variable.
@@ -306,7 +310,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     Formatter buf = new Formatter();
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension myd = dimensions.get(i);
-      String dimName = myd.getName();
+      String dimName = myd.getShortName();
 
       if (i != 0) buf.format(" ");
 
@@ -331,7 +335,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   public int findDimensionIndex(String name) {
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension d = dimensions.get(i);
-      if (name.equals(d.getName()))
+      if (name.equals(d.getShortName()))
         return i;
     }
     return -1;
@@ -354,7 +358,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public Attribute findAttribute(String name) {
     for (Attribute a : attributes) {
-      if (name.equals(a.getName()))
+      if (name.equals(a.getShortName()))
         return a;
     }
     return null;
@@ -370,7 +374,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     if (attributes == null)
       System.out.println("HEY");
     for (Attribute a : attributes) {
-      if (name.equalsIgnoreCase(a.getName()))
+      if (name.equalsIgnoreCase(a.getShortName()))
         return a;
     }
     return null;
@@ -446,7 +450,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
         for (Dimension d : dimensions) {
           int len = d.getLength();
           if (len > 0)
-            list.add(new Range(d.getName(), 0, len - 1));
+            list.add(new Range(d.getShortName(), 0, len - 1));
           else if (len == 0)
             list.add( Range.EMPTY); // LOOK empty not named
           else
@@ -517,7 +521,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     sectionV.dimensions = new ArrayList<Dimension>();
     for (int i = 0; i < getRank(); i++) {
       Dimension oldD = getDimension(i);
-      Dimension newD = (oldD.getLength() == sectionV.shape[i]) ? oldD : new Dimension(oldD.getName(), sectionV.shape[i], false);
+      Dimension newD = (oldD.getLength() == sectionV.shape[i]) ? oldD : new Dimension(oldD.getShortName(), sectionV.shape[i], false);
       newD.setUnlimited(oldD.isUnlimited());
       sectionV.dimensions.add(newD);
     }
@@ -843,7 +847,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    if (isMemberOfStructure()) { // LOOK should be UnsupportedOperationException ??
      List<String> memList = new ArrayList<String>();
      memList.add(this.getShortName());
-     Structure s = parent.select(memList);
+     Structure s = getParentStructure().select(memList);
      ArrayStructure as = (ArrayStructure) s.read();
      return as.extractMemberArray( as.findMember( getShortName()));
    }
@@ -977,16 +981,16 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   public void getNameAndDimensions(Formatter buf, boolean useFullName, boolean strict) {
     useFullName = useFullName && !strict;
     String name = useFullName ? getFullName() : getShortName();
-    if (strict) name = NetcdfFile.escapeNameCDL( getShortName());
+    if (strict) name = NetcdfFile.makeValidCDLName( getShortName());
     buf.format("%s", name);
 
     if (shape != null) {
         if(getRank() > 0) buf.format("(");
         for (int i = 0; i < dimensions.size(); i++) {
             Dimension myd = dimensions.get(i);
-            String dimName = myd.getName();
+            String dimName = myd.getShortName();
             if ((dimName != null) && strict)
-                dimName = NetcdfFile.escapeNameCDL(dimName);
+                dimName = NetcdfFile.makeValidCDLName(dimName);
             if (i != 0) buf.format(", ");
             if (myd.isVariableLength()) {
                buf.format("*");
@@ -1034,7 +1038,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
       if (enumTypedef == null)
         buf.format("enum UNKNOWN");
       else
-        buf.format("enum %s", NetcdfFile.escapeNameCDL(enumTypedef.getName()));
+        buf.format("enum %s", NetcdfFile.makeValidCDLName(enumTypedef.getShortName()));
     } else
       buf.format("%s", dataType.toString());
 
@@ -1048,7 +1052,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     indent.incr();
     for (Attribute att : getAttributes()) {
       buf.format("%s", indent);
-      if (strict) buf.format(NetcdfFile.escapeNameCDL(getShortName()));
+      if (strict) buf.format(NetcdfFile.makeValidCDLName(getShortName()));
       buf.format(":");
       att.writeCDL(buf,  strict);
       buf.format(";");
@@ -1103,8 +1107,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
       if (isScalar()) result++;
       result = 37 * result + getDataType().hashCode();
       result = 37 * result + getParentGroup().hashCode();
-      if (parent != null)
-        result = 37 * result + parent.hashCode();
+      if (getParentStructure() != null)
+        result = 37 * result + getParentStructure().hashCode();
       if (isVariableLength) result++;
       result = 37 * result + dimensions.hashCode();
       hashCode = result;
@@ -1179,7 +1183,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     this.elementSize = from.getElementSize();
     this.enumTypedef = from.enumTypedef;
     setParentGroup(from.group);
-    setParentStructure(from.parent);
+    setParentStructure(from.getParentStructure());
     this.isMetadata = from.isMetadata;
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
@@ -1250,7 +1254,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     if (immutable) throw new IllegalStateException("Cant modify");
     for (int i = 0; i < attributes.size(); i++) {
       Attribute a = attributes.get(i);
-      if (att.getName().equals(a.getName())) {
+      if (att.getShortName().equals(a.getShortName())) {
         attributes.set(i, att); // replace
         return att;
       }
@@ -1376,7 +1380,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
 
     for (Dimension dim : dimensions) {
       if (dim.isShared()) {
-        Dimension newD = getParentGroup().findDimension(dim.getName());
+        Dimension newD = getParentGroup().findDimension(dim.getShortName());
         if (newD == null)
           throw new IllegalArgumentException("Variable " + getFullName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
         newDimensions.add(newD);
@@ -1631,30 +1635,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   // StructureMember - could be a subclass, but that has problems
 
   /**
-   * Is this variable a member of a Structure?.
-   */
-  public boolean isMemberOfStructure() {
-    return parent != null;
-  }
-
-  /**
-   * Get the parent Variable if this is a member of a Structure, or null if its not.
-   */
-  public Structure getParentStructure() {
-    return parent;
-  }
-
-  /**
-   * Set the parent structure.
-   *
-   * @param parent set to this value
-   */
-  public void setParentStructure(Structure parent) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    this.parent = parent;
-  }
-
-  /**
    * Get list of Dimensions, including parents if any.
    *
    * @return array of Dimension, rank of v plus all parents.
@@ -1674,7 +1654,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   }
 
   public int[] getShapeAll() {
-    if (parent == null) return getShape();
+    if (getParentStructure() == null) return getShape();
     List<Dimension> dimAll = getDimensionsAll();
     int[] shapeAll = new int[dimAll.size()];
     for (int i=0; i<dimAll.size(); i++)
@@ -1816,7 +1796,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     }
     if (n == 2 && dimensions.size() == 2) {    // two dimensional
       Dimension firstd = dimensions.get(0);
-      if (shortName.equals(firstd.getName()) &&  // short names match
+      if (shortName.equals(firstd.getShortName()) &&  // short names match
           (getDataType() == DataType.CHAR)) {         // must be char valued (really a String)
         return true;
       }
@@ -1834,7 +1814,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
       // protected int sizeToCache = -1; // bytes
 
       clone.setParentGroup(group);
-      clone.setParentStructure(parent);
+      clone.setParentStructure(getParentStructure());
       clone.setProxyReader(clone);
       return clone;
   }

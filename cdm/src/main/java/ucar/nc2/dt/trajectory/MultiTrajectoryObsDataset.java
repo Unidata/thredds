@@ -811,8 +811,8 @@ public class MultiTrajectoryObsDataset
       if ( trajDim != null ) rank--;
       shape = new int[rank];
       int[] varShape = super.getShape();
-      int trajDimIndex = v.findDimensionIndex( MultiTrajectoryObsDataset.this.trajDim.getName());
-      int timeDimIndex = v.findDimensionIndex( MultiTrajectoryObsDataset.this.timeDim.getName());
+      int trajDimIndex = v.findDimensionIndex( MultiTrajectoryObsDataset.this.trajDim.getShortName());
+      int timeDimIndex = v.findDimensionIndex( MultiTrajectoryObsDataset.this.timeDim.getShortName());
       for ( int j = 0, i = 0; i < varShape.length; i++)
       {
         if ( i == trajDimIndex) continue;

@@ -124,12 +124,12 @@ public class TestRedefine extends TestCase {
     assert null != v.findAttribute("quality");
     
     Dimension d = v.getDimension(0);
-    assert d.getName().equals("date");
+    assert d.getShortName().equals("date");
 
     assert file.findDimension("time") == null;
     Dimension dim = file.findDimension("date");
     assert dim != null;
-    assert dim.getName().equals("date");
+    assert dim.getShortName().equals("date");
     assert dim.equals(d);
     assert dim == d;
 
