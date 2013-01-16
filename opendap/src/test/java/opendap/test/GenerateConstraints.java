@@ -41,7 +41,7 @@ package opendap.test;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
-import opendap.test.dts.test_ServerFactory;
+//import opendap.dts.*;
 
 import java.util.*;
 import java.io.*;
@@ -280,7 +280,7 @@ public class GenerateConstraints extends TestCeParser {
     StringBuilder constraint = new StringBuilder();
     for (int i = 0; i < nconstraints; i++) {
       // Parse the DDS to produce a ServerDDS object
-      ServerDDS sdds = new ServerDDS(new test_ServerFactory());
+      ServerDDS sdds = new ServerDDS(new test_SDFactory());
 
       StringBufferInputStream teststream = new StringBufferInputStream(testDDS);
       if (!sdds.parse(teststream))

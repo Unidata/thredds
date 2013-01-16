@@ -44,6 +44,7 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import ucar.unidata.util.Parameter;
 
+import java.io.File;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Formatter;
@@ -63,6 +64,17 @@ public class NetcdfDatasetInfo {
   public NetcdfDatasetInfo( String location) throws IOException {
     ds = NetcdfDataset.openDataset(location, false, null);
     builder = ds.enhance();
+  }
+
+  public NetcdfDatasetInfo( NetcdfDataset ds) throws IOException {
+    File loc = new File(ds.getLocation());
+    if (loc.exists()) {
+      this.ds = NetcdfDataset.openDataset(ds.getLocation(), false, null); // fresh enhancement
+      builder = this.ds.enhance();
+    } else {  // Aggregation, fc may not exist
+      this.ds = ds;  // LOOK what can we do thats better ?
+      builder = ds.enhance();
+    }
   }
 
   public void close() throws IOException {

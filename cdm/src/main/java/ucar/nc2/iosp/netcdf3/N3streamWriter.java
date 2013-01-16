@@ -102,7 +102,7 @@ public abstract class N3streamWriter {
 
     for (int i = 0; i < numdims; i++) {
       Dimension dim = (Dimension) dims.get(i);
-      count += writeString(stream, N3iosp.makeValidNetcdfObjectName( dim.getName()));
+      count += writeString(stream, N3iosp.makeValidNetcdfObjectName( dim.getShortName()));
       stream.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
       count += 4;
     }
@@ -242,7 +242,7 @@ public abstract class N3streamWriter {
     for (int i = 0; i < natts; i++) {
       Attribute att = atts.get(i);
 
-      hsize += writeString(stream, N3iosp.makeValidNetcdfObjectName( att.getName()));
+      hsize += writeString(stream, N3iosp.makeValidNetcdfObjectName( att.getShortName()));
       int type = N3header.getType(att.getDataType());
       if (null != stream) stream.writeInt(type);
       hsize += 4;

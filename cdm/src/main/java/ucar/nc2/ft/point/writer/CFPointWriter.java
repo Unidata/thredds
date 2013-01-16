@@ -180,7 +180,7 @@ public class CFPointWriter {
     writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     writer.addGroupAttribute(null, new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {
-      if (!reservedAttsList.contains(att.getName()))
+      if (!reservedAttsList.contains(att.getShortName()))
         writer.addGroupAttribute(null, att);
     }
 

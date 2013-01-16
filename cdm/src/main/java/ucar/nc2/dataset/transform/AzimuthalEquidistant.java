@@ -10,7 +10,7 @@ import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 
 /**
- * Describe
+ * AzimuthalEquidistant Projection.
  *
  * @author caron
  * @since 4/30/12

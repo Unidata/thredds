@@ -104,7 +104,7 @@ public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
   	if (axis == null) return false;
   	Dimension dim = axis.getDimension(dimIndex);
   	if (dim == null) return false;
-  	if (dim.getName().endsWith("stag")) return true;
+  	if (dim.getShortName().endsWith("stag")) return true;
   	return false;
 }
 

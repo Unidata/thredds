@@ -178,23 +178,28 @@ public class StringUtil2 {
     return new String(bo, 0, count);
   }
 
+  // remove leading and trailing blanks
+  // remove control characters (< 0x20)
+  // transform "/" to "_"
+  // transform embedded space to "_"
   static public String makeValidCdmObjectName(String name) {
+    name = name.trim();
     // common case no change
     boolean ok = true;
     for (int i = 0; i < name.length(); i++) {
       int c = name.charAt(i);
       if (c < 0x20) ok = false;
       if (c == '/') ok = false;
+      if (c == ' ') ok = false;
       if (!ok) break;
     }
-    if (ok) return name.trim();
+    if (ok) return name;
 
-    name = name.trim();
     StringBuilder sbuff = new StringBuilder(name.length());
     for (int i = 0, len = name.length(); i < len; i++) {
       int c = name.charAt(i);
-      if (c == 0x2f)
-        sbuff.append(RC.getUseGroups() ? c : '_');
+      if ((c == '/') || (c == ' '))
+        sbuff.append('_');
       else if (c >= 0x20)
         sbuff.append((char) c);
     }

@@ -58,9 +58,9 @@ public class TestNc4IospReading {
     return v.read(section) ;
   }
 
-  //@Test
+  // @Test
   public void problem() throws IOException {
-    doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\tst\\test_enum_type.nc", true, true, true);
+    doCompare("Q:\\cdmUnitTest\\formats\\hdf5\\grid_1_3d_xyz_aug.h5", true, false, true);
   }
 
   @Test
@@ -121,7 +121,7 @@ public class TestNc4IospReading {
     @Override
     public boolean attOk(Variable v, Attribute att) {
       // if (v != null && v.isMemberOfStructure()) return false;
-      String name = att.getName();
+      String name = att.getShortName();
 
       // added by cdm
       if (name.equals(CDM.CHUNK_SIZE)) return false;

@@ -383,6 +383,14 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return vs.isMissing(val);
   }
 
+  public boolean hasMissing() {
+    return vs.hasMissing();
+  }
+
+  public boolean isMissing(double val) {
+    return vs.isMissing(val);
+  }
+
   /**
    * Convert (in place) all values in the given array that are considered
    * as "missing" to Float.NaN, according to isMissingData(val).
@@ -409,22 +417,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return both min and max value.
    */
   public MAMath.MinMax getMinMaxSkipMissingData(Array a) {
-    if (!hasMissingData())
-      return MAMath.getMinMax(a);
-
-    IndexIterator iter = a.getIndexIterator();
-    double max = -Double.MAX_VALUE;
-    double min = Double.MAX_VALUE;
-    while (iter.hasNext()) {
-      double val = iter.getDoubleNext();
-      if (isMissingData(val))
-        continue;
-      if (val > max)
-        max = val;
-      if (val < min)
-        min = val;
-    }
-    return new MAMath.MinMax(min, max);
+    return MAMath.getMinMaxSkipMissingData(a, this);
   }
 
   /**
@@ -600,7 +593,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     if (debugArrayShape) {
       System.out.println("read shape from org variable = ");
       for (int i = 0; i < rank; i++)
-        System.out.println("   start = " + start[i] + " shape = " + shape[i] + " name = " + vs.getDimension(i).getName());
+        System.out.println("   start = " + start[i] + " shape = " + shape[i] + " name = " + vs.getDimension(i).getShortName());
     }
 
     // read it
@@ -626,7 +619,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
     if (debugArrayShape) {
       System.out.println("oldDims = ");
-      for (Dimension oldDim : oldDims) System.out.println("   oldDim = " + oldDim.getName());
+      for (Dimension oldDim : oldDims) System.out.println("   oldDim = " + oldDim.getShortName());
       System.out.println("permute dims = ");
       for (int aPermuteIndex : permuteIndex) System.out.println("   oldDim index = " + aPermuteIndex);
     }

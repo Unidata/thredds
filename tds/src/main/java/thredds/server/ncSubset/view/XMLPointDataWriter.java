@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.util.NcssRequestUtils;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -485,12 +486,12 @@ class XMLPointDataWriter implements PointDataWriter {
 		Map<String, String> attributes = new HashMap<String, String>();
 		// tag data for lat
 		attributes.put("name", "lat");
-		attributes.put("units", "degrees_north");
+		attributes.put("units", CDM.LAT_UNITS);
 		writeDataTag(writer, attributes, lat.toString());
 		attributes.clear();
 		// tag data for lon
 		attributes.put("name", "lon");
-		attributes.put("units", "degrees_east");
+		attributes.put("units", CDM.LON_UNITS);
 		writeDataTag(writer, attributes, lon.toString());
 		attributes.clear();
 

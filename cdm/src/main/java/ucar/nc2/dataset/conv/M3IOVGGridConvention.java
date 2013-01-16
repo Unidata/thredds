@@ -61,7 +61,8 @@ import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 
-/*
+/**
+ * M3IO VG scheme, 5D gridded scalar data, cell-based hexahedra.
  * Describes NetCDF files that follow M3IO (Models-3) conventions for
  * structured (in projected, e.g., Lambert space) 5D gridded scalar data.
  * These are similar to Vis5D data sets except that the data are
@@ -71,11 +72,10 @@ import ucar.unidata.geoloc.projection.*;
  * the same height varying rectilinearly based on pressure.
  * The pressure-based levels are converted into approximate z in meters above
  * mean sea level.
- * @invariant ncfile != null implies isValidM3IOFile()
  *
  * 09/2010 plessel.todd@epa.gov add projection types 6,7,8,9,10
  *
- * @HISTORY: 2003/06/26
+ * HISTORY: 2003/06/26
  * @author plessel.todd@epa.gov, based on WRFConvention.java
  * @author caron - convert to new CoordSysBuilder
  */
@@ -230,7 +230,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     final String newUnits = units.equals( "m" ) ? "km" : units;
     String desc = "synthesized x coordinate from XORIG, XCELL global attributes";
 
-    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "x", DataType.DOUBLE, dim.getName(), newUnits, desc );
+    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "x", DataType.DOUBLE, dim.getShortName(), newUnits, desc );
 
     final double scale = units.equals("m") ? 0.001 : 1.0;//IDV BUG m->km
     final double xorig = doubleAttribute( "XORIG" ) * scale;
@@ -257,7 +257,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     final String newUnits = units.equals( "m" ) ? "km" : units;
     String desc = "synthesized y coordinate from YORIG, YCELL global attributes";
 
-    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "y", DataType.DOUBLE, dim.getName(), newUnits, desc );
+    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "y", DataType.DOUBLE, dim.getShortName(), newUnits, desc );
     final double scale = units.equals("m") ? 0.001 : 1.0;//IDV BUG m->km
     final double yorig = doubleAttribute( "YORIG" ) * scale;
     final double ycell = doubleAttribute( "YCELL" ) * scale;
@@ -282,7 +282,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     Dimension dim = ds.findDimension( "LAY" );
 
     String desc = "synthesized z coordinate from VGTYP, VGTOP, VGLVLS global attributes";
-    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "z", DataType.DOUBLE, dim.getName(), "km", desc ); // IDV?
+    CoordinateAxis axis = new CoordinateAxis1D( ds, null, "z", DataType.DOUBLE, dim.getShortName(), "km", desc ); // IDV?
     final int vgtyp = intAttribute( "VGTYP" );
     final double vgtop = doubleAttribute( "VGTOP" );
     final double[] vglvls = doubleArrayAttribute( "VGLVLS" );
@@ -674,7 +674,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
 
     while ( result && iter.hasNext() ) {
       Dimension d = (Dimension) iter.next();
-      result = index < count && d.getName().equals( dims[ index ] );
+      result = index < count && d.getShortName().equals( dims[ index ] );
       ++index;
     }
 

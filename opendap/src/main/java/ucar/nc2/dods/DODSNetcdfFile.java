@@ -60,6 +60,10 @@ import java.nio.channels.WritableByteChannel;
 
 public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
 {
+    // temporary flag to control usegroup changes
+    static boolean OLDGROUPCODE = false;
+
+
     static public boolean debugCE = false;
     static public boolean debugServerCall = false;
     static public boolean debugOpenResult = false;
@@ -77,9 +81,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
     // Define a utility class to decompse names
     private static class NamePieces
     {
-        String prefix = null;
-        String var = null;
-        String name = null;
+        String prefix = null; // group part of the path
+        String var = null;    // struct part of the path
+        String name = null;   // last name in a path
     }
 
     /**
@@ -524,7 +528,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
     {
 
         List<DODSAttribute> atts = root.attributes;
-        for (DODSAttribute ncatt : atts) {
+        for (ucar.nc2.Attribute ncatt : atts) {
             rootGroup.addAttribute(ncatt);
         }
 
@@ -580,7 +584,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
      * and move to the proper groups.
      */
     protected void reGroup()
-            throws opendap.dap.DAP2Exception
+            throws DAP2Exception
     {
         assert (RC.getUseGroups());
         Group rootgroup = this.getRootGroup();
@@ -590,112 +594,121 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
         // to variables, instead get made global with name var.att.
         Object[] gattlist = rootgroup.getAttributes().toArray();
         for (Object att : gattlist) {
-            DODSAttribute ncatt = (DODSAttribute) att;
-            String aname = ncatt.getName();
-            NamePieces pieces = parseName(aname);
-            if (pieces.var != null) { // Figure out which variable to which this should be moved
-                // Locate the varname; should be in variables because we have not
-                // processed variable names yet. In the event that there is no matching
+            Attribute ncatt = (Attribute) att;
+            String dodsname = ncatt.getDODSName();
+            NamePieces pieces = parseName(dodsname);
+            if (pieces.var != null) {
+                // Figure out which variable to which this attribute should be moved.
+                // In the event that there is no matching
                 // variable, then keep the attribute as is.
                 String searchname = pieces.var;
                 if (pieces.prefix != null) searchname = pieces.prefix + '/' + searchname;
-                Variable v = rootgroup.findVariable(searchname);
+                Variable v = findVariable(searchname);
                 if (v != null) {
                     // move attribute
                     rootgroup.remove(ncatt);
                     v.addAttribute(ncatt);
-                    // change attribute name
+                    // change attribute name to remove var.
                     String newname = pieces.name;
-                    if (pieces.prefix != null) newname = pieces.prefix + '/' + pieces.name;
                     ncatt.setName(newname);
                 }
-                continue;
-            }
-            // We have a true global name to move to proper group
-            if (pieces.prefix != null) {
+            } else if (pieces.prefix != null) {
+             // We have a true group global name to move to proper group
                 // convert prefix to an actual group
-                Group g = rootgroup.makeRelativeGroup(this, aname, true);
+                Group g = rootgroup.makeRelativeGroup(this, dodsname, true);
                 rootgroup.remove(ncatt);
                 g.addAttribute(ncatt);
-                ncatt.setName(pieces.name);
+if(OLDGROUPCODE) {ncatt.setName(pieces.name);}
             }
         }
 
         Object[] varlist = rootgroup.getVariables().toArray();
+
+if(false) {    // This should have been done by computegroup()
         // Now move variables
         for (Object var : varlist) {
-            if (var instanceof Variable) {
-                Variable v = (Variable) var;
-                reGroupVariable(rootgroup, (Variable) var);
+            if (var instanceof DODSVariable) {
+                DODSVariable v = (DODSVariable) var;
+                reGroupVariable(rootgroup, v);
             } else
-                throw new opendap.dap.DAP2Exception("regroup: unexpected variable type: "
+                throw new DAP2Exception("regroup: unexpected variable type: "
                         + var.getClass().getCanonicalName());
         }
+}
 
         // In theory, we should be able to fix variable attributes
-        // by just removing the group prefix. However, their is the issue
-        // that attribute names have as a suffix, sometimes, varname.attname,
+        // by just removing the group prefix. However, there is the issue
+        // that attribute names sometimes have as a suffix varname.attname.
         // So, we should use that to adjust the attribute to attach to that
         // variable.
         for (Object var : varlist) {
-            reGroupVariableAttributes(rootgroup, (Variable) var);
+            reGroupVariableAttributes(rootgroup, (Variable)var);
         }
     }
 
-    protected void reGroupVariable(Group rootgroup, Variable ncvar)
+    @Deprecated
+    protected void reGroupVariable(Group rootgroup, DODSVariable dodsv)
             throws opendap.dap.DAP2Exception
     {
-        String vname = ncvar.getShortName();
-        NamePieces pieces = parseName(vname);
+        String dodsname = dodsv.getDODSName();
+        NamePieces pieces = parseName(dodsname);
         if (pieces.prefix != null) {
             // convert prefix to an actual group
-            Group gnew = rootgroup.makeRelativeGroup(this, vname, true);
+            Group gnew = rootgroup.makeRelativeGroup(this, dodsname, true);
             // Get current group for the variable
             Group gold = null;
-            gold = ncvar.getParentGroup();
+            gold = dodsv.getParentGroup();
             if (gnew != gold) {
-                gold.remove(ncvar);
-                ncvar.setParentGroup(gnew);
-                gnew.addVariable(ncvar);
-                ncvar.setName(pieces.name);
+                gold.remove(dodsv);
+                dodsv.setParentGroup(gnew);
+                gnew.addVariable(dodsv);
+if(OLDGROUPCODE) {
+                dodsv.setName(pieces.name);
+}
             }
         }
     }
 
-    protected void reGroupVariableAttributes(Group rootgroup, Variable ncvar)
+    protected void reGroupVariableAttributes(Group rootgroup, Variable v)
             throws opendap.dap.DAP2Exception
     {
-        Group vgroup = ncvar.getParentGroup();
-        String vname = ncvar.getShortName();
-        Object[] attlist = ncvar.getAttributes().toArray();
+        String vname = v.getShortName();
+        Group vgroup = v.getParentGroup();
+        Object[] attlist = v.getAttributes().toArray();
         for (Object att : attlist) {
             Attribute ncatt = (Attribute) att;
-            String aname = ncatt.getName();
-            NamePieces pieces = parseName(aname);
+            String adodsname = ncatt.getDODSName();
+            NamePieces pieces = parseName(adodsname);
             Group agroup = null;
             if (pieces.prefix != null) {
                 // convert prefix to an actual group
-                agroup = rootgroup.makeRelativeGroup(this, aname, true);
+                agroup = rootgroup.makeRelativeGroup(this, adodsname, true);
             } else
                 agroup = vgroup;
+
             // If the attribute group is different from the variable group,
             // then we have some kind of inconsistency; presumably from
             // the original dds+das; in any case, use the variable's group
             if (agroup != vgroup)
                 agroup = vgroup;
+
             if (pieces.var != null && !pieces.var.equals(vname)) {
                 // move the attribute to the correct variable
+                // (presumably in the same group)
                 Variable newvar = (Variable) agroup.findVariable(pieces.var);
                 if (newvar != null) {// if not found leave the attribute as is
-                    // otherwise, move the attribute
+                    // otherwise, move the attribute and rename
                     newvar.addAttribute(ncatt);
-                    ncvar.remove(ncatt);
+                    v.remove(ncatt);
+                    ncatt.setShortName(pieces.name);
                 }
             }
+if(OLDGROUPCODE) {
             if (pieces.prefix != null) {// rename the attribute
                 // Rename the attribute to its shortname
                 ncatt.setName(pieces.name);
             }
+}
         }
     }
 
@@ -859,7 +872,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
             if (parentStructure != null)
                 parentStructure.addMemberVariable(v);
             else {
-                parentGroup = computeGroup(v, parentGroup);
+                parentGroup = computeGroup(v.getDODSName(), v, parentGroup);
                 parentGroup.addVariable(v);
             }
             dodsV.isDone = true;
@@ -867,26 +880,28 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
         return v;
     }
 
-    Group computeGroup(Variable v, Group parentGroup/*Ostensibly*/)
+    Group computeGroup(String path, Variable v, Group parentGroup/*Ostensibly*/)
     {
         if (parentGroup == null)
             parentGroup = getRootGroup();
-        if (false && RC.getUseGroups()) {     // see if reGroup can do this
-            // If the shortname has '/' in it, then we need to insert
+        if(RC.getUseGroups()) {
+            // If the path has '/' in it, then we need to insert
             // this variable into the proper group and rename it. However,
             // if this variable is within a structure, we cannot do it.
             if (v.getParentStructure() == null) {
-                // HACK: Since only the array is substituted for the Grid in converting
+                // HACK: Since only the grid array is used in converting
                 // to netcdf-3, we look for group info on the array.
-                String name = v.getShortName();
-                int sindex = name.indexOf('/');
+                String dodsname = v.getDODSName();
+                int sindex = dodsname.indexOf('/');
                 if (sindex >= 0) {
                     assert (parentGroup != null);
-                    Group g = parentGroup.makeRelativeGroup(this, name, true/*ignorelast*/);
+                    Group g = parentGroup.makeRelativeGroup(this, dodsname, true/*ignorelast*/);
                     parentGroup = g;
+if(OLDGROUPCODE) {
                     // change variable's name
-                    name = name.substring(name.lastIndexOf('/') + 1);
-                    v.setName(name);   // change name
+                    dodsname = dodsname.substring(dodsname.lastIndexOf('/') + 1);
+                    v.setName(dodsname);   // change name
+                }
                 }
             }
         }
@@ -895,7 +910,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
 
     private Variable makeVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException
     {
-
         opendap.dap.BaseType dodsBT = dodsV.bt;
         String dodsShortName = dodsBT.getClearName();
         if (debugConstruct) System.out.print("DODSNetcdf makeVariable try to init <" + dodsShortName + "> :");
@@ -934,7 +948,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
                 // this is how the netccdf servers do it
                 for (int i = 1; i < dodsV.children.size(); i++) {
                     DodsV map = dodsV.children.get(i);
-                    String shortName = DODSNetcdfFile.makeNetcdfName(map.bt.getEncodedName());
+                    String shortName = DODSNetcdfFile.makeShortName(map.bt.getEncodedName());
                     Variable mapV = parentGroup.findVariable(shortName); // LOOK WRONG
                     if (mapV == null) {         // if not, add it LOOK need to compare values
                         mapV = addVariable(parentGroup, parentStructure, map);
@@ -966,7 +980,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
             if (dodsV.darray == null) {
                 if (useGroups && (parentStructure == null) && isGroup(dstruct)) { // turn into a group
                     if (debugConstruct) System.out.println(" assigned to Group <" + dodsShortName + ">");
-                    Group g = new Group(this, parentGroup, DODSNetcdfFile.makeNetcdfName(dodsShortName));
+                    Group g = new Group(this, parentGroup, DODSNetcdfFile.makeShortName(dodsShortName));
                     addAttributes(g, dodsV);
                     parentGroup.addGroup(g);
 
@@ -1065,14 +1079,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
      v.addAttribute( ncatt);
        } else if (v instanceof Structure) {
      Structure s = (Structure) v;
-     Variable member = s.findVariable( att.getName());
+     Variable member = s.findVariable( att.getShortName());
      if (member != null) {
        addAttributes(member, att.getContainer());
      } else {
-       if (debugAttributes) System.out.println("Cant find nested Variable "+ att.getName()+" in "+v.getName());
+       if (debugAttributes) System.out.println("Cant find nested Variable "+ att.getShortName()+" in "+v.getName());
      }
        } else {
-     if (debugAttributes) System.out.println("Container attribute "+ att.getName()+" in non structure variables"+v.getName());
+     if (debugAttributes) System.out.println("Container attribute "+ att.getShortName()+" in non structure variables"+v.getName());
        }
      }
    } */
@@ -1080,7 +1094,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
     private void addAttributes(Variable v, DodsV dodsV)
     {
         List<DODSAttribute> atts = dodsV.attributes;
-        for (DODSAttribute ncatt : atts) {
+        for (Attribute ncatt : atts) {
             v.addAttribute(ncatt);
         }
 
@@ -1096,7 +1110,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
     private void addAttributes(Group g, DodsV dodsV)
     {
         List<DODSAttribute> atts = dodsV.attributes;
-        for (DODSAttribute ncatt : atts) {
+        for (Attribute ncatt : atts) {
             g.addAttribute(ncatt);
         }
     }
@@ -1178,11 +1192,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
      */
     Dimension getSharedDimension(Group group, Dimension d)
     {
-        if (d.getName() == null) return d;
+        if (d.getShortName() == null) return d;
 
         if (group == null) group = rootGroup;
         for (Dimension sd : group.getDimensions()) {
-            if (sd.getName().equals(d.getName()) && sd.getLength() == d.getLength())
+            if (sd.getShortName().equals(d.getShortName()) && sd.getLength() == d.getLength())
                 return sd;
         }
         d.setShared(true);
@@ -1263,26 +1277,41 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
 
     // kludge for single inheritence
 
-    static public String getDODSshortName(Variable var)
+    /**
+     * Return a variable name suitable for use in a DAP constraint expression.
+     * [Original code seemed wrong because structures can be nested and hence
+     *  would have to use the full name just like non-structures]
+     *
+     * @param var The variable whose name will appear in the CE
+     * @return    The name in a form suitable for use in a cE
+     */
+    static public String getDODSConstraintName(Variable var)
     {
+        String vname = var.getDODSName();
+	// The vname is backslash escaped, so we need to
+	// modify to use DAP %xx escapes.
+        return EscapeStrings.backslashToDAP(vname);
+
+        /*
         if (var instanceof DODSVariable)
-            return ((DODSVariable) var).getDODSshortName();
+            return ((DODSVariable) var).getDODSName();
         else if (var instanceof DODSStructure)
-            return ((DODSStructure) var).getDODSshortName();
+            return ((DODSStructure) var).getDODSConstraintName();
         else
             return null;
+        */
     }
 
     /* full name
    private String makeDODSname(Variable dodsV) {
      if (dodsV.isMemberOfStructure())
-       return makeDODSname(dodsV.getParentStructure()) + "." + getDODSshortName(dodsV);
+       return makeDODSname(dodsV.getParentStructure()) + "." + getDODSConstraintName(dodsV);
 
      Group parent = dodsV.getParentGroup();
      if (parent != rootGroup)
-       return parent.getShortName() + "." + getDODSshortName(dodsV);
+       return parent.getShortName() + "." + getDODSConstraintName(dodsV);
      else
-       return getDODSshortName(dodsV);
+       return getDODSConstraintName(dodsV);
    } */
 
     // full name
@@ -1296,9 +1325,18 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
     }
 
     static String
-    makeNetcdfName(String name)
+    makeShortName(String name)
     {
-        return EscapeStrings.unescapeDAPIdentifier(name);
+        String unescaped = EscapeStrings.unescapeDAPIdentifier(name);
+        int index = unescaped.lastIndexOf('/');
+        if(index < 0) index = -1;
+        return unescaped.substring(index+1, unescaped.length());
+    }
+
+    static String
+    makeDODSName(String name)
+    {
+      return EscapeStrings.unescapeDAPIdentifier(name);
     }
 
     /**
@@ -1597,7 +1635,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
         // create the constraint expression
         StringBuilder buff = new StringBuilder(100);
         buff.setLength(0);
-        buff.append(getDODSshortName(v));
+        buff.append(getDODSConstraintName(v));
 
         // add the selector if not a Sequence
         if (!v.isVariableLength()) {
@@ -1709,7 +1747,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
 
         List<Range> subSection = section.subList(start, start + s.getRank());
 
-        buff.append(getDODSshortName(s));
+        buff.append(getDODSConstraintName(s));
 
         if (!s.isVariableLength()) // have to get the whole thing for a sequence !!
             makeSelector(buff, subSection);
@@ -1842,10 +1880,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
     // extract top dodsVar from dataDDS
     BaseType dodsVar = dataV.darray == null ? dataV.bt : dataV.darray;
     /*try {
-      dodsVar = dds.getVariable( getDODSshortName( topVar));
+      dodsVar = dds.getVariable( getDODSConstraintName( topVar));
     } catch (NoSuchVariableException e) {
       // can happen when the f**ing thing is a Grid
-      dodsVar = dds.getVariable( getDODSshortName( ncVar));
+      dodsVar = dds.getVariable( getDODSConstraintName( ncVar));
       topVar = ncVar;
     } *
 
@@ -2022,7 +2060,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
     else if (dodsVar instanceof DGrid) { // scalar grid
       DGrid ds = (DGrid) dodsVar;
       try {
-    DArray da = (DArray) ds.getVariable(getDODSshortName( ncVar));
+    DArray da = (DArray) ds.getVariable(getDODSConstraintName( ncVar));
     return convertArray(da, ncVar);
       } catch (NoSuchVariableException e) {
     e.printStackTrace();

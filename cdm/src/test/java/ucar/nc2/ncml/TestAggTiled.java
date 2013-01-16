@@ -108,13 +108,13 @@ public class TestAggTiled extends TestCase {
   public void testDimensions(NetcdfFile ncfile) {
     Dimension latDim = ncfile.findDimension("lat");
     assert null != latDim;
-    assert latDim.getName().equals("lat");
+    assert latDim.getShortName().equals("lat");
     assert latDim.getLength() == nlat;
     assert !latDim.isUnlimited();
 
     Dimension lonDim = ncfile.findDimension("lon");
     assert null != lonDim;
-    assert lonDim.getName().equals("lon");
+    assert lonDim.getShortName().equals("lon");
     assert lonDim.getLength() == nlon;
     assert !lonDim.isUnlimited();
   }

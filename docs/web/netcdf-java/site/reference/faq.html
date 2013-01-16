@@ -84,11 +84,11 @@ dl {margin: 10px 5px 5px 15px;)
 <h3><a name="Multithreading" id="Multithreading"></a>Multithreading</h3>
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
 <blockquote>
-  <p> Underneath a <strong>Variable/NetcdfFile</strong> is (usually) a <strong>java.io.RandomAccessFile</strong> object, which is not thread-safe, because  it keeps the state of the file position. So even if all you want to do is read data in multiple threads, you need to synchronize, typically on the <strong>NetcdFile</strong> object. Alternatively, open a new <strong>NetcdfFile</strong> for each thread. The THREDDS Data Server (TDS) uses a cache of open <strong>NetcdfFile</strong> files by using the <strong>NetcdfDataset.acquireFile() </strong>method, which allows stateless handling of data requests minimizing file opening and closing.</p>
+  <p> Underneath a <strong>Variable/NetcdfFile</strong> is (usually) a <strong>java.io.RandomAccessFile</strong> object, which is not thread-safe, because  it keeps the state of the file position. So even if all you want to do is read data in multiple threads, you need to synchronize, typically on the <strong>NetcdFile</strong> object. Better is toopen a new <strong>NetcdfFile</strong> for each thread. The THREDDS Data Server (TDS) uses a cache of open <strong>NetcdfFile</strong> files by using the <strong>NetcdfDataset.acquireFile() </strong>method, which allows stateless handling of data requests minimizing file opening and closing.</p>
 </blockquote>
 <p><strong>Q: Do I need to synchronize if I use NetcdfDataset.acquireFile()?</strong></p>
 <blockquote>
-  <p wrap="">The way that the cache is designed to work is that you get back a NetcdfFile object, which should then be used only in a single thread so that you dont need synchronization (&quot;thread-confinement&quot;), eg to answer a single request in a server. Until you release that NetcdfFile object, no one else can get it from the cache. If another request is made for that same NetcdfFile while its locked, a new NetcdfFile is opened.     And of course, the cache itself is thread-safe. So if you use it properly, you never have to do synchronization yourself.</p>
+  <p wrap="">The way that the cache is designed to work is that you get back a NetcdfFile object, which should then be used only in a single thread so that you don't need synchronization (&quot;thread-confinement&quot;), eg to answer a single request in a server. Until you release that NetcdfFile object, no one else can get it from the cache. If another request is made for that same NetcdfFile while its locked, a new NetcdfFile is opened.     And of course, the cache itself is thread-safe. So if you use it properly, you never have to do synchronization. As a rule, synchronization should not happen in application code, as it is too difficult to do correctly.</p>
 </blockquote>
 <h3><strong><a name="ncml" id="ncml"></a></strong>NcML</h3>
 <p><strong>Q: The NcML in my TDS is not working. What should I do?</strong></p>
@@ -114,9 +114,35 @@ dl {margin: 10px 5px 5px 15px;)
 <h3><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h3>
 <p><strong>Q: How do I work with unsigned integer types?</strong></p>
 <blockquote>
-  <p>When accessing a file through the &quot;raw interface&quot;, by opening the file through <em>NetcdfFile.open() </em>or<em> NetcdfDataset.openFile(),</em> you may see unsigned data types. These have the attribute _Unsigned = &quot;true&quot;. See <a href="../CDM/DataType.html#integer">CDM Datatypes</a> for more details on how to work with unsigned data arrays.</p>
-  <p>When accessing a file through the &quot;dataset interface&quot;, by opening the file through <em>NetcdfDataset.openDataset(),</em> if there is a scale/offset attribute set on a Variable, the variable will be widended to the type of the scale/offset attribute, typically a float. In this case the unsigned data will be correctly handled, and doesnt need special handling.</p>
-  <p>Classic netCDF-3 format has only signed bytes. The CDM library often sees unsigned bytes coming from other data formats, and we made the decision not to automatically widen unsigned bytes to shorts. The data is delivered using Java integer types, which are signed, so its up to the application to check <em>Variable.isUnsigned()</em> and do the right thing when doing computations with the data. The library handles the conversion correctly when the scale/offset attributes are being used.</p>
+  <p>Classic netCDF-3 format has only signed bytes. The CDM library often sees unsigned integers coming from other data formats, and we made the decision not to automatically widen unsigned types, in order to save memory. The data is delivered using Java integer types, which are signed, so its up to the application to check <em>Variable.isUnsigned()</em> and do the right thing when doing computations with the data. The library itself handles all conversions and computations correctly. See <a href="../CDM/DataType.html#integer">CDM Datatypes</a> for more details on how to work with unsigned data arrays.</p>
+  <p>The correct way to widen is to use the equivilent of these static methods in <strong>ucar.ma2.DataType</strong>. The actual conversion code is on the right:</p>
+  <table width="732" border="1">
+    <tr>
+      <td width="363">DataType.<strong>unsignedByteToShort</strong>(byte b)</td>
+      <td width="353">(short) (b &amp; 0xff)</td>
+    </tr>
+    <tr>
+      <td>DataType.<strong>unsignedShortToInt</strong>(short s)</td>
+      <td>(int) (s &amp; 0xffff)</td>
+    </tr>
+    <tr>
+      <td>DataType.long <strong>unsignedIntToLong</strong>(int i)</td>
+      <td>(i &lt; 0) ? (long) i + 4294967296L : (long) i;</td>
+    </tr>
+  </table>
+  <p>Widening is  different than taking the absolute value, as this partial table showing  byte to short conversion:</p>
+  <pre>
+ byte   short
+ ...
+  125 =  125
+  126 =  126
+  127 =  127
+ -128 =  128
+ -127 =  129
+ -126 =  130
+ -125 =  131
+ -124 =  132
+ ...</pre>
 </blockquote>
 <h3><a name="Reading" id="Reading"></a>Reading</h3>
 <p><strong>Q: What files can the library read?</strong></p>
@@ -188,7 +214,7 @@ dl {margin: 10px 5px 5px 15px;)
 </blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 2011
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 2012
 </address>
 </body>
 </html>

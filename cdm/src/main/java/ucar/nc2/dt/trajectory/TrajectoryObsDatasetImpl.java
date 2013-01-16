@@ -1427,7 +1427,7 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
             shape = new int[varShape.length - 1];
             int trajDimIndex =
                 v.findDimensionIndex(
-                    TrajectoryObsDatasetImpl.this.trajectoryDim.getName());
+                    TrajectoryObsDatasetImpl.this.trajectoryDim.getShortName());
             for (int i = 0, j = 0; i < varShape.length; i++) {
                 if (i == trajDimIndex) {
                     continue;

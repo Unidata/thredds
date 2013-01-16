@@ -38,7 +38,7 @@ package ucar.nc2;
  * 1. do true switching on node type
  * 2. avoid use of instanceof
  * 3. Use container classes that have more than one kind of node
- *
+ * <p/>
  * Also move various common fields and methods to here.
  *
  * @author Heimbigner
@@ -48,83 +48,226 @@ public class CDMNode
 {
     CDMSort sort = null;
     Group group = null;
+    Structure struct = null;
     boolean immutable = false;
     String shortName = null;
+    String fullName = null; // uses backslash escaping
 
+    // HACK: sadly, because of the existing class structure,
+    // we need to track the original name of a
+    // Variable/Dimension/Attribute object.
+    // This is primarily used in DAP processing
+    // because the names in the DAP DDS and/or DAS
+    // may contain group information separated
+    // by forward slash.
+
+    String dodsname = null;
+
+    //////////////////////////////////////////////////
     // Constructors
 
     protected CDMNode()
     {
-	// Use Instanceof to figure out the sort
-	if(this instanceof Attribute)
-	    setSort(CDMSort.ATTRIBUTE);
-	else if(this instanceof Dimension)
-	    setSort(CDMSort.DIMENSION);
-	else if(this instanceof EnumTypedef)
-	    setSort(CDMSort.ENUMERATION);
-	else if(this instanceof Sequence)
-	    setSort(CDMSort.SEQUENCE);
-	else if(this instanceof Structure)
-	    setSort(CDMSort.STRUCTURE);
-	else if(this instanceof Group)
-	    setSort(CDMSort.GROUP);
-	else if(this instanceof Variable) // Only case left is atomic var
-	    setSort(CDMSort.VARIABLE);
+        // Use Instanceof to figure out the sort
+        if(this instanceof Attribute)
+            setSort(CDMSort.ATTRIBUTE);
+        else if(this instanceof Dimension)
+            setSort(CDMSort.DIMENSION);
+        else if(this instanceof EnumTypedef)
+            setSort(CDMSort.ENUMERATION);
+        else if(this instanceof Sequence)
+            setSort(CDMSort.SEQUENCE);
+        else if(this instanceof Structure)
+            setSort(CDMSort.STRUCTURE);
+        else if(this instanceof Group)
+            setSort(CDMSort.GROUP);
+        else if(this instanceof Variable) // Only case left is atomic var
+            setSort(CDMSort.VARIABLE);
     }
 
-    public CDMNode(String name) {this(); setShortName(name);}
+    public CDMNode(String name)
+    {
+        this();
+        setShortName(name);
+    }
 
     // Get/Set
-    public CDMSort getSort() {return this.sort;}    
+    public CDMSort getSort()
+    {
+        return this.sort;
+    }
 
-    public void setSort(CDMSort sort) {if(!immutable) this.sort = sort;}
+    public void setSort(CDMSort sort)
+    {
+        if(!immutable) this.sort = sort;
+    }
 
     /**
      * Get the short name of this Variable. The name is unique within its parent group.
      */
-    public String getShortName() {return this.shortName;}    
+    public String getShortName()
+    {
+        return this.shortName;
+    }
 
     /**
      * Set the short name of this Variable. The name is unique within its parent group.
+     *
      * @param name new short name
      */
     public void setShortName(String name)
-	{if(!immutable) this.shortName = name;}
+    {
+        if(!immutable) this.shortName = NetcdfFile.makeValidCdmObjectName(name);
+    }
 
-   /**
-    * Get its parent Group, or null if its the root group.
-    *
-    * @return parent Group
-    */
-    public Group getParentGroup() {return this.group;}    
+    /**
+     * Get its parent Group, or null if its the root group.
+     *
+     * @return parent Group
+     */
+    public Group getParentGroup()
+    {
+        return this.group;
+    }
 
-   /**
-    * Alias for getParentGroup
-    *
-    * @return parent Group
-    */
-    public Group getGroup() {return getParentGroup();}    
+    /**
+     * Alias for getParentGroup
+     *
+     * @return parent Group
+     */
+    public Group getGroup()
+    {
+        return getParentGroup();
+    }
 
-   /**
-    * Set the parent Group
-    *
-    * @param parent The new parent group
-    */
+    /**
+     * Set the parent Group
+     *
+     * @param parent The new parent group
+     */
     public void setParentGroup(Group parent)
-	{if(!immutable) this.group = parent;}
+    {
+        if(!immutable) this.group = parent;
+    }
 
-   /**
-    * Get immutable flag
-    * As a rule, subclasses will access directly
-    *
-    * @return Immutable flag
-    */
-    public boolean getImmutable() {return this.immutable;}    
+    /**
+     * Get its parent structure, or null if not in structure
+     *
+     * @return parent structure
+     */
+    public Structure getParentStructure()
+    {
+        return this.struct;
+    }
 
-   /**
-    * Set the immutable flag
-    *
-    * @param tf The new value for the immutable flag
-    */
-    public void setImmutable(boolean tf) {this.immutable = tf;}
+    /**
+     * Set the parent Structure
+     *
+     * @param parent The new parent structure
+     */
+    public void setParentStructure(Structure parent)
+    {
+        if(!immutable) this.struct = parent;
+    }
+
+    /**
+     * Test for presence of parent Structure
+     *
+     * @return true iff struct != null
+     */
+
+    public boolean isMemberOfStructure() {return struct != null;}
+
+    /**
+     * Get immutable flag
+     * As a rule, subclasses will access directly
+     *
+     * @return Immutable flag
+     */
+    public boolean getImmutable()
+    {
+        return this.immutable;
+    }
+
+    /**
+     * Set the immutable flag
+     *
+     * @param tf The new value for the immutable flag
+     */
+    public void setImmutable(boolean tf)
+    {
+        this.immutable = tf;
+    }
+
+
+    /**
+     * Get the dodsname
+     *
+     * @return the original names from the DDS or DAS; if null,
+     *         then return the short name
+     */
+    public String getDODSName()
+    {
+        if(dodsname == null)
+            return this.shortName;
+        else
+            return this.dodsname;
+    }
+
+    /**
+     * Store the original dods name
+     *
+     * @param name The original name from the DDS/DAS
+     */
+    public void setDODSName(String name)
+    {
+        this.dodsname = name;
+    }
+
+
+    /**
+     * Get the Full name of this object. Certain characters are
+     * backslash escaped (see NetcdfFile)
+     *
+     * @return full name with backslash escapes
+     */
+    public String getFullName()
+    {
+        if(this.fullName != null)
+            return this.fullName;
+        this.fullName = NetcdfFile.makeFullName(this);
+        return this.fullName;
+    }
+
+    /**
+     * Alias for getFullName
+     *
+     * @return full name with backslash escapes
+     */
+    public String getFullNameEscaped()
+    {
+        return getFullName();
+    }
+
+
+/* Turn this on before a release
+    public String getName()
+    {
+	switch (sort) {
+	case ATTRIBUTE:
+	case DIMENSION:
+	case ENUMERATION:
+	    // for these cases, getName is getShortName
+	    return getShortName();
+
+	case VARIABLE: // Atomic
+	case SEQUENCE:
+	case STRUCTURE:
+	case GROUP:
+	    // for these cases, getName is getFullName
+	    return getFullName();
+	}
+    }
+*/
+
 }

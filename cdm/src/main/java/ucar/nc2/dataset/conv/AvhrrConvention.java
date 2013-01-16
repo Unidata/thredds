@@ -35,8 +35,6 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
@@ -79,15 +77,15 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    ds.addAttribute(null, new Attribute("FeatureType", FeatureType.IMAGE.toString())); // LOOK
+    ds.addAttribute(null, new Attribute("FeatureType", FeatureType.SWATH.toString()));
 
     Group vhrr = ds.findGroup("VHRR");
     Group loc = vhrr.findGroup("Geo-Location");
     Variable lat = loc.findVariable("Latitude");
-    lat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+    lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     Variable lon = loc.findVariable("Longitude");
-    lon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+    lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
     lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     int[] shape = lat.getShape();

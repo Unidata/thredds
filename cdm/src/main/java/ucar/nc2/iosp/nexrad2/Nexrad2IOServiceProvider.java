@@ -370,7 +370,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     String nradialsName = "numRadials"+abbrev;
     Variable nradialsVar = new Variable(ncfile, null, null, nradialsName);
     nradialsVar.setDataType(DataType.INT);
-    nradialsVar.setDimensions(scanDim.getName());
+    nradialsVar.setDimensions(scanDim.getShortName());
     nradialsVar.addAttribute( new Attribute(CDM.LONG_NAME, "number of valid radials in this scan"));
     ncfile.addVariable(null, nradialsVar);
 
@@ -378,7 +378,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     String ngateName = "numGates"+abbrev;
     Variable ngateVar = new Variable(ncfile, null, null, ngateName);
     ngateVar.setDataType(DataType.INT);
-    ngateVar.setDimensions(scanDim.getName());
+    ngateVar.setDimensions(scanDim.getShortName());
     ngateVar.addAttribute( new Attribute(CDM.LONG_NAME, "number of valid gates in this scan"));
     ncfile.addVariable(null, ngateVar);
 

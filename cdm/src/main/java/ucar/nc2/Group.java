@@ -33,11 +33,12 @@
 package ucar.nc2;
 
 import ucar.ma2.DataType;
+import ucar.nc2.util.Indent;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Collections;
-import java.io.PrintWriter;
 
 /**
  * A Group is a logical collection of Variables.
@@ -72,6 +73,7 @@ public class Group extends CDMNode {
    *
    * @return group full name
    */
+/* see CDMNode.getFullName()
   public String getFullName() {
     String name = getShortName();
     Group parent = getParentGroup();
@@ -82,6 +84,7 @@ public class Group extends CDMNode {
     else
 	return parent.getFullName() + "/" + name;
   }
+*/
 
   /**
    * Alias for getFullName
@@ -90,10 +93,12 @@ public class Group extends CDMNode {
    *
    * @return group full name
    */
+/*
    @Deprecated
    public String getName() {
     return getFullName();
    }
+*/
  
   /**
    * Is this the root group?
@@ -147,7 +152,7 @@ public class Group extends CDMNode {
    *
   public Variable findVariableEscaped(String varShortNameEscaped) {
     if (varShortNameEscaped == null) return null;
-    return findVariable( NetcdfFile.unescapeName(varShortNameEscaped));
+    return findVariable( NetcdfFile.makeNameUnescaped(varShortNameEscaped));
   } */
 
   /**
@@ -192,7 +197,7 @@ public class Group extends CDMNode {
    */
   public Group findGroup(String groupShortName) {
     if (groupShortName == null) return null;
-    // groupShortName = NetcdfFile.unescapeName(groupShortName);
+    // groupShortName = NetcdfFile.makeNameUnescaped(groupShortName);
 
     for (Group group : groups) {
       if (groupShortName.equals(group.getShortName()))
@@ -229,7 +234,7 @@ public class Group extends CDMNode {
    */
   public Dimension findDimension(String name) {
     if (name == null) return null;
-    // name = NetcdfFile.unescapeName(name);
+    // name = NetcdfFile.makeNameUnescaped(name);
     Dimension d = findDimensionLocal(name);
     if (d != null) return d;
     Group parent = getParentGroup();
@@ -247,9 +252,9 @@ public class Group extends CDMNode {
    */
   public Dimension findDimensionLocal(String name) {
     if (name == null) return null;
-    // name =  NetcdfFile.unescapeName(name);
+    // name =  NetcdfFile.makeNameUnescaped(name);
     for (Dimension d : dimensions) {
-      if (name.equals(d.getName()))
+      if (name.equals(d.getShortName()))
         return d;
     }
 
@@ -273,7 +278,7 @@ public class Group extends CDMNode {
    */
   public Attribute findAttribute(String name) {
     if (name == null) return null;
-    // name = NetcdfFile.unescapeName(name);
+    // name = NetcdfFile.makeNameUnescaped(name);
 
     for (Attribute a : attributes) {
       if (name.equals(a.getShortName()))
@@ -290,7 +295,7 @@ public class Group extends CDMNode {
    */
   public Attribute findAttributeIgnoreCase(String name) {
     if (name == null) return null;
-    //name =  NetcdfFile.unescapeName(name);
+    //name =  NetcdfFile.makeNameUnescaped(name);
     for (Attribute a : attributes) {
       if (name.equalsIgnoreCase(a.getShortName()))
         return a;
@@ -307,7 +312,7 @@ public class Group extends CDMNode {
    */
   public EnumTypedef findEnumeration(String name) {
     if (name == null) return null;
-    // name =  NetcdfFile.unescapeName(name);
+    // name =  NetcdfFile.makeNameUnescaped(name);
     for (EnumTypedef d : enumTypedefs) {
       if (name.equals(d.getShortName()))
         return d;
@@ -367,7 +372,7 @@ public class Group extends CDMNode {
     return sbuff.toString();
   }
 
-  protected void writeCDL(PrintWriter out, String indent, boolean strict) {
+  protected void writeCDL(Formatter out, Indent indent, boolean strict) {
     boolean hasE = (enumTypedefs.size() > 0);
     boolean hasD = (dimensions.size() > 0);
     boolean hasV = (variables.size() > 0);
@@ -375,47 +380,65 @@ public class Group extends CDMNode {
     boolean hasA = (attributes.size() > 0);
 
     if (hasE) {
-      out.print(indent + " types:\n");
+      out.format("%stypes:%n", indent);
+      indent.incr();
       for (EnumTypedef e : enumTypedefs) {
-        out.print(indent + e.writeCDL(strict));
-        out.print(indent + "\n");
+        e.writeCDL(out, indent, strict);
+        out.format("%n");
       }
-      out.print(indent + "\n");
+      indent.decr();
+      out.format("%n");
     }
 
-    if (hasD)
-      out.print(indent + " dimensions:\n");
-    for (Dimension myd : dimensions) {
-      out.print(indent + myd.writeCDL(strict));
-      out.print(indent + "\n");
+    if (hasD) {
+      out.format("%sdimensions:%n", indent);
+      indent.incr();
+      for (Dimension myd : dimensions) {
+        myd.writeCDL(out, indent, strict);
+        out.format("%n");
+      }
+      indent.decr();
     }
 
-    if (hasV)
-      out.print(indent + " variables:\n");
-    for (Variable v : variables) {
-      out.print(v.writeCDL(indent + "   ", false, strict));
+    if (hasV) {
+      out.format("%svariables:%n", indent);
+      indent.incr();
+      for (Variable v : variables) {
+        v.writeCDL(out, indent, false, strict);
+        out.format("%n");
+      }
+      indent.decr();
     }
 
     for (Group g : groups) {
-      String gname = strict ? NetcdfFile.escapeNameCDL(g.getShortName()) : g.getShortName();
-      out.print("\n " + indent + "Group " + gname + " {\n");
-      g.writeCDL(out, indent + "  ", strict);
-      out.print(indent + " }\n");
+      String gname = strict ? NetcdfFile.makeValidCDLName(g.getShortName()) : g.getShortName();
+      out.format("%n%sgroup: %s {%n", indent, gname);
+      indent.incr();
+      g.writeCDL(out, indent, strict);
+      indent.decr();
+      out.format("%s}%n", indent);
     }
 
-    if (hasA && (hasE || hasD || hasV || hasG))
-      out.print("\n");
+    //if (hasA && (hasE || hasD || hasV || hasG))
+    //  out.format("%n");
 
-    if (hasA && strict)
-      out.print(indent + " // global attributes:\n");
-    for (Attribute att : attributes) {
-      String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
-      out.print(indent + " " + name + ":");
-      out.print(att.toString(strict));
-      out.print(";");
-      if (!strict && (att.getDataType() != DataType.STRING)) out.print(" // " + att.getDataType());
-      out.print("\n");
+    if (hasA) {
+      if (isRoot())
+        out.format("%s// global attributes:%n", indent);
+      else
+        out.format("%s// group attributes:%n", indent);
+      //indent.incr();
+      for (Attribute att : attributes) {
+        //String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
+        out.format("%s:", indent);
+        att.writeCDL(out, strict);
+        out.format(";");
+        if (!strict && (att.getDataType() != DataType.STRING)) out.format(" // %s", att.getDataType());
+        out.format("%n");
+      }
+      //indent.decr();
     }
+
   }
 
 
@@ -453,9 +476,8 @@ public class Group extends CDMNode {
    */
   public String setName(String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    shortName = NetcdfFile.makeValidCdmObjectName(shortName);
     setShortName(shortName);
-    return shortName;
+    return getShortName();
   }
 
   /**
@@ -467,7 +489,7 @@ public class Group extends CDMNode {
     if (immutable) throw new IllegalStateException("Cant modify");
     for (int i = 0; i < attributes.size(); i++) {
       Attribute a = attributes.get(i);
-      if (att.getName().equals(a.getName())) {
+      if (att.getShortName().equals(a.getShortName())) {
         attributes.set(i, att); // replace
         return;
       }
@@ -695,7 +717,7 @@ public class Group extends CDMNode {
     Group current = (isabsolute ? ncfile.getRootGroup() : this);
     for (String name : pieces) {
       if (name == null) continue;
-      String clearname = NetcdfFile.unescapeName(name);  //??
+      String clearname = NetcdfFile.makeNameUnescaped(name);  //??
       Group next = current.findGroup(clearname);
       if (next == null) {
         next = new Group(ncf, current, clearname);

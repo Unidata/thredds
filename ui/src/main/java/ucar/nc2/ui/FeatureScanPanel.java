@@ -32,6 +32,9 @@
  */
 package ucar.nc2.ui;
 
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.grid.CoverageCS;
+import ucar.nc2.ft.grid.impl.CoverageCSFactory;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -83,7 +86,7 @@ public class FeatureScanPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Check CoordSystems", new AbstractAction() {
+    varPopup.addAction("Open in CoordSystems", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
         if (ftb == null) return;
@@ -115,6 +118,14 @@ public class FeatureScanPanel extends JPanel {
       }
     });
 
+    varPopup.addAction("Open as CoverageDataset", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+        if (ftb == null) return;
+        FeatureScanPanel.this.firePropertyChange("openCoverageDataset", null, ftb.f.getPath());
+      }
+    });
+
     varPopup.addAction("Open as RadialDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
@@ -131,6 +142,14 @@ public class FeatureScanPanel extends JPanel {
           bean.toString(f, false);
         }
         dumpTA.setText(f.toString());          
+      }
+    });
+
+    varPopup.addAction("Run Coverage Classifier", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+        if (ftb == null) return;
+        dumpTA.setText(ftb.runClassifier());
       }
     });
 
@@ -159,9 +178,17 @@ public class FeatureScanPanel extends JPanel {
 
   public boolean setScanDirectory(String dirName) {
     ftTable.setBeans(new ArrayList()); // clear
+    //repaint();
     FeatureScan scanner = new FeatureScan(dirName, true);
-    List<FeatureScan.Bean> beans = scanner.scan(new Formatter());
+    Formatter errlog = new Formatter();
+    List<FeatureScan.Bean> beans = scanner.scan(errlog);
+    if (beans.size() == 0)  {
+      dumpTA.setText(errlog.toString());
+      return false;
+    }
+
     ftTable.setBeans(beans);
+    //repaint();
     return true;
   }
 

@@ -66,7 +66,7 @@ public class TestGribMiscCoordinates {
 
     int idx = hybrid.findDimensionIndex("hybrid");
     Dimension dim = hybrid.getDimension(idx);
-    assert dim.getName().equals("hybrid");
+    assert dim.getShortName().equals("hybrid");
 
     ncfile.close();
   }

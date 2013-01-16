@@ -41,9 +41,9 @@ import ucar.ma2.Section;
  */
 
 public interface VariableIF extends VariableSimpleIF {
-    public java.lang.String getFullName();
-    public java.lang.String getFullNameEscaped();
-    public java.lang.String getShortName();
+    public String getFullName();
+    public String getFullNameEscaped();
+    public String getShortName();
     public void getNameAndDimensions(java.util.Formatter result, boolean useFullName, boolean strict);
 
     public boolean isUnlimited();
@@ -57,11 +57,11 @@ public interface VariableIF extends VariableSimpleIF {
 
     public java.util.List<Dimension> getDimensions();
     public ucar.nc2.Dimension getDimension(int index);
-    public int findDimensionIndex(java.lang.String dimName);
+    public int findDimensionIndex(String dimName);
 
     public java.util.List<Attribute> getAttributes();
-    public ucar.nc2.Attribute findAttribute(java.lang.String attName);
-    public ucar.nc2.Attribute findAttributeIgnoreCase(java.lang.String attName);
+    public ucar.nc2.Attribute findAttribute(String attName);
+    public ucar.nc2.Attribute findAttributeIgnoreCase(String attName);
 
     public ucar.nc2.Group getParentGroup();
     public ucar.nc2.Variable section(java.util.List<Range> ranges) throws ucar.ma2.InvalidRangeException;
@@ -69,7 +69,7 @@ public interface VariableIF extends VariableSimpleIF {
     public java.util.List<Range> getRanges();
 
     public ucar.ma2.Array read(int[] origin, int[] shape) throws java.io.IOException, ucar.ma2.InvalidRangeException;
-    public ucar.ma2.Array read(java.lang.String rangeSpec) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    public ucar.ma2.Array read(String rangeSpec) throws java.io.IOException, ucar.ma2.InvalidRangeException;
     public ucar.ma2.Array read(ucar.ma2.Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
     public ucar.ma2.Array read() throws java.io.IOException;
 
@@ -92,8 +92,8 @@ public interface VariableIF extends VariableSimpleIF {
     public long readScalarLong() throws java.io.IOException;
     public float readScalarFloat() throws java.io.IOException;
     public double readScalarDouble() throws java.io.IOException;
-    public java.lang.String readScalarString() throws java.io.IOException;
+    public String readScalarString() throws java.io.IOException;
 
     // debug
-    public java.lang.String toStringDebug();
+    public String toStringDebug();
 }

@@ -49,12 +49,12 @@ public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
    * @return name of the data Variable
    * @deprecated use getFullName or getShortName
    */
-  public String getName();
+  //ambiguous v-a-v short or full name public String getName();
 
 
   /**
-   * full, unescaped name of the data Variable
-   * @return full, unescaped name of the data Variable
+   * full, backslash escaped name of the data Variable
+   * @return full, backslash escaped name of the data Variable
    */
   public String getFullName();
 

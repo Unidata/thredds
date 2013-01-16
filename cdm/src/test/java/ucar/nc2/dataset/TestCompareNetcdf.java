@@ -45,25 +45,25 @@ public class TestCompareNetcdf  {
     Iterator s = subset.getDimensions().iterator();
     while (s.hasNext()) {
       Dimension ds = (Dimension) s.next();
-      Dimension d = ncfile.findDimension( ds.getName());
+      Dimension d = ncfile.findDimension( ds.getShortName());
       if (null == d)
-        return "missing dimension "+ds.getName();
+        return "missing dimension "+ds.getShortName();
       if (d.getLength() != ds.getLength())
-        return "wrong length, dimension "+ds.getName();
+        return "wrong length, dimension "+ds.getShortName();
       if (d.isUnlimited() != ds.isUnlimited())
-        return "wrong unlimited, dimension "+ds.getName();
+        return "wrong unlimited, dimension "+ds.getShortName();
     }
 
     Iterator atts = subset.getGlobalAttributes().iterator();
     while (atts.hasNext()) {
       Attribute ds = (Attribute) atts.next();
-      Attribute d = ncfile.findGlobalAttribute( ds.getName());
+      Attribute d = ncfile.findGlobalAttribute( ds.getShortName());
       if (null == d)
-        return "missing attribute "+ds.getName();
+        return "missing attribute "+ds.getShortName();
       if (!d.getDataType().equals(ds.getDataType()))
-        return "wrong getDataType, attribute "+ds.getName();
+        return "wrong getDataType, attribute "+ds.getShortName();
       if (!d.getStringValue().equals(ds.getStringValue()))
-        return "wrong Value, attribute "+ds.getName();
+        return "wrong Value, attribute "+ds.getShortName();
     }
 
     Iterator vs = subset.getVariables().iterator();
@@ -88,19 +88,19 @@ public class TestCompareNetcdf  {
       Dimension ds = (Dimension) s.get(i);
       Dimension d = v.getDimension(i);
       if (!ds.equals(d))
-        return "dimension not equals "+ds.getName()+" for variable "+subset.getFullName();
+        return "dimension not equals "+ds.getShortName()+" for variable "+subset.getFullName();
     }
 
     Iterator atts = subset.getAttributes().iterator();
     while (atts.hasNext()) {
       Attribute ds = (Attribute) atts.next();
-      Attribute d = v.findAttribute( ds.getName());
+      Attribute d = v.findAttribute( ds.getShortName());
       if (null == d)
-        return "missing attribute "+ds.getName()+" for variable "+subset.getFullName();;
+        return "missing attribute "+ds.getShortName()+" for variable "+subset.getFullName();;
       if (!d.getDataType().equals(ds.getDataType()))
-        return "wrong getDataType, attribute "+ds.getName()+" for variable "+subset.getFullName();
+        return "wrong getDataType, attribute "+ds.getShortName()+" for variable "+subset.getFullName();
       if (!d.getStringValue().equals(ds.getStringValue()))
-        return "wrong Value, attribute "+ds.getName()+" for variable "+subset.getFullName();;
+        return "wrong Value, attribute "+ds.getShortName()+" for variable "+subset.getFullName();;
     }
 
     Array vArray = v.read();

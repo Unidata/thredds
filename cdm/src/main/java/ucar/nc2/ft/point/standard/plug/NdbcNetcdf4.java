@@ -109,10 +109,10 @@ public class NdbcNetcdf4 extends TableConfigurerImpl  {
     if (nt.stnDesc == null)
       nt.stnDesc = ds.findAttValueIgnoreCase(null, "comment", null);
 
-    TableConfig obs = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName());
+    TableConfig obs = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName());
     obs.structName = "record";
     obs.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
-    obs.dimName = obsDim.getName();
+    obs.dimName = obsDim.getShortName();
     obs.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     nt.addChild(obs);
 

@@ -57,7 +57,6 @@ import java.util.*;
  */
 
 public class GridRenderer {
-  public static enum MinMaxType {horiz, log, hold};
 
   private PreferencesExt store;
 
@@ -69,7 +68,7 @@ public class GridRenderer {
   private boolean isNewField = true;
 
   private ColorScale cs = null;
-  private MinMaxType dataMinMaxType = MinMaxType.horiz;
+  private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
   private ProjectionImpl drawProjection = null;    // current drawing Projection
   private ProjectionImpl dataProjection = null;    // current GridDatatype Projection
   private GridDatatype orgGrid = null;
@@ -128,7 +127,7 @@ public class GridRenderer {
    * set the ColorScale data min/max type
    * @param type MinMaxType
    */
-  public void setDataMinMaxType(MinMaxType type) {
+  public void setDataMinMaxType(ColorScale.MinMaxType type) {
     if (type != dataMinMaxType) {
       dataMinMaxType = type;
       colorScaleChanged = true;
@@ -617,7 +616,7 @@ public class GridRenderer {
 
   // set colorscale limits, missing data
   private void setColorScaleParams() {
-       if (dataMinMaxType == MinMaxType.hold && !isNewField)
+       if (dataMinMaxType == ColorScale.MinMaxType.hold && !isNewField)
       return;
     isNewField = false;
 

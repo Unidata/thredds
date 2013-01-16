@@ -57,6 +57,7 @@ public class TestAggSynGrid extends TestCase {
     public void setUp() throws IOException {
       if (gds != null) return;
       gds = ucar.nc2.dt.grid.GridDataset.open(filename);
+      System.out.printf("open %s%n", filename);
     }
 
     public void tearDown() throws IOException {
@@ -94,19 +95,19 @@ public class TestAggSynGrid extends TestCase {
 
       Dimension latDim = ncfile.findDimension("lat");
       assert null != latDim;
-      assert latDim.getName().equals("lat");
+      assert latDim.getShortName().equals("lat");
       assert latDim.getLength() == 3;
       assert !latDim.isUnlimited();
 
       Dimension lonDim = ncfile.findDimension("lon");
       assert null != lonDim;
-      assert lonDim.getName().equals("lon");
+      assert lonDim.getShortName().equals("lon");
       assert lonDim.getLength() == 4;
       assert !lonDim.isUnlimited();
 
       Dimension timeDim = ncfile.findDimension("time");
       assert null != timeDim;
-      assert timeDim.getName().equals("time");
+      assert timeDim.getShortName().equals("time");
       assert timeDim.getLength() == 3;
     }
 

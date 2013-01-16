@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import ucar.ma2.*;
 
+import java.util.Formatter;
 import java.util.List;
 import java.nio.ByteBuffer;
 
@@ -61,15 +62,16 @@ public class Attribute extends CDMNode {
    *
    * @return name
    */
+  /*
   public String getName() {
     return getShortName();
-  }
+  }  */
 
   /**
    * Set the name of this Attribute.
    * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
    *
-   * @param name
+   * @param name name of attribute
    */
   public synchronized void setName(String name) {
       setShortName(name);
@@ -289,44 +291,53 @@ public class Attribute extends CDMNode {
   }
 
   /**
-   * CDL representation
-   *
+   * CDL representation, may be strict
    * @param strict if true, create strict CDL, escaping names
    * @return CDL representation
    */
-  public String toString(boolean strict) {
-    StringBuilder buff = new StringBuilder();
-    buff.append(strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName());
+  public String toString( boolean strict) {
+    Formatter f = new Formatter();
+    writeCDL(f, strict);
+    return f.toString();
+  }
+
+  /**
+   * Write CDL representation into f
+   *
+   * @param f write into this
+   * @param strict if true, create strict CDL, escaping names
+   */
+  protected void writeCDL(Formatter f, boolean strict) {
+    f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
     if (isString()) {
-      buff.append(" = ");
+      f.format(" = ");
       for (int i = 0; i < getLength(); i++) {
-        if (i != 0) buff.append(", ");
+        if (i != 0) f.format(", ");
         String val = getStringValue(i);
         if (val != null)
-          buff.append("\"").append(NCdumpW.encodeString(val)).append("\"");
+          f.format("\"%s\"", NCdumpW.encodeString(val));
       }
     } else {
-      buff.append(" = ");
+      f.format(" = ");
       for (int i = 0; i < getLength(); i++) {
-        if (i != 0) buff.append(", ");
-        buff.append(getNumericValue(i));
+        if (i != 0) f.format(", ");
+        f.format("%s", getNumericValue(i));
         if (dataType == DataType.FLOAT)
-          buff.append("f");
+          f.format("f");
         else if (dataType == DataType.SHORT) {
-          if (isUnsigned()) buff.append("US");
-          else buff.append("S");
+          if (isUnsigned()) f.format("US");
+          else f.format("S");
         } else if (dataType == DataType.BYTE) {
-          if (isUnsigned()) buff.append("UB");
-          else buff.append("B");
+          if (isUnsigned()) f.format("UB");
+          else f.format("B");
         } else if (dataType == DataType.LONG) {
-          if (isUnsigned()) buff.append("UL");
-          else buff.append("L");
+          if (isUnsigned()) f.format("UL");
+          else f.format("L");
         } else if (dataType == DataType.INT) {
-          if (isUnsigned()) buff.append("U");
+          if (isUnsigned()) f.format("U");
         }
       }
     }
-    return buff.toString();
   }
 
 

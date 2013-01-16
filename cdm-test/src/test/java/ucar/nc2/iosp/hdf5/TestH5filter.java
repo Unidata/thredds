@@ -106,7 +106,7 @@ public class TestH5filter extends TestCase {
     NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIRDLS2-AFGL_b027_na.he5");
 
     // picture looks ok in ToolsUI
-    Variable v = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data Fields/Altitude");
+    Variable v = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
     assert v != null;
     Array data = v.read();
     int[] shape = data.getShape();

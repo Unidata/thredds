@@ -289,7 +289,7 @@ public abstract class Table {
 
     @Override
     protected void showTableExtraInfo(String indent, Formatter f) {
-      f.format("%sstruct=%s, dim=%s type=%s%n", indent, struct.getNameAndDimensions(), dim.getName(), struct.getClass().getName());
+      f.format("%sstruct=%s, dim=%s type=%s%n", indent, struct.getNameAndDimensions(), dim.getShortName(), struct.getClass().getName());
     }
 
     @Override
@@ -299,7 +299,7 @@ public abstract class Table {
 
     @Override
     public String showDimension() {
-      return dim.getName();
+      return dim.getShortName();
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -335,12 +335,12 @@ public abstract class Table {
 
     @Override
     protected void showTableExtraInfo(String indent, Formatter f) {
-      f.format("%sArrayStruct=%s, dim=%s%n", indent, new Section(as.getShape()), dim.getName());
+      f.format("%sArrayStruct=%s, dim=%s%n", indent, new Section(as.getShape()), dim.getShortName());
     }
 
     @Override
     public String showDimension() {
-      return dim.getName();
+      return dim.getShortName();
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -701,12 +701,12 @@ public abstract class Table {
 
      @Override
      protected void showTableExtraInfo(String indent, Formatter f) {
-       f.format("%sStructureMembers=%s, dim=%s,%s%n", indent, sm.getName(), outer.getName(), inner.getName());
+       f.format("%sStructureMembers=%s, dim=%s,%s%n", indent, sm.getName(), outer.getShortName(), inner.getShortName());
      }
 
      @Override
      public String showDimension() {
-       return inner.getName();
+       return inner.getShortName();
      }
 
      @Override
@@ -727,7 +727,7 @@ public abstract class Table {
 
       @Override
       public String getName() {
-        return "Multidim(" + outer.getName()+"," + inner.getName() + ")";
+        return "Multidim(" + outer.getShortName()+"," + inner.getShortName() + ")";
       }
    }
 
@@ -774,12 +774,12 @@ public abstract class Table {
 
      @Override
      protected void showTableExtraInfo(String indent, Formatter f) {
-       f.format("%sStructureMembers=%s, dim=%s%n", indent, sm.getName(), dim.getName());
+       f.format("%sStructureMembers=%s, dim=%s%n", indent, sm.getName(), dim.getShortName());
      }
 
      @Override
      public String showDimension() {
-       return dim.getName();
+       return dim.getShortName();
      }
 
      @Override
@@ -802,7 +802,7 @@ public abstract class Table {
 
       @Override
       public String getName() {
-        return "Multidim(" + dim.getName()+"," + middle.getName() +"," + inner.getName() + ")";
+        return "Multidim(" + dim.getShortName()+"," + middle.getShortName() +"," + inner.getShortName() + ")";
       }
 
    }
@@ -854,7 +854,7 @@ public abstract class Table {
 
            @Override
       public String getName() {
-        return "MultidimPseudo(" + outer.getName()+"," + inner.getName() + ")";
+        return "MultidimPseudo(" + outer.getShortName()+"," + inner.getShortName() + ")";
       }
 
   }
@@ -905,7 +905,7 @@ public abstract class Table {
 
       @Override
       public String getName() {
-        return "MultidimPsuedo(" + dim.getName()+"," + middle.getName() +"," + inner.getName() + ")";
+        return "MultidimPsuedo(" + dim.getShortName()+"," + middle.getShortName() +"," + inner.getShortName() + ")";
       }
 
   }

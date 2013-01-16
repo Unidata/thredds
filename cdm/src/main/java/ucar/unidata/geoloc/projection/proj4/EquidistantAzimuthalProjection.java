@@ -23,6 +23,10 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
+/**
+ * AzimuthalEquidistant Projection.
+ * Port from proj4.
+ */
 public class EquidistantAzimuthalProjection extends ProjectionImpl {
   public final static int NORTH_POLE = 1;
   public final static int SOUTH_POLE = 2;

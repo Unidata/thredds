@@ -34,6 +34,7 @@
 package ucar.nc2;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.util.Indent;
 
 import java.util.*;
 
@@ -50,11 +51,13 @@ public class EnumTypedef extends CDMNode {
   private ArrayList<String> enumStrings;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
-    super(NetcdfFile.makeValidCdmObjectName(name));
+    super(name);
     this.map = map;
   }
 
+  /*Obsolete
   public String getName() { return getShortName(); }
+  */
 
   public List<String> getEnumStrings() {
     if (enumStrings != null) {
@@ -77,22 +80,26 @@ public class EnumTypedef extends CDMNode {
    * @return CDL representation.
    */
   public String writeCDL(boolean strict) {
-    StringBuilder buff = new StringBuilder();
-    String name = strict ? NetcdfFile.escapeNameCDL(getName()) : getName();
-    buff.append("  enum ").append(name).append(" { ");
+    Formatter out = new Formatter();
+    writeCDL(out, new Indent(2), strict);
+    return out.toString();
+  }
+
+  protected void writeCDL(Formatter out, Indent indent, boolean strict) {
+    String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
+    out.format("%senum %s { ", indent, name);
     int count = 0;
     List<Object> keyset = Arrays.asList(map.keySet().toArray());
     //Collections.sort(keyset);
     for (Object key : keyset) {
       String s = map.get(key);
-      if (0 < count++) buff.append(", ");
+      if (0 < count++) out.format(", ");
       if (strict)
-        buff.append( NetcdfFile.escapeNameCDL(s)).append(" = ").append(key);
+        out.format("%s = %s", NetcdfFile.makeValidCDLName(s), key);
       else
-        buff.append("'").append(s).append("' = ").append(key);
+        out.format("'%s' = %s", s, key);
     }
-    buff.append("};");
-    return buff.toString();
+    out.format("};");
   }
 
   @Override

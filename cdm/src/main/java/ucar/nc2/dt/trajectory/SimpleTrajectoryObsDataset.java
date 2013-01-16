@@ -80,7 +80,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
     List list = ncd.getRootGroup().getDimensions();
     if ( list.size() != 1) return null;
     Dimension d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( timeDimName)) return null;
+    if ( ! d.getShortName().equals( timeDimName)) return null;
 
     Config trajConfig = new Config();
     trajConfig.setTimeDim( d);
@@ -91,7 +91,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
     list = var.getDimensions();
     if ( list.size() != 1) return null;
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( timeDimName)) return null;
+    if ( ! d.getShortName().equals( timeDimName)) return null;
     String units = var.findAttribute( "units").getStringValue();
     Date date = DateUnit.getStandardDate( "0 " + units);
     if ( date == null) return null;
@@ -104,7 +104,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
     list = var.getDimensions();
     if ( list.size() != 1) return null;
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( timeDimName)) return null;
+    if ( ! d.getShortName().equals( timeDimName)) return null;
     units = var.findAttribute( "units").getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "degrees_north")) return null;
 
@@ -116,7 +116,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
     list = var.getDimensions();
     if ( list.size() != 1) return null;
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( timeDimName)) return null;
+    if ( ! d.getShortName().equals( timeDimName)) return null;
     units = var.findAttribute( "units").getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "degrees_east")) return null;
 
@@ -128,7 +128,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
     list = var.getDimensions();
     if ( list.size() != 1) return null;
     d = (Dimension) list.get(0);
-    if ( ! d.getName().equals( timeDimName)) return null;
+    if ( ! d.getShortName().equals( timeDimName)) return null;
     units = var.findAttribute( "units").getStringValue();
     if ( ! SimpleUnit.isCompatible( units, "meters")) return null;
 

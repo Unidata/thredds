@@ -121,7 +121,7 @@ public class TestConvertD2N {
     List vars = dodsfile.getVariables();
     for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      String name = DODSNetcdfFile.getDODSshortName(v);
+      String name = DODSNetcdfFile.getDODSConstraintName(v);
       DodsV dodsV = root.findByDodsShortName( name);
       if (dodsV == null) {
         System.out.println("Cant find "+name);
@@ -169,7 +169,7 @@ public class TestConvertD2N {
     DodsV root = DodsV.parseDataDDS( dataDDS);
     for (int i = 0; i < root.children.size(); i++) {
       DodsV dodsV = (DodsV) root.children.get(i);
-      Variable v = dodsfile.findVariable( dodsV.getNetcdfShortName());
+      Variable v = dodsfile.findVariable( dodsV.getFullName());
       Array data = converter.convertTopVariable(v, null, dodsV);
       showArray( v.getFullName(), data, out, "");
 

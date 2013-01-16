@@ -37,6 +37,7 @@ import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ft.grid.impl.CoverageCSFactory;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -77,11 +78,21 @@ public class CoordSysTable extends JPanel {
   private BeanTableSorted varTable, csTable, axisTable;
   private JSplitPane split, split2;
   private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
+  private IndependentWindow infoWindow, attWindow;
   private Formatter parseInfo = new Formatter();
 
-  public CoordSysTable(PreferencesExt prefs) {
+  public CoordSysTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
+
+    if (buttPanel != null) {
+      AbstractAction attAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          showAtts();
+        }
+      };
+      BAMutil.setActionProperties(attAction, "FontDecr", "global attributes", false, 'A', -1);
+      BAMutil.addActionToContainer(buttPanel, attAction);
+    }
 
     varTable = new BeanTableSorted(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
     varTable.addListSelectionListener(new ListSelectionListener() {
@@ -136,7 +147,7 @@ public class CoordSysTable extends JPanel {
         infoTA.clear();
         infoTA.appendLine("Coordinate System = " + coordSys.getName());
         for (CoordinateAxis axis : coordSys.getCoordinateAxes()) {
-          infoTA.appendLine("  " + axis.getAxisType() + " " + axis.writeCDL("   ", true, false));
+          infoTA.appendLine("  " + axis.getAxisType() + " " + axis.writeCDL(true, false));
         }
         infoTA.appendLine(" Coordinate Transforms");
         for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
@@ -313,6 +324,35 @@ public class CoordSysTable extends JPanel {
     add(split2, BorderLayout.CENTER);
   }
 
+  private BeanTableSorted attTable;
+  public void showAtts() {
+    if (ds == null) return;
+    if (attTable == null) {
+      // global attributes
+      attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
+      PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(attTable.getJTable(), "Options");
+      varPopup.addAction("Show Attribute", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          AttributeBean bean = (AttributeBean) attTable.getSelectedBean();
+          if (bean != null) {
+            infoTA.setText(bean.att.toString());
+            infoTA.gotoTop();
+            infoWindow.show();
+          }
+        }
+      });
+      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage( "netcdfUI"), attTable);
+      attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
+    }
+
+    List<AttributeBean> attlist = new ArrayList<AttributeBean>();
+    for (Attribute att : ds.getGlobalAttributes()) {
+      attlist.add(new AttributeBean(att));
+    }
+    attTable.setBeans(attlist);
+    attWindow.show();
+  }
+
   private void showDates2D(VariableEnhanced axis, String units) throws Exception {
     infoTA.appendLine(NCdumpW.printVariableData(axis, null));
     String cal = getCalendarAttribute(axis);
@@ -383,6 +423,8 @@ public class CoordSysTable extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (infoWindow != null) prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
   }
 
   public void setDataset(NetcdfDataset ds) {
@@ -510,7 +552,7 @@ public class CoordSysTable extends JPanel {
           lens.append(",");
           names.append(",");
         }
-        String name = dim.isShared() ? dim.getName() : "anon";
+        String name = dim.isShared() ? dim.getShortName() : "anon";
         names.append(name);
         lens.append(dim.getLength());
       }
@@ -605,7 +647,7 @@ public class CoordSysTable extends JPanel {
     // static public String editableProperties() { return "title include logging freq"; }
 
     CoordinateSystem coordSys;
-    private String name, ctNames, dataType = "";
+    private String name, ctNames, dataType = "", coverageType;
     private int domainRank, rangeRank;
     private boolean isGeoXY, isLatLon, isProductSet, isRegular;
 
@@ -624,6 +666,8 @@ public class CoordSysTable extends JPanel {
       setRegular(cs.isRegular());
       setDomainRank(cs.getDomain().size());
       setRangeRank(cs.getCoordinateAxes().size());
+
+      coverageType = CoverageCSFactory.describe(null, cs);
 
       if (GridCoordSys.isGridCoordSys(parseInfo, cs, null)) {
         addDataType("grid");
@@ -726,6 +770,33 @@ public class CoordSysTable extends JPanel {
     public boolean isImplicit() {
       return coordSys.isImplicit();
     }
+
+    public String getCoverage() {
+      return coverageType;
+    }
+  }
+
+  public class AttributeBean {
+    private Attribute att;
+
+    // no-arg constructor
+    public AttributeBean() {}
+
+    // create from a dataset
+    public AttributeBean( Attribute att) {
+      this.att = att;
+    }
+
+    public String getName() { return att.getShortName(); }
+    public String getValue() {
+      Array value = att.getValues();
+      try {
+        return NCdumpW.printArray(value, null, null);
+      } catch (IOException e) {
+        return e.getMessage();
+      }
+    }
+
   }
 
   public class AxisBean {
@@ -764,7 +835,7 @@ public class CoordSysTable extends JPanel {
           lens.append(",");
           names.append(",");
         }
-        String name = dim.isShared() ? dim.getName() : "anon";
+        String name = dim.isShared() ? dim.getShortName() : "anon";
         names.append(name);
         lens.append(dim.getLength());
       }

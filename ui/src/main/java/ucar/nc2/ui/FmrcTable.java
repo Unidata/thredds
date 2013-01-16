@@ -133,7 +133,7 @@ public class FmrcTable extends JPanel {
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
-    coordSysTable = new CoordSysTable( (PreferencesExt) prefs.node("CoordSys"));
+    coordSysTable = new CoordSysTable( (PreferencesExt) prefs.node("CoordSys"), null);
 
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, messageTable, coordSysTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));

@@ -163,7 +163,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 				writer.addVariableAttribute(zVar, new Attribute(CDM.UNITS , zAxis.getUnitsString() ));
 				writer.addVariableAttribute(zVar, new Attribute(CF.POSITIVE , zAxis.getPositive() ));
 				writer.addVariableAttribute(zVar, new Attribute(CF.AXIS , "Z"  ));
-				coordinates = coordinates +" "+d.getName();
+				coordinates = coordinates +" "+d.getShortName();
 			}
 
 			for(String var : vars){
@@ -197,12 +197,12 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 
 		//Lon
 		lat = writer.addVariable(null, latName, DataType.DOUBLE, STATION_DIM_NAME);
-		writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, "degrees_north"));
+		writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, CDM.LAT_UNITS));
 		writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "profile latitude"));
 
 		//Lat
 		lon = writer.addVariable(null, lonName, DataType.DOUBLE, STATION_DIM_NAME);
-		writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, "degrees_east"));
+		writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, CDM.LON_UNITS));
 		writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "profile longitude"));	    
 
 		//TIME

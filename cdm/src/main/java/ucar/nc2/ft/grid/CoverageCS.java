@@ -33,24 +33,23 @@
 package ucar.nc2.ft.grid;
 
 import ucar.nc2.Dimension;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.dataset.*;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 import ucar.unidata.geoloc.LatLonPoint;
 
+import java.util.Formatter;
 import java.util.List;
 import java.util.Date;
 
 /**
- * A Coordinate System for gridded data. Assume:
+ * A Coordinate System for coverage data. Where:
  * <ul>
- * <li> always a product set</li>
- * <li> X and Y are 1 or 2 dimensional
- * <li> T is 1 or 2 dimensional. The 2D case is that it depends on runtime.
- * <li> We can create Dates out of the T and RT coordinate values.
- * <li> Z, E, RT are 1-dimensional
- * <li> An optional VerticalTransform can provide a height or pressure coordinate that may be 1-4 dimensional.
+ * <li> CS:D -> Rn</li>
+ * <li> D is the domain
+ * <li> R is a coordinate axis. n is getCoordinateAxes().size()
  * </ul>
  * <p/>
  * <p/>
@@ -70,7 +69,9 @@ import java.util.Date;
  *  curvilinear  - 2D lat,lon with no projection. need lat,lon <-> i,j
  */
 
-public interface GridCoordSys {
+public interface CoverageCS {
+
+  public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
   /**
    * The name of the Grid Coordinate System.
@@ -94,6 +95,13 @@ public interface GridCoordSys {
   public List<CoordinateAxis> getCoordinateAxes();
 
   /**
+   * Get the list of axes that are not x,y,z,t.
+   *
+   * @return List of CoordinateAxis.
+   */
+  public List<CoordinateAxis> getOtherCoordinateAxes();
+
+  /**
    * True if all axes are 1 dimensional.
    *
    * @return true if all axes are 1 dimensional.
@@ -111,14 +119,7 @@ public interface GridCoordSys {
   /////////////////////////////////////////////
   // horizontal axes
 
-  /**
-   * True if both X and Y axes are 1 dimensional and are regularly spaced.
-   *
-   * @return true if both X and Y axes are 1 dimensional and are regularly spaced.
-   */
-  public boolean isRegularSpatial();
-
-  /**
+   /**
    * Get the X axis. May be 1 or 2 dimensional.
    *
    * @return X CoordinateAxis, may not be null.
@@ -156,12 +157,12 @@ public interface GridCoordSys {
    */
   public ucar.unidata.geoloc.ProjectionRect getBoundingBox();
 
-  /**
+  /*
    * Get the Projection CoordinateTransform. It must exist if !isLatLon().
    *
    * @return ProjectionCT or null.
-   */
-  public ProjectionCT getProjectionCT();
+   *
+  public ProjectionCT getProjectionCT();   */
 
   /**
    * Get the Projection that performs the transform math.
@@ -171,78 +172,16 @@ public interface GridCoordSys {
    */
   public ucar.unidata.geoloc.ProjectionImpl getProjection();
 
-  /**
-   * Get Index Ranges for the given lat, lon bounding box.
-   * For projection, only an approximation based on corners.
-   * Must have CoordinateAxis1D or 2D for x and y axis.
-   *
-   * @param llbb a lat/lon bounding box.
-   * @return list of 2 Range objects, first y then x.
-   * @throws ucar.ma2.InvalidRangeException if llbb generates bad ranges
-   */
-  public java.util.List<Range> getRangesFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb) throws InvalidRangeException;
-
-  /**
-   * Given a point in x,y coordinate space, find the x,y indices.
-   *
-   * @param x_coord position in x coordinate space, ie, units of getXHorizAxis().
-   * @param y_coord position in y coordinate space, ie, units of getYHorizAxis().
-   * @param result  optionally pass in the result array to use.
-   * @return int[2], 0=x, 1=y indices of the point. These will be -1 if out of range.
-   */
-  public int[] findXYindexFromCoord(double x_coord, double y_coord, int[] result);
-
-  /**
-   * Given a point in x,y coordinate space, find the x,y indices.
-   * If outside the range, the closest point is returned
-   *
-   * @param x_coord position in x coordinate space, ie, units of getXHorizAxis().
-   * @param y_coord position in y coordinate space, ie, units of getYHorizAxis().
-   * @param result  optionally pass in the result array to use.
-   * @return int[2], 0=x, 1=y indices of the point.
-   */
-  public int[] findXYindexFromCoordBounded(double x_coord, double y_coord, int[] result);
-
-  /**
-   * Given a lat,lon point, find the x,y index of the containing grid point.
-   *
-   * @param lat    latitude position.
-   * @param lon    longitude position.
-   * @param result put result in here, may be null
-   * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
-   */
-  public int[] findXYindexFromLatLon(double lat, double lon, int[] result);
-
-  /**
-   * Given a lat,lon point, find the x,y index of the containing grid point.
-   * If outside the range, the closest point is returned
-   *
-   * @param lat    latitude position.
-   * @param lon    longitude position.
-   * @param result return result here, may be null
-   * @return int[2], 0=x,1=y indices in the coordinate system of the point.
-   */
-  public int[] findXYindexFromLatLonBounded(double lat, double lon, int[] result);
-
-  /**
-   * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices.
-   *
-   * @param xindex x index
-   * @param yindex y index
-   * @return lat/lon coordinate of the midpoint of the cell
-   */
-  public LatLonPoint getLatLon(int xindex, int yindex);
-
 
   /////////////////
   // vertical axis
 
   /**
-   * Get the Z axis. Must be 1 dimensional.
+   * Get the Z axis.
    *
    * @return Y CoordinateAxis, may be null.
    */
-  public CoordinateAxis1D getVerticalAxis();
+  public CoordinateAxis getVerticalAxis();
 
   /**
    * True if increasing z coordinate values means "up" in altitude
@@ -268,18 +207,6 @@ public interface GridCoordSys {
 
 
   /////////////////
-  // ensemble axis
-
-  /**
-   * Get the ensemble axis. Must be 1 dimensional.
-   * Typical meaning is an enumeration of ensemble Model runs.
-   *
-   * @return ensemble CoordinateAxis, may be null.
-   */
-  public CoordinateAxis1D getEnsembleAxis();
-
-
-  /////////////////
   // time axis
 
   /**
@@ -288,13 +215,6 @@ public interface GridCoordSys {
    * @return true if there is a Time Axis.
    */
   public boolean hasTimeAxis();
-
-  /**
-   * If there is a time coordinate, get the time covered.
-   *
-   * @return DateRange or null if no time coordinate
-   */
-  public DateRange getDateRange();
 
   /**
    * Get the Time axis, if it exists. May be 1 or 2 dimensional.
@@ -307,36 +227,37 @@ public interface GridCoordSys {
   public CoordinateAxis getTimeAxis();
 
   /**
-   * Get the RunTime axis. Must be 1 dimensional.
-   * A runtime coordinate must be a udunit date or ISO String, so it can always be converted to a Date.
-   * Typical meaning is the date that a Forecast Model Run is made.
+   * If there is a time coordinate, get the time covered.
    *
-   * @return RunTime CoordinateAxis, may be null.
+   * @return DateRange or null if no time coordinate
    */
-  public CoordinateAxis1DTime getRunTimeAxis();
+  public CalendarDateRange getCalendarDateRange();
 
   /**
-   * True if there is a Time Axis and it is 1D.
-   *
-   * @return true if there is a Time Axis and it is 1D.
+   * Show information about this
+   * @param f put info here
+   * @param showCoordValues  optionally show the coordinate values
    */
-  public boolean hasTimeAxis1D();
+  public void show(Formatter f, boolean showCoordValues);
+
+  ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * Get the Time axis, if it exists, and its 1-dimensional.
+   * Get Index Ranges for the given lat, lon bounding box.
+   * For projection, only an approximation based on corners.
+   * Must have CoordinateAxis1D or 2D for x and y axis.
    *
-   * @return the time coordinate axis, may be null.
+   * @param llbb a lat/lon bounding box.
+   * @return list of 2 Range objects, first y then x.
+   * @throws ucar.ma2.InvalidRangeException if llbb generates bad ranges
    */
-  public CoordinateAxis1DTime getTimeAxis1D();
+  public Subset makeSubsetFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb) throws InvalidRangeException;
+  public Subset getSubset();
 
-  /**
-   * This is the case of a 2D time axis, which depends on the run index.
-   * A time coordinate must be a udunit date or ISO String, so it can always be converted to a Date.
-   *
-   * @param runTime which run?
-   * @return 1D time axis for that run.
-   */
-  public CoordinateAxis1DTime getTimeAxisForRun(Date runTime);
 
+  public interface Subset {
+    void setLevel(int idx);
+    void setTime(int idx);
+  }
 
 }

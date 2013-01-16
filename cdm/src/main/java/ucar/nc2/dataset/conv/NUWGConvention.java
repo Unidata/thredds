@@ -157,7 +157,7 @@ public class NUWGConvention extends CoordSysBuilder {
       // "referential" variables
     List<Dimension> dims = ds.getRootGroup().getDimensions();
     for (Dimension dim : dims) {
-      String dimName = dim.getName();
+      String dimName = dim.getShortName();
       if (null != ds.findVariable( dimName)) // already has a coord axis
         continue;
       List<Variable> ncvars = searchAliasedDimension( ds, dim);
@@ -256,8 +256,8 @@ public class NUWGConvention extends CoordSysBuilder {
     if (!vdim.equals(dim))
       return false;
 
-    if (!dim.getName().equals(ncvar.getShortName())) {
-      ncvar.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    if (!dim.getShortName().equals(ncvar.getShortName())) {
+      ncvar.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
     }
 
@@ -273,7 +273,7 @@ public class NUWGConvention extends CoordSysBuilder {
     int count = 0;
     while (iter.hasNext()) {
       Dimension dim = (Dimension) iter.next();
-      if (dimName.equalsIgnoreCase( dim.getName()))
+      if (dimName.equalsIgnoreCase( dim.getShortName()))
         return count;
       count++;
     }
@@ -289,7 +289,7 @@ public class NUWGConvention extends CoordSysBuilder {
    * @return Collection of nectdf variables, or null if none
    */
   private List<Variable> searchAliasedDimension( NetcdfDataset ds, Dimension dim) {
-    String dimName = dim.getName();
+    String dimName = dim.getShortName();
     String alias = ds.findAttValueIgnoreCase(null, dimName, null);
     if (alias == null)
       return null;
@@ -305,7 +305,7 @@ public class NUWGConvention extends CoordSysBuilder {
         continue;
       Iterator dimIter = ncvar.getDimensions().iterator();
       Dimension dim2 = (Dimension) dimIter.next();
-      if (dimName.equals(dim2.getName())) {
+      if (dimName.equals(dim2.getShortName())) {
         vars.add(ncvar);
         if (debug) System.out.print(" "+token);
       }
@@ -351,7 +351,7 @@ public class NUWGConvention extends CoordSysBuilder {
     if (vname.equalsIgnoreCase("record"))
       return AxisType.Time;
     Dimension dim = v.getDimension(0);
-    if ((dim != null) && dim.getName().equalsIgnoreCase("record")) { // wow thats bad!
+    if ((dim != null) && dim.getShortName().equalsIgnoreCase("record")) { // wow thats bad!
       return AxisType.Time;
     }
 
@@ -551,7 +551,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
     CoordinateAxis makeXCoordAxis( NetcdfDataset ds, String xname) {
       CoordinateAxis v = new CoordinateAxis1D( ds, null, xname, DataType.DOUBLE, xname,
-          (0 == grid_code) ? "degrees_east" : "km", "synthesized X coord");
+          (0 == grid_code) ? CDM.LON_UNITS : "km", "synthesized X coord");
       v.addAttribute( new Attribute( _Coordinate.AxisType, (0 == grid_code) ? AxisType.Lon.toString() : AxisType.GeoX.toString()));
       ds.setValues( v, nx, startx, dx);
       ds.addCoordinateAxis( v);
@@ -560,7 +560,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
     CoordinateAxis makeYCoordAxis( NetcdfDataset ds, String yname) {
       CoordinateAxis v = new CoordinateAxis1D( ds, null, yname, DataType.DOUBLE, yname,
-            ((0 == grid_code) ? "degrees_north" : "km"), "synthesized Y coord");
+            ((0 == grid_code) ? CDM.LAT_UNITS : "km"), "synthesized Y coord");
       v.addAttribute( new Attribute( _Coordinate.AxisType, (0 == grid_code) ? AxisType.Lat.toString() : AxisType.GeoY.toString()));
       ds.setValues( v, ny, starty, dy);
       ds.addCoordinateAxis( v);

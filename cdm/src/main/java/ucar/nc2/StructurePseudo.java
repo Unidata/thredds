@@ -70,7 +70,7 @@ public class StructurePseudo extends Structure {
   public StructurePseudo( NetcdfFile ncfile, Group group, String shortName, Dimension dim) {
     super (ncfile, group, null, shortName); // cant do this for nested structures
     this.dataType = DataType.STRUCTURE;
-    setDimensions( dim.getName());
+    setDimensions( dim.getShortName());
 
     if (group == null)
       group = ncfile.getRootGroup();
@@ -108,7 +108,7 @@ public class StructurePseudo extends Structure {
   public StructurePseudo( NetcdfFile ncfile, Group group, String shortName, List<String> varNames, Dimension dim) {
     super (ncfile, group, null, shortName); // cant do this for nested structures
     this.dataType = DataType.STRUCTURE;
-    setDimensions( dim.getName());
+    setDimensions( dim.getShortName());
 
     if (group == null)
       group = ncfile.getRootGroup();

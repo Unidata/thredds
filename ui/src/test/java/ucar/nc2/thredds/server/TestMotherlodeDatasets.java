@@ -188,7 +188,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
           Group root = nc.getRootGroup();
           if (root.getGroups().size() > 0) {
              out.printf("  GROUPS in %s%n", gds.getLocation());
-            for (Group g : root.getGroups()) System.out.printf("%s%n", g.getName());
+            for (Group g : root.getGroups()) System.out.printf("%s%n", g.getShortName());
           }
         }
       }

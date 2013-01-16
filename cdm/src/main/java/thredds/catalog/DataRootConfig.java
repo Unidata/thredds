@@ -33,7 +33,7 @@
 package thredds.catalog;
 
 /**
- * Describe
+ * ataRoot eleentg in a thredds config catalog.
  *
  * @author caron
  * @since Sep 14, 2009

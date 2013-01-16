@@ -32,9 +32,9 @@
  */
 package ucar.nc2.ui.grid;
 
+import ucar.nc2.ft.grid.IsMissingEvaluator;
 import ucar.nc2.ui.widget.FontUtil;
 
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.ListenerManager;
 import ucar.unidata.util.Format;
 
@@ -58,6 +58,8 @@ import javax.swing.*;
  */
 
 public class ColorScale implements Cloneable, java.io.Serializable {
+  public static enum MinMaxType {horiz, log, hold};
+
   public static final int VERTICAL = 0;
   public static final int HORIZONTAL = 1;
 
@@ -76,7 +78,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   private ListenerManager lm;
 
   // this is set for each grid
-  private GridDatatype gg;
+  private IsMissingEvaluator gg;
   private double[] edge;
   private int[] hist;
   private double min, max, interval;
@@ -331,9 +333,9 @@ public class ColorScale implements Cloneable, java.io.Serializable {
     this.missingDataColor = missingDataColor;
   } */
 
-  public void setGeoGrid(GridDatatype gg) {
+  public void setGeoGrid(IsMissingEvaluator gg) {
     this.gg = gg;
-    hasMissingData = gg.hasMissingData();
+    hasMissingData = gg.hasMissing();
   }
 
   public Color getMissingDataColor() {
@@ -355,7 +357,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
    */
   public int getIndexFromValue(double value) {
     int index;
-    if (hasMissingData && gg.isMissingData(value))
+    if (hasMissingData && gg.isMissing(value))
       index = ncolors;  // missing data
     else if (value <= min)
       index = 0;
@@ -370,7 +372,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
 
   public int getIndexFromValueLog(double value) {
     int index;
-    if (hasMissingData && gg.isMissingData(value))
+    if (hasMissingData && gg.isMissing(value))
       index = ncolors;  // missing data
     else if (value <= min)
       index = 0;

@@ -642,6 +642,7 @@ public class TestSubset extends TestCase {
 
   public void testAggByteGiniSubsetStride() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/giniAggByte.ncml"); // R:\testdata2\satellite\gini
+    System.out.printf("Test %s%n", dataset.getLocation());
     GeoGrid grid = dataset.findGridByName("IR");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();

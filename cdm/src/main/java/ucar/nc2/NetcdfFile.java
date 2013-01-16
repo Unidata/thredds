@@ -32,6 +32,7 @@
  */
 package ucar.nc2;
 
+import ucar.nc2.util.Indent;
 import ucar.nc2.util.net.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.util.rc.RC;
@@ -261,109 +262,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
 
     userLoads = true;
-  }
-
-  ///////////////////////////////////////////////////////////////////////
-
-  /**
-   * Create a valid CDM object name.
-   * Control chars (< 0x20) are not allowed.
-   * Trailing and leading blanks are not allowed and are stripped off.
-   * A forward slash "/" is converted into an underscore "_".
-   *
-   * @param name from this name
-   * @return valid CDM object name
-   */
-  static public String makeValidCdmObjectName(String name) {
-    return StringUtil2.makeValidCdmObjectName(name);
-    //return StringUtil.replace(name.trim(), "/", "_");
-  }
-
-  /*
-   * The set of characters in a netcdf object name that are escaped for the "escaped name".
-   */
-  static public final String reserved = ".\\";
-  static public final String reservedSectionSpec = "();,.\\";
-  static public final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~.\\";
-
-  /**
-   * Escape standard special characters in a netcdf object name.
-   *
-   * @param vname the name
-   * @return escaped version of it
-   */
-  public static String escapeName(String vname) {
-    return EscapeStrings.backslashEscape(vname, NetcdfFile.reserved);
-  }
-
-  /**
-   * Escape special characters in a netcdf object name for CDL.
-   *
-   * @param vname the name
-   * @return escaped version of it
-   */
-  public static String escapeNameCDL(String vname) {
-    return EscapeStrings.backslashEscape(vname, reservedCdl);
-  }
-
-  /**
-   * Escape special characters in a netcdf object name for SectionSpec.
-   *
-   * @param vname the name
-   * @return escaped version of it
-   */
-  public static String escapeNameSectionSpec(String vname) {
-    return EscapeStrings.backslashEscape(vname, reservedSectionSpec);
-  }
-
-  /**
-   * Unescape any escaped characters in a name.
-   *
-   * @param vname the escaped name
-   * @return unescaped version of it
-   */
-  public static String unescapeName(String vname) {
-    return EscapeStrings.backslashUnescape(vname);
-  }
-
-  static protected String makeFullName(Variable v) {
-    return makeFullName(v, null);
-  }
-
-  static protected String makeFullNameEscaped(Variable v) {
-    return makeFullName(v, reserved);
-  }
-
-  static protected String makeFullNameEscapedSectionSpec(Variable v) {
-    return makeFullName(v, reservedSectionSpec);
-  }
-
-  static protected String makeFullName(Variable v, String reserved) {
-    Group parent = v.getParentGroup();
-    if (((parent == null) || parent.isRoot()) && !v.isMemberOfStructure()) return v.getShortName(); // common case
-
-    StringBuilder sbuff = new StringBuilder();
-    appendGroupName(sbuff, parent, reserved);
-    appendStructureName(sbuff, v, reserved);
-    return sbuff.toString();
-  }
-
-  static private void appendGroupName(StringBuilder sbuff, Group g, String reserved) {
-    boolean isRoot = (g == null) || (g.getParentGroup() == null);
-    if (isRoot) return;
-
-    if (g.getParentGroup() != null)
-      appendGroupName(sbuff, g.getParentGroup(), reserved);
-    sbuff.append( EscapeStrings.backslashEscape(g.getShortName(), reserved));
-    sbuff.append("/");
-  }
-
-  static private void appendStructureName(StringBuilder sbuff, Variable v, String reserved) {
-    if (v.isMemberOfStructure()) {
-      appendStructureName(sbuff, v.getParentStructure(), reserved);
-      sbuff.append(".");
-    }
-    sbuff.append( EscapeStrings.backslashEscape(v.getShortName(), reserved));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -1041,8 +939,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       return rootGroup;
 
     Group g = rootGroup;
-    String[] groupNames = fullName.split("/");
-    for (String groupName : groupNames) {
+    StringTokenizer stoke = new StringTokenizer(fullName, "/");
+    while (stoke.hasMoreTokens()) {
+      String groupName = NetcdfFile.makeNameUnescaped(stoke.nextToken());
       g = g.findGroup(groupName);
       if (g == null) return null;
     }
@@ -1082,7 +981,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       vars = fullNameEscaped.substring(pos + 1);
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
-        String token = NetcdfFile.unescapeName( stoke.nextToken());
+        String token = NetcdfFile.makeNameUnescaped( stoke.nextToken()) ;
         g = g.findGroup(token);
         if (g == null) return null;
       }
@@ -1092,14 +991,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
     if (snames.size() == 0) return null;
 
-    String varShortName = NetcdfFile.unescapeName(snames.get(0));
+    String varShortName = NetcdfFile.makeNameUnescaped(snames.get(0)) ;
     Variable v = g.findVariable(varShortName);
     if (v == null) return null;
 
     int memberCount = 1;
     while (memberCount < snames.size()) {
       if (!(v instanceof Structure)) return null;
-      String name = NetcdfFile.unescapeName(snames.get(memberCount++));
+      String name = NetcdfFile.makeNameUnescaped(snames.get(memberCount++));
       v = ((Structure) v).findVariable(name);
       if (v == null) return null;
     }
@@ -1110,7 +1009,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (g == null) g = getRootGroup();
     for (Variable v : variables) {
       for (Attribute att : v.getAttributes())
-        if (attName.equals(att.getName()) && attValue.equals(att.getStringValue()))
+        if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
           return v;
     }
     for (Group nested : g.getGroups()) {
@@ -1143,7 +1042,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   public Dimension findDimension(String name) {
     if (name == null) return null;
     for (Dimension d : dimensions) {
-      if (name.equals(d.getName()))
+      if (name.equals(d.getShortName()))
         return d;
     }
     return null;
@@ -1190,7 +1089,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public Attribute findGlobalAttribute(String name) {
     for (Attribute a : gattributes) {
-      if (name.equals(a.getName()))
+      if (name.equals(a.getShortName()))
         return a;
     }
     return null;
@@ -1204,11 +1103,76 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public Attribute findGlobalAttributeIgnoreCase(String name) {
     for (Attribute a : gattributes) {
-      if (name.equalsIgnoreCase(a.getName()))
+      if (name.equalsIgnoreCase(a.getShortName()))
         return a;
     }
     return null;
   }
+
+  /**
+   * Find an attribute, with the specified (escaped full) name.
+   * It may possibly be nested in multiple groups and/or structures.
+   * An embedded "." is interpreted as structure.member.
+   * An embedded "/" is interpreted as group/group or group/variable.
+   * If the name actually has a ".", you must escape it (call NetcdfFile.escapeName(varname))
+   * Any other chars may also be escaped, as they are removed before testing.
+   *
+   * @param fullNameEscaped eg "@attName", "/group/subgroup/@attName" or "/group/subgroup/varname.name2.name@attName"
+   * @return Attribute or null if not found.
+   * @see NetcdfFile#escapeName
+   * @see NetcdfFile#unescapeName
+   */
+  public Attribute findAttribute(String fullNameEscaped) {
+    if (fullNameEscaped == null || fullNameEscaped.length() == 0) {
+      return null;
+    }
+
+    int posAtt = fullNameEscaped.indexOf('@');
+    if (posAtt < 0 || posAtt >= fullNameEscaped.length()-1)
+      return null;
+    if (posAtt == 0) {
+      return findGlobalAttribute(fullNameEscaped.substring(1));
+    }
+
+    String path = fullNameEscaped.substring(0, posAtt);
+    String attName = fullNameEscaped.substring(posAtt+1);
+
+     // find the group
+    Group g = rootGroup;
+    int pos = path.lastIndexOf('/');
+    String varName = (pos > 0 && pos < path.length()-1) ?  path.substring(pos + 1) : null;
+    if (pos >= 0) {
+      String groups = path.substring(0, pos);
+      StringTokenizer stoke = new StringTokenizer(groups, "/");
+      while (stoke.hasMoreTokens()) {
+        String token = NetcdfFile.makeNameUnescaped( stoke.nextToken());
+        g = g.findGroup(token);
+        if (g == null) return null;
+      }
+    }
+    if (varName == null) // group attribute
+      return g.findAttribute(attName);
+
+    // heres var.var - tokenize respecting the possible escaped '.'
+    List<String> snames = EscapeStrings.tokenizeEscapedName(varName);
+    if (snames.size() == 0) return null;
+
+    String varShortName = NetcdfFile.makeNameUnescaped(snames.get(0));
+    Variable v = g.findVariable(varShortName);
+    if (v == null) return null;
+
+    int memberCount = 1;
+    while (memberCount < snames.size()) {
+      if (!(v instanceof Structure)) return null;
+      String name = NetcdfFile.makeNameUnescaped(snames.get(memberCount++));
+      v = ((Structure) v).findVariable(name);
+      if (v == null) return null;
+    }
+
+    return v.findAttribute(attName);
+  }
+
+
 
   /**
    * Find a String-valued global or variable Attribute by
@@ -1270,6 +1234,17 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
 
   //////////////////////////////////////////////////////////////////////////////////////
+  /**
+   * CDL representation of Netcdf header info, non strict
+   */
+  public String toString() {
+    Formatter f = new Formatter();
+    writeCDL(f, new Indent(2), false);
+    return f.toString();
+  }
+
+  ///////////////////////////////////////////////////////////////////
+  // old stuff for backwards compatilibilty, esp with NCdumpW
 
   /**
    * Write CDL representation to OutputStream.
@@ -1296,30 +1271,35 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     pw.flush();
   }
 
-  /**
-   * CDL representation of Netcdf header info.
-   */
-  public String toString() {
-    StringWriter writer = new StringWriter(50000);
-    writeCDL(new PrintWriter(writer), false);
-    return writer.toString();
-  }
-
-  protected void toStringStart(PrintWriter pw, boolean strict) {
-    String name = getLocation();
-    if (strict) {
-      int pos = name.lastIndexOf('/');
-      if (pos < 0) pos = name.lastIndexOf('\\');
-      if (pos >= 0) name = name.substring(pos + 1);
-      if (name.endsWith(".nc")) name = name.substring(0, name.length() - 3);
-      if (name.endsWith(".cdl")) name = name.substring(0, name.length() - 4);
-    }
-    pw.print("netcdf " + name + " {\n");
-    rootGroup.writeCDL(pw, "", strict);
+  public void toStringStart(PrintWriter pw, boolean strict) {
+    Formatter f = new Formatter();
+    toStringStart(f, new Indent(2), strict);
+    pw.write(f.toString());
   }
 
   protected void toStringEnd(PrintWriter pw) {
     pw.print("}\n");
+  }
+
+  //////////////////////////////////////////////////////////
+  // the actual work is here
+
+  protected void writeCDL(Formatter f, Indent indent, boolean strict) {
+    toStringStart(f, indent, strict);
+    f.format("%s}%n",indent);
+  }
+
+  protected void toStringStart(Formatter f, Indent indent, boolean strict) {
+    String name = getLocation();
+    if (strict) {
+      if (name.endsWith(".nc")) name = name.substring(0, name.length() - 3);
+      if (name.endsWith(".cdl")) name = name.substring(0, name.length() - 4);
+      name = NetcdfFile.makeValidCDLName(name);
+    }
+    f.format("%snetcdf %s {%n", indent, name);
+    indent.incr();
+    rootGroup.writeCDL(f, indent, strict);
+    indent.decr();
   }
 
   /**
@@ -1880,7 +1860,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (g == rootGroup) {
         gattributes.add(oldAtt);
       } else {
-        String newName = makeFullNameWithString(g, oldAtt.getName());
+        String newName = makeFullNameWithString(g, oldAtt.getShortName()); // LOOK fishy
         gattributes.add(new Attribute(newName, oldAtt));
       }
     }
@@ -1891,7 +1871,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
         if (g == rootGroup) {
           dimensions.add(oldDim);
         } else {
-          String newName = makeFullNameWithString(g, oldDim.getName());
+          String newName = makeFullNameWithString(g, oldDim.getShortName()); // LOOK fishy
           dimensions.add(new Dimension(newName, oldDim));
         }
       }
@@ -1902,13 +1882,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       finishGroup(nested);
     }
 
-  }
-
-  protected String makeFullNameWithString(Group parent, String name) {
-    StringBuilder sbuff = new StringBuilder();
-    appendGroupName(sbuff, parent, null);
-    sbuff.append(name);
-    return makeValidCdmObjectName(sbuff.toString());
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -2246,5 +2219,169 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       e.printStackTrace();
     }            */
   }
+
+
+  ///////////////////////////////////////////////////////////////////////
+  // All CDM naming convention enforcement should be here.
+  // DAP conventions should be in DODSNetcdfFile
+
+  // reservedFullName defines the characters that must be escaped
+  // when a short name is inserted into a full name
+  static public final String reservedFullName = ".\\"; 
+
+  // reservedSectionSpec defines the characters that must be escaped
+  // when a short name is inserted into a section specification.
+  static public final String reservedSectionSpec = "();,.\\";
+
+  // reservedSectionCdl defines the characters that must be escaped
+  // when what?
+  static public final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~.\\";
+
+  /**
+   * Create a valid CDM object name.
+   * Control chars (< 0x20) are not allowed.
+   * Trailing and leading blanks are not allowed and are stripped off.
+   * A space is converted into an underscore "_".
+   * A forward slash "/" is converted into an underscore "_".
+   *
+   * @param shortName from this name
+   * @return valid CDM object name
+   */
+  static public String makeValidCdmObjectName(String shortName) {
+    if (shortName == null) return null;
+    return StringUtil2.makeValidCdmObjectName(shortName);
+  }
+
+  /**
+   * Escape special characters in a netcdf short name when
+   * it is intended for use in CDL.
+   *
+   * @param vname the name
+   * @return escaped version of it
+   */
+  public static String makeValidCDLName(String vname) {
+    return EscapeStrings.backslashEscape(vname, reservedCdl);
+  }
+
+  /**
+   * Escape special characters in a netcdf short name when
+   * it is intended for use in a fullname
+   *
+   * @param vname the name
+   * @return escaped version of it
+   */
+  public static String makeValidPathName(String vname) {
+    return EscapeStrings.backslashEscape(vname, reservedFullName);
+  }
+
+  /**
+   * Escape special characters in a netcdf short name when
+   * it is intended for use in a sectionSpec
+   *
+   * @param vname the name
+   * @return escaped version of it
+   */
+  public static String makeValidSectionSpecName(String vname) {
+    return EscapeStrings.backslashEscape(vname, reservedSectionSpec);
+  }
+
+  /**
+   * Unescape any escaped characters in a name.
+   *
+   * @param vname the escaped name
+   * @return unescaped version of it
+   */
+  public static String makeNameUnescaped(String vname) {
+    return EscapeStrings.backslashUnescape(vname);
+  }
+
+  /**
+   * Given a CDMNode, create its full name with
+   * appropriate backslash escaping.
+   * Warning: do not use for a section spec.   
+   *
+   * @param v the cdm node
+   * @return full name
+   */
+  static protected String makeFullName(CDMNode v) {
+    return makeFullName(v, reservedFullName);
+  }
+
+  /**
+   * Given a CDMNode, create its full name  with
+   * appropriate backslash escaping for use in a section spec.
+   *
+   * @param v the cdm node
+   * @return full name
+   */
+  static protected String makeFullNameSectionSpec(CDMNode v) {
+    return makeFullName(v, reservedSectionSpec);
+  }
+
+  /**
+   * Given a CDMNode, create its full name  with
+   * appropriate backslash escaping of the specified characters.
+   *
+   * @param v the cdm node
+   * @param reservedChars the set of characters to escape
+   * @return full name
+   */
+  static protected String makeFullName(CDMNode node, String reservedChars) {
+    Group parent = node.getParentGroup();
+    if(((parent == null) || parent.isRoot())
+       && !node.isMemberOfStructure()) // common case?
+      return EscapeStrings.backslashEscape(node.getShortName(), reservedChars);
+    StringBuilder sbuff = new StringBuilder();
+    appendGroupName(sbuff, parent, reservedChars);
+    appendStructureName(sbuff, node, reservedChars);
+    return sbuff.toString();
+  }
+
+  static private void appendGroupName(StringBuilder sbuff, Group g, String reserved) {
+    if(g == null) return;
+    if(g.getParentGroup() == null) return;
+    appendGroupName(sbuff, g.getParentGroup(), reserved);
+    sbuff.append( EscapeStrings.backslashEscape(g.getShortName(), reserved));
+    sbuff.append("/");
+  }
+
+  static private void appendStructureName(StringBuilder sbuff, CDMNode n, String reserved) {
+    if(n.isMemberOfStructure()) {
+      appendStructureName(sbuff, n.getParentStructure(), reserved);
+      sbuff.append(".");
+    }
+    sbuff.append(EscapeStrings.backslashEscape(n.getShortName(), reserved));
+  }
+
+  /**
+   * Create a synthetic full name from a group plus a string
+   * 
+   * @param parent parent group
+   * @param name synthetic name string
+   * @return synthetic name
+   */
+  protected String makeFullNameWithString(Group parent, String name)
+  {
+    name = makeValidPathName(name); // escape for use in full name  
+    StringBuilder sbuff = new StringBuilder();
+    appendGroupName(sbuff, parent, null);
+    sbuff.append(name);
+    return sbuff.toString();
+  }
+
+
+
+  /**
+   * Escape standard special characters in a netcdf object name.
+   *
+   * @param vname the name
+   * @return escaped version of it
+   */
+/* Who uses this?
+  public static String escapeName(String vname) {
+    return EscapeStrings.backslashEscape(vname, NetcdfFile.reserved);
+  }
+*/
+
 
 }

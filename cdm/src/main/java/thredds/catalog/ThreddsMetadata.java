@@ -39,6 +39,7 @@ import java.util.*;
 import java.net.URI;
 import java.io.IOException;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -934,8 +935,8 @@ public class ThreddsMetadata {
    * Implements GeospatialCoverage type.
    */
   static public class GeospatialCoverage {
-    static private Range defaultEastwest = new Range(0.0, 0.0, Double.NaN, "degrees_east");
-    static private Range defaultNorthsouth = new Range(0.0, 0.0, Double.NaN, "degrees_north");
+    static private Range defaultEastwest = new Range(0.0, 0.0, Double.NaN, CDM.LON_UNITS);
+    static private Range defaultNorthsouth = new Range(0.0, 0.0, Double.NaN, CDM.LAT_UNITS);
     static private Range defaultUpdown = new Range(0.0, 0.0, Double.NaN, "km");
     static private GeospatialCoverage empty = new GeospatialCoverage();
 
@@ -1278,8 +1279,8 @@ public class ThreddsMetadata {
       LatLonPointImpl urpt = bb.getUpperRightPoint();
       double height = urpt.getLatitude() - llpt.getLatitude();
 
-      this.eastwest = new Range(llpt.getLongitude(), bb.getWidth(), 0.0, "degrees_east");
-      this.northsouth = new Range(llpt.getLatitude(), height, 0.0, "degrees_north");
+      this.eastwest = new Range(llpt.getLongitude(), bb.getWidth(), 0.0, CDM.LON_UNITS);
+      this.northsouth = new Range(llpt.getLatitude(), height, 0.0, CDM.LAT_UNITS);
 
       if ((bb.getWidth() > 358) && (height > 178))
         setGlobal(true); // LOOK ??

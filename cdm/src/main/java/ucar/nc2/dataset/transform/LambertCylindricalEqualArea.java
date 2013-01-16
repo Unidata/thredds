@@ -9,7 +9,7 @@ import ucar.nc2.dataset.TransformType;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 
 /**
- * Describe
+ * Lambert Cylindrical Equal Area Projection
  *
  * @author caron
  * @since 4/30/12

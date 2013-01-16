@@ -73,6 +73,6 @@ public class TestAggPromote  extends TestCase {
     assert times.getRank() == 1;
     assert times.getSize() == 3;
 
-    assert times.getDimension(0).getName().equals("time");
+    assert times.getDimension(0).getShortName().equals("time");
   }
 }

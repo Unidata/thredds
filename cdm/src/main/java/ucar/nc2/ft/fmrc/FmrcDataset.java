@@ -356,18 +356,18 @@ class FmrcDataset {
               coordV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
           }
           if (axis.getAxisType() == AxisType.Lat) {
-            coordV.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
-            coordV.addAttribute(new Attribute("standard_name", "latitude"));
+            coordV.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+            coordV.addAttribute(new Attribute(CF.STANDARD_NAME, "latitude"));
           }
           if (axis.getAxisType() == AxisType.Lon) {
-            coordV.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
-            coordV.addAttribute(new Attribute("standard_name", "longitude"));
+            coordV.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+            coordV.addAttribute(new Attribute(CF.STANDARD_NAME, "longitude"));
           }
           if (axis.getAxisType() == AxisType.GeoX) {
-            coordV.addAttribute(new Attribute("standard_name", "projection_x_coordinate"));
+            coordV.addAttribute(new Attribute(CF.STANDARD_NAME, "projection_x_coordinate"));
           }
           if (axis.getAxisType() == AxisType.GeoY) {
-            coordV.addAttribute(new Attribute("standard_name", "projection_y_coordinate"));
+            coordV.addAttribute(new Attribute(CF.STANDARD_NAME, "projection_y_coordinate"));
           }
           if (axis.getAxisType() == AxisType.Time) {
             Attribute att = axis.findAttribute("bounds");  // LOOK nasty : remove time bounds from proto
@@ -412,8 +412,8 @@ class FmrcDataset {
 
     // dimensions
     for (Dimension d : srcGroup.getDimensions()) {
-      if (null == targetGroup.findDimensionLocal(d.getName())) {
-        Dimension newd = new Dimension(d.getName(), d.getLength(), d.isShared(), d.isUnlimited(), d.isVariableLength());
+      if (null == targetGroup.findDimensionLocal(d.getShortName())) {
+        Dimension newd = new Dimension(d.getShortName(), d.getLength(), d.isShared(), d.isUnlimited(), d.isVariableLength());
         targetGroup.addDimension(newd);
       }
     }
@@ -573,7 +573,7 @@ class FmrcDataset {
         String bname = timeVar.getShortName() + "_bounds";
         timeVar.addAttribute(new ucar.nc2.Attribute("bounds", bname));
         Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension( result);
-        VariableDS boundsVar = new VariableDS(result, newGroup, null, bname, dtype, dims+" "+bd.getName(), null, null);
+        VariableDS boundsVar = new VariableDS(result, newGroup, null, bname, dtype, dims+" "+bd.getShortName(), null, null);
         boundsVar.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for "+ timeVar.getShortName()));
         boundsVar.setCachedData(Array.factory( DataType.DOUBLE, new int[] {nruns, gridset.noffsets, 2}, gridset.timeBounds));
         newGroup.addVariable(boundsVar);
@@ -957,7 +957,7 @@ class FmrcDataset {
       String bname = timeVar.getShortName() + "_bounds";
       timeVar.addAttribute(new ucar.nc2.Attribute("bounds", bname));
       Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension( result);
-      VariableDS boundsVar = new VariableDS(result, group, null, bname, dtype, dimName+" " + bd.getName(), null, null);
+      VariableDS boundsVar = new VariableDS(result, group, null, bname, dtype, dimName+" " + bd.getShortName(), null, null);
       boundsVar.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for "+ timeVar.getShortName()));
       boundsVar.setCachedData(Array.factory( DataType.DOUBLE, new int[] {ntimes, 2}, valueb.bounds));
       group.addVariable(boundsVar);

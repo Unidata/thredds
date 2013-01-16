@@ -49,7 +49,8 @@ import ucar.unidata.util.StringUtil2;
  */
 
 @Immutable
-public class DODSAttribute extends ucar.nc2.Attribute {
+public class DODSAttribute extends ucar.nc2.Attribute
+{
 
   /** constructor: adapter around dods.dap.Attribute
    *
@@ -57,7 +58,8 @@ public class DODSAttribute extends ucar.nc2.Attribute {
    * @param att the dods attribute
    */
   public DODSAttribute( String dodsName, opendap.dap.Attribute att) {
-    super( DODSNetcdfFile.makeNetcdfName( dodsName));
+    super( DODSNetcdfFile.makeShortName(dodsName));
+    setDODSName(DODSNetcdfFile.makeDODSName(dodsName));
 
     DataType ncType = DODSNetcdfFile.convertToNCType( att.getType());
 
@@ -116,7 +118,8 @@ public class DODSAttribute extends ucar.nc2.Attribute {
   }
 
   protected DODSAttribute( String dodsName, String val) {
-    super( DODSNetcdfFile.makeNetcdfName( dodsName), val);
+    super(DODSNetcdfFile.makeShortName(dodsName), val);
+    setDODSName(DODSNetcdfFile.makeDODSName(dodsName));
   }
 
   static private String[] escapeAttributeStrings = {"\\", "\"" };
@@ -124,4 +127,13 @@ public class DODSAttribute extends ucar.nc2.Attribute {
   private String unescapeAttributeStringValues( String value) {
     return StringUtil2.substitute(value, substAttributeStrings, escapeAttributeStrings);
   }
+
+
+  //////////////////////////////////////////////////
+  // DODSNode Interface
+  String dodsName = null;
+  public String getDODSName() {return dodsName;}
+  public void setDODSName(String name) {this.dodsName = name;}
+  public void resetShortName(String name) {setShortName(name);}
+
 }

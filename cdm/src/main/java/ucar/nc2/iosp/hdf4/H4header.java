@@ -37,7 +37,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.ma2.*;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -77,12 +76,12 @@ public class H4header {
     return false;
   }
 
-  // replace space and / with underscore
+  /* replace space and / with underscore
   private static final char[] replace = new char[] {' ', '/'}; // , '.'};
   private static final String[] replaceWith = new String[] {"_", "_"}; // , ""};
   static String createValidObjectName(String name ) {
     return StringUtil2.replace( name, replace, replaceWith); // added 2/15/2010 , mod 2/18/2012
-  }
+  }  */
 
   private static boolean debugDD = false; // DDH/DD
    private static boolean debugTag1 = false; // show tags after read(), before read2().
@@ -402,7 +401,7 @@ public class H4header {
     }
 
     boolean isUnlimited = (length == 0);
-    Dimension dim = new Dimension(createValidObjectName(group.name), length, true, isUnlimited, false);
+    Dimension dim = new Dimension(group.name, length, true, isUnlimited, false);
     if (debugConstruct) System.out.println("added dimension " + dim + " from VG " + group.refno);
     ncfile.addDimension(null, dim);
   }
@@ -582,7 +581,7 @@ public class H4header {
     }
 
     if (debugConstruct) {
-      System.out.println("added group " + group.getName() + " from VG " + tagGroup.refno);
+      System.out.println("added group " + group.getFullName() + " from VG " + tagGroup.refno);
     }
 
     return group;
@@ -716,7 +715,7 @@ public class H4header {
     Variable v;
     if (vh.nfields == 1) {
       // String name = createValidObjectName(vh.name);
-      v = new Variable(ncfile, null, null, H4header.createValidObjectName(vh.name));
+      v = new Variable(ncfile, null, null, vh.name);
       vinfo.setVariable(v);
       H4type.setDataType(vh.fld_type[0], v);
 
@@ -761,7 +760,7 @@ public class H4header {
           s.setIsScalar();
 
         for (int fld = 0; fld < vh.nfields; fld++) {
-          Variable m = new Variable(ncfile, null, s, H4header.createValidObjectName(vh.fld_name[fld]));
+          Variable m = new Variable(ncfile, null, s, vh.fld_name[fld]);
           short type = vh.fld_type[fld];
           int nbytes = vh.fld_isize[fld];
           short nelems = vh.fld_order[fld];
@@ -833,7 +832,7 @@ public class H4header {
       if (tag.code == 1965) {
         TagVGroup vg = (TagVGroup) tag;
         if (vg.className.startsWith("Dim") || vg.className.startsWith("UDim")) {
-          String dimName = H4header.createValidObjectName(vg.name);
+          String dimName = NetcdfFile.makeValidCdmObjectName(vg.name);
           Dimension d = ncfile.getRootGroup().findDimension(dimName);
           if (d == null)
             throw new IllegalStateException();
@@ -853,7 +852,7 @@ public class H4header {
       log.warn("data tag missing vgroup= " + group.refno + " " + group.name);
       //return null;
     }
-    Variable v = new Variable(ncfile, null, null, H4header.createValidObjectName(group.name));
+    Variable v = new Variable(ncfile, null, null, group.name);
     v.setDimensions(dims);
     H4type.setDataType(ntag.type, v);
 
@@ -983,7 +982,7 @@ public class H4header {
           Attribute att = makeAttribute(vh);
           if (null != att) {
             vinfo.v.addAttribute(att);
-            if (att.getName().equals(CDM.FILL_VALUE))
+            if (att.getShortName().equals(CDM.FILL_VALUE))
               vinfo.setFillValue(att);
           }
         }

@@ -90,11 +90,11 @@ public class WriterCFPointCollection extends CFPointWriter {
 
     // add the station Variables using the station dimension
     lat = writer.addVariable(null, latName, DataType.DOUBLE, recordDimName);
-    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, "degrees_north"));
+    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "station latitude"));
 
     lon = writer.addVariable(null, lonName, DataType.DOUBLE, recordDimName);
-    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, "degrees_east"));
+    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, CDM.LON_UNITS));
     writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "station longitude"));
 
     if (altUnits != null) {
@@ -119,7 +119,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     // add them
     for (Dimension d : dimSet) {
       if (!d.isUnlimited())
-        writer.addDimension(null, d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength());
+        writer.addDimension(null, d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength());
     }
 
     // add the data variables all using the record dimension
@@ -128,7 +128,7 @@ public class WriterCFPointCollection extends CFPointWriter {
       StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
         if (!d.isUnlimited())
-          dimNames.append(" ").append(d.getName());
+          dimNames.append(" ").append(d.getShortName());
       }
       Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
 

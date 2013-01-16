@@ -603,7 +603,7 @@ class Giniheader {
     var.addAttribute( new Attribute(CDM.UNITS, getPhysElemUnits(phys_elem, ent_id)));
     // var.addAttribute( new Attribute(CDM.MISSING_VALUE, new Byte((byte) 0))); // ??
 
-      // get dimensions
+    // get dimensions
     int velems;
     boolean isRecord = false;
     ArrayList dims = new ArrayList();
@@ -640,9 +640,9 @@ class Giniheader {
     else  {
         var.setDataType( DataType.BYTE);
         var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
-        //var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
-        //var.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Short((short)(1))));
-        //var.addAttribute( new Attribute(CDM.ADD_OFFSET, new Short((short)(0))));
+        // var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
+        var.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Short((short)(1))));
+        var.addAttribute( new Attribute(CDM.ADD_OFFSET, new Short((short)(0))));
         var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny));
     }
     String coordinates = "x y time";

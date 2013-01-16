@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.Attribute;
+import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -177,6 +178,10 @@ public class Hdf5ObjectTable extends JPanel {
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds(new Rectangle(300, 300, 500, 800));
+  }
+
+  public void getEosInfo(Formatter f) throws IOException {
+    iosp.getEosInfo(f);
   }
 
   private H5iosp iosp;

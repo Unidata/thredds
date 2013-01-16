@@ -126,24 +126,24 @@ public class TestOffAggFmrcGrib extends TestCase {
   private void testDimensions(NetcdfFile ncfile, int nagg, String timeDimName) {
     Dimension latDim = ncfile.findDimension("x");
     assert null != latDim;
-    assert latDim.getName().equals("x");
+    assert latDim.getShortName().equals("x");
     assert latDim.getLength() == 369;
     assert !latDim.isUnlimited();
 
     Dimension lonDim = ncfile.findDimension("y");
     assert null != lonDim;
-    assert lonDim.getName().equals("y");
+    assert lonDim.getShortName().equals("y");
     assert lonDim.getLength() == 257;
     assert !lonDim.isUnlimited();
 
     Dimension timeDim = ncfile.findDimension(timeDimName);
     assert null != timeDim;
-    assert timeDim.getName().equals(timeDimName);
+    assert timeDim.getShortName().equals(timeDimName);
     assert timeDim.getLength() == 29;
 
     Dimension runDim = ncfile.findDimension("run");
     assert null != runDim;
-    assert runDim.getName().equals("run");
+    assert runDim.getShortName().equals("run");
     assert runDim.getLength() == nagg : nagg +" != "+ runDim.getLength();
   }
 
@@ -218,7 +218,7 @@ public class TestOffAggFmrcGrib extends TestCase {
     Variable v = ncfile.findVariable(varName);
     assert v != null : ncfile.getLocation();
     Dimension d = v.getDimension(1); // time dim
-    Variable time = ncfile.findVariable(d.getName());
+    Variable time = ncfile.findVariable(d.getShortName());
     assert null != time;
     System.out.printf("%ntime dimension for %s = %s%n", varName, time.getFullName());
 

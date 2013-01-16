@@ -259,12 +259,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       }
     }
 
-    // Set the primary temporal axis - either Time or Runtime
-    if (t != null) {
+    if (t != null)
       testAxis.add(t);
-    } else if (rt != null) {
+    if (rt != null)
       testAxis.add(rt);
-    }
 
     CoordinateAxis ens = cs.getEnsembleAxis();
     if (ens != null)
@@ -413,8 +411,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
         } catch (Exception e) {
           if (sbuff != null)
-            sbuff.format("Error reading time coord= %s err= %s\n", t.getFullName(), e.getMessage());
-          log.error("Error reading time coord= "+t.getFullName(), e);
+            sbuff.format("%s: Error reading time coord= %s err= %s\n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
+          log.error(t.getDatasetLocation()+": Error reading time coord= "+t.getFullName(), e);
         }
 
       } else { // 2d
@@ -592,7 +590,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       if (taxis1D != null) {
         Dimension tDim = taxis1D.getDimension(0);
         Dimension rtDim = rtaxis.getDimension(0);
-        if (tDim.getName().equals(rtDim.getName())) { // must usetime subset range if dims match - FMRC 1D has this a lot
+        if (tDim.getShortName().equals(rtDim.getShortName())) { // must usetime subset range if dims match - FMRC 1D has this a lot
           runTimeAxis = (t_range == null) ? rtaxis : (CoordinateAxis1DTime) rtaxis.section(t_range);
         }
       }
@@ -1358,8 +1356,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       f.format("%n");
     }
     if (getTimeAxis() != null) {
-      f.format("t=%s (%s)", timeTaxis.getFullName(), timeTaxis.getClass().getName());
-      if (showCoords) showCoords(timeTaxis, f);
+      f.format("t=%s (%s)", tAxis.getFullName(), tAxis.getClass().getName());
+      if (showCoords) showCoords(tAxis, f);
       f.format("%n");
     }
     if (getVerticalAxis() != null) {

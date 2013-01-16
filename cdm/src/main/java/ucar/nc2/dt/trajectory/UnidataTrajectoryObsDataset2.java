@@ -132,7 +132,7 @@ public class UnidataTrajectoryObsDataset2
       throw new IllegalArgumentException( "Dataset time variable does not have exactly one (1) dimension [" + timeVarNumOfDims + "]." );
     this.timeVarName = this.timeVar.getShortName();
     this.timeDim = this.timeVar.getDimension( 0 );
-    this.timeDimName = this.timeDim.getName();
+    this.timeDimName = this.timeDim.getShortName();
 
     // Find the latitude or GeoY coordinate variable.
     this.latVar = UnidataObsDatasetHelper.getCoordinate( ncd, AxisType.Lat );
@@ -152,7 +152,7 @@ public class UnidataTrajectoryObsDataset2
       {
         this.isTimeDimensionFirst = true;
         this.trajDim = latVarDimList.get( 1 );
-        this.trajDimName = this.trajDim.getName();
+        this.trajDimName = this.trajDim.getShortName();
       }
       else
       {
@@ -160,7 +160,7 @@ public class UnidataTrajectoryObsDataset2
           throw new IllegalArgumentException( "Dataset Latitude/GeoY variable has no time dimension. ");
         this.isTimeDimensionFirst = false;
         this.trajDim = latVarDimList.get( 0 );
-        this.trajDimName = this.trajDim.getName();
+        this.trajDimName = this.trajDim.getShortName();
       }
     }
     else
@@ -185,7 +185,7 @@ public class UnidataTrajectoryObsDataset2
     // Find the vertical height coordinate variable (may be null).
     elevVar = UnidataObsDatasetHelper.getCoordinate( ncd, AxisType.Height );
 
-    timeDimName = timeVar.getDimension(0).getName();
+    timeDimName = timeVar.getDimension(0).getShortName();
     timeVarName = timeVar.getShortName();
     latVarName = latVar.getShortName();
     lonVarName = lonVar.getShortName();

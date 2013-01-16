@@ -64,6 +64,11 @@ second
     testCalendar("gregorian", "secs since -0001-01-01");
   }
 
+  @Test
+  public void problem() {
+    testCalendarOnly(null, "sec since 1970-1-1 00:00:00Z");
+  }
+
   // UNIT since [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]
   @Test
   public void testUdunits() {
@@ -179,6 +184,19 @@ second
     System.out.printf("%s == %s (joda %s) == %s (udunit) %n", s, cdu, cdu.getCalendar(), df.toDateTimeStringISO(base));
     if (!base.equals(cdu.getBaseDate()))
       System.out.printf("  BAD diff = %d%n", cdu.getBaseDate().getTime() - base.getTime());
+  }
+
+  private void testCalendarOnly(String cal, String s) {
+
+    CalendarDateUnit cdu;
+    try {
+     cdu = CalendarDateUnit.of(cal, s);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
+    System.out.printf("%s == %s (joda %s) %n", s, cdu, cdu.getCalendar());
   }
 
   @Test

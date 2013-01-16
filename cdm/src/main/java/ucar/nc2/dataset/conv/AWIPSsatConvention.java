@@ -149,7 +149,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     if (vname.equalsIgnoreCase("record"))
       return AxisType.Time;
     Dimension dim = v.getDimension(0);
-    if ((dim != null) && dim.getName().equalsIgnoreCase("record"))
+    if ((dim != null) && dim.getShortName().equalsIgnoreCase("record"))
       return AxisType.Time;
 
     String unit = ve.getUnitsString();

@@ -55,7 +55,7 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
  * <p> Use the static methods writeToFile() to copy an entire file. Create a FileWriter object to control exactly
  * what gets written to the file.
  *
- * @deprecated use FileWriter2 to allow netcdf4 writing also
+ * @deprecated use FileWriter2
  * @author caron
  * @author Steve Ansari
  * @see ucar.nc2.NetcdfFile
@@ -142,7 +142,7 @@ public class FileWriter {
     // global attributes
     List<Attribute> glist = fileIn.getGlobalAttributes();
     for (Attribute att : glist) {
-      String useName = N3iosp.makeValidNetcdfObjectName(att.getName());
+      String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
       Attribute useAtt;
       if (att.isArray())
         useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
@@ -155,10 +155,10 @@ public class FileWriter {
 
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : fileIn.getDimensions()) {
-      String useName = N3iosp.makeValidNetcdfObjectName(oldD.getName());
+      String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
       Dimension newD = ncfile.addDimension(useName, oldD.isUnlimited() ? 0 : oldD.getLength(),
               oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-      dimHash.put(newD.getName(), newD);
+      dimHash.put(newD.getShortName(), newD);
       if (debug) System.out.println("add dim= " + newD);
     }
 
@@ -176,12 +176,12 @@ public class FileWriter {
           dims.add(newD);
 
         } else {
-          String useName = N3iosp.makeValidNetcdfObjectName(oldD.getName());
+          String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
           Dimension dim = dimHash.get(useName);
           if (dim != null)
             dims.add(dim);
           else
-            throw new IllegalStateException("Unknown dimension= " + oldD.getName());
+            throw new IllegalStateException("Unknown dimension= " + oldD.getShortName());
         }
       }
 
@@ -212,7 +212,7 @@ public class FileWriter {
       // attributes
       List<Attribute> attList = oldVar.getAttributes();
       for (Attribute att : attList) {
-        String useName = N3iosp.makeValidNetcdfObjectName(att.getName());
+        String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
         if (att.isArray())
           ncfile.addVariableAttribute(varName, useName, att.getValues());
         else if (att.isString())
@@ -320,7 +320,7 @@ public class FileWriter {
 
   private static void copyAll(NetcdfFileWriteable ncfile, Variable oldVar) throws IOException {
     String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
-    newName = NetcdfFile.escapeName(newName);
+    newName = NetcdfFile.makeValidPathName(newName);
 
     Array data = oldVar.read();
     try {
@@ -343,6 +343,9 @@ public class FileWriter {
    * An index that computes chunk shapes. It is intended to be used to compute the origins and shapes for a series
    * of contiguous writes to a multidimensional array.
    * It writes the first n elements (n < maxChunkElems), then the next, etc.
+   */
+  /**
+   * @deprecated use FileWriter2.ChunkingIndex
    */
   public static class ChunkingIndex extends Index {
     public ChunkingIndex(int[] shape) {
@@ -511,7 +514,7 @@ public class FileWriter {
    * @param att take attribute name, value, from here
    */
   public void writeGlobalAttribute(Attribute att) {
-    String useName = N3iosp.makeValidNetcdfObjectName(att.getName());
+    String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
     if (att.isArray()) // why rewrite them ??
       ncfile.addGlobalAttribute(useName, att.getValues());
     else if (att.isString())
@@ -527,7 +530,7 @@ public class FileWriter {
    * @param att     take attribute name, value, from here
    */
   public void writeAttribute(String varName, Attribute att) {
-    String attName = N3iosp.makeValidNetcdfObjectName(att.getName());
+    String attName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
     varName = N3iosp.makeValidNetcdfObjectName(varName);
     if (att.isArray())
       ncfile.addVariableAttribute(varName, attName, att.getValues());
@@ -544,7 +547,7 @@ public class FileWriter {
    * @return the new Dimension
    */
   public Dimension writeDimension(Dimension dim) {
-    String useName = N3iosp.makeValidNetcdfObjectName(dim.getName());
+    String useName = N3iosp.makeValidNetcdfObjectName(dim.getShortName());
     Dimension newDim = ncfile.addDimension(useName, dim.isUnlimited() ? 0 : dim.getLength(),
             dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
     dimHash.put(useName, newDim);
@@ -565,10 +568,10 @@ public class FileWriter {
     List<Dimension> dimvList = oldVar.getDimensions();
     for (int j = 0; j < dimvList.size(); j++) {
       Dimension oldD = dimvList.get(j);
-      Dimension newD = dimHash.get(N3iosp.makeValidNetcdfObjectName(oldD.getName()));
+      Dimension newD = dimHash.get(N3iosp.makeValidNetcdfObjectName(oldD.getShortName()));
       if (null == newD) {
         newD = writeDimension(oldD);
-        dimHash.put(newD.getName(), newD);
+        dimHash.put(newD.getShortName(), newD);
       }
       dims[j] = newD;
     }
@@ -648,6 +651,9 @@ public class FileWriter {
     System.out.println("usage: ucar.nc2.FileWriter -in <fileIn> -out <fileOut> [-delay <millisecs>]");
   }
 
+  /**
+   * @deprecated use FileWriter2.FileWriterProgressEvent
+   */
   public static class FileWriterProgressEvent {
     private double progressPercent;
     private long bytesWritten;

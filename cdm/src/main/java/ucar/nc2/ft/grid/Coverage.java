@@ -33,64 +33,20 @@
 package ucar.nc2.ft.grid;
 
 import ucar.ma2.*;
-import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.util.NamedObject;
 
 import java.util.List;
 
 /**
- * Experimental Grid feature type.
+ * Experimental Coverage feature type.
+ * Superclass of gridded data types
  * Can we do this without indexed reads?
- * TODO
- *  has extra dimension(s)
- *
  * @author caron
  * @since Jan 19, 2010
  */
-public interface Grid {
-
-    /**
-     * Get the name of the Grid
-     *
-     * @return the name of the Grid
-     */
-    public String getName();
-
-    /**
-     * Get the description/long_name of the Grid
-     * @return the description/long_name of the Grid
-     */
-    public String getDescription();
-
-    /**
-     * Get the unit string
-     * @return the unit string
-     */
-    public String getUnitsString();
-
-    /**
-     * get the data type
-     * @return the data type
-     */
-    public DataType getDataType();
-
-    /**
-     * Get a List of Attribute specific to the Grid
-     * @return a List of Attribute
-     */
-    public List<Attribute> getAttributes();
-
-    /**
-     * Convenience function; lookup Attribute by name.
-     *
-     * @param name the name of the attribute
-     * @return the attribute, or null if not found
-     */
-    public Attribute findAttributeIgnoreCase(String name);
+public interface Coverage extends IsMissingEvaluator, VariableSimpleIF, NamedObject {
 
     /**
      * Convenience function; lookup Attribute value by name. Must be String valued
@@ -102,7 +58,7 @@ public interface Grid {
     public String findAttValueIgnoreCase(String attName, String defaultValue);
 
     /**
-     * Returns a List of Dimension containing the dimensions used by this grid.
+     * Returns a List of Dimension containing the dimensions used by this Coverage.
      * The dimension are put into canonical order: (rt, e, t, z, y, x).
      * Only the x and y are required.
      * If the Horizontal axes are 2D, the x and y dimensions are arbitrarily chosen to be
@@ -113,86 +69,57 @@ public interface Grid {
     public List<Dimension> getDimensions();
 
     /**
-     * get the ith dimension
-     * @param i index of dimension
-     * @return the ith dimension
+     * get the Coverage's Coordinate System.
+     * @return the Coverage's Coordinate System.
      */
-    public Dimension getDimension(int i);
-
-    /**
-     * get the Grid's Coordinate System.
-     * @return the Grid's Coordinate System.
-     */
-    public GridCoordSystem getCoordinateSystem();
-
-    /**
-     * get the Projection, if it exists.
-     * @return the Projection, or null
-     */
-    public ProjectionImpl getProjection();
+    public CoverageCS getCoordinateSystem();
 
     /**
      * true if there may be missing data
      * @return true if there may be missing data
      */
-    public boolean hasMissingData();
+    public boolean hasMissing();
 
     /**
      * if val is missing data
      * @param val test this value
      * @return true if val is missing data
      */
-    public boolean isMissingData(double val);
+    public boolean isMissing(double val);
 
-    /**
+    /*
      * Get the minimum and the maximum data value of the previously read Array,
      * skipping missing values as defined by isMissingData(double val).
      *
      * @param data Array to get min/max values
      * @return both min and max value.
-     */
-    public MAMath.MinMax getMinMaxSkipMissingData(Array data);
+     *
+    public MAMath.MinMax getMinMaxSkipMissingData(Array data); */
 
     /**
      * This reads an arbitrary data slice, returning the data in
      * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
      *
-     * @param rt_index if < 0, get all of runtime dim; if valid index, fix slice to that value.
-     * @param e_index  if < 0, get all of ensemble dim; if valid index, fix slice to that value.
-     * @param t_index  if < 0, get all of time dim; if valid index, fix slice to that value.
-     * @param z_index  if < 0, get all of z dim; if valid index, fix slice to that value.
-     * @param y_index  if < 0, get all of y dim; if valid index, fix slice to that value.
-     * @param x_index  if < 0, get all of x dim; if valid index, fix slice to that value.
+     * @param subset subset that you want
      * @return data[rt,e,t,z,y,x], eliminating missing or fixed dimension.
      * @throws java.io.IOException on io error
      */
-    public Array readDataSlice(int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
+    public Array readData(CoverageCS.Subset subset) throws java.io.IOException, InvalidRangeException;
 
-    /**
+    /*
      * Create a new GeoGrid that is a logical subset of this GeoGrid.
      *
-     * @param rt_range subset the runtime dimension, or null if you want all of it
-     * @param e_range  subset the ensemble dimension, or null if you want all of it
-     * @param t_range  subset the time dimension, or null if you want all of it
-     * @param z_range  subset the vertical dimension, or null if you want all of it
-     * @param y_range  subset the y dimension, or null if you want all of it
-     * @param x_range  subset the x dimension, or null if you want all of it
+     * @param subset subset that you want
      * @return subsetted GeoGrid
-     * @throws ucar.ma2.InvalidRangeException if ranges are invlaid
-     */
-    public Grid makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException;
+     * @throws ucar.ma2.InvalidRangeException if ranges are invalid
+     *
+    public Coverage makeSubset(Subset subset) throws ucar.ma2.InvalidRangeException;  */
 
     /**
-     * human readable information about this Grid.
-     * @return human readable information about this Grid.
+     * human readable information about this Coverage.
+     * @return human readable information about this Coverage.
      */
     public String getInfo();
-
-    /**
-     * Get the underlying Variable, if it exists.
-     * @return the underlying Variable, if it exists, else null
-     */
-    public VariableDS getVariable();
 
   }
 

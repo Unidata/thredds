@@ -670,7 +670,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             lat.setDimensions(COLUMN + " " + ROW);
             lat.setDataType(DataType.DOUBLE);
             lat.addAttribute(new Attribute("long_name", "latitude"));
-            lat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+            lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
             lat.addAttribute(new Attribute(CF.STANDARD_NAME, "latitude"));
             lat.addAttribute(new Attribute(_Coordinate.AxisType,
                                            AxisType.Lat.toString()));
@@ -679,7 +679,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             Variable lon = new Variable(ncfile, null, null, LON);
             lon.setDimensions(COLUMN + " " + ROW);
             lon.setDataType(DataType.DOUBLE);
-            lon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+            lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
             lon.addAttribute(new Attribute("long_name", "longitude"));
             lon.addAttribute(new Attribute(CF.STANDARD_NAME, "longitude"));
             lon.addAttribute(new Attribute(_Coordinate.AxisType,

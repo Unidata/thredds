@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Port Eumetsat MSG_navigation.c to java
+ * Port Eumetsat MSG_navigation.c to java.
  * from http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=zip_tools_msg_nav_c&RevisionSelectionMethod=LatestReleased
  *
  * @author caron

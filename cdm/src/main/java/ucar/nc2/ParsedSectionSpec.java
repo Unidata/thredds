@@ -119,7 +119,7 @@ public class ParsedSectionSpec {
 
     } else if (parent instanceof Structure) { // then varNameEsc = memberNameEsc (i.e. includes groups)
       Structure s = (Structure) parent;
-      v = s.findVariable( NetcdfFile.unescapeName(varNameEsc) ); // s.findVariable wants unescaped version
+      v = s.findVariable( NetcdfFile.makeNameUnescaped(varNameEsc) ); // s.findVariable wants unescaped version
     }
     if (v == null)
       throw new IllegalArgumentException(" cant find variable: " + varNameEsc + " in selector=" + selector);
@@ -161,7 +161,8 @@ public class ParsedSectionSpec {
 
     List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
 
-    sb.append(v.isMemberOfStructure() ? NetcdfFile.escapeNameSectionSpec(v.getShortName()) : NetcdfFile.makeFullNameEscapedSectionSpec(v));
+    sb.append(v.isMemberOfStructure() ? NetcdfFile.makeValidSectionSpecName(v.getShortName())
+                                      : NetcdfFile.makeFullNameSectionSpec(v));
 
     if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
       sb.append('(');

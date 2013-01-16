@@ -316,7 +316,7 @@ class DodsV implements Comparable {
   }
 
   String getNetcdfShortName() {
-    return DODSNetcdfFile.makeNetcdfName( getClearName());
+    return DODSNetcdfFile.makeShortName(getClearName());
   }
 
   String getType() { return bt == null ? "" : bt.getTypeName(); }
@@ -429,7 +429,7 @@ class DodsV implements Comparable {
     if (!att.isContainer()) {
       DODSAttribute ncatt = new DODSAttribute( match ? att.getEncodedName() : fullName, att);
       dodsV.addAttribute( ncatt);
-      if (debugAttributes) System.out.println(" addAttribute "+ncatt.getName()+" to "+dodsV.getFullName());
+      if (debugAttributes) System.out.println(" addAttribute "+ncatt.getShortName()+" to "+dodsV.getFullName());
 
     } else if (att.getEncodedName() == null) {
       logger.info("DODS attribute name is null = "+att);

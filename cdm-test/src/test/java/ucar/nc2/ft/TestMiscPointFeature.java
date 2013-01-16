@@ -109,23 +109,19 @@ public class TestMiscPointFeature extends TestCase {
   }
 
   public void testGempak() throws Exception {
-    String file = TestDir.cdmUnitTestDir +  "formats/gempak/surface/09052812.sf";
+    String file = TestDir.cdmUnitTestDir +  "formats/gempak/surface/09052812.sf";       // Q:/cdmUnitTest/formats/gempak/surface/09052812.sf
     Formatter buf = new Formatter();
-    FeatureDatasetPoint pods =
-        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-            ucar.nc2.constants.FeatureType.POINT, file, null, buf);
+    FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.POINT, file, null, buf);
     if (pods == null) {  // try as ANY_POINT
-      pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-          ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
+      pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
     }
     if (pods == null) {
-      throw new Exception("can't open file");
+      System.out.printf("can't open file=%s%n error=%s%n",file, buf );
+      throw new Exception("can't open file "+file);
     }
-    List<FeatureCollection> collectionList =
-        pods.getPointFeatureCollectionList();
+    List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
     if (collectionList.size() > 1) {
-      throw new IllegalArgumentException(
-          "Can't handle point data with multiple collections");
+      throw new IllegalArgumentException("Can't handle point data with multiple collections");
     }
     boolean sample = true;
     for (int time = 0; time < 2; time++) {

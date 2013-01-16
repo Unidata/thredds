@@ -45,95 +45,100 @@ import java.util.List;
 public class TestMisc extends UnitTestCommon
 {
   static final String DFALTTESTSERVER = "motherlode.ucar.edu:8081";
+  //static final String DFALTTESTSERVER = "localhost:8080";
 
-  public TestMisc() {
-    setTitle("DAP Misc tests");
-  }
-
-  // Collect results locally
-  static public class Result {
+  // Collect testcases locally
+  static public class Testcase {
     String title;
     String url;
     String cdl;
 
-    public Result(String title, String url, String cdl) {
+    public Testcase(String title, String url, String cdl) {
       this.title = title;
       this.url = url;
       this.cdl = cdl;
     }
   }
 
-  public void testFake() throws Exception {
+  String testserver = null;
+  List<Testcase> testcases = null;
+
+  public TestMisc() {
+    setTitle("DAP Misc tests");
+    // Check if we are running against motherlode or localhost, or what.
+    testserver = System.getProperty("testserver");
+    if (testserver == null) testserver = DFALTTESTSERVER;
+    definetestcases();
   }
 
-  public void
-  testMisc() throws Exception
+  void
+  definetestcases()
   {
-    // Check if we are running against motherlode or localhost, or what.
-    String testserver = System.getProperty("testserver");
-    if (testserver == null) testserver = DFALTTESTSERVER;
-
-    List<Result> results = new ArrayList<Result>();
-    if (true) {
-      results.add(new Result("TestBennoGrid Example",
+    testcases = new ArrayList<Testcase>();
+    if (false) { // use this arm for debugging individual cases
+        testcases.add(new Testcase("TestDODSArrayPrimitiveExample",
+                      "dods://" + testserver + "/dts/test.02",
+                      "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/test.02.cdl")
+                      );
+    } else {
+      testcases.add(new Testcase("TestBennoGrid Example",
 	      "dods://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods",
               "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/dods.cdl")
               );
-
-      results.add(new Result("TestDODSArrayPrimitiveExample",
+      testcases.add(new Testcase("TestDODSArrayPrimitiveExample",
               "dods://" + testserver + "/dts/test.02",
               "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/test.02.cdl")
               );
 
     }
-    if (false) {
-      results.add(new Result("External user provided group example",
-              "http://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR_05JUL2012_0700_L2B_OLR.h5",
-              "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/K1VHR_05JUL2012_0700_L2B_OLR.h5.cdl"));
-    }
-    // Run  with usegroups == true
+  }
+
+
+  public void
+  testMisc() throws Exception
+  {
     System.out.println("TestMisc:");
-    for (Result result : results) {
-      System.out.println("url: " + result.url);
-      boolean pass = process1(result);
+    for (Testcase testcase : testcases) {
+      System.out.println("url: " + testcase.url);
+      boolean pass = process1(testcase);
       if (!pass) {
-        assertTrue("Testing " + result.title, pass);
+        assertTrue("Testing " + testcase.title, pass);
       }
     }
   }
 
-  boolean process1(Result result)
+  boolean process1(Testcase testcase)
           throws Exception
   {
-      DODSNetcdfFile ncfile = new DODSNetcdfFile(result.url);
+      DODSNetcdfFile ncfile = new DODSNetcdfFile(testcase.url);
       if (ncfile == null)
-        throw new Exception("Cannot read: " + result.url);
+        throw new Exception("Cannot read: " + testcase.url);
       StringWriter ow = new StringWriter();
       PrintWriter pw = new PrintWriter(ow);
       ncfile.writeCDL(pw, false);
       pw.close();
       ow.close();
       String captured = ow.toString();
-      visual(result.title,captured);
-      boolean pass = diff(result,captured);
+      visual(testcase.title,captured);
+      boolean pass = diff(testcase,captured);
       return pass;
   }
 
-  boolean diff(Result result, String captured)
+  boolean diff(Testcase testcase, String captured)
           throws Exception
   {
       // See if the cdl is in a file or a string.
       if (System.getProperty("nodiff") != null)
           return true;
       Reader baserdr = null;
-      if(result.cdl.startsWith("file://")) {
-          File f = new File(result.cdl.substring("file://".length(),result.cdl.length()));
+      if(testcase.cdl.startsWith("file://")) {
+          File f = new File(testcase.cdl.substring("file://".length(),testcase.cdl.length()));
           baserdr = new FileReader(f);
       } else
-          baserdr = new StringReader(result.cdl);
+          baserdr = new StringReader(testcase.cdl);
       StringReader resultrdr = new StringReader(captured);
       // Diff the two files
-      Diff diff = new Diff("Testing " + result.title);
+      Diff diff = new Diff("Testing " + testcase.title);
       boolean pass = !diff.doDiff(baserdr, resultrdr);
       baserdr.close();
       resultrdr.close();

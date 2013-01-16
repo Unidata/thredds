@@ -309,13 +309,13 @@ public class FeatureDatasetPointXML {
       }
 
       for (Attribute att : atts) {
-        if (att.getName().equals(CDM.UNITS))
+        if (att.getShortName().equals(CDM.UNITS))
           units = att.getStringValue();
-        if (att.getName().equals(CDM.LONG_NAME))
+        if (att.getShortName().equals(CDM.LONG_NAME))
           desc = att.getStringValue();
-        if ((desc == null) && att.getName().equals("description"))
+        if ((desc == null) && att.getShortName().equals("description"))
           desc = att.getStringValue();
-        if ((desc == null) && att.getName().equals("standard_name"))
+        if ((desc == null) && att.getShortName().equals("standard_name"))
           desc = att.getStringValue();
       }
     }
@@ -371,7 +371,7 @@ public class FeatureDatasetPointXML {
     @Override
     public Attribute findAttributeIgnoreCase(String name) {
       for (Attribute att : atts) {
-        if (att.getName().equalsIgnoreCase(name))
+        if (att.getShortName().equalsIgnoreCase(name))
           return att;
       }
       return null;

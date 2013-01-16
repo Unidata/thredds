@@ -588,7 +588,7 @@ public class GridDatasetInfo {
       Dimension dim = (Dimension) dims.get(i);
       if (i > 0) buff.append(" ");
       if (dim.isShared())
-        buff.append(dim.getName());
+        buff.append(dim.getShortName());
       else
         buff.append(dim.getLength());
     }

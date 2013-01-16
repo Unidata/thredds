@@ -194,13 +194,13 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     int nlon = ds.findDimension("Lon").getLength();
 
     // add lat
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, "Lat", DataType.FLOAT, "Lat", "degrees_north", "latitude coordinate");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, "Lat", DataType.FLOAT, "Lat", CDM.LAT_UNITS, "latitude coordinate");
     ds.setValues(v, nlat, lat, -dlat);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     ds.addCoordinateAxis( v);
 
     // add lon
-    v = new CoordinateAxis1D(ds, null, "Lon", DataType.FLOAT, "Lon", "degrees_east", "longitude coordinate");
+    v = new CoordinateAxis1D(ds, null, "Lon", DataType.FLOAT, "Lon", CDM.LON_UNITS, "longitude coordinate");
     ds.setValues(v, nlon, lon, dlon);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     ds.addCoordinateAxis( v);

@@ -32,6 +32,10 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
+/**
+ * CylindricalEqualArea Projection.
+ * Port from proj4.
+ */
 public class CylindricalEqualAreaProjection extends ProjectionImpl {
 
   private double trueScaleLatitude, lon0; // degrees

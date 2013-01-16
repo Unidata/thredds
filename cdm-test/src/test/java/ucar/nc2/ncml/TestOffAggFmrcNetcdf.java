@@ -70,19 +70,19 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   private void testDimensions(NetcdfFile ncfile, int nagg) {
     Dimension latDim = ncfile.findDimension("x");
     assert null != latDim;
-    assert latDim.getName().equals("x");
+    assert latDim.getShortName().equals("x");
     assert latDim.getLength() == 93;
     assert !latDim.isUnlimited();
 
     Dimension lonDim = ncfile.findDimension("y");
     assert null != lonDim;
-    assert lonDim.getName().equals("y");
+    assert lonDim.getShortName().equals("y");
     assert lonDim.getLength() == 65;
     assert !lonDim.isUnlimited();
 
     Dimension timeDim = ncfile.findDimension("run");
     assert null != timeDim;
-    assert timeDim.getName().equals("run");
+    assert timeDim.getShortName().equals("run");
     assert timeDim.getLength() == nagg : timeDim.getLength();
   }
 

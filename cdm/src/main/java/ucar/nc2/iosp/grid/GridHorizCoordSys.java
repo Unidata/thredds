@@ -141,7 +141,7 @@ public class GridHorizCoordSys {
     grid_name = StringUtil2.replace(grid_name, ' ', "_");
     id = (g == null)
         ? grid_name
-        : g.getName();
+        : g.getFullName();
 
     if (isLatLon && (lookup.getProjectionType(gds) == GridTableLookup.GaussianLatLon)) {
       isGaussian = true;
@@ -1110,8 +1110,8 @@ public class GridHorizCoordSys {
         int[] shape = var.getShape();
         if (var.getRank() == 3 && shape[0] == 1) { // remove time dependencies - MAJOR KLUDGE
               List<Dimension> dims = var.getDimensions();
-              if( ! timeDimLL.contains( dims.get( 0 ).getName() ))
-                timeDimLL.add( dims.get( 0 ).getName() );
+              if( ! timeDimLL.contains( dims.get( 0 ).getShortName() ))
+                timeDimLL.add( dims.get( 0 ).getShortName() );
               dims.remove(0);
               var.setDimensions(dims);
         }
@@ -1133,8 +1133,8 @@ public class GridHorizCoordSys {
         int[] shape = var.getShape();
         if (var.getRank() == 3 && shape[0] == 1) { // remove time dependencies - MAJOR KLUDGE
               List<Dimension> dims = var.getDimensions();
-              if( ! timeDimLL.contains( dims.get( 0 ).getName() ))
-                timeDimLL.add( dims.get( 0 ).getName() );
+              if( ! timeDimLL.contains( dims.get( 0 ).getShortName() ))
+                timeDimLL.add( dims.get( 0 ).getShortName() );
               dims.remove(0);
               var.setDimensions(dims);
         }
@@ -1159,18 +1159,18 @@ public class GridHorizCoordSys {
      List<Dimension> dims = var.getDimensions();
      if( var.getShortName().startsWith( "U-component") ) {
         var.addAttribute(new Attribute("coordinates", latU +" "+ lonU));
-        if( ! timeDimV.contains( dims.get( 0 ).getName() ))
-                timeDimV.add( dims.get( 0 ).getName() );
+        if( ! timeDimV.contains( dims.get( 0 ).getShortName() ))
+                timeDimV.add( dims.get( 0 ).getShortName() );
       } else if( var.getShortName().startsWith( "V-component") ) {
         var.addAttribute(new Attribute("coordinates", latV +" "+ lonV));
-        if( ! timeDimV.contains( dims.get( 0 ).getName() ))
-                timeDimV.add( dims.get( 0 ).getName() );
+        if( ! timeDimV.contains( dims.get( 0 ).getShortName() ))
+                timeDimV.add( dims.get( 0 ).getShortName() );
 
         // rest of variables default to Pressure_Point
       } else {
         var.addAttribute(new Attribute("coordinates", latpp +" "+ lonpp));
-        if( ! timeDimV.contains( dims.get( 0 ).getName() ))
-                timeDimV.add( dims.get( 0 ).getName() );
+        if( ! timeDimV.contains( dims.get( 0 ).getShortName() ))
+                timeDimV.add( dims.get( 0 ).getShortName() );
      }
     }
 

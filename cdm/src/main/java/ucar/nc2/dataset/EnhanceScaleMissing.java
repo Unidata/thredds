@@ -33,6 +33,7 @@
 package ucar.nc2.dataset;
 
 import ucar.ma2.Array;
+import ucar.nc2.ft.grid.IsMissingEvaluator;
 
 import java.io.IOException;
 
@@ -139,7 +140,7 @@ import java.io.IOException;
  * @author caron
  */
 
-public interface EnhanceScaleMissing {
+public interface EnhanceScaleMissing extends IsMissingEvaluator {
 
   /** true if Variable has missing data values
    * @return true if Variable has missing data values

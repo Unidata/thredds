@@ -99,9 +99,9 @@ public class WriterCFPointDataset {
   private void createGlobalAttributes() {
     if (globalAtts != null) {
       for (Attribute att : globalAtts) {
-        if (att.getName().equalsIgnoreCase("cdm_data_type")) continue;
-        if (att.getName().equalsIgnoreCase("cdm_datatype")) continue;
-        if (att.getName().equalsIgnoreCase("thredds_data_type")) continue;
+        if (att.getShortName().equalsIgnoreCase("cdm_data_type")) continue;
+        if (att.getShortName().equalsIgnoreCase("cdm_datatype")) continue;
+        if (att.getShortName().equalsIgnoreCase("thredds_data_type")) continue;
         
         ncfileOut.addAttribute(null, att);
       }
@@ -160,7 +160,7 @@ public class WriterCFPointDataset {
     // add them
     for (Dimension d : dimSet) {
       if (isExtraDimension(d))
-        ncfileOut.addDimension(null, new Dimension(d.getName(), d.getLength(), true, false, d.isVariableLength()));
+        ncfileOut.addDimension(null, new Dimension(d.getShortName(), d.getLength(), true, false, d.isVariableLength()));
     }
 
     // add the data variables all using the record dimension
@@ -170,7 +170,7 @@ public class WriterCFPointDataset {
       StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
         if (isExtraDimension(d))
-          dimNames.append(" ").append(d.getName());
+          dimNames.append(" ").append(d.getShortName());
       }
       Variable newVar = ncfileOut.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
       recordVars.add(newVar);
@@ -185,7 +185,7 @@ public class WriterCFPointDataset {
 
   // LOOK kludge to identify time dimension
   private boolean isExtraDimension(Dimension d) {
-    return (!d.isUnlimited() && !d.getName().equalsIgnoreCase("time"));
+    return (!d.isUnlimited() && !d.getShortName().equalsIgnoreCase("time"));
   }
 
   public void writeRecord(double lat, double lon, double alt, Date time, double[] vals, String[] svals) throws IOException {

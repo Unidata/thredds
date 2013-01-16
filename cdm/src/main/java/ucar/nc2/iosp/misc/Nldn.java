@@ -214,13 +214,13 @@ The specifics for the binary NLDN data record contained in the IDD is:
     seq.addMemberVariable(v);
 
     v = makeLightningVariable(ncfile, null, seq, LAT, DataType.INT, "",
-            "latitude", "latitude", "degrees_north",
+            "latitude", "latitude", CDM.LAT_UNITS,
             AxisType.Lat);
     v.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float(1.0e-3)));
     seq.addMemberVariable(v);
 
     v = makeLightningVariable(ncfile, null, seq, LON, DataType.INT, "",
-            "longitude", "longitude", "degrees_east",
+            "longitude", "longitude", CDM.LON_UNITS,
             AxisType.Lon);
     v.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float(1.0e-3)));
     seq.addMemberVariable(v);

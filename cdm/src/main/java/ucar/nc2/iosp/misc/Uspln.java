@@ -248,20 +248,17 @@ public class Uspln extends AbstractLightningIOSP {
         seq.addMemberVariable(v);
 
         v = makeLightningVariable(ncfile, null, seq, LAT, DataType.DOUBLE,
-                                  "", "latitude", "latitude",
-                                  "degrees_north", AxisType.Lat);
+                                  "", "latitude", "latitude", CDM.LAT_UNITS, AxisType.Lat);
         seq.addMemberVariable(v);
 
         v = makeLightningVariable(ncfile, null, seq, LON, DataType.DOUBLE,
                                   "", "longitude", "longitude",
-                                  "degrees_east", AxisType.Lon);
+                CDM.LON_UNITS, AxisType.Lon);
         seq.addMemberVariable(v);
 
         v = makeLightningVariable(ncfile, null, seq, SIGNAL, DataType.FLOAT,
-                                  "",
-                                  "signed peak amplitude (signal strength)",
-                                  null, "kAmps", null);
-        v.addAttribute(new Attribute(CDM.MISSING_VALUE, new Double(999)));
+                                  "", "signed peak amplitude (signal strength)", null, "kAmps", null);
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, new Double(999)));
         seq.addMemberVariable(v);
 
         if (isExtended) {  // extended

@@ -47,6 +47,7 @@ import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Formatter;
 
 /**
  * HDF5 I/O
@@ -99,9 +100,19 @@ public class H5iosp extends AbstractIOServiceProvider {
     return "Hierarchical Data Format, version 5";
   }
 
+  public void getEosInfo(Formatter f) throws IOException {
+    NetcdfFile ncfile = headerParser.ncfile;
+    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
+    if (eosInfo != null) {
+      HdfEos.getEosInfo(ncfile, eosInfo, f);
+    } else {
+      f.format("Cant find GROUP '%s'", HdfEos.HDF5_GROUP);
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////////
 
-  private RandomAccessFile myRaf;
+  //private RandomAccessFile raf;
   private H5header headerParser;
   private boolean isEos;
   boolean includeOriginalAttributes = false;
@@ -112,12 +123,12 @@ public class H5iosp extends AbstractIOServiceProvider {
   public void open(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
-    this.myRaf = raf;
-    headerParser = new H5header(myRaf, ncfile, this);
+    this.raf = raf;
+    headerParser = new H5header(this.raf, ncfile, this);
     headerParser.read(null);
 
     // check if its an HDF5-EOS file
-    Group eosInfo = ncfile.getRootGroup().findGroup("HDFEOS INFORMATION");
+    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
     if (eosInfo != null && !skipEos) {
       isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }
@@ -148,7 +159,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (debugFilter) System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
       ByteOrder bo = (vinfo.typeInfo.endian == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
-      layout = new H5tiledLayoutBB(v2, wantSection, myRaf, vinfo.mfp.getFilters(), bo);
+      layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
       data = IospHelper.readDataFill((LayoutBB) layout, v2.getDataType(), vinfo.getFillValue());
 
     } else { // normal case
@@ -215,7 +226,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     // special processing
     if (typeInfo.hdfType == 2) { // time
-      Object data = IospHelper.readDataFill(myRaf, layout, dataType, fillValue, endian, true);
+      Object data = IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, true);
       Array timeArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
 
       // now transform into an ISO Date String
@@ -229,7 +240,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     if (typeInfo.hdfType == 8) { // enum
-      Object data = IospHelper.readDataFill(myRaf, layout, dataType, fillValue, endian);
+      Object data = IospHelper.readDataFill(raf, layout, dataType, fillValue, endian);
       return Array.factory(dataType.getPrimitiveClassType(), shape, data);
     }
 
@@ -268,8 +279,8 @@ public class H5iosp extends AbstractIOServiceProvider {
         if (debugStructure)
           System.out.println(" readStructure " + v.getFullName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
         // copy bytes directly into the underlying byte[] LOOK : assumes contiguous layout ??
-        myRaf.seek(chunk.getSrcPos());
-        myRaf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
+        raf.seek(chunk.getSrcPos());
+        raf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
       }
 
       // place data into an ArrayStructureBB
@@ -395,8 +406,8 @@ public class H5iosp extends AbstractIOServiceProvider {
         int recsize = layout.getElemSize();
         for (int i = 0; i < chunk.getNelems(); i++) {
           byte[] pa = new byte[recsize];
-          myRaf.seek(chunk.getSrcPos() + i * recsize);
-          myRaf.read(pa, 0, recsize);
+          raf.seek(chunk.getSrcPos() + i * recsize);
+          raf.read(pa, 0, recsize);
           opArray.setObject(count++, ByteBuffer.wrap(pa));
         }
       }
@@ -404,7 +415,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     // normal case
-    return IospHelper.readDataFill(myRaf, layout, dataType, fillValue, endian, convertChar);
+    return IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, convertChar);
   }
 
   // old way
@@ -431,11 +442,11 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @throws IOException on io error
    */
   public void close() throws IOException {
-    if (myRaf != null) {
-      myRaf.close();
+    if (raf != null) {
+      raf.close();
       // log.warn("H5iosp.close called on "+myRaf.getLocation()+" for ncfile="+ncfile.hashCode()+" for iosp="+this.hashCode());
     }
-    myRaf = null;
+    raf = null;
     headerParser.close();
   }
 
@@ -455,12 +466,16 @@ public class H5iosp extends AbstractIOServiceProvider {
     ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
     try {
       NetcdfFile ncfile = new FakeNetcdfFile();
-      H5header detailParser = new H5header(myRaf, ncfile, this);
+      H5header detailParser = new H5header(raf, ncfile, this);
       detailParser.read(new PrintStream(ff));
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return ff.toString();
+
+    Formatter f = new Formatter();
+    f.format("%s",super.getDetailInfo());
+    f.format("%s",ff.toString());
+    return f.toString();
   }
 
   static private class FakeNetcdfFile extends NetcdfFile {
@@ -478,7 +493,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     if (message.toString().equals("headerEmpty")) {
       NetcdfFile ncfile = new FakeNetcdfFile();
-      H5header headerEmpty = new H5header(myRaf, ncfile, this);
+      H5header headerEmpty = new H5header(raf, ncfile, this);
       return headerEmpty;
     }
 

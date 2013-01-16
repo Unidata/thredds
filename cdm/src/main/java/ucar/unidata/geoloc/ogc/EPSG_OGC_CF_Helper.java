@@ -44,7 +44,7 @@ import ucar.unidata.util.Parameter;
 import java.util.List;
 
 /**
- * _more_
+ * Helper class for using EPSG codes.
  *
  * @author edavis
  * @since 4.0

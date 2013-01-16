@@ -32,6 +32,7 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.ft.grid.IsMissingEvaluator;
 import ucar.nc2.util.Misc;
 
 /**
@@ -497,6 +498,26 @@ public class MAMath {
     }
     return new MinMax(min, max);
   }
+
+  public static MAMath.MinMax getMinMaxSkipMissingData(Array a, IsMissingEvaluator eval) {
+    if (!eval.hasMissing())
+      return MAMath.getMinMax(a);
+
+    IndexIterator iter = a.getIndexIterator();
+    double max = -Double.MAX_VALUE;
+    double min = Double.MAX_VALUE;
+    while (iter.hasNext()) {
+      double val = iter.getDoubleNext();
+      if (eval.isMissing(val))
+        continue;
+      if (val > max)
+        max = val;
+      if (val < min)
+        min = val;
+    }
+    return new MAMath.MinMax(min, max);
+  }
+
 
   public static double getMinimumSkipMissingData(Array a, double missingValue) {
     IndexIterator iter = a.getIndexIterator();

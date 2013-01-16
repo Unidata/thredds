@@ -457,7 +457,7 @@ public class NetcdfCFWriter {
   private void convertAttribute(Variable ctv, Attribute att, double scalef) {
     if (att == null) return;
     double val = scalef * att.getNumericValue().doubleValue();
-    ctv.addAttribute(new Attribute(att.getName(), val));
+    ctv.addAttribute(new Attribute(att.getShortName(), val));
   }
 
   private void addLatLon2D(NetcdfFile ncfile, List<Variable> varList, Projection proj,
@@ -473,7 +473,7 @@ public class NetcdfCFWriter {
     Variable latVar = new Variable(ncfile, null, null, "lat");
     latVar.setDataType(DataType.DOUBLE);
     latVar.setDimensions(dims);
-    latVar.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+    latVar.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     latVar.addAttribute(new Attribute(CDM.LONG_NAME, "latitude coordinate"));
     latVar.addAttribute(new Attribute("standard_name", "latitude"));
     latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
@@ -481,7 +481,7 @@ public class NetcdfCFWriter {
     Variable lonVar = new Variable(ncfile, null, null, "lon");
     lonVar.setDataType(DataType.DOUBLE);
     lonVar.setDimensions(dims);
-    lonVar.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+    lonVar.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
     lonVar.addAttribute(new Attribute(CDM.LONG_NAME, "longitude coordinate"));
     lonVar.addAttribute(new Attribute("standard_name", "longitude"));
     lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
@@ -575,8 +575,8 @@ public class NetcdfCFWriter {
   private void writeGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds) {
     // global attributes
     for (Attribute att : gds.getGlobalAttributes()) {
-      if (att.getName().equals(CDM.FILE_FORMAT)) continue;
-      if (att.getName().equals(_Coordinate._CoordSysBuilder)) continue;
+      if (att.getShortName().equals(CDM.FILE_FORMAT)) continue;
+      if (att.getShortName().equals(_Coordinate._CoordSysBuilder)) continue;
       writer.addGroupAttribute(null, att);
     }
 
@@ -612,7 +612,7 @@ public class NetcdfCFWriter {
       for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
         Variable v = ncd.findVariable(ct.getName());
         if (ct.getTransformType() == TransformType.Projection)
-          newV.addAttribute(new Attribute(CF.GRID_MAPPING, v.getName()));
+          newV.addAttribute(new Attribute(CF.GRID_MAPPING, v.getFullName()));
       }
     }
 

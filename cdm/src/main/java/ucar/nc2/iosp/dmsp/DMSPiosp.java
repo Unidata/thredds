@@ -33,7 +33,6 @@
 // $Id: DMSPiosp.java 63 2006-07-12 21:50:51Z edavis $
 package ucar.nc2.iosp.dmsp;
 
-import thredds.catalog.DataFormatType;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -113,10 +112,10 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     this.header.read( this.raf, this.ncFile );
 
     // Create dimension lists for adding to variables.
-    List nonScanDimList = new ArrayList();
+    List<Dimension> nonScanDimList = new ArrayList<Dimension>();
     nonScanDimList.add( this.header.getNumDataRecordsDim() );
 
-    List scanDimList = new ArrayList();
+    List<Dimension> scanDimList = new ArrayList<Dimension>();
     scanDimList.add( this.header.getNumDataRecordsDim() );
     scanDimList.add( this.header.getNumSamplesPerBandDim() );
 
@@ -167,7 +166,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       else if ( curVariable.getShortName().equals( "infraredImagery"))
       {
-        curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude"));
+        curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude time"));
         curVariable.addAttribute( new Attribute( CDM.UNSIGNED, "true"));
         curVariable.addAttribute( new Attribute( CDM.SCALE_FACTOR, new Float((310.0-190.0)/(256.0-1.0))));
         curVariable.addAttribute( new Attribute( CDM.ADD_OFFSET, new Float( 190.0)));
@@ -178,7 +177,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       else if ( curVariable.getShortName().equals( "visibleImagery"))
       {
-        curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude"));
+        curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude time"));
         curVariable.addAttribute( new Attribute( CDM.UNSIGNED, "true"));
         curVariable.addAttribute( new Attribute( "description",
                                                  "Visible pixels are relative values ranging from 0 to 63 rather than " +
@@ -202,8 +201,8 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     if ( v2 == null ) throw new IllegalArgumentException( "Variable must not be null.");
     if ( section == null ) throw new IllegalArgumentException( "Section must not be null.");
 
-    Object data = null;
-    Array dataArray = null;
+    Object data;
+    Array dataArray;
     List<Range> ranges = section.getRanges();
 
     // Read in date/time variables for each scan (year, dayOfYear, and secondsOfDay).
@@ -629,8 +628,8 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     // @todo Each of these items should BE a ucar.nc2.Variable with additional info.
     // That way it would be easier to add additional variable attributes to a particular variable.
     // Currently need to change some here and others in open().
-    private static java.util.List list = new java.util.ArrayList( 30 );
-    private static java.util.HashMap hash = new java.util.HashMap( 30 );
+    private static java.util.List<VariableInfo> list = new java.util.ArrayList<VariableInfo>( 30 );
+    private static java.util.Map<String, VariableInfo> hash = new java.util.HashMap<String, VariableInfo>( 30 );
 
     public final static VariableInfo YEAR = new VariableInfo(
             "year", "year at time of scan", "year", DataType.INT, 0, 1 );
@@ -642,9 +641,9 @@ public class DMSPiosp extends AbstractIOServiceProvider {
             "time", "time of scan", "seconds since ??? (see above)", DataType.FLOAT, -1, 1 );
 
     public final static VariableInfo SAT_EPHEM_LATITUDE = new VariableInfo(
-            "satEphemLatitude", "geodetic latitude of the satellite for this scan", "degrees_north", DataType.FLOAT, 16, 1);
+            "satEphemLatitude", "geodetic latitude of the satellite for this scan", CDM.LAT_UNITS, DataType.FLOAT, 16, 1);
     public final static VariableInfo SAT_EPHEM_LONGITUDE = new VariableInfo(
-            "satEphemLongitude", "longitude of the satellite for this scan", "degrees_east", DataType.FLOAT, 20, 1);
+            "satEphemLongitude", "longitude of the satellite for this scan", CDM.LON_UNITS, DataType.FLOAT, 20, 1);
     public final static VariableInfo SAT_EPHEM_ALTITUDE = new VariableInfo(
             "satEphemAltitude", "altitude of the satellite for this scan", "kilometers", DataType.FLOAT, 24, 1);
     public final static VariableInfo SAT_EPHEM_HEADING = new VariableInfo(
@@ -737,7 +736,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       {
         return( null);
       }
-      return (VariableInfo) hash.get( name );
+      return hash.get( name );
     }
 
     public static List getAll() { return( list); }
@@ -1281,7 +1280,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
   {
     /**
      * Return the magnitude of a 3-D vector.
-     * @param vector
+     * @param vector 3d vector
      * @return the magnitude of the given 3-D vector.
      */
     static double vectorMagnitude( double[] vector)
@@ -1293,7 +1292,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
 
     /**
      * Change a vector into a vector with magnitude of one.
-     * @param vector
+     * @param vector 3d vector
      */
     static double [] unitVector( double[] vector)
     {

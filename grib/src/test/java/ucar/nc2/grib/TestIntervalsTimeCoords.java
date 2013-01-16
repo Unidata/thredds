@@ -458,7 +458,7 @@ public class TestIntervalsTimeCoords {
         Variable var = ncf.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, parameter );
         assert var != null;
         Dimension dim = var.getDimension( 0 );
-        String bounds = dim.getName() +"_bounds";
+        String bounds = dim.getShortName() +"_bounds";
         Variable interval = ncf.findVariable( bounds );
         Array data = interval.read();
         IndexIterator iter = data.getIndexIterator();

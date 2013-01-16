@@ -32,14 +32,14 @@
  */
 package ucar.unidata.util;
 
-
 import java.lang.ArithmeticException;
 
 
 import java.lang.Math;
 
 /**
- * Recoded from online sources
+ * Special Math functions.
+ * Recoded from online sources for licensing purposes.
  * caron 6/22/2012
  */
 

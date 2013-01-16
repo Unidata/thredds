@@ -207,7 +207,7 @@ public class TestGridRanks extends TestCase {
 
     for (int n=0; n<rank; n++) {
       Dimension dim = v.getDimension(n);
-      String dimName = dim.getName();
+      String dimName = dim.getShortName();
       if (dimName.equals("time")) w[n]  = 1000;
       if (dimName.equals("z")) w[n]  = 100;
       if (dimName.equals("y")) w[n]  = 10;
@@ -374,7 +374,7 @@ public class TestGridRanks extends TestCase {
 
     for (int n=0; n<rank; n++) {
       Dimension dim = gg.getDimension(n);
-      String dimName = dim.getName();
+      String dimName = dim.getShortName();
       if (dimName.equals("time")) w[n]  = 1000;
       if (dimName.equals("z")) w[n]  = 100;
       if (dimName.equals("y")) w[n]  = 10;

@@ -60,6 +60,9 @@ import java.nio.ByteBuffer;
 public class NCdumpW {
   private static String usage = "usage: NCdumpW <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
+  /**
+   * Tell NCdumpW if you want values printed.
+   */
   public enum WantValues {
     none, coordsOnly, all
   }
@@ -179,7 +182,7 @@ public class NCdumpW {
           showValues = WantValues.coordsOnly;
         if (toke.equalsIgnoreCase("-ncml"))
           ncml = true;
-        if (toke.equalsIgnoreCase("-cdl"))
+        if (toke.equalsIgnoreCase("-cdl") || toke.equalsIgnoreCase("-strict"))
           strict = true;
         if (toke.equalsIgnoreCase("-v") && stoke.hasMoreTokens())
           varNames = stoke.nextToken();
@@ -720,7 +723,7 @@ public class NCdumpW {
 
     List<Dimension> dimList = g.getDimensions();
     for (Dimension dim : dimList) {
-      out.format("%s<dimension name='%s' length='%s'", indent, StringUtil2.quoteXmlAttribute(dim.getName()), dim.getLength());
+      out.format("%s<dimension name='%s' length='%s'", indent, StringUtil2.quoteXmlAttribute(dim.getShortName()), dim.getLength());
       if (dim.isUnlimited())
         out.format(" isUnlimited='true'");
       out.format(" />%n");
@@ -839,7 +842,7 @@ public class NCdumpW {
       if (j != 0)
         out.format(" ");
       if (dim.isShared())
-        out.format("%s", StringUtil2.quoteXmlAttribute(dim.getName()));
+        out.format("%s", StringUtil2.quoteXmlAttribute(dim.getShortName()));
       else
         out.format("%d", dim.getLength());
     }
@@ -848,7 +851,7 @@ public class NCdumpW {
 
   @SuppressWarnings({"ObjectToString"})
   static private void writeNcMLAtt(Attribute att, Formatter out, Indent indent) {
-    out.format("%s<attribute name='%s' value='", indent, StringUtil2.quoteXmlAttribute(att.getName()));
+    out.format("%s<attribute name='%s' value='", indent, StringUtil2.quoteXmlAttribute(att.getShortName()));
     if (att.isString()) {
       for (int i = 0; i < att.getLength(); i++) {
         if (i > 0) out.format("\\, "); // ??

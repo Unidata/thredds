@@ -65,7 +65,7 @@ public class Write2ncRect {
     // global attributes
     List<Attribute> glist = bufr.getGlobalAttributes();
     for (Attribute att : glist) {
-      String useName = N3iosp.makeValidNetcdfObjectName(att.getName());
+      String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
       Attribute useAtt;
       if (att.isArray())
         useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
@@ -80,10 +80,10 @@ public class Write2ncRect {
     Dimension recordDim = null;
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : bufr.getDimensions()) {
-      String useName = N3iosp.makeValidNetcdfObjectName(oldD.getName());
+      String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
       boolean isRecord = useName.equals("record");
       Dimension newD = ncfile.addDimension(useName, oldD.getLength(), true, false, false);
-      dimHash.put(newD.getName(), newD);
+      dimHash.put(newD.getShortName(), newD);
       if (isRecord) recordDim = newD;
       if (debug) System.out.println("add dim= " + newD);
     }
@@ -108,7 +108,7 @@ public class Write2ncRect {
       // attributes
       List<Attribute> attList = oldVar.getAttributes();
       for (Attribute att : attList) {
-        String useName = N3iosp.makeValidNetcdfObjectName(att.getName());
+        String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
         if (att.isArray())
           ncfile.addVariableAttribute(varName, useName, att.getValues());
         else if (att.isString())
@@ -146,7 +146,7 @@ public class Write2ncRect {
         // attributes
         List<Attribute> attList = seqVar.getAttributes();
         for (Attribute att : attList) {
-          String useName = N3iosp.makeValidNetcdfObjectName(att.getName());
+          String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
           if (att.isArray())
             ncfile.addVariableAttribute(varName, useName, att.getValues());
           else if (att.isString())

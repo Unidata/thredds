@@ -628,7 +628,7 @@ public class DatasetWriter extends JPanel {
       this.ds = ds;
     }
 
-    public String getName() { return ds.getName(); }
+    public String getName() { return ds.getShortName(); }
     public int getLength() { return ds.getLength(); }
     public boolean isUnlimited() { return ds.isUnlimited(); }
     public void setUnlimited(boolean unlimited) {
@@ -660,26 +660,28 @@ public class DatasetWriter extends JPanel {
       setDataType( vs.getDataType().toString());
 
       // collect dimensions
-      StringBuilder lens = new StringBuilder();
-      StringBuilder names = new StringBuilder();
-      java.util.List dims = vs.getDimensions();
+      Formatter lens = new Formatter();
+      Formatter names = new Formatter();
+      lens.format("(");
+      java.util.List<Dimension> dims = vs.getDimensions();
       for (int j=0; j<dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
+        ucar.nc2.Dimension dim = dims.get(j);
         if (j>0) {
-          lens.append(",");
-          names.append(",");
+          lens.format(",");
+          names.format(",");
         }
-        String name = dim.isShared() ? dim.getName() : "anon";
-        names.append(name);
-        lens.append(dim.getLength());
+        String name = dim.isShared() ? dim.getShortName() : "anon";
+        names.format("%s", name);
+        lens.format("%d",dim.getLength());
       }
+      lens.format(")");
       setDimensions( names.toString());
       setShape( lens.toString());
     }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public String getGroup() { return vs.getParentGroup().getName(); }
+    public String getGroup() { return vs.getParentGroup().getFullName(); }
 
     public String getDimensions() { return dimensions; }
     public void setDimensions(String dimensions) { this.dimensions = dimensions; }
@@ -721,6 +723,29 @@ public class DatasetWriter extends JPanel {
       return vs.getSize() /  elementsPerChunk;
     }
 
+    public long getOverHang() {
+      if (!isChunked) return 0;
+      if (chunked == null) return 0;
+      long total = 1;
+      int[] shape = vs.getShape();
+      for (int i=0; i<chunked.length; i++) {
+        int overhang = (int) (shape[i] % chunked[i]);
+        total *= overhang;
+      }
+      return total;
+    }
+
+    public String getOHPercent() {
+       if (!isChunked) return "";
+       if (chunked == null) return "";
+       long total = getOverHang();
+       float p = 100.0f * total / vs.getSize();
+       Formatter f= new Formatter();
+       f.format("%6.3f", p);
+       return f.toString();
+     }
+
+
     public String getChunkSize() {
       if (chunked == null) return "";
       Formatter f = new Formatter();
@@ -757,7 +782,7 @@ public class DatasetWriter extends JPanel {
       this.att = att;
     }
 
-    public String getName() { return att.getName(); }
+    public String getName() { return att.getShortName(); }
     public String getValue() {
       Array value = att.getValues();
       try {

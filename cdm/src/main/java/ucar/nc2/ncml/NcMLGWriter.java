@@ -209,7 +209,7 @@ public class NcMLGWriter {
 
   private Element makeAttribute( ucar.nc2.Attribute att, String elementName) {
     Element attElem = new Element(elementName, ncNS);
-    attElem.setAttribute("name", att.getName());
+    attElem.setAttribute("name", att.getShortName());
 
     DataType dt = att.getDataType();
     if (dt != null)
@@ -272,7 +272,7 @@ public class NcMLGWriter {
     for (int i=0; i<dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
       if (i > 0) buff.append( " ");
-      buff.append( dim.getName());
+      buff.append( dim.getShortName());
     }
     if (buff.length() > 0)
       varElem.setAttribute("shape", buff.toString());
@@ -353,7 +353,7 @@ public class NcMLGWriter {
 
   private Element makeDim( Dimension dim) {
     Element dimElem = new Element("dimension", ncNS);
-    dimElem.setAttribute("name", dim.getName());
+    dimElem.setAttribute("name", dim.getShortName());
     dimElem.setAttribute("length", Integer.toString(dim.getLength()));
     if (dim.isUnlimited())
       dimElem.setAttribute("isUnlimited", "true");
@@ -386,7 +386,7 @@ public class NcMLGWriter {
     for (int i=0; i<dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
       if (i > 0) buff.append( " ");
-      buff.append( dim.getName());
+      buff.append( dim.getShortName());
     }
     if (buff.length() > 0)
       varElem.setAttribute("shape", buff.toString());

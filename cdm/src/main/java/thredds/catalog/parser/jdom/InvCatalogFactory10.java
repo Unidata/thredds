@@ -57,6 +57,7 @@ import java.util.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateRange;
@@ -1246,8 +1247,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     String zpositive = gcElem.getAttributeValue("zpositive");
 
-    ThreddsMetadata.Range northsouth = readGeospatialRange( gcElem.getChild("northsouth", defNS), "degrees_north");
-    ThreddsMetadata.Range eastwest = readGeospatialRange( gcElem.getChild("eastwest", defNS), "degrees_east");
+    ThreddsMetadata.Range northsouth = readGeospatialRange( gcElem.getChild("northsouth", defNS), CDM.LAT_UNITS);
+    ThreddsMetadata.Range eastwest = readGeospatialRange( gcElem.getChild("eastwest", defNS), CDM.LON_UNITS);
     ThreddsMetadata.Range updown = readGeospatialRange( gcElem.getChild("updown", defNS), "m");
 
     // look for names

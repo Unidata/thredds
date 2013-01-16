@@ -37,6 +37,8 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.grid.CoverageCS;
+import ucar.nc2.ft.grid.impl.CoverageCSFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -149,22 +151,21 @@ public class FeatureScan {
     return (pos > 0) ? name.substring(0, pos) : name;
   }
 
-  private boolean debug = false;
+  private static final boolean debug = true;
 
   public class Bean {
     public File f;
     String fileType;
-    //IOServiceProvider iosp;
     String coordMap;
-    FeatureType featureType;
+    FeatureType featureType, ftFromMetadata;
     String ftype;
-    String info;
+    StringBuilder info = new StringBuilder();
     String coordSysBuilder;
     String ftImpl;
     Throwable problem;
+    String isCoverage;
 
     // no-arg constructor
-
     public Bean() {
     }
 
@@ -176,13 +177,22 @@ public class FeatureScan {
         if (debug) System.out.printf(" featureScan=%s%n", f.getPath());
         ds = NetcdfDataset.openDataset(f.getPath());
         fileType = ds.getFileTypeId();
-        //iosp = ds.getIosp();
         setCoordMap(ds.getCoordinateSystems());
         coordSysBuilder = ds.findAttValueIgnoreCase(null, _Coordinate._CoordSysBuilder, "none");
 
         Formatter errlog = new Formatter();
+        isCoverage = CoverageCSFactory.describe(errlog, ds);
+        info.append(errlog.toString());
+
+        ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
+
         try {
+          errlog = new Formatter();
           FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
+          info.append("FeatureDatasetFactoryManager errlog = ");
+          info.append(errlog.toString());
+          info.append("\n\n");
+
           if (featureDataset != null) {
             featureType = featureDataset.getFeatureType();
             if (featureType != null)
@@ -190,13 +200,14 @@ public class FeatureScan {
             ftImpl = featureDataset.getImplementationName();
             Formatter infof = new Formatter();
             featureDataset.getDetailInfo(infof);
-            info = infof.toString();
+            info.append(infof.toString());
           } else {
-            ftype = " FAIL: " + errlog.toString();
+            ftype = "";
           }
+
         } catch (Throwable t) {
           ftype = " ERR: " + t.getMessage();
-          info = errlog.toString();
+          info.append(errlog.toString());
           problem = t;
         }
 
@@ -231,10 +242,6 @@ public class FeatureScan {
       return fm.toString();
     }
 
-    /* public String getIosp() {
-      return (iosp == null) ? "none" : iosp.getClass().getName();
-    } */
-
     public String getCoordMap() {
       return coordMap;
     }
@@ -257,8 +264,16 @@ public class FeatureScan {
       return ftype;
     }
 
+    public String getFtMetadata() {
+      return (ftFromMetadata == null) ? "" : ftFromMetadata.toString();
+    }
+
     public String getFeatureImpl() {
       return ftImpl;
+    }
+
+    public String getCoverage() {
+      return isCoverage == null ? "" : isCoverage;
     }
 
     public void toString(Formatter f, boolean showInfo) {
@@ -277,6 +292,28 @@ public class FeatureScan {
       Formatter f = new Formatter();
       toString(f, true);
       return f.toString();
+    }
+
+    public String runClassifier() {
+      Formatter ff = new Formatter();
+      NetcdfDataset ds = null;
+      String type = null;
+      try {
+        ds = NetcdfDataset.openDataset(f.getPath());
+        type = CoverageCSFactory.describe(ff, ds);
+
+      } catch (IOException e) {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream(10000);
+        problem.printStackTrace(new PrintStream(bout));
+        ff.format("\n%s", bout.toString());
+
+      } finally {
+        if (ds != null)
+          try { ds.close(); }
+          catch (IOException e) {}
+      }
+      ff.format("CoverageCS.Type = %s", type);
+      return ff.toString();
     }
 
   }

@@ -36,6 +36,7 @@ import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.ft.grid.IsMissingEvaluator;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -46,7 +47,7 @@ import java.util.List;
  *
  * @author caron
  */
-public interface GridDatatype extends Comparable<GridDatatype> {
+public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatype> {
 
   /**
    * Get the full, unescaped name of the Grid

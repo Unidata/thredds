@@ -41,7 +41,6 @@ import java.util.Map;
 import ucar.ma2.*;
 import ucar.nc2.jni.netcdf.Nc4Chunking;
 import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
@@ -65,7 +64,7 @@ import ucar.nc2.jni.netcdf.Nc4Iosp;
 public class FileWriter2 {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
   static private final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
-  static private boolean debug = false, debugWrite = false, debugChunk = true;
+  static private boolean debug = false, debugWrite = false, debugChunk = false;
 
   /**
    * Set debugging flags
@@ -154,11 +153,11 @@ public class FileWriter2 {
 
     // dimensions
     for (Dimension oldD : oldVar.getDimensions()) {
-      Dimension newD = gdimHash.get(oldD.getName());
+      Dimension newD = gdimHash.get(oldD.getShortName());
       if (newD == null) {
-        newD = writer.addDimension(null, oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+        newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
                 oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-        gdimHash.put(oldD.getName(), newD);
+        gdimHash.put(oldD.getShortName(), newD);
         if (debug) System.out.println("add dim= " + newD);
       }
       result.add(newD);
@@ -175,7 +174,7 @@ public class FileWriter2 {
     else
       addNetcdf3();
 
-    if (true)
+    if (debugWrite)
       System.out.printf("About to write = %n%s%n", writer.getNetcdfFile());
 
     // create the file
@@ -214,9 +213,9 @@ public class FileWriter2 {
     // dimensions
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : fileIn.getDimensions()) {
-      Dimension newD = writer.addDimension(null, oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+      Dimension newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
               oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-      dimHash.put(oldD.getName(), newD);
+      dimHash.put(oldD.getShortName(), newD);
       if (debug) System.out.println("add dim= " + newD);
     }
 
@@ -232,11 +231,11 @@ public class FileWriter2 {
           dims.add(newD);
 
         } else {
-          Dimension dim = dimHash.get(oldD.getName());
+          Dimension dim = dimHash.get(oldD.getShortName());
           if (dim != null)
             dims.add(dim);
           else
-            throw new IllegalStateException("Unknown dimension= " + oldD.getName());
+            throw new IllegalStateException("Unknown dimension= " + oldD.getShortName());
         }
       }
 
@@ -290,9 +289,9 @@ public class FileWriter2 {
     // dimensions
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : oldGroup.getDimensions()) {
-      Dimension newD = writer.addDimension(newGroup, oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+      Dimension newD = writer.addDimension(newGroup, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
               oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-      dimHash.put(oldD.getName(), newD);
+      dimHash.put(oldD.getShortName(), newD);
       if (debug) System.out.println("add dim= " + newD);
     }
 
@@ -301,11 +300,11 @@ public class FileWriter2 {
       List<Dimension> dims = new ArrayList<Dimension>();
       for (Dimension oldD : oldVar.getDimensions()) {
         // in case the name changed
-        Dimension newD = oldD.isShared() ? dimHash.get(oldD.getName()) : oldD;
+        Dimension newD = oldD.isShared() ? dimHash.get(oldD.getShortName()) : oldD;
         if (newD == null)
-          newD = newParent.findDimension(oldD.getName());
+          newD = newParent.findDimension(oldD.getShortName());
         if (newD == null)
-          throw new IllegalStateException("Cant find dimension " + oldD.getName());
+          throw new IllegalStateException("Cant find dimension " + oldD.getShortName());
         dims.add(newD);
       }
 
@@ -635,6 +634,10 @@ public class FileWriter2 {
     }
   }
 
+  /**
+   * Track the progress of file writing.
+   * use FileWriter2.addProgressListener()
+   */
   public static class FileWriterProgressEvent {
     private double progressPercent;
     private long bytesWritten;

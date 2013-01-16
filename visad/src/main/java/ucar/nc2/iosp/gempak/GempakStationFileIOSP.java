@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -70,7 +71,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     protected NetcdfFile ncfile;
 
     /** the file we are reading */
-    protected RandomAccessFile raf;
+    //protected RandomAccessFile raf;
 
     /** Gempak file reader */
     protected AbstractGempakStationFileReader gemreader;
@@ -214,7 +215,10 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
      * @return the detail info
      */
     public String getDetailInfo() {
-        return parseInfo.toString();
+      Formatter ff = new Formatter();
+      ff.format("%s",super.getDetailInfo());
+      ff.format("%s",parseInfo);
+      return ff.toString();
     }
 
     /**
@@ -345,9 +349,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         String fileType = "GEMPAK " + gemreader.getFileType();
         ncfile.addAttribute(null, new Attribute("file_format", fileType));
         ncfile.addAttribute(null,
-                            new Attribute("history",
-                                          "Direct read of " + fileType
-                                          + " into NetCDF-Java 4.2 API"));  //  at " + dateFormat.toDateTimeStringISO(new Date())));
+                            new Attribute("history", "Direct read of " + fileType + " into NetCDF-Java API"));
         ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, getCFFeatureType()));
     }
 
@@ -519,12 +521,12 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
             type     = DataType.INT;
         } else if (varname.equals(GempakStation.SLAT)) {
             longName = "latitude";
-            unit     = "degrees_north";
+            unit     = CDM.LAT_UNITS;
             type     = DataType.FLOAT;
             attrs.add(new Attribute("standard_name", "latitude"));
         } else if (varname.equals(GempakStation.SLON)) {
             longName = "longitude";
-            unit     = "degrees_east";
+            unit     = CDM.LON_UNITS;
             type     = DataType.FLOAT;
             attrs.add(new Attribute("standard_name", "longitude"));
         } else if (varname.equals(GempakStation.SELV)) {

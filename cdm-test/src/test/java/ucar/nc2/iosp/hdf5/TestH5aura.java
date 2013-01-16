@@ -51,13 +51,14 @@ public class TestH5aura extends TestCase {
   public void test1() throws IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.open(testDir +"HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5");
-    Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS_L1_Swath/Data Fields/Scaled Ch01 Radiance");
+    Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS_L1_Swath/Data_Fields/Scaled_Ch01_Radiance");
+    assert dset != null;
     dset.read();
   }
 
   public void test2() throws IOException {
     NetcdfFile ncfile = TestH5.open(testDir +"HIRDLS2-AFGL_b027_na.he5");
-    Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data Fields/Altitude");
+    Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
     
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/dataBtree"));
     Array data = dset.read();
@@ -69,7 +70,7 @@ public class TestH5aura extends TestCase {
     NetcdfFile ncfile = TestH5.open(testDir +"HIRDLS2-Aura73p_b029_2000d275.he5");
 
     Group root = ncfile.getRootGroup();
-    Group g = root.findGroup("HDFEOS INFORMATION");
+    Group g = root.findGroup("HDFEOS_INFORMATION");
     Variable dset = g.findVariable("StructMetadata.0");
     assert(null != dset );
     assert(dset.getDataType() == DataType.CHAR);

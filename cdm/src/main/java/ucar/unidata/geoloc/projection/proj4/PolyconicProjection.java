@@ -30,7 +30,8 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/*
+/**
+ * Polyconic Projection.
  * This file was semi-automatically converted from the public-domain USGS PROJ source.
  *
  * Bernhard Jenny, 19 September 2010: fixed spherical inverse.

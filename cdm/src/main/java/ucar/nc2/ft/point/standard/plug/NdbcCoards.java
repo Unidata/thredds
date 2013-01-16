@@ -101,7 +101,7 @@ public class NdbcCoards extends TableConfigurerImpl  {
 
     // wants a Point
     if ((wantFeatureType == FeatureType.POINT)) {
-      TableConfig nt = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName() );
+      TableConfig nt = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName() );
       nt.structName = "record";
       nt.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
       nt.featureType = FeatureType.POINT;
@@ -121,10 +121,10 @@ public class NdbcCoards extends TableConfigurerImpl  {
     if (nt.stnDesc == null)
       nt.stnDesc = ds.findAttValueIgnoreCase(null, "comment", null);
 
-    TableConfig obs = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName());
+    TableConfig obs = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName());
     obs.structName = "record";
     obs.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
-    obs.dimName = obsDim.getName();
+    obs.dimName = obsDim.getShortName();
     obs.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     nt.addChild(obs);
 

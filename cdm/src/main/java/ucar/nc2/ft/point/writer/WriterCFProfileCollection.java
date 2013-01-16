@@ -141,11 +141,11 @@ public class WriterCFProfileCollection extends CFPointWriter {
     writer.addVariableAttribute(id, new Attribute(CF.CF_ROLE, CF.PROFILE_ID));
 
     Variable lat = writer.addVariable(null, latName, DataType.DOUBLE, profileDimName);
-    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, "degrees_north"));
+    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "profile latitude"));
 
     Variable lon = writer.addVariable(null, lonName, DataType.DOUBLE, profileDimName);
-    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, "degrees_east"));
+    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, CDM.LON_UNITS));
     writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "profile longitude"));
 
     if (altUnits != null) {

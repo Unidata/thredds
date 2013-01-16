@@ -19,11 +19,17 @@ import java.util.Random;
 public class TestSubsettingUtils {
 
   public static void subsetVariables(String filename, String varName, int ntrials) throws InvalidRangeException, IOException {
+    //varName = NetcdfFile.makeValidCdmObjectName(varName);
     System.out.println("testVariableSubset="+filename+","+varName);
 
     NetcdfFile ncfile = NetcdfFile.open(filename);
 
     Variable v = ncfile.findVariable(varName);
+    if (v == null) {
+      System.out.printf("Cant Find %s%n", varName);
+      for (Variable v2 : ncfile.getVariables())
+        System.out.printf("  %s%n", v2.getFullName());
+    }
     assert (null != v);
     int[] shape = v.getShape();
 

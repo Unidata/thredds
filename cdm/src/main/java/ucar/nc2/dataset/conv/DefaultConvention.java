@@ -33,20 +33,26 @@
 
 package ucar.nc2.dataset.conv;
 
+import ucar.ma2.Array;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.*;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.Attribute;
-import ucar.nc2.Variable;
-import ucar.nc2.Dimension;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.TransverseMercator;
 import ucar.unidata.geoloc.projection.Stereographic;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -218,8 +224,24 @@ public class DefaultConvention extends CoordSysBuilder {
           return AxisType.Height;
     }
 
-      if (vname.equalsIgnoreCase("time") || findAlias(ds, v).equalsIgnoreCase("time"))
-        return AxisType.Time;
+      if (vname.equalsIgnoreCase("time") || findAlias(ds, v).equalsIgnoreCase("time"))  {
+        if (SimpleUnit.isDateUnit(unit))
+          return AxisType.Time;
+      }
+
+      if (vname.equalsIgnoreCase("time") && v.getDataType() == DataType.STRING) {
+        try {
+          Array firstValue = v.read("0");
+          // System.out.printf("%s%n", NCdumpW.printArray(firstValue, "firstValue", null));
+          if (firstValue instanceof ArrayObject.D1) {
+            ArrayObject.D1 sarry = (ArrayObject.D1) firstValue;
+            String firstStringValue = (String) sarry.get(0);
+            if (CalendarDate.parseISOformat(null, firstStringValue) != null) // valid iso date string
+              return AxisType.Time;
+          }
+        } catch (Exception e) {
+        }
+      }
 
       return null;
     }
