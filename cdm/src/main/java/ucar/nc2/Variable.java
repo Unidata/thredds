@@ -32,6 +32,7 @@
  */
 package ucar.nc2;
 
+import thredds.catalog2.ThreddsMetadata;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -1208,6 +1209,19 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     }
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
+    EnumTypedef etd = getEnumTypedef();
+    if(etd != null) {
+        DataType etdtype = etd.getBaseType();
+        DataType basetype = null;
+        if(dataType == DataType.ENUM1) basetype = DataType.BYTE;
+        else if(dataType == DataType.ENUM2) basetype = DataType.SHORT;
+        else if(dataType == DataType.ENUM1) basetype = DataType.INT;
+        else basetype = etdtype;
+        if(etdtype != null && basetype != etdtype)
+            log.error("Variable.setDataType: enum basetype mismatch: "+basetype.name());
+        else
+            etd.setBaseType(basetype);
+    }
   }
 
   /**

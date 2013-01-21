@@ -61,7 +61,9 @@ public enum DataType {
   ENUM2("enum2", 2), // short
   ENUM4("enum4", 4), // int
 
-  OPAQUE("opaque", 1); // byte blobs
+  OPAQUE("opaque", 1), // byte blobs
+
+  OBJECT("object", 1); // added for use with Array 
 
   private String niceName;
   private int size;

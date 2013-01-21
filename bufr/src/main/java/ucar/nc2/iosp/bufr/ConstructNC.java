@@ -331,7 +331,7 @@ class ConstructNC {
         e.printStackTrace();
       }
 
-    } else if ((dataDesc.type == 2) && CodeFlagTables.hasTable(dataDesc.fxy)) {
+    } else if ((dataDesc.type == 2) && CodeFlagTables.hasTable(dataDesc.fxy)) {  // enum
       int nbits = dataDesc.bitWidth;
       int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
 

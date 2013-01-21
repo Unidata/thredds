@@ -250,7 +250,14 @@ public class CDMNode
     }
 
 
-/* Turn this on before a release
+    /**
+     * getName is deprecated because, as the code below shows,
+     * it has no consistent meaning. Sometimes it returns
+     * the short name, sometimes it returns the full name.
+     * 
+     * @deprecated  Replaced by {@link #getShortName()} and {@link #getFullName()}
+     */
+    @Deprecated
     public String getName()
     {
 	switch (sort) {
@@ -266,8 +273,8 @@ public class CDMNode
 	case GROUP:
 	    // for these cases, getName is getFullName
 	    return getFullName();
+	default: break;
 	}
+	return getShortName(); // default
     }
-*/
-
 }
