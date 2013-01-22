@@ -54,7 +54,7 @@ public class LambertConformal extends ProjectionImpl {
   private final double earth_radius;
   private double lat0, lon0;  // lat/lon in radians
   private double par1, par2;  // standard parallel 1 and 2 degrees
-  private final double falseEasting, falseNorthing;
+  private double falseEasting, falseNorthing;
 
   private double n, F, rho; // constants from Snyder's equations
   private double earthRadiusTimesF;// Earth's radius time F
@@ -341,6 +341,24 @@ public class LambertConformal extends ProjectionImpl {
     precalculate();
   }
 
+  /**
+   * Set the false_easting, in km.
+   * natural_x_coordinate + false_easting = x coordinate
+   * @param falseEasting x offset
+   */
+  public void setFalseEasting(double falseEasting) {
+      this.falseEasting = falseEasting;
+  }
+
+  /**
+   * Set the false northing, in km.
+   * natural_y_coordinate + false_northing = y coordinate
+   *
+   * @param falseNorthing y offset
+   */
+  public void setFalseNorthing(double falseNorthing) {
+    this.falseNorthing = falseNorthing;
+  }
 
   //////////////////////////////////////////////
 

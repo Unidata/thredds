@@ -52,7 +52,7 @@ public class AlbersEqualArea extends ProjectionImpl {
 
   private double lat0, lon0;  // radians
   private double par1, par2;  // degrees
-  private final double falseEasting, falseNorthing;
+  private double falseEasting, falseNorthing;
   private final double earth_radius; // radius in km
 
   /**
@@ -320,6 +320,26 @@ public class AlbersEqualArea extends ProjectionImpl {
   public void setOriginLat(double lat) {
       lat0 = Math.toRadians(lat);
       precalculate();
+  }
+
+  /**
+   * Set the false_easting, in km.
+   * natural_x_coordinate + false_easting = x coordinate
+   *
+   * @param falseEasting x offset
+   */
+  public void setFalseEasting(double falseEasting) {
+    this.falseEasting = falseEasting;
+  }
+
+  /**
+   * Set the false northing, in km.
+   * natural_y_coordinate + false_northing = y coordinate
+   *
+   * @param falseNorthing y offset
+   */
+  public void setFalseNorthing(double falseNorthing) {
+    this.falseNorthing = falseNorthing;
   }
 
     //////////////////////////////////////////////
