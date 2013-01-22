@@ -73,6 +73,7 @@ import java.nio.*;
  * @see IndexIterator
  */
 public abstract class Array {
+
 /* implementation notes.
   Could create interface for Ranges, ScatterIndex and pass array of that (?)
  */
@@ -382,16 +383,52 @@ public abstract class Array {
   protected final int rank;
   protected boolean unsigned;
   private IndexIterator ii; // local iterator
+  private DataType sort;
 
   // for subclasses only
   protected Array(int[] shape) {
     rank = shape.length;
     indexCalc = Index.factory(shape);
+    this.sort = computesort();
   }
 
   protected Array(Index index) {
     rank = index.getRank();
     indexCalc = index;
+    this.sort = computesort();
+  }
+
+  /**
+   * Compute the datatype sort
+   */
+  DataType
+  computesort()
+  {
+    if(this instanceof ArrayBoolean)
+	return DataType.BOOLEAN;
+    if(this instanceof ArrayByte)
+	return DataType.BYTE;
+    if(this instanceof ArrayChar)
+	return DataType.CHAR;
+    if(this instanceof ArrayShort)
+	return DataType.SHORT;
+    if(this instanceof ArrayInt)
+	return DataType.INT;
+    if(this instanceof ArrayLong)
+	return DataType.LONG;
+    if(this instanceof ArrayFloat)
+	return DataType.FLOAT;
+    if(this instanceof ArrayDouble)
+	return DataType.DOUBLE;
+    if(this instanceof ArrayString)
+	return DataType.STRING;
+    if(this instanceof ArrayObject)
+	return DataType.OBJECT;
+    if(this instanceof ArraySequence)
+	return DataType.SEQUENCE;
+    if(this instanceof ArrayStructure)
+	return DataType.STRUCTURE;
+    return null;
   }
 
   /**

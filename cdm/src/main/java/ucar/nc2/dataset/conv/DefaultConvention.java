@@ -63,7 +63,7 @@ import java.util.StringTokenizer;
  * @author caron
  * @since Dec 17, 2008
  */
-public class DefaultConvention extends CoordSysBuilder {
+public class  DefaultConvention extends CoordSysBuilder {
     protected ProjectionCT projCT = null;
 
     public DefaultConvention() {

@@ -43,7 +43,7 @@ import java.util.*;
  * @author caron
  */
 
-public class Section {
+public class  Section {
   private List<Range> list;
   private boolean immutable = false;
 

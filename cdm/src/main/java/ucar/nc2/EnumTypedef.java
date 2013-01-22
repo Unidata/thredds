@@ -34,6 +34,7 @@
 package ucar.nc2;
 
 import net.jcip.annotations.Immutable;
+import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -49,10 +50,18 @@ import java.util.*;
 public class EnumTypedef extends CDMNode {
   private final Map<Integer, String> map;
   private ArrayList<String> enumStrings;
+  private DataType basetype;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
+    this(name,map,DataType.ENUM4); //default basetype
+  }
+
+  public EnumTypedef(String name, Map<Integer, String> map, DataType basetype)
+  {
     super(name);
+    assert(validateMap(map,basetype));
     this.map = map;
+    setBaseType(basetype); // default
   }
 
   /*Obsolete
@@ -68,6 +77,54 @@ public class EnumTypedef extends CDMNode {
   }
   public Map<Integer, String> getMap() {
     return map;
+  }
+
+  public DataType getBaseType() {return this.basetype;}
+  public void setBaseType(DataType basetype)
+  {
+     switch (basetype) {
+     case ENUM1:    
+     case ENUM2:
+     case ENUM4:
+	this.basetype = basetype;
+	break;
+     default: assert(false) : "Illegal Enum basetype";
+     }
+  }
+
+  public boolean
+  validateMap(Map<Integer, String> map, DataType basetype)
+  {
+     if(map == null || basetype == null) return false;
+     for(Integer I: map.keySet()) {
+         int i = (int) I;
+	if(basetype == DataType.ENUM1
+	   && (i < Byte.MIN_VALUE || i > Byte.MAX_VALUE))
+	    return false;
+	if(basetype == DataType.ENUM2
+	   && (i < Short.MIN_VALUE || i > Short.MAX_VALUE))
+	    return false;
+	if(basetype == DataType.ENUM2
+	   && (i < Integer.MIN_VALUE || i > Integer.MAX_VALUE))
+	    return false;
+     }
+     return true;
+  }
+
+  public boolean
+  inRange(int i)
+  {
+    if(this.basetype == DataType.ENUM1
+       && (i >= Byte.MIN_VALUE || i <= Byte.MAX_VALUE))
+        return true;
+    else if(this.basetype == DataType.ENUM2
+       && (i >= Short.MIN_VALUE || i <= Short.MAX_VALUE))
+        return true;
+    else if(this.basetype == DataType.ENUM2
+       && (i >= Integer.MIN_VALUE || i <= Integer.MAX_VALUE))
+        return true;
+    else
+        return false;
   }
 
   public String lookupEnumString(int e) {
