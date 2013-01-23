@@ -63,7 +63,7 @@ public class Stereographic extends ProjectionImpl {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private final double falseEasting, falseNorthing;
+  private double falseEasting, falseNorthing;
   private double scale, earthRadius;
   private double latt, lont;
   private double sinlatt, coslatt, latts;
@@ -293,7 +293,25 @@ public class Stereographic extends ProjectionImpl {
     setTangentLon(lont);
   }
 
-   //////////////////////////////////////////////
+  /**
+   * Set the false_easting, in km.
+   * natural_x_coordinate + false_easting = x coordinate
+   *
+   * @param falseEasting x offset
+   */
+  public void setFalseEasting(double falseEasting) {
+    this.falseEasting = falseEasting;
+  }
+
+  /**
+   * Set the false northing, in km.
+   * natural_y_coordinate + false_northing = y coordinate
+   *
+   * @param falseNorthing y offset
+   */
+  public void setFalseNorthing(double falseNorthing) {
+    this.falseNorthing = falseNorthing;
+  }
 
   /**
    * Get the parameters as a String
@@ -303,6 +321,8 @@ public class Stereographic extends ProjectionImpl {
   public String paramsToString() {
     return toString();
   }
+
+  //////////////////////////////////////////////
 
   @Override
   public String toString() {

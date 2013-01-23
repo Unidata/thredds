@@ -32,7 +32,6 @@
  */
 package ucar.nc2;
 
-import thredds.catalog2.ThreddsMetadata;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;

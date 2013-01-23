@@ -69,7 +69,7 @@ public class Mercator extends ProjectionImpl {
   private final double earthRadius;
   private double lon0; // longitude of the origin in degrees
   private double par; // standard parallel in degrees
-  private final double falseEasting, falseNorthing;
+  private double falseEasting, falseNorthing;
 
   private double par_r; // standard parallel in radians
   private double A;
@@ -205,6 +205,26 @@ public class Mercator extends ProjectionImpl {
   public void setOriginLon(double lon) {
     lon0 = lon;
     precalculate();
+  }
+
+  /**
+   * Set the false_easting, in km.
+   * natural_x_coordinate + false_easting = x coordinate
+   *
+   * @param falseEasting x offset
+   */
+  public void setFalseEasting(double falseEasting) {
+    this.falseEasting = falseEasting;
+  }
+
+  /**
+   * Set the false northing, in km.
+   * natural_y_coordinate + false_northing = y coordinate
+   *
+   * @param falseNorthing y offset
+   */
+  public void setFalseNorthing(double falseNorthing) {
+    this.falseNorthing = falseNorthing;
   }
 
   /////////////////////////////////////////////////////

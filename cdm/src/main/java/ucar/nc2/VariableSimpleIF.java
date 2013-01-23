@@ -45,12 +45,17 @@ import java.util.List;
 public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
 
   /**
-   * name of the data Variable
+   * Name of the data Variable.
+   * Not that this is technically ambiguous v-a-v short or full name;
+   * however, since this is a Variable interface, one must assume
+   * that it is intended to be getFullName().
+   *
    * @return name of the data Variable
    * @deprecated use getFullName or getShortName
    */
-  //ambiguous v-a-v short or full name public String getName();
 
+    @Deprecated
+    public String getName();
 
   /**
    * full, backslash escaped name of the data Variable

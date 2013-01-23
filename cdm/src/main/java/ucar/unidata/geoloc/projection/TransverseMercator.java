@@ -51,7 +51,7 @@ import ucar.unidata.util.SpecialMathFunction;
 public class TransverseMercator extends ProjectionImpl {
 
   private double lat0, lon0, scale, earthRadius;
-  private final double falseEasting, falseNorthing;
+  private double falseEasting, falseNorthing;
 
   @Override
   public ProjectionImpl constructCopy() {
@@ -199,7 +199,6 @@ public class TransverseMercator extends ProjectionImpl {
       lat0 = Math.toRadians(lat);
   }
 
-
   /**
    * Set the tangent longitude
    *
@@ -207,6 +206,24 @@ public class TransverseMercator extends ProjectionImpl {
    */
   public void setTangentLon(double lon) {
       lon0 = Math.toRadians(lon);
+  }
+
+  /**
+   * Set the false_easting, in km.
+   * natural_x_coordinate + false_easting = x coordinate
+   * @param falseEasting x offset
+   */
+  public void setFalseEasting(double falseEasting) {
+      this.falseEasting = falseEasting;
+  }
+
+  /**
+   * Set the false northing, in km.
+   * natural_y_coordinate + false_northing = y coordinate
+   * @param falseNorthing y offset
+   */
+  public void setFalseNorthing(double falseNorthing) {
+      this.falseNorthing = falseNorthing;
   }
 
   /////////////////////////////////////////////

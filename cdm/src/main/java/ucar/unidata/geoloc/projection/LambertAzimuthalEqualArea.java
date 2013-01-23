@@ -55,7 +55,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   private double R, sinLat0, cosLat0, lon0Degrees;
 
   private double lat0, lon0; // center lat/lon in degrees
-  private final double falseEasting, falseNorthing;
+  private double falseEasting, falseNorthing;
 
   @Override
   public ProjectionImpl constructCopy() {
@@ -225,6 +225,23 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
       precalculate();
   }
 
+  /**
+   * Set the false_easting, in km.
+   * natural_x_coordinate + false_easting = x coordinate
+   * @param falseEasting x offset
+   */
+  public void setFalseEasting(double falseEasting) {
+      this.falseEasting = falseEasting;
+  }
+
+  /**
+   * Set the false northing, in km.
+   * natural_y_coordinate + false_northing = y coordinate
+   * @param falseNorthing y offset
+   */
+  public void setFalseNorthing(double falseNorthing) {
+      this.falseNorthing = falseNorthing;
+  }
    /////////////////////////////////////////////////////////////////////
 
   /**
