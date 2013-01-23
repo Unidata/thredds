@@ -184,19 +184,30 @@ public class ParsedSectionSpec {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  public final Variable v;        // the variable
-  public final Section section;   // section for this variable, filled in from variable if needed
-  public ParsedSectionSpec child; // if not null, v is a Structure, and this is one of its members
+  // Modify to allow setting after creation
+  public Variable v = null;        // the variable
+  public Section section = null;   // section for this variable, filled in from variable if needed
+  public ParsedSectionSpec child = null; // if not null, v is a Structure, and this is one of its members
 
-  private ParsedSectionSpec(Variable v, Section section) {
+  public ParsedSectionSpec(Variable v, Section section)
+  {
     this.v = v;
     this.section = section;
-    this.child = null;
   }
 
-  @Override
-  public String toString() {
-    return "ParsedSectionSpec{" +
+    /**
+     * Public simple constructor
+     */
+    public ParsedSectionSpec()
+    {
+	this.v=null;
+	this.section=null;
+	this.child=null;
+    }
+
+    @Override
+    public String toString() {
+      return "ParsedSectionSpec{" +
             "v=" + v.getFullName() +
             ", section=" + section +
             ", child=" + child +

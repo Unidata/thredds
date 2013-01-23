@@ -46,7 +46,7 @@ import java.util.List;
  * @see Array
  */
 
-public class Index implements Cloneable {
+public class  Index implements Cloneable {
   public static final Index0D scalarIndexImmutable = new Index0D(); // immutable, so can be shared
 
   /**
