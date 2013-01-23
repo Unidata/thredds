@@ -238,7 +238,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
     // DQC schema 0.4
     initEntity( DQC_NAMESPACE_04,
-            "/src/main/archive/schemas/thredds/queryCapability.0.4.xsd",
+                "/resources/thredds/schemas/queryCapability.0.4.xsd",
                 "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.4.xsd");
 
     // nj22 schema
@@ -253,7 +253,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
     // catgen 0.5 dtd
     initEntity( "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd",
-            "/src/main/archive/schemas/thredds/CatalogGenConfig.0.5.dtd",
+                "/resources/thredds/schemas/CatalogGenConfig.0.5.dtd",
                 "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd");
 
     String javaVersion = System.getProperty("java.version").substring(2,3);  // ie 1.5_02

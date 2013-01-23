@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!ENTITY % catalogDTD SYSTEM "InvCatalog.0.6.dtd">
+<!ENTITY % catalogDTD SYSTEM "../../../../archive/schemas/thredds/InvCatalog.0.6.dtd">
 %catalogDTD;
 
 <!ENTITY % CatalogGenConfigType "Catalog | Aggregation">
