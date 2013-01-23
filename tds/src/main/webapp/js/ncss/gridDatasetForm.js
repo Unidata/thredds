@@ -1,4 +1,5 @@
 
+var map;
 
 Ncss.changeSpatialSubsetType = function(){
 		
@@ -122,6 +123,11 @@ Ncss.verticalSubsetting = function(){
 //$(document).ready( function(){
 //});	
 
+Ncss.initGridDataset = function(){
+	Ncss.initGridDatasetForm();
+	Ncss.initMapPreview();
+};
+
 Ncss.initGridDatasetForm = function(){	
 	Ncss.log("initGridDatasetForm...(starts)");
 	
@@ -179,6 +185,9 @@ Ncss.initGridDatasetForm = function(){
 	$('#inputVerticalStride').click(Ncss.verticalSubsetting);
 	
 	Ncss.log("initGridDatasetForm...(ends)");
+	    
 };	
+
+
 
 

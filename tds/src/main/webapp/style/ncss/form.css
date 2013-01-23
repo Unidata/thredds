@@ -1,4 +1,17 @@
 
+#gridPreviewFrame{
+	width:280px;
+	height:150px;
+	border:1px solid #cccccc;
+	padding:1px;
+}
+
+#gridPreviewFrame #mapPreview{
+	width:276px;
+	height:146px;	
+	
+}
+
 #areaInput{
 	/*clear:both;*/
 }

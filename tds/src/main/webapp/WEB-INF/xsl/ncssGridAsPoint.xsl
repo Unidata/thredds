@@ -5,11 +5,8 @@
 
 	<!-- Gets the tds context as a xslt parameter -->
 	<xsl:param name="tdsContext"></xsl:param>
+	<xsl:param name="gridWKT"></xsl:param>
 
-	<!-- Sets the paths that depends on the tdsContext -->
-	<!-- <xsl:variable name="cssPath"> <xsl:value-of select="concat($tdsContext,'/upc.css')"></xsl:value-of> 
-		</xsl:variable> <xsl:variable name="logoPath"> <xsl:value-of select="concat($tdsContext,'/unidataLogo.gif')"></xsl:value-of> 
-		</xsl:variable> -->
 	<!-- Sets the paths that depends on the tdsContext -->
 	<xsl:variable name="cssMainPath">
 		<xsl:value-of select="concat($tdsContext,'/style/ncss/main.css')"></xsl:value-of>
@@ -20,17 +17,12 @@
 	<xsl:variable name="cssFormPath">
 		<xsl:value-of select="concat($tdsContext,'/style/ncss/form.css')"></xsl:value-of>
 	</xsl:variable>
+	<xsl:variable name="olcssPath">
+		<xsl:value-of select="concat($tdsContext,'/js/lib/OpenLayers-2.12/theme/default/style.css')"></xsl:value-of>
+	</xsl:variable>	
 	<xsl:variable name="logoPath">
 		<xsl:value-of select="concat($tdsContext,'/unidataLogo.gif')"></xsl:value-of>
 	</xsl:variable>
-
-	<xsl:variable name="jQueryPath">
-		<xsl:value-of select="concat($tdsContext,'/js/lib/jquery-1.7.2.min.js')"></xsl:value-of>
-	</xsl:variable>
-	<xsl:variable name="jsScriptPath">
-		<xsl:value-of select="concat($tdsContext,'/js/ncss/form.js')"></xsl:value-of>
-	</xsl:variable>
-
 
 	<xsl:template match="/">
 	
@@ -67,16 +59,21 @@
         				<xsl:value-of select="$cssFormPath"></xsl:value-of>	
 					</xsl:attribute>
 				</xsl:element>
+				
+				<xsl:element name="link">
+					<xsl:attribute name="rel">StyleSheet</xsl:attribute>
+					<xsl:attribute name="type">text/css</xsl:attribute>
+					<xsl:attribute name="href">
+        				<xsl:value-of select="$olcssPath"></xsl:value-of>	
+					</xsl:attribute>
+				</xsl:element>				
 
-
-				<!-- LINK REL="StyleSheet" HREF="/thredds/upc.css" TYPE="text/css"/ -->
-				<!-- <xsl:element name="link"> <xsl:attribute name="rel">StyleSheet</xsl:attribute> 
-					<xsl:attribute name="type">text/css</xsl:attribute> <xsl:attribute name="href"> 
-					<xsl:value-of select="$cssPath"></xsl:value-of> </xsl:attribute> </xsl:element> -->
 					
 			<script type="text/javascript">
 			
 			var context = '<xsl:value-of select="$tdsContext"></xsl:value-of>';
+			var gridWKT = '<xsl:value-of select="$gridWKT"></xsl:value-of>';
+			
 			var Ncss ={};
 
 			Ncss.debug = true;
@@ -96,6 +93,13 @@
 				jQueryfile.setAttribute("type", "text/javascript");
 				jQueryfile.setAttribute("src", context+"/js/lib/jquery-1.7.2.min.js");				
 				headTag.appendChild(jQueryfile);
+				
+				//OpenLayers.js
+				var olfile = document.createElement('script');
+				olfile.setAttribute("type", "text/javascript");
+				olfile.setAttribute("src",
+				context+"/js/lib/OpenLayers-2.12/OpenLayers.js");
+				headTag.appendChild(olfile);				
 				
 				//ncssApp.js								
 				var jsfile = document.createElement('script');
@@ -117,7 +121,7 @@
 					
 					
 			</head>
-			<body onload="Ncss.initGridAsPointForm()">
+			<body onload="Ncss.initGridAsPoint()">
 				<!-- Header -->
 				<div id="header">
 					<div id="dataset">
@@ -243,6 +247,14 @@
 
 								<td class="rightCol">
 									<h3>Choose Lat/Lon Location:</h3>
+									
+									<div id="gridPreviewFrame">
+										<div id="gridPreview">
+											<!-- grid preview... -->
+										</div>
+									</div>									
+									<br clear="all"/>									
+									
 									<div class="borderLightGrey">
 										<label class="sized_big">Latitude:</label>
 										<input type="text" name="latitude" size="10" />

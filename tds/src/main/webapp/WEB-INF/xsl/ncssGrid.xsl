@@ -2,8 +2,10 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
 	<xsl:output method="html" encoding="utf-8" indent="yes" />
 
-	<!-- Gets the tds context as a xslt parameter -->
+	<!-- Gets the tds context and the grid boundaries in WKT as a xslt parameter -->
 	<xsl:param name="tdsContext"></xsl:param>
+	<xsl:param name="gridWKT"></xsl:param>
+	
 
 	<!-- Sets the paths that depends on the tdsContext -->
 	<xsl:variable name="cssMainPath">
@@ -18,10 +20,11 @@
 	<xsl:variable name="logoPath">
 		<xsl:value-of select="concat($tdsContext,'/unidataLogo.gif')"></xsl:value-of>
 	</xsl:variable>
-
-	<xsl:variable name="jQueryPath">
-		<xsl:value-of select="concat($tdsContext,'/js/lib/jquery-1.7.2.min.js')"></xsl:value-of>
+	 
+	<xsl:variable name="olcssPath">
+		<xsl:value-of select="concat($tdsContext,'/js/lib/OpenLayers-2.12/theme/default/style.css')"></xsl:value-of>
 	</xsl:variable>
+
 
 	<xsl:template match="/">
 	
@@ -58,10 +61,20 @@
         				<xsl:value-of select="$cssFormPath"></xsl:value-of>	
 					</xsl:attribute>
 				</xsl:element>
+				
+				<xsl:element name="link">
+					<xsl:attribute name="rel">StyleSheet</xsl:attribute>
+					<xsl:attribute name="type">text/css</xsl:attribute>
+					<xsl:attribute name="href">
+        				<xsl:value-of select="$olcssPath"></xsl:value-of>	
+					</xsl:attribute>
+				</xsl:element>				
 
 				<script type="text/javascript">
 
 					var context = '<xsl:value-of select="$tdsContext"></xsl:value-of>';
+					var gridWKT = '<xsl:value-of select="$gridWKT"></xsl:value-of>';
+					
 					var Ncss ={};
 
 					Ncss.debug = true;
@@ -82,6 +95,13 @@
 					jQueryfile.setAttribute("src",
 					context+"/js/lib/jquery-1.7.2.min.js");
 					headTag.appendChild(jQueryfile);
+					
+					//OpenLayers.js
+					var olfile = document.createElement('script');
+					olfile.setAttribute("type", "text/javascript");
+					olfile.setAttribute("src",
+					context+"/js/lib/OpenLayers-2.12/OpenLayers.js");
+					headTag.appendChild(olfile);					
 
 					//ncssApp.js
 					var ncssAppfile = document.createElement('script');
@@ -102,7 +122,7 @@
 
 			</head>
 
-			<body onload="Ncss.initGridDatasetForm()">
+			<body onload="Ncss.initGridDataset()">
 				<!-- Header -->
 				<div id="header">
 					<div id="dataset">
@@ -230,6 +250,14 @@
 
 								<td class="rightCol">
 									<h3>Choose Spatial Subset:</h3>
+									
+									<div id="gridPreviewFrame">
+										<div id="gridPreview">
+											<!-- grid preview... -->
+										</div>
+									</div>									
+									<br clear="all"/>
+									
 									<div id="inputLatLonSubset" class="selected">
 										<span class="bold">Lat/lon subset</span>
 									</div>

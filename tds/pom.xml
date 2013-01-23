@@ -96,11 +96,14 @@
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
     </dependency>
+    <!-- 
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
       <scope>runtime</scope>
     </dependency>
+     -->
+     
     <dependency>
       <artifactId>je</artifactId>
       <groupId>com.sleepycat</groupId>

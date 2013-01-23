@@ -70,6 +70,9 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 	    		Transformer xslTransformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslt));
 	    		String context= servletContext.getContextPath();
 	    		xslTransformer.setParameter("tdsContext", context);
+	    		
+	    		xslTransformer.setParameter("gridWKT", writer.getDatasetBoundariesWKT());
+	    		
 	    		JDOMSource in = new JDOMSource(doc);
 	    		JDOMResult out = new JDOMResult();
 	    		xslTransformer.transform(in, out);  		

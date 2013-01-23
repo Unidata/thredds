@@ -56,6 +56,12 @@
 //$(document).ready( function(){
 //});
 
+Ncss.initGridAsPoint = function(){
+	Ncss.initGridAsPointForm();
+	Ncss.initMapPreview();
+
+};
+
 Ncss.initGridAsPointForm = function(){
 	Ncss.log("initGridAsPointForm...(starts)");
 	
