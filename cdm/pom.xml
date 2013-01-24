@@ -91,7 +91,7 @@
     <!-- Required for object caching. -->
     <dependency>
       <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
+      <artifactId>ehcache-core</artifactId>
     </dependency>
 
     <!-- Required for using aggregations. -->
