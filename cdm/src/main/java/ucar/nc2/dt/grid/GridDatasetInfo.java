@@ -196,7 +196,7 @@ public class GridDatasetInfo {
 	 */
 	public String getDatasetBoundariesWKT(){
 		
-		return GridBoundariesExtractor.getDatasetBoundariesWKT(gds);
+		return GridBoundariesExtractor.valueOf(gds).getDatasetBoundariesWKT();
 	}
 
   

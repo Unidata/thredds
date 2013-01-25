@@ -33,11 +33,15 @@
  
 package ucar.nc2.dt.grid.gis;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionImpl;
 
@@ -50,8 +54,20 @@ import ucar.unidata.geoloc.ProjectionImpl;
  */
 public final class GridBoundariesExtractor {
 
+	
+	private GridDataset gridDataset;
+	private double minLon=0;
+	private double maxLon=0;
+	private double maxDiff =0;
+	private boolean crossesDateLine = false;
+	
+	
 	private GridBoundariesExtractor(){}
 	
+	private GridBoundariesExtractor(GridDataset gridDataset){
+		this.gridDataset = gridDataset;
+	}
+		
 	/**
 	 * 
 	 * Takes a GridDataset and returns the boundary for the first gridset in the dataset in as a polygon in WKT   
@@ -59,14 +75,83 @@ public final class GridBoundariesExtractor {
 	 * @param gds
 	 * @return
 	 */
-	public static final String getDatasetBoundariesWKT(GridDataset gds){
+	public String getDatasetBoundariesWKT(){
 
 		StringBuilder polygonWKT = new StringBuilder( "POLYGON((");
-		Gridset gridset = gds.getGridsets().get(0);
+
+		List<Double> polLons = new ArrayList<Double>();
+		List<Double> polLats = new ArrayList<Double>();		
+		getLatLonsForPolygon(polLons, polLats );
+		
+		//Build string from lists
+		//Crosses dateLine?			
+		//Assuming grid cells don't extend more than 270 deg.
+		if( (maxLon > 0 && minLon < 0) && maxDiff > 270 ){
+			//either crosses 0 or -180
+			crossesDateLine = true;								
+		}		
+		
+		int nPoints = polLats.size();
+		for( int i=0; i< nPoints; i++ ){
+			
+			double lon = polLons.get(i);
+			
+			if(crossesDateLine && lon < 0) lon+=360;
+			
+			if(i < nPoints -1)
+				polygonWKT.append( lon ).append(" ").append( polLats.get(i) ).append(",");
+			else
+				polygonWKT.append( lon ).append(" ").append( polLats.get(i) );
+		}		
+		
+		polygonWKT.append("))");
+		return polygonWKT.toString();
+	}
+	
+	
+	public String getDatasetBoundariesGeoJSON(){
+
+		StringBuilder polygonJSON = new StringBuilder( "{\"type\":\"Polygon\", \"coordinates\":[ [ " );
+		
+		List<Double> polLons = new ArrayList<Double>();
+		List<Double> polLats = new ArrayList<Double>();		
+		getLatLonsForPolygon(polLons, polLats );
+		
+		//Build string from lists
+		//Crosses dateLine?			
+		//Assuming grid cells don't extend more than 270 deg.
+		if( (maxLon > 0 && minLon < 0) && maxDiff > 270 ){
+			//either crosses 0 or -180
+			crossesDateLine = true;								
+		}		
+	
+		int nPoints = polLats.size();
+		for( int i=0; i< nPoints; i++ ){
+			
+			double lon = polLons.get(i);
+			
+			if(crossesDateLine && lon < 0) lon+=360;
+			
+			if(i < nPoints -1)
+				polygonJSON.append("[").append( lon ).append(", ").append( polLats.get(i) ).append("],");
+			else
+				polygonJSON.append("[").append( lon ).append(", ").append( polLats.get(i) ).append("]");
+		}		
+		
+					
+
+		polygonJSON.append(" ] ]}");
+
+		return polygonJSON.toString();
+	}
+	
+	private void getLatLonsForPolygon( List<Double> polLons, List<Double> polLats){
+		
+		Gridset gridset = gridDataset.getGridsets().get(0);
 
 		GridCoordSystem coordSystem = gridset.getGeoCoordSystem();
 		ProjectionImpl fromProj = coordSystem.getProjection();
-		
+									
 		if( coordSystem.getYHorizAxis() instanceof CoordinateAxis1D &&  coordSystem.getXHorizAxis() instanceof CoordinateAxis1D ){
 			
 			CoordinateAxis1D xAxis = (CoordinateAxis1D) coordSystem.getXHorizAxis();
@@ -78,57 +163,82 @@ public final class GridBoundariesExtractor {
 				double miny = yAxis.getMinValue();
 
 				//polygonWKT.append("-180 "+ miny +", 180 "+ miny +", 180 "+ maxy +", -180 "+ maxy +", -180 "+ miny +"] ))");
-				polygonWKT.append("0 "+ miny +", 360 "+ miny +", 360 "+ maxy +", 0 "+ maxy +", 0 "+ miny +"] ))");
-				return polygonWKT.toString();
+				//polygonWKT.append("0 "+ miny +", 360 "+ miny +", 360 "+ maxy +", 0 "+ maxy +", 0 "+ miny +"] ))");
+				//return polygonWKT.toString();
+				
 			}
 
 			double[] xCoords = xAxis.getCoordValues();
 			double[] yCoords = yAxis.getCoordValues();
-
+			
+			
+			LatLonPoint prev = fromProj.projToLatLon(xCoords[0], yCoords[0]);
+						
 			//Bottom edge
-			int k = 0;
 			for( double x : xCoords  ){
 				LatLonPoint point = fromProj.projToLatLon(x, yCoords[0]);
 
-				double lon = point.getLongitude();
-				if(lon < 0) lon+=360;			
-
-				polygonWKT.append( lon ).append(" ").append(point.getLatitude()).append(",");		  
+				if( point.getLongitude() < minLon ) minLon = point.getLongitude();  
+				if( point.getLongitude() > maxLon ) maxLon = point.getLongitude();
+				
+				if( Math.abs(prev.getLongitude() - point.getLongitude() ) > maxDiff   )
+					maxDiff = Math.abs(prev.getLongitude() - point.getLongitude() );
+					
+				polLons.add(point.getLongitude());
+				polLats.add(point.getLatitude());
+				prev = point;
 			}
 
 			//Right edge
 			for( double y : yCoords  ){
 				LatLonPoint point = fromProj.projToLatLon(xCoords[xCoords.length-1], y);
+				
+				if( point.getLongitude() < minLon ) minLon = point.getLongitude();  
+				if( point.getLongitude() > maxLon ) maxLon = point.getLongitude();	
+				
+				if( Math.abs(prev.getLongitude() - point.getLongitude() ) > maxDiff   )
+					maxDiff = Math.abs(prev.getLongitude() - point.getLongitude() );				
+				
+				polLons.add(point.getLongitude());
+				polLats.add(point.getLatitude());				
+				prev = point;
 
-				double lon = point.getLongitude();
-				if(lon < 0) lon+=360;			
-
-				polygonWKT.append( lon ).append(" ").append(point.getLatitude()).append(",");
 			}	  
 
 			//Top
 			for( int i = xCoords.length-1; i>=0; i--  ){
 				LatLonPoint point = fromProj.projToLatLon(xCoords[i], yCoords[yCoords.length-1]);
-
-				double lon = point.getLongitude();
-				if(lon < 0) lon+=360;			
-
-				polygonWKT.append( lon ).append(" ").append(point.getLatitude()).append(",");		  
+				
+				if( point.getLongitude() < minLon ) minLon = point.getLongitude();  
+				if( point.getLongitude() > maxLon ) maxLon = point.getLongitude();
+				
+				if( Math.abs(prev.getLongitude() - point.getLongitude() ) > maxDiff   )
+					maxDiff = Math.abs(prev.getLongitude() - point.getLongitude() );
+				
+				polLons.add(point.getLongitude());
+				polLats.add(point.getLatitude());				
+				prev = point;
+				
 			}	  
 
 			//Left edge
 			for( int i = yCoords.length-1; i>=0; i--  ){
 
 				LatLonPoint point = fromProj.projToLatLon(xCoords[0], yCoords[i]);
-
-				double lon = point.getLongitude();
-				if(lon < 0) lon+=360;			
-
-				if(i != 0)
-					polygonWKT.append( lon ).append(" ").append(point.getLatitude()).append(",");
-				else
-					polygonWKT.append( lon ).append(" ").append(point.getLatitude());
-			}			
+				
+				if( point.getLongitude() < minLon ) minLon = point.getLongitude();  
+				if( point.getLongitude() > maxLon ) maxLon = point.getLongitude();	
+				
+				if( Math.abs(prev.getLongitude() - point.getLongitude() ) > maxDiff   )
+					maxDiff = Math.abs(prev.getLongitude() - point.getLongitude() );				
+				
+				polLons.add(point.getLongitude());
+				polLats.add(point.getLatitude() );				
+				prev = point;
+			}
+			
+						
+			
 		}else if( coordSystem.getYHorizAxis() instanceof CoordinateAxis2D &&  coordSystem.getXHorizAxis() instanceof CoordinateAxis2D ){
 			
 			//Get boundaries from 2d axis...
@@ -138,12 +248,24 @@ public final class GridBoundariesExtractor {
 			int[] xShape = xAxis.getShape();
 			int[] yShape = yAxis.getShape();
 			
+			
+			LatLonPoint prev = fromProj.projToLatLon(xAxis.getCoordValue(0, 0), yAxis.getCoordValue(0, 0));
+			
 			for(int i = 0; i < xShape[0]; i++ ){
 					double x = xAxis.getCoordValue(i, 0);
 					double y = yAxis.getCoordValue(i, 0);
 					
 					LatLonPoint point = fromProj.projToLatLon(x, y);
-					polygonWKT.append( point.getLongitude() ).append(" ").append(point.getLatitude()).append(",");					
+					
+					if( point.getLongitude() < minLon ) minLon = point.getLongitude();  
+					if( point.getLongitude() > maxLon ) maxLon = point.getLongitude();
+					
+					if( Math.abs(prev.getLongitude() - point.getLongitude() ) > maxDiff )
+						maxDiff = Math.abs(prev.getLongitude() - point.getLongitude() );
+					
+					polLons.add(point.getLongitude());
+					polLats.add(point.getLatitude());					
+					prev = point;
 			}
 			
 			for(int i = 0; i < xShape[1]; i++ ){
@@ -151,7 +273,15 @@ public final class GridBoundariesExtractor {
 					double y = yAxis.getCoordValue(xShape[0]-1, i);
 					
 					LatLonPoint point = fromProj.projToLatLon(x, y);
-					polygonWKT.append( point.getLongitude() ).append(" ").append(point.getLatitude()).append(",");					
+					if( point.getLongitude() < minLon ) minLon = point.getLongitude();  
+					if( point.getLongitude() > maxLon ) maxLon = point.getLongitude();
+					
+					if( Math.abs(prev.getLongitude() - point.getLongitude() ) > maxDiff )
+						maxDiff = Math.abs(prev.getLongitude() - point.getLongitude() );
+					
+					polLons.add(point.getLongitude());
+					polLats.add(point.getLatitude());					
+					prev = point;					
 			}
 			
 			for(int i = xShape[0]-1 ; i >= 0; i-- ){
@@ -159,7 +289,15 @@ public final class GridBoundariesExtractor {
 				double y = yAxis.getCoordValue(i, xShape[1]-1);
 				
 				LatLonPoint point = fromProj.projToLatLon(x, y);
-				polygonWKT.append( point.getLongitude() ).append(" ").append(point.getLatitude()).append(",");				
+				if( point.getLongitude() < minLon ) minLon = point.getLongitude();  
+				if( point.getLongitude() > maxLon ) maxLon = point.getLongitude();
+				
+				if( Math.abs(prev.getLongitude() - point.getLongitude() ) > maxDiff )
+					maxDiff = Math.abs(prev.getLongitude() - point.getLongitude() );
+				
+				polLons.add(point.getLongitude());
+				polLats.add(point.getLatitude());					
+				prev = point;				
 			}
 			
 			for(int i = xShape[1]-1 ; i >= 0; i-- ){
@@ -167,142 +305,25 @@ public final class GridBoundariesExtractor {
 				double y = yAxis.getCoordValue(0, i);
 				
 				LatLonPoint point = fromProj.projToLatLon(x, y);
-				if(i > 0)
-					polygonWKT.append( point.getLongitude() ).append(" ").append(point.getLatitude()).append(",");
-				else
-					polygonWKT.append( point.getLongitude() ).append(" ").append(point.getLatitude());				
+				if( point.getLongitude() < minLon ) minLon = point.getLongitude();  
+				if( point.getLongitude() > maxLon ) maxLon = point.getLongitude();
+				
+				if( Math.abs(prev.getLongitude() - point.getLongitude() ) > maxDiff )
+					maxDiff = Math.abs(prev.getLongitude() - point.getLongitude() );
+				
+				polLons.add(point.getLongitude());
+				polLats.add(point.getLatitude());					
+				prev = point;				
 			}			
-			
-			
-			
-		}
-
-		polygonWKT.append("))");
-		return polygonWKT.toString();
+								
+		}		
+		
 	}
 	
 	
-	public static final String getDatasetBoundariesGeoJSON(GridDataset gds){
-
-		StringBuilder polygonJSON = new StringBuilder( "{\"type\":\"Polygon\", \"coordinates\":[ [ " );
-		Gridset gridset = gds.getGridsets().get(0);
+	public static GridBoundariesExtractor valueOf(GridDataset gds){
 		
-		GridCoordSystem coordSystem = gridset.getGeoCoordSystem();
-		ProjectionImpl fromProj = coordSystem.getProjection();
-		
-		if( coordSystem.getYHorizAxis() instanceof CoordinateAxis1D &&  coordSystem.getXHorizAxis() instanceof CoordinateAxis1D ){
-			
-			CoordinateAxis1D xAxis = (CoordinateAxis1D) coordSystem.getXHorizAxis();
-			CoordinateAxis1D yAxis  =(CoordinateAxis1D) coordSystem.getYHorizAxis();			
-
-			if(coordSystem.isGlobalLon()) {
-
-				double maxy = yAxis.getMaxValue();
-				double miny = yAxis.getMinValue();
-
-				polygonJSON.append("[0, "+ miny +"], [360, "+ miny +"], [360, "+ maxy +"], [0, "+ maxy +"],[0, "+ miny +"] ]]}");			
-				return polygonJSON.toString();
-			}
-
-			double[] xCoords = xAxis.getCoordValues();
-			double[] yCoords = yAxis.getCoordValues();
-
-			//Bottom edge
-			int k = 0;
-			for( double x : xCoords  ){
-				LatLonPoint point = fromProj.projToLatLon(x, yCoords[0]);
-
-				double lon = point.getLongitude();
-				if(lon < 0) lon+=360;			
-
-				polygonJSON.append("[").append( lon ).append(", ").append(point.getLatitude()).append("],");		  
-			}
-
-			//Right edge
-			for( double y : yCoords  ){
-				LatLonPoint point = fromProj.projToLatLon(xCoords[xCoords.length-1], y);
-
-				double lon = point.getLongitude();
-				if(lon < 0) lon+=360;			
-
-				polygonJSON.append("[").append( lon ).append(", ").append(point.getLatitude()).append("],");
-			}	  
-
-			//Top
-			for( int i = xCoords.length-1; i>=0; i--  ){
-				LatLonPoint point = fromProj.projToLatLon(xCoords[i], yCoords[yCoords.length-1]);
-
-				double lon = point.getLongitude();
-				if(lon < 0) lon+=360;			
-
-				polygonJSON.append("[").append( lon ).append(", ").append(point.getLatitude()).append("],");		  
-			}	  
-
-			//Left edge
-			for( int i = yCoords.length-1; i>=0; i--  ){
-
-				LatLonPoint point = fromProj.projToLatLon(xCoords[0], yCoords[i]);
-
-				double lon = point.getLongitude();
-				if(lon < 0) lon+=360;			
-
-				if(i != 0)
-					polygonJSON.append("[").append( lon ).append(", ").append(point.getLatitude()).append("],");
-				else
-					polygonJSON.append("[").append( lon ).append(", ").append(point.getLatitude()).append("]");
-			}			
-		}else if( coordSystem.getYHorizAxis() instanceof CoordinateAxis2D &&  coordSystem.getXHorizAxis() instanceof CoordinateAxis2D ){
-			
-			//Get boundaries from 2d axis...
-			CoordinateAxis2D xAxis = (CoordinateAxis2D) coordSystem.getXHorizAxis();
-			CoordinateAxis2D yAxis  =(CoordinateAxis2D) coordSystem.getYHorizAxis();
-			
-			int[] xShape = xAxis.getShape();
-			int[] yShape = yAxis.getShape();
-			
-			for(int i = 0; i < xShape[0]; i++ ){
-					double x = xAxis.getCoordValue(i, 0);
-					double y = yAxis.getCoordValue(i, 0);
-					
-					LatLonPoint point = fromProj.projToLatLon(x, y);
-					polygonJSON.append("[").append( point.getLongitude() ).append(", ").append(point.getLatitude()).append("],");
-			}
-			
-			for(int i = 0; i < xShape[1]; i++ ){
-					double x = xAxis.getCoordValue(xShape[0]-1, i);
-					double y = yAxis.getCoordValue(xShape[0]-1, i);
-					
-					LatLonPoint point = fromProj.projToLatLon(x, y);
-					polygonJSON.append("[").append( point.getLongitude() ).append(", ").append(point.getLatitude()).append("],");					
-			}
-			
-			for(int i = xShape[0]-1 ; i >= 0; i-- ){
-				double x = xAxis.getCoordValue(i, xShape[1]-1);
-				double y = yAxis.getCoordValue(i, xShape[1]-1);
-				
-				LatLonPoint point = fromProj.projToLatLon(x, y);
-				polygonJSON.append("[").append( point.getLongitude() ).append(", ").append(point.getLatitude()).append("],");				
-			}
-			
-			for(int i = xShape[1]-1 ; i >= 0; i-- ){
-				double x = xAxis.getCoordValue(0, i);
-				double y = yAxis.getCoordValue(0, i);
-				
-				LatLonPoint point = fromProj.projToLatLon(x, y);
-				if(i > 0)
-					polygonJSON.append("[").append( point.getLongitude() ).append(", ").append(point.getLatitude()).append("],");
-				else
-					polygonJSON.append("[").append( point.getLongitude() ).append(", ").append(point.getLatitude()).append("]");				
-			}			
-			
-			
-			
-		}		
-					
-
-		polygonJSON.append(" ] ]}");
-
-		return polygonJSON.toString();
-	}	
+		return new GridBoundariesExtractor(gds);
+	}
 	
 }
