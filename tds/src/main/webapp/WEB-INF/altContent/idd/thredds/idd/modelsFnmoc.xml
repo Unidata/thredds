@@ -62,7 +62,8 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/NOGAPS/Global_1p0deg/FNMOC_NOGAPS_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_NOGAPS_Global_1p0deg"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
       </featureCollection>
 
     </dataset>
@@ -84,7 +85,8 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/WW3/Global_1p0deg/FNMOC_WW3_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_WW3_Global_1p0deg"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 1 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 1 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="FNMOC-WW3-Mediterranean" featureType="GRIB" harvest="true" path="grib/FNMOC/WW3/Mediterranean">
@@ -98,7 +100,8 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/WW3/Mediterranean/FNMOC_WW3_Mediterranean_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_WW3_Mediterranean"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 2 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 2 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
       </featureCollection>
 
     </dataset>
@@ -120,7 +123,8 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/FAROP/Global_1p0deg/FNMOC_FAROP_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_FAROP_Global_1p0deg"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 3 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 3 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
       </featureCollection>
 
     </dataset>
@@ -144,7 +148,8 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Western_Atlantic/FNMOC_COAMPS_Western_Atlantic_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_COAMPS_Western_Atlantic"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 4 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 4 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="FNMOC-COAMPS-Central_America" featureType="GRIB" harvest="true" path="grib/FNMOC/COAMPS/Central_America">
@@ -158,7 +163,8 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Central_America/FNMOC_COAMPS_Central_America_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_COAMPS_Central_America"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 5 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 5 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="FNMOC-COAMPS-Eastern_Pacific" featureType="GRIB" harvest="true" path="grib/FNMOC/COAMPS/Eastern_Pacific">
@@ -172,7 +178,8 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Eastern_Pacific/FNMOC_COAMPS_Eastern_Pacific_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_COAMPS_Eastern_Pacific"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 6 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 6 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="FNMOC-COAMPS-Europe" featureType="GRIB" harvest="true" path="grib/FNMOC/COAMPS/Europe">
@@ -186,7 +193,8 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Europe/FNMOC_COAMPS_Europe_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_COAMPS_Europe"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 7 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 7 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
       </featureCollection>
     </dataset>
 
@@ -207,7 +215,8 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/NCODA/Global_Ocean/FNMOC_NCODA_Global_Ocean_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_NCODA_Global_Ocean"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 8 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 8 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
       </featureCollection>
 
     </dataset>

@@ -84,7 +84,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/.*grib2$"
                     dateFormatMark="#DGEX_CONUS_12km_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -100,7 +101,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/.*grib2$"
                     dateFormatMark="#DGEX_Alaska_12km_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -130,7 +132,8 @@
                     dateFormatMark="#GEFS_Global_1p0deg_Ensemble_#yyyyMMdd_HHmm"
                     timePartition="1 day"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -145,7 +148,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/derived/.*grib2$"
                     dateFormatMark="#GEFS_Global_1p0deg_Ensemble_derived_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -178,7 +182,8 @@
                     dateFormatMark="#GFS_Global_0p5deg_#yyyyMMdd_HHmm"
                     timePartition="1 day"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -197,7 +202,8 @@
                     dateFormatMark="#GFS_Global_onedeg_#yyyyMMdd_HHmm"
                     timePartition="1 day"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -214,7 +220,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/.*grib2$"
                     dateFormatMark="#GFS_Global_2p5deg_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -233,7 +240,8 @@
             spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km_grib2/.*grib2$"
             dateFormatMark="#GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -252,7 +260,8 @@
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Pacific_40km/.*grib2$"
             dateFormatMark="#GFS_Pacific_40km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -271,7 +280,8 @@
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_0p5deg/.*grib2$"
             dateFormatMark="#GFS_Puerto_Rico_0p5deg_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -288,7 +298,8 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -305,7 +316,8 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/GFS_Hawaii_160km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -321,7 +333,8 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -339,7 +352,8 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/GFS_CONUS_95km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -356,7 +370,8 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/GFS_CONUS_191km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -377,7 +392,8 @@
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$"
             dateFormatMark="#GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -407,7 +423,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$"
                     dateFormatMark="#NAM_Alaska_11km_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
         </gribConfig>
@@ -428,7 +445,8 @@
                     dateFormatMark="#NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm"
                     timePartition="1 day"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
         </gribConfig>
@@ -449,7 +467,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/.*grib2$"
                     dateFormatMark="#NAM_CONUS_12km_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
          <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
           <intvFilter intvLength="3">
@@ -475,7 +494,8 @@
             spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/.*grib2$"
             dateFormatMark="#NAM_CONUS_12km_conduit_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
           <intvFilter intvLength="3">
@@ -499,7 +519,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/.*grib2$"
                     dateFormatMark="#NAM_CONUS_20km_surface_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
           <intvFilter intvLength="3">
@@ -524,7 +545,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/.*grib2$"
                     dateFormatMark="#NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
           <intvFilter intvLength="3">
@@ -549,7 +571,8 @@
                     dateFormatMark="#NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm"
                     timePartition="1 day"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
           <intvFilter intvLength="3">
@@ -572,7 +595,8 @@
                     dateFormatMark="#NAM_Polar_90km_#yyyyMMdd_HHmm"
                     timePartition="1 day"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
         </gribConfig>
@@ -602,7 +626,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Firewxnest/.*grib2$"
                     dateFormatMark="#NAM_Firewxnest_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <groupNamer>Firewxnest</groupNamer>
           <intvFilter excludeZero="true"/>
@@ -621,7 +646,8 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/NAM_Alaska_22km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -639,7 +665,8 @@
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/NAM_Alaska_45km_noaaport_#yyyyMMdd_HHmm#.grib1"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -655,7 +682,8 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/NAM_Alaska_95km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -673,7 +701,8 @@
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/NAM_CONUS_20km_noaaport_#yyyyMMdd_HHmm#.grib1"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -689,7 +718,8 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -716,7 +746,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/.*grib2$"
                     dateFormatMark="#NDFD_CONUS_5km_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -733,7 +764,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/conduit/CONUS_5km/.*grib2$"
                     dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <gdsHash from="-2121584860" to="28944332"/>
         </gribConfig>
@@ -749,7 +781,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/Fireweather/CONUS/.*grib2$"
                     dateFormatMark="#NDFD_Fireweather_CONUS_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -779,7 +812,8 @@
             spec="/data/ldm/pub/native/grid/NCEP/RTMA/CONUS_2p5km/.*grib2$"
             dateFormatMark="#RTMA_CONUS_2p5km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <useGenType/>
         </gribConfig>
@@ -797,7 +831,8 @@
             spec="/data/ldm/pub/native/grid/NCEP/RTMA/GUAM_2p5km/.*grib2$"
             dateFormatMark="#RTMA_GUAM_2p5km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <useGenType/>
         </gribConfig>
@@ -828,6 +863,7 @@
             dateFormatMark="#RR_CONUS_13km_#yyyyMMdd_HHmm"
             timePartition="1 day"
             olderThan="5 min"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
@@ -844,7 +880,8 @@
             spec="/data/ldm/pub/native/grid/NCEP/RR/CONUS_20km/.*grib2$"
             dateFormatMark="#RR_CONUS_20km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 5,20,35,50 * * * ? *" trigger="allow"/>
         <!-- gribConfig>
           <intvFilter excludeZero="true"/>
           <intvFilter intvLength="1">
@@ -867,7 +904,8 @@
             spec="/data/ldm/pub/native/grid/NCEP/RR/CONUS_40km/.*grib2$"
             dateFormatMark="#RR_CONUS_40km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="true" rescan="0 9,24,39,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
     </dataset>
@@ -891,7 +929,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod/.*grib2$"
                     dateFormatMark="#SREF_CONUS_40km_ensprod_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter intvLength="12">
             <variable id="0-1-8" prob="50800"/>
@@ -915,7 +954,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod_biasc/.*grib2$"
                     dateFormatMark="#SREF_CONUS_40km_ensprod_biasc_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -947,7 +987,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/SREF/Alaska_45km/ensprod/.*grib2$"
                     dateFormatMark="#SREF_Alaska_45km_ensprod_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter intvLength="3">
             <variable id="0-1-8"/>
@@ -966,7 +1007,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/SREF/PacificNE_0p4/ensprod/.*grib2$"
                     dateFormatMark="#SREF_PacificNE_0p4_ensprod_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter intvLength="3">
             <variable id="0-1-8"/>
@@ -995,7 +1037,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Global/.*grib2$"
                     dateFormatMark="#WW3_Global_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -1011,7 +1054,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Alaska/.*grib2$"
                     dateFormatMark="#WW3_Regional_Alaska_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -1027,7 +1071,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Eastern_Pacific/.*grib2$"
                     dateFormatMark="#WW3_Regional_Eastern_Pacific_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -1043,7 +1088,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_East_Coast/.*grib2$"
                     dateFormatMark="#WW3_Regional_US_East_Coast_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -1059,7 +1105,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_West_Coast/.*grib2$"
                     dateFormatMark="#WW3_Regional_US_West_Coast_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -1075,7 +1122,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_East_Coast/.*grib2$"
                     dateFormatMark="#WW3_Coastal_US_East_Coast_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -1091,7 +1139,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_West_Coast/.*grib2$"
                     dateFormatMark="#WW3_Coastal_US_West_Coast_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
@@ -1107,7 +1156,8 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_Alaska/.*grib2$"
                     dateFormatMark="#WW3_Coastal_Alaska_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+        <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 

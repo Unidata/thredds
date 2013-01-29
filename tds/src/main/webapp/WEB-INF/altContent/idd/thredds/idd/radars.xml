@@ -537,7 +537,8 @@
                       dateFormatMark="#/N0R/#yyyyMMdd"
                       timePartition="directory"
                       olderThan="5 min"/>
-          <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+          <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
+          <tdm startup="false" rescan="0 10,25,40,55 * * * ? *" trigger="allow"/>
 
         </featureCollection>
 
