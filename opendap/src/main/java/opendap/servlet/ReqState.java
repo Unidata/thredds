@@ -164,15 +164,16 @@ public class ReqState {
         StringBuffer url = myHttpRequest.getRequestURL();
         if(url == null || url.length() == 0)
             AbstractServlet.log.error("ReqState: no url specified");
-
-        int index = url.lastIndexOf(myHttpRequest.getServletPath());
-        if(index < 0) index = url.length(); //USe whole thing
-        defaultSchemaLocation = url.substring(0, index) +
+	else {
+	    int index = url.lastIndexOf(myHttpRequest.getServletPath());
+            if(index < 0) index = url.length(); //Use whole thing
+            defaultSchemaLocation = url.substring(0, index) +
                 "/schema/" +
                 defaultSchemaName;
 
-        //System.out.println("Default Schema Location: "+defaultSchemaLocation);
-        //System.out.println("Schema Location: "+getSchemaLocation());
+            //System.out.println("Default Schema Location: "+defaultSchemaLocation);
+            //System.out.println("Schema Location: "+getSchemaLocation());
+	}
 
         requestURL = (encodedurl);
 
