@@ -505,7 +505,7 @@ public abstract class Dapparse
             throws ParseException
     {
         int len;
-        System.err.println(String.format(fmt, args));
+        lexstate.lexerror(String.format(fmt, args));
         String tmp = null;
         len = lexstate.getInput().length();
         tmp = flatten(lexstate.getInput());
