@@ -149,9 +149,10 @@ array_decls:
 
 array_decl:
 	   '[' SCAN_WORD ']' {$$=arraydecl(parsestate,null,$2);}
+	 | '[' '=' SCAN_WORD ']' {$$=arraydecl(parsestate,null,$3);}
 	 | '[' name '=' SCAN_WORD ']' {$$=arraydecl(parsestate,$2,$4);}
 	 | error
-	    {daperror(parsestate,"Illegal dimension declaration"); return YYABORT;}
+	    {daperror(parsestate,"Illegal dimension declaration/reference"); return YYABORT;}
 	;
 
 datasetname:
