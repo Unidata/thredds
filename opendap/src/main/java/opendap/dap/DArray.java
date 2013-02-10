@@ -167,7 +167,8 @@ public class DArray extends DVector
         for (Enumeration e = dimVector.elements(); e.hasMoreElements();) {
             DArrayDimension d = (DArrayDimension) e.nextElement();
             os.print("[");
-            if (d.getEncodedName() != null)
+            String name = d.getEncodedName();
+            if (name != null && name.length() > 0)
                 os.print(d.getEncodedName() + " = ");
             os.print(d.getSize() + "]");
         }
