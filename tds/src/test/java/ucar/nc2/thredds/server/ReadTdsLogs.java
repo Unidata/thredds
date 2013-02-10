@@ -39,7 +39,7 @@ import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 
 import java.io.BufferedReader;
 import java.io.*;

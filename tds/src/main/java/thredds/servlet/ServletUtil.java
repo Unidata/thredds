@@ -47,7 +47,7 @@ import thredds.catalog.XMLEntityResolver;
 import thredds.util.RequestForwardUtils;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 

@@ -51,6 +51,7 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.*;
 
 import org.apache.commons.httpclient.protocol.Protocol;
+import ucar.nc2.util.EscapeStrings;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 

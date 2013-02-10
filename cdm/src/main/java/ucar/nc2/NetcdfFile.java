@@ -33,7 +33,7 @@
 package ucar.nc2;
 
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.io.UncompressInputStream;

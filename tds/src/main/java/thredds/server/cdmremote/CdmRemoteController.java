@@ -33,7 +33,7 @@
 
 package thredds.server.cdmremote;
 
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;

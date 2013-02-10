@@ -41,7 +41,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.net.URL;
 
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 import thredds.catalog.*;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.catalog.query.*;

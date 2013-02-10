@@ -39,7 +39,7 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 
 import java.util.Enumeration;
 import java.util.Vector;

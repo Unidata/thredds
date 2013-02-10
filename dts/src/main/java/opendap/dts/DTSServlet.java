@@ -51,7 +51,7 @@ import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 import opendap.servlet.*;
 import opendap.util.Debug;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 
 /**
  * DTSServlet is a servlet to support client testing.

@@ -8,7 +8,7 @@ package opendap.servers.parsers;
 import opendap.dap.*;
 import opendap.servers.*;
 import opendap.dap.parsers.*;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 
 import static opendap.servers.parsers.CeParser.*;
 

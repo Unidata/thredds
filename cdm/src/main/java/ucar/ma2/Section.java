@@ -812,6 +812,8 @@ public class  Section {
 
   /**
    * Check if this Section is legal for the given shape.
+   * [Note: modified by dmh to address the case of unlimited
+   *  where the size is zero]
    *
    * @param shape range must fit within this shape, rank must match.
    * @return error message if illegal, null if all ok
@@ -824,7 +826,7 @@ public class  Section {
       Range r = list.get(i);
       if (r == null) continue;
       if (r == Range.VLEN) continue;
-      if (r.last() >= shape[i])
+      if (shape[i] > 0 && r.last() >= shape[i])
         return "Illegal Range for dimension " + i + ": last requested " + r.last() + " > max " + (shape[i] - 1);
     }
 

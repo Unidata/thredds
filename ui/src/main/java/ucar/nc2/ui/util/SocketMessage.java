@@ -34,7 +34,7 @@ package ucar.nc2.ui.util;
 
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.ListenerManager;
 

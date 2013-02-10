@@ -55,7 +55,7 @@ import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 
 /**
  * THREDDS opendap server.

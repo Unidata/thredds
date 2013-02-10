@@ -52,7 +52,7 @@ import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 
 /**
  * AbstractServlet is the base servlet class for an OPeNDAP

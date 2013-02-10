@@ -38,7 +38,9 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package ucar.nc2.util.net;
+package ucar.nc2.util;
+
+import ucar.nc2.util.net.HTTPSession;
 
 import java.net.*;
 import java.util.ArrayList;

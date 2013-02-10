@@ -49,7 +49,7 @@ import java.nio.charset.Charset;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
 import ucar.nc2.util.net.HTTPMethod;

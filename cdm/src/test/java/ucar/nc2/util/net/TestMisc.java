@@ -33,6 +33,7 @@
 package ucar.nc2.util.net;
 
 import org.junit.Test;
+import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.UnitTestCommon;
 
 import static junit.framework.Assert.assertTrue;

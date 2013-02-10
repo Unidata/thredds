@@ -33,7 +33,7 @@
 package ucar.nc2;
 
 import junit.framework.TestCase;
-import ucar.nc2.util.net.EscapeStrings;
+import ucar.nc2.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GeoGrid;
