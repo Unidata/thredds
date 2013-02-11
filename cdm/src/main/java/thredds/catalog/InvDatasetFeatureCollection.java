@@ -70,7 +70,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
 
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
-  static protected final String LATEST_FILE_NAME = "Latest File";
+  static protected String LATEST_FILE_NAME = "Latest File";
   static protected final String LATEST_SERVICE = "latest";
   static protected final String VARIABLES = "?metadata=variableMap";
   static protected final String FILES = "files";
@@ -127,6 +127,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     if (result != null) {
       result.finishConstruction(); // stuff that shouldnt be done in a constructor
+    }
+
+    if (config.gribConfig.latestNamer != null) {
+      LATEST_FILE_NAME = config.gribConfig.latestNamer;
     }
 
     return result;
@@ -392,8 +396,17 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       top.addDataset(ds);
       result.addService(InvService.latest);
     }
+    //COPY FILENAMES TO MODIFIABLE LIST, SORT, AND PASS
+    List<String> sortedFilenames = new ArrayList<String>(filenames);
 
-    for (String f : filenames) {
+    Collections.sort(sortedFilenames,String.CASE_INSENSITIVE_ORDER);
+
+    // if not increasing (i.e. we WANT newest file listed first), reverse sort
+    if (!this.config.gribConfig.filesSortIncreasing) {
+        Collections.reverse(sortedFilenames);
+    }
+
+    for (String f : sortedFilenames) {
       if (!f.startsWith(topDirectory))
         logger.warn("File {} doesnt start with topDir {}", f, topDirectory);
 
