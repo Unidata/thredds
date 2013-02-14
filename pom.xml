@@ -743,6 +743,7 @@
     <module>opendap</module>
     <module>dts</module>
     <module>visad</module>
+    <module>ncIdv</module>
     <module>ui</module>
     <module>tds</module>
     <module>tdm</module>

@@ -194,7 +194,7 @@
 
           </execution>
 
-          <execution>
+          <!--execution>
             <id>build-ncIdv</id>
             <phase>package</phase>
             <goals>
@@ -229,7 +229,7 @@
 
             </configuration>
 
-          </execution>
+          </execution-->
 
         </executions>
 
