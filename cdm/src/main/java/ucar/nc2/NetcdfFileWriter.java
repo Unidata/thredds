@@ -448,6 +448,59 @@ public class NetcdfFileWriter {
   }
 
   /**
+   * Add a variable with DataType = String to a netCDF-3 file. Must be in define mode.
+   * The variable will be stored in the file as a CHAR variable.
+   * A new dimension with name "stringVar.getShortName()_strlen" is automatically
+   * added, with length max_strlen, as determined from the data contained in the
+   * stringVar.
+   *
+   * @param g         add to this group in the new file
+   * @param stringVar  string variable.
+   * @param dims     list of Dimensions for the string variable.
+   *
+   * @return the CHAR variable generated from stringVar
+   */
+  public Variable addStringVariable(Group g, Variable stringVar, List<Dimension> dims) {
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
+    if (!N3iosp.isValidNetcdfObjectName(stringVar.getShortName()))
+      throw new IllegalArgumentException("illegal netCDF-3 variable name: "+stringVar.getShortName());
+
+    // convert STRING to CHAR
+    int max_len = 0;
+    Array data = null;
+
+    try {
+      data = stringVar.read();
+      IndexIterator ii = data.getIndexIterator();
+      while (ii.hasNext()) {
+        String s = (String) ii.getObjectNext();
+        max_len = Math.max(max_len, s.length());
+      }
+    } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+    // add last dimension
+    String useName = stringVar.getShortName() + "_strlen";
+    //Dimension newD = writer.addDimension(null, useName, max_len);
+    //Create dimension from scratch (we can not use writer because the dimension will be added again when we add the variable)
+    Dimension newD = new Dimension(useName, max_len, true, false, false);
+    dims.add(newD);
+    ncfile.addDimension(g, newD);
+
+    //Create our variable:
+    //We cannot use writer.addVariable to get the variable because FileWriter2.addVariable
+    //will add the variable again to the file so we would be adding the same variable twice (causes error)
+    Variable v = new Variable(ncfile , null, null, stringVar.getShortName());
+    v.setDataType(DataType.CHAR);
+    v.setDimensions(dims);
+
+    ncfile.addVariable(g, v);
+    return v;
+   }
+
+
+  /**
    * Add a variable to the file. Must be in define mode.
    *
    * @param g         add to this group in the new file

@@ -138,7 +138,13 @@ public class FileWriter2 {
    */
   public Variable addVariable(Variable oldVar) {
     List<Dimension> newDims = getNewDimensions(oldVar);
-    Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), newDims);
+
+    Variable newVar = null;
+    if ((oldVar.getDataType().equals(DataType.STRING)) && (!version.isNetdf4format())) {
+      newVar = writer.addStringVariable(null, oldVar,newDims);
+    } else {
+      newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), newDims);
+    }
     varMap.put(oldVar, newVar);
     varList.add(oldVar);
 
