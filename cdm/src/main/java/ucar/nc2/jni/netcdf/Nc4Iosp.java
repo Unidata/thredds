@@ -78,6 +78,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private String jnaPath;
   static private String libName = "netcdf";
 
+  static private int[] zerostride = new int[0];
+
   static private boolean warn = true;
   static private final boolean debug = false, debugCompoundAtt = false, debugUserTypes = false, debugWrite = false;
 
@@ -1210,6 +1212,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     long[] origin = convert(section.getOrigin());
     long[] shape = convert(section.getShape());
     long[] stride = convert(section.getStride());
+    boolean stride1 = isStride1(section.getStride());
     boolean isUnsigned = isUnsigned(typeid);
     int len = (int) section.computeSize();
 
@@ -1221,60 +1224,89 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case Nc4prototypes.NC_BYTE:
       case Nc4prototypes.NC_UBYTE:
         byte[] valb = new byte[len];
-        int ret = isUnsigned ? nc4.nc_get_vars_uchar(grpid, varid, origin, shape, stride, valb) :
-                nc4.nc_get_vars_schar(grpid, varid, origin, shape, stride, valb);
+	int ret;
+        if(stride1)
+          ret = isUnsigned ? nc4.nc_get_vara_uchar(grpid, varid, origin, shape, valb)
+                               : nc4.nc_get_vara_schar(grpid, varid, origin, shape, valb);
+	else
+          ret = isUnsigned ? nc4.nc_get_vars_uchar(grpid, varid, origin, shape, stride, valb)
+                           : nc4.nc_get_vars_schar(grpid, varid, origin, shape, stride, valb);
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         values = Array.factory(DataType.BYTE.getPrimitiveClassType(), section.getShape(), valb);
         break;
 
       case Nc4prototypes.NC_CHAR:
         byte[] valc = new byte[len];
-        ret = nc4.nc_get_vars_text(grpid, varid, origin, shape, stride, valc);
+	if(stride1)
+	    ret = nc4.nc_get_vara_text(grpid, varid, origin, shape, valc);
+	else
+	    ret = nc4.nc_get_vars_text(grpid, varid, origin, shape, stride, valc);
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         values = Array.factory(DataType.CHAR.getPrimitiveClassType(), section.getShape(), IospHelper.convertByteToChar(valc));
         break;
 
       case Nc4prototypes.NC_DOUBLE:
         double[] vald = new double[len];
-        ret = nc4.nc_get_vars_double(grpid, varid, origin, shape, stride, vald);
+	if(stride1)
+            ret = nc4.nc_get_vara_double(grpid, varid, origin, shape, vald);
+	else
+            ret = nc4.nc_get_vars_double(grpid, varid, origin, shape, stride, vald);
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         values = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), section.getShape(), vald);
         break;
 
       case Nc4prototypes.NC_FLOAT:
         float[] valf = new float[len];
-        ret = nc4.nc_get_vars_float(grpid, varid, origin, shape, stride, valf);
+	if(stride1)
+            ret = nc4.nc_get_vara_float(grpid, varid, origin, shape, valf);
+	else
+            ret = nc4.nc_get_vars_float(grpid, varid, origin, shape, stride, valf);
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         values = Array.factory(DataType.FLOAT.getPrimitiveClassType(), section.getShape(), valf);
         break;
 
       case Nc4prototypes.NC_INT:
         int[] vali = new int[len];
-        ret = isUnsigned ? nc4.nc_get_vars_uint(grpid, varid, origin, shape, stride, vali) :
-                nc4.nc_get_vars_int(grpid, varid, origin, shape, stride, vali);
+	if(stride1)
+            ret = isUnsigned ? nc4.nc_get_vara_uint(grpid, varid, origin, shape, vali)
+			     : nc4.nc_get_vara_int(grpid, varid, origin, shape, vali);
+	else
+	    ret = isUnsigned ? nc4.nc_get_vars_uint(grpid, varid, origin, shape, stride, vali)
+                             : nc4.nc_get_vars_int(grpid, varid, origin, shape, stride, vali);
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         values = Array.factory(DataType.INT.getPrimitiveClassType(), section.getShape(), vali);
         break;
 
       case Nc4prototypes.NC_INT64:
         long[] vall = new long[len];
-        ret = isUnsigned ? nc4.nc_get_vars_ulonglong(grpid, varid, origin, shape, stride, vall) :
-                nc4.nc_get_vars_longlong(grpid, varid, origin, shape, stride, vall);
+	if(stride1)
+            ret = isUnsigned ? nc4.nc_get_vara_ulonglong(grpid, varid, origin, shape, vall)
+                         : nc4.nc_get_vara_longlong(grpid, varid, origin, shape, vall);
+	else
+            ret = isUnsigned ? nc4.nc_get_vars_ulonglong(grpid, varid, origin, shape, stride, vall)
+                             : nc4.nc_get_vars_longlong(grpid, varid, origin, shape, stride, vall);
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         values = Array.factory(DataType.LONG.getPrimitiveClassType(), section.getShape(), vall);
         break;
 
       case Nc4prototypes.NC_SHORT:
         short[] vals = new short[len];
-        ret = isUnsigned ? nc4.nc_get_vars_ushort(grpid, varid, origin, shape, stride, vals) :
-                nc4.nc_get_vars_short(grpid, varid, origin, shape, stride, vals);
+	if(stride1)
+	    ret = isUnsigned ? nc4.nc_get_vara_ushort(grpid, varid, origin, shape, vals)
+                             : nc4.nc_get_vara_short(grpid, varid, origin, shape, vals);
+	else
+	    ret = isUnsigned ? nc4.nc_get_vars_ushort(grpid, varid, origin, shape, stride, vals)
+                             : nc4.nc_get_vars_short(grpid, varid, origin, shape, stride, vals);
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         values = Array.factory(DataType.SHORT.getPrimitiveClassType(), section.getShape(), vals);
         break;
 
       case Nc4prototypes.NC_STRING:
         String[] valss = new String[len];
-        ret = nc4.nc_get_vars_string(grpid, varid, origin, shape, stride, valss);
+	if(stride1)
+	    ret = nc4.nc_get_vara_string(grpid, varid, origin, shape, valss);
+	else
+	    ret = nc4.nc_get_vars_string(grpid, varid, origin, shape, stride, valss);
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         return Array.factory(DataType.STRING.getPrimitiveClassType(), section.getShape(), valss);
 
@@ -1371,6 +1403,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         return Array.factory(DataType.SHORT.getPrimitiveClassType(), shape, valsu);
 
+     case Nc4prototypes.NC_UINT:
+        int[] valiu = new int[len];
+        ret = nc4.nc_get_var_uint(grpid, varid, valiu);
+        if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        return Array.factory(DataType.INT.getPrimitiveClassType(), shape, valiu);
+
       case Nc4prototypes.NC_STRING:
         String[] valss = new String[len];
         ret = nc4.nc_get_var_string(grpid, varid, valss);
@@ -1426,7 +1464,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     bbuff.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
 
     // read in the data
-    int ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bbuff);
+    int ret;
+    if(isStride1(section.getStride()))
+        ret = nc4.nc_get_vara(grpid, varid, origin, shape, bbuff);
+    else
+        ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bbuff);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     StructureMembers sm = new StructureMembers(userType.name);
@@ -1546,7 +1588,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int len = (int) section.computeSize();
 
     ByteBuffer bb = ByteBuffer.allocate(len * size);
-    ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bb);
+    if(isStride1(section.getStride()))
+        ret = nc4.nc_get_vara(grpid, varid, origin, shape, bb);
+    else
+        ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bb);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     byte[] entire = bb.array();
 
@@ -1597,6 +1642,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private boolean isVlen(int type) {
     UserType userType = userTypes.get(type);
     return (userType == null) ? false : (userType.typeClass == Nc4prototypes.NC_VLEN);
+  }
+
+  private boolean isStride1(int[] strides)
+  {
+    if(strides == null) return true;
+    for(int i=0;i<strides.length;i++) {
+	if(strides[i] != 1) return false;
+    }
+    return true;
   }
 
   private long[] convert(int[] from) {

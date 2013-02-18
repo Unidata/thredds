@@ -181,6 +181,7 @@ public interface Nc4prototypes extends Library {
   int nc_get_var_short(int ncid, int varid, short[] ip);
   int nc_get_var_ushort(int ncid, int varid, short[] ip);
   int nc_get_var_int(int ncid, int varid, int[] ip);
+  int nc_get_var_uint(int ncid, int varid, int[] ip);
   int nc_get_var_longlong(int ncid, int varid, long[] ip);
   int nc_get_var_ulonglong(int ncid, int varid, long[] ip);
   int nc_get_var_float(int ncid, int varid, float[] ip);
@@ -188,6 +189,21 @@ public interface Nc4prototypes extends Library {
   int nc_get_var_string(int ncid, int varid, String[] sarray);
 
   // read array section
+
+  int nc_get_vara(int ncid, int varid, long[] startp, long[] countp, ByteBuffer bbuff);
+  int nc_get_vara_uchar(int ncid, int varid, long[] startp, long[] countp, byte[] ip);
+  int nc_get_vara_schar(int ncid, int varid, long[] startp, long[] countp, byte[] ip);
+  int nc_get_vara_text(int ncid, int varid, long[] startp, long[] countp, byte[] ip);
+  int nc_get_vara_short(int ncid, int varid, long[] startp, long[] countp, short[] ip);
+  int nc_get_vara_ushort(int ncid, int varid, long[] startp, long[] countp, short[] ip);
+  int nc_get_vara_int(int ncid, int varid, long[] startp, long[] countp, int[] ip);
+  int nc_get_vara_uint(int ncid, int varid, long[] startp, long[] countp, int[] ip);
+  int nc_get_vara_longlong(int ncid, int varid, long[] startp, long[] countp, long[] ip);
+  int nc_get_vara_ulonglong(int ncid, int varid, long[] startp, long[] countp, long[] ip);
+  int nc_get_vara_float(int ncid, int varid, long[] startp, long[] countp, float[] ip);
+  int nc_get_vara_double(int ncid, int varid, long[] startp, long[] countp, double[] ip);
+  int nc_get_vara_string(int ncid, int varid, long[] startp, long[] countp, String[] ip);
+
   int nc_get_vars(int ncid, int varid, long[] startp, long[] countp, long[] stridep, ByteBuffer bbuff);
   int nc_get_vars_uchar(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
   int nc_get_vars_schar(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
@@ -218,6 +234,22 @@ public interface Nc4prototypes extends Library {
   int nc_def_var (int ncid, String name, long xtype, int ndims, int[] dimids, IntByReference varidp);
 
   // write array section
+  int nc_put_vara(int ncid, int varid, long[] startp, long[] countp, ByteBuffer bbuff);
+  int nc_put_vara_uchar(int ncid, int varid, long[] startp, long[] countp, byte[] ip);
+  int nc_put_vara_schar(int ncid, int varid, long[] startp, long[] countp, byte[] ip);
+  int nc_put_vara_text(int ncid, int varid, long[] startp, long[] countp, byte[] ip);
+  int nc_put_vara_short(int ncid, int varid, long[] startp, long[] countp, short[] ip);
+  int nc_put_vara_ushort(int ncid, int varid, long[] startp, long[] countp, short[] ip);
+  int nc_put_vara_int(int ncid, int varid, long[] startp, long[] countp, int[] ip);
+  int nc_put_vara_uint(int ncid, int varid, long[] startp, long[] countp, int[] ip);
+  int nc_put_vara_longlong(int ncid, int varid, long[] startp, long[] countp, long[] ip);
+  int nc_put_vara_ulonglong(int ncid, int varid, long[] startp, long[] countp, long[] ip);
+  int nc_put_vara_float(int ncid, int varid, long[] startp, long[] countp, float[] ip);
+  int nc_put_vara_double(int ncid, int varid, long[] startp, long[] countp, double[] ip);
+
+/*int nc_get_vara_string(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, char **ip);  */
+  int nc_put_vara_string(int ncid, int varid, long[] startp, long[] countp, long[] stridep, String[] ip);
+
   int nc_put_vars(int ncid, int varid, long[] startp, long[] countp, long[] stridep, ByteBuffer bbuff);
   int nc_put_vars_uchar(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
   int nc_put_vars_schar(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
