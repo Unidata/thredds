@@ -75,6 +75,7 @@ public class UtmProjection extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result = (save == null) ? new UtmProjection(getZone(), isNorth()) : new UtmProjection(save.a, save.f, getZone(), isNorth());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

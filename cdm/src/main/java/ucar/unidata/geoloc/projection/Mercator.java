@@ -78,6 +78,7 @@ public class Mercator extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new Mercator(getOriginLon(), getParallel(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

@@ -74,6 +74,7 @@ public class Stereographic extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

@@ -99,6 +99,7 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new CylindricalEqualAreaProjection(lon0, trueScaleLatitude, falseEasting, falseNorthing, earth);
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

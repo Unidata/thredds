@@ -101,6 +101,7 @@ public class RotatedLatLon extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new RotatedLatLon(latpole, lonpole, polerotate);
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

@@ -76,6 +76,7 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
     ProjectionImpl result =  new LambertConformalConicEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
             getFalseEasting(), getFalseNorthing(), getEarth());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

@@ -65,6 +65,7 @@ public class LambertConformal extends ProjectionImpl {
     ProjectionImpl result =  new LambertConformal(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
             getFalseEasting(), getFalseNorthing(), earth_radius);
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

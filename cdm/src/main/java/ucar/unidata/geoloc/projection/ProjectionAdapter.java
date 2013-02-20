@@ -68,6 +68,7 @@ public class ProjectionAdapter extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new ProjectionAdapter(proj);
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

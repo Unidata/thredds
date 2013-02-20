@@ -65,6 +65,7 @@ public class VerticalPerspectiveView extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new VerticalPerspectiveView(getOriginLat(), getOriginLon(), R, getHeight(), false_east, false_north);
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

@@ -68,6 +68,7 @@ public class AlbersEqualArea extends ProjectionImpl {
     ProjectionImpl result = new AlbersEqualArea(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
             getFalseEasting(), getFalseNorthing(), getEarthRadius());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

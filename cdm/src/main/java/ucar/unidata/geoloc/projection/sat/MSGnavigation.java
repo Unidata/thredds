@@ -366,6 +366,7 @@ public class MSGnavigation extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new MSGnavigation(lat0, lon0, 1000 * major_axis, 1000 * minor_axis, 1000 * sat_height, scale_x, scale_y);
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

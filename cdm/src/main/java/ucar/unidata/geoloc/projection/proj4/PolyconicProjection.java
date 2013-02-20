@@ -420,6 +420,7 @@ public class PolyconicProjection extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new PolyconicProjection(getOriginLatitude(), getOriginLongitude(), getFalseEasting(), getFalseNorthing(), getEarth());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 }
