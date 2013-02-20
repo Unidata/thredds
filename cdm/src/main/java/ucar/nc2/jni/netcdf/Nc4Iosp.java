@@ -61,6 +61,8 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.NativeLongByReference;
 
+import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
+
 /**
  * IOSP for reading netcdf files through jni interface to netcdf4 library
  *
