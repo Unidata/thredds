@@ -141,6 +141,7 @@ public class RotatedPole extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new RotatedPole(northPole.getY(), northPole.getX());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

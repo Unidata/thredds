@@ -80,6 +80,7 @@ public class FlatEarth extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result = new FlatEarth(getOriginLat(), getOriginLon(), getRotationAngle());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

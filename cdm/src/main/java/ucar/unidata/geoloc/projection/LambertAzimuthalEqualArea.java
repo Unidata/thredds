@@ -61,6 +61,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new LambertAzimuthalEqualArea(getOriginLat(), getOriginLon(), getFalseEasting(), getFalseNorthing(), R);
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

@@ -63,6 +63,7 @@ public class LatLonProjection extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result = new LatLonProjection(getName(), getDefaultMapArea());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

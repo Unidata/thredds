@@ -82,6 +82,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
     ProjectionImpl result = new AlbersEqualAreaEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
             getFalseEasting(), getFalseNorthing(), getEarth());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

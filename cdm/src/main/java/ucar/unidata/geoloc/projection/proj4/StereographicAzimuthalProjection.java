@@ -310,6 +310,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
         ProjectionImpl result =  new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
                 scaleFactor, Math.toDegrees(trueScaleLatitude), falseEasting, falseNorthing, earth);
         result.setDefaultMapArea(defaultMapArea);
+        result.setName(name);
         return result;
     }
 

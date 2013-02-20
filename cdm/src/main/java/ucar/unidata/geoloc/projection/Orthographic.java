@@ -62,6 +62,7 @@ public class Orthographic extends ProjectionImpl {
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new Orthographic(getOriginLat(), getOriginLon(), R);
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 

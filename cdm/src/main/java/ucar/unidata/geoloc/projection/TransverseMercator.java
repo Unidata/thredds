@@ -58,6 +58,7 @@ public class TransverseMercator extends ProjectionImpl {
     ProjectionImpl result =  new TransverseMercator(getOriginLat(), getTangentLon(),
             getScale(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
     result.setDefaultMapArea(defaultMapArea);
+    result.setName(name);
     return result;
   }
 
