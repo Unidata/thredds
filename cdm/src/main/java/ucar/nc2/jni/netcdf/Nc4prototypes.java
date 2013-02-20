@@ -71,6 +71,7 @@ public interface Nc4prototypes extends Library {
   static public final int NC_INT64 =	10;	/* signed 8-byte int */
   static public final int NC_UINT64 =	11;/* unsigned 8-byte int */
   static public final int NC_STRING =	12;	/* string */
+  static public final int NC_MAX_ATOMIC_TYPE = NC_STRING;
 
   /* The folloing are use internally in support of user-defines
    * types. They are also the class returned by nc_inq_user_type. */

@@ -968,6 +968,32 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     void setEnum(EnumTypedef e) {
       this.e = e;
+      // set the enum's basetype
+      if(baseTypeid > 0 && baseTypeid <= NC_MAX_ATOMIC_TYPE) {
+          DataType cdmtype = null;
+          boolean isunsigned = false;
+          switch (baseTypeid) {
+          case NC_CHAR:
+          case NC_UBYTE:
+              isunsigned = true;
+          case NC_BYTE:
+              cdmtype = DataType.ENUM1;
+              break;
+          case NC_USHORT:
+              isunsigned = true;
+          case NC_SHORT:
+              cdmtype = DataType.ENUM1;
+              break;
+          case NC_UINT:
+              isunsigned = true;
+          case NC_INT:
+          default:
+              cdmtype = DataType.ENUM4;
+              break;
+          }
+          // not supported this.e.setUnsigned(isunsigned);
+          this.e.setBaseType(cdmtype);
+       }
     }
 
     void addField(Field fld) {
