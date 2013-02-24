@@ -106,7 +106,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static public final String resourcesDir = "resources/nj22/coords/"; // resource path
   static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysBuilder.class);
 
-  // static private Map<String, Class> conventionHash = new HashMap<String, Class>();
   static private List<Convention> conventionList = new ArrayList<Convention>();
   static private Map<String, String> ncmlHash = new HashMap<String, String>();
   static private boolean useMaximalCoordSys = true;
@@ -282,18 +281,28 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     return useMaximalCoordSys;
   }
 
-  // breakup list of Conventions
-  static protected List<String> breakupConventionNames(String convName) {
+  /**
+   * Breakup list of Convention names in teh COnvention attribute in CF compliant way.
+   * @param convAttValue original value of COnvention attribute
+   * @return  list of Convention names
+   */
+  static public List<String> breakupConventionNames(String convAttValue) {
     List<String> names = new ArrayList<String>();
 
-    if ((convName.indexOf(',') > 0) || (convName.indexOf(';') > 0)) {
-      StringTokenizer stoke = new StringTokenizer(convName, ",;");
+    if ((convAttValue.indexOf(',') > 0) || (convAttValue.indexOf(';') > 0)) {
+      StringTokenizer stoke = new StringTokenizer(convAttValue, ",;");
       while (stoke.hasMoreTokens()) {
         String name = stoke.nextToken();
         names.add(name.trim());
       }
-    } else if ((convName.indexOf('/') > 0)) {
-      StringTokenizer stoke = new StringTokenizer(convName, "/");
+    } else if ((convAttValue.indexOf('/') > 0)) {
+      StringTokenizer stoke = new StringTokenizer(convAttValue, "/");
+      while (stoke.hasMoreTokens()) {
+        String name = stoke.nextToken();
+        names.add(name.trim());
+      }
+    } else {
+      StringTokenizer stoke = new StringTokenizer(convAttValue, " ");
       while (stoke.hasMoreTokens()) {
         String name = stoke.nextToken();
         names.add(name.trim());
@@ -427,7 +436,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   protected Formatter parseInfo = new Formatter();
   protected Formatter userAdvice = new Formatter();
 
-  protected boolean debug = false, showRejects = false;
+  protected boolean debug = false;
 
   public void setConventionUsed(String convName) {
     this.conventionName = convName;
@@ -906,9 +915,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     return (hasLat && hasLon) || (hasX && hasY);
   }
 
-  //protected void assignImplicitCoordinateTransforms( NetcdfDataset ncDataset, CoordinateSystem csnew) {
-  //}
-
   /**
    * Take all previously identified Coordinate Transforms and create a
    * CoordinateTransform object by calling CoordTransBuilder.makeCoordinateTransform().
@@ -1196,13 +1202,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       // if not a CoordinateAxis, will turn into one
       v = axis = ds.addCoordinateAxis((VariableDS) v);
-
-      /* if (v instanceof CoordinateAxis) {
-        axis = (CoordinateAxis) v;
-      } else {
-        axis = ds.addCoordinateAxis((VariableDS) v);
-        v = axis;
-      } */
 
       if (axisType != null) {
         axis.setAxisType(axisType);

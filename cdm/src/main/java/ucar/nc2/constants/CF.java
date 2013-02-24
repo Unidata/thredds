@@ -128,8 +128,7 @@ public interface CF {
   ///////////////////////////////////////////////////////////////////////
 
   /**
-   * Start of map from CF feature type names to our FeatureType enums.
-   * Unofficial.
+   * Map from CF feature type names to our FeatureType enums.
    */
   public enum FeatureType {
     point, timeSeries, profile, trajectory, timeSeriesProfile, trajectoryProfile;
@@ -148,6 +147,24 @@ public interface CF {
           return CF.FeatureType.timeSeriesProfile;
         case SECTION:
           return CF.FeatureType.trajectoryProfile;
+      }
+      return null;
+    }
+
+    public static ucar.nc2.constants.FeatureType convert(FeatureType cff) {
+      switch (cff) {
+        case point:
+          return ucar.nc2.constants.FeatureType.POINT;
+        case timeSeries:
+          return ucar.nc2.constants.FeatureType.STATION;
+        case profile:
+          return ucar.nc2.constants.FeatureType.PROFILE;
+        case trajectory:
+          return ucar.nc2.constants.FeatureType.TRAJECTORY;
+        case timeSeriesProfile:
+          return ucar.nc2.constants.FeatureType.STATION_PROFILE;
+        case trajectoryProfile:
+          return ucar.nc2.constants.FeatureType.SECTION;
       }
       return null;
     }

@@ -385,7 +385,7 @@ public class FeatureDatasetFactoryManager {
    * @return FeatureType if found, else null
    */
   static public FeatureType findFeatureType(NetcdfDataset ncd) {
-    // look for explicit guidance
+    // look for explicit featureType global attribute
     String cdm_datatype = ncd.findAttValueIgnoreCase(null, "cdm_data_type", null);
     if (cdm_datatype == null)
       cdm_datatype = ncd.findAttValueIgnoreCase(null, "cdm_datatype", null);
@@ -400,18 +400,8 @@ public class FeatureDatasetFactoryManager {
         }
     }
 
-    // LOOK - compare to CF names when those are finalized
-    String ftypeS = ncd.findAttValueIgnoreCase(null, CF.FEATURE_TYPE, null);
-    if (ftypeS == null)
-      ftypeS = ncd.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
-    if (ftypeS == null)
-      ftypeS = ncd.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
-
-    if (ftypeS != null) {
-      if (debug) System.out.println(" wrapUnknown found cf_datatype " + ftypeS);
-      return FeatureType.getType(ftypeS);
-    }
-
+    CF.FeatureType cff = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ncd);
+    if (cff != null) return CF.FeatureType.convert(cff);
     return null;
   }
 

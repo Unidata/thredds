@@ -76,7 +76,7 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
   protected Variable findVariableWithAttributeAndDimension(NetcdfDataset ds, String att_name, String att_value, Dimension outer, Formatter errlog) {
     for (Variable v : ds.getVariables()) {
       String stdName = ds.findAttValueIgnoreCase(v, att_name, null);
-      if ((stdName != null) && stdName.equals(att_value)) {
+      if ((stdName != null) && stdName.equalsIgnoreCase(att_value)) {
         if (v.getRank() > 0 && v.getDimension(0).equals(outer))
           return v;
         if (isEffectivelyScaler(v) && (outer == null))

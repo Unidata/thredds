@@ -88,7 +88,7 @@ public class FileManager {
   //protected ComboBox urlComboBox;
 
   private boolean readOk = true, selectedFile = false;
-  private static boolean debug = false, test = false;
+  private static boolean debug = false;
 
   public FileManager(JFrame parent) {
     this(parent, null, null, null);
@@ -235,7 +235,7 @@ public class FileManager {
       prefs.put(DEFAULT_DIR, currDir.getPath());
 
     FileFilter currFilter = chooser.getFileFilter();
-    if (currDir != null)
+    if (currFilter != null)
       prefs.put(DEFAULT_FILTER, currFilter.getDescription());
 
     if (dirComboBox != null)

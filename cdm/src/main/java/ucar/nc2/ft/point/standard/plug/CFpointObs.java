@@ -34,6 +34,7 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.point.standard.CoordSysEvaluator;
@@ -73,10 +74,9 @@ public class CFpointObs extends TableConfigurerImpl {
     String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (conv == null) return false;
 
-    StringTokenizer stoke = new StringTokenizer(conv, ",");
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken().trim();
-      if (toke.startsWith("CF-1"))
+    List<String> names = CoordSysBuilder.breakupConventionNames(conv);
+    for (String s : names) {
+      if (s.startsWith("CF-1"))
         return true;
     }
     return false;
@@ -1424,7 +1424,7 @@ public class CFpointObs extends TableConfigurerImpl {
   // Adds check for dimensions against parent structure if applicable...
   //
   // Note to John.  It may be that this implementation can be pushed into the super
-  // class, I don't unserstand enough of the code base to anticipate implementation artifacts.
+  // class, I don't understand enough of the code base to anticipate implementation artifacts.
 
   @Override
   protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer) {
