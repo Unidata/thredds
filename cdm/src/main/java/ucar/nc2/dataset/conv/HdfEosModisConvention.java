@@ -108,10 +108,10 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
       ds.addVariable(dataG, crss);
 
       double minX = upperLeft.getNumericValue(0).doubleValue();
-      double maxY = upperLeft.getNumericValue(1).doubleValue();
+      double minY = upperLeft.getNumericValue(1).doubleValue();
 
       double maxX = lowerRight.getNumericValue(0).doubleValue();
-      double minY = lowerRight.getNumericValue(1).doubleValue();
+      double maxY = lowerRight.getNumericValue(1).doubleValue();
 
       ds.addCoordinateAxis(makeCoordAxis(ds, dataG, DIMX_NAME, dimX.getLength(), minX,  maxX, true));
       ds.addCoordinateAxis(makeCoordAxis(ds, dataG, DIMY_NAME, dimY.getLength(), minY,  maxY, false));

@@ -1545,7 +1545,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       showProxies(f);
     } else {
       f.format("%nReferenced File:%n");
-      f.format(orgFile.getDetailInfo());
+      f.format("%s", orgFile.getDetailInfo());
     }
   }
 
