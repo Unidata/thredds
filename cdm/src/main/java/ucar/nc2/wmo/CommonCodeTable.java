@@ -35,6 +35,7 @@ package ucar.nc2.wmo;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -464,7 +465,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
       if (this.code < 1)
         comment = value;
       else {
-        this.value = value;
+        this.value = filter(value);
         this.status = status;
       }
     }
@@ -473,7 +474,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
       this.line = Integer.parseInt(line);
       this.code = parse(code1);
       this.code2 = parse(code2);
-      this.value = value2;
+      this.value = filter(value2);
       this.comment = value1;
       this.status = status;
     }
@@ -503,6 +504,12 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
               ", status='" + status + '\'' +
               '}';
     }
+  }
+
+  private static final char badDash = 173;
+  private String filter(String s) {
+    if (s == null) return null;
+    return StringUtil2.replace(s, badDash, "-");
   }
 
   public static void main(String arg[]) throws IOException {
