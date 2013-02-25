@@ -277,7 +277,7 @@ public class TransverseMercator extends ProjectionImpl {
     double y1 = pt1.getY() - falseNorthing;
     double y2 = pt2.getY() - falseNorthing;
 
-    // opposite signed long lines: LOOK ????
+    // opposite signed long lines
     return (y1 * y2 < 0) && (Math.abs(y1 - y2) > 2 * earthRadius);
   }
 

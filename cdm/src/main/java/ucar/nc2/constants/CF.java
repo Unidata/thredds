@@ -69,6 +69,7 @@ public interface CF {
   public final static String POLAR_STEREOGRAPHIC = "polar_stereographic";
   public final static String ROTATED_LATITUDE_LONGITUDE = "rotated_latitude_longitude";
   public final static String STEREOGRAPHIC = "stereographic";
+  public final static String SINUSOIDAL = "sinusoidal";       // NOY
   public final static String TRANSVERSE_MERCATOR = "transverse_mercator";
   public final static String VERTICAL_PERSPECTIVE = "vertical_perspective";
 

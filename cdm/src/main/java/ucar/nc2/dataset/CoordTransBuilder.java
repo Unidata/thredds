@@ -73,6 +73,7 @@ public class CoordTransBuilder {
     registerTransform("polyconic", PolyconicProjection.class); // ghansham@sac.isro.gov.in 1/8/2012
     registerTransform(CF.ROTATED_LATITUDE_LONGITUDE, RotatedPole.class);
     registerTransform("rotated_latlon_grib", RotatedLatLon.class);
+    registerTransform(CF.SINUSOIDAL, Sinusoidal.class);
     registerTransform(CF.STEREOGRAPHIC, Stereographic.class);
     registerTransform(CF.TRANSVERSE_MERCATOR, TransverseMercator.class);
     registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);

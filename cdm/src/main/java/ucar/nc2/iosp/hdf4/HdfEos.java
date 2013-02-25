@@ -47,16 +47,46 @@ import java.util.Iterator;
 import java.util.Formatter;
 
 import org.jdom.Element;
+import ucar.nc2.dataset.VariableDS;
 
 /**
  * Parse structural metadata from HDF-EOS.
  * This allows us to use shared dimensions, identify Coordinate Axes, and the FeatureType.
+ *
+ * <p>from HDF-EOS.status.ppt:
+   <pre>
+ HDF-EOS is format for EOS  Standard Products
+   <ul>
+   <li>Landsat 7 (ETM+)
+   <li>Terra (CERES, MISR, MODIS, ASTER, MOPITT)
+   <li>Meteor-3M (SAGE III)
+   <li>Aqua (AIRS, AMSU-A, AMSR-E, CERES, MODIS)
+   <li>Aura(MLS, TES, HIRDLS, OMI
+ </ul>
+ HDF is used by other EOS missions
+   <ul>
+   <li>OrbView 2 (SeaWIFS)
+   <li>TRMM (CERES, VIRS, TMI, PR)
+   <li>Quickscat (SeaWinds)
+   <li>EO-1 (Hyperion, ALI)
+   <li>ICESat (GLAS)
+   <li>Calypso
+   </ul>
+ * </pre>
+ * </p>
  *
  * @author caron
  * @since Jul 23, 2007
  */
 public class HdfEos {
   static public final String HDF5_GROUP = "HDFEOS_INFORMATION";
+  static public final String HDFEOS_CRS = "_HDFEOS_CRS";
+  static public final String HDFEOS_CRS_Projection = "Projection";
+  static public final String HDFEOS_CRS_UpperLeft = "UpperLeftPointMtrs";
+  static public final String HDFEOS_CRS_LowerRight = "LowerRightMtrs";
+  static public final String HDFEOS_CRS_ProjParams = "ProjParams";
+  static public final String HDFEOS_CRS_SphereCode = "SphereCode";
+
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
   static boolean showWork = false; // set in debug
   static private final String GEOLOC_FIELDS = "Geolocation Fields";
@@ -166,7 +196,7 @@ public class HdfEos {
       for (Element elemGrid : grids) {
         Element gridNameElem = elemGrid.getChild("GridName");
         if (gridNameElem == null) {
-          log.warn("Ne GridName element in {} {} ", elemGrid.getName(), ncfile.getLocation());
+          log.warn("No GridName element in {} {} ", elemGrid.getName(), ncfile.getLocation());
           continue;
         }
         String gridName = NetcdfFile.makeValidCdmObjectName(gridNameElem.getText());
@@ -174,7 +204,7 @@ public class HdfEos {
         //if (gridGroup == null)
         //  gridGroup = findGroupNested(rootg, H4header.createValidObjectName(gridName));
         if (gridGroup != null) {
-          featureType = amendGrid(elemGrid, gridGroup, ncfile.getLocation());
+          featureType = amendGrid(elemGrid, ncfile, gridGroup, ncfile.getLocation());
         } else {
           log.warn("Cant find Grid group {} {}", gridName, ncfile.getLocation());
         }
@@ -368,7 +398,7 @@ public class HdfEos {
   }
 
 
-  private FeatureType amendGrid(Element gridElem, Group parent, String location) {
+  private FeatureType amendGrid(Element gridElem, NetcdfFile ncfile, Group parent, String location) {
     List<Dimension> unknownDims = new ArrayList<Dimension>();
 
     // always has x and y dimension
@@ -378,6 +408,28 @@ public class HdfEos {
     int ydimSize = Integer.parseInt(ydimSizeS);
     parent.addDimensionIfNotExists(new Dimension("XDim", xdimSize));
     parent.addDimensionIfNotExists(new Dimension("YDim", ydimSize));
+
+    /* see HdfEosModisConvention
+    UpperLeftPointMtrs=(-20015109.354000,1111950.519667)
+    		LowerRightMtrs=(-18903158.834333,-0.000000)
+    		Projection=GCTP_SNSOID
+    		ProjParams=(6371007.181000,0,0,0,0,0,0,0,0,0,0,0,0)
+    		SphereCode=-1
+     */
+    String proj = gridElem.getChild("Projection").getText();
+    if (proj != null) {
+      Variable crs = new Variable(ncfile, parent, null, HDFEOS_CRS);
+      crs.setDataType(DataType.SHORT);
+      crs.setDimensions(""); // scalar
+      crs.setCachedData(Array.makeArray(DataType.SHORT, 1, 0, 0)); // fake data
+      parent.addVariable(crs);
+
+      addAttributeIfExists(gridElem, HDFEOS_CRS_Projection, crs, false);
+      addAttributeIfExists(gridElem, HDFEOS_CRS_UpperLeft, crs, true);
+      addAttributeIfExists(gridElem, HDFEOS_CRS_LowerRight, crs, true);
+      addAttributeIfExists(gridElem, HDFEOS_CRS_ProjParams, crs, true);
+      addAttributeIfExists(gridElem, HDFEOS_CRS_SphereCode, crs, false);
+    }
 
     // global Dimensions
     Element d = gridElem.getChild("Dimension");
@@ -468,6 +520,27 @@ public class HdfEos {
       }
   }
     return FeatureType.GRID;
+  }
+
+  private void addAttributeIfExists(Element elem, String name, Variable v, boolean isDoubleArray) {
+    Element child = elem.getChild(name);
+    if (child == null) return;
+    if (isDoubleArray) {
+      List<Element> vElems = (List<Element>) child.getChildren();
+      List<Double> values = new ArrayList<Double>();
+      for (Element ve : vElems) {
+        String valueS = ve.getText();
+        try {
+          values.add(Double.parseDouble(valueS));
+        } catch (NumberFormatException e) {  }
+        }
+      Attribute att = new Attribute(name, values);
+      v.addAttribute(att);
+    } else {
+      String value = child.getText();
+      Attribute att = new Attribute(name, value);
+      v.addAttribute(att);
+    }
   }
 
   // convert to shared dimensions

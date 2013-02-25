@@ -11,7 +11,7 @@ import ucar.nc2.util.CancelTask;
 import java.io.IOException;
 
 /**
- * Description
+ * HDF5-EOS AURA OMI
  *
  * @author John
  * @since 12/26/12

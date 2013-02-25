@@ -65,8 +65,8 @@ public class TestProjections extends TestCase {
     LatLonPointImpl endL = (LatLonPointImpl) proj.projToLatLon(p);
 
     System.out.println("start  = " + startL.toString(8));
+    System.out.println("projection point  = " + p.toString());
     System.out.println("end  = " + endL.toString(8));
-
   }
 
   private void testProjection(ProjectionImpl proj) {
@@ -297,6 +297,14 @@ public class TestProjections extends TestCase {
     testProjectionLonMax(new RotatedPole(37, 177), 360, 88);
     RotatedPole p = new RotatedPole();
     RotatedPole p2 = (RotatedPole) p.constructCopy();
+    assert p.equals(p2);
+  }
+
+  public void testSinusoidal() {
+    doOne(new Sinusoidal(0, 0, 0, 6371.007), 20, 40);
+    testProjection(new Sinusoidal(0, 0, 0, 6371.007));
+    Sinusoidal p = new Sinusoidal();
+    Sinusoidal p2 = (Sinusoidal) p.constructCopy();
     assert p.equals(p2);
   }
 
