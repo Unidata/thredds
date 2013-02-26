@@ -56,7 +56,7 @@ import ucar.nc2.util.CancelTask;
  * <li>If the FileCacheable is acquired from the cache (ie already open), sync() is called on it.
  * <li>Make sure you call shutdown() when exiting the program, in order to shut down the cleanup thread.
  * </ol>
- *
+ * <p/>
  * Normal usage is through the NetcdfDataset interface:
  * <pre>
  * NetcdfDataset.initNetcdfFileCache(...); // on application startup
@@ -213,7 +213,7 @@ public class FileCache {
 
     if (null == hashKey) hashKey = location;
     FileCacheable ncfile = acquireCacheOnly(hashKey);
-    if (ncfile != null) { // LOOK should we check lastModified ?
+    if (ncfile != null) {
       hits.incrementAndGet();
       return ncfile;
     }
@@ -221,7 +221,8 @@ public class FileCache {
 
     // open the file
     ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
-    if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " acquire " + hashKey + " " + ncfile.getLocation());
+    if (cacheLog.isDebugEnabled())
+      cacheLog.debug("FileCache " + name + " acquire " + hashKey + " " + ncfile.getLocation());
     if (debugPrint) System.out.println("  FileCache " + name + " acquire " + hashKey + " " + ncfile.getLocation());
 
     // user may have canceled
@@ -268,7 +269,8 @@ public class FileCache {
     }
 
     if (needHard) {
-      if (debugCleanup) System.out.println("CleanupTask due to hard limit time=" + new Date().getTime()); // +" Thread="+Thread.currentThread().hashCode()
+      if (debugCleanup)
+        System.out.println("CleanupTask due to hard limit time=" + new Date().getTime()); // +" Thread="+Thread.currentThread().hashCode()
       cleanup(hardLimit);
 
     } else if (needSoft) {
@@ -287,37 +289,53 @@ public class FileCache {
    */
   private FileCacheable acquireCacheOnly(Object hashKey) {
     if (disabled.get()) return null;
-    FileCacheable ncfile = null;
 
     // see if its in the cache
-    CacheElement elem = cache.get(hashKey);
-    if (elem != null) {
-      synchronized (elem) { // synch in order to traverse the list
-        for (CacheElement.CacheFile file : elem.list) {
-          if (file.isLocked.compareAndSet(false, true)) {
-            ncfile = file.ncfile;
-            break;
-          }
+    CacheElement wantCacheElem = cache.get(hashKey);
+    if (wantCacheElem == null) return null;  // not found in cache
+
+    CacheElement.CacheFile want = null;
+    synchronized (wantCacheElem) { // synch in order to traverse the list
+      for (CacheElement.CacheFile file : wantCacheElem.list) {
+        if (file.isLocked.compareAndSet(false, true)) {
+          want = file;
+          break;
         }
       }
     }
+    if (want == null) return null; // no unlocked file in cache
 
-    // sync the file when you want to use it again : needed for grib growing index, netcdf-3 record growing, etc
-    // also sets isClosed = false
-    if (ncfile != null) {
-     try {
-       boolean changed = ncfile.sync();
-       if (cacheLog.isDebugEnabled())
-         cacheLog.debug("FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation()+" changed = "+changed);
-       if (debugPrint)
-         System.out.println("  FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation()+" changed = "+changed);
-       } catch (IOException e) {
+    /* DISABLED 2/26/2013 JCARON
+     sync the file when you want to use it again : needed for grib growing index, netcdf-3 record growing, etc
+    if (want != null) {
+      try {
+        boolean changed = ncfile.sync();
+        if (cacheLog.isDebugEnabled())
+          cacheLog.debug("FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation() + " changed = " + changed);
+        if (debugPrint)
+          System.out.println("  FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation() + " changed = " + changed);
+      } catch (IOException e) {
         log.error("FileCache " + name + " synch failed on " + ncfile.getLocation() + " " + e.getMessage());
         return null;
       }
+    } */
+
+    // check if modified, remove if so
+    if (want.ncfile != null) {
+      long lastModified = want.ncfile.getLastModified();
+      boolean changed = lastModified != want.lastModified;
+      if (cacheLog.isDebugEnabled() && changed)
+        cacheLog.debug("FileCache " + name + ": acquire from cache " + hashKey + " " + want.ncfile.getLocation() + " was changed; discard");
+      if (changed) {
+        synchronized (wantCacheElem) {
+          wantCacheElem.list.remove(want);
+        }
+        files.remove(want.ncfile);
+        want.ncfile = null;
+      }
     }
 
-    return ncfile;
+    return want.ncfile;
   }
 
   /**
@@ -388,7 +406,7 @@ public class FileCache {
     // find it in the file cache
     CacheElement.CacheFile file = files.get(ncfile);
     if (file != null) {
-      return "File is in cache= "+file;
+      return "File is in cache= " + file;
     }
     return "File not in cache";
   }
@@ -630,10 +648,12 @@ public class FileCache {
       FileCacheable ncfile; // actually final, but we null it out for gc
       final AtomicBoolean isLocked = new AtomicBoolean(true);
       int countAccessed = 1;
+      long lastModified = 0;
       long lastAccessed = 0;
 
       private CacheFile(FileCacheable ncfile) {
         this.ncfile = ncfile;
+        this.lastModified = ncfile.getLastModified();
         this.lastAccessed = System.currentTimeMillis();
 
         ncfile.setFileCache(FileCache.this);
@@ -656,7 +676,7 @@ public class FileCache {
       }
 
       public String toString() {
-        return isLocked  + " " + countAccessed + " " + new Date(lastAccessed) + " " + ncfile.getLocation();
+        return isLocked + " " + countAccessed + " " + new Date(lastAccessed) + " " + ncfile.getLocation();
       }
 
       public int compareTo(CacheFile o) {
@@ -670,5 +690,5 @@ public class FileCache {
       cleanup(softLimit);
     }
   }
- 
+
 }

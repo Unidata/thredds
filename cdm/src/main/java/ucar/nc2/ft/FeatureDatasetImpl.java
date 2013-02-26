@@ -216,10 +216,10 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     }
   }
 
-  @Override
+  /* @Override
   public boolean sync() throws IOException {
     return false;
-  }
+  } */
 
   @Override
   public long getLastModified() {

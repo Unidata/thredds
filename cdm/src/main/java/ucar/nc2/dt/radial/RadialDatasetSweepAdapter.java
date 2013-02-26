@@ -238,10 +238,10 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     }
   }
 
-  @Override
+  /* @Override
   public boolean sync() throws IOException {
     return false;
-  }
+  } */
 
   @Override
   public long getLastModified() {

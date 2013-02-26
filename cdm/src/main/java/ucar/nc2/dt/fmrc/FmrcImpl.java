@@ -95,7 +95,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
    * @throws IOException
    */
   public boolean sync() throws IOException {
-    boolean changed = ncd_2dtime.sync();
+    boolean changed = ncd_2dtime.syncExtend();  // LOOK syncExtend ok ??
     if (changed) {
       if (logger.isDebugEnabled()) logger.debug("ncd_2dtime changed, reinit Fmrc "+ncd_2dtime.getLocation());
       init(ncd_2dtime);
@@ -841,27 +841,6 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     NCdumpW.printArray(data, "2D time", new PrintWriter( System.out), null);
 
     fmrc.dump(new Formatter(System.out));
-  }
-
-  static void testSync(String location, String timeVarName) throws IOException, InterruptedException {
-    FmrcImpl fmrc = new FmrcImpl(location);
-    System.out.println("Fmrc for dataset= " + location);
-
-    NetcdfDataset fmrcd = fmrc.getFmrcDataset();
-    Variable time = fmrcd.findVariable(timeVarName);
-    Array data = time.read();
-    NCdumpW.printArray(data, "2D time", new PrintWriter( System.out), null);
-
-    fmrc.dump(new Formatter(System.out));
-
-    boolean changed = fmrc.sync();
-
-    if (changed) {
-      System.out.println("========== Sync =================");
-      data = time.read();
-      NCdumpW.printArray(data, "2D time", new PrintWriter( System.out), null);
-      fmrc.dump(new Formatter(System.out));
-    }
   }
 
   public static void main(String args[]) throws Exception {

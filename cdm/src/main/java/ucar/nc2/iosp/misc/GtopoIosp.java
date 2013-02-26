@@ -74,13 +74,10 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     return "USGS GTOPO digital elevation model";
   }
 
-
   private int nlats = 6000;
   private int nlons = 4800;
   private float incr = .008333333333333333f;
   private float startx, starty;
-
-  private RandomAccessFile raf;
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);

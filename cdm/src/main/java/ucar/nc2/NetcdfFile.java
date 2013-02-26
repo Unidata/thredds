@@ -1336,19 +1336,18 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return (spi != null) && spi.syncExtend();
   }
 
-  /**
+  /*
    * Check if file has changed, and reread metadata if needed.
    * All previous object references (variables, dimensions, etc) may become invalid - you must re-obtain.
    * DO NOT USE THIS ROUTINE YET - NOT FULLY TESTED
    *
    * @return true if file was changed.
    * @throws IOException if error
-   */
-  @Override
+   *
   public boolean sync() throws IOException {
     unlocked = false;
     return (spi != null) && spi.sync();
-  }
+  } */
 
   @Override
   public long getLastModified() {

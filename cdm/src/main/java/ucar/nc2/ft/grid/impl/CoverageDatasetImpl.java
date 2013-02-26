@@ -215,10 +215,10 @@ public class CoverageDatasetImpl implements CoverageDataset {
     ds.close();
   }
 
-  @Override
+  /* @Override
   public boolean sync() throws IOException {
     return false;
-  }
+  } */
 
   @Override
   public long getLastModified() {
