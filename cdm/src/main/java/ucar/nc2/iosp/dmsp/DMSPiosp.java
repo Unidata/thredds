@@ -52,18 +52,17 @@ import java.text.ParseException;
  * instrument is supported, in particular only NOAA/NGDC DMSP OIS (OLS
  * Integrated Smooth) data files. The OIS data is visible and thermal
  * imagery at 2.7km resolution.
- *
+ * <p/>
  * The DMSP satellites are polar orbiting satellites crossing the equator,
  * depending on the satellite, at either dawn/dusk or noon/midnight.
- *
+ * <p/>
  * More information is available at http://dmsp.ngdc.noaa.gov/.
  *
  * @author Ethan Davis
  * @since 2004-08-13T13:21:19 MDT
  */
 public class DMSPiosp extends AbstractIOServiceProvider {
-  private NetcdfFile ncFile = null;
-  private ucar.unidata.io.RandomAccessFile raf = null;
+  private NetcdfFile ncfile;
 
   DMSPHeader header = null;
 
@@ -85,10 +84,9 @@ public class DMSPiosp extends AbstractIOServiceProvider {
   private float[] cachedScannerOffset = null;
   private byte[] cachedScanDirection = null;
 
-  public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf )
-  {
+  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     DMSPHeader localHeader = new DMSPHeader();
-    return( localHeader.isValidFile( raf ));
+    return (localHeader.isValidFile(raf));
   }
 
   public String getFileTypeId() {
@@ -99,546 +97,444 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     return "Defense Meteorological Satellite Program";
   }
 
-  public void open( RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask )
-          throws IOException
-  {
-    //this.raf = raf;
-    this.ncFile = ncfile;
-    this.raf = raf;
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
+    this.ncfile = ncfile;
 
-    this.raf.order( ucar.unidata.io.RandomAccessFile.BIG_ENDIAN ); // DMSP files are XDR
+    this.raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN); // DMSP files are XDR
 
     this.header = new DMSPHeader();
-    this.header.read( this.raf, this.ncFile );
+    this.header.read(this.raf, this.ncfile);
 
     // Create dimension lists for adding to variables.
     List<Dimension> nonScanDimList = new ArrayList<Dimension>();
-    nonScanDimList.add( this.header.getNumDataRecordsDim() );
+    nonScanDimList.add(this.header.getNumDataRecordsDim());
 
     List<Dimension> scanDimList = new ArrayList<Dimension>();
-    scanDimList.add( this.header.getNumDataRecordsDim() );
-    scanDimList.add( this.header.getNumSamplesPerBandDim() );
+    scanDimList.add(this.header.getNumDataRecordsDim());
+    scanDimList.add(this.header.getNumSamplesPerBandDim());
 
     Iterator varInfoIt = VariableInfo.getAll().iterator();
     VariableInfo curVarInfo = null;
     Variable curVariable = null;
-    while ( varInfoIt.hasNext() )
-    {
+    while (varInfoIt.hasNext()) {
       curVarInfo = (VariableInfo) varInfoIt.next();
-      curVariable = new Variable( this.ncFile, this.ncFile.getRootGroup(), null, curVarInfo.getName());
-      curVariable.setDataType( curVarInfo.getDataType());
-      if ( curVarInfo.getNumElementsInRecord() == 1)
-      {
-        curVariable.setDimensions( nonScanDimList );
+      curVariable = new Variable(this.ncfile, this.ncfile.getRootGroup(), null, curVarInfo.getName());
+      curVariable.setDataType(curVarInfo.getDataType());
+      if (curVarInfo.getNumElementsInRecord() == 1) {
+        curVariable.setDimensions(nonScanDimList);
+      } else {
+        curVariable.setDimensions(scanDimList);
       }
-      else
-      {
-        curVariable.setDimensions( scanDimList );
-      }
-      curVariable.addAttribute( new Attribute( CDM.LONG_NAME, curVarInfo.getLongName()));
-      curVariable.addAttribute( new Attribute( CDM.UNITS, curVarInfo.getUnits()));
+      curVariable.addAttribute(new Attribute(CDM.LONG_NAME, curVarInfo.getLongName()));
+      curVariable.addAttribute(new Attribute(CDM.UNITS, curVarInfo.getUnits()));
 
-      if ( curVariable.getShortName().equals( "latitude"))
-      {
-        curVariable.addAttribute( new Attribute( "calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
-        curVariable.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Lat.toString()));
-      }
-      else if ( curVariable.getShortName().equals( "longitude"))
-      {
-        curVariable.addAttribute( new Attribute( "calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
-        curVariable.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Lon.toString()));
-      }
-      else if ( curVariable.getShortName().equals( "time"))
-      {
-        curVariable.addAttribute( new Attribute( "calculatedVariable", "Using the satellite epoch for each scan."));
+      if (curVariable.getShortName().equals("latitude")) {
+        curVariable.addAttribute(new Attribute("calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
+        curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+      } else if (curVariable.getShortName().equals("longitude")) {
+        curVariable.addAttribute(new Attribute("calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
+        curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+      } else if (curVariable.getShortName().equals("time")) {
+        curVariable.addAttribute(new Attribute("calculatedVariable", "Using the satellite epoch for each scan."));
         this.startDateString = this.header.getStartDateAtt().getStringValue();
-        try
-        {
-          this.startDate = DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateFromDateTimeString( this.startDateString);
+        try {
+          this.startDate = DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateFromDateTimeString(this.startDateString);
+        } catch (ParseException e) {
+          throw new IOException("Invalid DMSP file: \"startDate\" attribute value <" + this.startDateString +
+                  "> not parseable with format string <" + DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString() + ">.");
         }
-        catch ( ParseException e )
-        {
-          throw new IOException( "Invalid DMSP file: \"startDate\" attribute value <" + this.startDateString +
-                                 "> not parseable with format string <" + DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString() + ">.");
-        }
-        curVariable.addAttribute( new Attribute( CDM.UNITS, "seconds since " + this.startDateString));
-        curVariable.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Time.toString()));
-      }
-      else if ( curVariable.getShortName().equals( "infraredImagery"))
-      {
-        curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude time"));
-        curVariable.addAttribute( new Attribute( CDM.UNSIGNED, "true"));
-        curVariable.addAttribute( new Attribute( CDM.SCALE_FACTOR, new Float((310.0-190.0)/(256.0-1.0))));
-        curVariable.addAttribute( new Attribute( CDM.ADD_OFFSET, new Float( 190.0)));
-        curVariable.addAttribute( new Attribute( "description",
-                                                 "Infrared pixel values correspond to a temperature range of 190 to 310 " +
-                                                 "Kelvins in 256 equally spaced steps. Onboard calibration is performed " +
-                                                 "during each scan. -- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));
-      }
-      else if ( curVariable.getShortName().equals( "visibleImagery"))
-      {
-        curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude time"));
-        curVariable.addAttribute( new Attribute( CDM.UNSIGNED, "true"));
-        curVariable.addAttribute( new Attribute( "description",
-                                                 "Visible pixels are relative values ranging from 0 to 63 rather than " +
-                                                 "absolute values in Watts per m^2. Instrumental gain levels are adjusted " +
-                                                 "to maintain constant cloud reference values under varying conditions of " +
-                                                 "solar and lunar illumination. Telescope pixel values are replaced by " +
-                                                 "Photo Multiplier Tube (PMT) values at night. " +
-                                                 "-- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));
+        curVariable.addAttribute(new Attribute(CDM.UNITS, "seconds since " + this.startDateString));
+        curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+      } else if (curVariable.getShortName().equals("infraredImagery")) {
+        curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
+        curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+        curVariable.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float((310.0 - 190.0) / (256.0 - 1.0))));
+        curVariable.addAttribute(new Attribute(CDM.ADD_OFFSET, new Float(190.0)));
+        curVariable.addAttribute(new Attribute("description",
+                "Infrared pixel values correspond to a temperature range of 190 to 310 " +
+                        "Kelvins in 256 equally spaced steps. Onboard calibration is performed " +
+                        "during each scan. -- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));
+      } else if (curVariable.getShortName().equals("visibleImagery")) {
+        curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
+        curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+        curVariable.addAttribute(new Attribute("description",
+                "Visible pixels are relative values ranging from 0 to 63 rather than " +
+                        "absolute values in Watts per m^2. Instrumental gain levels are adjusted " +
+                        "to maintain constant cloud reference values under varying conditions of " +
+                        "solar and lunar illumination. Telescope pixel values are replaced by " +
+                        "Photo Multiplier Tube (PMT) values at night. " +
+                        "-- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));
       }
 
-      this.ncFile.addVariable( null, curVariable);
+      this.ncfile.addVariable(null, curVariable);
     }
 
     // Make sure the NetcdfFile is setup properly.
-    this.ncFile.finish();
+    this.ncfile.finish();
 
   }
 
-  public Array readData( Variable v2, Section section ) throws IOException, InvalidRangeException
-  {
-    if ( v2 == null ) throw new IllegalArgumentException( "Variable must not be null.");
-    if ( section == null ) throw new IllegalArgumentException( "Section must not be null.");
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+    if (v2 == null) throw new IllegalArgumentException("Variable must not be null.");
+    if (section == null) throw new IllegalArgumentException("Section must not be null.");
 
     Object data;
     Array dataArray;
     List<Range> ranges = section.getRanges();
 
     // Read in date/time variables for each scan (year, dayOfYear, and secondsOfDay).
-    if ( v2.getShortName().equals( VariableInfo.YEAR.getName()))
-    {
-      if ( this.cachedYear == null )
-      {
-        this.cachedYear = (int[]) this.readIntArray1D( VariableInfo.YEAR.getByteOffsetInRecord());
+    if (v2.getShortName().equals(VariableInfo.YEAR.getName())) {
+      if (this.cachedYear == null) {
+        this.cachedYear = (int[]) this.readIntArray1D(VariableInfo.YEAR.getByteOffsetInRecord());
       }
       data = this.cachedYear;
-      dataArray = Array.factory( int.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges).copy());
-    }
-    else if ( v2.getShortName().equals( VariableInfo.DAY_OF_YEAR.getName()))
-    {
-      if ( this.cachedDayOfYear == null )
-      {
-        this.cachedDayOfYear = (int[]) this.readIntArray1D( VariableInfo.DAY_OF_YEAR.getByteOffsetInRecord());
+      dataArray = Array.factory(int.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
+    } else if (v2.getShortName().equals(VariableInfo.DAY_OF_YEAR.getName())) {
+      if (this.cachedDayOfYear == null) {
+        this.cachedDayOfYear = (int[]) this.readIntArray1D(VariableInfo.DAY_OF_YEAR.getByteOffsetInRecord());
       }
       data = this.cachedDayOfYear;
-      dataArray = Array.factory( int.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( ranges ).copy() );
-    }
-    else if ( v2.getShortName().equals( VariableInfo.SECONDS_OF_DAY.getName()))
-    {
-      if ( this.cachedSecondsOfDay == null )
-      {
-        this.cachedSecondsOfDay = (double[]) this.readDoubleArray1D( VariableInfo.SECONDS_OF_DAY.getByteOffsetInRecord());
+      dataArray = Array.factory(int.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
+    } else if (v2.getShortName().equals(VariableInfo.SECONDS_OF_DAY.getName())) {
+      if (this.cachedSecondsOfDay == null) {
+        this.cachedSecondsOfDay = (double[]) this.readDoubleArray1D(VariableInfo.SECONDS_OF_DAY.getByteOffsetInRecord());
       }
       data = this.cachedSecondsOfDay;
-      dataArray = Array.factory( double.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( ranges ).copy() );
-    }
-    else if ( v2.getShortName().equals( VariableInfo.TIME.getName()))
-    {
-      if ( this.calculatedTime == null )
-      {
-        this.calculatedTime = new float[ v2.getShape()[0] ];
+      dataArray = Array.factory(double.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
+    } else if (v2.getShortName().equals(VariableInfo.TIME.getName())) {
+      if (this.calculatedTime == null) {
+        this.calculatedTime = new float[v2.getShape()[0]];
 
         // Make sure the cached data for year, dayOfYear, and secondsOfDay
         // is available as it is used in the time calculation.
         // [Note: don't need Arrays returned.]
         // @todo Could seperate reading cache from Array production.
-        Variable curVar = this.ncFile.findVariable( VariableInfo.YEAR.getName() );
-        this.readData( curVar, curVar.getShapeAsSection());
+        Variable curVar = this.ncfile.findVariable(VariableInfo.YEAR.getName());
+        this.readData(curVar, curVar.getShapeAsSection());
 
-        curVar = this.ncFile.findVariable( VariableInfo.DAY_OF_YEAR.getName() );
-        this.readData( curVar, curVar.getShapeAsSection());
+        curVar = this.ncfile.findVariable(VariableInfo.DAY_OF_YEAR.getName());
+        this.readData(curVar, curVar.getShapeAsSection());
 
-        curVar = this.ncFile.findVariable( VariableInfo.SECONDS_OF_DAY.getName() );
-        this.readData( curVar, curVar.getShapeAsSection());
+        curVar = this.ncfile.findVariable(VariableInfo.SECONDS_OF_DAY.getName());
+        this.readData(curVar, curVar.getShapeAsSection());
 
-        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ), Locale.US );
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.US);
 
         double secOfDay, secOfHour, secOfMinute;
         double hours, mins, secs, millis;
-        for( int i = 0; i < v2.getShape()[0]; i++ )
-        {
+        for (int i = 0; i < v2.getShape()[0]; i++) {
           calendar.clear();
-          calendar.set( Calendar.YEAR, this.cachedYear[i]);
-          calendar.set( Calendar.DAY_OF_YEAR, this.cachedDayOfYear[i]);
+          calendar.set(Calendar.YEAR, this.cachedYear[i]);
+          calendar.set(Calendar.DAY_OF_YEAR, this.cachedDayOfYear[i]);
           secOfDay = this.cachedSecondsOfDay[i];
-          hours = Math.floor( secOfDay/3600);
+          hours = Math.floor(secOfDay / 3600);
           secOfHour = secOfDay % 3600.0;
-          mins = Math.floor( secOfHour/60.0);
+          mins = Math.floor(secOfHour / 60.0);
           secOfMinute = secOfHour % 60.0;
-          secs = Math.floor( secOfMinute);
-          millis = Math.floor(( secOfMinute - secs) * 1000.0);
-          calendar.add( Calendar.HOUR_OF_DAY, (int) hours);
-          calendar.add( Calendar.MINUTE, (int) mins);
-          calendar.add( Calendar.SECOND, (int) secs);
-          calendar.add( Calendar.MILLISECOND, (int) millis );
+          secs = Math.floor(secOfMinute);
+          millis = Math.floor((secOfMinute - secs) * 1000.0);
+          calendar.add(Calendar.HOUR_OF_DAY, (int) hours);
+          calendar.add(Calendar.MINUTE, (int) mins);
+          calendar.add(Calendar.SECOND, (int) secs);
+          calendar.add(Calendar.MILLISECOND, (int) millis);
           //calendar.add( Calendar.MILLISECOND, (int) ((this.cachedSecondsOfDay[i] - ((double) (int) this.cachedSecondsOfDay[i])) * 1000.0 ) );
-          this.calculatedTime[i] = ( calendar.getTimeInMillis() - this.startDate.getTime()) / 1000.0F;
+          this.calculatedTime[i] = (calendar.getTimeInMillis() - this.startDate.getTime()) / 1000.0F;
         }
 
-        dataArray = Array.factory( float.class, v2.getShape(), this.calculatedTime);
-        return ( dataArray.sectionNoReduce( ranges ).copy() );
+        dataArray = Array.factory(float.class, v2.getShape(), this.calculatedTime);
+        return (dataArray.sectionNoReduce(ranges).copy());
       }
     }
 
     // Read in satellite ephemeris variables for each scan (satEphemLatitude,
     // satEphemLongitude, satEphemAltitude, satEphemHeading).
-    else if ( v2.getShortName().equals( VariableInfo.SAT_EPHEM_LATITUDE.getName()))
-    {
-      if ( this.cachedSatEphemLatitude == null )
-      {
-        this.cachedSatEphemLatitude = (float[]) this.readFloatArray1D( VariableInfo.SAT_EPHEM_LATITUDE.getByteOffsetInRecord());
+    else if (v2.getShortName().equals(VariableInfo.SAT_EPHEM_LATITUDE.getName())) {
+      if (this.cachedSatEphemLatitude == null) {
+        this.cachedSatEphemLatitude = (float[]) this.readFloatArray1D(VariableInfo.SAT_EPHEM_LATITUDE.getByteOffsetInRecord());
       }
       data = this.cachedSatEphemLatitude;
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( ranges ).copy() );
-    }
-    else if ( v2.getShortName().equals( VariableInfo.SAT_EPHEM_LONGITUDE.getName()))
-    {
-      if ( this.cachedSatEphemLongitude == null )
-      {
-        this.cachedSatEphemLongitude = (float[]) this.readFloatArray1D( VariableInfo.SAT_EPHEM_LONGITUDE.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
+    } else if (v2.getShortName().equals(VariableInfo.SAT_EPHEM_LONGITUDE.getName())) {
+      if (this.cachedSatEphemLongitude == null) {
+        this.cachedSatEphemLongitude = (float[]) this.readFloatArray1D(VariableInfo.SAT_EPHEM_LONGITUDE.getByteOffsetInRecord());
       }
       data = this.cachedSatEphemLongitude;
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( ranges ).copy() );
-    }
-    else if ( v2.getShortName().equals( VariableInfo.SAT_EPHEM_ALTITUDE.getName()))
-    {
-      if ( this.cachedSatEphemAltitude == null )
-      {
-        this.cachedSatEphemAltitude = (float[]) this.readFloatArray1D( VariableInfo.SAT_EPHEM_ALTITUDE.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
+    } else if (v2.getShortName().equals(VariableInfo.SAT_EPHEM_ALTITUDE.getName())) {
+      if (this.cachedSatEphemAltitude == null) {
+        this.cachedSatEphemAltitude = (float[]) this.readFloatArray1D(VariableInfo.SAT_EPHEM_ALTITUDE.getByteOffsetInRecord());
       }
       data = this.cachedSatEphemAltitude;
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( ranges ).copy() );
-    }
-    else if ( v2.getShortName().equals( VariableInfo.SAT_EPHEM_HEADING.getName()))
-    {
-      if ( this.cachedSatEphemHeading == null )
-      {
-        this.cachedSatEphemHeading = (float[]) this.readFloatArray1D( VariableInfo.SAT_EPHEM_HEADING.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
+    } else if (v2.getShortName().equals(VariableInfo.SAT_EPHEM_HEADING.getName())) {
+      if (this.cachedSatEphemHeading == null) {
+        this.cachedSatEphemHeading = (float[]) this.readFloatArray1D(VariableInfo.SAT_EPHEM_HEADING.getByteOffsetInRecord());
       }
       data = this.cachedSatEphemHeading;
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( ranges ).copy() );
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
     }
 
     // Read in scan information variables for each scan (scannerOffset and scanDirection).
-    else if ( v2.getShortName().equals( VariableInfo.SCANNER_OFFSET.getName()))
-    {
-      if ( this.cachedScannerOffset == null )
-      {
-        this.cachedScannerOffset = (float[]) this.readFloatArray1D( VariableInfo.SCANNER_OFFSET.getByteOffsetInRecord());
+    else if (v2.getShortName().equals(VariableInfo.SCANNER_OFFSET.getName())) {
+      if (this.cachedScannerOffset == null) {
+        this.cachedScannerOffset = (float[]) this.readFloatArray1D(VariableInfo.SCANNER_OFFSET.getByteOffsetInRecord());
       }
       data = this.cachedScannerOffset;
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( ranges ).copy() );
-    }
-    else if ( v2.getShortName().equals( VariableInfo.SCAN_DIRECTION.getName()))
-    {
-      if ( this.cachedScanDirection == null )
-      {
-        this.cachedScanDirection = (byte[]) this.readUCharArray1D( VariableInfo.SCAN_DIRECTION.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
+    } else if (v2.getShortName().equals(VariableInfo.SCAN_DIRECTION.getName())) {
+      if (this.cachedScanDirection == null) {
+        this.cachedScanDirection = (byte[]) this.readUCharArray1D(VariableInfo.SCAN_DIRECTION.getByteOffsetInRecord());
       }
       data = this.cachedScanDirection;
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( ranges ).copy() );
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
     }
 
     // Read in sun and moon information variables for each scan (solarElevation,
     // solarAzimuth, lunarElevation, lunarAzimuth, and lunarPhase).
-    else if ( v2.getShortName().equals( VariableInfo.SOLAR_ELEVATION.getName()))
-    {
-      data = this.readFloatArray1D( VariableInfo.SOLAR_ELEVATION.getByteOffsetInRecord());
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.SOLAR_AZIMUTH.getName()))
-    {
-      data = this.readFloatArray1D( VariableInfo.SOLAR_AZIMUTH.getByteOffsetInRecord());
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.LUNAR_ELEVATION.getName()))
-    {
-      data = this.readFloatArray1D( VariableInfo.LUNAR_ELEVATION.getByteOffsetInRecord());
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.LUNAR_AZIMUTH.getName()))
-    {
-      data = this.readFloatArray1D( VariableInfo.LUNAR_AZIMUTH.getByteOffsetInRecord());
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.LUNAR_PHASE.getName()))
-    {
-      data = this.readFloatArray1D( VariableInfo.LUNAR_PHASE.getByteOffsetInRecord());
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
+    else if (v2.getShortName().equals(VariableInfo.SOLAR_ELEVATION.getName())) {
+      data = this.readFloatArray1D(VariableInfo.SOLAR_ELEVATION.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.SOLAR_AZIMUTH.getName())) {
+      data = this.readFloatArray1D(VariableInfo.SOLAR_AZIMUTH.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.LUNAR_ELEVATION.getName())) {
+      data = this.readFloatArray1D(VariableInfo.LUNAR_ELEVATION.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.LUNAR_AZIMUTH.getName())) {
+      data = this.readFloatArray1D(VariableInfo.LUNAR_AZIMUTH.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.LUNAR_PHASE.getName())) {
+      data = this.readFloatArray1D(VariableInfo.LUNAR_PHASE.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
     }
 
     // Read in gain information variables for each scan (gainCode, gainMode,
     // gainSubMode, and tChannelGain).
-    else if ( v2.getShortName().equals( VariableInfo.GAIN_CODE.getName()))
-    {
-      data = this.readFloatArray1D( VariableInfo.GAIN_CODE.getByteOffsetInRecord());
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.GAIN_MODE.getName()))
-    {
-      data = this.readUCharArray1D( VariableInfo.GAIN_MODE.getByteOffsetInRecord());
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.GAIN_SUB_MODE.getName()))
-    {
-      data = this.readUCharArray1D( VariableInfo.GAIN_SUB_MODE.getByteOffsetInRecord());
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.T_CHANNEL_GAIN.getName()))
-    {
-      data = this.readFloatArray1D( VariableInfo.T_CHANNEL_GAIN.getByteOffsetInRecord());
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
+    else if (v2.getShortName().equals(VariableInfo.GAIN_CODE.getName())) {
+      data = this.readFloatArray1D(VariableInfo.GAIN_CODE.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.GAIN_MODE.getName())) {
+      data = this.readUCharArray1D(VariableInfo.GAIN_MODE.getByteOffsetInRecord());
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.GAIN_SUB_MODE.getName())) {
+      data = this.readUCharArray1D(VariableInfo.GAIN_SUB_MODE.getByteOffsetInRecord());
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.T_CHANNEL_GAIN.getName())) {
+      data = this.readFloatArray1D(VariableInfo.T_CHANNEL_GAIN.getByteOffsetInRecord());
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
     }
 
     // Read in calibration variables for each scan (hotTCalSegmentID,
     // coldTCalSegmentID, hotTCal, coldTCal, PMTCal).
-    else if ( v2.getShortName().equals( VariableInfo.HOT_T_CAL_SEGMENT_ID.getName()))
-    {
-      data = this.readUCharArray1D( VariableInfo.HOT_T_CAL_SEGMENT_ID.getByteOffsetInRecord());
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.COLD_T_CAL_SEGMENT_ID.getName()))
-    {
-      data = this.readUCharArray1D( VariableInfo.COLD_T_CAL_SEGMENT_ID.getByteOffsetInRecord());
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.HOT_T_CAL.getName()))
-    {
-      data = this.readUCharArray1D( VariableInfo.HOT_T_CAL.getByteOffsetInRecord());
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.COLD_T_CAL.getName()))
-    {
-      data = this.readUCharArray1D( VariableInfo.COLD_T_CAL.getByteOffsetInRecord());
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.PMT_CAL.getName()))
-    {
-      data = this.readUCharArray1D( VariableInfo.PMT_CAL.getByteOffsetInRecord());
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
+    else if (v2.getShortName().equals(VariableInfo.HOT_T_CAL_SEGMENT_ID.getName())) {
+      data = this.readUCharArray1D(VariableInfo.HOT_T_CAL_SEGMENT_ID.getByteOffsetInRecord());
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.COLD_T_CAL_SEGMENT_ID.getName())) {
+      data = this.readUCharArray1D(VariableInfo.COLD_T_CAL_SEGMENT_ID.getByteOffsetInRecord());
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.HOT_T_CAL.getName())) {
+      data = this.readUCharArray1D(VariableInfo.HOT_T_CAL.getByteOffsetInRecord());
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.COLD_T_CAL.getName())) {
+      data = this.readUCharArray1D(VariableInfo.COLD_T_CAL.getByteOffsetInRecord());
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.PMT_CAL.getName())) {
+      data = this.readUCharArray1D(VariableInfo.PMT_CAL.getByteOffsetInRecord());
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
     }
 
     // Read in scan quality flag variables (visibleScanQualityFlag and thermalScanQualityFlag).
-    else if ( v2.getShortName().equals( VariableInfo.VISIBLE_SCAN_QUALITY_FLAG.getName()))
-    {
-      data = this.readIntArray1D( VariableInfo.VISIBLE_SCAN_QUALITY_FLAG.getByteOffsetInRecord());
-      dataArray = Array.factory( int.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.THERMAL_SCAN_QUALITY_FLAG.getName()))
-    {
-      data = this.readIntArray1D( VariableInfo.THERMAL_SCAN_QUALITY_FLAG.getByteOffsetInRecord());
-      dataArray = Array.factory( int.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
+    else if (v2.getShortName().equals(VariableInfo.VISIBLE_SCAN_QUALITY_FLAG.getName())) {
+      data = this.readIntArray1D(VariableInfo.VISIBLE_SCAN_QUALITY_FLAG.getByteOffsetInRecord());
+      dataArray = Array.factory(int.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.THERMAL_SCAN_QUALITY_FLAG.getName())) {
+      data = this.readIntArray1D(VariableInfo.THERMAL_SCAN_QUALITY_FLAG.getByteOffsetInRecord());
+      dataArray = Array.factory(int.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
     }
 
     // Read in scan variables (visibleImagery and infraredImagery).
-    else if ( v2.getShortName().equals( VariableInfo.VISIBLE_SCAN.getName()))
-    {
+    else if (v2.getShortName().equals(VariableInfo.VISIBLE_SCAN.getName())) {
       // @todo Scan alternates direction, flip every other array (see ScanDirection variable) [Not with OIS data]
-      data = this.readByteArray2D( VariableInfo.VISIBLE_SCAN.getByteOffsetInRecord(),
-                                   VariableInfo.VISIBLE_SCAN.getNumElementsInRecord());
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-    else if ( v2.getShortName().equals( VariableInfo.THERMAL_SCAN.getName()))
-    {
+      data = this.readByteArray2D(VariableInfo.VISIBLE_SCAN.getByteOffsetInRecord(),
+              VariableInfo.VISIBLE_SCAN.getNumElementsInRecord());
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.THERMAL_SCAN.getName())) {
       // @todo Scan alternates direction, flip every other array (see ScanDirection variable) [Not with OIS data]
-      data = this.readByteArray2D( VariableInfo.THERMAL_SCAN.getByteOffsetInRecord(),
-                                   VariableInfo.THERMAL_SCAN.getNumElementsInRecord());
-      dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges));
-    }
-
-    else if ( v2.getShortName().equals( VariableInfo.LATITUDE.getName()) ||
-              v2.getShortName().equals( VariableInfo.LONGITUDE.getName()))
-    {
-      if ( this.calculatedLatitude == null && this.calculatedLongitude == null )
-      {
-        this.calculatedLatitude = new float[ header.getNumDataRecords() * this.header.getNumSamplesPerBandDim().getLength() ];
-        this.calculatedLongitude = new float[ header.getNumDataRecords() * this.header.getNumSamplesPerBandDim().getLength() ];
+      data = this.readByteArray2D(VariableInfo.THERMAL_SCAN.getByteOffsetInRecord(),
+              VariableInfo.THERMAL_SCAN.getNumElementsInRecord());
+      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges));
+    } else if (v2.getShortName().equals(VariableInfo.LATITUDE.getName()) ||
+            v2.getShortName().equals(VariableInfo.LONGITUDE.getName())) {
+      if (this.calculatedLatitude == null && this.calculatedLongitude == null) {
+        this.calculatedLatitude = new float[header.getNumDataRecords() * this.header.getNumSamplesPerBandDim().getLength()];
+        this.calculatedLongitude = new float[header.getNumDataRecords() * this.header.getNumSamplesPerBandDim().getLength()];
 
         // Make sure the cached data for SCANNER_OFFSET, SAT_EPHEM_LATITUDE,
         // SAT_EPHEM_LONGITUDE, SAT_EPHEM_ALTITUDE, and SAT_EPHEM_HEADING
         // is available as it is used in the latitude and longitude calculation.
-        Variable curVar = this.ncFile.findVariable( VariableInfo.SCANNER_OFFSET.getName() );
-        this.readData( curVar, curVar.getShapeAsSection() );
+        Variable curVar = this.ncfile.findVariable(VariableInfo.SCANNER_OFFSET.getName());
+        this.readData(curVar, curVar.getShapeAsSection());
 
-        curVar = this.ncFile.findVariable( VariableInfo.SAT_EPHEM_LATITUDE.getName() );
-        this.readData( curVar, curVar.getShapeAsSection() );
+        curVar = this.ncfile.findVariable(VariableInfo.SAT_EPHEM_LATITUDE.getName());
+        this.readData(curVar, curVar.getShapeAsSection());
 
-        curVar = this.ncFile.findVariable( VariableInfo.SAT_EPHEM_LONGITUDE.getName() );
-        this.readData( curVar, curVar.getShapeAsSection() );
+        curVar = this.ncfile.findVariable(VariableInfo.SAT_EPHEM_LONGITUDE.getName());
+        this.readData(curVar, curVar.getShapeAsSection());
 
-        curVar = this.ncFile.findVariable( VariableInfo.SAT_EPHEM_ALTITUDE.getName() );
-        this.readData( curVar, curVar.getShapeAsSection() );
+        curVar = this.ncfile.findVariable(VariableInfo.SAT_EPHEM_ALTITUDE.getName());
+        this.readData(curVar, curVar.getShapeAsSection());
 
-        curVar = this.ncFile.findVariable( VariableInfo.SAT_EPHEM_HEADING.getName() );
-        this.readData( curVar, curVar.getShapeAsSection() );
+        curVar = this.ncfile.findVariable(VariableInfo.SAT_EPHEM_HEADING.getName());
+        this.readData(curVar, curVar.getShapeAsSection());
 
-        int satID = Integer.parseInt( this.ncFile.getRootGroup().findAttribute( "spacecraftId").getStringValue().substring( 1));
-        GeolocateOLS.geolocateOLS( satID, 0, header.getNumDataRecords(),
-                                   this.cachedScannerOffset,
-                                   this.cachedSatEphemLatitude, this.cachedSatEphemLongitude,
-                                   this.cachedSatEphemAltitude, this.cachedSatEphemHeading,
-                                   this.calculatedLatitude, this.calculatedLongitude );
+        int satID = Integer.parseInt(this.ncfile.getRootGroup().findAttribute("spacecraftId").getStringValue().substring(1));
+        GeolocateOLS.geolocateOLS(satID, 0, header.getNumDataRecords(),
+                this.cachedScannerOffset,
+                this.cachedSatEphemLatitude, this.cachedSatEphemLongitude,
+                this.cachedSatEphemAltitude, this.cachedSatEphemHeading,
+                this.calculatedLatitude, this.calculatedLongitude);
       }
 
-      if ( v2.getShortName().equals( VariableInfo.LATITUDE.getName()) )
-      {
+      if (v2.getShortName().equals(VariableInfo.LATITUDE.getName())) {
         data = this.calculatedLatitude;
-      }
-      else
-      {
+      } else {
         data = this.calculatedLongitude;
       }
 
-      dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( ranges).copy());
-    }
-
-    else
-    {
+      dataArray = Array.factory(float.class, v2.getShape(), data);
+      return (dataArray.sectionNoReduce(ranges).copy());
+    } else {
       // This shouldn't happen.
-      throw( new IOException( "Requested variable <name=" + v2.getShortName() + "> not in DMSP file."));
+      throw (new IOException("Requested variable <name=" + v2.getShortName() + "> not in DMSP file."));
     }
 
-    return( null); // Should return from one of above if-else-if blocks.
+    return (null); // Should return from one of above if-else-if blocks.
   }
 
-  public void close() throws IOException
-  {
-    if (this.raf != null)
-      this.raf.close();
+  public void close() throws IOException {
+    super.close();
     this.header = null;
   }
 
-  Object readUCharArray1D( int offsetInRecord ) throws IOException
-  {
+  Object readUCharArray1D(int offsetInRecord) throws IOException {
     // XDR u_char fills 4 bytes but only uses one byte.
     int elementSizeInBytes = 4;
-    byte[] elementArray = new byte[ elementSizeInBytes ];
+    byte[] elementArray = new byte[elementSizeInBytes];
 
-    byte[] array = new byte[ header.getNumDataRecords() ];
+    byte[] array = new byte[header.getNumDataRecords()];
 
-    this.raf.seek( header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
+    this.raf.seek(header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
 
-    for ( int i = 0; i < header.getNumDataRecords(); i++ )
-    {
-      this.raf.read( elementArray );
-      array[ i] = elementArray[ 3];
-      this.raf.skipBytes( header.getRecordSizeInBytes() - elementSizeInBytes );
+    for (int i = 0; i < header.getNumDataRecords(); i++) {
+      this.raf.read(elementArray);
+      array[i] = elementArray[3];
+      this.raf.skipBytes(header.getRecordSizeInBytes() - elementSizeInBytes);
     }
 
-    return( array);
+    return (array);
   }
 
-  Object readIntArray1D( int offsetInRecord ) throws IOException
-  {
+  Object readIntArray1D(int offsetInRecord) throws IOException {
     int elementSizeInBytes = 4;
 
-    int[] array = new int[ header.getNumDataRecords() ];
+    int[] array = new int[header.getNumDataRecords()];
 
-    this.raf.seek( header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
+    this.raf.seek(header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
 
-    for ( int i = 0; i < header.getNumDataRecords(); i++ )
-    {
-      this.raf.readInt( array, i, 1);
-      this.raf.skipBytes( header.getRecordSizeInBytes() - elementSizeInBytes );
+    for (int i = 0; i < header.getNumDataRecords(); i++) {
+      this.raf.readInt(array, i, 1);
+      this.raf.skipBytes(header.getRecordSizeInBytes() - elementSizeInBytes);
     }
 
-    return( array);
+    return (array);
   }
 
-  Object readFloatArray1D( int offsetInRecord ) throws IOException
-  {
+  Object readFloatArray1D(int offsetInRecord) throws IOException {
     int elementSizeInBytes = 4;
 
-    float[] array = new float[ header.getNumDataRecords() ];
+    float[] array = new float[header.getNumDataRecords()];
 
-    this.raf.seek( header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
+    this.raf.seek(header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
 
-    for ( int i = 0; i < header.getNumDataRecords(); i++ )
-    {
-      this.raf.readFloat( array, i, 1);
-      this.raf.skipBytes( header.getRecordSizeInBytes() - elementSizeInBytes );
+    for (int i = 0; i < header.getNumDataRecords(); i++) {
+      this.raf.readFloat(array, i, 1);
+      this.raf.skipBytes(header.getRecordSizeInBytes() - elementSizeInBytes);
     }
 
-    return( array);
+    return (array);
   }
 
-  Object readDoubleArray1D( int offsetInRecord ) throws IOException
-  {
+  Object readDoubleArray1D(int offsetInRecord) throws IOException {
     int elementSizeInBytes = 8;
 
-    double[] array = new double[ header.getNumDataRecords() ];
+    double[] array = new double[header.getNumDataRecords()];
 
-    this.raf.seek( header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
+    this.raf.seek(header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
 
-    for ( int i = 0; i < header.getNumDataRecords(); i++ )
-    {
-      this.raf.readDouble( array, i, 1);
-      this.raf.skipBytes( header.getRecordSizeInBytes() - elementSizeInBytes );
+    for (int i = 0; i < header.getNumDataRecords(); i++) {
+      this.raf.readDouble(array, i, 1);
+      this.raf.skipBytes(header.getRecordSizeInBytes() - elementSizeInBytes);
     }
 
-    return( array);
+    return (array);
   }
 
-  Object readByteArray2D( int offsetInRecord, int numElementsInRecord ) throws IOException
-  {
-    byte[] array = new byte[ header.getNumDataRecords() * numElementsInRecord ];
+  Object readByteArray2D(int offsetInRecord, int numElementsInRecord) throws IOException {
+    byte[] array = new byte[header.getNumDataRecords() * numElementsInRecord];
 
-    this.raf.seek( header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
+    this.raf.seek(header.getRecordSizeInBytes() * header.getNumHeaderRecords() + offsetInRecord);
 
-    for ( int i = 0; i < header.getNumDataRecords(); i++ )
-    {
-      this.raf.read( array, i * numElementsInRecord, numElementsInRecord);
-      this.raf.skipBytes( header.getRecordSizeInBytes() - numElementsInRecord );
+    for (int i = 0; i < header.getNumDataRecords(); i++) {
+      this.raf.read(array, i * numElementsInRecord, numElementsInRecord);
+      this.raf.skipBytes(header.getRecordSizeInBytes() - numElementsInRecord);
     }
 
-    return( array);
+    return (array);
   }
 
-  private static class VariableInfo
-  {
+  private static class VariableInfo {
     // @todo Each of these items should BE a ucar.nc2.Variable with additional info.
     // That way it would be easier to add additional variable attributes to a particular variable.
     // Currently need to change some here and others in open().
-    private static java.util.List<VariableInfo> list = new java.util.ArrayList<VariableInfo>( 30 );
-    private static java.util.Map<String, VariableInfo> hash = new java.util.HashMap<String, VariableInfo>( 30 );
+    private static java.util.List<VariableInfo> list = new java.util.ArrayList<VariableInfo>(30);
+    private static java.util.Map<String, VariableInfo> hash = new java.util.HashMap<String, VariableInfo>(30);
 
     public final static VariableInfo YEAR = new VariableInfo(
-            "year", "year at time of scan", "year", DataType.INT, 0, 1 );
+            "year", "year at time of scan", "year", DataType.INT, 0, 1);
     public final static VariableInfo DAY_OF_YEAR = new VariableInfo(
-            "dayOfYear", "day of year at time of scan", "day of year", DataType.INT, 4, 1 );
+            "dayOfYear", "day of year at time of scan", "day of year", DataType.INT, 4, 1);
     public final static VariableInfo SECONDS_OF_DAY = new VariableInfo(
-            "secondsOfDay", "seconds of day at time of scan", "seconds of day", DataType.DOUBLE, 8, 1 );
+            "secondsOfDay", "seconds of day at time of scan", "seconds of day", DataType.DOUBLE, 8, 1);
     public final static VariableInfo TIME = new VariableInfo(
-            "time", "time of scan", "seconds since ??? (see above)", DataType.FLOAT, -1, 1 );
+            "time", "time of scan", "seconds since ??? (see above)", DataType.FLOAT, -1, 1);
 
     public final static VariableInfo SAT_EPHEM_LATITUDE = new VariableInfo(
             "satEphemLatitude", "geodetic latitude of the satellite for this scan", CDM.LAT_UNITS, DataType.FLOAT, 16, 1);
@@ -714,11 +610,10 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     private DataType dataType = null;
     private int byteOffsetInRecord = -1;
     private int numElementsInRecord = 0;
-    
-    private VariableInfo( String name, String long_name, String units,
-                          DataType dataType, int byteOffsetInRecord,
-                          int numElementsInRecord)
-    {
+
+    private VariableInfo(String name, String long_name, String units,
+                         DataType dataType, int byteOffsetInRecord,
+                         int numElementsInRecord) {
       this.name = name;
       this.longName = long_name;
       this.units = units;
@@ -726,98 +621,120 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       this.byteOffsetInRecord = byteOffsetInRecord;
       this.numElementsInRecord = numElementsInRecord;
 
-      list.add( this );
-      hash.put( this.name,  this);
+      list.add(this);
+      hash.put(this.name, this);
     }
 
-    public static VariableInfo findByName( String name )
-    {
-      if ( name == null )
-      {
-        return( null);
+    public static VariableInfo findByName(String name) {
+      if (name == null) {
+        return (null);
       }
-      return hash.get( name );
+      return hash.get(name);
     }
 
-    public static List getAll() { return( list); }
-    public static Set getAllNames() { return( hash.keySet()); }
-    public String getName() { return( this.name); }
-    public String getLongName() { return( this.longName); }
-    public String getUnits() { return( this.units); }
-    public DataType getDataType() { return( this.dataType); }
-    public int getByteOffsetInRecord() { return( this.byteOffsetInRecord); }
-    public int getNumElementsInRecord() { return( this.numElementsInRecord); }
+    public static List getAll() {
+      return (list);
+    }
 
-    public String toString()
-    {
+    public static Set getAllNames() {
+      return (hash.keySet());
+    }
+
+    public String getName() {
+      return (this.name);
+    }
+
+    public String getLongName() {
+      return (this.longName);
+    }
+
+    public String getUnits() {
+      return (this.units);
+    }
+
+    public DataType getDataType() {
+      return (this.dataType);
+    }
+
+    public int getByteOffsetInRecord() {
+      return (this.byteOffsetInRecord);
+    }
+
+    public int getNumElementsInRecord() {
+      return (this.numElementsInRecord);
+    }
+
+    public String toString() {
       StringBuilder retVal = new StringBuilder();
-      retVal.append( "Variable(").append( this.getName()).append(",")
-              .append( this.getLongName()).append( ",")
-              .append( this.getUnits()).append( ",")
-              .append( this.getDataType()).append( ",")
-              .append( this.getByteOffsetInRecord()).append( ",")
-              .append( this.getNumElementsInRecord()).append( ")");
+      retVal.append("Variable(").append(this.getName()).append(",")
+              .append(this.getLongName()).append(",")
+              .append(this.getUnits()).append(",")
+              .append(this.getDataType()).append(",")
+              .append(this.getByteOffsetInRecord()).append(",")
+              .append(this.getNumElementsInRecord()).append(")");
 
-      return( retVal.toString() );
+      return (retVal.toString());
     }
   }
 
   /**
    * Geolocate OLS swath data, return geodetic latitude and longitude.
-   *
+   * <p/>
    * Author:  Ethan R. Davis
    * Date:    30 November 1994
-   *
+   * <p/>
    * Earth-centered coordinate system:
-   *   x-axis goes through zero longitude at the equator.
-   *   y-axis goes through 90 degrees longitude at the equator.
-   *   z-axis goes through the north pole.
-   *
+   * x-axis goes through zero longitude at the equator.
+   * y-axis goes through 90 degrees longitude at the equator.
+   * z-axis goes through the north pole.
+   * <p/>
    * The plane tangent to the earth surface at the subsatellite point
    * will be called the tangent plane.
-   *
+   * <p/>
    * Method:
-   *   - Calculate the subsatellite point.
-   *   - Calculate the satellite point.
-   *   - Calculate the parametric equation for the line from
-   *     the satellite to the scan point.
-   *     - Calculate north and west in the tangent plane.
-   *     - Calculate heading vector in tangen plane.
-   *     - Calculate scan line vector in tangent plane.
-   *     - Calculate the scan angle.
-   *     - Calculate the scan point in the tangent plane
-   *       (i.e., the point where the line-of-sight and the
-   *        tangent plane intersect).
-   *   - Calculate the intersection of the line-of-sight and the
-   *     earth surface (elliptical model).  This is done by
-   *     solving the quadratic equation that is found when the
-   *     equations for the line-of-sight are substituted into the
-   *     equations for an ellipse.
-   *
+   * - Calculate the subsatellite point.
+   * - Calculate the satellite point.
+   * - Calculate the parametric equation for the line from
+   * the satellite to the scan point.
+   * - Calculate north and west in the tangent plane.
+   * - Calculate heading vector in tangen plane.
+   * - Calculate scan line vector in tangent plane.
+   * - Calculate the scan angle.
+   * - Calculate the scan point in the tangent plane
+   * (i.e., the point where the line-of-sight and the
+   * tangent plane intersect).
+   * - Calculate the intersection of the line-of-sight and the
+   * earth surface (elliptical model).  This is done by
+   * solving the quadratic equation that is found when the
+   * equations for the line-of-sight are substituted into the
+   * equations for an ellipse.
    */
-  static class GeolocateOLS
-  {
-    static void geolocateOLS( int satID, int dataType,
-                              int numScans, float[] scannerOffset,
-                              float[] satEphemLatitude, float[] satEphemLongitude,
-                              float[] satEphemAltitude, float[] satEphemHeading,
-                              float[] latitude, float[] longitude)
-    {
-      if ( satID < OLSSensorModel.RANGE_SAT_GROUPS[0][0] || satID > OLSSensorModel.RANGE_SAT_GROUPS[1][1])
-        throw new IllegalArgumentException( "Satellite ID <" + satID + "> outside supported range <min=" + OLSSensorModel.RANGE_SAT_GROUPS[0][0] + ",max=" + OLSSensorModel.RANGE_SAT_GROUPS[1][1] + ">.");
-      if ( dataType < 0 || dataType > OLSSensorModel.NUM_DATA_TYPES )
-        throw new IllegalArgumentException( "Data type <" + dataType + "> not in valid range <min=0,max=" + OLSSensorModel.NUM_DATA_TYPES + ">.");
-      if ( scannerOffset.length != numScans ) throw new IllegalArgumentException( "Size of scannerOffset vector <" + scannerOffset.length + "> not as expected <" + numScans + ">." );
-      if ( satEphemLatitude.length != numScans ) throw new IllegalArgumentException( "Size of satEphemLatitude vector <" + satEphemLatitude.length + "> not as expected <" + numScans + ">." );
-      if ( satEphemLongitude.length != numScans ) throw new IllegalArgumentException( "Size of satEphemLongitude vector <" + satEphemLongitude.length + "> not as expected <" + numScans + ">." );
-      if ( satEphemAltitude.length != numScans ) throw new IllegalArgumentException( "Size of satEphemAltitude vector <" + satEphemAltitude.length + "> not as expected <" + numScans + ">." );
-      if ( satEphemHeading.length != numScans ) throw new IllegalArgumentException( "Size of satEphemHeading vector <" + satEphemHeading.length + "> not as expected <" + numScans + ">." );
-      if ( latitude.length != ( OLSSensorModel.numSamplesPerScan[ dataType] * numScans ))
-        throw new IllegalArgumentException( "Size of latitude vector <" + latitude.length +
-                                            "> not as expected <" + OLSSensorModel.numSamplesPerScan[ dataType] + " * " + numScans + ">.");
-      if ( longitude.length != ( OLSSensorModel.numSamplesPerScan[ dataType] * numScans ))
-        throw new IllegalArgumentException( "Size of longitude vector <" + longitude.length +
-                                            "> not as expected <" + OLSSensorModel.numSamplesPerScan[ dataType] + " * " + numScans + ">.");
+  static class GeolocateOLS {
+    static void geolocateOLS(int satID, int dataType,
+                             int numScans, float[] scannerOffset,
+                             float[] satEphemLatitude, float[] satEphemLongitude,
+                             float[] satEphemAltitude, float[] satEphemHeading,
+                             float[] latitude, float[] longitude) {
+      if (satID < OLSSensorModel.RANGE_SAT_GROUPS[0][0] || satID > OLSSensorModel.RANGE_SAT_GROUPS[1][1])
+        throw new IllegalArgumentException("Satellite ID <" + satID + "> outside supported range <min=" + OLSSensorModel.RANGE_SAT_GROUPS[0][0] + ",max=" + OLSSensorModel.RANGE_SAT_GROUPS[1][1] + ">.");
+      if (dataType < 0 || dataType > OLSSensorModel.NUM_DATA_TYPES)
+        throw new IllegalArgumentException("Data type <" + dataType + "> not in valid range <min=0,max=" + OLSSensorModel.NUM_DATA_TYPES + ">.");
+      if (scannerOffset.length != numScans)
+        throw new IllegalArgumentException("Size of scannerOffset vector <" + scannerOffset.length + "> not as expected <" + numScans + ">.");
+      if (satEphemLatitude.length != numScans)
+        throw new IllegalArgumentException("Size of satEphemLatitude vector <" + satEphemLatitude.length + "> not as expected <" + numScans + ">.");
+      if (satEphemLongitude.length != numScans)
+        throw new IllegalArgumentException("Size of satEphemLongitude vector <" + satEphemLongitude.length + "> not as expected <" + numScans + ">.");
+      if (satEphemAltitude.length != numScans)
+        throw new IllegalArgumentException("Size of satEphemAltitude vector <" + satEphemAltitude.length + "> not as expected <" + numScans + ">.");
+      if (satEphemHeading.length != numScans)
+        throw new IllegalArgumentException("Size of satEphemHeading vector <" + satEphemHeading.length + "> not as expected <" + numScans + ">.");
+      if (latitude.length != (OLSSensorModel.numSamplesPerScan[dataType] * numScans))
+        throw new IllegalArgumentException("Size of latitude vector <" + latitude.length +
+                "> not as expected <" + OLSSensorModel.numSamplesPerScan[dataType] + " * " + numScans + ">.");
+      if (longitude.length != (OLSSensorModel.numSamplesPerScan[dataType] * numScans))
+        throw new IllegalArgumentException("Size of longitude vector <" + longitude.length +
+                "> not as expected <" + OLSSensorModel.numSamplesPerScan[dataType] + " * " + numScans + ">.");
       //-----
       // Geodetic latitude and longitude.
       //-----
@@ -910,41 +827,40 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       int swathIndex, sampleIndex, currentSampleIndex;
 
       // Step through the number of swaths in file.
-      for ( swathIndex = 0; swathIndex < numScans; swathIndex++ )
-      {
-        gdLatitude = degreesToRadians( satEphemLatitude[ swathIndex]);
-        gdLongitude = degreesToRadians( satEphemLongitude[ swathIndex]);
+      for (swathIndex = 0; swathIndex < numScans; swathIndex++) {
+        gdLatitude = degreesToRadians(satEphemLatitude[swathIndex]);
+        gdLongitude = degreesToRadians(satEphemLongitude[swathIndex]);
 
-        satAltitude = satEphemAltitude[ swathIndex];
-        satHeadingAngle = degreesToRadians( satEphemHeading[ swathIndex]);
+        satAltitude = satEphemAltitude[swathIndex];
+        satHeadingAngle = degreesToRadians(satEphemHeading[swathIndex]);
 
-        gcLatitude = EllipsoidalEarthModel.geodeticToGeocentric( gdLatitude);
+        gcLatitude = EllipsoidalEarthModel.geodeticToGeocentric(gdLatitude);
         gcLongitude = gdLongitude;
 
         //-----
         // Calculate subsatellite point, vector subSatPoint[].
         //-----
-        cosLat = Math.cos( gcLatitude);
-        sinLat = Math.sin( gcLatitude);
-        cosLon = Math.cos( gcLongitude);
-        sinLon = Math.sin( gcLongitude);
+        cosLat = Math.cos(gcLatitude);
+        sinLat = Math.sin(gcLatitude);
+        cosLon = Math.cos(gcLongitude);
+        sinLon = Math.sin(gcLongitude);
 
-        earthRadius = EllipsoidalEarthModel.earthRadiusKm( gcLatitude);
+        earthRadius = EllipsoidalEarthModel.earthRadiusKm(gcLatitude);
 
         scratchVec[0] = cosLat * cosLon;
         scratchVec[1] = cosLat * sinLon;
         scratchVec[2] = sinLat;
 
-        subSatPoint = VectorMath.vectorScalarMultiplication( scratchVec, earthRadius );
+        subSatPoint = VectorMath.vectorScalarMultiplication(scratchVec, earthRadius);
 
         //-----
         // Calculate normal to surface at the subsatellite point,
         // unit vector surfaceNormal[].
         //-----
-        cosLat = Math.cos( gdLatitude);
-        sinLat = Math.sin( gdLatitude);
-        cosLon = Math.cos( gdLongitude);
-        sinLon = Math.sin( gdLongitude);
+        cosLat = Math.cos(gdLatitude);
+        sinLat = Math.sin(gdLatitude);
+        cosLon = Math.cos(gdLongitude);
+        sinLon = Math.sin(gdLongitude);
 
         surfaceNormal[0] = cosLat * cosLon;
         surfaceNormal[1] = cosLat * sinLon;
@@ -962,30 +878,30 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         //-----
         north[0] = -subSatPoint[0];
         north[1] = -subSatPoint[1];
-        north[2] = EllipsoidalEarthModel.earthRadiusKm( PI/2.0) - subSatPoint[2];
+        north[2] = EllipsoidalEarthModel.earthRadiusKm(PI / 2.0) - subSatPoint[2];
 
-        projectMag = VectorMath.vectorDotProduct( north, surfaceNormal)
-                     / Math.pow( VectorMath.vectorMagnitude( surfaceNormal), 2.0);
+        projectMag = VectorMath.vectorDotProduct(north, surfaceNormal)
+                / Math.pow(VectorMath.vectorMagnitude(surfaceNormal), 2.0);
 
         north[0] = north[0] - projectMag * surfaceNormal[0];
         north[1] = north[1] - projectMag * surfaceNormal[1];
         north[2] = north[2] - projectMag * surfaceNormal[2];
 
-        north = VectorMath.unitVector( north);
+        north = VectorMath.unitVector(north);
 
         //-----
         // Calculate west on tangent to surface, unit vector west[].
         //-----
-        west = VectorMath.vectorCrossProduct( surfaceNormal, north);
-        west = VectorMath.unitVector( west);
+        west = VectorMath.vectorCrossProduct(surfaceNormal, north);
+        west = VectorMath.unitVector(west);
 
         //-----
         // Calculate the direction vector for the satellite heading
         // using the given heading angle west of north,
         // unit vector satHeading.
         //-----
-        cosHeading = Math.cos( satHeadingAngle);
-        sinHeading = Math.sin( satHeadingAngle);
+        cosHeading = Math.cos(satHeadingAngle);
+        sinHeading = Math.sin(satHeadingAngle);
 
         satHeading[0] = sinHeading * west[0] + cosHeading * north[0];
         satHeading[1] = sinHeading * west[1] + cosHeading * north[1];
@@ -997,23 +913,22 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         // line-of-sight draws on the tangent plane),
         // unit vector scanLine[].
         //-----
-        scanLine = VectorMath.vectorCrossProduct( surfaceNormal, satHeading);
+        scanLine = VectorMath.vectorCrossProduct(surfaceNormal, satHeading);
 
         // Step through each sample/pixel in the current swath.
-        for ( sampleIndex = 0; sampleIndex < OLSSensorModel.numSamplesPerScan[ dataType]; sampleIndex++)
-        {
+        for (sampleIndex = 0; sampleIndex < OLSSensorModel.numSamplesPerScan[dataType]; sampleIndex++) {
           //-----
           // Calculate the scan angle, scannerAngle.
           // A positive angle is to the port of the satellite.
           //-----
-          scannerAngle = OLSSensorModel.scanAngleOLS( satID, dataType,
-                                                      sampleIndex, scannerOffset[ swathIndex]);
+          scannerAngle = OLSSensorModel.scanAngleOLS(satID, dataType,
+                  sampleIndex, scannerOffset[swathIndex]);
 
           //-----
           // Calculate the point on the scan line through which the
           // line-of-sight passes, vector scanPoint[].
           //-----
-          scanPointMag = satAltitude * Math.tan( scannerAngle);
+          scanPointMag = satAltitude * Math.tan(scannerAngle);
 
           scanPoint[0] = subSatPoint[0] + scanPointMag * scanLine[0];
           scanPoint[1] = subSatPoint[1] + scanPointMag * scanLine[1];
@@ -1039,37 +954,37 @@ public class DMSPiosp extends AbstractIOServiceProvider {
           // ellipsoid, x^2/a^2 + y^2/a^2 + z^2/b^2 = 1, where a is the
           // earth major axis and b is the earth minor axis.
           //-----
-          earthMajorAxis = EllipsoidalEarthModel.earthRadiusKm( 0.0);
-          earthMinorAxis = EllipsoidalEarthModel.earthRadiusKm( PI/2.0);
+          earthMajorAxis = EllipsoidalEarthModel.earthRadiusKm(0.0);
+          earthMinorAxis = EllipsoidalEarthModel.earthRadiusKm(PI / 2.0);
 
-          earthMajorAxisSquared = Math.pow( earthMajorAxis, 2.0);
-          earthMinorAxisSquared = Math.pow( earthMinorAxis, 2.0);
+          earthMajorAxisSquared = Math.pow(earthMajorAxis, 2.0);
+          earthMinorAxisSquared = Math.pow(earthMinorAxis, 2.0);
 
           quadraticEqnA =
-          earthMinorAxisSquared * Math.pow( lineOfSightSlope[0], 2.0)
-          + earthMinorAxisSquared * Math.pow( lineOfSightSlope[1], 2.0)
-          + earthMajorAxisSquared * Math.pow( lineOfSightSlope[2], 2.0);
+                  earthMinorAxisSquared * Math.pow(lineOfSightSlope[0], 2.0)
+                          + earthMinorAxisSquared * Math.pow(lineOfSightSlope[1], 2.0)
+                          + earthMajorAxisSquared * Math.pow(lineOfSightSlope[2], 2.0);
           quadraticEqnB =
-          2.0 * ( earthMinorAxisSquared * satPoint[0] * lineOfSightSlope[0]
-                  + earthMinorAxisSquared * satPoint[1] * lineOfSightSlope[1]
-                  + earthMajorAxisSquared * satPoint[2] * lineOfSightSlope[2]);
+                  2.0 * (earthMinorAxisSquared * satPoint[0] * lineOfSightSlope[0]
+                          + earthMinorAxisSquared * satPoint[1] * lineOfSightSlope[1]
+                          + earthMajorAxisSquared * satPoint[2] * lineOfSightSlope[2]);
           quadraticEqnC =
-          earthMinorAxisSquared * Math.pow( satPoint[0], 2.0)
-          + earthMinorAxisSquared * Math.pow( satPoint[1], 2.0)
-          + earthMajorAxisSquared * Math.pow( satPoint[2], 2.0)
-          - earthMajorAxisSquared * earthMinorAxisSquared;
+                  earthMinorAxisSquared * Math.pow(satPoint[0], 2.0)
+                          + earthMinorAxisSquared * Math.pow(satPoint[1], 2.0)
+                          + earthMajorAxisSquared * Math.pow(satPoint[2], 2.0)
+                          - earthMajorAxisSquared * earthMinorAxisSquared;
 
-          scratch = Math.sqrt( Math.pow( quadraticEqnB, 2.0) -
-                               4.0 * quadraticEqnA * quadraticEqnC);
-          quadraticSoln1 = ( -quadraticEqnB + scratch)/( 2.0 * quadraticEqnA);
-          quadraticSoln2 = ( -quadraticEqnB - scratch)/( 2.0 * quadraticEqnA);
+          scratch = Math.sqrt(Math.pow(quadraticEqnB, 2.0) -
+                  4.0 * quadraticEqnA * quadraticEqnC);
+          quadraticSoln1 = (-quadraticEqnB + scratch) / (2.0 * quadraticEqnA);
+          quadraticSoln2 = (-quadraticEqnB - scratch) / (2.0 * quadraticEqnA);
 
           //-----
           // Select the point on the near side of the earth.
           //-----
-          lineParameter = ( quadraticSoln1 < quadraticSoln2)
-                          ? quadraticSoln1
-                          : quadraticSoln2;
+          lineParameter = (quadraticSoln1 < quadraticSoln2)
+                  ? quadraticSoln1
+                  : quadraticSoln2;
 
           //-----
           // Calculate the current position on the scanLine.
@@ -1077,21 +992,21 @@ public class DMSPiosp extends AbstractIOServiceProvider {
           geolocatedPoint[0] = lineOfSightSlope[0] * lineParameter + satPoint[0];
           geolocatedPoint[1] = lineOfSightSlope[1] * lineParameter + satPoint[1];
           geolocatedPoint[2] = lineOfSightSlope[2] * lineParameter + satPoint[2];
-          double [] unitVecGeolocatedPoint = VectorMath.unitVector( geolocatedPoint);
+          double[] unitVecGeolocatedPoint = VectorMath.unitVector(geolocatedPoint);
 
           //-----
           // Calculate the geocentric latitude and longitude at the calculated point.
           //-----
-          gcLat = Math.asin( unitVecGeolocatedPoint[2]);
-          gcLon = Math.acos( unitVecGeolocatedPoint[0]/Math.cos( gcLat));
-          gcLon = ( unitVecGeolocatedPoint[1] < 0.0) ? -gcLon : gcLon;
+          gcLat = Math.asin(unitVecGeolocatedPoint[2]);
+          gcLon = Math.acos(unitVecGeolocatedPoint[0] / Math.cos(gcLat));
+          gcLon = (unitVecGeolocatedPoint[1] < 0.0) ? -gcLon : gcLon;
 
           //-----
           // Return the geocentric latitude and longitude in degrees.
           //-----
-          currentSampleIndex = swathIndex * OLSSensorModel.numSamplesPerScan[ dataType] + sampleIndex;
-          latitude[ currentSampleIndex] = (float) radiansToDegrees( gcLat);
-          longitude[currentSampleIndex] = (float) radiansToDegrees( gcLon);
+          currentSampleIndex = swathIndex * OLSSensorModel.numSamplesPerScan[dataType] + sampleIndex;
+          latitude[currentSampleIndex] = (float) radiansToDegrees(gcLat);
+          longitude[currentSampleIndex] = (float) radiansToDegrees(gcLon);
 
 //        //-----
 //        // Return the geodetic latitude and longitude in degrees.
@@ -1107,59 +1022,66 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     static final double HALF_PI = PI / 2.0;
     static final double DEGREES_PER_RADIANS = 360.0 / TWO_PI;
 
-    static double degreesToRadians( double angleInDegrees ) { return( angleInDegrees / DEGREES_PER_RADIANS ); }
-    static double radiansToDegrees( double angleInRadians) { return( angleInRadians * DEGREES_PER_RADIANS); }
+    static double degreesToRadians(double angleInDegrees) {
+      return (angleInDegrees / DEGREES_PER_RADIANS);
+    }
+
+    static double radiansToDegrees(double angleInRadians) {
+      return (angleInRadians * DEGREES_PER_RADIANS);
+    }
   }
 
   /**
    * Provides a method for calculating the scan angle for a given OLS scan sample.
    */
-  static class OLSSensorModel
-  {
+  static class OLSSensorModel {
     // Light Smooth (LS), Thermal Smooth (TS), Light Fine (LF), Thermal Fine (TF)
     static final int NUM_DATA_TYPES = 4;
 
     // Two satellite groups: first, satellites 11-15; second, satellites 16-20.
     static final int NUM_SAT_GROUPS = 2;
-    static final int [][] RANGE_SAT_GROUPS = { {11, 16}, {15, 20}};
+    static final int[][] RANGE_SAT_GROUPS = {{11, 16}, {15, 20}};
 
     static final double peakScanAngle = 1.00967;
 
-    static final double [] nominalTotalSamplePeriod
+    static final double[] nominalTotalSamplePeriod
             = {1464.436, 1464.436, 7322.179, 7322.179};
 
-    static final int [] numSamplesPerScan = {1465, 1465, 7322, 7322};
+    static final int[] numSamplesPerScan = {1465, 1465, 7322, 7322};
 
-    /** Constant M used in the calculation of the scan angle for a pixel. */
+    /**
+     * Constant M used in the calculation of the scan angle for a pixel.
+     */
     static final double M = 2.66874;
 
-    /** Constant B used in the calculation of the scan angle for a pixel.
-     *  The value for TS data depends on the satellite group.
+    /**
+     * Constant B used in the calculation of the scan angle for a pixel.
+     * The value for TS data depends on the satellite group.
      */
-    static final double [][] B =
-    {
-      { 0.23686, 0.23591, 0.23665, 0.23665},
-      { 0.23686, 0.23686, 0.23665, 0.23665}
-    };
+    static final double[][] B =
+            {
+                    {0.23686, 0.23591, 0.23665, 0.23665},
+                    {0.23686, 0.23686, 0.23665, 0.23665}
+            };
 
     /**
      * Calculate the scan angle from nadir for the given sample. Positive scan
      * angles are to the left from the heading direction. Currently only supports
      * smooth data, samples 0 through 1464 (fine data, samples 0 through 7321).
      *
-     * @param satID - the satellite number
-     * @param dataType - light smooth, thermal smooth, light fine, or thermal fine.
-     * @param sampleNumber - the sample number
+     * @param satID         - the satellite number
+     * @param dataType      - light smooth, thermal smooth, light fine, or thermal fine.
+     * @param sampleNumber  - the sample number
      * @param scannerOffset - the scanner offset for this satellite and data type.
      * @return the scan angle from nadir for the given sample.
      */
-    static double scanAngleOLS( int satID, int dataType, int sampleNumber, double scannerOffset)
-    {
-      if ( sampleNumber > 1464) throw new IllegalArgumentException( "Sample number <" + sampleNumber + "> not within smooth sample range <0-1464> (fine data not currently supported).");
-      int satGroup = satID <=15 ? 0 : 1;
+    static double scanAngleOLS(int satID, int dataType, int sampleNumber, double scannerOffset) {
+      if (sampleNumber > 1464)
+        throw new IllegalArgumentException("Sample number <" + sampleNumber + "> not within smooth sample range <0-1464> (fine data not currently supported).");
+      int satGroup = satID <= 15 ? 0 : 1;
 
-      return ( peakScanAngle * Math.cos( ( sampleNumber/nominalTotalSamplePeriod[dataType] * M )
-                                         + B[satGroup][dataType] ) - scannerOffset );
+      return (peakScanAngle * Math.cos((sampleNumber / nominalTotalSamplePeriod[dataType] * M)
+              + B[satGroup][dataType]) - scannerOffset);
     }
   }
 
@@ -1168,8 +1090,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
    * geocentric latitude and longitude, using a ellipsoidal earth; and
    * 2) converting between geocentric and geodetic latitude.
    */
-  static class EllipsoidalEarthModel
-  {
+  static class EllipsoidalEarthModel {
     /*
     From http://maic.jmu.edu/sic/standards/datum.htm
     Table 1: Datums and their principle areas of use
@@ -1217,7 +1138,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     // These constants are from MI Cal/Val report.
     static final double EARTH_MEAN_EQUATORIAL_RADIUS_KM = 6378.14;
     static final double EARTHS_ECCENTRICITY = 0.0818191830;
-    static final double E_ECC_SQUARED = Math.pow( EARTHS_ECCENTRICITY, 2.0);
+    static final double E_ECC_SQUARED = Math.pow(EARTHS_ECCENTRICITY, 2.0);
 
     // static public String getEllipsoidName() {}
     // static public String getDatumName() {}
@@ -1225,6 +1146,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     // static public double getFlattening() {}
     // static public double getMajor() {}
     // static public double getMinor() {}
+
     /**
      * Return the earth radius in units of EARTH_MEAN_EQUATORIAL_RADIUS_KM
      * at the given geocentric latitude.
@@ -1232,10 +1154,9 @@ public class DMSPiosp extends AbstractIOServiceProvider {
      * @param gcLatitude - the geocentric latitude
      * @return the earth radius at the given location in units of EARTH_MEAN_EQUATORIAL_RADIUS_KM
      */
-    static double earthRadius( double gcLatitude)
-    {
-      return( Math.sqrt( 1.0 - E_ECC_SQUARED)
-              / Math.sqrt( 1.0 - E_ECC_SQUARED * Math.cos( gcLatitude)) );
+    static double earthRadius(double gcLatitude) {
+      return (Math.sqrt(1.0 - E_ECC_SQUARED)
+              / Math.sqrt(1.0 - E_ECC_SQUARED * Math.cos(gcLatitude)));
     }
 
     /**
@@ -1244,9 +1165,8 @@ public class DMSPiosp extends AbstractIOServiceProvider {
      * @param gcLatitude - the given geocentric latitude
      * @return the earth radius at the given location in kilometers
      */
-    static double earthRadiusKm( double gcLatitude)
-    {
-      return( earthRadius( gcLatitude) * EARTH_MEAN_EQUATORIAL_RADIUS_KM );
+    static double earthRadiusKm(double gcLatitude) {
+      return (earthRadius(gcLatitude) * EARTH_MEAN_EQUATORIAL_RADIUS_KM);
     }
 
     /**
@@ -1255,20 +1175,18 @@ public class DMSPiosp extends AbstractIOServiceProvider {
      * @param geodeticLatitude - the given geodetic latitude
      * @return the geocentric latitude
      */
-    static double geodeticToGeocentric( double geodeticLatitude)
-    {
-      return ( Math.atan( (1.0 - E_ECC_SQUARED) * Math.tan( geodeticLatitude)));
+    static double geodeticToGeocentric(double geodeticLatitude) {
+      return (Math.atan((1.0 - E_ECC_SQUARED) * Math.tan(geodeticLatitude)));
     }
 
     /**
      * Return the geodetic latitude for the given geocentric latitude.
-
+     *
      * @param geocentricLatitude - the given geocentric latitude
      * @return the geodetic latitude
      */
-    static double geocentricToGeodetic( double geocentricLatitude)
-    {
-      return ( Math.atan( Math.tan( geocentricLatitude)/( 1.0 - E_ECC_SQUARED)));
+    static double geocentricToGeodetic(double geocentricLatitude) {
+      return (Math.atan(Math.tan(geocentricLatitude) / (1.0 - E_ECC_SQUARED)));
     }
   }
 
@@ -1276,61 +1194,64 @@ public class DMSPiosp extends AbstractIOServiceProvider {
    * A class to provide methods for manipulating 3-D vectors. E.g., calculating the
    * magnitude of a vector and converting a vector into a unit vector.
    */
-  static class VectorMath
-  {
+  static class VectorMath {
     /**
      * Return the magnitude of a 3-D vector.
+     *
      * @param vector 3d vector
      * @return the magnitude of the given 3-D vector.
      */
-    static double vectorMagnitude( double[] vector)
-    {
-      if ( vector.length != 3) throw new IllegalArgumentException( "Argument not a 3-D vector <dim=" + vector.length + ">.");
-      return ( Math.sqrt( Math.pow(vector[0], 2.0) + Math.pow( vector[1], 2.0)
-                     + Math.pow( vector[2], 2.0)));
+    static double vectorMagnitude(double[] vector) {
+      if (vector.length != 3)
+        throw new IllegalArgumentException("Argument not a 3-D vector <dim=" + vector.length + ">.");
+      return (Math.sqrt(Math.pow(vector[0], 2.0) + Math.pow(vector[1], 2.0)
+              + Math.pow(vector[2], 2.0)));
     }
 
     /**
      * Change a vector into a vector with magnitude of one.
+     *
      * @param vector 3d vector
      */
-    static double [] unitVector( double[] vector)
-    {
-      if ( vector.length != 3) throw new IllegalArgumentException( "Argument not a 3-D vector <dim=" + vector.length + ">.");
-      double magnitude = vectorMagnitude( vector);
+    static double[] unitVector(double[] vector) {
+      if (vector.length != 3)
+        throw new IllegalArgumentException("Argument not a 3-D vector <dim=" + vector.length + ">.");
+      double magnitude = vectorMagnitude(vector);
 
-      double [] resultingVector = { vector[0]/magnitude, vector[1]/magnitude, vector[2]/magnitude };
-      return( resultingVector );
+      double[] resultingVector = {vector[0] / magnitude, vector[1] / magnitude, vector[2] / magnitude};
+      return (resultingVector);
     }
 
-    static double [] vectorScalarMultiplication( double [] vector, double scalar)
-    {
-      if ( vector.length != 3) throw new IllegalArgumentException( "Argument not a 3-D vector <dim=" + vector.length + ">.");
+    static double[] vectorScalarMultiplication(double[] vector, double scalar) {
+      if (vector.length != 3)
+        throw new IllegalArgumentException("Argument not a 3-D vector <dim=" + vector.length + ">.");
 
-      double [] resultingVector = { scalar * vector[0], scalar * vector[1], scalar * vector[2] };
-      return( resultingVector );
+      double[] resultingVector = {scalar * vector[0], scalar * vector[1], scalar * vector[2]};
+      return (resultingVector);
     }
 
-    static double vectorDotProduct( double [] vectorA, double [] vectorB )
-    {
-      if ( vectorA.length != 3) throw new IllegalArgumentException( "First argument not a 3-D vector <dim=" + vectorA.length + ">.");
-      if ( vectorB.length != 3) throw new IllegalArgumentException( "Second argument not a 3-D vector <dim=" + vectorB.length + ">.");
+    static double vectorDotProduct(double[] vectorA, double[] vectorB) {
+      if (vectorA.length != 3)
+        throw new IllegalArgumentException("First argument not a 3-D vector <dim=" + vectorA.length + ">.");
+      if (vectorB.length != 3)
+        throw new IllegalArgumentException("Second argument not a 3-D vector <dim=" + vectorB.length + ">.");
 
-      return( vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1] + vectorA[2] * vectorB[2] );
+      return (vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1] + vectorA[2] * vectorB[2]);
     }
 
-    static double [] vectorCrossProduct( double [] vectorA, double [] vectorB )
-    {
-      if ( vectorA.length != 3) throw new IllegalArgumentException( "First argument not a 3-D vector <dim=" + vectorA.length + ">.");
-      if ( vectorB.length != 3) throw new IllegalArgumentException( "Second argument not a 3-D vector <dim=" + vectorB.length + ">.");
+    static double[] vectorCrossProduct(double[] vectorA, double[] vectorB) {
+      if (vectorA.length != 3)
+        throw new IllegalArgumentException("First argument not a 3-D vector <dim=" + vectorA.length + ">.");
+      if (vectorB.length != 3)
+        throw new IllegalArgumentException("Second argument not a 3-D vector <dim=" + vectorB.length + ">.");
 
-      double [] resultingVector = {
-        vectorA[1] * vectorB[2] - vectorA[2] * vectorB[1],
-        vectorA[2] * vectorB[0] - vectorA[0] * vectorB[2],
-        vectorA[0] * vectorB[1] - vectorA[1] * vectorB[0]
+      double[] resultingVector = {
+              vectorA[1] * vectorB[2] - vectorA[2] * vectorB[1],
+              vectorA[2] * vectorB[0] - vectorA[0] * vectorB[2],
+              vectorA[0] * vectorB[1] - vectorA[1] * vectorB[0]
       };
 
-      return( resultingVector );
+      return (resultingVector);
     }
   }
 }

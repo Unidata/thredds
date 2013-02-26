@@ -404,7 +404,7 @@ public String NC_check_name(String name) {
 
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    this.raf = raf;
+    super.open(raf, ncfile, cancelTask);
     this.ncfile = ncfile;
 
     String location = raf.getLocation();

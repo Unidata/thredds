@@ -51,7 +51,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
   protected boolean readonly;
   private ucar.nc2.NetcdfFile ncfile;
-  private ucar.unidata.io.RandomAccessFile myRaf;
   protected Giniheader headerParser;
 
   final static int Z_DEFLATED = 8;
@@ -82,14 +81,12 @@ public class Giniiosp extends AbstractIOServiceProvider {
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
     ncfile = file;
-    myRaf = raf;
+    super.open(raf, ncfile, cancelTask);
 
     headerParser = new Giniheader();
-    headerParser.read(myRaf, ncfile, null);
+    headerParser.read(raf, ncfile, null);
 
     ncfile.finish();
-
-
   }
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
@@ -114,12 +111,12 @@ public class Giniiosp extends AbstractIOServiceProvider {
   private Array readData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride,
                          int[] levels) throws IOException, InvalidRangeException {
 
-    long length = myRaf.length();
-    myRaf.seek(dataPos);
+    long length = raf.length();
+    raf.seek(dataPos);
 
     int data_size = (int) (length - dataPos);
     byte[] data = new byte[data_size];
-    myRaf.read(data);
+    raf.read(data);
 
     if (levels == null) {
       Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), data);
@@ -219,13 +216,13 @@ public class Giniiosp extends AbstractIOServiceProvider {
   public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int[] origin,
                                   int[] shape, int[] stride, int[] levels) throws IOException, InvalidRangeException {
 
-    long length = myRaf.length();
+    long length = raf.length();
 
-    myRaf.seek(dataPos);
+    raf.seek(dataPos);
 
     int data_size = (int) (length - dataPos);
     byte[] data = new byte[data_size];
-    myRaf.read(data);
+    raf.read(data);
     ByteArrayInputStream ios = new ByteArrayInputStream(data);
 
     BufferedImage image = javax.imageio.ImageIO.read(ios);
@@ -286,13 +283,13 @@ public class Giniiosp extends AbstractIOServiceProvider {
   public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int[] origin,
                                   int[] shape, int[] stride, int[] levels) throws IOException, InvalidRangeException {
 
-    long length = myRaf.length();
+    long length = raf.length();
 
-    myRaf.seek(dataPos);
+    raf.seek(dataPos);
 
     int data_size = (int) (length - dataPos);     //  or 5120 as read buffer size
     byte[] data = new byte[data_size];
-    myRaf.read(data);
+    raf.read(data);
 
     // decompress the bytes
     int resultLength = 0;
@@ -413,7 +410,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     /*
     ** checking image file and set location of first line in file
     */
-    myRaf.seek(doff);
+    raf.seek(doff);
 
     if (lineNumber >= ny)
       throw new IOException("Try to access the file at line number= " + lineNumber + " larger then last line number = " + ny);
@@ -426,8 +423,8 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
     //myRaf.seek ( offset );
     for (int i = 0; i < len; i++) {
-      myRaf.seek(offset);
-      data[i] = myRaf.readByte();
+      raf.seek(offset);
+      data[i] = raf.readByte();
       offset = offset + stride;
       //myRaf.seek(offset);
     }
@@ -467,14 +464,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
   protected boolean fill;
   protected HashMap dimHash = new HashMap(50);
 
-  public void flush() throws java.io.IOException {
-    myRaf.flush();
-  }
-
-  public void close() throws java.io.IOException {
-    myRaf.close();
-  }
-
   // get this to inline for performance
   private short convertUnsignedByte2Short(byte b) {
     return (short) ((b < 0) ? (short) b + 256 : (short) b);
@@ -493,7 +482,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
     }
 
     return 0;
-
   }
 
   public String getFileTypeId() {
@@ -520,8 +508,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
     ArrayByte data = (ArrayByte) v.read(origin, shape);
 
     ncf.close();
-
-
   }
 
 

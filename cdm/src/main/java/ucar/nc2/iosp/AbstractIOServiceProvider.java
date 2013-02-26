@@ -42,6 +42,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
@@ -137,6 +138,14 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   @Override
   public boolean sync() throws IOException {
     return false;
+  }
+
+  @Override
+  public long getLastModified() {
+    if (raf != null) {
+      return raf.getLastModified();
+    }
+    return 0;
   }
 
   @Override

@@ -372,6 +372,12 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
   }
 
   @Override
+  public long getLastModified() {
+    File file = new File(getLocation());
+    return file.lastModified();
+  }
+
+  @Override
   public void setFileCache(FileCache fileCache) {
     this.fileCache = fileCache;
   }

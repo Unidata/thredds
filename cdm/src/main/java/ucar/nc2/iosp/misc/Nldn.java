@@ -187,10 +187,8 @@ The specifics for the binary NLDN data record contained in the IDD is:
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if read error
    */
-  public void open(RandomAccessFile raf, NetcdfFile ncfile,
-                   CancelTask cancelTask)
-          throws IOException {
-    this.raf = raf;
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
 
     seq = new Sequence(ncfile, null, null, RECORD);
     ncfile.addVariable(null, seq);

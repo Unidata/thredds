@@ -963,8 +963,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    *
    * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
    * @return Variable or null if not found.
-   * @see NetcdfFile#escapeName
-   * @see NetcdfFile#unescapeName
    */
   public Variable findVariable(String fullNameEscaped) {
     if (fullNameEscaped == null || fullNameEscaped.length() == 0) {
@@ -1119,8 +1117,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    *
    * @param fullNameEscaped eg "@attName", "/group/subgroup/@attName" or "/group/subgroup/varname.name2.name@attName"
    * @return Attribute or null if not found.
-   * @see NetcdfFile#escapeName
-   * @see NetcdfFile#unescapeName
    */
   public Attribute findAttribute(String fullNameEscaped) {
     if (fullNameEscaped == null || fullNameEscaped.length() == 0) {
@@ -1348,9 +1344,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return true if file was changed.
    * @throws IOException if error
    */
+  @Override
   public boolean sync() throws IOException {
     unlocked = false;
     return (spi != null) && spi.sync();
+  }
+
+  @Override
+  public long getLastModified() {
+    return (spi != null) ? spi.getLastModified() : 0;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -2322,7 +2324,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Given a CDMNode, create its full name  with
    * appropriate backslash escaping of the specified characters.
    *
-   * @param v the cdm node
+   * @param node the cdm node
    * @param reservedChars the set of characters to escape
    * @return full name
    */

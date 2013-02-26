@@ -54,7 +54,6 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   protected boolean readonly;
   private ucar.nc2.NetcdfFile ncfile;
-  private ucar.unidata.io.RandomAccessFile myRaf;
   protected FysatHeader headerParser;
 
   final static int Z_DEFLATED = 8;
@@ -86,15 +85,13 @@ public class Fysatiosp extends AbstractIOServiceProvider {
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile file,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
+    super.open(raf, ncfile, cancelTask);
     ncfile = file;
-    myRaf = raf;
 
     headerParser = new FysatHeader();
-    headerParser.read(myRaf, ncfile);
+    headerParser.read(raf, ncfile);
 
     ncfile.finish();
-
-
   }
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
@@ -120,11 +117,11 @@ public class Fysatiosp extends AbstractIOServiceProvider {
   private Array readData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride) throws IOException, InvalidRangeException {
 
     // long length = myRaf.length();
-    myRaf.seek(dataPos);
+    raf.seek(dataPos);
     Vinfo vi = (Vinfo) v2.getSPobject();
     int data_size = vi.vsize;
     byte[] data = new byte[data_size];
-    myRaf.read(data);
+    raf.read(data);
 
     Array array = null;
     if (vi.classType == DataType.BYTE.getPrimitiveClassType()) {
@@ -206,13 +203,13 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride) throws IOException, InvalidRangeException {
 
-    long length = myRaf.length();
+    long length = raf.length();
 
-    myRaf.seek(dataPos);
+    raf.seek(dataPos);
 
     int data_size = (int) (length - dataPos);
     byte[] data = new byte[data_size];
-    myRaf.read(data);
+    raf.read(data);
     ByteArrayInputStream ios = new ByteArrayInputStream(data);
 
     BufferedImage image = javax.imageio.ImageIO.read(ios);
@@ -234,13 +231,13 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int[] origin, int[] shape, int[] stride) throws IOException, InvalidRangeException {
 
-    long length = myRaf.length();
+    long length = raf.length();
 
-    myRaf.seek(dataPos);
+    raf.seek(dataPos);
 
     int data_size = (int) (length - dataPos);     //  or 5120 as read buffer size
     byte[] data = new byte[data_size];
-    myRaf.read(data);
+    raf.read(data);
 
     // decompress the bytes
     int resultLength = 0;
@@ -324,7 +321,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     /*
     ** checking image file and set location of first line in file
     */
-    myRaf.seek(doff);
+    raf.seek(doff);
 
     if (lineNumber >= ny)
       throw new IOException("Try to access the file at line number= " + lineNumber + " larger then last line number = " + ny);
@@ -337,8 +334,8 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
     //myRaf.seek ( offset );
     for (int i = 0; i < len; i++) {
-      myRaf.seek(offset);
-      data[i] = myRaf.readByte();
+      raf.seek(offset);
+      data[i] = raf.readByte();
       offset = offset + stride;
       //myRaf.seek(offset);
     }
@@ -396,14 +393,6 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   protected boolean fill;
   protected HashMap dimHash = new HashMap(50);
-
-  public void flush() throws java.io.IOException {
-    myRaf.flush();
-  }
-
-  public void close() throws java.io.IOException {
-    myRaf.close();
-  }
 
   public short convertunsignedByte2Short(byte b) {
     return (short) ((b < 0) ? (short) b + 256 : (short) b);

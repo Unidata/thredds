@@ -187,15 +187,15 @@ public class Grib1Iosp extends GribIosp {
     }
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
-    ncfile.addAttribute(null, new Attribute("Originating_or_generating_Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
+    ncfile.addAttribute(null, new Attribute(GribUtils.CENTER, val == null ? Integer.toString(gribCollection.getCenter()) : val));
     val = cust.getSubCenterName(gribCollection.getSubcenter());
-    ncfile.addAttribute(null, new Attribute("Originating_or_generating_Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
+    ncfile.addAttribute(null, new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
     //ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
     //ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
 
     val = cust.getGeneratingProcessName(gribCollection.getGenProcessId());
     if (val != null)
-      ncfile.addAttribute(null, new Attribute("Generating_process_or_model", val));
+      ncfile.addAttribute(null, new Attribute(GribUtils.GEN_PROCESS, val));
 
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib1Collection"));
@@ -376,9 +376,9 @@ public class Grib1Iosp extends GribIosp {
     if (tc.isInterval()) {
       GribStatType statType = cust.getStatType(tc.getCode());
       if (statType == null) {
-        v.addAttribute(new Attribute("Grib1 statistical type", tc.getCode()));
+        v.addAttribute(new Attribute("Grib1_statistical_type", tc.getCode()));
       } else {
-        v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
+        v.addAttribute(new Attribute("Grib1_statistical_type", GribStatType.getStatTypeDescription(statType)));
       }
 
       // coordinate bounds
@@ -410,7 +410,7 @@ public class Grib1Iosp extends GribIosp {
       v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
     }
 
-    v.addAttribute(new Attribute("GRIB1_level_code", vc.getCode()));
+    v.addAttribute(new Attribute("Grib1_level_code", vc.getCode()));
     String datum = cust.getLevelDatum(vc.getCode());
     if (datum != null)
       v.addAttribute(new Attribute("datum", datum));

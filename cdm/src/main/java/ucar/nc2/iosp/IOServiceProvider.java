@@ -160,6 +160,8 @@ public interface IOServiceProvider {
    */
   public boolean sync() throws IOException;
 
+  public long getLastModified();
+
   /**
    * A way to communicate arbitrary information to an iosp.
    * @param message opaque message sent to the IOSP object when its opened (not when isValidFile() is called)

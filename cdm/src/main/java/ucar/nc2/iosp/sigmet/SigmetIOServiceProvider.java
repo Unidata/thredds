@@ -128,7 +128,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    */
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws java.io.IOException {
-    this.raf = raf;
+    super.open(raf, ncfile, cancelTask);
     //java.util.Map<String, Number> recHdr=new java.util.HashMap<String, Number>();
     java.util.Map<String, String> hdrNames = new java.util.HashMap<String, String>();
     volScan = new SigmetVolumeScan(raf, ncfile, varList);

@@ -383,6 +383,14 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   @Override
+  public long getLastModified() {
+    if (indexFile != null) {
+      return indexFile.lastModified();
+    }
+    return 0;
+  }
+
+  @Override
   public void setFileCache(FileCache fileCache) {
     this.fileCache = fileCache;
   }

@@ -83,7 +83,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
   private RandomAccessFile raf;
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    this.raf = raf;
+    super.open(raf, ncfile, cancelTask);
 
     readHDR();
 
@@ -157,7 +157,4 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     return Array.factory(v2.getDataType().getPrimitiveClassType(), wantSection.getShape(), arr);
   }
 
-  public void close() throws IOException {
-    raf.close();
-  }
 }

@@ -46,7 +46,6 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
   static private final String PRECIP = "PCP WATER";
   static private final String RAIN = "RAIN";
 
-  private RandomAccessFile raf;
   private NetcdfFile ncfile;
   private String[] species_names;
   private long data_start;
@@ -66,7 +65,6 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
    */
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     try {
-
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
       raf.skipBytes(4);
@@ -142,7 +140,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      *
      */
     // Internalize raf and ncfile
-    this.raf = raf;
+    super.open(raf, ncfile, cancelTask);
     this.ncfile = ncfile;
 
     // set raf to big endian and start at the beginning
@@ -370,7 +368,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     projpath = projpath + File.separator + "camxproj.txt";
     File paramFile = new File(projpath);
     if (paramFile.exists()) {
-      BufferedReader br = new BufferedReader(new FileReader( paramFile));
+      BufferedReader br = new BufferedReader(new FileReader(paramFile));
       while ((thisLine = br.readLine()) != null) {
         if (thisLine.substring(0, 1) != "#") {
           key_value = thisLine.split("=");
@@ -404,7 +402,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
 
     } else {
       if (log.isDebugEnabled()) log.debug("UAMIVServiceProvider: adding projection file");
-      BufferedWriter bw = new BufferedWriter(new java.io.FileWriter( paramFile));
+      BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(paramFile));
       bw.write("# Projection parameters are based on IOAPI.  For details, see www.baronsams.com/products/ioapi");
       bw.newLine();
       bw.write("GDTYP=");
@@ -566,16 +564,4 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     return data.sectionNoReduce(wantSection.getRanges());
   }
 
-  ;
-
-  /**
-   * Close the file.
-   * It is the IOServiceProvider's job to close the file (even though it didnt open it),
-   * and to free any other resources it has used.
-   *
-   * @throws IOException
-   */
-  public void close() throws IOException {
-    raf.close();
-  }
 }

@@ -1100,6 +1100,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   @Override
+  public long getLastModified() {
+    // LOOK agg ??
+
+    return (orgFile != null) ? orgFile.getLastModified() : 0;
+  }
+
+  @Override
   public void empty() {
     super.empty();
     coordSys = new ArrayList<CoordinateSystem>();

@@ -42,6 +42,10 @@ import ucar.unidata.util.StringUtil2;
  * @since 11/16/11
  */
 public class GribUtils {
+  public static final String CENTER = "Originating_or_generating_Center";
+  public static final String SUBCENTER = "Originating_or_generating_Subcenter";
+  public static final String GEN_PROCESS = "Generating_process_or_model";
+  public static final String TABLE_VERSION = "GRIB_table_version";
 
   /**
    * Convert a time unit to a CalendarPeriod

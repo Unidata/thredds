@@ -64,6 +64,8 @@ public interface FileCacheable {
    */
   public boolean sync() throws IOException;
 
+  public long getLastModified();
+
   /**
    * If the FileCache is set, the FileCacheable object must store it and call FileCache.release() on FileCacheable.close():
   <pre>

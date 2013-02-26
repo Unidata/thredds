@@ -56,8 +56,6 @@ public class Nidsiosp extends AbstractIOServiceProvider {
 
   protected boolean readonly;
   private ucar.nc2.NetcdfFile ncfile;
-  private ucar.unidata.io.RandomAccessFile myRaf;
-  // private Nidsheader.Vinfo myInfo;
   protected Nidsheader headerParser;
 
   private int pcode;
@@ -102,11 +100,11 @@ public class Nidsiosp extends AbstractIOServiceProvider {
 
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile file,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
     ncfile = file;
-    myRaf = raf;
 
     headerParser = new Nidsheader();
-    headerParser.read(myRaf, ncfile);
+    headerParser.read(this.raf, ncfile);
     //myInfo = headerParser.getVarInfo();
     pcode = headerParser.pcode;
     ncfile.finish();
@@ -713,7 +711,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
         float isc = vinfo.code;
         float[] fdata = new float[npixel];
         for (int i = 0; i < npixel; i++) {
-            int ival =  unsignedByteToInt(pdata[i]);
+            int ival =  DataType.unsignedByteToShort(pdata[i]);
             if (ival != 2 && ival != 0 && ival != 1)
                 fdata[i] = (ival*isc - offset)/scale;
             else
@@ -732,7 +730,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
         float isc = vinfo.code;
         float[] fdata = new float[npixel];
         for (int i = 0; i < npixel; i++) {
-            int ival =  unsignedByteToInt(pdata[i]);
+            int ival =  DataType.unsignedByteToShort(pdata[i]);
             if ( ival != 0 && ival != 1)
                 fdata[i] = (ival*1.0f - offset*1.0f/isc)/(scale*1.0f);
             else
@@ -749,7 +747,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
         offset = levels[1];
         float[] fdata = new float[npixel];
         for (int i = 0; i < npixel; i++) {
-            int ival =  unsignedByteToInt(pdata[i]);
+            int ival =  DataType.unsignedByteToShort(pdata[i]);
             if (ival != 0)
                 fdata[i] = (float) ival ;
             else
@@ -763,7 +761,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
       for (int i = 0; i < npixel; i++) {
-        int ival = levels[unsignedByteToInt(pdata[i])];
+        int ival = levels[DataType.unsignedByteToShort(pdata[i])];
         if (ival > -9997 && ival != -9866)
           fdata[i] = (float) ival / (float) iscale + (float) offset;
         else
@@ -777,7 +775,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
       for (int i = 0; i < npixel; i++) {
-        int ival = levels[unsignedByteToInt(pdata[i])];
+        int ival = levels[DataType.unsignedByteToShort(pdata[i])];
         if (ival != levels[0] && ival != levels[1])
           fdata[i] = (float) ival / (float) iscale + (float) offset;
         else
@@ -791,7 +789,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
       for (int i = 0; i < npixel; i++) {
-        int ival = levels[convertunsignedByte2Short(pdata[i])];
+        int ival = levels[DataType.unsignedByteToShort(pdata[i])];
 
         if (ival > -9996 && ival != -9866)
           fdata[i] = (float) ival / (float) iscale + (float) offset;
@@ -835,7 +833,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
       for (int i = 0; i < npixel; i++) {
-        int ival = unsignedByteToInt(pdata[i]);
+        int ival = DataType.unsignedByteToShort(pdata[i]);
         if (ival == 0 && ival == 1)
           fdata[i] = Float.NaN;
         else
@@ -852,7 +850,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       float c = getHexDecodeValue((short)levels[3]);
       float d = getHexDecodeValue((short)levels[4]);
       for (int i = 0; i < npixel; i++) {
-        int ival = unsignedByteToInt(pdata[i]);
+        int ival = DataType.unsignedByteToShort(pdata[i]);
         if(ival == 0 || ival ==1)
           fdata[i] = Float.NaN;
         else if (ival < 20)
@@ -926,8 +924,8 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     int nbin = 0;
     int total = 0;
     for (run = 0; run < rLen * 2; run++) {
-      int drun = convertunsignedByte2Short(ddata[run]) >> 4;
-      byte dcode1 = (byte) (convertunsignedByte2Short(ddata[run]) & 0Xf);
+      int drun = DataType.unsignedByteToShort(ddata[run]) >> 4;
+      byte dcode1 = (byte) (DataType.unsignedByteToShort(ddata[run]) & 0Xf);
       for (int i = 0; i < drun; i++) {
         bdata[nbin++] = dcode1;
         total++;
@@ -961,7 +959,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     int total = 0;
 
     for (run = 0; run < rLen; run++) {
-      short dcode1 = convertunsignedByte2Short(ddata[run]);
+      short dcode1 = DataType.unsignedByteToShort(ddata[run]);
       sdata[run] = dcode1;
       total++;
     }
@@ -1573,9 +1571,9 @@ short arrowHeadValue = 0;    */
     int nbin = 0;
     int total = 0;
     for (run = 0; run < rLen-1; run++) {
-      int drun = convertunsignedByte2Short(ddata[run]);
+      int drun = DataType.unsignedByteToShort(ddata[run]);
       run++;
-      short dcode1 = (convertunsignedByte2Short(ddata[run]));
+      short dcode1 = (DataType.unsignedByteToShort(ddata[run]));
       for (int i = 0; i < drun; i++) {
         bdata[nbin++] = dcode1;
         total++;
@@ -1603,8 +1601,8 @@ short arrowHeadValue = 0;    */
       int nbin = 0;
       int total = 0;
       for (run = 0; run < rLen; run++) {
-        int drun = convertunsignedByte2Short(ddata[run]) >> 4;
-        short dcode1 = (short)(convertunsignedByte2Short(ddata[run]) & 0Xf);
+        int drun = DataType.unsignedByteToShort(ddata[run]) >> 4;
+        short dcode1 = (short)(DataType.unsignedByteToShort(ddata[run]) & 0Xf);
         for (int i = 0; i < drun; i++) {
           bdata[nbin++] = dcode1;
           total++;
@@ -1633,8 +1631,8 @@ short arrowHeadValue = 0;    */
     int nbin = 0;
     int total = 0;
     for (run = 0; run < rLen; run++) {
-      int drun = convertunsignedByte2Short(ddata[run]) >> 4;
-      byte dcode1 = (byte) (convertunsignedByte2Short(ddata[run]) & 0Xf);
+      int drun = DataType.unsignedByteToShort(ddata[run]) >> 4;
+      byte dcode1 = (byte) (DataType.unsignedByteToShort(ddata[run]) & 0Xf);
       for (int i = 0; i < drun; i++) {
         bdata[nbin++] = dcode1;
         total++;
@@ -1788,14 +1786,14 @@ short arrowHeadValue = 0;    */
   public byte[] readCompData(long hoff, long doff) throws IOException {
     int numin;                /* # input bytes processed       */
     long pos = 0;
-    long len = myRaf.length();
-    myRaf.seek(pos);
+    long len = raf.length();
+    raf.seek(pos);
     numin = (int) (len - hoff);
     // Read in the contents of the NEXRAD Level III product header
 
     // nids header process
     byte[] b = new byte[(int) len];
-    myRaf.readFully(b);
+    raf.readFully(b);
 
     /* a new copy of buff with only compressed bytes */
 
@@ -1919,15 +1917,15 @@ short arrowHeadValue = 0;    */
   public byte[] readUCompData(long hoff, long doff) throws IOException {
     int numin;
     long pos = 0;
-    long len = myRaf.length();
-    myRaf.seek(pos);
+    long len = raf.length();
+    raf.seek(pos);
 
     numin = (int) (len - hoff);
     // Read in the contents of the NEXRAD Level III product header
 
     // nids header process
     byte[] b = new byte[(int) len];
-    myRaf.readFully(b);
+    raf.readFully(b);
     /* a new copy of buff with only compressed bytes */
 
     byte[] ucomp = new byte[numin - 4];
@@ -1975,7 +1973,7 @@ short arrowHeadValue = 0;    */
     int bv[] = new int[num];
 
     for (i = 0; i < num; i++) {
-      bv[i] = convertunsignedByte2Short(b[offset + i]);
+      bv[i] = DataType.unsignedByteToShort(b[offset + i]);
     }
 
     /*
@@ -1999,7 +1997,7 @@ short arrowHeadValue = 0;    */
     int bv[] = new int[num];
 
     for (i = 0; i < num; i++) {
-      bv[i] = convertunsignedByte2Short(b[offset + i]);
+      bv[i] = DataType.unsignedByteToShort(b[offset + i]);
     }
 
     if (bv[0] > 127) {
@@ -2019,25 +2017,16 @@ short arrowHeadValue = 0;    */
 
   }
 
-  public short convertunsignedByte2Short(byte b) {
+  /* public short convertunsignedByte2Short(byte b) {
     return (short) ((b < 0) ? (short) b + 256 : (short) b);
   }
 
   public static int unsignedByteToInt(byte b) {
     return (int) b & 0xFF;
-  }
+  } */
 
   protected boolean fill;
   protected HashMap dimHash = new HashMap(50);
-
-  public void flush() throws java.io.IOException {
-    myRaf.flush();
-  }
-
-  public void close() throws java.io.IOException {
-    myRaf.close();
-  }
-
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
     String fileIn = "/home/yuanho/NIDS/N0R_20041102_2111";
