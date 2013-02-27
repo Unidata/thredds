@@ -591,7 +591,7 @@ public class DGrid extends DConstructor implements ClientIO {
                     // Check the matching Map vector; the Map projection must equal
                     // the Array dimension projection
 
-                    valid = true;
+                    // wrong: valid at this point might have been false: valid = true;
                     valid = valid && mapDim.getStart() == thisDim.getStart();
                     valid = valid && mapDim.getStop() == thisDim.getStop();
                     valid = valid && mapDim.getStride() == thisDim.getStride();
@@ -601,7 +601,7 @@ public class DGrid extends DConstructor implements ClientIO {
                 }
 
             } else {
-                // LogStream.out.println("Dimension empty. Verifing cooresponding Map vector not projected...");
+                // LogStream.out.println("Dimension empty. Verifying corresponding Map vector not projected...");
                 // Corresponding Map vector must be excluded from the
                 // projection or it's not a grid.
                 valid = !mapArray.isProject();

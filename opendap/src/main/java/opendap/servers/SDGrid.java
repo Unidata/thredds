@@ -108,7 +108,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
         boolean isGrid = false;
         boolean psemi = true;
 
-        //os.println("The gird contains "+projectedComponents(true)+" projected components");
+        //os.println("The grid contains "+projectedComponents(true)+" projected components");
 
         if (constrained && projectedComponents(true) == 0)
             return;
@@ -116,14 +116,18 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
         // If we are printing the declaration of a constrained Grid then check for
         // the case where the projection removes all but one component; the
         // resulting object is a simple array.
+        // 2013-2-26: Heimbigner : this is incorrect, even single
+        // projected components should be in a structure.
 
-        if (constrained && projectedComponents(true) == 1) {
+        /* Wrong
+            if (constrained && projectedComponents(true) == 1) {
             //os.println("It's a single Array.");
             isSingle = true;
             psemi = print_semi;
-        }
+        } */
+
         // If there are M (< N) componets (Array and Maps combined) in a N
-        // component Grid, send the M components as elements of a Struture.
+        // component Grid, send the M components as elements of a Structure.
         // This will preserve the grouping without violating the rules for a
         // Grid.
         else if (constrained && !projectionYieldsGrid(true)) {
@@ -141,12 +145,12 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
 
         if (isStructure) os.println(space + "Structure {");
 
-        ((SDArray) arrayVar).printDecl(os, space + (isSingle ? "" : "    "), psemi, constrained);
+        ((SDArray) arrayVar).printDecl(os, space + "    ", psemi, constrained);
 
         if (isGrid) os.println(space + " MAPS:");
         for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
             SDArray sda = (SDArray) e.nextElement();
-            sda.printDecl(os, space + (isSingle ? "" : "    "), psemi, constrained);
+            sda.printDecl(os, space + "    ", psemi, constrained);
         }
 
         if (isStructure || isGrid) {
