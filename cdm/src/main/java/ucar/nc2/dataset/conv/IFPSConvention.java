@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
@@ -79,9 +80,9 @@ public class IFPSConvention extends CoordSysBuilder {
    // Figure out projection info. Assume the same for all variables
     Variable lonVar = ds.findVariable("longitude");
     lonVar.addAttribute( new Attribute(CDM.UNITS, CDM.LON_UNITS));
-    lonVar.addAttribute( new Attribute(_Coordinate.AxisType, "Lon"));
+    lonVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     Variable latVar = ds.findVariable("latitude");
-    latVar.addAttribute( new Attribute(_Coordinate.AxisType, "Lat"));
+    latVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     latVar.addAttribute( new Attribute(CDM.UNITS, CDM.LAT_UNITS));
 
     projVar = latVar;
@@ -151,9 +152,7 @@ public class IFPSConvention extends CoordSysBuilder {
 
     CoordinateAxis1D timeCoord = new CoordinateAxis1D( ds, null, dimName, dtype, dimName, units, desc);
     timeCoord.setCachedData(timesArray, true);
-    timeCoord.addAttribute(new Attribute(CDM.LONG_NAME,  desc));
-    timeCoord.addAttribute(new Attribute(CDM.UNITS,  units));
-    timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+    timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     ds.addCoordinateAxis(timeCoord);
 
     parseInfo.format(" added coordinate variable %s\n", dimName);

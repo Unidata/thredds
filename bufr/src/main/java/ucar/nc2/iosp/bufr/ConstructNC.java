@@ -536,7 +536,12 @@ class ConstructNC {
     if (dayName != null) {
       int day = sdata.convertScalarInt(dayName);
       int month = sdata.convertScalarInt(monthName);
-      return CalendarDate.of(null, year, month, day, hour, min, sec);
+      try {
+        return CalendarDate.of(null, year, month, day, hour, min, sec);
+      } catch(RuntimeException t) {
+        System.out.println("HEY");
+        return CalendarDate.present(); // LOOK FAKE
+      }
 
     } else {
       int doy = sdata.convertScalarInt(doyName);

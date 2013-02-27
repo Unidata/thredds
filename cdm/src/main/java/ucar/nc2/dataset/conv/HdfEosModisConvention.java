@@ -1,14 +1,18 @@
 package ucar.nc2.dataset.conv;
 
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.projection.Sinusoidal;
 
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 /**
  * HDF4-EOS TERRA MODIS
@@ -21,6 +25,7 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
   private static final String DATA_GROUP = "Data_Fields";
   private static final String DIMX_NAME = "XDim";
   private static final String DIMY_NAME = "YDim";
+  private static final String TIME_NAME = "time";
 
   public static boolean isMine(NetcdfFile ncfile) {
     if (!ncfile.getFileTypeId().equals("HDF4-EOS")) return false;
@@ -72,10 +77,56 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
         ...
 
    */
+  private boolean addTimeCoord;
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    addTimeCoord = addTimeCoordinate(ds);
     findGroup(ds, ds.getRootGroup());
     ds.addAttribute(ds.getRootGroup(), new Attribute(CDM.CONVENTIONS, "CF-1.0"));
+
     ds.finish();
+  }
+
+  private boolean addTimeCoordinate(NetcdfDataset ds) {
+    // add time coordinate
+    CalendarDate cd = parseFilenameForDate(ds.getLocation());
+    if (cd == null) return false;
+
+    ds.addAttribute(ds.getRootGroup(), new Attribute("_MODIS_Date", cd.toString()));
+
+    // add the time dimension
+    int nTimesDim = 1;
+    Dimension newDim = new Dimension(TIME_NAME, nTimesDim);
+    ds.addDimension( null, newDim);
+
+    // add the coordinate variable
+    String units = "seconds since "+cd.toString();
+    String desc = "time coordinate";
+
+    Array data = Array.makeArray(DataType.DOUBLE, 1, 0.0, 0.0) ;
+
+    CoordinateAxis1D timeCoord = new CoordinateAxis1D( ds, null, TIME_NAME, DataType.DOUBLE, "", units, desc);
+    timeCoord.setCachedData(data, true);
+    timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+    ds.addCoordinateAxis(timeCoord);
+
+    return true;
+  }
+
+  private CalendarDate parseFilenameForDate(String filename) {
+    // filename MOD13Q1.A2000065.h11v04.005.2008238031620.hdf
+    String[] tokes = filename.split("\\.");
+    if (tokes.length < 2) return null;
+    if (tokes[1].length() < 8) return null;
+    String want = tokes[1];
+    String yearS = want.substring(1,5);
+    String jdayS = want.substring(5,8);
+    try {
+      int year = Integer.parseInt(yearS);
+      int jday = Integer.parseInt(jdayS);
+      return CalendarDate.withDoy(null, year, jday, 0,0,0);
+    }  catch (Exception e) {
+      return null;
+    }
   }
 
   private void findGroup(NetcdfDataset ds, Group g) {
@@ -121,6 +172,11 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
         if (!v.getDimension(0).equals(dimY))  continue;
         if (!v.getDimension(1).equals(dimX))  continue;
         v.addAttribute(new Attribute(CF.GRID_MAPPING, CRS));
+        if (addTimeCoord) {
+          v.addAttribute(new Attribute(_Coordinate.Axes, TIME_NAME+" "+DIMX_NAME + " " + DIMY_NAME));
+          //String dims = v.getDimensionsString();
+          //v.setDimensions(TIME_NAME+" "+dims);
+        }
         //v.addAttribute(new Attribute(_Coordinate.Axes, DIMX_NAME + " " + DIMY_NAME));
       }
     }
