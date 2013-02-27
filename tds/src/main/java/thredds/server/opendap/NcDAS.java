@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import opendap.dap.AttributeExistsException;
+import ucar.nc2.util.EscapeStrings;
 
 /**
  * Netcdf DAS object
@@ -169,8 +170,9 @@ public class NcDAS extends opendap.dap.DAS {
           // are not escaped, so we need to make sure that happens.
           String attName = att.getShortName();
         if (att.isString()) {
-          /* FIX String value = escapeAttributeStringValues(att.getStringValue());
-          table.appendAttribute(attName, dods_type, "\""+value+"\"");
+          /* do in Attribute.print()
+          String value = EscapeStrings.backslashEscape(att.getStringValue(),"\"\\");
+          table.appendAttribute(attName, dods_type, value);
           */
           table.appendAttribute(attName, dods_type, att.getStringValue());
         } else {

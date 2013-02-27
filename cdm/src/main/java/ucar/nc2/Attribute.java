@@ -51,7 +51,7 @@ import net.jcip.annotations.Immutable;
 
 @Immutable
 public class Attribute extends CDMNode {
-  private String svalue; // optimization for common case of String valued attribute
+  private String svalue; // optimization for common case of single String valued attribute
   private DataType dataType;
   private int nelems; // can be 0 or greater
   private Array values;
@@ -505,7 +505,7 @@ public class Attribute extends CDMNode {
     if (val == null)
       throw new IllegalArgumentException("Attribute value cannot be null");
 
-    // get rid of trailing zeroes
+    // get rid of trailing nul characters
     int len = val.length();
     while ((len > 0) && (val.charAt(len - 1) == 0))
       len--;
