@@ -152,15 +152,15 @@ public interface IOServiceProvider {
    */
   public boolean syncExtend() throws IOException;
 
-  /**
+  /*
    * Update the metadata in the NetcdfFile if the underlying dataset has changed.
    *
    * @return true if the NetcdfFile was changed.
    * @throws IOException if a read error occured when accessing the underlying dataset.
-   */
-  public boolean sync() throws IOException;
+   *
+  public boolean sync() throws IOException; */
 
-  public long getLastModified();
+  //public long getLastModified();  LOOK: dont add this for backwards compatibility. Probably add back in in version 5
 
   /**
    * A way to communicate arbitrary information to an iosp.

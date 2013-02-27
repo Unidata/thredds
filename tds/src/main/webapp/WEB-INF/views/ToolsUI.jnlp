@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart">
   <information>
-    <title>NetCDF Tools UI 4.2</title>
+    <title>NetCDF Tools UI 4.3</title>
     <vendor>Unidata</vendor>
     <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/"/>
     <description kind="short">GUI interface to netCDF-Java / Common Data Model</description>

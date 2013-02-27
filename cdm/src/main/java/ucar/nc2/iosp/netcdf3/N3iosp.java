@@ -846,7 +846,7 @@ public String NC_check_name(String name) {
     return result;
   }
 
-  @Override
+  /* @Override
   public boolean sync() throws IOException {
     if (syncExtendOnly)
       return syncExtend();
@@ -870,7 +870,7 @@ public String NC_check_name(String name) {
 
     // can this happen ?
     throw new IOException("File does not exist");
-  }
+  } */
 
   public void flush() throws java.io.IOException {
     raf.flush();

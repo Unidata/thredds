@@ -108,7 +108,7 @@ public class TestCdmRemoteServer extends TestCase {
     System.out.println("ThreddsDataFactory.Result= "+dataResult);
   }
 
-  public void utestUrlReading() throws IOException {
+  public void testUrlReading() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
 
@@ -136,7 +136,7 @@ public class TestCdmRemoteServer extends TestCase {
   }
 
   public void testCompareWithFile() throws IOException {
-    final String urlPrefix = CdmRemote.SCHEME+"http://localhost:8080/thredds/cdmremote/opendapTest/";
+    final String urlPrefix = CdmRemote.SCHEME+TestTdsLocal.top+"/cdmremote/opendapTest/";
     final String dirName = TestDir.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
     TestDir.actOnAll(dirName, new TestDir.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestDir.Act() {

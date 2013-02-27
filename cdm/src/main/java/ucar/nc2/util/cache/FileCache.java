@@ -53,7 +53,8 @@ import ucar.nc2.util.CancelTask;
  * <li>The FileCacheable object must not be modified.
  * <li>The hashKey must uniquely define the FileCacheable object.
  * <li>The location must be usable in a FileFactory.open().
- * <li>If the FileCacheable is acquired from the cache (ie already open), sync() is called on it.
+ * <li>If the FileCacheable is acquired from the cache (ie already open), getLastModified() is used to see if it has changed,
+ *     and is discarded if so.
  * <li>Make sure you call shutdown() when exiting the program, in order to shut down the cleanup thread.
  * </ol>
  * <p/>
@@ -305,7 +306,7 @@ public class FileCache {
     }
     if (want == null) return null; // no unlocked file in cache
 
-    /* DISABLED 2/26/2013 JCARON
+    /* DISABLED 2/26/2013 JCARON use getLastModified()
      sync the file when you want to use it again : needed for grib growing index, netcdf-3 record growing, etc
     if (want != null) {
       try {
@@ -327,10 +328,14 @@ public class FileCache {
       if (cacheLog.isDebugEnabled() && changed)
         cacheLog.debug("FileCache " + name + ": acquire from cache " + hashKey + " " + want.ncfile.getLocation() + " was changed; discard");
       if (changed) {
-        synchronized (wantCacheElem) {
-          wantCacheElem.list.remove(want);
-        }
+        want.remove();
         files.remove(want.ncfile);
+        want.ncfile.setFileCache(null);
+        try {
+          want.ncfile.close();
+        } catch (IOException e) {
+          log.error("close failed on "+want.ncfile.getLocation(), e);
+        }
         want.ncfile = null;
       }
     }
