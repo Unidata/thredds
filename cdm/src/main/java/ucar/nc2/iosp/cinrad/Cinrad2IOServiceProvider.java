@@ -153,6 +153,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   private DateFormatter formatter = new DateFormatter();
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
     NexradStationDB.init();
 
     volScan = new Cinrad2VolumeScan( raf, cancelTask);
@@ -572,9 +573,4 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
-
-  public void close() throws IOException {
-    volScan.raf.close();
-  }
 }

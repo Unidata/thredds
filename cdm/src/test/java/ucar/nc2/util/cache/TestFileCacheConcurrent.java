@@ -154,7 +154,7 @@ public class TestFileCacheConcurrent {
         //System.out.printf("acquire %s%n", location);
         FileCacheable fc = cache.acquire(factory, location, null);
         NetcdfFile ncfile = (NetcdfFile) fc;
-        assert !ncfile.isUnlocked();
+        //assert ncfile.isLocked();
         assert (null != ncfile.getIosp());
         Thread.sleep(wait);
         ncfile.close();

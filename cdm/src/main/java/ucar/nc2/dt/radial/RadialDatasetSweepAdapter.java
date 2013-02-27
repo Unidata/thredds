@@ -225,6 +225,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   //////////////////////////////////////////////////
   //  FileCacheable
 
+  @Override
   public synchronized void close() throws java.io.IOException {
     if (fileCache != null) {
       fileCache.release(this);
@@ -237,11 +238,19 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     }
   }
 
+  /* @Override
   public boolean sync() throws IOException {
     return false;
+  } */
+
+  @Override
+  public long getLastModified() {
+    return (ncfile != null) ? ncfile.getLastModified() : 0;
   }
 
   protected FileCache fileCache;
+
+  @Override
   public void setFileCache(FileCache fileCache) {
     this.fileCache = fileCache;
   }

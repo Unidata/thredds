@@ -103,7 +103,7 @@ public class TestOffAggUpdating extends TestCase {
       }
     }
 
-    ncfile.sync();
+    ncfile.syncExtend();
     check(ncfile, 18);
 
     ncfile.close();    

@@ -670,8 +670,6 @@ public static String normalizeToXML(String s)
 
 }
 
-
-
     /**
      * Given a backslash escaped name,
      * convert to a DAP escaped name
@@ -698,5 +696,34 @@ public static String normalizeToXML(String s)
 	}
 	return buf.toString();
     }
+
+
+static String
+backslashEscapeDapString(String s)
+{
+    StringBuilder buf = new StringBuilder();
+    for(int i=0;i<s.length();i++) {
+	int c = s.charAt(i);
+	if(c < ' ') {
+	    switch (c) {
+            case '\n': case '\r': case '\t': case '\f':
+	        buf.append((char)c);		
+		break;
+            default:
+                buf.append(String.format("0x%04x",c));
+		break;
+            }
+	} else if(c == '"') {
+	    buf.append("\\\"");
+        } else if(c == '\\') {
+	    buf.append('\\');
+	} else
+	    buf.append((char)c);		
+    }
+    return buf.toString();
+}
+
+
+
 
 }

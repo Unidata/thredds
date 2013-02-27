@@ -82,6 +82,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     NexradStationDB.init();
+    this.raf = raf;
 
     volScan = new Level2VolumeScan( raf, cancelTask);
     if (volScan.hasDifferentDopplarResolutions())
@@ -611,9 +612,6 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
   /////////////////////////////////////////////////////////////////////
 
-  public void close() throws IOException {
-    volScan.raf.close();
-  }
 
   public String getFileTypeId() {
     return DataFormatType.NEXRAD2.toString();

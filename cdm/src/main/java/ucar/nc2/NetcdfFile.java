@@ -32,6 +32,7 @@
  */
 package ucar.nc2;
 
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.EscapeStrings;
 import ucar.ma2.*;
@@ -794,7 +795,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   ////////////////////////////////////////////////////////////////////////////////////////////////
   protected String location, id, title, cacheName;
   protected Group rootGroup = makeRootGroup();
-  protected boolean unlocked = false; // in the cache but not locked
+  //protected boolean unlocked = false; // in the cache and locked - detect unguarded access to this file
   private boolean immutable = false;
 
   protected ucar.nc2.util.cache.FileCache cache;
@@ -806,12 +807,21 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected List<Attribute> gattributes;
 
   /*
-   * Is the dataset closed, and not available for use.
-   * @return true if closed
-   */
+   * Is the dataset in the cache, but unlocked, and so not available for use.
+   * Detect illegal use of dataset
+   * @return true if unlocked
+   *
   public synchronized boolean isUnlocked() {
     return unlocked;
   }
+
+  /*
+   * Set unlocked to true
+   * @return true if closed
+   *
+  public synchronized void setUnlocked() {
+    unlocked = true;
+  } */
 
   /**
    * Close all resources (files, sockets, etc) associated with this file.
@@ -822,7 +832,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public synchronized void close() throws java.io.IOException {
     if (cache != null) {
-      unlocked = true;
+      //unlocked = true;
       cache.release(this);
 
     } else {
@@ -963,8 +973,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    *
    * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
    * @return Variable or null if not found.
-   * @see NetcdfFile#escapeName
-   * @see NetcdfFile#unescapeName
    */
   public Variable findVariable(String fullNameEscaped) {
     if (fullNameEscaped == null || fullNameEscaped.length() == 0) {
@@ -1119,8 +1127,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    *
    * @param fullNameEscaped eg "@attName", "/group/subgroup/@attName" or "/group/subgroup/varname.name2.name@attName"
    * @return Attribute or null if not found.
-   * @see NetcdfFile#escapeName
-   * @see NetcdfFile#unescapeName
    */
   public Attribute findAttribute(String fullNameEscaped) {
     if (fullNameEscaped == null || fullNameEscaped.length() == 0) {
@@ -1336,21 +1342,30 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws IOException if error
    */
   public boolean syncExtend() throws IOException {
-    unlocked = false;
+    //unlocked = false;
     return (spi != null) && spi.syncExtend();
   }
 
-  /**
+  /*
    * Check if file has changed, and reread metadata if needed.
    * All previous object references (variables, dimensions, etc) may become invalid - you must re-obtain.
    * DO NOT USE THIS ROUTINE YET - NOT FULLY TESTED
    *
    * @return true if file was changed.
    * @throws IOException if error
-   */
+   *
   public boolean sync() throws IOException {
     unlocked = false;
     return (spi != null) && spi.sync();
+  } */
+
+  @Override
+  public long getLastModified() {
+    if (spi != null && spi instanceof AbstractIOServiceProvider) {
+      AbstractIOServiceProvider aspi = (AbstractIOServiceProvider) spi;
+      return aspi.getLastModified();
+    }
+    return 0;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -1904,10 +1919,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       start = System.currentTimeMillis();
     }
 
-    if (unlocked) {
+    /* if (unlocked) {
       String info = cache.getInfo(this);
       throw new IllegalStateException("File is unlocked - cannot use\n" + info);
-    }
+    } */
 
     if (spi == null) {
       throw new IOException("spi is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
@@ -1934,8 +1949,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
-    if (unlocked)
-      throw new IllegalStateException("File is unlocked - cannot use");
+    /* if (unlocked)
+      throw new IllegalStateException("File is unlocked - cannot use"); */
 
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
     if (cer.child == null) {
@@ -1968,8 +1983,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc)
           throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
-    if (unlocked)
-      throw new IllegalStateException("File is unlocked - cannot use");
+    //if (unlocked)
+    //  throw new IllegalStateException("File is unlocked - cannot use");
 
     if ((spi == null) || v.hasCachedData())
       return IospHelper.copyToByteChannel(v.read(section), wbc);
@@ -1981,8 +1996,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected long readToOutputStream(ucar.nc2.Variable v, Section section, OutputStream out)
           throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
-    if (unlocked)
-      throw new IllegalStateException("File is unlocked - cannot use");
+    //if (unlocked)
+    //  throw new IllegalStateException("File is unlocked - cannot use");
 
     if ((spi == null) || v.hasCachedData())
       return IospHelper.copyToOutputStream(v.read(section), out);
@@ -2322,7 +2337,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Given a CDMNode, create its full name  with
    * appropriate backslash escaping of the specified characters.
    *
-   * @param v the cdm node
+   * @param node the cdm node
    * @param reservedChars the set of characters to escape
    * @return full name
    */

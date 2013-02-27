@@ -404,7 +404,7 @@ public String NC_check_name(String name) {
 
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    this.raf = raf;
+    super.open(raf, ncfile, cancelTask);
     this.ncfile = ncfile;
 
     String location = raf.getLocation();
@@ -846,7 +846,7 @@ public String NC_check_name(String name) {
     return result;
   }
 
-  @Override
+  /* @Override
   public boolean sync() throws IOException {
     if (syncExtendOnly)
       return syncExtend();
@@ -870,7 +870,7 @@ public String NC_check_name(String name) {
 
     // can this happen ?
     throw new IOException("File does not exist");
-  }
+  } */
 
   public void flush() throws java.io.IOException {
     raf.flush();

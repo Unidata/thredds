@@ -61,6 +61,26 @@ public class TestReadFormats {
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
   }
 
+  @Test
+  public void problem() throws IOException {
+    doOne("Q:/cdmUnitTest/formats/gtopo/E020N40.DEM");
+  }
+
+  private void doOne(String name) throws IOException {
+    NetcdfFile ncfile = null;
+    try {
+       ncfile = NetcdfDataset.openFile(name, null);
+       if (verbose) System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
+       countGood++;
+     } catch (Throwable t) {
+       System.out.printf("  FAIL on %s == %s%n", name, t.getMessage());
+       t.printStackTrace();
+     } finally {
+       if (ncfile != null) ncfile.close();
+     }
+
+  }
+
   public void openAllInDir(String dirName, FileFilter ff) throws IOException {
     if (verbose) System.out.println("---------------Reading directory "+dirName);
     File allDir = new File( dirName);

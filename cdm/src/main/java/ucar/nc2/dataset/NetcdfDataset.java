@@ -1035,7 +1035,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (agg != null) agg.persistWrite(); // LOOK  maybe only on real close ??
 
     if (cache != null) {
-      unlocked = true;
+      //unlocked = true;
       cache.release(this);
 
     } else {
@@ -1063,13 +1063,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }  */
 
-  /**
+  /*
    * Check if file has changed, and reread metadata if needed.
    * All previous object references (variables, dimensions, etc) may become invalid - you must re-obtain.
    *
    * @return true if file was changed.
    * @throws IOException
-   */
+   *
   public boolean sync() throws IOException {
     unlocked = false;
 
@@ -1097,6 +1097,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     return false;
+  } */
+
+  @Override
+  public long getLastModified() {
+    // LOOK agg ??
+
+    return (orgFile != null) ? orgFile.getLastModified() : 0;
   }
 
   @Override
@@ -1109,7 +1116,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   public boolean syncExtend() throws IOException {
-    unlocked = false;
+    //unlocked = false;
 
     if (agg != null)
       return agg.syncExtend();

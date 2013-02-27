@@ -61,8 +61,13 @@ public interface FileCacheable {
    *  application. FileCacheable has an opportunity to freshen itself. FileCacheable may ignore this call.
    * @return true if FileCacheable was changed
    * @throws IOException on i/o error.
+  public boolean sync() throws IOException; */
+
+  /**
+   * Get last modified date of underlying file. If changes, will be discarded.
+   * @return a sequence number (typically file date), 0 if cannot change
    */
-  public boolean sync() throws IOException;
+  public long getLastModified();
 
   /**
    * If the FileCache is set, the FileCacheable object must store it and call FileCache.release() on FileCacheable.close():

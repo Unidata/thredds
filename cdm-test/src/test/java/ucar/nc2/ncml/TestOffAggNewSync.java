@@ -106,7 +106,7 @@ public class TestOffAggNewSync {
 
     Thread.sleep(2000);
 
-    ncfile.sync();
+    ncfile.syncExtend();
     testAggCoordVar(ncfile, 8);
     ncfile.close();
     System.out.printf("ok testSync%n");
@@ -123,7 +123,7 @@ public class TestOffAggNewSync {
     int nfiles = ok ? 7 : 8;  // sometimes fails
     Thread.sleep(2000);
 
-    ncfile.sync();
+    ncfile.syncExtend();
     testAggCoordVar(ncfile, nfiles);
     ncfile.close();
 

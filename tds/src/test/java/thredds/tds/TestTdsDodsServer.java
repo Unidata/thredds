@@ -62,7 +62,7 @@ public class TestTdsDodsServer extends TestCase {
 
   //                http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1.ascii?Visibility[0:1:0][10:21:0][0:10:0]
   //                http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1.ascii?Visibility[0:1:0][0:1:0][0:1:0]
-  String dataset = "http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1";
+  String dataset = TestTdsLocal.top+"/dodsC/testCdmUnitTest/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2";
   public void testGrid() {
     String grid = dataset + ".ascii?Visibility_surface[0:1:0][0:1:0][0:1:0]";
     System.out.println(" request= "+grid);
@@ -162,7 +162,7 @@ public class TestTdsDodsServer extends TestCase {
    public void testSingleDataset() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);
 
-    InvDataset ds = cat.findDatasetByID("testDataset");
+    InvDataset ds = cat.findDatasetByID("testDataset2");
     assert (ds != null) : "cant find dataset 'testDataset'";
     assert ds.getDataType() == FeatureType.GRID;
 
@@ -208,12 +208,12 @@ public class TestTdsDodsServer extends TestCase {
   }
 
   public void testUrlReading() throws IOException {
-    doOne("http://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_22km_20100504_0000.grib1");
-    doOne("http://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_45km_conduit_20100913_0000.grib2");
+    doOne(TestTdsLocal.top+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_22km_20100504_0000.grib1");
+    doOne(TestTdsLocal.top+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_45km_conduit_20100913_0000.grib2");
   }
 
   public void testCompareWithFile() throws IOException {
-    final String urlPrefix = "dods://localhost:8080/thredds/dodsC/opendapTest/";
+    final String urlPrefix = TestTdsLocal.top+"/dodsC/opendapTest/";
     final String dirName = TestDir.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
     TestDir.actOnAll(dirName, new TestDir.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestDir.Act() {

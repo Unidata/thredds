@@ -42,6 +42,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
@@ -134,9 +135,20 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return false;
   }
 
-  @Override
+  /* @Override
   public boolean sync() throws IOException {
     return false;
+  } */
+
+  /**
+   * Get last modified date of underlying file. If changes, will be discarded.
+   * @return a sequence number (typically file date), 0 if cannot change
+   */
+  public long getLastModified() {
+    if (raf != null) {
+      return raf.getLastModified();
+    }
+    return 0;
   }
 
   @Override

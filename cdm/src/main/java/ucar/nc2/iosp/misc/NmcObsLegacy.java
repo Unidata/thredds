@@ -57,7 +57,6 @@ import java.nio.ByteBuffer;
 public class NmcObsLegacy extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NmcObsLegacy.class);
 
-  private RandomAccessFile raf;
   private NetcdfFile ncfile;
   //private Structure reportVar;
 
@@ -142,10 +141,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       log.error("open ON29 File", e);
       throw new IllegalStateException(e.getMessage());
     }
-  }
-
-  public void close() throws IOException {
-    raf.close();
   }
 
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {

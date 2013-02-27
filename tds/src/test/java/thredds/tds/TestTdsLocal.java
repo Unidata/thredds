@@ -36,7 +36,6 @@ import junit.framework.*;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.nc2.thredds.ThreddsDataFactory;
 
 /**
  * TestSuite that runs all the sample tests for testing the TDS on localhost.
@@ -45,17 +44,17 @@ import ucar.nc2.thredds.ThreddsDataFactory;
  * Please keep this updated and checked into svn.
  *
  * Data should be kept in /upc/share/cdmUnitTest/tds
- * To run, use "-Dtds.content.root.path=/$github_root/tds/src/test/data"  on java startup
+ * To run, use "-Dtds.content.root.path=/$github_root/tds/src/test/data/content"  on java startup
  *
  * jcaron, resurrected Sep 2010
  */
 public class TestTdsLocal extends TestCase {
-  public static String topCatalog = "http://localhost:8080/thredds";
+  public static String top = "http://localhost:8081/thredds";
   public static boolean showValidationMessages = false;
 
   public static InvCatalogImpl open(String catalogName) {
     if (catalogName == null) catalogName = "/catalog.xml";
-    String catalogPath = topCatalog + catalogName;
+    String catalogPath = top + catalogName;
     System.out.println("\n open= "+catalogPath);
     StringBuilder buff = new StringBuilder();
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false);

@@ -366,9 +366,15 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
     file = null;  // help the gc
   }
 
-  @Override
+  /* @Override
   public boolean sync() throws IOException {
     return false;
+  } */
+
+  @Override
+  public long getLastModified() {
+    File file = new File(getLocation());
+    return file.lastModified();
   }
 
   @Override

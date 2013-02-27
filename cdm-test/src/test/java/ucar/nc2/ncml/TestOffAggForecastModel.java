@@ -106,7 +106,7 @@ public class TestOffAggForecastModel extends TestCase {
     boolean ok = newModelFileSave.renameTo(newModelFile);
     if (!ok) throw new IOException("cant rename file");
 
-    ncfile.sync();
+    ncfile.syncExtend();
 
     testDimensions(ncfile, nruns);
     testCoordVar(ncfile);

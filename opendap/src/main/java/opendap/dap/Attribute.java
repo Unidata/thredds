@@ -40,6 +40,7 @@
 package opendap.dap;
 
 import opendap.dap.parsers.DDSXMLParser;
+import ucar.nc2.util.EscapeStrings;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -744,7 +745,7 @@ public class Attribute extends DAPNode
           os.print(val);
 */
         if(this.type == Attribute.STRING) {
-          String quoted = "\"" + escapify(val) + "\"";
+          String quoted = "\"" + EscapeStrings.backslashToDAP(val) + "\"";
          for(int i=0;i<quoted.length();i++) os.print((char)((int)quoted.charAt(i)));
          //os.print(quoted);
         } else
@@ -880,32 +881,6 @@ fixnan(String value)
 	value = "inf";
     return value;
 }
-
-
-static String escapify(String s)
-{
-    StringBuilder buf = new StringBuilder();
-    for(int i=0;i<s.length();i++) {
-	int c = s.charAt(i);
-	if(c < ' ') {
-	    switch (c) {
-            case '\n': case '\r': case '\t': case '\f':
-	        buf.append((char)c);		
-		break;
-            default:
-                buf.append(String.format("0x%04x",c));
-		break;
-            }
-	} else if(c == '"') {
-	    buf.append("\\\"");
-    } else if(c == '\\') {
-	    buf.append('\\');
-	} else
-	    buf.append((char)c);		
-    }
-    return buf.toString();
-}
-
 
   /**
    * Returns a clone of this <code>Attribute</code>.

@@ -126,9 +126,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     /** table of param name to var index */
     private static Hashtable<Variable, Integer> varTable;
 
-    /** local copy of the raf */
-    private RandomAccessFile raf;
-
     /** local copy of the ncfile */
     private NetcdfFile ncfile;
 
@@ -490,6 +487,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         if (v5dstruct != null) {
             v5dstruct = null;
         }
+      super.close();
     }
 
     /**

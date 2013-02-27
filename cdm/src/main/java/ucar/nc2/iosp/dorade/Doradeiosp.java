@@ -48,7 +48,6 @@ import java.util.*;
 public class Doradeiosp extends AbstractIOServiceProvider {
 
   protected boolean readonly;
-  private ucar.unidata.io.RandomAccessFile myRaf;
   protected Doradeheader headerParser;
 
   public DoradeSweep mySweep = null;
@@ -72,7 +71,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
-    myRaf = raf;
+    super.open(raf, ncfile, cancelTask);
 
     try {
       mySweep = new DoradeSweep(raf.getRandomAccessFile());
@@ -259,15 +258,6 @@ public class Doradeiosp extends AbstractIOServiceProvider {
 
   protected boolean fill;
   protected HashMap dimHash = new HashMap(50);
-
-  public void flush() throws java.io.IOException {
-    myRaf.flush();
-  }
-
-  public void close() throws java.io.IOException {
-    myRaf.close();
-  }
-
 
   public static void main(String args[]) throws IOException, InstantiationException, IllegalAccessException {
     String fileIn = "/home/yuanho/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";

@@ -363,20 +363,20 @@ public class Grib2Iosp extends GribIosp {
     }
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
-    ncfile.addAttribute(null, new Attribute("Originating or generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
+    ncfile.addAttribute(null, new Attribute(GribUtils.CENTER, val == null ? Integer.toString(gribCollection.getCenter()) : val));
     val = cust.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
-    ncfile.addAttribute(null, new Attribute("Originating or generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
-    ncfile.addAttribute(null, new Attribute("GRIB table version (master,local)", gribCollection.getMaster() + "," + gribCollection.getLocal())); // LOOK
+    ncfile.addAttribute(null, new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
+    ncfile.addAttribute(null, new Attribute(GribUtils.TABLE_VERSION, gribCollection.getMaster() + "," + gribCollection.getLocal())); // LOOK
 
     val = cust.getTableValue("4.3", gribCollection.getGenProcessType());
     if (val != null)
-      ncfile.addAttribute(null, new Attribute("Type of generating process", val));
+      ncfile.addAttribute(null, new Attribute("Type_of_generating_process", val));
     val = cust.getGeneratingProcessName(gribCollection.getGenProcessId());
     if (val != null)
-      ncfile.addAttribute(null, new Attribute("Analysis or forecast generating process identifier (defined by originating centre)", val));
+      ncfile.addAttribute(null, new Attribute("Analysis_or_forecast_generating_process_identifier_defined_by_originating_centre", val));
     val = cust.getGeneratingProcessName(gribCollection.getBackProcessId());
     if (val != null)
-      ncfile.addAttribute(null, new Attribute("Background generating process identifier (defined by originating centre)", val));
+      ncfile.addAttribute(null, new Attribute("Background_generating_process_identifier_defined_by_originating_centre", val));
 
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib2Collection"));
@@ -627,7 +627,7 @@ public class Grib2Iosp extends GribIosp {
         v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
       }
 
-      v.addAttribute(new Attribute("GRIB2_level_type", vc.getCode()));
+      v.addAttribute(new Attribute("Grib2_level_type", vc.getCode()));
       VertCoord.VertUnit vu = Grib2Utils.getLevelUnit(vc.getCode());
       if (vu != null) {
         if (vu.getDatum() != null)

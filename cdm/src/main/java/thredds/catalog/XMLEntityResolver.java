@@ -49,7 +49,7 @@ import ucar.nc2.util.IO;
  * Get a javax.xml.parsers.DocumentBuilder from here, allows you to validate or not.
  * <p>
  * The Crimson parser wont do schema validation.
- *
+ * NOTE: OLD AND CRUFTY
  * @author John Caron
  */
 
@@ -234,7 +234,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
     // DQC schema 0.3
     initEntity( DQC_NAMESPACE_03,
                 "/resources/thredds/schemas/queryCapability.0.3.xsd",
-                "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd");*/
+                "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd"); */
 
     // DQC schema 0.4
     initEntity( DQC_NAMESPACE_04,
@@ -251,10 +251,10 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
                 "/resources/thredds/schemas/xlink.xsd",
                 "http://www.unidata.ucar.edu/schemas/other/xlink.xsd");
 
-    // catgen 0.5 dtd
+    /* catgen 0.5 dtd
     initEntity( "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd",
                 "/resources/thredds/schemas/CatalogGenConfig.0.5.dtd",
-                "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd");
+                "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd"); */
 
     String javaVersion = System.getProperty("java.version").substring(2,3);  // ie 1.5_02
     int v = Integer.parseInt(javaVersion);

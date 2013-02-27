@@ -377,9 +377,17 @@ public abstract class GribCollection implements FileCacheable {
     return getIndexFile().getPath();
   }
 
-  @Override
+  /* @Override
   public boolean sync() throws IOException {
     return false;
+  } */
+
+  @Override
+  public long getLastModified() {
+    if (indexFile != null) {
+      return indexFile.lastModified();
+    }
+    return 0;
   }
 
   @Override

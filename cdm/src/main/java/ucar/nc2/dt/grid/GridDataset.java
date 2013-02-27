@@ -490,6 +490,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   //////////////////////////////////////////////////
   //  FileCacheable
 
+  @Override
   public synchronized void close() throws java.io.IOException {
     if (fileCache != null) {
       fileCache.release(this);
@@ -502,11 +503,19 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     }
   }
 
+  /* @Override
   public boolean sync() throws IOException {
-    return (ds != null) ? ds.sync() : false;
+    return (ds != null) && ds.sync();
+  } */
+
+  @Override
+  public long getLastModified() {
+    return (ds != null) ? ds.getLastModified() : 0;
   }
 
   protected FileCache fileCache;
+
+  @Override
   public void setFileCache(FileCache fileCache) {
     this.fileCache = fileCache;
   }

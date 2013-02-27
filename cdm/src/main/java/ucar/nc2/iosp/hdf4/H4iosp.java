@@ -74,7 +74,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    this.raf = raf;
+    super.open(raf, ncfile, cancelTask);
     header.read(raf, ncfile);
     ncfile.finish();
   }
