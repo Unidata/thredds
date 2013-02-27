@@ -100,6 +100,21 @@ public class ThreddsDataFactory {
 
     public String location;
     public InvAccess accessUsed;
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("Result");
+      sb.append("{fatalError=").append(fatalError);
+      sb.append(", errLog=").append(errLog);
+      sb.append(", featureType=").append(featureType);
+      sb.append(", featureDataset=").append(featureDataset);
+      sb.append(", imageURL='").append(imageURL).append('\'');
+      sb.append(", location='").append(location).append('\'');
+      sb.append(", accessUsed=").append(accessUsed);
+      sb.append('}');
+      return sb.toString();
+    }
   }
 
   /**

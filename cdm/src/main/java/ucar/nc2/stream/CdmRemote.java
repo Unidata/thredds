@@ -140,8 +140,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   @Override
   protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
-    if (unlocked)
-      throw new IllegalStateException("File is unlocked - cannot use");
+    //if (unlocked)
+    //  throw new IllegalStateException("File is unlocked - cannot use");
 
     if (v.getDataType() == DataType.SEQUENCE) {
       Structure s = (Structure) v;

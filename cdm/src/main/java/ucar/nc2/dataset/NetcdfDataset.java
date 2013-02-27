@@ -1035,7 +1035,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (agg != null) agg.persistWrite(); // LOOK  maybe only on real close ??
 
     if (cache != null) {
-      unlocked = true;
+      //unlocked = true;
       cache.release(this);
 
     } else {
@@ -1116,7 +1116,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   public boolean syncExtend() throws IOException {
-    unlocked = false;
+    //unlocked = false;
 
     if (agg != null)
       return agg.syncExtend();

@@ -384,7 +384,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
             dodsConnection.closeSession();
 
         if (cache != null) {
-            unlocked = true;
+            //unlocked = true;
             cache.release(this);
 
         } else {
@@ -1612,8 +1612,8 @@ if(OLDGROUPCODE) {
     {
         ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
 
-        if (unlocked)
-            throw new IllegalStateException("File is unlocked - cannot use");
+        //if (unlocked)
+        //    throw new IllegalStateException("File is unlocked - cannot use");
 
         /* run it through the variableso to pick up caching
        if (cer.child == null) {
@@ -1628,8 +1628,8 @@ if(OLDGROUPCODE) {
     @Override
     protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException
     {
-        if (unlocked)
-            throw new IllegalStateException("File is unlocked - cannot use");
+        //if (unlocked)
+        //    throw new IllegalStateException("File is unlocked - cannot use");
 
         // LOOK: what if theres already a CE !!!!
         // create the constraint expression
@@ -1672,8 +1672,8 @@ if(OLDGROUPCODE) {
     public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel channel)
             throws java.io.IOException, ucar.ma2.InvalidRangeException
     {
-        if (unlocked)
-            throw new IllegalStateException("File is unlocked - cannot use");
+        //if (unlocked)
+        //    throw new IllegalStateException("File is unlocked - cannot use");
 
         Array result = readData(v, section);
         return IospHelper.transferData(result, channel);
