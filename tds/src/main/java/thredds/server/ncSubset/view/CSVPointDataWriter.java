@@ -70,6 +70,7 @@ class CSVPointDataWriter implements PointDataWriter {
 
 		List<String> keys =new ArrayList<String>(groupedVars.keySet());
 		//loop over variable groups
+		int contKeys = 1;
 		for(String key : keys){
 
 			List<String> varsGroup = groupedVars.get(key);
@@ -89,7 +90,11 @@ class CSVPointDataWriter implements PointDataWriter {
 					pointRead = write(key, gds, date, point, vertCoord);
 				}
 			}
-			printWriter.println();		
+			
+			if( contKeys != keys.size() )
+				printWriter.println();
+			
+			contKeys++;
 		}
 
 		return allDone;
