@@ -229,6 +229,8 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     String libraryName = ThreddsConfig.get("Netcdf4Clibrary.libraryName", null);
     if (libraryPath != null || libraryName != null){
       Nc4Iosp.setLibraryAndPath(libraryPath, libraryName);
+    } else {
+      Nc4Iosp.setWarnOff(); // if they dont have a Netcdf4Clibrary element, suppress warnings
     }
     
     //Netcdf4 library could be set as a environment variable or as a jvm parameter 

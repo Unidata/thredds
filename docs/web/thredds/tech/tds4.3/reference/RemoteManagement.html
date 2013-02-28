@@ -1,39 +1,42 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html><head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Remote Management</title>  
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>Remote Management</title>
+  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+  </head>
 </head>
 <body>
 
 
 <h1><img src="../../images/unidataLogo.png" width="75" height="75" align="middle"> Enabling TDS Remote Management
 </h1>
-<div class="head">
-  <address>
-  </address>
-  <hr>
-  <div class="head"></div>
-  <h2>Introduction</h2>
-  <p>It's very convenient to be able to remotely manage and administer the Tomcat web server, and to remotely
+
+<address>
+</address>
+<hr>
+<div class="head"></div>
+<h2>Introduction</h2>
+<p>It's very convenient to be able to remotely manage and administer the Tomcat web server, and to remotely
     configure and debug the Thredds Data Server, for example from a web browser running on your desktop.
     However, remote access to the server introduces potential security problems, so by default these
     capabilities are not turned on. You can run Tomcat and TDS quite successfully by editing the
-    configuration files on the server, and restarting when needed. </p>
-  <p>Managing a server is difficult and we recommend that you  enable remote  management. By following the
+  configuration files on the server, and restarting when needed. </p>
+<p>Managing a server is difficult and we recommend that you  enable remote  management. By following the
     procedures here, you can do so without opening any big security holes. However, you must decide this
     yourself, based on your organization's security policies, and a risk assessment for your server. In what
     follows we try to explain what risks the various options have, as well as we understand them. A good
     compromise may be to do all the work to enable remote management, then turn it on only while actively
-    configuring the server, and turn it off when in production mode. </p>
-  <p>In any case, we strongly recommend that you also read and follow the
-    <a href="TomcatSecurity.html">Tomcat/TDS Security guidelines</a>. </p>
-</div>
+  configuring the server, and turn it off when in production mode. </p>
+<p>In any case, we strongly recommend that you also read and follow the
+  <a href="TomcatSecurity.html">Tomcat/TDS Security guidelines</a>.</p>
+<p>Follow the  <a href="../tutorial/Checklist.html">checklist</a> for more concise and up-to-date configuration instruction.</p>
 <h2>Configuring Tomcat Users </h2>
 <p>Special permissions (like remote management) are done in Tomcat by creating <em><strong>users</strong></em> with special <em><strong>roles</strong></em>. As long as you also follow the <a href="TomcatSecurity.html">Tomcat/TDS Security guidelines</a>, using the simplest Tomcat mechanism to do this should be safe. </p>
 <p> Edit <strong>${tomcat_home}/conf/tomcat-users.xml</strong>, adding roles "tdsConfig", "manager", &quot;admin&quot;, and users who have those roles, e.g.:</p>
 <blockquote>
   <pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;<br>&lt;tomcat-users&gt;<br>  &lt;role rolename="manager"/&gt;<br>  &lt;role rolename="admin"/&gt;<br>  &lt;role rolename="tdsConfig"/&gt;
-<br>  &lt;user username="admin" password="adminpassword" roles="admin, manager-gui, manager"/&gt;<br>  &lt;user username="yername" password="yerpassword" roles="tdsConfig"/&gt;<br>&lt;/tomcat-users&gt;</pre>
-</blockquote>
+<br>  &lt;user username="admin" password="adminpassword" roles="admin, manager-gui, manager"/&gt;<br>  &lt;user username="yername" password="yerpassword" roles="tdsConfig"/&gt;<br>&lt;/tomcat-users&gt;</pre></blockquote>
 <p>The <em><strong>manager</strong></em>, <em><strong>manager-gui</strong></em>, and <em><strong>admin</strong></em> roles are used within Tomcat itself to allow the use of the manager and administrator web interface. The <em><strong>tdsConfig</strong></em> role is used to configure the TDS. These roles must be specified exactly as shown. Note that all 3 of these roles are independent - you can add any, all or none of them. The easiest way to enable or disable remote administration is to change this file and restart Tomcat.</p>
 <p>The list of users, their names and passwords, are whatever you want them to be. Note that after you get this set up, you can manage users remotely through the administrator interface. Note also that before you go into production mode, you should change to using digest passwords by following the instructions <a href="TomcatSecurity.html#Digest">here</a>. </p>
 <p>Note that any changes won't take effect until you restart Tomcat. </p>
@@ -91,24 +94,25 @@ If this option is not specified, it defaults to <strong>${user_home}/.keystore</
 </blockquote>
 <p>If the certificate is not correctly installed (eg you put it in the wrong JRE), you will get an Exception like:</p>
 <pre><strong>  sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target</strong></pre>
-<h3>&nbsp;</h3>
 <h2>Check that the correct ports are enabled</h2>
 <p>After restarting Tomcat, you can use <strong>netstat -an </strong>command to check that the ports are correctly configured. You should see lines like:</p>
 <pre>  TCP    127.0.0.1:8080         0.0.0.0:0              LISTENING
   TCP    127.0.0.1:8443         0.0.0.0:0              LISTENING 
 </pre>
 <p>You also need to make sure that your firewall is allowing those ports through. </p>
-<p>&nbsp;</p>
 <h2>TDS Remote Debugging<a name="RemoteDebugging" id="RemoteDebugging"></a></h2>
-<p>Once SSL is enabled, you can remotely debug and configure the TDS.</p>
-<p>Debugging information is available at <strong><a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>. </strong>Some features of particular interest are:</p>
+<p>Once SSL is enabled, you can remotely debug and configure the TDS. You need to login with a user who has the <strong>tdsConfig</strong> role.</p>
+<p>Debugging information is available at <strong><a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>. </strong></p>
+<p><img src="images/TdsDebug.png" width="828" height="1160"></p>
+<p>Some capabilities of particular interest are:</p>
 <ol>
-  <li><strong>Show Log</strong>s allows you to look at the TDS access logs, to see who is using your server.</li>
-  <li><strong>Reinitialize</strong> will reread in the TDS catalogs and reinitialize itself, without having to restart the server. Use this whenever you make changes to the TDS catalogs.</li>
-  <li><strong>Show Catalog Errors</strong> shows you any errors when reading the TDS catalogs. Check this after you run Reinitialize.</li>
+  <li><strong>Show Tomcat Logs</strong>: allows you to look at the Tomcat logs in <strong>${tomcat_home}/logs</strong></li>
+  <li><strong>Show TDS Log</strong><strong>s:</strong> allows you to look at the TDS logs in <strong>${tomcat_home}/content/thredds/logs</strong></li>
+  <li><strong>Show static catalogs: </strong>list all the static (non-dynamic) catalogs read in at startup</li>
+  <li><strong>Show data roots:</strong> list all the dataRoots with links to the directories they are mapped to</li>
+  <li><strong>Show File Object Caches</strong>: Show all files currently in the object caches</li>
+  <li><strong>Clear File Object Caches:</strong> Remove all unlocked files in the object caches</li>
 </ol>
-<p>TDS catalogs can be modified remotely through HTTPS GET and PUT commands that work on the &quot;raw&quot;catalog.xml using a special URL. For example, the main catalog will have the URL <strong><a href="http://localhost:8080/thredds/content/catalog.xml">http://localhost:8080/thredds/content/catalog.xml</a>. </strong>The NetCDF ToolsUI is currently under development to make this convenient to do.</p>
-<p>&nbsp;</p>
 <h2>TroubleShooting</h2>
 <ul>
   <li><strong>Connection refused when trying to access a restricted page</strong>. The SSL socket is not enabled in the server.xml file, or you didn't install a certificate in the keystore.</li>
@@ -121,9 +125,6 @@ If this option is not specified, it defaults to <strong>${user_home}/.keystore</
     </ul>
   </li>
 </ul>
-<h2>Running without SSL</h2>
-<p>If you are on a secure network, and don't want to run with SSL enabled, edit <strong>${tomcat_home}webapps/thredds/WEB-INF/web.xml</strong> and change all instances of CONFIDENTIAL to NONE.</p>
-<p>Password authentication will then be done without SSL encryption. You will have to repeat this whenever you reinstall or upgrade thredds.war.</p>
 <h2>Resources</h2>
 <ul>
   <li> <a href="http://jakarta.apache.org/tomcat/tomcat-7.0-doc/ssl-howto.html">Tomcat SSL Configuration</a> </li>
@@ -131,16 +132,10 @@ If this option is not specified, it defaults to <strong>${user_home}/.keystore</
   <li>JDK <a href="http://java.sun.com/j2se/1.5.0/docs/tooldocs/index.html#security">keytool</a> application </li>
   <li>JA-SIG Central Authentication Service. (<a href="http://www.jasig.org/cas/">CAS</a>) </li>
 </ul>
-<hr WIDTH="100%">
-<h2>Changes</h2>
-<p>Jan 19, 2007 </p>
-<ul>
-  <li>Redo the section on creating SSL certificate (it was slightly wrong). Make default instructons to use a seperate keystore. Add CAS. Update links. </li>
-</ul>
 <hr width="100%">
 <address>
     <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
-    This document is maintained by Unidata and was last updated January 19, 2007.
+    This document is maintained by Unidata and was last updated Feb 2013.
     Send comments to
     <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address><p>&nbsp;

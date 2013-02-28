@@ -76,6 +76,7 @@ import ucar.unidata.geoloc.projection.*;
  * 09/2010 plessel.todd@epa.gov add projection types 6,7,8,9,10
  *
  * HISTORY: 2003/06/26
+ * @deprecated - removed from CoordSysBuilder.register by request of todd
  * @author plessel.todd@epa.gov, based on WRFConvention.java
  * @author caron - convert to new CoordSysBuilder
  */

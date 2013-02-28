@@ -33,7 +33,6 @@
 
 package ucar.nc2.dataset;
 
-import org.apache.commons.httpclient.util.ParameterParser;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dt.GridCoordSystem;
@@ -103,6 +102,14 @@ public class TestProjections extends TestCase {
         "SpaceViewPerspective_Projection",
         "Pixel_scene_type",
         MSGnavigation.class);
+  }
+
+  public void testProjectionsHdfEos() throws IOException, InvalidRangeException {
+
+    test(TestDir.cdmUnitTestDir + "formats/hdf4/eos/modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf",
+        "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/Projection",
+        "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NDVI",
+        Sinusoidal.class);
   }
 
   public void testProjectionsHeiko() throws IOException, InvalidRangeException {
