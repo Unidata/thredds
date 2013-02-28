@@ -85,6 +85,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private boolean warn = true;
   static private final boolean debug = false, debugCompoundAtt = false, debugUserTypes = false, debugWrite = false;
 
+  // suppress warning messages
+  static public void setWarnOff() {
+    warn = false;
+  }
   /**
    * Test if the netcdf C library is present and loaded
    *

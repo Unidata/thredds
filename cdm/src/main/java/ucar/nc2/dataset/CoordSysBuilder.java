@@ -157,7 +157,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention("AWIPS-Sat", AWIPSsatConvention.class, null);
     registerConvention("WRF", WRFConvention.class, null);
 
-    registerConvention("M3IOVGGrid", M3IOVGGridConvention.class, null);
+    //registerConvention("M3IOVGGrid", M3IOVGGridConvention.class, null);
     registerConvention("M3IO", M3IOConvention.class, null);
     registerConvention("IFPS", IFPSConvention.class, null);
     registerConvention("ARPS/ADAS", ADASConvention.class, null);
