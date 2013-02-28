@@ -1628,6 +1628,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     IndexIterator ii = values.getIndexIterator();
     while (ii.hasNext()) {
       ii.setObjectNext(ByteBuffer.wrap(entire, count * size, size));
+      count++;
     }
 
     return values;
