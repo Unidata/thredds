@@ -32,6 +32,8 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import ucar.nc2.iosp.bufr.tables.TableD;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -55,11 +57,15 @@ public class DataDescriptorTreeConstructor {
     // convert ids to DataDescriptor
     List<DataDescriptor> keys = decode(dds.getDataDescriptors(), lookup);
 
+    // try to find useful struct names
+    grabCompoundNames(keys);
+
     // unwind replications inside compound (!!??)
     keys = preflatten(keys);
 
     // make replicated keys into subKeys, constituting a tree
     List<DataDescriptor> tree = replicate(keys);
+
 
     // flatten the compounds
     root.subKeys = new ArrayList<DataDescriptor>();
@@ -83,11 +89,13 @@ public class DataDescriptorTreeConstructor {
       DataDescriptor dd = new DataDescriptor(id, lookup);
       keys.add( dd);
       if (dd.f == 3) {
-        List<Short> subDesc = lookup.getDescriptorsTableD(dd.fxy);
-        if (subDesc == null)
+        TableD.Descriptor tdd = lookup.getDescriptorTableD(dd.fxy);
+        if (tdd == null || tdd.getSequence() == null) {
           dd.bad = true;
-        else
-          dd.subKeys = decode(subDesc, lookup);
+        } else {
+          dd.name = tdd.getName();
+          dd.subKeys = decode(tdd.getSequence(), lookup);
+        }
       }
     }
     return keys;
@@ -103,8 +111,8 @@ public class DataDescriptorTreeConstructor {
         dk.subKeys = new ArrayList<DataDescriptor>();
         dk.replication = dk.y; // replication count
 
-        if (dk.replication == 0) { // delayed repliction
-          root.isVarLength = true; // variable sized data == defered replication == sequence data
+        if (dk.replication == 0) { // delayed replication
+          root.isVarLength = true; // variable sized data == deferred replication == sequence data
 
           // the next one is the replication count size
           DataDescriptor replication = dkIter.next();
@@ -190,6 +198,48 @@ public class DataDescriptorTreeConstructor {
     }
     return result;
   }
+
+  /* try to grab names of compounds (structs)
+     if f=1 is followed by f=3, eg:
+     0-40-20 : GQisFlagQualDetailed - Quality flag for the system
+      1-01-010: replication
+      3-40-2  : (IASI Level 1c band description)
+        0-25-140: Start channel
+        0-25-141: End channel
+        0-25-142: Channel scale factor
+      1-01-087: replication
+      3-40-3  : (IASI Level 1c 100 channels)
+        1-04-100: replication
+        2-01-136: Operator= change data width
+        0-5-42  : Channel number
+        2-01-000: Operator= change data width
+        0-14-46 : Scaled IASI radiance
+      0-2-19  : Satellite instruments
+      0-25-51 : AVHRR channel combination
+      1-01-007: replication
+      3-40-4  : (IASI Level 1c AVHRR single scene)
+        0-5-60  : Y angular position from centre of gravity
+        0-5-61  : Z angular position from centre of gravity
+        0-25-85 : Fraction of clear pixels in HIRS FOV
+      ...
+*/
+  private void grabCompoundNames(List<DataDescriptor> tree) {
+
+    for (int i=0; i<tree.size(); i++) {
+      DataDescriptor key = tree.get(i);
+      if (key.bad) continue;
+
+      if ((key.f == 3) && (key.subKeys != null)) {
+        grabCompoundNames(key.subKeys);
+
+      } else if (key.f == 1 && i < tree.size()-1) {
+        DataDescriptor nextKey = tree.get(i+1);
+        if (nextKey.f == 3) key.name = nextKey.name;
+      }
+    }
+  }
+
+
 
   // flatten the compounds (type 3); but dont remove bad ones
   private void flatten(List<DataDescriptor> result, List<DataDescriptor> tree) {

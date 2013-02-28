@@ -241,10 +241,12 @@ public class WmoXmlReader {
   }
 
   public static String cleanName(String name) {
+    if (name == null) return null;
     int pos = name.indexOf("(see");
     if (pos > 0) name = name.substring(0, pos);
-    name = StringUtil2.remove(name, '*');
-    return name.trim();
+    StringBuilder sb = new StringBuilder(name);
+    StringUtil2.remove(sb, "*()");
+    return sb.toString().trim();
   }
 
   public static String cleanUnit(String unit) {
@@ -339,7 +341,7 @@ public class WmoXmlReader {
         int y = seq % 1000;
         int w = seq / 1000;
         int x = w % 100;
-        String seqName = elem.getChildTextNormalize(elems[1]);
+        String seqName = cleanName(elem.getChildTextNormalize(elems[1]));
         currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<Short>());
         currSeqno = seq;
       }

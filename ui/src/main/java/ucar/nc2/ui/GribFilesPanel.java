@@ -304,7 +304,6 @@ public class GribFilesPanel extends JPanel {
     Grib1SectionProductDefinition pds;
 
     public Grib1Bean() {
-      System.out.println("HEY");
     }
 
     public Grib1Bean(MFile m, Grib1Record first) {

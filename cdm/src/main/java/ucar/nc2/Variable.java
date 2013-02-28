@@ -371,8 +371,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @return the attribute, or null if not found
    */
   public Attribute findAttributeIgnoreCase(String name) {
-    if (attributes == null)
-      System.out.println("HEY");
     for (Attribute a : attributes) {
       if (name.equalsIgnoreCase(a.getShortName()))
         return a;
@@ -1203,9 +1201,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public void setDataType(DataType dataType) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    if(getShortName().equals("IR") && dataType == DataType.SHORT) {
-      DataType old = getDataType();
-    }
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
     EnumTypedef etd = getEnumTypedef();

@@ -33,6 +33,13 @@ dl {margin: 10px 5px 5px 15px;)
   <p>which will give back the Java primitive array, without copying if possible. For example if you have a type double Array object:</p>
   <pre> double[] ja = (double []) ma.get1DJavaArray( double.class);</pre>
   <p>You then have to see if your chosen  package has a constructor that can wrap the Java array without copying it. You will also need the multidimensional shape information: <strong>int[] shape = ma.getShape().</strong></p>
+  <p>&nbsp;</p>
+</blockquote>
+<p><strong>Q: What are some easy ways to create an Array object?</strong></p>
+<blockquote>
+  <pre>Array.factory(DataType dataType, int[] shape, Object javaArray);
+Array.makeArray(DataType dtype, int npts, double start, double incr);
+Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 </blockquote>
 <h3><a name="Caching" id="Caching"></a>Caching</h3>
 <p><strong>Q: How do I use NetcdfFile object caching</strong>?</p>

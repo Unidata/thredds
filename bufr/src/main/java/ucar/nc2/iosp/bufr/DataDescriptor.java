@@ -324,6 +324,8 @@ public class DataDescriptor {
         sbuff.append(" replicationCountSize=").append(replicationCountSize);
       if (repetitionCountSize != 0)
         sbuff.append(" repetitionCountSize=").append(repetitionCountSize);
+      if (name != null)
+        sbuff.append(": " + name);
 
     } else if (f == 2) {
       String desc = TableC.getOperatorName(x);
