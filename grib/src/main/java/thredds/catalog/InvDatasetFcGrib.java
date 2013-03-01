@@ -79,7 +79,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
   static private final String BEST_DATASET = "best";
-  static private final String BEST_DATASET_NAME = "Best Timeseries";
+  static private String BEST_DATASET_NAME = "Best Timeseries";
 
   static protected final String LATEST_DATASET = "latest";
   static protected final String LATEST_DATASET_NAME = "Latest Run";
@@ -131,6 +131,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
 
     tmi.setDataType(FeatureType.GRID); // override GRIB
+
+    if (config.gribConfig.bestNamer != null) {
+      BEST_DATASET_NAME = config.gribConfig.bestNamer;
+    }
+
     finish();
   }
 

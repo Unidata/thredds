@@ -327,9 +327,11 @@ public class FeatureCollectionConfig {
     public Map<Integer, String> gdsNamer;
     public String groupNamer;
     public String lookupTablePath, paramTablePath;
+    public String latestNamer, bestNamer;
     public Element paramTable;
     public Boolean intvMerge = null;
     public Boolean useGenType = null;
+    public Boolean filesSortIncreasing = null;
     public GribIntvFilter intvFilter;
 
     private TimeUnitConverterHash tuc;
@@ -367,6 +369,26 @@ public class FeatureCollectionConfig {
         lookupTablePath = configElem.getChildText("gribParameterTableLookup", ns);
       if (configElem.getChild("groupNamer", ns) != null)
         groupNamer = configElem.getChildText("groupNamer", ns);
+      if (configElem.getChild("latestNamer", ns) != null)
+        latestNamer = configElem.getChild("latestNamer", ns).getAttributeValue("name");
+      if (configElem.getChild("bestNamer", ns) != null)
+        bestNamer = configElem.getChild("bestNamer", ns).getAttributeValue("name");
+
+      List<Element> filesSortElems = configElem.getChildren("filesSort", ns);
+      if (filesSortElems != null) {
+        for (Element filesSort : filesSortElems) {
+          if (filesSort.getChild("lexigraphicByName", ns) != null) {
+            filesSortIncreasing = Boolean.valueOf(
+                    filesSort.getChild("lexigraphicByName", ns).getAttributeValue("increasing"));
+          }
+        }
+      }
+      // if the sort tag is not used, then set increasing to True (the current
+      //  catalog behavior for grib collections
+      if (filesSortIncreasing == null) {
+          filesSortIncreasing = true;
+      }
+
 
       List<Element> intvElems = configElem.getChildren("intvFilter", ns);
       for (Element intvElem : intvElems) {
