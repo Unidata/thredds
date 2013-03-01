@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -61,7 +61,7 @@ import java.util.*;
  */
 
 public class M3IOConvention extends CoordSysBuilder {
-
+   private static final double earthRadius = 6370.000; // km
   /**
    * Do we think this is a M3IO file.
    *
@@ -75,6 +75,10 @@ public class M3IOConvention extends CoordSysBuilder {
             && (null != ncfile.findGlobalAttribute("YCELL"))
             && (null != ncfile.findGlobalAttribute("NCOLS"))
             && (null != ncfile.findGlobalAttribute("NROWS"));
+
+    // M3IOVGGridConvention - is this true for this class ??
+    // return ncFile.findGlobalAttribute( "VGLVLS" ) != null && isValidM3IOFile_( ncFile );
+
   }
 
   public M3IOConvention() {
@@ -155,7 +159,7 @@ public class M3IOConvention extends CoordSysBuilder {
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, dimName, unitName,
             "synthesized coordinate from " + startName + " " + incrName + " global attributes");
-    ds.setValues(v, n, start, incr);
+    v.setValues(n, start, incr);
     return v;
   }
 
@@ -167,7 +171,7 @@ public class M3IOConvention extends CoordSysBuilder {
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, dimName, unitName,
             "synthesized coordinate from " + startName + " " + incrName + " global attributes");
-    ds.setValues(v, n, start, incr);
+    v.setValues(n, start, incr);
     return v;
   }
 
@@ -275,19 +279,19 @@ public class M3IOConvention extends CoordSysBuilder {
     double lon0 = findAttributeDouble(ds, "XCENT");
     double lat0 = findAttributeDouble(ds, "YCENT");
 
-    LambertConformal lc = new LambertConformal(lat0, lon0, par1, par2);
+    LambertConformal lc = new LambertConformal(lat0, lon0, par1, par2, 0.0, 0.0, earthRadius);
 
     return new ProjectionCT("LambertConformalProjection", "FGDC", lc);
   }
 
   private CoordinateTransform makePolarStereographicProjection(NetcdfDataset ds) {
-    boolean n_polar = (findAttributeDouble(ds, "P_ALP") == 1.0);
-    double centeral_meridian = findAttributeDouble(ds, "P_GAM");
+    //boolean n_polar = (findAttributeDouble(ds, "P_ALP") == 1.0);
+    //double central_meridian = findAttributeDouble(ds, "P_GAM");
     double lon0 = findAttributeDouble(ds, "XCENT");
     double lat0 = findAttributeDouble(ds, "YCENT");
     double latts = findAttributeDouble(ds, "P_BET");
 
-    Stereographic sg = new Stereographic(latts, lat0, lon0, n_polar);
+    Stereographic sg = new Stereographic(latts, lat0, lon0, 0.0, 0.0, earthRadius);
     //sg.setCentralMeridian(centeral_meridian);
 
     return new ProjectionCT("PolarStereographic", "FGDC", sg);
@@ -297,20 +301,18 @@ public class M3IOConvention extends CoordSysBuilder {
     double lon0 = findAttributeDouble(ds, "XCENT");
     double par  = findAttributeDouble(ds, "P_ALP");
 
-    Mercator p = new Mercator(lon0, par);
-    CoordinateTransform ct = new ProjectionCT("EquitorialMercator", "FGDC", p);
+    Mercator p = new Mercator(lon0, par, 0.0, 0.0, earthRadius);
 
-    return ct;
+    return new ProjectionCT("EquitorialMercator", "FGDC", p);
   }
 
   private CoordinateTransform makeTransverseMercatorProjection(NetcdfDataset ds) {
     double lat0 = findAttributeDouble(ds, "P_ALP");
     double tangentLon = findAttributeDouble(ds, "P_GAM");
 
-    TransverseMercator p = new TransverseMercator(lat0, tangentLon, 1.0);
-    CoordinateTransform ct = new ProjectionCT("TransverseMercator", "FGDC", p);
+    TransverseMercator p = new TransverseMercator(lat0, tangentLon, 1.0, 0.0, 0.0, earthRadius);
 
-    return ct;
+    return new ProjectionCT("TransverseMercator", "FGDC", p);
   }
 
   private CoordinateTransform makeAlbersProjection(NetcdfDataset ds) {
@@ -319,10 +321,9 @@ public class M3IOConvention extends CoordSysBuilder {
     double par1 = findAttributeDouble(ds, "P_ALP");
     double par2 = findAttributeDouble(ds, "P_BET");
 
-    AlbersEqualArea p = new AlbersEqualArea(lat0, lon0, par1, par2);
-    CoordinateTransform ct = new ProjectionCT("Albers", "FGDC", p);
+    AlbersEqualArea p = new AlbersEqualArea(lat0, lon0, par1, par2, 0.0, 0.0, earthRadius);
 
-    return ct;
+    return new ProjectionCT("Albers", "FGDC", p);
   }
 
   private CoordinateTransform makeLambertAzimuthalProjection(NetcdfDataset ds) {
@@ -330,10 +331,9 @@ public class M3IOConvention extends CoordSysBuilder {
     double lon0 = findAttributeDouble(ds, "XCENT");
 
     LambertAzimuthalEqualArea p =
-      new LambertAzimuthalEqualArea(lat0, lon0, 0.0, 0.0, 6370000.0);
-    CoordinateTransform ct = new ProjectionCT("LambertAzimuthal", "FGDC", p);
+      new LambertAzimuthalEqualArea(lat0, lon0, 0.0, 0.0, earthRadius);
 
-    return ct;
+    return new ProjectionCT("LambertAzimuthal", "FGDC", p);
   }
 
   private CoordinateTransform makeSTProjection(NetcdfDataset ds) {
@@ -351,7 +351,7 @@ public class M3IOConvention extends CoordSysBuilder {
      * @param lont tangent point of projection, also origin of projecion coord system
      * @param scale scale factor at tangent point, "normally 1.0 but may be reduced"
      */
-    Stereographic st = new Stereographic(latt, lont, 1.0);
+    Stereographic st = new Stereographic(latt, lont, 1.0, 0.0, 0.0, earthRadius);
 
     return new ProjectionCT("StereographicProjection", "FGDC", st);
   }
@@ -371,7 +371,7 @@ public class M3IOConvention extends CoordSysBuilder {
      * @param tangentLon longitude that the cylinder is tangent at ("central meridian")
      * @param scale scale factor along the central meridian
      */
-    TransverseMercator tm = new TransverseMercator(lat0, tangentLon, 1.0);
+    TransverseMercator tm = new TransverseMercator(lat0, tangentLon, 1.0, 0.0, 0.0, earthRadius);
 
     return new ProjectionCT("MercatorProjection", "FGDC", tm);
   }
@@ -397,9 +397,8 @@ public class M3IOConvention extends CoordSysBuilder {
     if (ycent < 0)
       isNorth = false;
     UtmProjection utm = new UtmProjection(zone, isNorth);
-    CoordinateTransform ct = new ProjectionCT("UTM", "EPSG", utm);
 
-    return ct;
+    return new ProjectionCT("UTM", "EPSG", utm);
   }
 
   /////////////////////////////////////////////////////////////////////////

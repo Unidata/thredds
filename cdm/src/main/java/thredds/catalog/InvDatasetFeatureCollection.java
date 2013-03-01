@@ -435,8 +435,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
      // services need to be local
      // result.addService(InvService.latest);
-     result.addService(orgService);
-     top.getLocalMetadataInheritable().setServiceName(orgService.getName());
+     if (orgService != null) {
+       result.addService(orgService);
+       top.getLocalMetadataInheritable().setServiceName(orgService.getName());
+     }
 
      /* boolean isSingleGroup = gc.getGroups().size() == 1;
      List<String> filenames = isSingleGroup ? gc.getFilenames() : group.getFilenames();

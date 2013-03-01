@@ -103,8 +103,7 @@ public class TransverseMercator extends ProjectionImpl {
    * @param north      false northing in units of km
    * @param radius     earth radius in km
    */
-  public TransverseMercator(double lat0, double tangentLon, double scale,
-                            double east, double north, double radius) {
+  public TransverseMercator(double lat0, double tangentLon, double scale, double east, double north, double radius) {
     super("TransverseMercator", false);
 
     this.lat0 = Math.toRadians(lat0);

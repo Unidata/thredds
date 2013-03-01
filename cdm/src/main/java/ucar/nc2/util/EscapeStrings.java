@@ -698,27 +698,37 @@ public static String normalizeToXML(String s)
     }
 
 
-static String
+/**
+ *  Given a DAP (attribute) string, insert backslashes
+ *  before '"' and '/' characters. This code also escapes
+ *  control characters, although the spec does not call for it;
+ *  make that code conditional.
+ */
+static public String
 backslashEscapeDapString(String s)
 {
     StringBuilder buf = new StringBuilder();
     for(int i=0;i<s.length();i++) {
 	int c = s.charAt(i);
-	if(c < ' ') {
-	    switch (c) {
-            case '\n': case '\r': case '\t': case '\f':
-	        buf.append((char)c);		
-		break;
-            default:
-                buf.append(String.format("0x%04x",c));
-		break;
+        if(true) {
+            if(c < ' ') {
+                switch (c) {
+                case '\n': case '\r': case '\t': case '\f':
+                    buf.append((char)c);
+                    break;
+                default:
+                    buf.append(String.format("\\x%02x",(c&0xff)));
+                    break;
+                }
+                continue;
             }
-	} else if(c == '"') {
-	    buf.append("\\\"");
+        }
+        if(c == '"') {
+            buf.append("\\\"");
         } else if(c == '\\') {
-	    buf.append('\\');
-	} else
-	    buf.append((char)c);		
+            buf.append('\\');
+        } else
+            buf.append((char)c);
     }
     return buf.toString();
 }

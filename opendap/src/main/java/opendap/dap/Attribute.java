@@ -745,7 +745,7 @@ public class Attribute extends DAPNode
           os.print(val);
 */
         if(this.type == Attribute.STRING) {
-          String quoted = "\"" + EscapeStrings.backslashToDAP(val) + "\"";
+          String quoted = "\"" + EscapeStrings.backslashEscapeDapString(val) + "\"";
          for(int i=0;i<quoted.length();i++) os.print((char)((int)quoted.charAt(i)));
          //os.print(quoted);
         } else
