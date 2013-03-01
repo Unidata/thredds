@@ -37,6 +37,7 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.bufr.tables.TableB;
 import ucar.nc2.iosp.bufr.tables.TableD;
 import ucar.nc2.iosp.bufr.tables.WmoXmlReader;
+import ucar.nc2.wmo.Util;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -173,9 +174,9 @@ public class EmbeddedTable {
     name = name.trim();
     int pos = name.indexOf(' ');
     if (pos > 0) {
-      desc = WmoXmlReader.cleanName(name.substring(pos+1));
+      desc = Util.cleanName(name.substring(pos + 1));
       name = name.substring(0,pos);
-      name= WmoXmlReader.cleanName(name);
+      name= Util.cleanName(name);
     }
 
     units = WmoXmlReader.cleanUnit(units.trim());
@@ -225,7 +226,7 @@ public class EmbeddedTable {
     short f1 = Short.parseShort(f.trim());
     short x1 = Short.parseShort(x.trim());
     short y1 = Short.parseShort(y.trim());
-    name = WmoXmlReader.cleanName(name);
+    name = Util.cleanName(name);
 
     d.addDescriptor(x1, y1, name, dds);
   }

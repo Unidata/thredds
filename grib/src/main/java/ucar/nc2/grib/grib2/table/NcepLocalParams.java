@@ -40,6 +40,7 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.units.SimpleUnit;
+import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
@@ -253,8 +254,8 @@ public class NcepLocalParams {
         if (p1.getNumber() < 192) f.format("  WMO missing %s%n", p1);
 
       } else {
-        String p1n = StringUtil2.substitute(GridParameter.cleanupDescription(p1.getName()), "-", " ");
-        String p2n = StringUtil2.substitute(GridParameter.cleanupDescription(p2.getName()), "-", " ");
+        String p1n = Util.cleanName(StringUtil2.substitute(p1.getName(), "-", " "));
+        String p2n = Util.cleanName(StringUtil2.substitute(p2.getName(), "-", " "));
 
         if (!p1n.equalsIgnoreCase(p2n) ||
            (p1.getNumber() >= 192 && !p1.getAbbrev().equals(p2.getAbbrev()))) {
@@ -264,8 +265,8 @@ public class NcepLocalParams {
         }
 
         if (!p1.getUnit().equalsIgnoreCase(p2.getUnit())) {
-          String cu1 = GridParameter.cleanupUnits(p1.getUnit());
-          String cu2 = GridParameter.cleanupUnits(p2.getUnit());
+          String cu1 = Util.cleanUnit(p1.getUnit());
+          String cu2 = Util.cleanUnit(p2.getUnit());
 
           // eliminate common non-udunits
           boolean isUnitless1 = isUnitless(cu1);

@@ -66,7 +66,7 @@ public class TestBufrRead {
     System.out.println("***READ " + count + " files");
   }
 
-  @Test
+  // @Test
   public void readAllInIddDir() throws IOException {
     int count = 0;
     assert 13852 == (count = readBufr(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueIDD.bufr")) : count; // was 12337

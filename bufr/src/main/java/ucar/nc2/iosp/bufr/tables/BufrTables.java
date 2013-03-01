@@ -50,6 +50,7 @@ import java.nio.charset.Charset;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import ucar.nc2.wmo.Util;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
@@ -637,7 +638,7 @@ public class BufrTables {
           short x = (short) (xy / 1000);
           short y = (short) (xy % 1000);
 
-          String name = WmoXmlReader.cleanName(line.substring(8));
+          String name = Util.cleanName(line.substring(8));
           String units = WmoXmlReader.cleanUnit(dataIS.readLine());
 
           line = dataIS.readLine();

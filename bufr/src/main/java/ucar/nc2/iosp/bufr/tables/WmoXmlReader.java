@@ -35,6 +35,7 @@ package ucar.nc2.iosp.bufr.tables;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -194,7 +195,7 @@ public class WmoXmlReader {
     List<Element> featList = root.getChildren(elems[0]);
     for (Element elem : featList) {
 
-      String name = cleanName(elem.getChildTextNormalize(elems[1]));
+      String name = Util.cleanName(elem.getChildTextNormalize(elems[1]));
       String units = cleanUnit(elem.getChildTextNormalize("BUFR_Unit"));
       int x = 0, y = 0, scale = 0, reference = 0, width = 0;
 
@@ -238,15 +239,6 @@ public class WmoXmlReader {
 
   static String cleanNumber(String s) {
     return StringUtil2.remove(s, ' ');
-  }
-
-  public static String cleanName(String name) {
-    if (name == null) return null;
-    int pos = name.indexOf("(see");
-    if (pos > 0) name = name.substring(0, pos);
-    StringBuilder sb = new StringBuilder(name);
-    StringUtil2.remove(sb, "*().");
-    return sb.toString().trim();
   }
 
   public static String cleanUnit(String unit) {
@@ -341,7 +333,7 @@ public class WmoXmlReader {
         int y = seq % 1000;
         int w = seq / 1000;
         int x = w % 100;
-        String seqName = cleanName(elem.getChildTextNormalize(elems[1]));
+        String seqName = Util.cleanName(elem.getChildTextNormalize(elems[1]));
         currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<Short>());
         currSeqno = seq;
       }
