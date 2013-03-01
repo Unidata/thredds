@@ -57,15 +57,14 @@ public class DataDescriptorTreeConstructor {
     // convert ids to DataDescriptor
     List<DataDescriptor> keys = decode(dds.getDataDescriptors(), lookup);
 
+    // deal with f3-60-4
+    keys = preflatten(keys);
+
     // try to find useful struct names
     grabCompoundNames(keys);
 
-    // unwind replications inside compound (!!??)
-    keys = preflatten(keys);
-
     // make replicated keys into subKeys, constituting a tree
     List<DataDescriptor> tree = replicate(keys);
-
 
     // flatten the compounds
     root.subKeys = new ArrayList<DataDescriptor>();
@@ -114,7 +113,7 @@ public class DataDescriptorTreeConstructor {
         if (dk.replication == 0) { // delayed replication
           root.isVarLength = true; // variable sized data == deferred replication == sequence data
 
-          // the next one is the replication count size
+          // the next one is the replication count size : does not count in field count (x)
           DataDescriptor replication = dkIter.next();
           if (replication.y == 0)
             dk.replicationCountSize = 1; // ??
@@ -149,7 +148,7 @@ public class DataDescriptorTreeConstructor {
   }
 
   /* Use case:
-   3-62-1  : HEADR
+    3-62-1  : HEADR
       0-4-194 : FORECAST TIME
       0-1-205 : STATION NUMBER -- 6 DIGITS
       0-1-198 : REPORT IDENTIFIER
@@ -167,9 +166,93 @@ public class DataDescriptorTreeConstructor {
 
      where the 3-62-2 should be replicated.
      This is from NCEP bufrtab.ETACLS1. Not sure if others use this idiom.
+
+     Use case 2:
+     not just top level
+      3-61-37 : TMPSQ1   SYNOPTIC REPORT TEMPERATURE DATA
+        0-33-193: QMAT
+        0-12-101: TMDB
+        0-33-194: QMDD
+        0-12-103: TMDP
+        0-2-38  : MSST
+        0-33-218: QMST
+        0-22-43 : SST1
+        3-60-4  : DRP1BIT
+          1-01-000: replication
+          0-31-0  : DRF1BIT
+        3-61-38 : TMPSQ2   SYNOPTIC REPORT WET BULB TEMPERATURE DATA
+          0-2-39  : MWBT
+          0-12-102: TMWB
+          0-13-3  : REHU
+        3-60-4  : DRP1BIT
+          1-01-000: replication
+          0-31-0  : DRF1BIT
+        3-61-39 : TMPSQ3   SYNOPTIC REPORT MAXIMUM AND MINIMUM TEMPERATURE DATA
+          0-4-31  : DTH
+          0-12-111: MXTM
+          0-4-31  : DTH
+          0-12-112: MITM
+
+          I think that a 3-60-4 should just be flattened:
+     3-61-37 : TMPSQ1   SYNOPTIC REPORT TEMPERATURE DATA
+        0-33-193: QMAT
+        0-12-101: TMDB
+        0-33-194: QMDD
+        0-12-103: TMDP
+        0-2-38  : MSST
+        0-33-218: QMST
+        0-22-43 : SST1
+        1-01-000: replication
+        0-31-0  : DRF1BIT
+        3-61-38 : TMPSQ2   SYNOPTIC REPORT WET BULB TEMPERATURE DATA
+          0-2-39  : MWBT
+          0-12-102: TMWB
+          0-13-3  : REHU
+        1-01-000: replication
+        0-31-0  : DRF1BIT
+        3-61-39 : TMPSQ3   SYNOPTIC REPORT MAXIMUM AND MINIMUM TEMPERATURE DATA
+          0-4-31  : DTH
+          0-12-111: MXTM
+          0-4-31  : DTH
+          0-12-112: MITM
    */
-  // preflatten replications inside a top level compound (!)
+
+  // LOOK this is NCEP specific !!
+  static boolean isNcepDRP( DataDescriptor key) {
+    return key.f == 3 && key.x == 60;
+  }
+
   private List<DataDescriptor> preflatten(List<DataDescriptor> tree) {
+    if (tree == null) return null;
+
+    // do we need to flatten, ie have f3604 ??
+    boolean flatten = false;
+    for (DataDescriptor key : tree) {
+      if (isNcepDRP(key)) flatten = true;
+    }
+
+    if (flatten) {
+      List<DataDescriptor> result = new ArrayList<DataDescriptor>(tree.size());
+      for (DataDescriptor key : tree) {
+        if (isNcepDRP(key)) {
+          result.addAll(key.subKeys); // remove f3604
+        } else {
+          result.add(key); // leave others
+        }
+      }
+      tree = result;
+    }
+
+    // recurse
+    for (DataDescriptor key : tree) {
+      key.subKeys = preflatten(key.subKeys);
+    }
+
+    return tree;
+  }
+
+  /* OLD preflatten replications inside a top level compound (!)
+  private List<DataDescriptor> preflattenOld(List<DataDescriptor> tree) {
     List<DataDescriptor> result = new ArrayList<DataDescriptor>(tree.size());
     for (DataDescriptor key : tree) {
       boolean preflatten = false;
@@ -197,7 +280,7 @@ public class DataDescriptorTreeConstructor {
 
     }
     return result;
-  }
+  }  */
 
   /* try to grab names of compounds (structs)
      if f=1 is followed by f=3, eg:
@@ -222,6 +305,26 @@ public class DataDescriptorTreeConstructor {
         0-5-61  : Z angular position from centre of gravity
         0-25-85 : Fraction of clear pixels in HIRS FOV
       ...
+
+      sequence:
+        3-60-4  : DRP1BIT
+          1-01-000: replication
+          0-31-0  : DRF1BIT
+        3-61-38 : TMPSQ2   SYNOPTIC REPORT WET BULB TEMPERATURE DATA
+          0-2-39  : MWBT
+          0-12-102: TMWB
+          0-13-3  : REHU
+
+     which has been preflattened into:
+
+       1-01-000: replication
+       0-31-0  : DRF1BIT
+       3-61-38 : TMPSQ2   SYNOPTIC REPORT WET BULB TEMPERATURE DATA
+          0-2-39  : MWBT
+          0-12-102: TMWB
+          0-13-3  : REHU
+
+
 */
   private void grabCompoundNames(List<DataDescriptor> tree) {
 
@@ -232,9 +335,18 @@ public class DataDescriptorTreeConstructor {
       if ((key.f == 3) && (key.subKeys != null)) {
         grabCompoundNames(key.subKeys);
 
-      } else if (key.f == 1 && i < tree.size()-1) {
+      } else if (key.f == 1 && key.x == 1 && i < tree.size()-1) {  // replicator with 1 element
         DataDescriptor nextKey = tree.get(i+1);
-        if (nextKey.f == 3) key.name = nextKey.name;
+        if (nextKey.f == 3) {  // the one element is a compound
+          if (nextKey.name != null && !nextKey.name.isEmpty())
+            key.name = nextKey.name;
+
+        } else if (key.y == 0 && i < tree.size()-2) {  // seq has an extra key before the 3
+          DataDescriptor nnKey = tree.get(i+2);
+          if (nnKey.f == 3 )
+            if (nnKey.name != null && !nnKey.name.isEmpty())
+              key.name = nnKey.name;
+        }
       }
     }
   }

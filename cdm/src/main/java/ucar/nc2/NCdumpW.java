@@ -635,7 +635,7 @@ public class NCdumpW {
     indent.incr();
     for (StructureMembers.Member m : sdata.getMembers()) {
       Array sdataArray = sdata.getArray(m);
-      printArray(sdataArray, m.getName(), m.getUnitsString(), out, indent, ct, false);
+      printArray(sdataArray, m.getName(), m.getUnitsString(), out, indent, ct, true);
       if (ct != null && ct.isCancel()) return;
     }
     indent.decr();

@@ -360,7 +360,7 @@ public class ArraySequence extends ArrayStructure {
 
   @Override
   public String toString() {
-    return getClass().getName() + " nelems=" + Integer.toString(nelems);
+    return "seq n=" + Integer.toString(nelems);
   }
 
   @Override

@@ -438,7 +438,7 @@ public class BufrMessageViewer extends JPanel {
     this.raf = raf;
     java.util.List<MessageBean> beanList = new ArrayList<MessageBean>();
 
-    scan = new MessageScanner(raf, 0, false);
+    scan = new MessageScanner(raf, 0, true);
     while (scan.hasNext()) {
       Message m = scan.next();
       if (m == null) continue;

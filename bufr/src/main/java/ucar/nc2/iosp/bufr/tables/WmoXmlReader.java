@@ -245,7 +245,7 @@ public class WmoXmlReader {
     int pos = name.indexOf("(see");
     if (pos > 0) name = name.substring(0, pos);
     StringBuilder sb = new StringBuilder(name);
-    StringUtil2.remove(sb, "*()");
+    StringUtil2.remove(sb, "*().");
     return sb.toString().trim();
   }
 
