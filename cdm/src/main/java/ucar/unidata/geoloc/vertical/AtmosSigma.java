@@ -32,13 +32,20 @@
  */
 package ucar.unidata.geoloc.vertical;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
-import ucar.unidata.util.Parameter;
-
 import java.io.IOException;
 import java.util.List;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayDouble.D1;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.units.SimpleUnit;
+import ucar.unidata.util.Parameter;
 
 
 /**
@@ -116,6 +123,16 @@ public class AtmosSigma extends VerticalTransformImpl {
     }
 
     units = ds.findAttValueIgnoreCase(psVar, CDM.UNITS, "none");
+    
+    String ptopUnitStr = ds.findAttValueIgnoreCase(ptopVar, CDM.UNITS, "none");
+    if (!units.equalsIgnoreCase(ptopUnitStr)) {
+      // Convert ptopVar to units of psVar
+      SimpleUnit psUnit = SimpleUnit.factory(units);
+      SimpleUnit ptopUnit = SimpleUnit.factory(ptopUnitStr);
+      double factor = ptopUnit.convertTo(1.0, psUnit);
+      this.ptop = this.ptop * factor;
+    }    
+    
   }
 
   /**
@@ -149,5 +166,35 @@ public class AtmosSigma extends VerticalTransformImpl {
 
     return result;
   }
+  
+  /**
+   * Get the 1D vertical coordinate array for this time step and point
+   * 
+   * (needds test!!!)
+   * 
+   * @param timeIndex the time index. Ignored if !isTimeDependent().
+   * @param xIndex    the x index
+   * @param yIndex    the y index
+   * @return vertical coordinate array
+   * @throws java.io.IOException problem reading data
+   * @throws ucar.ma2.InvalidRangeException _more_ 
+   */  
+  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
+  		throws IOException, InvalidRangeException {
+	  	  		  		  		 
+	    Array ps = readArray(psVar, timeIndex); 
+	    Index psIndex = ps.getIndex();	  
+	    int nz = sigma.length;  
+	    ArrayDouble.D1 result = new ArrayDouble.D1(nz);
+	    
+        double psVal = ps.getDouble(psIndex.set(yIndex, xIndex));
+        for (int z = 0; z < nz; z++) {
+          result.set(z,  ptop + sigma[z] * (psVal - ptop));
+        }	    
+	    
+	    return result;
+	    
+  }  
+  
 }
 

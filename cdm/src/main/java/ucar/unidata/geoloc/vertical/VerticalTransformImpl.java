@@ -33,6 +33,7 @@
 package ucar.unidata.geoloc.vertical;
 
 import ucar.ma2.Array;
+import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 
@@ -77,6 +78,19 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
      */
     public abstract ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex)
      throws java.io.IOException, InvalidRangeException;
+    
+    /**
+     * Get the 1D vertical coordinate array for this time step and point
+     * 
+     * @param timeIndex the time index. Ignored if !isTimeDependent().
+     * @param xIndex    the x index
+     * @param yIndex    the y index
+     * @return vertical coordinate array
+     * @throws java.io.IOException problem reading data
+     * @throws ucar.ma2.InvalidRangeException _more_ 
+     */
+    public abstract ucar.ma2.ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) 
+    		throws IOException, InvalidRangeException;
 
     /**
      * Get the unit string for the vertical coordinate.
