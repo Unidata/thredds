@@ -47,6 +47,29 @@ import ucar.nc2.util.IO;
  * @author caron
  * @since Aug 7, 2007
  */
+
+/*
+ http://newsroom.gsfc.nasa.gov/sdptoolkit/hdfeosfaq.html
+
+ 3.2 What types of metadata are embedded in an HDF-EOS file and what are the added storage requirements?
+ An HDF-EOS file must contain ECS "core" metadata which is essential for ECS search services. Core metadata are populated
+  using the SDP Toolkit, rather than through HDF-EOS calls. "Archive" metadata (supplementary information included by the
+  data provider) may also be present. If grid, point, or swath data types have been used, there also will be structural
+  metadata describing how these data types have been translated into standard HDF data types. Metadata resides in
+  human-readable form in the Object Descriptor Language (ODL). Structural metadata uses 32K of storage, regardless of
+  the amount actually required. The sizes of the core and archive metadata vary depending on what has been entered by the user.
+
+ 3.3 What are the options for adding ECS metadata to standard HDF files?
+ For data products that will be accessed by ECS but which remain in native HDF, there is a choice of
+ 1) adding no ECS metadata in the HDF file,
+ 2) inserting ECS metadata into the HDF file, or
+ 3) "appending" ECS metadata to the HDF file. "Append" means updating the HDF location table so that the appended metadata
+ becomes known to the HDF libraries/tools.
+
+ 3.4 Some DAACs currently provide descriptor files that give background information about the data. Will this information be included in an HDF-EOS file?
+ Yes. The descriptor file will be retained. It can be viewed by EOSView if it stored either as a global attribute or a file annotation.
+
+ */
 public class ODLparser {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ODLparser.class);
 

@@ -34,6 +34,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -87,6 +88,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
       throw new IllegalStateException(ioe);
     }
 
+
     data = data.reduce();
     if (data.getRank() != 2)
       throw new IllegalArgumentException("must be 2D");
@@ -94,7 +96,45 @@ public class CoordinateAxis2D extends CoordinateAxis {
       System.out.printf("Coordinate2D read%n");
 
     midpoint = (ArrayDouble.D2) Array.factory(double.class, data.getShape(), data.get1DJavaArray( double.class) );
+
+    if (this.axisType == AxisType.Lon)
+      makeConnectedLon(midpoint);
   }
+
+  private void makeConnectedLon(ArrayDouble.D2 mid) {
+
+    int[] shape = mid.getShape();
+    int ny = shape[0];
+    int nx = shape[1];
+
+    // first row
+    double connect =  mid.get(0, 0);
+    for (int i = 1; i < nx; i++) {
+      connect = connectLon(connect, mid.get(0,i));
+      mid.set(0,i,connect);
+    }
+
+    // other rows
+    for (int j = 1; j <ny; j++) {
+      connect =  mid.get(j-1, 0);
+      for (int i = 0; i < nx; i++) {
+        connect = connectLon(connect, mid.get(j,i));
+        mid.set(j,i,connect);
+      }
+    }
+
+  }
+
+  private static final double THRESH = 100.0;
+  private double connectLon( double connect, double val) {
+    double diff = connect - val;
+    if (Math.abs(diff) < THRESH) return val; // common case fast
+    // we have to add or subtract 360
+    double result = diff > 0 ? val + 360 : val - 360;
+    assert ((Math.abs(connect - result) ) < THRESH) ;
+    return result;
+  }
+
 
   /** Get the coordinate values as a 1D double array, in canonical order.
    *  @return coordinate values
@@ -126,6 +166,16 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return midpoint;
   }
 
+  public ArrayDouble.D2 getXEdges() {
+    ArrayDouble.D2 mids  = getMidpoints();
+    return makeXEdges(mids);
+  }
+
+  public ArrayDouble.D2 getYEdges() {
+    ArrayDouble.D2 mids  = getMidpoints();
+    return makeYEdges(mids);
+  }
+
   /**
    * Normal case: do something reasonable in deciding on the edges when we have the midpoints of a 2D coordinate.
    * @param midx x coordinates of midpoints
@@ -153,16 +203,6 @@ public class CoordinateAxis2D extends CoordinateAxis {
       edgex.set(0, x, edgex.get(1,x) - (edgex.get(2,x) - edgex.get(1,x)));
       edgex.set(ny, x, edgex.get(ny-1,x) + (edgex.get(ny-1,x) - edgex.get(ny-2,x)));
     }
-
-
-   /* for (int y=0; y<ny; y++) {
-      for (int x=1; x<nx; x++) {
-        double xmid = (midx.get(y,x-1) + midx.get(y,x))/2;
-        edgex.set(y, x, xmid);
-      }
-      edgex.set(y, 0, midx.get(y,0) - (edgex.get(y,1) - midx.get(y,0)));
-      edgex.set(y, nx, midx.get(y, nx-1) - (edgex.get(y,nx-1) - midx.get(y,nx-1)));
-    } */
 
     return edgex;
   }

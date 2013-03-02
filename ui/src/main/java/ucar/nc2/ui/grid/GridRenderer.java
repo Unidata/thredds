@@ -33,6 +33,7 @@
 package ucar.nc2.ui.grid;
 
 import ucar.ma2.*;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
@@ -775,8 +776,8 @@ public class GridRenderer {
       return;
     }
 
-    ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdges(xaxis2D.getMidpoints());
-    ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdges(yaxis2D.getMidpoints());
+    ArrayDouble.D2 edgex = xaxis2D.getXEdges();
+    ArrayDouble.D2 edgey = yaxis2D.getYEdges();
 
     Index ima = data.getIndex();
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
@@ -792,6 +793,21 @@ public class GridRenderer {
         gp.lineTo((float) edgex.get(y, x + 1), (float) edgey.get(y, x + 1));
         gp.lineTo((float) edgex.get(y + 1, x + 1), (float) edgey.get(y + 1, x + 1));
         gp.lineTo((float) edgex.get(y + 1, x), (float) edgey.get(y + 1, x));
+
+        // debug F:\data2\formats\hdf4\AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf
+        if (false) {
+          double d1 = Math.abs(edgex.get(y, x) - edgex.get(y, x+1));
+          double d2 = Math.abs(edgex.get(y, x+1) - edgex.get(y+1, x+1));
+          double d3 = Math.abs(edgex.get(y+1, x+1) - edgex.get(y+1, x) );
+          double d4 = Math.abs(edgex.get(y+1, x) - edgex.get(y, x));
+          if (Math.abs(d1) > 10 || Math.abs(d2) > 10 || Math.abs(d3) > 10 || Math.abs(d4) > 10) {
+            System.out.printf("x=%d y=%d %n", x, y);
+            System.out.printf("%f %f %f %f %n", edgex.get(y, x), edgex.get(y, x + 1), edgex.get(y + 1, x), edgex.get(y + 1, x + 1));
+
+            System.out.printf("%n%s", NCdumpW.printArray(edgex.slice(0,y+1), "row "+y, null));
+            System.out.printf("%n%s", NCdumpW.printArray(edgex.slice(0,y+1), "row "+(y+1), null));
+          }
+        }
 
         double val = data.getDouble(ima.set(y, x));   // ordering LOOK
         int colorIndex = cs.getIndexFromValue(val);
@@ -816,8 +832,8 @@ public class GridRenderer {
     CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
     CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
 
-    ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdges(xaxis2D.getMidpoints());
-    ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdges(yaxis2D.getMidpoints());
+    ArrayDouble.D2 edgex = xaxis2D.getXEdges();
+    ArrayDouble.D2 edgey = yaxis2D.getYEdges();
 
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
     g.setColor(Color.BLACK);

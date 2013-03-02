@@ -108,7 +108,9 @@ public class HdfEos {
     String smeta = getStructMetadata(eosGroup);
     if (smeta == null) return false;
 
-    new HdfEos().amendFromODL(ncfile, smeta);
+    HdfEos fixer = new HdfEos();
+    fixer.amendFromODL(ncfile, smeta);
+    fixer.fixAttributes(ncfile.getRootGroup());
     return true;
   }
 
@@ -373,14 +375,26 @@ public class HdfEos {
     } else if (name.equalsIgnoreCase("Time")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
       if (v.findAttribute(CDM.UNITS) == null) {
-        String tit = ncfile.findAttValueIgnoreCase(v, "Title", null);
+        /*
+        from http://newsroom.gsfc.nasa.gov/sdptoolkit/hdfeosfaq.html
+        HDF-EOS uses the TAI93 (International Atomic Time) format. This means that time is stored as the number of
+        elapsed seconds since January 1, 1993 (negative values represent times prior to this date).
+        An 8 byte floating point number is used, producing microsecond accuracy from 1963 (when leap second records
+        became available electronically) to 2100. The SDP Toolkit provides conversions from other date formats to and
+        from TAI93. Other representations of time can be entered as ancillary data, if desired.
+        For lists and descriptions of other supported time formats, consult the Toolkit documentation or write to
+        landover_PGSTLKIT@raytheon.com.
+         */
+        v.addAttribute(new Attribute(CDM.UNITS, "seconds since 1993-01-01T00:00:00Z"));
+        v.addAttribute(new Attribute(CF.CALENDAR, "TAI"));
+        /* String tit = ncfile.findAttValueIgnoreCase(v, "Title", null);
         if (tit != null && tit.contains("TAI93")) {
           // Time is given in the TAI-93 format, i.e. the number of seconds passed since 01-01-1993, 00:00 UTC.
           v.addAttribute(new Attribute(CDM.UNITS, "seconds since 1993-01-01T00:00:00Z"));
           v.addAttribute(new Attribute(CF.CALENDAR, "TAI"));
         } else { // who the hell knows ??
-          v.addAttribute(new Attribute(CDM.UNITS, "seconds since 1970=01-01T00:00:00Z"));
-        }
+          v.addAttribute(new Attribute(CDM.UNITS, "seconds since 1970-01-01T00:00:00Z"));
+        }  */
       }
       return AxisType.Time;
 
@@ -623,6 +637,24 @@ public class HdfEos {
         return result;
     }
     return null;
+  }
+
+  private void fixAttributes(Group g) {
+    for (Variable v : g.getVariables()) {
+      for (Attribute a : v.getAttributes()) {
+        if (a.getShortName().equalsIgnoreCase("UNIT"))
+          a.setShortName(CDM.UNITS);
+        if (a.getShortName().equalsIgnoreCase("SCALE_FACTOR"))
+          a.setShortName(CDM.SCALE_FACTOR);
+        if (a.getShortName().equalsIgnoreCase("OFFSET"))
+          a.setShortName(CDM.ADD_OFFSET);
+      }
+    }
+
+    for (Group ng : g.getGroups()) {
+      fixAttributes(ng);
+    }
+
   }
 
 }

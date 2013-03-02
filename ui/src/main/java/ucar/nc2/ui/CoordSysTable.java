@@ -33,8 +33,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayObject;
+import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.grid.impl.CoverageCSFactory;
@@ -52,8 +51,6 @@ import ucar.nc2.dt.grid.*;
 import ucar.unidata.util.Parameter;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -177,6 +174,7 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        if (bean == null) return;
         VariableDS axis = (VariableDS) ds.findVariable(bean.getName());
         if (axis == null) return;
         infoTA.clear();
@@ -190,7 +188,7 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Values", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        //CoordinateAxis axis = (CoordinateAxis) ds.findVariable( bean.getName());
+        if (bean == null) return;
         CoordinateAxis axis = bean.axis;
         infoTA.clear();
         try {
@@ -223,18 +221,44 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Value Differences", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        if (bean == null) return;
         CoordinateAxis axis = (CoordinateAxis) ds.findVariable(bean.getName());
+        if (!axis.isNumeric()) return;
         infoTA.clear();
         try {
-          if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
+          if (axis instanceof CoordinateAxis1D) {
             CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
             double[] mids = axis1D.getCoordValues();
             for (int i = 0; i < mids.length - 1; i++)
               mids[i] = mids[i + 1] - mids[i];
             mids[mids.length - 1] = 0.0;
-
             printArray("midpoint differences=", mids);
+
+          } else if (axis instanceof CoordinateAxis2D) {
+            CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
+            ArrayDouble.D2 mids = axis2D.getMidpoints();
+            int[] shape = mids.getShape();
+            ArrayDouble.D2 diffx = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[] {shape[0],shape[1]-1});
+            for (int j=0; j<shape[0]; j++) {
+              for (int i=0; i<shape[1]-1; i++) {
+                double diff = mids.get(j, i+1) - mids.get(j,i);
+                diffx.set(j,i,diff);
+              }
+            }
+            infoTA.appendLine(NCdumpW.printArray(diffx, "diff in x", null));
+
+            ArrayDouble.D2 diffy = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[] {shape[0]-1,shape[1]});
+            for (int j=0; j<shape[0]-1; j++) {
+              for (int i=0; i<shape[1]; i++) {
+                double diff = mids.get(j+1, i) - mids.get(j,i);
+                diffy.set(j,i,diff);
+              }
+            }
+            infoTA.appendLine("\n\n\n");
+            infoTA.appendLine(NCdumpW.printArray(diffy, "diff in y", null));
+
           }
+
         } catch (Exception e1) {
           e1.printStackTrace();
           infoTA.appendLine(e1.getMessage());
@@ -247,6 +271,7 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Values as Date", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        if (bean == null) return;
         VariableEnhanced axis = (VariableEnhanced) ds.findVariable(bean.getName());
         String units = axis.getUnitsString();
         infoTA.clear();
@@ -400,7 +425,6 @@ public class CoordSysTable extends JPanel {
     }
     return true;
   }
-
 
   private void printArray(String title, double vals[]) {
     StringBuilder sbuff = new StringBuilder();
@@ -790,11 +814,7 @@ public class CoordSysTable extends JPanel {
     public String getName() { return att.getShortName(); }
     public String getValue() {
       Array value = att.getValues();
-      try {
-        return NCdumpW.printArray(value, null, null);
-      } catch (IOException e) {
-        return e.getMessage();
-      }
+      return NCdumpW.printArray(value, null, null);
     }
 
   }

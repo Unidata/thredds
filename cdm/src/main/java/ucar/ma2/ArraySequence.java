@@ -77,7 +77,7 @@ public class ArraySequence extends ArrayStructure {
   }
 
   @Override
-  public StructureDataIterator getStructureDataIterator() throws java.io.IOException {
+  public StructureDataIterator getStructureDataIterator() { // throws java.io.IOException {
     iter = iter.reset();
     return iter;
   }

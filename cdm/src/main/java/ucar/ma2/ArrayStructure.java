@@ -254,7 +254,7 @@ public abstract class ArrayStructure extends Array {
     return members.getStructureSize();
   }
 
-  public StructureDataIterator getStructureDataIterator() throws java.io.IOException {
+  public StructureDataIterator getStructureDataIterator() { // throws java.io.IOException {
     return new ArrayStructureIterator();
   }
 

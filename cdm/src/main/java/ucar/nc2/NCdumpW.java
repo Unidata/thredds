@@ -392,14 +392,14 @@ public class NCdumpW {
     out.flush();
   }
 
-  static public String printArray(Array array, String name, CancelTask ct) throws IOException {
+  static public String printArray(Array array, String name, CancelTask ct) { // throws IOException {
     CharArrayWriter carray = new CharArrayWriter(100000);
     PrintWriter pw = new PrintWriter(carray);
     printArray(array, name, null, pw, new Indent(2), ct, true);
     return carray.toString();
   }
 
-  static private void printArray(Array array, String name, String units, PrintWriter out, Indent ilev, CancelTask ct, boolean printSeq) throws IOException {
+  static private void printArray(Array array, String name, String units, PrintWriter out, Indent ilev, CancelTask ct, boolean printSeq) { // throws IOException {
     if (ct != null && ct.isCancel()) return;
 
     if (name != null) out.print(ilev + name + " =");
@@ -572,8 +572,7 @@ public class NCdumpW {
     out.print("\n" + indent + "}");
   }
 
-  static private void printStructureDataArray(PrintWriter out, ArrayStructure array, Indent indent,
-                                              ucar.nc2.util.CancelTask ct) throws IOException {
+  static private void printStructureDataArray(PrintWriter out, ArrayStructure array, Indent indent, ucar.nc2.util.CancelTask ct) { // throws IOException {
     StructureDataIterator sdataIter = array.getStructureDataIterator();
     int count = 0;
     try {
@@ -586,12 +585,14 @@ public class NCdumpW {
         if (ct != null && ct.isCancel()) return;
         count++;
       }
+    } catch (IOException e) {
+      e.printStackTrace();  // shouldnt happen ?
     } finally {
       sdataIter.finish();
     }
   }
 
-  static private void printVariableArray(PrintWriter out, ArrayObject array, Indent indent, CancelTask ct) throws IOException {
+  static private void printVariableArray(PrintWriter out, ArrayObject array, Indent indent, CancelTask ct) { // throws IOException {
     out.println("\n" + indent + "{");
     indent.incr();
     IndexIterator iter = array.getIndexIterator();
@@ -604,7 +605,7 @@ public class NCdumpW {
   }
 
 
-  static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) throws IOException {
+  static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) { // throws IOException {
     StructureDataIterator iter = seq.getStructureDataIterator();
     try {
       while (iter.hasNext()) {
@@ -614,6 +615,8 @@ public class NCdumpW {
         out.print(indent + "} " + sdata.getName());
         if (ct != null && ct.isCancel()) return;
       }
+    } catch (IOException e) {
+      e.printStackTrace();  // shouldnt happen ??
     } finally {
       iter.finish();
     }
@@ -631,7 +634,7 @@ public class NCdumpW {
     out.flush();
   }
 
-  static private void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) throws IOException {
+  static private void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) { // throws IOException {
     indent.incr();
     for (StructureMembers.Member m : sdata.getMembers()) {
       Array sdataArray = sdata.getArray(m);

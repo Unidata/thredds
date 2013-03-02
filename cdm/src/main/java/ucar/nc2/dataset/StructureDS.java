@@ -143,9 +143,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   public StructureDS(NetcdfDataset ds, Group group, Structure parent, String shortName, Structure orgVar) {
     super(ds, group, parent, shortName);
 
-    if (orgVar instanceof Structure)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
-
     // dont share cache, iosp : all IO is delegated
     // this.ncfile = null;
     this.spiObject = null;
@@ -522,7 +519,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator() throws java.io.IOException {
+    public StructureDataIterator getStructureDataIterator() { // throws java.io.IOException {
       return new StructureDataConverter(orgStruct, orgSeq.getStructureDataIterator());
     }
   }
