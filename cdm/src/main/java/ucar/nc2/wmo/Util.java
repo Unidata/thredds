@@ -42,8 +42,8 @@ public class Util {
     if (pos < 0) pos = name.indexOf("(See");
     if (pos > 0) name = name.substring(0,pos);
 
+    name = StringUtil2.replace(name, '/', "-");
     StringBuilder sb = new StringBuilder(name);
-
     StringUtil2.remove(sb, ".;,=[]()/*\"");
     return StringUtil2.collapseWhitespace(sb.toString().trim());
   }

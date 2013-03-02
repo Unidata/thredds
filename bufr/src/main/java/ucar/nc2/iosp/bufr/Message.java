@@ -250,7 +250,7 @@ public class Message {
 
   public boolean isBitCountOk() throws IOException {
     getRootDataDescriptor(); // make sure root is calculated
-    getTotalBits(); // make sure buts are counted
+    getTotalBits(); // make sure bits are counted
     //int nbitsGiven = 8 * (dataSection.getDataLength() - 4);
     int nbytesCounted = getCountedDataBytes();
     int nbytesGiven = dataSection.getDataLength();

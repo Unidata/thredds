@@ -196,7 +196,7 @@ public class BtMessInfoController extends AbstractController {
     Message m = null;
     try {
       raf = new RandomAccessFile(file.getPath(), "r");
-      MessageScanner scan = new MessageScanner(raf, messPos, false);
+      MessageScanner scan = new MessageScanner(raf, messPos, true);
       if (scan.hasNext())
         m = scan.next();
 
@@ -288,7 +288,7 @@ public class BtMessInfoController extends AbstractController {
     RandomAccessFile raf = null;
     try {
       raf = new RandomAccessFile(file.getPath(), "r");
-      MessageScanner scan = new MessageScanner(raf, messPos, false);
+      MessageScanner scan = new MessageScanner(raf, messPos, true);
       if (scan.hasNext()) {
         message = scan.next();
         byte[] mbytes = scan.getMessageBytesFromLast(message);
@@ -339,7 +339,7 @@ public class BtMessInfoController extends AbstractController {
 
   private Message getBufrMessageByPos(File file, long pos) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-    MessageScanner scan = new MessageScanner(raf, pos, false);
+    MessageScanner scan = new MessageScanner(raf, pos, true);
     if (scan.hasNext())
       return scan.next();
 

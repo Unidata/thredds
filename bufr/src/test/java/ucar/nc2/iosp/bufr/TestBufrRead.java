@@ -34,8 +34,10 @@
 package ucar.nc2.iosp.bufr;
 
 import org.junit.Test;
+import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
+import java.util.Formatter;
 
 import ucar.unidata.test.util.TestDir;
 
@@ -62,7 +64,7 @@ public class TestBufrRead {
       public int doAct(String filename) throws IOException {
         return readBufr(filename);
       }
-    }, false);
+    }, true);
     System.out.println("***READ " + count + " files");
   }
 
@@ -92,7 +94,7 @@ public class TestBufrRead {
     try {
       raf = new RandomAccessFile(filename, "r");
 
-      MessageScanner scan = new MessageScanner(raf, 0, false);
+      MessageScanner scan = new MessageScanner(raf, 0, true);
       while (scan.hasNext()) {
         try {
           
@@ -100,18 +102,26 @@ public class TestBufrRead {
           if (m == null) continue;
           int nobs = m.getNumberDatasets();
           System.out.printf(" %3d nobs = %4d (%s) center = %s table=%s cat=%s ", count++, nobs, m.getHeader(), m.getCenterNo(), m.getTableName(), m.getCategoryNo());
-          if (m.isTablesComplete()) {
-            if (m.isBitCountOk()) {
-              totalObs += nobs;
-              System.out.printf("%n");
-            } else
-              System.out.printf(" BITS NOT OK%n");                                                           
-          } else
-            System.out.printf(" TABLES NOT COMPLETE%n");
+          assert m.isTablesComplete() : "incomplete tables";
+
+          if (nobs > 0) {
+            if (!m.isBitCountOk()) {
+              Formatter f = new Formatter();
+              int n = m.calcTotalBits(f);
+              FileOutputStream out = new FileOutputStream("C:/tmp/bitcount.txt");
+              IO.writeContents(f.toString(), out);
+              out.close();
+              System.out.printf("  nbits = %d%n", n);
+            }
+            assert m.isBitCountOk() : "bit count wrong";
+          }
+
+          totalObs += nobs;
+          System.out.printf("%n");
 
         } catch (Exception e) {
-          System.out.printf(" CANT READ %n");
           e.printStackTrace();
+          assert true : e.getMessage();
         }
 
       }
