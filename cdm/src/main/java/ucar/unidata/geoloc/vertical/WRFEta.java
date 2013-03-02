@@ -37,6 +37,7 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.ArrayDouble.D1;
 
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
@@ -173,6 +174,43 @@ public class WRFEta extends VerticalTransformImpl {
 
     return array;
   }
+  
+  
+  /**
+   * Get the 1D vertical coordinate array for this time step and point
+   * 
+   * @param timeIndex the time index. Ignored if !isTimeDependent().
+   * @param xIndex    the x index
+   * @param yIndex    the y index
+   * @return vertical coordinate array
+   * @throws java.io.IOException problem reading data
+   * @throws ucar.ma2.InvalidRangeException _more_ 
+   */  
+  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
+  		throws IOException, InvalidRangeException {
+	  
+
+	  ArrayDouble.D3 data = getCoordinateArray(timeIndex);
+	  
+	  ArrayDouble.D1 result = null;
+	  
+	  int[] origin = new int[3];
+	  int[] shape = new int[3];
+	  
+	  origin[0]=0;
+	  origin[1]=yIndex;
+	  origin[2]=xIndex;
+	  
+	  shape[0] = data.getShape()[0];
+	  shape[1] =1;
+	  shape[2] =1;
+	  
+	  Array tmp = data.section(origin, shape);
+	  result = (ArrayDouble.D1)tmp.reduce();
+	  
+	  return result;
+	  
+  }  
 
   /**
    * Add 1 to the size of the array for the given dimension.

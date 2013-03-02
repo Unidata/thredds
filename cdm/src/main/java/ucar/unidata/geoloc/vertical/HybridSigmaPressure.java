@@ -33,8 +33,10 @@
 package ucar.unidata.geoloc.vertical;
 
 import ucar.ma2.*;
+import ucar.ma2.ArrayDouble.D1;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
@@ -88,6 +90,11 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
   private Variable psVar, aVar, bVar, p0Var;
 
   /**
+   * If has AP, this is a pressure value and has to be also in the same units as PS 
+   */
+  private String apUnits ="";
+  
+  /**
    * a and b Arrays
    */
   private Array aArray = null,
@@ -109,16 +116,26 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     String p0Name = getParameterStringValue(params, P0);
     String apName = getParameterStringValue(params, AP);
 
-    if (apName != null)
-       aVar = ds.findVariable(apName);
-     else
+    
+    
+    if (apName != null){
+       aVar = ds.findVariable(apName);       
+    }else
        aVar = ds.findVariable(aName);
+    
+    if(aVar.findAttributeIgnoreCase(CDM.UNITS) != null){
+    	apUnits = aVar.findAttributeIgnoreCase(CDM.UNITS).getStringValue();
+    }
+    
     psVar = ds.findVariable(psName);
     bVar = ds.findVariable(bName);
-    if (p0Name != null)
-      p0Var = ds.findVariable(p0Name);
-
     units = ds.findAttValueIgnoreCase(psVar, CDM.UNITS, "none");
+    if (p0Name != null){    	
+      p0Var = ds.findVariable(p0Name);
+      apUnits = units; //Won't need transformation for AP = A * P0 * 1 (in this case) 
+    }
+    
+    
   }
 
   /**
@@ -136,7 +153,8 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     if (null == aArray) {
       aArray = aVar.read();
       bArray = bVar.read();
-      p0 = (p0Var == null) ? 1.0 : p0Var.readScalarDouble();
+      //p0 = (p0Var == null) ? 1.0 : p0Var.readScalarDouble();
+      p0 = computeP0();
     }
 
     int nz = (int) aArray.getSize();
@@ -159,6 +177,12 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     double ps;
     for (int z = 0; z < nz; z++) {
       double term1 = aArray.getDouble(aIndex.set(z)) * p0;
+      
+      //AP might need unit conversion
+      if(!apUnits.equals(units) ){
+    	  term1 = convertPressureToPSUnits(apUnits, term1);
+      }
+      
       double bz = bArray.getDouble(bIndex.set(z));
 
       for (int y = 0; y < ny; y++) {
@@ -170,6 +194,86 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     }
 
     return press;
+  }
+  
+  /**
+   * Get the 1D vertical coordinate array for this time step and point
+   * 
+   * @param timeIndex the time index. Ignored if !isTimeDependent().
+   * @param xIndex    the x index
+   * @param yIndex    the y index
+   * @return vertical coordinate array
+   * @throws java.io.IOException problem reading data
+   * @throws ucar.ma2.InvalidRangeException _more_ 
+   */  
+  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
+  		throws IOException, InvalidRangeException {
+	  
+	    Array psArray = readArray(psVar, timeIndex);
+
+	    if (null == aArray) {
+	      aArray = aVar.read();
+	      bArray = bVar.read();
+	      //p0 = (p0Var == null) ? 1.0 : p0Var.readScalarDouble();
+	      p0 = computeP0();
+	    }
+
+	    int nz = (int) aArray.getSize();
+	    Index aIndex = aArray.getIndex();
+	    Index bIndex = bArray.getIndex();
+
+	    // it's possible to have rank 3 because pressure can have a level, usually 1
+	    // Check if rank 3 and try to reduce
+	    if( psArray.getRank() == 3) 
+	      psArray = psArray.reduce(0);
+
+	    Index psIndex = psArray.getIndex();
+
+	    ArrayDouble.D1 press = new ArrayDouble.D1(nz);
+
+	    double ps;
+	    for (int z = 0; z < nz; z++) {
+	    	    	
+	      double term1 = aArray.getDouble(aIndex.set(z)) * p0;
+	      //AP might need unit conversion
+	      if(!apUnits.equals(units) ){
+	    	  term1 = convertPressureToPSUnits(apUnits, term1);
+	      }	      
+	      
+	      double bz = bArray.getDouble(bIndex.set(z));
+
+          ps = psArray.getDouble(psIndex.set( yIndex, xIndex));
+          press.set(z, term1 + bz * ps);
+          
+	    }
+
+	    return press;
+	  
+	  
+  }
+  
+  private double computeP0() throws IOException{
+	  
+	  if(p0Var == null) return 1.0; //Has AP variable
+	  
+	  double p0 = p0Var.readScalarDouble(); 
+	  
+	  //Units check:
+	  // P0 must have same units as PS
+	  String p0UnitStr = p0Var.findAttributeIgnoreCase(CDM.UNITS).getStringValue();
+	  if (!units.equalsIgnoreCase(p0UnitStr)) {
+		  p0 = convertPressureToPSUnits(p0UnitStr, p0);		  
+	  }	  
+	  
+	  return p0;
+  }
+  
+  private double convertPressureToPSUnits(String unit, double val){
+	  SimpleUnit psUnit = SimpleUnit.factory(units);
+	  SimpleUnit ptopUnit = SimpleUnit.factory(unit);
+	  double factor = ptopUnit.convertTo(1.0, psUnit);
+	  return val * factor;	  
+	  
   }
 
 }

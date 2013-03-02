@@ -37,6 +37,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.ma2.*;
+import ucar.ma2.ArrayDouble.D1;
 import ucar.unidata.util.Parameter;
 
 import java.util.List;
@@ -132,6 +133,23 @@ public class AtmosLnPressure extends VerticalTransformImpl {
 
     return result;
   }
+
+  /**
+   * Get the 1D vertical coordinate array for this time step and point
+   * 
+   * @param timeIndex the time index. Ignored if !isTimeDependent().
+   * @param xIndex    the x index
+   * @param yIndex    the y index
+   * @return vertical coordinate array
+   * @throws java.io.IOException problem reading data
+   * @throws ucar.ma2.InvalidRangeException _more_ 
+   */  
+  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
+  		throws IOException, InvalidRangeException {
+	  
+	  throw new UnsupportedOperationException("1D subsetting is not implemented yet for this vertical tranformation");
+  }
+
 }
 
 
