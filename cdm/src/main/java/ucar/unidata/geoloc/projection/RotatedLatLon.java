@@ -84,6 +84,14 @@ public class RotatedLatLon extends ProjectionImpl {
   public RotatedLatLon(double southPoleLat, double southPoleLon, double southPoleAngle) {
     super("RotatedLatLon", false);
 
+    /*
+          lonsp = aLonsp;
+      latsp = aLatsp;
+      rotsp = aRotsp;
+      double dlat_rad = (latsp - (-90)) * DEG2RAD; //delta latitude
+      sinDlat = Math.sin(dlat_rad);
+      cosDlat = Math.cos(dlat_rad);
+     */
     this.latpole = southPoleLat;
     this.lonpole = southPoleLon;
     this.polerotate = southPoleAngle;
@@ -165,8 +173,25 @@ public class RotatedLatLon extends ProjectionImpl {
     return destPoint;
   }
 
-  // Tor's tranform algorithm renamed to rotate for clarity
+  // Tor's transform algorithm renamed to rotate for clarity
   private double[] rotate(double[] lonlat, double rot1, double rot2, double s) {
+
+    /* original code
+      double e = DEG2RAD * (lonlat[0] - rot1); //east
+      double n = DEG2RAD * lonlat[1]; //north
+      double cn = Math.cos(n);
+      double x = cn * Math.cos(e);
+      double y = cn * Math.sin(e);
+      double z = Math.sin(n);
+      double x2 = cosDlat * x + s * z;
+      double z2 = -s * x + cosDlat * z;
+      double R = Math.sqrt(x2 * x2 + y * y);
+      double e2 = Math.atan2(y, x2);
+      double n2 = Math.atan2(z2, R);
+      double rlon = RAD2DEG * e2 - rot2;
+      double rlat = RAD2DEG * n2;
+      return new double[]{rlon, rlat};
+     */
 
     double e = Math.toRadians(lonlat[0] - rot1); //east
     double n = Math.toRadians(lonlat[1]); //north
@@ -179,7 +204,7 @@ public class RotatedLatLon extends ProjectionImpl {
     double R = Math.sqrt(x2 * x2 + y * y);
     double e2 = Math.atan2(y, x2);
     double n2 = Math.atan2(z2, R);
-    double rlon = Math.toDegrees(e2 - rot2);
+    double rlon = Math.toDegrees(e2) - rot2;
     double rlat =  Math.toDegrees(n2);
     return new double[]{rlon, rlat};
 
@@ -306,5 +331,75 @@ public class RotatedLatLon extends ProjectionImpl {
   public static void main(String args[]) {
     test();
   }
-
 }
+
+/*
+
+original code:
+
+
+  private static class RotLatLon {
+    double DEG2RAD = (Math.PI * 2) / 360;
+    double RAD2DEG = 1 / DEG2RAD;
+    double lonsp, latsp, rotsp, sinDlat, cosDlat;
+    public RotLatLon(double aLonsp,
+                     double aLatsp,
+                     double aRotsp)
+    {
+       lonsp = aLonsp;
+       latsp = aLatsp;
+       rotsp = aRotsp;
+       double dlat_rad = (latsp - (-90)) * DEG2RAD; //delta latitude
+       sinDlat = Math.sin(dlat_rad);
+       cosDlat = Math.cos(dlat_rad);
+    }
+
+    private double[] transform(double [] lonlat, double rot1, double rot2, double s)
+    {
+       double e = DEG2RAD * (lonlat[0] - rot1); //east
+       double n = DEG2RAD * lonlat[1]; //north
+       double cn = Math.cos(n);
+       double x = cn * Math.cos(e);
+       double y = cn * Math.sin(e);
+       double z = Math.sin(n);
+       double x2 = cosDlat * x + s * z;
+       double z2 = -s * x + cosDlat * z;
+       double R = Math.sqrt(x2 * x2 + y * y);
+       double e2 = Math.atan2(y, x2);
+       double n2 = Math.atan2(z2, R);
+       double rlon = RAD2DEG * e2 - rot2;
+       double rlat = RAD2DEG * n2;
+       return new double[]{rlon, rlat};
+    }
+
+    public double[] fwd(double[] lonlat)
+    {
+       return transform(lonlat, lonsp, rotsp, sinDlat);
+    }
+
+    public double[] inv(double[] lonlat)
+    {
+       return transform(lonlat, -rotsp, -lonsp, -sinDlat);
+    }
+  }
+
+  public static void main(String[] args) {
+    RotLatLon rot = new RotLatLon(155, -30, 0);
+    double[] lonlat = new double[] {130, 2};
+    double[] rlonlat = rot.fwd(lonlat);
+    double[] rrlonlat = rot.inv(rlonlat);
+    System.out.printf("lonlat = %f %f%n", lonlat[0],  lonlat[1]);
+    System.out.printf("rlonlat = %f %f%n", rlonlat[0],  rlonlat[1]);
+    System.out.printf("rrlonlat = %f %f%n", rrlonlat[0],  rrlonlat[1]);
+
+    RotatedLatLon rot2 = new RotatedLatLon(-30, 155, 0);
+    LatLonPointImpl ll = new LatLonPointImpl(2,130);
+    ProjectionPoint pp = rot2.latLonToProj(ll);
+    LatLonPoint ll2 = rot2.projToLatLon(pp);
+    System.out.printf("latlon = %s%n", ll);
+    System.out.printf("pp = %s%n", pp);
+    System.out.printf("latlon = %s%n", ll2);
+  }
+
+
+   */
