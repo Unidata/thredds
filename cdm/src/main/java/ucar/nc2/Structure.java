@@ -71,7 +71,7 @@ public class Structure extends Variable {
    */
   public Structure(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     super(ncfile, group, parent, shortName);
-    this.dataType = DataType.STRUCTURE;
+    setDataType(DataType.STRUCTURE);
     this.elementSize = -1; // gotta wait before calculating
     members = new ArrayList<Variable>();
     memberHash = new HashMap<String, Variable>();

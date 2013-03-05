@@ -48,7 +48,7 @@ public class CDMNode
 {
     CDMSort sort = null;
     Group group = null;
-    Structure struct = null;
+    Structure parentstruct = null;
     boolean immutable = false;
     String shortName = null;
     String fullName = null; // uses backslash escaping
@@ -157,7 +157,7 @@ public class CDMNode
      */
     public Structure getParentStructure()
     {
-        return this.struct;
+        return this.parentstruct;
     }
 
     /**
@@ -167,7 +167,7 @@ public class CDMNode
      */
     public void setParentStructure(Structure parent)
     {
-        if(!immutable) this.struct = parent;
+        if(!immutable) this.parentstruct = parent;
     }
 
     /**
@@ -176,7 +176,7 @@ public class CDMNode
      * @return true iff struct != null
      */
 
-    public boolean isMemberOfStructure() {return struct != null;}
+    public boolean isMemberOfStructure() {return this.parentstruct != null;}
 
     /**
      * Get immutable flag

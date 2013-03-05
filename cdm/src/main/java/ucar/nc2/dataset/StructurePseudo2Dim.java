@@ -63,7 +63,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
    */
   public StructurePseudo2Dim( NetcdfDataset ncfile, Group group, String shortName, List<String> varNames, Dimension outer, Dimension inner) {
     super (ncfile, group, shortName);
-    this.dataType = DataType.STRUCTURE;
+    setDataType(DataType.STRUCTURE);
     ArrayList<Dimension> dims = new ArrayList<Dimension>(2);
     dims.add(outer);
     dims.add(inner);
