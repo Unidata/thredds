@@ -50,7 +50,7 @@ import ucar.nc2.TestAll;
  */
 
 public class TestProjections extends TestCase {
-  boolean show = false;
+  boolean show = true;
   int NTRIALS = 10000;
   double TOLERENCE = 1.0e-6;
   int count = 10;
@@ -297,6 +297,19 @@ public class TestProjections extends TestCase {
     testProjectionLonMax(new RotatedPole(37, 177), 360, 88);
     RotatedPole p = new RotatedPole();
     RotatedPole p2 = (RotatedPole) p.constructCopy();
+    assert p.equals(p2);
+  }
+
+  /*
+     grid_south_pole_latitude = -30.000001907348633
+    grid_south_pole_longitude = -15.000000953674316
+    grid_south_pole_angle = 0.0 */
+  public void testRotatedLatLon() {
+    //   public RotatedLatLon(double southPoleLat, double southPoleLon, double southPoleAngle) {
+
+    testProjectionLonMax(new RotatedLatLon(-30, -15, 0), 360, 88);
+    RotatedLatLon p = new RotatedLatLon();
+    RotatedLatLon p2 = (RotatedLatLon) p.constructCopy();
     assert p.equals(p2);
   }
 

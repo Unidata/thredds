@@ -32,10 +32,8 @@
  */
 package ucar.nc2.dods;
 
-import sun.font.CreatedFontTracker;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.Attribute;
 import ucar.nc2.Group;
 import ucar.nc2.DODSNode;
 

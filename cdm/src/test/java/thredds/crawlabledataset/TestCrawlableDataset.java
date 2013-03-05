@@ -83,7 +83,7 @@ public class TestCrawlableDataset
     String path = ".";
     String name = ".";
     List results = new ArrayList();
-    results.add( "build.xml" );
+    results.add( "pom.xml" );
 
     checkCrDsChildren( path, name, results );
   }

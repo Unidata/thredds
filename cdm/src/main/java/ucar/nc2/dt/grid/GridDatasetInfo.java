@@ -54,17 +54,14 @@ import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.Parameter;
 
@@ -192,7 +189,7 @@ public class GridDatasetInfo {
 	/**
 	 * Returns a WKT polygon with the dataset boundaries 
 	 * 
-	 * @return
+	 * @return  WKT string
 	 */
 	public String getDatasetBoundariesWKT(){
 		
