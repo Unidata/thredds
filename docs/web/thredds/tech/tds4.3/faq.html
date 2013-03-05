@@ -288,6 +288,8 @@ mkdir javaUtilPrefs/.systemPrefs
   "class org.apache.catalina.ant.DeployTask cannot be found" when I try to build the TDS from
   source using Ant?</strong></p>
 <blockquote>
+  <p> <strong>Note:</strong> Ant builds are not supported in TDS 4.3, and <code>build.xml</code> is removed from the repository as of version 4.3.16
+  </p>
   <p>The TDS <code>build.xml</code> file uses several external Ant tasks defined in the
     <code>catalina-ant.jar</code> file. For TDS 4.2.5 and before, you need to have the
     <code>catalina-ant.jar</code> file in the <code>lib/</code> directory of your Ant installation.

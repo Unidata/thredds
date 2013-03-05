@@ -3,7 +3,7 @@
  Java Specialist newsletter #142 "Instrumentation Memory Counter",
  http://www.javaspecialists.eu/archive/Issue142.html.
 
-The build.xml builds the code and places the jar file (memoryagent.jar) in
+Maven uses the cdm pom.xml to build the code and places the jar file (memoryagent.jar) in
 this directory. To use this in testing, write code that constructs an object
 and hand that object to "MemoryCounterAgent.sizeOf(Object)" and/or
 "MemoryCounterAgent.deepSizeOf(Object)".

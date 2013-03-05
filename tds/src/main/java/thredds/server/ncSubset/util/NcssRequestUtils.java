@@ -140,7 +140,9 @@ public final class NcssRequestUtils implements ApplicationContextAware{
 		if (zAxis.getSize() == 1) {
 			targetLevel = 0.0;
 		} else {
-			coordLevel = zAxis.findCoordElement(vertLevel);
+			//coordLevel = zAxis.findCoordElement(vertLevel);
+			coordLevel = zAxis.findCoordElementBounded(vertLevel);
+			
 			if (coordLevel > 0) {
 				targetLevel = zAxis.getCoordValue(coordLevel);
 			}

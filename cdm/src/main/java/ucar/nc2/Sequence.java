@@ -61,7 +61,7 @@ public class Sequence extends Structure {
     List<Dimension> dims = new ArrayList<Dimension>();
     dims.add(Dimension.VLEN);
     setDimensions(dims);
-    this.dataType = DataType.SEQUENCE;
+    setDataType(DataType.SEQUENCE);
   }
 
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {

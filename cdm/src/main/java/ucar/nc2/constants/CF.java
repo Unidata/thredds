@@ -52,6 +52,8 @@ public interface CF {
   public static final String FEATURE_TYPE = "featureType";
   public static final String POSITIVE = "positive";
   public static final String STANDARD_NAME = "standard_name";
+  
+  public static final String FORMULA_TERMS = "formula_terms";
 
   // positive values
   public final static String POSITIVE_UP = "up";

@@ -73,6 +73,7 @@ import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.util.Parameter;
 
 /**
  * Write a CF compliant Netcdf-3 or netcdf-4 file (classic mode only) from any gridded dataset.
@@ -259,6 +260,9 @@ public class NetcdfCFWriter {
 
       // add coordinate transform variables
       addCoordinateTransform(gcs, ncd, varNameList, varList);
+      
+      //Add Variables from the formula_terms
+      total_size += processTransformationVars(varList, varNameList, ncd, gds, grid, timeRange, zRangeUse, llbb, 1, horizStride, horizStride );      
 
       // optional lat/lon
       if (addLatLon) {
@@ -386,8 +390,13 @@ public class NetcdfCFWriter {
       // add coordinate axes
       GridCoordSystem gcs = grid.getCoordinateSystem();
       addCoordinateAxis(gcs, varNameList, varList, axisList);
+      
+      //add coordinate transforms
       addCoordinateTransform(gcs, ncd, varNameList, varList);
 
+      //Add Variables from the formula_terms
+      total_size += processTransformationVars(varList, varNameList, ncd, gds, grid, timeRange, zRangeUse, y_range, x_range, 1, horizStride, horizStride );     
+      
       // optional lat/lon
       if (addLatLon) {
         Projection proj = gcs.getProjection();
@@ -560,7 +569,72 @@ public class NetcdfCFWriter {
     }
 
   }
+  
+  
+  /**
+   * 
+   * Process the coordinate transformations (formula_terms) and adds the variables needed for performing that transformation to the list of variables in the new file.
+   * Also, subsets the grids variables, if needed.
+   * 
+   * @param varList
+   * @param varNameList
+   * @param ncd
+   * @param gds
+   * @param grid
+   * @param timeRange
+   * @param zRangeUse
+   * @param llbb
+   * @param z_stride
+   * @param y_stride
+   * @param x_stride
+   * @return size of the added variables
+   * @throws InvalidRangeException
+   */
+  private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds, GridDatatype grid, Range timeRange, Range zRangeUse, LatLonRect llbb, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
+	  
+  	  List<Range> yxRanges = grid.getCoordinateSystem().getRangesFromLatLonRect(llbb);
+	  return processTransformationVars(varList, varNameList, ncd, gds, grid, timeRange, zRangeUse,  yxRanges.get(0), yxRanges.get(1), z_stride, y_stride, x_stride );
+  }  
+  
 
+  private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds, GridDatatype grid, Range timeRange, Range zRangeUse, Range yRange, Range xRange, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
+	  
+	  long varsSize =0L;
+	  List<CoordinateTransform> cctt =  grid.getCoordinateSystem().getCoordinateTransforms();
+	  for(CoordinateTransform ct : cctt){
+		  Parameter param = ct.findParameterIgnoreCase( CF.FORMULA_TERMS );
+
+		  if(param != null){
+			  String[] varStrings = param.getStringValue().split(" ");
+			  for(int i = 1; i<varStrings.length; i+=2 ){
+				  Variable paramVar = ncd.findVariable(varStrings[i].trim());
+
+				  //if (!varList.contains(varStrings[i]) && (null != paramVar) ) {
+				  if (!varNameList.contains(varStrings[i]) && (null != paramVar) ) {
+
+					  if(gds.findGridDatatype(paramVar.getFullName()) != null){
+						  //Subset...
+						  if ((null != timeRange) || (zRangeUse != null) || (x_stride > 1 && y_stride > 1)) {
+							  GridDatatype complementaryGrid = gds.findGridDatatype(paramVar.getFullName());	  
+							  complementaryGrid = complementaryGrid.makeSubset(null, null, timeRange, zRangeUse, yRange, xRange);							  							 
+							  paramVar = complementaryGrid.getVariable(); 
+						  }  	    		 
+					  }
+
+					  varNameList.add(paramVar.getFullName());					  
+					  varsSize += paramVar.getSize() * paramVar.getElementSize();					  
+					  varList.add(paramVar);
+				  }    		
+
+			  }
+		  }		
+
+
+	  }
+	  
+	  return varsSize;	  
+	  
+  }
 
   private boolean isLargeFile(long total_size) {
     boolean isLargeFile = false;

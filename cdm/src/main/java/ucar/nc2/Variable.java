@@ -371,6 +371,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @return the attribute, or null if not found
    */
   public Attribute findAttributeIgnoreCase(String name) {
+    if (attributes == null)
+      System.out.println("HEY");
     for (Attribute a : attributes) {
       if (name.equalsIgnoreCase(a.getShortName()))
         return a;
@@ -1176,7 +1178,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     super(from.getShortName());
     this.attributes = new ArrayList<Attribute>(from.attributes); // attributes are immutable
     this.cache = from.cache; // caller should do createNewCache() if dont want to share
-    this.dataType = from.getDataType();
+    setDataType(from.getDataType());
     this.dimensions = new ArrayList<Dimension>(from.dimensions); // dimensions are shared
     this.elementSize = from.getElementSize();
     this.enumTypedef = from.enumTypedef;
@@ -1201,6 +1203,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public void setDataType(DataType dataType) {
     if (immutable) throw new IllegalStateException("Cant modify");
+    if(getShortName().equals("IR") && dataType == DataType.SHORT) {
+      DataType old = getDataType();
+    }
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
     EnumTypedef etd = getEnumTypedef();
