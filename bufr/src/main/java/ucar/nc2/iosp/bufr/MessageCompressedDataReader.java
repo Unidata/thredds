@@ -188,6 +188,8 @@ public class MessageCompressedDataReader {
         setIterators( (ArrayStructureMA) data);
 
       } else {
+        if (data == null)
+          System.out.println("HEY");
         int[] shape = data.getShape();
         if ((shape.length > 1) && (sm.getDataType() != DataType.CHAR)) {
           Array datap;

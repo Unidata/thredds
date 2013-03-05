@@ -32,6 +32,10 @@
  */
 package ucar.unidata.geoloc.vertical;
 
+import java.io.IOException;
+
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 
 /**
@@ -55,6 +59,20 @@ public interface VerticalTransform {
      * @throws ucar.ma2.InvalidRangeException timeIndex out of bounds
      */
     public ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    
+    /**
+     * Get the 1D vertical coordinate array for this time step and
+     * the specified X,Y index for Lat-Lon point.
+     *
+     * @param timeIndex the time index. Ignored if !isTimeDependent().
+     * @param xIndex    the x index
+     * @param yIndex    the y index
+     * @return vertical coordinate array
+     * @throws java.io.IOException problem reading data
+     * @throws ucar.ma2.InvalidRangeException _more_
+     */
+   public ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException;    
+    
 
     /**
      * Get the unit string for the vertical coordinate.

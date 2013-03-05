@@ -32,15 +32,15 @@
  */
 package ucar.unidata.geoloc.vertical;
 
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.InvalidRangeException;
-
-import ucar.ma2.Range;
-
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayDouble.D1;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 
 /**
  * A subset of a vertical transform.
@@ -85,6 +85,46 @@ public class VerticalTransformSubset extends VerticalTransformImpl {
 
         return (ArrayDouble.D3) data.sectionNoReduce(subsetList);
     }
+    
+    
+    /**
+     * Get the 1D vertical coordinate array for this time step and point
+     * 
+     * @param timeIndex the time index. Ignored if !isTimeDependent().
+     * @param xIndex    the x index
+     * @param yIndex    the y index
+     * @return vertical coordinate array
+     * @throws java.io.IOException problem reading data
+     * @throws ucar.ma2.InvalidRangeException _more_ 
+     */  
+    public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
+    		throws IOException, InvalidRangeException {
+  	 
+
+    	ArrayDouble.D3 data = original.getCoordinateArray(timeIndex);
+    	
+    	int[] origin = new int[3];
+    	int[] shape = new int[3];
+    	
+    	shape[0] = subsetList.get(0).length();
+    	shape[1] =1;
+    	shape[2] =1;
+    	
+    	origin[0] = timeIndex;
+        if (isTimeDependent() && (t_range != null)) {
+        	origin[0] = t_range.element(timeIndex);
+        }    	
+    	
+    	origin[1] = yIndex;
+    	origin[2] = xIndex;
+    	
+    	Array section = data.section(origin, shape);
+    	
+    	return (ArrayDouble.D1) section.reduce();
+    	
+
+    }    
+    
 
     public boolean isTimeDependent() {
         return original.isTimeDependent();

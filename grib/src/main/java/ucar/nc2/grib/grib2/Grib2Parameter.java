@@ -37,6 +37,7 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.units.SimpleUnit;
+import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.Formatter;
@@ -59,7 +60,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     this.number = number;
     this.name = name.trim();
     this.abbrev = abbrev;
-    this.unit = GridParameter.cleanupUnits(unit);
+    this.unit = Util.cleanUnit(unit);
     this.desc = desc;
   }
 
@@ -141,8 +142,8 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
         }
 
       } else {
-        String p1n = mungeDescription(p1.getName());
-        String p2n = mungeDescription(p2.getName());
+        String p1n = Util.cleanName(p1.getName());
+        String p2n = Util.cleanName(p2.getName());
 
         if (!p1n.equalsIgnoreCase(p2n)) {
           f.format("  p1=%10s %40s %15s %15s %s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev(), p1.getDescription());
@@ -151,8 +152,8 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
         }
 
         if (!p1.getUnit().equalsIgnoreCase(p2.getUnit())) {
-          String cu1 = GridParameter.cleanupUnits(p1.getUnit());
-          String cu2 = GridParameter.cleanupUnits(p2.getUnit());
+          String cu1 = Util.cleanUnit(p1.getUnit());
+          String cu2 = Util.cleanUnit(p2.getUnit());
 
           // eliminate common non-udunits
           boolean isUnitless1 = isUnitless(cu1);
@@ -201,17 +202,6 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
             munge.startsWith("numeric") || munge.startsWith("non-dim") || munge.startsWith("see") ||
             munge.startsWith("proportion") || munge.startsWith("code") || munge.startsWith("0=") ||
             munge.equals("1") ;
-  }
-
-  static public String mungeDescription(String desc) {
-    if (desc == null) return null;
-    int pos = desc.indexOf("(see");
-    if (pos < 0) pos = desc.indexOf("(See");
-    if (pos > 0) desc = desc.substring(0,pos);
-
-    StringBuilder sb = new StringBuilder(desc.trim());
-    StringUtil2.remove(sb, ".;,=[]()/*- ");
-    return sb.toString().trim();
   }
 
 }

@@ -1,3 +1,35 @@
+/*
+ * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ *
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.GribResourceReader;
@@ -8,13 +40,13 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.ui.dialog.Grib1TableCompareDialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.iosp.grid.*;
 import ucar.nc2.ui.dialog.Grib1TableDialog;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.IO;
 import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.wmo.Util;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -284,13 +316,13 @@ public class Grib1TablesViewer extends JPanel {
             out.format(" %s units%n   %s%n   %s%n", d1.getNumber(), d1.getUnit(), d2.getUnit());
         }
         if (data.cleanUnits) {
-          String cu1 =  GridParameter.cleanupUnits(d1.getUnit());
-          String cu2 =  GridParameter.cleanupUnits(d2.getUnit());
+          String cu1 =  Util.cleanUnit(d1.getUnit());
+          String cu2 =  Util.cleanUnit(d2.getUnit());
           if (!equiv(cu1, cu2)) out.format(" %s cleanUnits%n   %s%n   %s%n", d1.getNumber(), cu1, cu2);
         }
         if (data.udunits) {
-          String cu1 =  GridParameter.cleanupUnits(d1.getUnit());
-          String cu2 =  GridParameter.cleanupUnits(d2.getUnit());
+          String cu1 =  Util.cleanUnit(d1.getUnit());
+          String cu2 =  Util.cleanUnit(d2.getUnit());
             try {
               SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
               if (!su1.isCompatible(cu2))
@@ -342,11 +374,11 @@ public class Grib1TablesViewer extends JPanel {
           boolean descDiff = data.compareDesc &&  !equiv(d1.getDescription(), d2.getDescription());
           boolean namesDiff = data.compareNames &&  !equiv(d1.getName(), d2.getName());
           boolean unitsDiff = data.compareUnits &&  !equiv(d1.getUnit(), d2.getUnit());
-          boolean cunitsDiff = data.cleanUnits &&  !equiv(GridParameter.cleanupUnits(d1.getUnit()), GridParameter.cleanupUnits(d2.getUnit()));
+          boolean cunitsDiff = data.cleanUnits &&  !equiv(Util.cleanUnit(d1.getUnit()), Util.cleanUnit(d2.getUnit()));
           boolean udunitsDiff = false;
           if (data.udunits) {
-            String cu1 =  GridParameter.cleanupUnits(d1.getUnit());
-            String cu2 =  GridParameter.cleanupUnits(d2.getUnit());
+            String cu1 =  Util.cleanUnit(d1.getUnit());
+            String cu2 =  Util.cleanUnit(d2.getUnit());
               try {
                 SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
                 udunitsDiff = !su1.isCompatible(cu2);
@@ -458,11 +490,11 @@ public class Grib1TablesViewer extends JPanel {
     }
 
     public String getCleanUnit() {
-      return GridParameter.cleanupUnits(param.getUnit());
+      return Util.cleanUnit(param.getUnit());
     }
 
     public String getUdunit() {
-      String cu =  GridParameter.cleanupUnits(param.getUnit());
+      String cu =  Util.cleanUnit(param.getUnit());
          try {
            SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu);
            return (su1.isUnknownUnit()) ? "UNKNOWN" : su1.toString();

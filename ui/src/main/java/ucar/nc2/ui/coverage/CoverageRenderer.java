@@ -741,8 +741,8 @@ public class CoverageRenderer {
       return;
     } */
 
-    ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdges(xaxis2D.getMidpoints());
-    ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdges(yaxis2D.getMidpoints());
+    ArrayDouble.D2 edgex = xaxis2D.getXEdges();
+    ArrayDouble.D2 edgey = yaxis2D.getYEdges();
 
     Index ima = data.getIndex();
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
@@ -782,8 +782,8 @@ public class CoverageRenderer {
     CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
     CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
 
-    ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdges(xaxis2D.getMidpoints());
-    ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdges(yaxis2D.getMidpoints());
+    ArrayDouble.D2 edgex = xaxis2D.getXEdges();
+    ArrayDouble.D2 edgey = yaxis2D.getYEdges();
 
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
     g.setColor(Color.BLACK);

@@ -38,6 +38,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
 import ucar.nc2.iosp.grid.GridParameter;
+import ucar.nc2.wmo.Util;
 
 import java.io.*;
 
@@ -477,7 +478,7 @@ public class GribPDSParamTable {
           logger.warn("Cant parse "+num+ " in file "+path);
         }
         parameter.setName(name);
-        parameter.setDescription(GridParameter.cleanupDescription(desc));
+        parameter.setDescription(Util.cleanName(desc));
         parameter.setUnit(units1);
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
@@ -628,7 +629,7 @@ public class GribPDSParamTable {
         GridParameter parameter = new GridParameter();
         parameter.setNumber(Integer.parseInt(flds[order[0]].trim())); // must have a number
         if (order[1] >= 0) parameter.setName(flds[order[1]].trim());
-        parameter.setDescription(GridParameter.cleanupDescription(flds[order[2]].trim()));
+        parameter.setDescription(Util.cleanName(flds[order[2]].trim()));
         if (flds.length > order[3]) parameter.setUnit(flds[order[3]].trim());
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);

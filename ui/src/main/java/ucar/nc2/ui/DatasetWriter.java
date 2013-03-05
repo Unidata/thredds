@@ -785,11 +785,7 @@ public class DatasetWriter extends JPanel {
     public String getName() { return att.getShortName(); }
     public String getValue() {
       Array value = att.getValues();
-      try {
-        return NCdumpW.printArray(value, null, null);
-      } catch (IOException e) {
-        return e.getMessage();
-      }
+      return NCdumpW.printArray(value, null, null);
     }
 
   }

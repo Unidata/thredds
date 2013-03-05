@@ -766,8 +766,9 @@
     <build.timestamp>${maven.build.timestamp}</build.timestamp>
 
     <!-- Dependency versions -->
-    <visad.version>2.0-20120411</visad.version>
-    <!-- was 2010-08-09, other options 2011-05-12 or 2011-08-22 -->
+    <!-- visad.version>2.0-20120411</visad.version -->
+    <visad.version>2.0-20130124</visad.version>
+    <!-- was 2.0-20120411, other options 2010-08-09, 2011-05-12 or 2011-08-22 -->
     <edu.wisc.version>2011-08-22</edu.wisc.version>
     <!-- uk.ac.rdg.resc.version>1.0.tds.4.3-20120605.2335</uk.ac.rdg.resc.version-->
     <!-- uk.ac.rdg.resc.version>1.0.tds.4.3.20120807.1030</uk.ac.rdg.resc.version-->    

@@ -169,7 +169,7 @@
             <configuration>
               <includes>
                 <include>ucar/unidata/test/**</include>
-                <include>ucar/nc2/util/**</include>
+                <include>ucar/nc2/util/**</include>    <!-- makes the nc2/util/memory/build.xml ant tasks redundant -->
                 <include>ucar/nc2/TestLocal.*</include>
               </includes>
             </configuration>

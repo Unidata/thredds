@@ -58,6 +58,7 @@ import ucar.nc2.ui.widget.FileManager;
 
 import java.awt.event.ActionEvent;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -88,15 +89,17 @@ public class BufrMessageViewer extends JPanel {
   public BufrMessageViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    AbstractAction useReaderAction = new AbstractAction() {
+    AbstractButton showButt = BAMutil.makeButtcon("addCoords", "Read Data", false);
+    showButt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        doRead = state.booleanValue();
+        List<Object> obs = messageTable.getBeans();
+        for (Object ob : obs) {
+          MessageBean mb = (MessageBean) ob;
+          mb.read();
+        }
       }
-    };
-    BAMutil.setActionProperties(useReaderAction, "addCoords", "read data", true, 'C', -1);
-    useReaderAction.putValue(BAMutil.STATE, new Boolean(doRead));
-    BAMutil.addActionToContainer(buttPanel, useReaderAction);
+    });
+    buttPanel.add(showButt);
 
     AbstractAction seperateWindowAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -187,15 +190,17 @@ public class BufrMessageViewer extends JPanel {
             if (dataTable == null) makeDataTable();
             dataTable.setStructure((Structure) v);
             dataWindow.show();
+            mb.setReadOk(true);
           }
         } catch (Exception ex) {
+          mb.setReadOk(false);
           JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
           ex.printStackTrace();
         }
       }
     });
 
-    varPopup.addAction("Bit Count", new AbstractAction() {
+    varPopup.addAction("Bit Count Details", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         if (mb == null) return;
@@ -230,6 +235,22 @@ public class BufrMessageViewer extends JPanel {
 
         infoTA2.gotoTop();
         infoWindow2.show();
+      }
+    });
+
+    varPopup.addAction("Read", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        if (mb == null) return;
+        mb.read();
+      }
+    });
+
+    varPopup.addAction("BitCount", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        if (mb == null) return;
+        mb.checkBits();
       }
     });
 
@@ -311,7 +332,6 @@ public class BufrMessageViewer extends JPanel {
         infoWindow.show();
       }
     });
-
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -438,7 +458,7 @@ public class BufrMessageViewer extends JPanel {
     this.raf = raf;
     java.util.List<MessageBean> beanList = new ArrayList<MessageBean>();
 
-    scan = new MessageScanner(raf, 0, false);
+    scan = new MessageScanner(raf, 0, true);
     while (scan.hasNext()) {
       Message m = scan.next();
       if (m == null) continue;
@@ -500,6 +520,7 @@ public class BufrMessageViewer extends JPanel {
   public class MessageBean {
     Message m;
     int readOk = 0;
+    int bitsOk = 0;
 
     // no-arg constructor
 
@@ -562,11 +583,22 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getBitsOk() {
+      if (bitsOk == 0) checkBits();
+      switch (bitsOk) {
+        default : return "N/A";
+        case 1 : return "true";
+        case 2 : return "false";
+        case 3 : return "fail";
+      }
+    }
+
+    void checkBits() {
+      if (getNobs() == 0) return;
       try {
-        if (!getComplete().equals("true")) return "incomplete";
-        return m.isBitCountOk() ? "true" : "false"; // LOOK using bit count 1
+        boolean ok = m.isBitCountOk();
+        setBitsOk(ok);
       } catch (Exception e) {
-        return "exception";
+        bitsOk = 3;
       }
     }
 
@@ -579,26 +611,37 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getReadOk() {
-      if (!getComplete().equals("true")) return "false";
-      if (!getBitsOk().equals("true")) return "false";
-      if (!doRead) return "N/A";
-      if (readOk == 0)
+      switch (readOk) {
+        default : return "N/A";
+        case 1 : return "true";
+        case 2 : return "false";
+      }
+    }
+
+    void setBitsOk(boolean ok) {
+      bitsOk = ok ? 1 : 2;
+    }
+
+    void setReadOk(boolean ok) {
+      readOk = ok ? 1 : 2;
+    }
+
+    private void read() {
+      try {
+        NetcdfDataset ncd = getBufrMessageAsDataset(m);
+        SequenceDS v = (SequenceDS) ncd.findVariable(BufrIosp.obsRecord);
+        StructureDataIterator iter = v.getStructureIterator(-1);
         try {
-          NetcdfDataset ncd = getBufrMessageAsDataset(m);
-          SequenceDS v = (SequenceDS) ncd.findVariable(BufrIosp.obsRecord);
-          StructureDataIterator iter = v.getStructureIterator(-1);
-          try {
-            while (iter.hasNext()) {
-              iter.next();
-            }
-          } finally {
-            iter.finish();
-          }
-          readOk = 1;
-        } catch (Exception e) {
-          readOk = 2;
+          while (iter.hasNext())
+            iter.next();
+
+        } finally {
+          iter.finish();
         }
-      return readOk == 1 ? "true" : "false";
+        setReadOk(true);
+      } catch (Exception e) {
+        setReadOk(false);
+      }
     }
 
   }

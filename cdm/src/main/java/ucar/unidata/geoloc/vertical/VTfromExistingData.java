@@ -37,6 +37,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
+import ucar.ma2.ArrayDouble.D1;
 
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
@@ -89,5 +90,28 @@ public class VTfromExistingData extends VerticalTransformImpl {
     MAMath.copyDouble(ddata, data);
     return ddata;
   }
+  
+  /**
+   * Get the 1D vertical coordinate array for this time step and point
+   * 
+   * @param timeIndex the time index. Ignored if !isTimeDependent().
+   * @param xIndex    the x index
+   * @param yIndex    the y index
+   * @return vertical coordinate array
+   * @throws java.io.IOException problem reading data
+   * @throws ucar.ma2.InvalidRangeException _more_ 
+   */  
+  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
+  		throws IOException, InvalidRangeException {
+	  
+	    
+	    ArrayDouble.D3 ddata = (ArrayDouble.D3) getCoordinateArray(timeIndex);
+	    int[] origin = new int[]{0, yIndex, xIndex };
+	    int[] shape = new int[]{ ddata.getShape()[0] , 1, 1 };
+	    
+	    return (ArrayDouble.D1)ddata.section(origin, shape).reduce();	    
+	    
+  }  
+  
 }
 

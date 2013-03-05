@@ -162,14 +162,17 @@ class ConstructNC {
 
       else if (dkey.replication > 1) {
         List<DataDescriptor> subKeys = dkey.subKeys;
-        if (subKeys.size() == 1) {
+        if (subKeys.size() == 1) {  // only one member
           DataDescriptor sub = dkey.subKeys.get(0);
           if (sub.dpi != null) {
             addDpiStructure(recordStructure, dkey, sub);
 
-          } else {
+          } else if (sub.replication == 1) { // one member not a replication
             Variable v = addVariable(recordStructure, sub, dkey.replication);
             v.setSPobject(dkey); // set the replicating dkey as SPI object
+
+          } else { // one member is a replication (two replications in a row)
+            addStructure(recordStructure, dkey, dkey.replication);
           }
         } else if (subKeys.size() > 1) {
           addStructure(recordStructure, dkey, dkey.replication);
@@ -183,9 +186,11 @@ class ConstructNC {
 
   private int structNum = 1;
   private void addStructure(Structure parent, DataDescriptor dataDesc, int count) {
-    String structName = "struct" + structNum;
-    structNum++;
-    Structure struct = new Structure(ncfile, null, parent, structName);
+    String uname = findUnique(parent, dataDesc.name, "struct");
+    dataDesc.name = uname; // name may need to be changed for uniqueness
+
+    //String structName = dataDesc.name != null ? dataDesc.name : "struct" + structNum++;
+    Structure struct = new Structure(ncfile, null, parent, uname);
     try {
       struct.setDimensionsAnonymous(new int[]{count}); // anon vector
     } catch (InvalidRangeException e) {
@@ -198,18 +203,19 @@ class ConstructNC {
     parent.addMemberVariable(struct);
     struct.setSPobject(dataDesc);
 
-    dataDesc.name = structName;
     dataDesc.refersTo = struct;
   }
 
   private int seqNum = 1;
 
   private void addSequence(Structure parent, DataDescriptor dataDesc) {
-    //String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
-    String seqName = "seq" + seqNum;
-    seqNum++;
+    String uname = findUnique(parent, dataDesc.name, "seq");
+    dataDesc.name = uname; // name may need to be changed for uniqueness
 
-    Sequence seq = new Sequence(ncfile, null, parent, seqName);
+    //String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
+    //String seqName = dataDesc.name != null ? dataDesc.name : "seq" + seqNum++;
+
+    Sequence seq = new Sequence(ncfile, null, parent, uname);
     seq.setDimensions(""); // scalar
 
     for (DataDescriptor dkey : dataDesc.getSubKeys())
@@ -218,7 +224,6 @@ class ConstructNC {
     parent.addMemberVariable(seq);
     seq.setSPobject(dataDesc);
 
-    dataDesc.name = seqName;
     dataDesc.refersTo = seq;
   }
 
@@ -243,8 +248,11 @@ class ConstructNC {
   }
 
   private void addDpiStructure(Structure parent, DataDescriptor parentDD, DataDescriptor dpiField) {
-    String structName = findUnique(parent, dpiField.name);
-    Structure struct = new Structure(ncfile, null, parent, structName);
+    String uname = findUnique(parent, dpiField.name, "struct");
+    dpiField.name = uname; // name may need to be changed for uniqueness
+
+    //String structName = findUnique(parent, dpiField.name);
+    Structure struct = new Structure(ncfile, null, parent, uname);
     int n = parentDD.replication;
     try {
       struct.setDimensionsAnonymous(new int[]{n}); // anon vector
@@ -265,7 +273,6 @@ class ConstructNC {
     parent.addMemberVariable(struct);
     struct.setSPobject(dpiField);  // ??
 
-    dpiField.name = structName;
     dpiField.refersTo = struct;
 
     // add some fake dkeys corresponding to above
@@ -291,14 +298,12 @@ class ConstructNC {
 
     parent.addMemberVariable(struct);    
   }
-  private int tempNo = 1;
-  private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
-    String name = findUnique(struct, dataDesc.name);
-    dataDesc.name = name; // name may need to be changed for uniqueness
-//    if (name == null)
-//      name = "temp" + tempNo++;
 
-    Variable v = new Variable(ncfile, null, struct, name);
+  private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
+    String uname = findUnique(struct, dataDesc.name, "unknown");
+    dataDesc.name = uname; // name may need to be changed for uniqueness
+
+    Variable v = new Variable(ncfile, null, struct, uname);
     try {
       if (count > 1)
         v.setDimensionsAnonymous(new int[]{count}); // anon vector
@@ -312,7 +317,7 @@ class ConstructNC {
         v.addAttribute(new Attribute("long_name", dataDesc.desc));
 
     if (dataDesc.units == null) {
-      if (warnUnits) log.warn("dataDesc.units == null for " + name);
+      if (warnUnits) log.warn("dataDesc.units == null for " + uname);
     } else {
       if (dataDesc.units.equalsIgnoreCase("Code_Table") || dataDesc.units.equalsIgnoreCase("Code Table"))
         v.addAttribute(new Attribute(CDM.UNITS, "CodeTable " + dataDesc.getFxyName()));
@@ -410,13 +415,18 @@ class ConstructNC {
     return v;
   }
 
-  private String findUnique(Structure struct, String want) {
-    Variable oldV = struct.findVariable(want);
-    if (oldV == null) return want;
 
-    int seq = 1;
+  private int tempNo = 1;
+  private String findUnique(Structure struct, String want, String def) {
+    if (want == null) return def + tempNo++;
+
+    String vwant = NetcdfFile.makeValidCdmObjectName(want);
+    Variable oldV = struct.findVariable(vwant);
+    if (oldV == null) return vwant;
+
+    int seq = 2;
     while (true) {
-      String wantSeq = want + "-" + seq;
+      String wantSeq = vwant + "-" + seq;
       oldV = struct.findVariable(wantSeq);
       if (oldV == null) return wantSeq;
       seq++;
@@ -539,7 +549,7 @@ class ConstructNC {
       try {
         return CalendarDate.of(null, year, month, day, hour, min, sec);
       } catch(RuntimeException t) {
-        System.out.println("HEY");
+        log.error("Illegal Date fields", t);
         return CalendarDate.present(); // LOOK FAKE
       }
 

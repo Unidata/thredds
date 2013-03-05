@@ -97,6 +97,10 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
         tDimOrgIndex = findDimension(gcs.getTimeAxis1D().getDimension(0));
       else
         tDimOrgIndex = findDimension(gcs.getTimeAxis().getDimension(1));
+      // deal with swath where time not independent dimension LOOK rewrite ??
+      if ((tDimOrgIndex == yDimOrgIndex) || (tDimOrgIndex == xDimOrgIndex)) {
+        tDimOrgIndex = -1;
+      }
     }
     if (gcs.getEnsembleAxis() != null) eDimOrgIndex = findDimension(gcs.getEnsembleAxis().getDimension(0));
     if (gcs.getRunTimeAxis() != null) rtDimOrgIndex = findDimension(gcs.getRunTimeAxis().getDimension(0));
@@ -113,7 +117,8 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
       eDimNewIndex = count++;
     }
     if (tDimOrgIndex >= 0) {
-      mydims.add(dsvar.getDimension(tDimOrgIndex));
+      Dimension tdim = dsvar.getDimension(tDimOrgIndex);
+      mydims.add(tdim);
       tDimNewIndex = count++;
     }
     if (zDimOrgIndex >= 0) {

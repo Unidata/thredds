@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.grid;
 
+import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -42,22 +43,6 @@ import ucar.unidata.util.StringUtil2;
  */
 
 public class GridParameter {
-
-  static public String cleanupUnits(String unit) {
-    if (unit == null) return null;
-    if (unit.equalsIgnoreCase("-")) unit = "";
-    else {
-      if (unit.startsWith("/")) unit = "1" + unit;
-      unit = unit.trim();
-      unit = StringUtil2.remove(unit, "**");
-      StringBuilder sb = new StringBuilder(unit);
-      StringUtil2.remove(sb, "^[]");
-      StringUtil2.replace(sb, ' ', ".");
-      StringUtil2.replace(sb, '*', ".");
-      unit = sb.toString();
-    }
-    return unit;
-  }
 
   static public String cleanupDescription(String desc) {
     if (desc == null) return null;
@@ -159,7 +144,7 @@ public class GridParameter {
    * @param description of parameter
    */
   public final void setDescription(String description) {
-    this.description = cleanupDescription(description);
+    this.description = Util.cleanName(description);
   }
 
   /**
@@ -168,7 +153,7 @@ public class GridParameter {
    * @param unit of parameter
    */
   public final void setUnit(String unit) {
-    this.unit = cleanupUnits(unit);
+    this.unit = Util.cleanUnit(unit);
   }
 
   /**

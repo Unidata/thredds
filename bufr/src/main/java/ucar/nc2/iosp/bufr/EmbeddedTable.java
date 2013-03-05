@@ -37,6 +37,7 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.bufr.tables.TableB;
 import ucar.nc2.iosp.bufr.tables.TableD;
 import ucar.nc2.iosp.bufr.tables.WmoXmlReader;
+import ucar.nc2.wmo.Util;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -45,6 +46,7 @@ import java.util.List;
 
 /**
  * BUFR allows you to encode a BUFR table in BUFR.
+ * LOOK: may be NCEP specific ?
  *
  * @author John
  * @since 8/11/11
@@ -82,14 +84,17 @@ public class EmbeddedTable {
     for (Message m : messages) {
       if (proto == null) proto = m;
       int n = m.getNumberDatasets();
-      countObs +=n;
+      countObs += n;
       //System.out.printf("  num datasets = %d%n", n);
     }
 
     // this fills the netcdf object
     ConstructNC construct = new ConstructNC(proto, countObs, new FakeNetcdfFile());
+
     seq2 = (Structure) construct.recordStructure.findVariable("seq2");
     seq3 = (Structure) construct.recordStructure.findVariable("seq3");
+    if (seq3 == null)
+      System.out.println("HEY");
     seq4 = (Structure) seq3.findVariable("seq4");
 
     // read all the messages
@@ -148,7 +153,7 @@ public class EmbeddedTable {
       else if (att.getStringValue().equals("0-0-13"))
         name = sdata.getScalarString(m);
       else if (att.getStringValue().equals("0-0-14"))
-        name += sdata.getScalarString(m);
+        name += sdata.getScalarString(m);  // append both lines
       else if (att.getStringValue().equals("0-0-15"))
         units = sdata.getScalarString(m);
       else if (att.getStringValue().equals("0-0-16"))
@@ -164,13 +169,14 @@ public class EmbeddedTable {
     }
     if (showB) System.out.printf("%n");
 
-    // split name
+    // split name and description from appendended line 1 and 2
     String desc = null;
     name = name.trim();
     int pos = name.indexOf(' ');
     if (pos > 0) {
-      desc = WmoXmlReader.cleanName(name.substring(pos+1));
+      desc = Util.cleanName(name.substring(pos + 1));
       name = name.substring(0,pos);
+      name= Util.cleanName(name);
     }
 
     units = WmoXmlReader.cleanUnit(units.trim());
@@ -211,6 +217,8 @@ public class EmbeddedTable {
           x = sdata.getScalarString(m);
         else if (att.getStringValue().equals("0-0-12"))
           y = sdata.getScalarString(m);
+        else if (att.getStringValue().equals("2-5-64"))
+          name = sdata.getScalarString(m);
       }
     }
     if (showD) System.out.printf("%n");
@@ -218,6 +226,7 @@ public class EmbeddedTable {
     short f1 = Short.parseShort(f.trim());
     short x1 = Short.parseShort(x.trim());
     short y1 = Short.parseShort(y.trim());
+    name = Util.cleanName(name);
 
     d.addDescriptor(x1, y1, name, dds);
   }

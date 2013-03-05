@@ -30,36 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/*
 
-http://www.javaspecialists.eu/archive/Issue142.html
-
-    java -javaagent:lib/memoryagent.jar <Our main class>
-    
-    <?xml version="1.0"?>
-    <project name="memoryagent" default="compile">
-      <target name="init">
-        <tstamp/>
-        <mkdir dir="build"/>
-      </target>
-
-      <target name="compile" depends="init">
-        <javac srcdir="src" source="1.5" target="1.5"
-               destdir="build"/>
-        <copy todir="build/META-INF">
-          <fileset dir="src/META-INF"/>
-        </copy>
-        <jar jarfile="memoryagent.jar" basedir="build"
-             filesetmanifest="merge"/>
-
-      </target>
-
-      <target name="clean">
-        <delete dir="build"/>
-        <delete file="memoryagent.jar"/>
-      </target>
-    </project>  
- */
 
 package ucar.nc2.util.memory;
 
