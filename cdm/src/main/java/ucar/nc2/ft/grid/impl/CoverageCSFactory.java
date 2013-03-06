@@ -24,17 +24,21 @@ public class CoverageCSFactory {
     fac.type = fac.classify(ds, cs, null);
     switch (fac.type) {
       case Curvilinear:
-      case Coverage : return new CoverageCSImpl(ds, cs, fac);
-      case Grid : return new GridCSImpl(ds, cs, fac);
-      case Fmrc: return new FmrcCSImpl(ds, cs, fac);
-      case Swath : return new SwathCSImpl(ds, cs, fac);
+      case Coverage:
+        return new CoverageCSImpl(ds, cs, fac);
+      case Grid:
+        return new GridCSImpl(ds, cs, fac);
+      case Fmrc:
+        return new FmrcCSImpl(ds, cs, fac);
+      case Swath:
+        return new SwathCSImpl(ds, cs, fac);
     }
     return null;
   }
 
   public static String describe(Formatter f, NetcdfDataset ds) {
     CoverageCSFactory fac = new CoverageCSFactory();
-    fac.type =  fac.classify(ds, f);
+    fac.type = fac.classify(ds, f);
     return fac.toString();
   }
 
@@ -176,13 +180,13 @@ public class CoverageCSFactory {
     // If time axis is two-dimensional...
     if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
 
-       if (rt != null) { // runtime needs 2d time with first dimension == runtime dimension
-         if (rt.getRank() != 1) {
-           if (errlog != null) errlog.format("%s: Runtime axis must be 1D%n", cs.getName());
-           return null;
-         }
+      if (rt != null) { // runtime needs 2d time with first dimension == runtime dimension
+        if (rt.getRank() != 1) {
+          if (errlog != null) errlog.format("%s: Runtime axis must be 1D%n", cs.getName());
+          return null;
+        }
 
-         // time may be 1 or 2 dimensional, but first dimension must agree
+        // time may be 1 or 2 dimensional, but first dimension must agree
         if (!rt.getDimension(0).equals(t.getDimension(0))) {
           if (errlog != null) errlog.format("%s: Time axis must use first RunTime dimension%n", cs.getName());
           return null;
@@ -222,7 +226,7 @@ public class CoverageCSFactory {
     // construct list of non standard axes
     List<CoordinateAxis> css = cs.getCoordinateAxes();
     if (standardAxes.size() < css.size()) {
-      otherAxes = new  ArrayList<CoordinateAxis>(3);
+      otherAxes = new ArrayList<CoordinateAxis>(3);
       for (CoordinateAxis axis : css)
         if (!standardAxes.contains(axis)) otherAxes.add(axis);
     }
@@ -231,8 +235,8 @@ public class CoverageCSFactory {
     CoverageCS.Type result = null;
 
     // 2D x,y
-    if (cs.isLatLon() && (xaxis.getRank() == 2) && (yaxis.getRank()== 2)) {
-      if ( (rt != null) && (t != null && t.getRank() == 2) )  // fmrc with curvilinear coordinates
+    if (cs.isLatLon() && (xaxis.getRank() == 2) && (yaxis.getRank() == 2)) {
+      if ((rt != null) && (t != null && t.getRank() == 2))  // fmrc with curvilinear coordinates
         result = CoverageCS.Type.Fmrc;
 
       else if (t != null) {  // is t independent or not
@@ -244,8 +248,8 @@ public class CoverageCSFactory {
         result = CoverageCS.Type.Curvilinear;   // if no time coordinate. call it curvilinear
 
     } else {
-      if ( (xaxis.getRank() == 1) && (yaxis.getRank()== 1) && (vertAxis == null || vertAxis.getRank() == 1) ) {
-        if ( (rt != null) && (t != null && t.getRank() == 2) )
+      if ((xaxis.getRank() == 1) && (yaxis.getRank() == 1) && (vertAxis == null || vertAxis.getRank() == 1)) {
+        if ((rt != null) && (t != null && t.getRank() == 2))
           result = CoverageCS.Type.Fmrc;
         else
           result = CoverageCS.Type.Grid;
@@ -268,15 +272,16 @@ public class CoverageCSFactory {
       public int compare(CoordinateAxis o1, CoordinateAxis o2) {
         AxisType t1 = o1.getAxisType();
         AxisType t2 = o2.getAxisType();
-        return t1.axisOrder() - t2.axisOrder();
+        if (t1 != null && t2 != null)
+          return t1.axisOrder() - t2.axisOrder();
+        return (t1 == null) ? ((t2 == null) ? 0 : -1) : 1;
       }
     });
     for (CoordinateAxis axis : standardAxes) {
       if (count++ > 0) f2.format(",");
-      f2.format("%s", axis.getAxisType().getCFAxisName());
+      f2.format("%s", axis.getAxisType() == null ? "none" : axis.getAxisType().getCFAxisName());
     }
     f2.format(")");
-
 
     if (otherAxes != null && otherAxes.size() > 0) {
       f2.format(": ");

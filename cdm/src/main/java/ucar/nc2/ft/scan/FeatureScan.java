@@ -107,7 +107,7 @@ public class FeatureScan {
         String name = f.getName();
         String stem = stem(name);
         if (name.endsWith(".gbx") || name.endsWith(".gbx8") || name.endsWith(".pdf") || name.endsWith(".xml") || name.endsWith(".gbx9")
-                || name.endsWith(".ncx")  || name.endsWith(".txt")) {
+                || name.endsWith(".ncx") || name.endsWith(".txt") || name.endsWith(".tar")) {
           files2.remove(f);
 
         } else if (prev != null) {

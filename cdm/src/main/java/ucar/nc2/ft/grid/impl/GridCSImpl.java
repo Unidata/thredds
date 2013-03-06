@@ -6,7 +6,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.grid.GridCS;
 
 /**
- * Description
+ * A Grid has a 1D x and y coordinate.
  *
  * @author John
  * @since 12/25/12

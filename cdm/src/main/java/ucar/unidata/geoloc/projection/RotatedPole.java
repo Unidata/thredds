@@ -50,6 +50,10 @@ import ucar.unidata.geoloc.*;
 /**
  * Rotated-pole longitude-latitude grid.
  *
+ * This is probably the same as rotated lat lon, using matrix to do rotation.
+ * Follows CF convention with "north_pole lat/lon", whereas RotatedLatLon uses
+ * south pole. LOOK
+ *
  * @author Robert Schmunk
  * @author jcaron
  */
@@ -232,7 +236,7 @@ public class RotatedPole extends ProjectionImpl {
   }
 
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-     return Math.abs(pt1.getX() - pt2.getX()) > 270.0;  // ?? LOOK: do I believe this ??
+     return Math.abs(pt1.getX() - pt2.getX()) > 270.0;
   }
 
   public boolean equals(Object proj) {
