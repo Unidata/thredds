@@ -457,6 +457,11 @@ pronounced difference with and without this cache. </p>
        <td>for joinExisting aggregations only: write XML files here.</td>
      </tr>
      <tr>
+       <td>CdmRemote.dir</td>
+       <td><strong>cache/cdmr/</strong></td>
+       <td>temporary files for cdmremote and cdmrFeature</td>
+     </tr>
+     <tr>
        <td>CdmValidatorService.dir</td>
        <td><strong>cache/cdmValidate/</strong></td>
        <td>temporary files for cdmvalidator (seperate war)</td>
@@ -487,8 +492,8 @@ pronounced difference with and without this cache. </p>
        <td>temporary files for WCS</td>
      </tr>
    </table>
- </blockquote>
- <p>We recommend that you use these defaults, by not specifying them in the threddsConfig.xml file. If you need to move the cache location, move all of them by using a link in <strong>{tomcat_home}/content/thredds/.</strong></p>
+</blockquote>
+ <p>We recommend that you use these defaults, by not specifying them in the threddsConfig.xml file. If you need to move the cache location, move all of them by using a symbolic file link in <strong>{tomcat_home}/content/thredds/.</strong></p>
  <p>These
    various caches at times may contain large amounts of data.
    You should choose a location that will not fill up (especially if that
@@ -524,8 +529,8 @@ pronounced difference with and without this cache. </p>
  <hr width="100%">
  <address>
      <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
-     This document is maintained by elves and was last updated October 2012.
+     This document is maintained by elves and was last updated March 2013.
      Send comments to
      <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
- </address>
+</address>
 </body></html>

@@ -46,6 +46,7 @@ import org.springframework.stereotype.Component;
 
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.inventory.CollectionUpdater;
+import thredds.server.cdmremote.CdmrFeatureController;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
@@ -89,6 +90,14 @@ public class CdmInit implements InitializingBean,  DisposableBean{
   public void afterPropertiesSet(){
     // prefer cdmRemote when available
     ThreddsDataFactory.setPreferCdm(true);
+
+    // 4.3.16
+    String dir = ThreddsConfig.get("CdmRemote.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
+    int scourSecs = ThreddsConfig.getSeconds("CdmRemote.scour", 30 * 60);
+    int maxAgeSecs = ThreddsConfig.getSeconds("CdmRemote.maxAge", 60 * 60);
+    DiskCache2 cache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
+    CdmrFeatureController.setDiskCache(cache);
+    startupLog.info("CdmInit:  CdmRemote= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
     /* new for 4.3.15: grib index file placement, using DiskCache2  */
     String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/grib/").getPath());
@@ -193,9 +202,9 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
 
     // persist joinExisting aggregations. default every 24 hours, delete stuff older than 90 days
-    String dir = ThreddsConfig.get("AggregationCache.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/agg/").getPath());
-    int scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
-    int maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
+    dir = ThreddsConfig.get("AggregationCache.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/agg/").getPath());
+    scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
+    maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
     aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
     Aggregation.setPersistenceCache(aggCache);
     startupLog.info("CdmInit:  AggregationCache= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);

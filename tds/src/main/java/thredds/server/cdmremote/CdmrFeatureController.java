@@ -80,9 +80,20 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrFeatureController.class);
   private static boolean debug = false, showTime = false, showReq = false;
 
+  private static DiskCache2 diskCache;
+  private static boolean allow = true;
+
+  public static void setDiskCache(DiskCache2 _diskCache) {
+    diskCache = _diskCache;
+  }
+
+  public static void setAllow(boolean _allow) {
+    allow = _allow;
+  }
+
+  ////////////////////////////////////////////////////////////////////
+
   private TdsContext tdsContext;
-  private boolean allow = true;
-  private DiskCache2 diskCache;
 
   public CdmrFeatureController() {
     setCommandClass(CdmRemoteQueryBean.class);
@@ -91,14 +102,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
-  }
-
-  public void setAllow(boolean allow) {
-    this.allow = allow;
-  }
-
-  public void setDiskCache(DiskCache2 diskCache) {
-    this.diskCache = diskCache;
   }
 
   protected ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object command, BindException errors) throws Exception {
