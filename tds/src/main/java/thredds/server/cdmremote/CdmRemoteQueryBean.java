@@ -124,6 +124,10 @@ public class CdmRemoteQueryBean {
     return dateRange;
   }
 
+  public LatLonPoint getLatlonPoint() {
+    return latlonPoint;
+  }
+
   RequestType getRequestType() {
     if (reqType == null) {
       if (req.equalsIgnoreCase("capabilities")) reqType = RequestType.capabilities;

@@ -55,7 +55,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 /**
  * Defines the point stream format, along with pointStream.proto.
  *
- cd c:/dev/tds4.2/thredds/cdm/src/main/java
+ cd c:/dev/github/thredds/cdm/src/main/java
  protoc --proto_path=. --java_out=. ucar/nc2/ft/point/remote/pointStream.proto
  *
  * @author caron
@@ -97,8 +97,10 @@ public class PointStream {
         return NcStream.writeBytes(out, PointStream.MAGIC_PointFeatureCollection);
       case StationList:
         return NcStream.writeBytes(out, PointStream.MAGIC_StationList);
+      case Start:
+        return NcStream.writeBytes(out, NcStream.MAGIC_START);
       case End:
-        return NcStream.writeBytes(out, NcStream.MAGIC_END);
+         return NcStream.writeBytes(out, NcStream.MAGIC_END);
       case Error:
         return NcStream.writeBytes(out, NcStream.MAGIC_ERR);
     }
@@ -248,7 +250,5 @@ public class PointStream {
       }
     }
   }
-
-
 
 }
