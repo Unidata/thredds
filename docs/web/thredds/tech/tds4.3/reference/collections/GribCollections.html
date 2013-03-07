@@ -478,10 +478,27 @@ de-referencing the catalogRefs, and simplifying:
   <h4>8) latestNamer: Rename the latest file dataset</h4>
   <blockquote>
     <p>Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is &quot;Latest File&quot;). The dataqsetTypes options <em><strong>LatestFile</strong></em> and <em><strong>Files</strong></em>, must be enabled. Note that this does not affect dataset urlPath, which is always <em>latest.xml</em>.</p></blockquote>
+<pre>
+&lt;gribConfig datasetTypes="Best LatestFile Files"&gt;
+  &lt;latestNamer name="My Latest Name"/&gt;
+&lt;/gribConfig&gt;
+</pre>
   <h4>9) bestNamer: Rename the Best dataset</h4>
   <blockquote><p>Change the name of the Best dataset in the collection (the default name is &quot;Best Timeseries&quot;). The dataqsetTypes <strong><em>Best</em></strong> option must be selected. Note that this does not affect dataset urlPath.</p></blockquote>
+<pre>
+&lt;gribConfig datasetTypes="Best LatestFile Files"&gt;
+  &lt;bestNamer name="My Best Name" /&gt;
+&lt;/gribConfig&gt;
+</pre>
   <h4>10) filesSort: Sort the dataset listings under the Files dataset</h4>
   <blockquote><p>Sort the files lexographically, either increasing or decreasing (default GRIB Feature Collection behavior is the same as <em>increasing = True</em>). The <em><strong>Files</strong></em> datasetTypes option must be enabled.</p></blockquote>
+  <pre>
+&lt;gribConfig datasetTypes="Best LatestFile Files"&gt;
+  &lt;filesSort&gt;
+    &lt;lexigraphicByName increasing="false" /&gt;
+  &lt;/filesSort&gt;
+&lt;/gribConfig&gt;
+</pre>
   <p>If you make changes to these parameters (except <strong>datasetTypes</strong>, <strong>LatestNamer</strong>, <strong>BestNamer</strong>, and <strong>filesSort</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
 </blockquote>
 <hr width="100%" />
