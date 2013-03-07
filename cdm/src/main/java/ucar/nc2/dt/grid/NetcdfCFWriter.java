@@ -592,7 +592,15 @@ public class NetcdfCFWriter {
    */
   private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds, GridDatatype grid, Range timeRange, Range zRangeUse, LatLonRect llbb, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
 	  
-  	  List<Range> yxRanges = grid.getCoordinateSystem().getRangesFromLatLonRect(llbb);
+	  List<Range> yxRanges = new ArrayList<Range>(2);
+	  
+	  if(llbb == null){
+		  yxRanges.add(null);
+		  yxRanges.add(null);
+	  }else{
+		  yxRanges = grid.getCoordinateSystem().getRangesFromLatLonRect(llbb);
+	  }
+  	  
 	  return processTransformationVars(varList, varNameList, ncd, gds, grid, timeRange, zRangeUse,  yxRanges.get(0), yxRanges.get(1), z_stride, y_stride, x_stride );
   }  
   
@@ -613,8 +621,8 @@ public class NetcdfCFWriter {
 				  if (!varNameList.contains(varStrings[i]) && (null != paramVar) ) {
 
 					  if(gds.findGridDatatype(paramVar.getFullName()) != null){
-						  //Subset...
-						  if ((null != timeRange) || (zRangeUse != null) || (x_stride > 1 && y_stride > 1)) {
+						  //Subset if needed
+						  if ((null != timeRange) || (zRangeUse != null) || (x_stride > 1 && y_stride > 1) || (yRange !=null || xRange !=null )) {
 							  GridDatatype complementaryGrid = gds.findGridDatatype(paramVar.getFullName());	  
 							  complementaryGrid = complementaryGrid.makeSubset(null, null, timeRange, zRangeUse, yRange, xRange);							  							 
 							  paramVar = complementaryGrid.getVariable(); 

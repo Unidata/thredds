@@ -383,6 +383,30 @@ de-referencing the catalogRefs, and simplifying:
 
 7)&lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;gribDatasetTypes&quot;/&gt;
 
+8)&lt;xsd:element name="latestNamer"&gt;
+    &lt;xsd:complexType&gt;
+      &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;
+    &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+
+9)&lt;xsd:element name="bestNamer"&gt;
+    &lt;xsd:complexType&gt;
+     &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;
+    &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+
+10)&lt;xsd:element name="filesSort"&gt;
+    &lt;xsd:complexType&gt;
+      &lt;xsd:choice&gt;
+        &lt;xsd:element name="lexigraphicByName"&gt;
+          &lt;xsd:complexType&gt;
+            &lt;xsd:attribute name="increasing" type="xsd:boolean"/&gt;
+          &lt;/xsd:complexType&gt;
+        &lt;/xsd:element&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+
 &lt;/xsd:complexType&gt;
 
 &lt;xsd:simpleType name=&quot;gribDatasetTypes&quot;&gt;
@@ -451,11 +475,18 @@ de-referencing the catalogRefs, and simplifying:
     is exposed as a seperate dataset.</li>
     <li><strong>LatestFile</strong>: add latest resolver dataset to Files catalog (<strong>Files</strong> must also be selected)</li>
   </ol>
-  <p>If you make changes to these parameters (except <strong>datasetTypes</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
+  <h4>8) latestNamer: Rename the latest file dataset</h4>
+  <blockquote>
+    <p>Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is &quot;Latest File&quot;). The dataqsetTypes options <em><strong>LatestFile</strong></em> and <em><strong>Files</strong></em>, must be enabled. Note that this does not affect dataset urlPath, which is always <em>latest.xml</em>.</p></blockquote>
+  <h4>9) bestNamer: Rename the Best dataset</h4>
+  <blockquote><p>Change the name of the Best dataset in the collection (the default name is &quot;Best Timeseries&quot;). The dataqsetTypes <strong><em>Best</em></strong> option must be selected. Note that this does not affect dataset urlPath.</p></blockquote>
+  <h4>10) filesSort: Sort the dataset listings under the Files dataset</h4>
+  <blockquote><p>Sort the files lexographically, either increasing or decreasing (default GRIB Feature Collection behavior is the same as <em>increasing = True</em>). The <em><strong>Files</strong></em> datasetTypes option must be enabled.</p></blockquote>
+  <p>If you make changes to these parameters (except <strong>datasetTypes</strong>, <strong>LatestNamer</strong>, <strong>BestNamer</strong>, and <strong>filesSort</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
 </blockquote>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated October 2012
+<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated March 2013
 </address>
 </body>
 </html>
