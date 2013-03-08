@@ -104,7 +104,8 @@ public class CdmrFeatureDataset {
       throw new IOException(t);
 
     } finally {
-      if (in != null) in.close();
+      //if (in != null)
+      //  in.close();
     }
 
     if (showXML) {

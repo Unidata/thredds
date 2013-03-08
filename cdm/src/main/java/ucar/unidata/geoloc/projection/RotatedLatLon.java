@@ -40,6 +40,7 @@ import java.util.Arrays;
 
 /**
  * Grib 1 projection 10 and Grib 2 projection 1.
+ *
  * The Rotated Latitude Longitude projection algorithms that are coded
  * here were given by Tor Christian Bekkvik <torc@cmr.no>. The rotated
  * lat/lon projection coordinates are defined in the grid file that
@@ -47,9 +48,45 @@ import java.util.Arrays;
  * before they can be displayed. The X/Y axis only makes sense in the rotated
  * projection.
  *
- * @author rkambic
  * @author Tor Christian Bekkvik <torc@cmr.no>
  * @since Nov 11, 2008
+ */
+
+/*
+
+Grib-1 doc: (http://rda.ucar.edu/docs/formats/grib/gribdoc/llgrid.html)
+
+Three parameters define a general latitude/longitude coordinate system, formed by a general rotation of the sphere.
+One choice for these parameters is: <ol>
+  <l1> The geographic latitude in degrees of the southern pole of the coordinate system, thetap for example;
+  <li> The geographic longitude in degrees of the southern pole of the coordinate system, lamdap for example;
+  <li> The angle of rotation in degrees about the new polar axis (measured clockwise when looking from the southern to the
+  northern pole) of the coordinate system, assuming the new axis to have been obtained by first rotating the sphere through lamdap degrees about
+the geographic polar axis, and then rotating through (90 + thetap ) degrees so that the southern pole moved along the (previously
+rotated) Greenwhich meridian. </ol>
+
+Grib2:
+
+Grid Definition Template 3.1: 	Rotated Latitude/longitude (or equidistant cylindrical, or Plate Carrée)
+
+Octet No.		Contents
+      15-72		Same as Grid Definition Template 3.0 (see Note 1)
+      73-76		Latitude of the southern pole of projection
+      77-80		Longitude of the southern pole of projection
+      81-84		Angle of rotation of projection
+      85-nn		List of number of points along each meridian or parallel (These octets are only present for quasi-regular grids as described in Note 3)
+
+Notes:
+(1) 	Basic angle of the initial production domain and subdivisions of this basic angle are provided to manage cases where the
+recommended unit of 10-6 degrees is not applicable to describe the extreme longitudes and latitudes, and direction increments.
+For these last six descriptors, unit is equal to the ratio of the basic angle and the subdivisions number.  For ordinary cases,
+zero and missing values should be coded, equivalent to respective values of 1 and 106 (10-6 degrees unit).
+(2) 	Three parameters define a general latitude/longitude coordinate system, formed by a general rotation of the sphere.
+One choice for these parameters is:
+(a)  	The geographic latitude in degrees of the southern pole of the coordinate system, θp for example.
+(b) 	The geographic longitude in degrees of the southern pole of the coordinate system, λp for example.
+(c)  	The angle of rotation in degrees about the new polar axis (measured clockwise when looking from the southern to the northern pole) of the coordinate system, assuming the new axis to have been obtained by first rotating the sphere through λp degrees about the geographic polar axis, and then rotating through (90 + θp) degrees so that the southern pole moved along the (previously rotated) Greenwich meridian.
+
  */
 
 public class RotatedLatLon extends ProjectionImpl {
@@ -85,7 +122,7 @@ public class RotatedLatLon extends ProjectionImpl {
     super("RotatedLatLon", false);
 
     /*
-          lonsp = aLonsp;
+      lonsp = aLonsp;
       latsp = aLatsp;
       rotsp = aRotsp;
       double dlat_rad = (latsp - (-90)) * DEG2RAD; //delta latitude
@@ -211,7 +248,7 @@ public class RotatedLatLon extends ProjectionImpl {
   }
 
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    return false;
+    return Math.abs(pt1.getX() - pt2.getX()) > 270.0;
   }
 
   @Override

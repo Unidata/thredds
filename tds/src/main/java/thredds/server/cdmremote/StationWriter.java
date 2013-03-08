@@ -35,14 +35,19 @@ package thredds.server.cdmremote;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.StructureData;
@@ -77,7 +82,6 @@ public class StationWriter {
 
   private List<VariableSimpleIF> wantVars;
   private DateRange wantRange;
-  private PointFeatureCollection pfc;
   private ucar.nc2.util.DiskCache2 diskCache;
 
   public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, CdmRemoteQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
@@ -112,7 +116,7 @@ public class StationWriter {
     } else {
       wantVars = new ArrayList<VariableSimpleIF>();
       for (VariableSimpleIF v : dataVars) {
-        if ((varNames == null) || varNames.contains(v.getShortName())) // LOOK N**2
+        if (varNames.contains(v.getShortName())) // LOOK N**2
           wantVars.add(v);
       }
     }
@@ -125,7 +129,7 @@ public class StationWriter {
         return false;
       }
       //System.out.printf("sfc.flatten0 wantRange= %s on %s %n", wantRange, fd.getLocation());
-      pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
+      // pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
 
     } else if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.stns) {
       if (!contains(sfc, qb.getStnNames())) {
@@ -133,12 +137,12 @@ public class StationWriter {
         return false;
       }
       //System.out.printf("sfc.flatten1 wantRange= %s on %s %n", wantRange, fd.getLocation());
-      List<String> wantStns = Arrays.asList(qb.getStnNames());
-      pfc = sfc.flatten(wantStns, wantRange, null);
+      // List<String> wantStns = Arrays.asList(qb.getStnNames());
+      //pfc = sfc.flatten(wantStns, wantRange, null);
 
     } else {
       //System.out.printf("sfc.flatten2 wantRange= %s on %s %n", wantRange, fd.getLocation());
-      pfc = sfc.flatten(null, wantRange, null);
+      //pfc = sfc.flatten(null, wantRange, null);
     }
 
     return true;
@@ -181,28 +185,58 @@ public class StationWriter {
       return null;
     }
 
-    Action act = w.getAction();
-    w.header();
-    scan(pfc, wantRange, null, act, counter);
+    // scan(pfc, wantRange, null, act, counter);
 
-    /*  if (null == time) {
-    if (useAll) {
-      StationTimeSeriesFeatureCollection subset = sfc.subset(range);
-      scanAll(fd, subset, null, act, counter);
-    } else {
-      StationTimeSeriesFeatureCollection subset = sfc.subset(stns);
-      scanAll(fd, subset, null, act, counter);
+    // time: all, range, point
+    // spatial: all, bb, point, stns
+    //StationTimeSeriesFeatureCollection useFc = sfc;
+    PointFeatureCollection pfc = null;
+    switch (qb.getSpatialSelection()) {
+
+      case bb:
+        //useFc = sfc.subset(qb.getLatLonRect());
+        pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
+        break;
+
+      case point:
+        Station closestStation = findClosestStation(qb.getLatlonPoint());
+        List<String> stn = new ArrayList<String>();
+        stn.add(closestStation.getName());
+        //useFc = sfc.subset(stn);
+        pfc = sfc.flatten(stn, wantRange, null);
+        break;
+
+      case stns:
+        //List<Station> wantStns = getStationList(qb.getStnNames());
+        //useFc = sfc.subset(stns);
+        List<String> wantStns = Arrays.asList(qb.getStnNames());
+        pfc = sfc.flatten(wantStns, wantRange, null);
+        break;
     }
 
-  } else {
-    // match specific time point
-    Dataset ds = filterDataset(time);
-    if (useAll)
-      scanAll(ds, time, null, act, counter);
-    else
-      scanStations(ds, stns, time, null, act, counter);
-  }  */
+    /*
+        switch (qb.getTemporalSelection()) {
+      case all:
+        scan(useFc, null, null, act, counter);
+        break;
 
+      case range:
+        scan(useFc, qb.getDateRange(), null, act, counter);
+        break;
+
+      case point: // pretty tricky
+    }
+     */
+
+    Action act = w.getAction();
+    w.header();
+
+    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
+      scanForClosestTime(pfc, qb.getTimePoint(), null, act, counter);
+
+    } else {
+      scan(pfc, wantRange, null, act, counter);
+    }
 
     w.trailer();
 
@@ -223,7 +257,7 @@ public class StationWriter {
   }
 
   ///////////////////////////////////////
-  /* station handling
+  // station handling
   private HashMap<String, Station> stationMap;
 
   /*
@@ -232,46 +266,35 @@ public class StationWriter {
    * @param stns List of station names
    * @return true if list is empty, ie no names are in the actual station list
    * @throws IOException if read error
-   *
+   */
   private boolean isStationListEmpty(List<String> stns) throws IOException {
-    HashMap<String, Station> map = getStationMap();
+    makeStationMap();
     for (String stn : stns) {
-      if (map.get(stn) != null) return false;
+      if (stationMap.get(stn) != null) return false;
     }
     return true;
   }
 
-  private List<Station> getStationList() throws IOException {
-    return stationList;
-  }
+  private List<Station> getStationList(String[] stnNames) throws IOException {
+    makeStationMap();
 
-  private List<Station> getStationList(List<String> stnNames) throws IOException {
-    getStationMap();
-    List<Station> result;
-
-    if (stnNames == null || stnNames.size() == 0) {
-      result = stationList;
-    } else {
-      result = new ArrayList<ucar.unidata.geoloc.Station>(stnNames.size());
-      for (String s : stnNames) {
-        Station stn = stationMap.get(s);
-        if (stn != null)
-          result.add(stn);
-      }
+    List<Station> result = new ArrayList<Station>(stnNames.length);
+    for (String s : stnNames) {
+      Station stn = stationMap.get(s);
+      if (stn != null)
+        result.add(stn);
     }
 
     return result;
   }
 
-  private HashMap<String, Station> getStationMap() throws IOException {
+  private void makeStationMap() throws IOException {
     if (null == stationMap) {
       stationMap = new HashMap<String, Station>();
-      List<Station> list = getStationList();
-      for (Station station : list) {
+      for (Station station : sfc.getStations()) {
         stationMap.put(station.getName(), station);
       }
     }
-    return stationMap;
   }
 
   /*
@@ -280,12 +303,11 @@ public class StationWriter {
    * @param boundingBox lat/lon bounding box
    * @return list of station names contained within the bounding box
    * @throws IOException if read error
-   *
+   */
   public List<String> getStationNames(LatLonRect boundingBox) throws IOException {
     LatLonPointImpl latlonPt = new LatLonPointImpl();
     ArrayList<String> result = new ArrayList<String>();
-    List<Station> stations = getStationList();
-    for (Station s : stations) {
+    for (Station s : sfc.getStations()) {
       latlonPt.set(s.getLatitude(), s.getLongitude());
       if (boundingBox.contains(latlonPt)) {
         result.add(s.getName());
@@ -293,7 +315,7 @@ public class StationWriter {
       }
     }
     return result;
-  } */
+  }
 
   /*
    * Find the station closest to the specified point.
@@ -303,10 +325,12 @@ public class StationWriter {
    * @param lon longitude value
    * @return name of station closest to the specified point
    * @throws IOException if read error
-   *
-  public String findClosestStation(double lat, double lon) throws IOException {
+   */
+  public Station findClosestStation(LatLonPoint pt) throws IOException {
+    double lat = pt.getLatitude();
+    double lon = pt.getLongitude();
     double cos = Math.cos(Math.toRadians(lat));
-    List<Station> stations = getStationList();
+    List<Station> stations = sfc.getStations();
     Station min_station = stations.get(0);
     double min_dist = Double.MAX_VALUE;
 
@@ -321,8 +345,8 @@ public class StationWriter {
         min_station = s;
       }
     }
-    return min_station.getName();
-  }  */
+    return min_station;
+  }
 
   /////////////////////
 
@@ -331,12 +355,12 @@ public class StationWriter {
   }
 
   ////////////////////////////////////////////////////////
-  // scanning
+  // scanning flattened collection
 
-  // scan collection, records that pass the predicate match are acted on, within limits
-
+  // scan PointFeatureCollection, records that pass the predicate match are acted on, within limits
   private void scan(PointFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
 
+    collection.resetIteration();
     while (collection.hasNext()) {
       PointFeature pf = collection.next();
 
@@ -359,9 +383,67 @@ public class StationWriter {
       if (debugDetail && (limit.matches % 50 == 0)) System.out.println(" matches " + limit.matches);
     }
     collection.finish();
+  }
+
+  // scan all data in the file, first eliminate any that dont pass the predicate
+  // for each station, track the closest record to the given time
+  // then act on those
+  private void scanForClosestTime(PointFeatureCollection collection, DateType time, Predicate p, Action a, Limit limit) throws IOException {
+
+    HashMap<String, StationDataTracker> map = new HashMap<String, StationDataTracker>();
+    long wantTime = time.getDate().getTime();
+
+    collection.resetIteration();
+    while (collection.hasNext()) {
+      PointFeature pf = collection.next();
+       System.out.printf("%s%n", pf);
+
+      // general predicate filter
+      if (p != null) {
+        StructureData sdata = pf.getData();
+        if (!p.match(sdata))
+          continue;
+      }
+
+      // find closest time for this station
+      long obsTime = pf.getObservationTimeAsDate().getTime();
+      long diff = Math.abs(obsTime - wantTime);
+
+      Station s = ((StationPointFeature)pf).getStation();
+      StationDataTracker track = map.get(s.getName());
+      if (track == null) {
+        map.put(s.getName(), new StationDataTracker(pf, diff));
+      } else {
+        if (diff < track.timeDiff) {
+          track.sobs = pf;
+          track.timeDiff = diff;
+        }
+      }
+    }
+
+    for (String name : map.keySet()) {
+      StationDataTracker track = map.get(name);
+      a.act(track.sobs, track.sobs.getData());
+      limit.matches++;
+
+      limit.count++;
+      if (limit.count > limit.limit) break;
+    }
 
   }
 
+  private class StationDataTracker {
+    PointFeature sobs;
+    long timeDiff = Long.MAX_VALUE;
+
+    StationDataTracker(PointFeature sobs, long timeDiff) {
+      this.sobs = sobs;
+      this.timeDiff = timeDiff;
+    }
+  }
+
+
+  // scan StationTimeSeriesFeatureCollection, records that pass the DateRange and Predicate match are acted on, within limits
   private void scan(StationTimeSeriesFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
 
     while (collection.hasNext()) {
@@ -396,6 +478,9 @@ public class StationWriter {
     }
 
   }
+
+  ////////////////////////////////////////////////////////
+  // scanning station collection
 
   /* scan data for the list of stations, in order
   // records that pass the dateRange and predicate match are acted on
@@ -609,11 +694,11 @@ public class StationWriter {
   }
 
   abstract class Writer {
-    abstract void header();
+    abstract void header() throws IOException;
 
     abstract Action getAction();
 
-    abstract void trailer();
+    abstract void trailer() throws IOException;
 
     java.io.PrintWriter writer;
     int count = 0;
@@ -634,7 +719,7 @@ public class StationWriter {
 
       netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
-      atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS using CDM remote subsetting" ));      
+      atts.add(new Attribute(CDM.TITLE, "Extracted data from TDS using CDM remote subsetting"));
       cfWriter = new WriterCFStationCollection(null, netcdfResult.getAbsolutePath(), atts);
 
       // verify SpatialSelection has some stations
@@ -654,12 +739,8 @@ public class StationWriter {
     public void header() {
     }
 
-    public void trailer() {
-      try {
-        cfWriter.finish();
-      } catch (IOException e) {
-        log.error("WriterNetcdf.trailer", e);
-      }
+    public void trailer() throws IOException {
+      cfWriter.finish();
     }
 
     Action getAction() {
@@ -689,16 +770,13 @@ public class StationWriter {
       out = os;
     }
 
-    public void header() {
+    public void header() throws IOException {
+      // PointStream.writeMagic(out, PointStream.MessageType.Start);  // LOOK - not ncstream protocol
     }
 
-    public void trailer() {
-      try {
+    public void trailer() throws IOException {
         PointStream.writeMagic(out, PointStream.MessageType.End);
         out.flush();
-      } catch (IOException e) {
-        log.error("WriterNcstream.trailer", e);
-      }
     }
 
     Action getAction() {
@@ -723,7 +801,7 @@ public class StationWriter {
           } catch (Throwable t) {
             String mess = t.getMessage();
             if (mess == null) mess = t.getClass().getName();
-            NcStreamProto.Error err = NcStream.encodeErrorMessage( t.getMessage());
+            NcStreamProto.Error err = NcStream.encodeErrorMessage(t.getMessage());
             byte[] b = err.toByteArray();
             PointStream.writeMagic(out, PointStream.MessageType.Error);
             NcStream.writeVInt(out, b.length);
@@ -877,7 +955,7 @@ public class StationWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           Station s = sfc.getStation(pf);
 
-          writer.print( CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
+          writer.print(CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
           writer.print(',');
           writer.print(s.getName());
           writer.print(',');

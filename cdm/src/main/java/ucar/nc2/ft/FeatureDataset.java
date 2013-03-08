@@ -195,7 +195,7 @@ public interface FeatureDataset extends FileCacheable {
    * Starting date for the entire dataset.
    *
    * @return the starting date for the entire dataset, or null if unknown
-   * @deprecated use getStartCalendarDate
+   * @deprecated use getCalendarDateStart
    */
   public Date getStartDate();
 
@@ -203,7 +203,7 @@ public interface FeatureDataset extends FileCacheable {
    * Ending date for the entire dataset.
    *
    * @return the ending date for the entire dataset, or null if unknown
-   * @deprecated use getEndCalendarDate
+   * @deprecated use getCalendarDateEnd
    */
   public Date getEndDate();
 
