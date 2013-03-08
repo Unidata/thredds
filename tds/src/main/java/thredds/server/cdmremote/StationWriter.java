@@ -35,6 +35,7 @@ package thredds.server.cdmremote;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
@@ -44,6 +45,7 @@ import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Station;
@@ -80,7 +82,6 @@ public class StationWriter {
 
   private List<VariableSimpleIF> wantVars;
   private DateRange wantRange;
-  // private PointFeatureCollection pfc;
   private ucar.nc2.util.DiskCache2 diskCache;
 
   public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, CdmRemoteQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
@@ -136,7 +137,7 @@ public class StationWriter {
         return false;
       }
       //System.out.printf("sfc.flatten1 wantRange= %s on %s %n", wantRange, fd.getLocation());
-      List<String> wantStns = Arrays.asList(qb.getStnNames());
+      // List<String> wantStns = Arrays.asList(qb.getStnNames());
       //pfc = sfc.flatten(wantStns, wantRange, null);
 
     } else {
@@ -184,33 +185,37 @@ public class StationWriter {
       return null;
     }
 
-    Action act = w.getAction();
-    w.header();
     // scan(pfc, wantRange, null, act, counter);
 
     // time: all, range, point
     // spatial: all, bb, point, stns
-    StationTimeSeriesFeatureCollection useFc = sfc;
+    //StationTimeSeriesFeatureCollection useFc = sfc;
+    PointFeatureCollection pfc = null;
     switch (qb.getSpatialSelection()) {
 
       case bb:
-        useFc = sfc.subset(qb.getLatLonRect());
+        //useFc = sfc.subset(qb.getLatLonRect());
+        pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
         break;
 
       case point:
         Station closestStation = findClosestStation(qb.getLatlonPoint());
-        List<Station> stn = new ArrayList<Station>();
-        stn.add(closestStation);
-        useFc = sfc.subset(stn);
+        List<String> stn = new ArrayList<String>();
+        stn.add(closestStation.getName());
+        //useFc = sfc.subset(stn);
+        pfc = sfc.flatten(stn, wantRange, null);
         break;
 
       case stns:
-        List<Station> stns = getStationList(qb.getStnNames());
-        useFc = sfc.subset(stns);
+        //List<Station> wantStns = getStationList(qb.getStnNames());
+        //useFc = sfc.subset(stns);
+        List<String> wantStns = Arrays.asList(qb.getStnNames());
+        pfc = sfc.flatten(wantStns, wantRange, null);
         break;
     }
 
-    switch (qb.getTemporalSelection()) {
+    /*
+        switch (qb.getTemporalSelection()) {
       case all:
         scan(useFc, null, null, act, counter);
         break;
@@ -221,7 +226,17 @@ public class StationWriter {
 
       case point: // pretty tricky
     }
+     */
 
+    Action act = w.getAction();
+    w.header();
+
+    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
+      scanForClosestTime(pfc, qb.getTimePoint(), null, act, counter);
+
+    } else {
+      scan(pfc, wantRange, null, act, counter);
+    }
 
     w.trailer();
 
@@ -340,11 +355,12 @@ public class StationWriter {
   }
 
   ////////////////////////////////////////////////////////
-  // scanning
+  // scanning flattened collection
 
   // scan PointFeatureCollection, records that pass the predicate match are acted on, within limits
   private void scan(PointFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
 
+    collection.resetIteration();
     while (collection.hasNext()) {
       PointFeature pf = collection.next();
 
@@ -367,8 +383,65 @@ public class StationWriter {
       if (debugDetail && (limit.matches % 50 == 0)) System.out.println(" matches " + limit.matches);
     }
     collection.finish();
+  }
+
+  // scan all data in the file, first eliminate any that dont pass the predicate
+  // for each station, track the closest record to the given time
+  // then act on those
+  private void scanForClosestTime(PointFeatureCollection collection, DateType time, Predicate p, Action a, Limit limit) throws IOException {
+
+    HashMap<String, StationDataTracker> map = new HashMap<String, StationDataTracker>();
+    long wantTime = time.getDate().getTime();
+
+    collection.resetIteration();
+    while (collection.hasNext()) {
+      PointFeature pf = collection.next();
+       System.out.printf("%s%n", pf);
+
+      // general predicate filter
+      if (p != null) {
+        StructureData sdata = pf.getData();
+        if (!p.match(sdata))
+          continue;
+      }
+
+      // find closest time for this station
+      long obsTime = pf.getObservationTimeAsDate().getTime();
+      long diff = Math.abs(obsTime - wantTime);
+
+      Station s = ((StationPointFeature)pf).getStation();
+      StationDataTracker track = map.get(s.getName());
+      if (track == null) {
+        map.put(s.getName(), new StationDataTracker(pf, diff));
+      } else {
+        if (diff < track.timeDiff) {
+          track.sobs = pf;
+          track.timeDiff = diff;
+        }
+      }
+    }
+
+    for (String name : map.keySet()) {
+      StationDataTracker track = map.get(name);
+      a.act(track.sobs, track.sobs.getData());
+      limit.matches++;
+
+      limit.count++;
+      if (limit.count > limit.limit) break;
+    }
 
   }
+
+  private class StationDataTracker {
+    PointFeature sobs;
+    long timeDiff = Long.MAX_VALUE;
+
+    StationDataTracker(PointFeature sobs, long timeDiff) {
+      this.sobs = sobs;
+      this.timeDiff = timeDiff;
+    }
+  }
+
 
   // scan StationTimeSeriesFeatureCollection, records that pass the DateRange and Predicate match are acted on, within limits
   private void scan(StationTimeSeriesFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
@@ -405,6 +478,9 @@ public class StationWriter {
     }
 
   }
+
+  ////////////////////////////////////////////////////////
+  // scanning station collection
 
   /* scan data for the list of stations, in order
   // records that pass the dateRange and predicate match are acted on

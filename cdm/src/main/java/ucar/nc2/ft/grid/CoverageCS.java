@@ -67,6 +67,11 @@ import java.util.Date;
  * TODO
  *  horiz time dependence
  *  curvilinear  - 2D lat,lon with no projection. need lat,lon <-> i,j
+ *
+ *  subsetting only in coordinate space
+ *  allow different indexes
+ *  each coordinate must correspond to a dimension (?)
+ *
  */
 
 public interface CoverageCS {
@@ -253,7 +258,6 @@ public interface CoverageCS {
    */
   public Subset makeSubsetFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb) throws InvalidRangeException;
   public Subset getSubset();
-
 
   public interface Subset {
     void setLevel(int idx);

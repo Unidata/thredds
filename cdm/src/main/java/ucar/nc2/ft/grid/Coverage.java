@@ -100,7 +100,7 @@ public interface Coverage extends IsMissingEvaluator, VariableSimpleIF, NamedObj
      * This reads an arbitrary data slice, returning the data in
      * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
      *
-     * @param subset subset that you want
+     * @param subset subset that you want. Must be created through this.getCoordinateSystem().makeSubset()
      * @return data[rt,e,t,z,y,x], eliminating missing or fixed dimension.
      * @throws java.io.IOException on io error
      */

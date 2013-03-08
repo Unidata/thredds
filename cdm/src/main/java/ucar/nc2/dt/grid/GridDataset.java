@@ -293,7 +293,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
       gridset = new Gridset(gcs);
       gridsetHash.put(gcs.getName(), gridset);
       if (parseInfo != null) parseInfo.format(" -make new GridCoordSys= %s\n",gcs.getName());
-      gcs.makeVerticalTransform(this, parseInfo); // delayed until now
+      gcs.makeVerticalTransform(this, parseInfo); // delayed until now LOOK why for each grid ??
     }
 
     GeoGrid geogrid = new GeoGrid(this, varDS, gridset.gcc);
