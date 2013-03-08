@@ -35,8 +35,11 @@ package ucar.nc2.units;
 
 import ucar.units.ConversionException;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
+
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -139,7 +142,11 @@ public class TimeDuration {
       try {
         DatatypeFactory factory = DatatypeFactory.newInstance();
         Duration d = factory.newDuration(text);
-        long secs = d.getTimeInMillis(new Date()) / 1000;
+        //long secs = d.getTimeInMillis(new Date()) / 1000;
+        Calendar c  = Calendar.getInstance();
+        c.set(1900, 0, 1, 0, 0, 0);
+        long secs =d.getTimeInMillis( c.getTime() ) / 1000;
+    	  
         timeUnit = new TimeUnit(secs + " secs");
       } catch (Exception e1) {
         throw new java.text.ParseException(e.getMessage(), 0);
@@ -168,7 +175,12 @@ public class TimeDuration {
     try {
       DatatypeFactory factory = DatatypeFactory.newInstance();
       Duration d = factory.newDuration(text);
-      long secs = d.getTimeInMillis(new Date()) / 1000;
+      //long secs = d.getTimeInMillis(new Date()) / 1000;
+      
+      Calendar c  = Calendar.getInstance();
+      c.set(1900, 0, 1, 0, 0, 0);
+      long secs =d.getTimeInMillis( c.getTime() ) / 1000;      
+      
       td.timeUnit = new TimeUnit(secs + " secs");
     } catch (Exception e) {
       throw new java.text.ParseException(e.getMessage(), 0);
@@ -278,7 +290,6 @@ public class TimeDuration {
   public Date add( Date d) {
     return timeUnit.add(d);
   }
-
 
   ////////////////////////////////////////////
   // test

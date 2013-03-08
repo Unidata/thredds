@@ -188,11 +188,14 @@ public class GridAsPointDataset {
 	    
 	    Point p = new Point();
 	    int zidx = -1;
-	    if(zCoord != -1){
-	    	CoordinateAxis1D zAxis = gcs.getVerticalAxis();
+	    //if(zCoord != -1){ LOOK!! --> zCoord may be -1 (ocean sigma levels usually go from 0 to -1)!!!
+	    CoordinateAxis1D zAxis = gcs.getVerticalAxis();
+	    if( zAxis !=null ){
 	    	zidx = zAxis.findCoordElement( zCoord);
-	    	p.z = zAxis.getCoordValue(zidx);
-	    }
+	    	if(zidx != -1)
+	    		p.z = zAxis.getCoordValue(zidx);
+	    }	
+	    //}
 	    	    
 	    int eidx =-1;	    
 	    if(ensCoord != -1){

@@ -31,6 +31,7 @@ import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.server.ncSubset.view.PointDataStream;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
@@ -49,7 +50,7 @@ class PointDataController extends AbstratNcssDataRequestController{
 	
 	//@RequestMapping(value = "**", params = { "latitude", "longitude", "var" })
 	@RequestMapping(value = "**", params = {})
-	void getPointData(@Valid PointDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response ) throws ParseException, NcssException, IOException{
+	void getPointData(@Valid PointDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response ) throws ParseException, NcssException, IOException, InvalidRangeException{
 
 		if( validationResult.hasErrors() ){
 			
@@ -76,8 +77,7 @@ class PointDataController extends AbstratNcssDataRequestController{
 			PointDataStream pds = PointDataStream.createPointDataStream(  sf, response.getOutputStream() );
 			
 			boolean allWritten=false;
-			
-			
+						
 			setResponseHeaders(response, pds.getHttpHeaders(getGridDataset(), requestPathInfo ) );
 			
 			allWritten = pds.stream( getGridDataset(), point, wantedDates, groupVars, params.getVertCoord());
@@ -217,6 +217,13 @@ class PointDataController extends AbstratNcssDataRequestController{
 	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR)
 	public @ResponseBody String handle(IOException ioe){
 		return "IO exception handled: "+ioe.getMessage();
+	}
+	
+	@ExceptionHandler
+	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR)
+	public @ResponseBody String handle(InvalidRangeException ire){
+		
+		return "Invalid Range exception handled: "+ire.getMessage();
 	}	
 	
 	@ExceptionHandler

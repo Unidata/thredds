@@ -26,6 +26,7 @@ import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
@@ -112,7 +113,7 @@ public class PointDataTest {
 	
 	
 	@Test
-	public void shouldGetData() throws ParseException, NcssException, IOException{
+	public void shouldGetData() throws ParseException, NcssException, IOException, InvalidRangeException{
 	
 		//fail("No yet implemented");
 		MockHttpServletResponse response = new MockHttpServletResponse();
