@@ -59,8 +59,13 @@ import java.io.InputStream;
 
 class HTTPMethodStream extends FilterInputStream
 {
+    //////////////////////////////////////////////////////////////////////////
+    static public org.slf4j.Logger log = HTTPSession.log;
+
+    //////////////////////////////////////////////////////////////////////////
     HTTPMethod method = null;
     InputStream stream = null; // in case someone wants to retrieve it
+    boolean closed = false;
 
     HTTPMethodStream(InputStream stream, HTTPMethod method)
     {
@@ -69,34 +74,42 @@ class HTTPMethodStream extends FilterInputStream
 	this.stream = stream;
     }
 
+    boolean getClosed() {return closed;}
+
     InputStream getStream() {return stream;}
 
     /**
        * Closes this input stream and releases any system resources associated
        * with the stream; closes the method also.
        *
-       * @exception  IOException  if an I/O error occurs.
+       * @exception  IOException  if an I/O error occurs; but not if close
+       *                          is called twice.
        */
     @Override
     public void close() throws IOException
     {
-	try {
-	    consume();
-	} finally {
-	    super.close();
+        if(closed)
+            return; /* Allow multiple close calls */
+        closed = true;
+        try {
+            consume();
+        } finally {
+            super.close();
         }
         if(method != null) method.close();
     }
 
-    void consume() throws IOException
+    void consume()
     {
-        long consumed = 0;
-        long available;
-        while ((available = available()) > 0) {
-	    consumed += skip(available);
-        }
-        if (consumed > 0) {
-	    // TODO: Logging strategy? Recommend warning if consumed > 0;
-        }
+        try {
+            long consumed = 0;
+            long available;
+            while ((available = available()) > 0) {
+            consumed += skip(available);
+            }
+            if (consumed > 0) {
+                log.warn("HTTPMethodStream: unconsumed data");
+            }
+        } catch (IOException ioe) {/*ignore*/};
       }
 }
