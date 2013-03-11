@@ -34,7 +34,7 @@ fatJar {  // does not inherit from parent jar
      'Implementation-Version': version,
      'Implementation-Vendor': 'UCAR/Unidata',
      'Implementation-Vendor-Id': 'edu.ucar',
-     'Built-On': new Date()
+     'Built-On': new Date().format('yyyyMMdd.HHmm')
   }
   exclude 'DATE'    // crap from other packages
   exclude 'JDOM*'
