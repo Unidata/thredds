@@ -230,7 +230,7 @@ public class DiskCache2 {
     File f = new File(makeCachePath(fileLocation));
     if (cachePathPolicy == CachePathPolicy.NestedDirectory) {
       File dir = f.getParentFile();
-      if (!dir.mkdirs())
+      if (!dir.exists() && !dir.mkdirs())
         log.warn("Cant create directories for file "+dir.getPath());
     }
 
