@@ -17,6 +17,7 @@ import thredds.server.ncSubset.controller.AbstractNcssController;
 import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapper;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapperFactory;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
@@ -98,7 +99,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	}	
 
 	
-	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord){
+	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord) throws InvalidRangeException{
 		
 		if(wDates.isEmpty()){
 			return write( groupedVars, gds, CalendarDate.of(new Date()), point, vertCoord);
@@ -120,7 +121,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	}
 	
 
-	private boolean write( Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
+	private boolean write( Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) throws InvalidRangeException {
 		
 		boolean allWrite = pointWriterWrapper.write(groupedVars, gridDataset, date, point, targetLevel);		
 				
