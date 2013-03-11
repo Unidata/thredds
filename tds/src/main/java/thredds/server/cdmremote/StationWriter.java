@@ -43,6 +43,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -193,6 +194,10 @@ public class StationWriter {
     PointFeatureCollection pfc = null;
     switch (qb.getSpatialSelection()) {
 
+      case all:
+        pfc = sfc.flatten(null, qb.getDateRange());
+        break;
+
       case bb:
         //useFc = sfc.subset(qb.getLatLonRect());
         pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
@@ -231,7 +236,7 @@ public class StationWriter {
     Action act = w.getAction();
     w.header();
 
-    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
+      if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
       scanForClosestTime(pfc, qb.getTimePoint(), null, act, counter);
 
     } else {
