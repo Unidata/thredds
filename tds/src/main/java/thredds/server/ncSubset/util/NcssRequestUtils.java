@@ -1,5 +1,6 @@
 package thredds.server.ncSubset.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,18 +12,22 @@ import org.springframework.stereotype.Component;
 import thredds.server.config.TdsContext;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
-import ucar.nc2.Dimension;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 @Component 
 public final class NcssRequestUtils implements ApplicationContextAware{
@@ -149,7 +154,52 @@ public final class NcssRequestUtils implements ApplicationContextAware{
 		}		
 		
 		return targetLevel;
-	}	
+	}
+
+	/**
+	 * 
+	 * Returns the actual vertical level if the grid has vertical transformation or -9999.9 otherwise 
+	 * 
+	 * 
+	 * @param grid
+	 * @param date
+	 * @param point
+	 * @param targetLevel
+	 * @return
+	 * @throws InvalidRangeException 
+	 * @throws IOException 
+	 */
+	public static double getActualVertLevel(GridDatatype grid, CalendarDate date, LatLonPoint point, double targetLevel ) throws IOException, InvalidRangeException{
+		
+		double actualLevel = -9999.9;
+		
+		//Check vertical transformations for the grid
+		GridCoordSystem cs = grid.getCoordinateSystem();
+		VerticalTransform vt = cs.getVerticalTransform();
+
+		if(vt != null ){
+			int[] result = new int[2];
+			cs.findXYindexFromLatLon(point.getLatitude(), point.getLongitude(), result);
+			CoordinateAxis1DTime timeAxis = cs.getTimeAxis1D();
+			int vertCoord = cs.getVerticalAxis().findCoordElement(targetLevel);
+
+			int timeIndex =0;
+			if( timeAxis != null){
+				timeIndex = timeAxis.findTimeIndexFromCalendarDate(date);
+			}//If null timAxis might be 2D -> not supported (handle this)
+
+			ArrayDouble.D1 actualLevels = null;
+
+			actualLevels = vt.getCoordinateArray1D(timeIndex, result[0], result[1]);
+			actualLevel = actualLevels.get(vertCoord);
+
+
+		}		
+		
+		return actualLevel;
+		
+	} 
+	
 	
 	
 	public static TdsContext getTdsContext(){
