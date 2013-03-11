@@ -194,29 +194,29 @@ public class StationWriter {
     PointFeatureCollection pfc = null;
     switch (qb.getSpatialSelection()) {
 
-      case all:
-        pfc = sfc.flatten(null, qb.getDateRange());
-        break;
+        case all:
+            pfc = sfc.flatten(null, (CalendarDateRange) null);
+            break;
 
-      case bb:
-        //useFc = sfc.subset(qb.getLatLonRect());
-        pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
-        break;
+        case bb:
+            //useFc = sfc.subset(qb.getLatLonRect());
+            pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
+            break;
 
-      case point:
-        Station closestStation = findClosestStation(qb.getLatlonPoint());
-        List<String> stn = new ArrayList<String>();
-        stn.add(closestStation.getName());
-        //useFc = sfc.subset(stn);
-        pfc = sfc.flatten(stn, wantRange, null);
-        break;
+        case point:
+            Station closestStation = findClosestStation(qb.getLatlonPoint());
+            List<String> stn = new ArrayList<String>();
+            stn.add(closestStation.getName());
+            //useFc = sfc.subset(stn);
+            pfc = sfc.flatten(stn, wantRange, null);
+            break;
 
-      case stns:
-        //List<Station> wantStns = getStationList(qb.getStnNames());
-        //useFc = sfc.subset(stns);
-        List<String> wantStns = Arrays.asList(qb.getStnNames());
-        pfc = sfc.flatten(wantStns, wantRange, null);
-        break;
+        case stns:
+            //List<Station> wantStns = getStationList(qb.getStnNames());
+            //useFc = sfc.subset(stns);
+            List<String> wantStns = Arrays.asList(qb.getStnNames());
+            pfc = sfc.flatten(wantStns, wantRange, null);
+            break;
     }
 
     /*
