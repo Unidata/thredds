@@ -19,14 +19,19 @@ import org.springframework.http.HttpHeaders;
 
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.util.NcssRequestUtils;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 class XMLPointDataWriter implements PointDataWriter {
 
@@ -67,7 +72,7 @@ class XMLPointDataWriter implements PointDataWriter {
 	}
 
 
-	private boolean write(List<String> groupsKeys,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
+	private boolean write(List<String> groupsKeys,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) throws InvalidRangeException {
 
 		boolean allDone = true;
 
@@ -105,7 +110,7 @@ class XMLPointDataWriter implements PointDataWriter {
 		return allDone;
 	}	
 
-	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord){
+	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord) throws InvalidRangeException{
 
 		//loop over wDates
 		CalendarDate date;
@@ -166,7 +171,7 @@ class XMLPointDataWriter implements PointDataWriter {
 
 	}
 
-	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits) {
+	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits) throws InvalidRangeException {
 
 		Iterator<String> itVars = vars.iterator();
 		boolean pointDone=false;
@@ -188,6 +193,9 @@ class XMLPointDataWriter implements PointDataWriter {
 					ensCoords = ensembleAxis.getCoordValues();
 					hasEnsembleDim = true;
 				}
+				
+				
+				double actualLevel = NcssRequestUtils.getActualVertLevel(grid, date, point, targetLevel);
 
 				for(double ensCoord : ensCoords){
 
@@ -200,6 +208,16 @@ class XMLPointDataWriter implements PointDataWriter {
 							attributes.put("units", zUnits);						
 							writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.z).toString());
 							attributes.clear();
+							
+							if(actualLevel != -9999.9){
+								
+								attributes.put("name", "vertCoord");
+								attributes.put("units", grid.getCoordinateSystem().getVerticalTransform().getUnitString() );
+								writeDataTag(xmlStreamWriter, attributes, Double.valueOf(actualLevel).toString());
+								attributes.clear();								
+								
+							}
+							
 						}
 						attributes.put("name", varName);
 						attributes.put("units", grid.getUnitsString());

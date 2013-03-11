@@ -278,29 +278,8 @@ class CSVPointDataWriter implements PointDataWriter  {
 		try{
 			while (itVars.hasNext()) {
 				GridDatatype grid = gridDataset.findGridDatatype(itVars.next());
-
-				//Check vertical transformations for the grid
-				GridCoordSystem cs = grid.getCoordinateSystem();
-				VerticalTransform vt = cs.getVerticalTransform();
-				double actualLevel = -9999.9;
-				if(vt != null ){
-					int[] result = new int[2];
-					cs.findXYindexFromLatLon(point.getLatitude(), point.getLongitude(), result);
-					CoordinateAxis1DTime timeAxis = cs.getTimeAxis1D();
-					int vertCoord = cs.getVerticalAxis().findCoordElement(targetLevel);
-
-					int timeIndex =0;
-					if( timeAxis != null){
-						timeIndex = timeAxis.findTimeIndexFromCalendarDate(date);
-					}//If null timAxis might be 2D -> not supported (handle this)
-
-					ArrayDouble.D1 actualLevels = null;
-
-					actualLevels = vt.getCoordinateArray1D(timeIndex, result[0], result[1]);
-					actualLevel = actualLevels.get(vertCoord);
-
-
-				}
+				
+				double actualLevel = NcssRequestUtils.getActualVertLevel(grid, date, point, targetLevel);
 
 				if ( gap.hasTime(grid, date) && gap.hasVert(grid, targetLevel) ) {
 					GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, targetLevel, point.getLatitude(), point.getLongitude());
