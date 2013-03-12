@@ -200,7 +200,7 @@ public class StationWriter {
 
         case bb:
             //useFc = sfc.subset(qb.getLatLonRect());
-            pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
+            pfc = sfc.flatten(qb.getLatLonRect(), CalendarDateRange.of(wantRange));
             break;
 
         case point:
@@ -208,14 +208,14 @@ public class StationWriter {
             List<String> stn = new ArrayList<String>();
             stn.add(closestStation.getName());
             //useFc = sfc.subset(stn);
-            pfc = sfc.flatten(stn, wantRange, null);
+            pfc = sfc.flatten(stn, CalendarDateRange.of(wantRange), null);
             break;
 
         case stns:
             //List<Station> wantStns = getStationList(qb.getStnNames());
             //useFc = sfc.subset(stns);
             List<String> wantStns = Arrays.asList(qb.getStnNames());
-            pfc = sfc.flatten(wantStns, wantRange, null);
+            pfc = sfc.flatten(wantStns, CalendarDateRange.of(wantRange), null);
             break;
     }
 

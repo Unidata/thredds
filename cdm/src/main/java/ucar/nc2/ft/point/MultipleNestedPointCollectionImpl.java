@@ -93,7 +93,7 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
   }
 
   public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new NestedPointFeatureCollectionFlatten(this, boundingBox, CalendarDateRange.of(dateRange));
+    return flatten( boundingBox, CalendarDateRange.of(dateRange));
   }
 
   private class NestedPointFeatureCollectionFlatten extends PointCollectionImpl {
