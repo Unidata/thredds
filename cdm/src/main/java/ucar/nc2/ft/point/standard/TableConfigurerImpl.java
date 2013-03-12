@@ -148,6 +148,15 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
         return ((stdName == null) || !CF.STATION_ALTITUDE.equals(stdName.getStringValue()));
       }
     });
+    if (z != null) return z;
+
+
+    z = CoordSysEvaluator.findCoordByType(ds, AxisType.GeoZ, new CoordSysEvaluator.Predicate() {
+      public boolean match(CoordinateAxis axis) {
+        Attribute stdName = axis.findAttribute(CF.STANDARD_NAME);
+        return ((stdName == null) || !CF.STATION_ALTITUDE.equals(stdName.getStringValue()));
+      }
+    });
     return z;
   }
 

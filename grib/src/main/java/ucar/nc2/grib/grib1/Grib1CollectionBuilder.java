@@ -238,8 +238,8 @@ public class Grib1CollectionBuilder {
       gc.filenames = Collections.unmodifiableList(gc.filenames);
 
       // error condition on a GribCollection Index
-      if (proto.getFilesCount() == 0) {
-        logger.warn("GribCollection {}: has no files, force recreate ", gc.getName());
+      if ((proto.getFilesCount() == 0) && !(this instanceof Grib1TimePartitionBuilder)) {
+        logger.warn("Grib1Collection {}: has no files, force recreate ", gc.getName());
         return false;
       }
 

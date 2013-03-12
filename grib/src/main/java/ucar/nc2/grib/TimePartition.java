@@ -76,7 +76,7 @@ public abstract class TimePartition extends GribCollection {
       File f = new File(location);
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCollection.createFromIndex(false, p.getName(), f.getParentFile(), raf, p.getConfig()); // LOOK not sure what the parent directory is for
+      return GribCollection.createFromIndex(p.isGrib1(), p.getName(), f.getParentFile(), raf, p.getConfig()); // LOOK not sure what the parent directory is for
     }
   };
 
@@ -114,6 +114,10 @@ public abstract class TimePartition extends GribCollection {
 
     public String getIndexFilename() {
       return indexFilename;
+    }
+
+    public boolean isGrib1() {
+      return isGrib1;         // in GribCollection
     }
 
     public FeatureCollectionConfig.GribConfig getConfig() {

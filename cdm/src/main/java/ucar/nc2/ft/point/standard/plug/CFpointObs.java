@@ -268,6 +268,7 @@ public class CFpointObs extends TableConfigurerImpl {
     // obs table
     VariableDS z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
     if (z == null) z = CoordSysEvaluator.findCoordByType(ds, AxisType.Pressure);
+    if (z == null) z = CoordSysEvaluator.findCoordByType(ds, AxisType.GeoZ);
     if (z == null) {
       errlog.format("CFpointObs getProfileConfig cant find a Height coordinate %n");
       return null;
@@ -950,6 +951,7 @@ public class CFpointObs extends TableConfigurerImpl {
     // find the obs dimension
     VariableDS z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
     if (z == null) z = CoordSysEvaluator.findCoordByType(ds, AxisType.Pressure);
+    if (z == null) z = CoordSysEvaluator.findCoordByType(ds, AxisType.GeoZ);
     if (z == null) {
       errlog.format("CFpointObs: Must have a Height coordinate%n");
       return false;
@@ -1223,6 +1225,7 @@ public class CFpointObs extends TableConfigurerImpl {
     tableConfig.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, info.parentDim);
     tableConfig.elev = matchAxisTypeAndDimension(ds, AxisType.Height, info.parentDim);
     if (tableConfig.elev == null) tableConfig.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, info.parentDim);
+    if (tableConfig.elev == null) tableConfig.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, info.parentDim);
     tableConfig.time = matchAxisTypeAndDimension(ds, AxisType.Time, info.parentDim);
     tableConfig.featureType = ftype;
 
@@ -1249,6 +1252,7 @@ public class CFpointObs extends TableConfigurerImpl {
     tableConfig.lon = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lon);
     tableConfig.elev = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Height);
     if (tableConfig.elev == null) tableConfig.elev = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Pressure);
+    if (tableConfig.elev == null) tableConfig.elev = CoordSysEvaluator.findCoordNameByType(ds, AxisType.GeoZ);
     tableConfig.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     tableConfig.featureType = ftype;
 
@@ -1273,6 +1277,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
     if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, childDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, childDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && childDim.isUnlimited();
@@ -1291,6 +1296,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
     if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, childDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, childDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && childDim.isUnlimited();
@@ -1315,6 +1321,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, parentDim, obsDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, parentDim, obsDim);
     if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, parentDim, obsDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, parentDim, obsDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, parentDim, obsDim);
 
     // divide up the variables between the parent and the obs
@@ -1367,6 +1374,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, outerDim, middleDim, innerDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, outerDim, middleDim, innerDim);
     if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, middleDim, innerDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, middleDim, innerDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, outerDim, middleDim, innerDim);
 
     // divide up the variables between the 3 tables
@@ -1408,6 +1416,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, obsDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, obsDim);
     if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, obsDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.GeoZ, obsDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, obsDim);
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && obsDim.isUnlimited();

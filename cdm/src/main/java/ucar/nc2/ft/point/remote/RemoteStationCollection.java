@@ -105,7 +105,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
   // NestedPointFeatureCollection
   @Override
-  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
     RemotePointCollection pfc = new RemotePointCollection(uri, queryMaker);
     return pfc.subset(boundingBox, dateRange);

@@ -87,7 +87,7 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
   // flatten into a PointFeatureCollection
   // if empty, may return null
   public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new NestedPointFeatureCollectionFlatten(this, boundingBox, CalendarDateRange.of(dateRange));
+    return flatten(boundingBox, CalendarDateRange.of(dateRange));
   }
 
   // flatten into a PointFeatureCollection

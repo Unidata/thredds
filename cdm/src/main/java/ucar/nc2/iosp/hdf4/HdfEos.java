@@ -47,7 +47,6 @@ import java.util.Iterator;
 import java.util.Formatter;
 
 import org.jdom.Element;
-import ucar.nc2.dataset.VariableDS;
 
 /**
  * Parse structural metadata from HDF-EOS.
