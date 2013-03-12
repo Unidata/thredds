@@ -96,6 +96,11 @@ public abstract class GribCollection implements FileCacheable {
     return cache.getFile(path);
   }
 
+  static public File getIndexFile(CollectionManager dcm) {
+    File idxFile = new File(new File(dcm.getRoot()), dcm.getCollectionName() + NCX_IDX);
+    return getIndexFile( idxFile.getPath());
+  }
+
   static public void setDiskCache2(DiskCache2 dc) {
     cache = dc;
   }
@@ -156,10 +161,6 @@ public abstract class GribCollection implements FileCacheable {
       if (have.equals(want)) return i;
     }
     return -1;
-  }
-
-  static public File getIndexFile(CollectionManager dcm) {
-    return new File(new File(dcm.getRoot()), dcm.getCollectionName() + NCX_IDX);
   }
 
   /**

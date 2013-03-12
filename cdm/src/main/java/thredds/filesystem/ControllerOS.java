@@ -116,7 +116,7 @@ public class ControllerOS implements MController {
     }
 
     public boolean hasNext() {
-      next = nextFilteredFile();
+      next = nextFilteredFile();  /// 7
       return (next != null);
     }
 
@@ -134,7 +134,7 @@ public class ControllerOS implements MController {
 
       MFile pdata = orgIter.next();
       while ((pdata.isDirectory() != wantDirs) || !mc.accept(pdata)) {  // skip directories, and filter
-        if (!orgIter.hasNext()) return null;
+        if (!orgIter.hasNext()) return null;  /// 6
         pdata = orgIter.next();
       }
       return pdata;
@@ -149,8 +149,8 @@ public class ControllerOS implements MController {
     MFileIterator(File dir) {
       File[] f = dir.listFiles();
       if (f == null) { // null on i/o error
-        logger.warn("I/O error on "+dir.getPath());
-        throw new IllegalStateException("dir.getPath() returned null on "+dir.getPath());
+        logger.warn("I/O error on " + dir.getPath());
+        throw new IllegalStateException("dir.getPath() returned null on " + dir.getPath());
       } else
         files = Arrays.asList(f);
     }
@@ -193,7 +193,7 @@ public class ControllerOS implements MController {
       }
 
       if (!currIter.hasNext()) {
-        currIter = getNextIterator();
+        currIter = getNextIterator(); /// 5
         return hasNext();
       }
 
@@ -208,20 +208,20 @@ public class ControllerOS implements MController {
 
       if (!currTraversal.leavesAreDone) {
         currTraversal.leavesAreDone = true;
-        return new MFileIterator(currTraversal.fileList); // look for leaves in the current directory
+        return new MFileIterator(currTraversal.fileList); // look for leaves in the current directory. may be empty.
 
       } else {
         if ((currTraversal.subdirIterator != null) && currTraversal.subdirIterator.hasNext()) { // has subdirs
-          File nextDir = currTraversal.subdirIterator.next();
+          File nextDir = currTraversal.subdirIterator.next(); /// NCDC gets null
 
           traverse.add(currTraversal); // keep track of current traversal
-          currTraversal = new Traversal(nextDir);
+          currTraversal = new Traversal(nextDir);   /// 2
           return getNextIterator();
 
         } else {
           if (traverse.peek() == null) return null;
           currTraversal = traverse.remove();
-          return getNextIterator();
+          return getNextIterator();  // 3 and 4  iteration
         }
       }
     }
@@ -231,18 +231,19 @@ public class ControllerOS implements MController {
     }
   }
 
-   private class Traversal {
-    File dir;
-    List<File> fileList;
-    Iterator<File> subdirIterator;
-    boolean leavesAreDone = false;
+  // traversal of one directory
+  private class Traversal {
+    File dir; // top directory
+    List<File> fileList;  // list of files
+    Iterator<File> subdirIterator;  // list of subdirs
+    boolean leavesAreDone = false;   // when all the files are done, start on the subdirs
 
     Traversal(File dir) {
       this.dir = dir;
 
       fileList = new ArrayList<File>();
       List<File> subdirList = new ArrayList<File>();
-      for (File f : dir.listFiles()) {
+      for (File f : dir.listFiles()) {  /// 1
         if (f.isDirectory())
           subdirList.add(f);
         else

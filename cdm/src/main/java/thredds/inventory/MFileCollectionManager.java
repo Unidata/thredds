@@ -508,13 +508,13 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     for (MCollection mc : scanList) {
 
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
-      Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);
+      Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);  /// NCDC wants subdir /global/nomads/nexus/gfsanl/**/gfsanl_3_.*\.grb$
       if (iter == null) {
         logger.error(collectionName + ": Invalid collection= " + mc);
         continue;
       }
 
-      while (iter.hasNext()) {
+      while (iter.hasNext()) {  /// NCDC
         MFile mfile = iter.next();
         mfile.setAuxInfo(mc.getAuxInfo());
         map.put(mfile.getPath(), mfile);
