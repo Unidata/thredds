@@ -540,12 +540,13 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     List<TimeCoord> list = new ArrayList<TimeCoord>(proto.getTimeCoordUnionsCount());
     for (int i = 0; i < proto.getTimeCoordUnionsCount(); i++) {
       GribCollectionProto.TimeCoordUnion tpu = proto.getTimeCoordUnions(i);
-      list.add(readTimePartition(tpu));
+      list.add(readTimePartition(tpu, i));
     }
     group.timeCoords = list;
   }
 
-  protected TimeCoordUnion readTimePartition(GribCollectionProto.TimeCoordUnion pc) {
+  /*
+   protected TimeCoord readTimePartition(GribCollectionProto.TimeCoordUnion pc, int timeIndex) {
     int[] partition = new int[pc.getPartitionCount()];
     int[] index = new int[pc.getPartitionCount()];  // better be the same
     for (int i = 0; i < pc.getPartitionCount(); i++) {
@@ -557,13 +558,41 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
       List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
       for (int i = 0; i < pc.getValuesCount(); i++)
         coords.add(new TimeCoord.Tinv((int) pc.getValues(i), (int) pc.getBound(i)));
-      return new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      TimeCoordUnion tc =  new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      return tc.setIndex( timeIndex);
 
     } else {
       List<Integer> coords = new ArrayList<Integer>(pc.getValuesCount());
       for (float value : pc.getValuesList())
         coords.add((int) value);
-      return new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      TimeCoordUnion tc = new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      return tc.setIndex( timeIndex);
+    }
+  }
+
+   */
+
+ protected TimeCoord readTimePartition(GribCollectionProto.TimeCoordUnion pc, int timeIndex) {
+    int[] partition = new int[pc.getPartitionCount()];
+    int[] index = new int[pc.getPartitionCount()];  // better be the same
+    for (int i = 0; i < pc.getPartitionCount(); i++) {
+      partition[i] = pc.getPartition(i);
+      index[i] = pc.getIndex(i);
+    }
+
+    if (pc.getBoundCount() > 0) {  // its an interval
+      List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
+      for (int i = 0; i < pc.getValuesCount(); i++)
+        coords.add(new TimeCoord.Tinv((int) pc.getValues(i), (int) pc.getBound(i)));
+      TimeCoordUnion tc =  new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      return tc.setIndex( timeIndex);
+
+    } else {
+      List<Integer> coords = new ArrayList<Integer>(pc.getValuesCount());
+      for (float value : pc.getValuesList())
+        coords.add((int) value);
+      TimeCoordUnion tc = new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      return tc.setIndex( timeIndex);
     }
   }
 
