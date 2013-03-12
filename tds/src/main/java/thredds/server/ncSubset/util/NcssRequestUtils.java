@@ -13,6 +13,7 @@ import thredds.server.config.TdsContext;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import ucar.ma2.ArrayDouble;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -128,11 +129,22 @@ public final class NcssRequestUtils implements ApplicationContextAware{
 		return varList;
 	}
 	
-	public static Double getTimeCoordValue(GridDatatype grid, CalendarDate date){
+	public static Double getTimeCoordValue(GridDatatype grid, CalendarDate date, CalendarDate origin){
 		
 		CoordinateAxis1DTime tAxis = grid.getCoordinateSystem().getTimeAxis1D();
     	Integer wIndex = tAxis.findTimeIndexFromCalendarDate( date );
-    	Double coordVal = tAxis.getCoordValue(wIndex);		
+    	Double coordVal = 0.;
+    	
+    	//Check axis dataType --> Time axis for some collections (joinExistingOne) is String
+    	//In that case we use the seconds since the origin of the time axis as unit
+    	if( tAxis.getDataType() == DataType.STRING ){
+    		CalendarDate wanted =tAxis.getCalendarDate(wIndex);
+    		coordVal = (double) wanted.getDifferenceInMsecs(origin)/1000;
+    		
+    	}else{    	
+    		coordVal = tAxis.getCoordValue(wIndex);
+    	}
+    	
 		return coordVal;
 	}	
 	

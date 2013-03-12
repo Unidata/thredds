@@ -232,9 +232,13 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims) throws IOException {
     super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription());
     this.ncd = ncd;
+    
+    //Gotta set the original var. Otherwise it would be unable to read the values
+    this.orgVar = org;
+    
     this.orgName = org.orgName;
     this.calendar = getCalendarFromAttribute();
-
+    
     if (org.getDataType() == DataType.CHAR)
       cdates = makeTimesFromChar(org, errMessages);
     else
