@@ -40,7 +40,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -53,7 +52,7 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.input.SAXBuilder;
 
 /**
- * Factory for CdmrFeature protocol. GRID, POINT, STATION so far
+ * Factory for FeatureDataset using CdmrRemote protocol. GRID, POINT, STATION so far
  *
  * @author caron
  * @since May 19, 2009
