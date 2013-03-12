@@ -12,9 +12,11 @@ import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 public final class StructureDataFactory {
 	
@@ -200,6 +202,20 @@ public final class StructureDataFactory {
 	    StructureMembers.Member zMember = sd.getStructureMembers().addMember(zAxis.getShortName(), null, zAxis.getUnitsString(), DataType.DOUBLE, scalarShape);
 	    zMember.setDataArray(zData);
 	    sd.setMemberData(zMember, zData);
+	    
+	    for( String v : vars ){
+	    	
+	    	VerticalCT vct = gds.findGridByShortName(v).getCoordinateSystem().getVerticalCT();	    	
+	    	if(vct != null){//Variables are grouped by vertical levels, so just one vertical transform is expected.
+	    		VerticalTransform vt = gds.findGridByShortName(v).getCoordinateSystem().getVerticalTransform();
+	    		ArrayDouble.D0 vData = new ArrayDouble.D0();
+	    		StructureMembers.Member vMember = sd.getStructureMembers().addMember( vct.getName() , null, vt.getUnitString() , DataType.DOUBLE, scalarShape);
+	    		vMember.setDataArray(vData);
+	    		sd.setMemberData(vMember, vData);
+
+	    	}
+	    }
+	    
 	    
 	    return sd;
 	}

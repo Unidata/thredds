@@ -43,6 +43,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -193,25 +194,29 @@ public class StationWriter {
     PointFeatureCollection pfc = null;
     switch (qb.getSpatialSelection()) {
 
-      case bb:
-        //useFc = sfc.subset(qb.getLatLonRect());
-        pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
-        break;
+        case all:
+            pfc = sfc.flatten(null, (CalendarDateRange) null);
+            break;
 
-      case point:
-        Station closestStation = findClosestStation(qb.getLatlonPoint());
-        List<String> stn = new ArrayList<String>();
-        stn.add(closestStation.getName());
-        //useFc = sfc.subset(stn);
-        pfc = sfc.flatten(stn, wantRange, null);
-        break;
+        case bb:
+            //useFc = sfc.subset(qb.getLatLonRect());
+            pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
+            break;
 
-      case stns:
-        //List<Station> wantStns = getStationList(qb.getStnNames());
-        //useFc = sfc.subset(stns);
-        List<String> wantStns = Arrays.asList(qb.getStnNames());
-        pfc = sfc.flatten(wantStns, wantRange, null);
-        break;
+        case point:
+            Station closestStation = findClosestStation(qb.getLatlonPoint());
+            List<String> stn = new ArrayList<String>();
+            stn.add(closestStation.getName());
+            //useFc = sfc.subset(stn);
+            pfc = sfc.flatten(stn, wantRange, null);
+            break;
+
+        case stns:
+            //List<Station> wantStns = getStationList(qb.getStnNames());
+            //useFc = sfc.subset(stns);
+            List<String> wantStns = Arrays.asList(qb.getStnNames());
+            pfc = sfc.flatten(wantStns, wantRange, null);
+            break;
     }
 
     /*
@@ -231,7 +236,7 @@ public class StationWriter {
     Action act = w.getAction();
     w.header();
 
-    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
+      if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
       scanForClosestTime(pfc, qb.getTimePoint(), null, act, counter);
 
     } else {

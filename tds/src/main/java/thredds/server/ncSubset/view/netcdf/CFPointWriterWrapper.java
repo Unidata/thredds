@@ -34,6 +34,7 @@ package thredds.server.ncSubset.view.netcdf;
 import java.util.List;
 import java.util.Map;
 
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
@@ -48,7 +49,7 @@ public interface CFPointWriterWrapper {
 
 	public boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, Double vertCoord);
 	
-	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel);
+	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) throws InvalidRangeException;
 	
 	public boolean trailer();
 }

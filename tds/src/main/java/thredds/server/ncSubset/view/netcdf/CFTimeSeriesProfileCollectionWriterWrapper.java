@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import thredds.server.ncSubset.dataservice.StructureDataFactory;
 import thredds.server.ncSubset.util.NcssRequestUtils;
+import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
@@ -71,7 +72,7 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 	@Override
 	public boolean write(Map<String, List<String>> groupedVars,
 			GridDataset gridDataset, CalendarDate date, LatLonPoint point,
-			Double targetLevel) {
+			Double targetLevel) throws InvalidRangeException {
 
 		boolean allDone = false;
 		List<String> keys =new ArrayList<String>(groupedVars.keySet());
@@ -149,7 +150,7 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 							if(zAxis.getCoordValues().length > 1) vertCoords = zAxis.getCoordValues();
 						}	
 						
-						 
+					 
 						int vertCoordsIndexForFile =0;
 						for(double vertLevel : vertCoords){
 							//The zAxis was added to the variables and we need a structure data that contains z-levels  
@@ -165,7 +166,12 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 							while (itVars.hasNext()) {
 								String varName = itVars.next();
 								GridDatatype grid = gridDataset.findGridDatatype(varName);
-
+								
+								if( grid.getCoordinateSystem().getVerticalTransform() != null ){
+									double actualLevel = NcssRequestUtils.getActualVertLevel(grid, date, point, vertLevel);								
+									sdata.findMember( grid.getCoordinateSystem().getVerticalCT().getName() ).getDataArray().setDouble(0, actualLevel );
+								}
+								
 								if (gap.hasTime(grid, date) && gap.hasVert(grid, vertLevel)) {
 									GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord,	vertLevel, point.getLatitude(), point.getLongitude() );
 									sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );

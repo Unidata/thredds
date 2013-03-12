@@ -15,6 +15,7 @@ atlassian-ide-plugin.xml
 
 # Ignore Dreamweaver balogna
 _notes
+_compareTemp
 
 # Ignore eclipse project files
 .classpath
