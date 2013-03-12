@@ -36,6 +36,7 @@ package ucar.nc2.dataset.conv;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.units.SimpleUnit;
@@ -503,6 +504,7 @@ map_proj =  1: Lambert Conformal
     String fromWhere = axisName.endsWith("stag") ? "ZNW" : "ZNU";
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "", "eta values from variable " + fromWhere);
+    v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // eta coordinate is 1.0 at bottom, 0 at top
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
@@ -621,6 +623,7 @@ map_proj =  1: Lambert Conformal
       return null;
 
     if (coordVar.getRank() == 1) {
+      coordVar.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // soil depth gets larger as you go down
       coordVar.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
       if (!coordVarName.equals(soilDim.getShortName()))
         coordVar.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getShortName()));
@@ -630,6 +633,7 @@ map_proj =  1: Lambert Conformal
     String units = ds.findAttValueIgnoreCase(coordVar, CDM.UNITS, "");
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, "soilDepth", DataType.DOUBLE, soilDim.getShortName(), units, "soil depth");
+    v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // soil depth gets larger as you go down
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     v.addAttribute(new Attribute(CDM.UNITS, CDM.UNITS));
     if (!v.getShortName().equals(soilDim.getShortName()))
