@@ -47,6 +47,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Station;
@@ -186,7 +187,20 @@ public class StationWriter {
       return null;
     }
 
-    // scan(pfc, wantRange, null, act, counter);
+    // for closet time, set wantRange to the time LOOK - do we need +- increment ??
+    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
+      TimeUnit hour = null;
+      try {
+        hour = new TimeUnit(1, "hour");
+      } catch (Exception e) {
+        e.printStackTrace();
+        log.error("bad time unit", e);
+        return null;
+      }
+      DateType startR =  qb.getTimePoint().subtract(hour);
+      DateType endR =  qb.getTimePoint().add(hour);
+      wantRange = new DateRange(startR.getDate(), endR.getDate());
+    }
 
     // time: all, range, point
     // spatial: all, bb, point, stns
@@ -195,7 +209,7 @@ public class StationWriter {
     switch (qb.getSpatialSelection()) {
 
         case all:
-            pfc = sfc.flatten(null, (CalendarDateRange) null);
+            pfc = sfc.flatten(null,  CalendarDateRange.of(wantRange));
             break;
 
         case bb:
@@ -219,24 +233,10 @@ public class StationWriter {
             break;
     }
 
-    /*
-        switch (qb.getTemporalSelection()) {
-      case all:
-        scan(useFc, null, null, act, counter);
-        break;
-
-      case range:
-        scan(useFc, qb.getDateRange(), null, act, counter);
-        break;
-
-      case point: // pretty tricky
-    }
-     */
-
     Action act = w.getAction();
     w.header();
 
-      if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
+    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
       scanForClosestTime(pfc, qb.getTimePoint(), null, act, counter);
 
     } else {
@@ -401,7 +401,7 @@ public class StationWriter {
     collection.resetIteration();
     while (collection.hasNext()) {
       PointFeature pf = collection.next();
-       System.out.printf("%s%n", pf);
+      //System.out.printf("%s%n", pf);
 
       // general predicate filter
       if (p != null) {
