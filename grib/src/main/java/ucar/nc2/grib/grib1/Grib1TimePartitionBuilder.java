@@ -110,8 +110,8 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
   private final Grib1TimePartition tp;  // build this object
 
   private Grib1TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc) {
-    this.tp = new Grib1TimePartition(name, directory,
-            (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG));
+    FeatureCollectionConfig.GribConfig config = (tpc == null) ? null :  (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.tp = new Grib1TimePartition(name, directory, config);
     this.gc = tp;
     this.tpc = tpc;
   }
