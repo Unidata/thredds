@@ -6,13 +6,11 @@ import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
-import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.projection.Sinusoidal;
 
 import java.io.IOException;
-import java.util.StringTokenizer;
 
 /**
  * HDF4-EOS TERRA MODIS
