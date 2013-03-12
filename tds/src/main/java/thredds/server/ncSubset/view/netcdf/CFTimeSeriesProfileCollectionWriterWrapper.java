@@ -37,7 +37,9 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 
 	static private Logger log = LoggerFactory.getLogger(CFTimeSeriesProfileCollectionWriterWrapper.class);
 
-	private WriterCFTimeSeriesProfileCollection writerCFTimeSeriesProfileCollection; 
+	private WriterCFTimeSeriesProfileCollection writerCFTimeSeriesProfileCollection;
+	
+	private CalendarDate timeOrigin;
 
 	private CFTimeSeriesProfileCollectionWriterWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
 
@@ -50,6 +52,9 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 			LatLonPoint point, Double vertCoord) {
 
 		boolean headerDone = false;
+		
+		timeOrigin = dateUnit.makeCalendarDate(0);
+		
 		List<Attribute> atts = new ArrayList<Attribute>();
 		atts.add(new Attribute( CDM.TITLE,  "Extract time series profiles data from Grid file "+ gds.getLocationURI()) );   		    		    	
 
@@ -103,7 +108,7 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 					EarthLocation earthLocation=null;	
 
 					GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
-					Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
+					Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date, timeOrigin);
 					if(zAxis == null){ //Variables without vertical levels
 
 						//Write no vert levels

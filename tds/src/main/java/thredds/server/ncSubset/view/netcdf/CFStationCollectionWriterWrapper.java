@@ -66,6 +66,8 @@ public final class CFStationCollectionWriterWrapper implements CFPointWriterWrap
 	private WriterCFStationCollection writerCFStationCollection;
 
 	private GridAsPointDataset gap;
+	
+	private CalendarDate timeOrigin;
 
 	private CFStationCollectionWriterWrapper(){}
 
@@ -78,6 +80,8 @@ public final class CFStationCollectionWriterWrapper implements CFPointWriterWrap
 	@Override
 	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, Double vertCoord) {
 
+		timeOrigin = dateUnit.makeCalendarDate(0);
+		
 		boolean headerDone = false;
 		String stnName = "GridPoint";
 		String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
@@ -109,7 +113,7 @@ public final class CFStationCollectionWriterWrapper implements CFPointWriterWrap
 		List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);
 		StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars, true);		
 
-		Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
+		Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date, timeOrigin);
 		sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
 
 		//Ensemble...

@@ -2,7 +2,6 @@ package thredds.server.ncSubset.view;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import thredds.server.ncSubset.exception.DateUnitException;
-import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
@@ -56,6 +56,7 @@ public final class PointDataStream {
 		return allDone;
 	}
 	
+	
 	private DateUnit getDateUnit(GridDatatype grid) throws DateUnitException{
 
 		//If the grid does not have time axis, return null
@@ -63,8 +64,15 @@ public final class PointDataStream {
 			return null;
 
 		// Asuming all vars have the same time axis and it is 1D...
-		String timeUnitString = grid.getCoordinateSystem().getTimeAxis().getUnitsString();
-					
+		CoordinateAxis1DTime tAxis =(CoordinateAxis1DTime) grid.getCoordinateSystem().getTimeAxis();
+		String timeUnitString = tAxis.getUnitsString();
+		if( tAxis.getDataType() == DataType.STRING && tAxis.getUnitsString().equals("") ){ //Time axis contains String dates (ISO ??)
+			
+			CalendarDate startDate = tAxis.getCalendarDate(0);
+			timeUnitString = "seconds since "+ startDate.toString(); //Units will be seconds since the origin of the time axis 
+						
+		}
+							
 		DateUnit du =null;
 		
 		try{
