@@ -31,7 +31,7 @@
 	</xsl:variable>
 	
 	<xsl:variable name="hasVertAxis">
-		<xsl:value-of select="count(/gridForm/timeSet/vertSet/values)" />
+		<xsl:value-of select="count(gridForm/timeSet/vertSet/vert/values)" />
 	</xsl:variable>	
 	
 		<html>
