@@ -41,7 +41,7 @@ import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ui.coverage.CoverageDisplay;
 import ucar.nc2.ui.coverage.CoverageTable;
 import ucar.nc2.ui.grid.GeoGridTable;
@@ -126,7 +126,7 @@ public class ToolsUI extends JPanel {
   private BufrTableBPanel bufrTableBPanel;
   private BufrTableDPanel bufrTableDPanel;
   private BufrCodePanel bufrCodePanel;
-  private CdmremotePanel cdmremotePanel;
+  private CdmrFeature cdmremotePanel;
   private CdmIndexPanel cdmIdxPanel;
   private CoordSysPanel coordSysPanel;
   private CollectionPanel collectionPanel;
@@ -245,9 +245,9 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("GRIB1", grib1TabPane);
     iospTabPane.addTab("HDF5", hdf5TabPane);
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
-    iospTabPane.addTab("CdmRemote", new JLabel("CdmRemote"));
     iospTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
     iospTabPane.addTab("NcStream", new JLabel("NcStream"));
+    iospTabPane.addTab("CdmrFeature", new JLabel("CdmrFeature"));
     iospTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = iospTabPane.getSelectedComponent();
@@ -507,8 +507,8 @@ public class ToolsUI extends JPanel {
       bufrCodePanel = new BufrCodePanel((PreferencesExt) mainPrefs.node("bufr-codes"));
       c = bufrCodePanel;
 
-    } else if (title.equals("CdmRemote")) {
-      cdmremotePanel = new CdmremotePanel((PreferencesExt) mainPrefs.node("CdmRemote"));
+    } else if (title.equals("CdmrFeature")) {
+      cdmremotePanel = new CdmrFeature((PreferencesExt) mainPrefs.node("CdmrFeature"));
       c = cdmremotePanel;
 
     } else if (title.equals("NcStream")) {
@@ -889,7 +889,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.iosp.hdf5.H5iosp.setDebugFlags(debugFlags);
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
-    ucar.nc2.stream.CdmRemote.setDebugFlags(debugFlags);
+    CdmRemote.setDebugFlags(debugFlags);
     GribServiceProvider.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
@@ -4033,12 +4033,12 @@ public class ToolsUI extends JPanel {
 
   ////////////////////////////////////////////////////////
 
-  private class CdmremotePanel extends OpPanel {
-    ucar.nc2.ui.CdmremotePanel panel;
+  private class CdmrFeature extends OpPanel {
+    CdmrFeaturePanel panel;
 
-    CdmremotePanel(PreferencesExt p) {
+    CdmrFeature(PreferencesExt p) {
       super(p, "file:", true, false);
-      panel = new ucar.nc2.ui.CdmremotePanel(prefs);
+      panel = new CdmrFeaturePanel(prefs);
       add(panel, BorderLayout.CENTER);
 
       AbstractAction infoAction = new AbstractAction() {

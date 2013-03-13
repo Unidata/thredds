@@ -331,7 +331,7 @@ public class FeatureCollectionConfig {
     public Element paramTable;
     public Boolean intvMerge = null;
     public Boolean useGenType = null;
-    public Boolean filesSortIncreasing = null;
+    public Boolean filesSortIncreasing = true;
     public GribIntvFilter intvFilter;
 
     private TimeUnitConverterHash tuc;
@@ -383,12 +383,6 @@ public class FeatureCollectionConfig {
           }
         }
       }
-      // if the sort tag is not used, then set increasing to True (the current
-      //  catalog behavior for grib collections
-      if (filesSortIncreasing == null) {
-          filesSortIncreasing = true;
-      }
-
 
       List<Element> intvElems = configElem.getChildren("intvFilter", ns);
       for (Element intvElem : intvElems) {

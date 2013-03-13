@@ -396,14 +396,15 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       top.addDataset(ds);
       result.addService(InvService.latest);
     }
+
     //COPY FILENAMES TO MODIFIABLE LIST, SORT, AND PASS
     List<String> sortedFilenames = new ArrayList<String>(filenames);
 
-    Collections.sort(sortedFilenames,String.CASE_INSENSITIVE_ORDER);
-
     // if not increasing (i.e. we WANT newest file listed first), reverse sort
-    if (!this.config.gribConfig.filesSortIncreasing) {
-        Collections.reverse(sortedFilenames);
+    if (this.config.gribConfig != null && !this.config.gribConfig.filesSortIncreasing) {
+      Collections.reverse(sortedFilenames);
+    } else {
+      Collections.sort(sortedFilenames,String.CASE_INSENSITIVE_ORDER);
     }
 
     for (String f : sortedFilenames) {

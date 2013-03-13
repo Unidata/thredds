@@ -150,8 +150,7 @@ public class NcStreamPanel extends JPanel {
         messages.add(new MessBean(m));
       }
 
-    } catch (Exception e) {
-      e.printStackTrace();
+    } finally  {
       if (raf != null) raf.close();
     }
 

@@ -44,11 +44,11 @@ import ucar.nc2.util.IO;
 
 import java.io.*;
 import java.net.URLEncoder;
-import java.nio.channels.WritableByteChannel;
 import java.util.Formatter;
 
 /**
- * A remote CDM dataset, using ncstream to communicate.
+ * A remote CDM dataset (extends NetcdfFile), using cdmremote protocol to communicate.
+ * Similar to Opendap in that it is a remote access protocol.
  * Supports full CDM / netcdf-4 data model.
  *
  * @author caron

@@ -6,7 +6,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CompareNetcdf2;
 
 import java.io.*;
-import java.nio.channels.WritableByteChannel;
 import java.util.Formatter;
 
 import ucar.unidata.test.util.TestDir;
