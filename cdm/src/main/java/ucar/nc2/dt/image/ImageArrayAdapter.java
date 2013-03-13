@@ -56,6 +56,7 @@ public class ImageArrayAdapter {
    * @return BufferedImage
    */
   public static java.awt.image.BufferedImage makeGrayscaleImage( Array ma) {
+    if (ma.getRank() < 2) return null;
 
     if (ma.getRank() == 3)
       ma = ma.reduce();

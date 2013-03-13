@@ -60,9 +60,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dataset.*;
@@ -91,16 +89,10 @@ import java.util.*;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.text.PlainDocument;
 import javax.swing.event.*;
 
 import org.springframework.context.*;
 import org.springframework.context.support.*;
-import org.bounce.text.ScrollableEditorPanel;
-import org.bounce.text.LineNumberMargin;
-import org.bounce.text.xml.XMLStyleConstants;
-import org.bounce.text.xml.XMLDocument;
-import org.bounce.text.xml.XMLEditorKit;
 
 /**
  * Netcdf Tools user interface.
@@ -1318,30 +1310,6 @@ public class ToolsUI extends JPanel {
     }
   } */
 
-  // LOOK put in background task ??
-  private NetcdfDataset openDataset(String location, boolean addCoords, CancelTask task) {
-    try {
-      NetcdfDataset ncd = NetcdfDataset.openDataset(location, addCoords, task);
-
-      /* if (addCoords)
-        ncd = NetcdfDatasetCache.acquire(location, task);
-      else {
-         NetcdfFile ncfile = NetcdfFileCache.acquire(location, task);
-         if (ncfile != null) ncd = new NetcdfDataset( ncfile, false);
-      } */
-
-      if (setUseRecordStructure)
-        ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-
-      return ncd;
-
-    } catch (IOException ioe) {
-      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + ioe.getMessage());
-      if (!(ioe instanceof java.io.FileNotFoundException)) ioe.printStackTrace();
-      return null;
-    }
-
-  }
 
   private NetcdfFile openFile(String location, boolean addCoords, CancelTask task) {
     NetcdfFile ncfile = null;
@@ -3748,10 +3716,7 @@ public class ToolsUI extends JPanel {
 
   private class NcmlEditorPanel extends OpPanel {
     NetcdfDataset ds = null;
-    String ncmlLocation = null;
-    JEditorPane editor;
-    Map<String, String> protoMap = new HashMap<String, String>(10);
-    ComboBox protoChooser;
+    NcmlEditor editor;
 
     void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
@@ -3759,273 +3724,18 @@ public class ToolsUI extends JPanel {
     }
 
     NcmlEditorPanel(PreferencesExt p) {
-      super(p, "dataset:");
-      protoChooser = new ComboBox((PreferencesExt) prefs.node("protoChooser"));
-      addProtoChoices();
-      buttPanel.add(protoChooser);
-      protoChooser.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String ptype = (String) protoChooser.getSelectedItem();
-          String proto = protoMap.get(ptype);
-          if (proto != null) {
-            editor.setText(proto);
-          }
-        }
-      });
-
-      editor = new JEditorPane();
-
-      // Instantiate a XMLEditorKit with wrapping enabled.
-      XMLEditorKit kit = new XMLEditorKit(false);
-
-      // Set the wrapping style.
-      kit.setWrapStyleWord(true);
-
-      editor.setEditorKit(kit);
-
-      // Set the font style.
-      editor.setFont(new Font("Courier", Font.PLAIN, 12));
-
-      // Set the tab size
-      editor.getDocument().putProperty(PlainDocument.tabSizeAttribute, 2);
-
-      // Enable auto indentation.
-      editor.getDocument().putProperty(XMLDocument.AUTO_INDENTATION_ATTRIBUTE, true);
-
-      // Enable tag completion.
-      editor.getDocument().putProperty(XMLDocument.TAG_COMPLETION_ATTRIBUTE, true);
-
-      // Initialise the folding
-      kit.setFolding(true);
-
-      // Set a style
-      kit.setStyle(XMLStyleConstants.ATTRIBUTE_NAME, Color.RED, Font.BOLD);
-
-      // Put the editor in a panel that will force it to resize, when a different view is choosen.
-      ScrollableEditorPanel editorPanel = new ScrollableEditorPanel(editor);
-
-      JScrollPane scroller = new JScrollPane(editorPanel);
-
-      // Add the number margin as a Row Header View
-      scroller.setRowHeaderView(new LineNumberMargin(editor));
-
-      AbstractAction wrapAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          XMLEditorKit kit = (XMLEditorKit) editor.getEditorKit();
-          kit.setLineWrappingEnabled(!kit.isLineWrapping());
-
-          // Update the UI and create a new view...
-          editor.updateUI();
-        }
-      };
-      BAMutil.setActionProperties(wrapAction, "Wrap", "Toggle Wrapping", false, 'W', -1);
-      BAMutil.addActionToContainer(buttPanel, wrapAction);
-
-      AbstractAction saveAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          String location = (ds == null) ? ncmlLocation : ds.getLocation();
-          if (location == null) location = "test";
-          int pos = location.lastIndexOf(".");
-          if (pos > 0)
-            location = location.substring(0, pos);
-          String filename = fileChooser.chooseFilenameToSave(location + ".ncml");
-          if (filename == null) return;
-          if (doSave(editor.getText(), filename))
-            ncmlLocation = filename;
-        }
-      };
-      BAMutil.setActionProperties(saveAction, "Save", "Save NcML", false, 'S', -1);
-      BAMutil.addActionToContainer(buttPanel, saveAction);
-
-      AbstractAction netcdfAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          String location = (ds == null) ? ncmlLocation : ds.getLocation();
-          if (location == null) location = "test";
-          int pos = location.lastIndexOf(".");
-          if (pos > 0)
-            location = location.substring(0, pos);
-
-          String filename = fileChooser.chooseFilenameToSave(location + ".nc");
-          if (filename == null) return;
-          doWriteNetCDF(editor.getText(), filename);
-        }
-      };
-      BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF", false, 'N', -1);
-      BAMutil.addActionToContainer(buttPanel, netcdfAction);
-
-      AbstractAction transAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          doTransform(editor.getText());
-        }
-      };
-      BAMutil.setActionProperties(transAction, "Import", "read textArea through NcMLReader\n write NcML back out via resulting dataset", false, 'T', -1);
-      BAMutil.addActionToContainer(buttPanel, transAction);
-
-      AbstractButton compareButton = BAMutil.makeButtcon("Select", "Check NcML", false);
-      compareButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
-          checkNcml(f);
-
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-        }
-      });
-      buttPanel.add(compareButton);
-
-      add(scroller, BorderLayout.CENTER);
+      super(p, "dataset:", true, false);
+      editor = new NcmlEditor(buttPanel, prefs);
+      add(editor, BorderLayout.CENTER);
     }
 
     boolean process(Object o) {
-      ncmlLocation = (String) o;
-      if (ncmlLocation.endsWith(".xml") || ncmlLocation.endsWith(".ncml")) {
-        if (!ncmlLocation.startsWith("http:") && !ncmlLocation.startsWith("file:"))
-          ncmlLocation = "file:" + ncmlLocation;
-        String text = IO.readURLcontents(ncmlLocation);
-
-        editor.setText(text);
-      } else {
-        writeNcml(ncmlLocation);
-      }
-      return true;
+      return editor.setNcml((String) o);
     }
 
-    boolean writeNcml(String location) {
-      boolean err = false;
-
-      try {
-        if (ds != null) ds.close();
-      } catch (IOException ioe) {
-      }
-
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      try {
-        String result;
-        ds = openDataset(location, addCoords, null);
-        if (ds == null) {
-          editor.setText("Failed to open <" + location + ">");
-        } else {
-          result = new NcMLWriter().writeXML(ds);
-          editor.setText(result);
-          editor.setCaretPosition(0);
-        }
-
-      } catch (FileNotFoundException ioe) {
-        editor.setText("Failed to open <" + location + ">");
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        editor.setText(bos.toString());
-        err = true;
-      }
-
-      return !err;
-    }
-
-    void doWriteNetCDF(String text, String filename) {
-      if (debugNcmlWrite) {
-        System.out.println("filename=" + filename);
-        System.out.println("text=" + text);
-      }
-      try {
-        ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes());
-        NcMLReader.writeNcMLToFile(bis, filename);
-        JOptionPane.showMessageDialog(this, "File successfully written");
-      } catch (Exception ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-      }
-    }
-
-    // read text from textArea through NcMLReader
-    // then write it back out via resulting dataset
-    void doTransform(String text) {
-      try {
-        StringReader reader = new StringReader(text);
-        NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ncd.writeNcML(bos, null);
-        editor.setText(bos.toString());
-        editor.setCaretPosition(0);
-        JOptionPane.showMessageDialog(this, "File successfully transformed");
-
-      } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-      }
-    }
-
-    // read text from textArea through NcMLReader
-    // then write it back out via resulting dataset
-    private void checkNcml(Formatter f) {
-      if (ncmlLocation == null) return;
-      try {
-        NetcdfDataset ncd = NetcdfDataset.openDataset(ncmlLocation);
-        ncd.check(f);
-
-      } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-      }
-    }
-
-    boolean doSave(String text, String filename) {
-      if (debugNcmlWrite) {
-        System.out.println("filename=" + filename);
-        System.out.println("text=" + text);
-      }
-
-      File out = new File(filename);
-      if (out.exists()) {
-        int val = JOptionPane.showConfirmDialog(parentFrame,
-                filename + " already exists. Do you want to overrwrite?",
-                 "WARNING",
-                JOptionPane.YES_NO_OPTION);
-        if (val != JOptionPane.YES_OPTION) return false;
-      }
-
-      try {
-        IO.writeToFile(text, out);
-        JOptionPane.showMessageDialog(this, "File successfully written");
-        return true;
-      } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-        return false;
-      }
-      // saveNcmlDialog.setVisible(false);
-    }
-
-    void addProtoChoices() {
-      String xml =
-              "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-                      "  <variable name='time' type='int' shape='time'>\n" +
-                      "    <attribute name='long_name' type='string' value='time coordinate' />\n" +
-                      "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n" +
-                      "    <values start='0' increment='10' />\n" +
-                      "  </variable>\n" +
-                      "  <aggregation dimName='time' type='joinNew'>\n" +
-                      "    <variableAgg name='T'/>\n" +
-                      "    <scan location='src/test/data/ncml/nc/' suffix='.nc' subdirs='false'/>\n" +
-                      "  </aggregation>\n" +
-                      "</netcdf>";
-      protoMap.put("joinNew", xml);
-      protoChooser.addItem("joinNew");
-
-      xml =
-              "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-                      "  <aggregation dimName='time' type='joinExisting'>\n" +
-                      "    <scan location='ncml/nc/pfeg/' suffix='.nc' />\n" +
-                      "  </aggregation>\n" +
-                      "</netcdf>";
-      protoMap.put("joinExisting", xml);
-      protoChooser.addItem("joinExisting");
-
+    void save() {
+      super.save();
+      editor.save();
     }
 
   }

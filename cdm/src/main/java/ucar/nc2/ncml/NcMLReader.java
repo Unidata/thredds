@@ -36,6 +36,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
+import ucar.nc2.jni.netcdf.Nc4Chunking;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
@@ -1515,8 +1516,24 @@ public class NcMLReader {
    * @see ucar.nc2.FileWriter2
    */
   public static void writeNcMLToFile(InputStream ncml, String fileOutName) throws IOException {
+    writeNcMLToFile(ncml, fileOutName, NetcdfFileWriter.Version.netcdf3, null);
+  }
+
+  /**
+   * Read an NcML and write an equivilent NetcdfFile to a physical file, using Netcdf-3 file format.
+   * The NcML may have a referenced dataset in the location URL, in which case the underlying data
+   * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
+   * then the new file is filled with fill values, like ncgen.
+   *
+   * @param ncml        read NcML from this input stream
+   * @param fileOutName write to this local file
+   * @param version     kind of netcdf file
+   * @param chunker     optional chunking (netcdf4 only)
+   * @throws IOException
+   */
+  public static void writeNcMLToFile(InputStream ncml, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker) throws IOException {
     NetcdfDataset ncd = NcMLReader.readNcML(ncml, null);
-    FileWriter2 writer = new FileWriter2(ncd, fileOutName, NetcdfFileWriter.Version.netcdf3, null);
+    FileWriter2 writer = new FileWriter2(ncd, fileOutName, version, chunker);
     NetcdfFile result = writer.write();
     result.close();
     ncd.close();
