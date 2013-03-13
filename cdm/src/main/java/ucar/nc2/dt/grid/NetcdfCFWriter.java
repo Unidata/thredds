@@ -55,10 +55,12 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -262,7 +264,7 @@ public class NetcdfCFWriter {
       addCoordinateTransform(gcs, ncd, varNameList, varList);
       
       //Add Variables from the formula_terms
-      total_size += processTransformationVars(varList, varNameList, ncd, gds, grid, timeRange, zRangeUse, llbb, 1, horizStride, horizStride );      
+      total_size += processTransformationVars(varList, varNameList, ncd, gds, grid, timeRange, zRangeUse, llbb, 1, horizStride, horizStride, axisList );      
 
       // optional lat/lon
       if (addLatLon) {
@@ -387,12 +389,14 @@ public class NetcdfCFWriter {
       varList.add(gridV);
       total_size += gridV.getSize() * gridV.getElementSize();
 
-      // add coordinate axes
       GridCoordSystem gcs = grid.getCoordinateSystem();
+      
+      // add coordinate axes      
       addCoordinateAxis(gcs, varNameList, varList, axisList);
       
       //add coordinate transforms
-      addCoordinateTransform(gcs, ncd, varNameList, varList);
+      addCoordinateTransform(gcs, ncd, varNameList, varList);      
+            
 
       //Add Variables from the formula_terms
       total_size += processTransformationVars(varList, varNameList, ncd, gds, grid, timeRange, zRangeUse, y_range, x_range, 1, horizStride, horizStride );     
@@ -590,7 +594,7 @@ public class NetcdfCFWriter {
    * @return size of the added variables
    * @throws InvalidRangeException
    */
-  private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds, GridDatatype grid, Range timeRange, Range zRangeUse, LatLonRect llbb, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
+  private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds, GridDatatype grid, Range timeRange, Range zRangeUse, LatLonRect llbb, int z_stride, int y_stride, int x_stride, List<CoordinateAxis> axisList) throws InvalidRangeException {
 	  
 	  List<Range> yxRanges = new ArrayList<Range>(2);
 	  
@@ -606,7 +610,7 @@ public class NetcdfCFWriter {
   
 
   private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds, GridDatatype grid, Range timeRange, Range zRangeUse, Range yRange, Range xRange, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
-	  
+
 	  long varsSize =0L;
 	  List<CoordinateTransform> cctt =  grid.getCoordinateSystem().getCoordinateTransforms();
 	  for(CoordinateTransform ct : cctt){
@@ -617,31 +621,36 @@ public class NetcdfCFWriter {
 			  for(int i = 1; i<varStrings.length; i+=2 ){
 				  Variable paramVar = ncd.findVariable(varStrings[i].trim());
 
-				  //if (!varList.contains(varStrings[i]) && (null != paramVar) ) {
 				  if (!varNameList.contains(varStrings[i]) && (null != paramVar) ) {
 
 					  if(gds.findGridDatatype(paramVar.getFullName()) != null){
 						  //Subset if needed
 						  if ((null != timeRange) || (zRangeUse != null) || (x_stride > 1 && y_stride > 1) || (yRange !=null || xRange !=null )) {
-							  GridDatatype complementaryGrid = gds.findGridDatatype(paramVar.getFullName());	  
+							  GridDatatype complementaryGrid = gds.findGridDatatype(paramVar.getFullName());							  
 							  complementaryGrid = complementaryGrid.makeSubset(null, null, timeRange, zRangeUse, yRange, xRange);							  							 
 							  paramVar = complementaryGrid.getVariable(); 
 						  }  	    		 
-					  }
-
+					  }else{
+						  //Also have to subset the var if it is not a grid but has vertical dimension (the dimensionless vars in the formula) and zRangeUse != null
+						  if( zRangeUse != null && paramVar.getRank() == 1 ){
+							  List<Range> ranges = new ArrayList<Range>();
+							  ranges.add(zRangeUse);
+							  paramVar = paramVar.section(ranges);
+						  }
+					  }	  
 					  varNameList.add(paramVar.getFullName());					  
 					  varsSize += paramVar.getSize() * paramVar.getElementSize();					  
 					  varList.add(paramVar);
+
+
 				  }    		
 
 			  }
 		  }		
-
-
 	  }
-	  
+
 	  return varsSize;	  
-	  
+
   }
 
   private boolean isLargeFile(long total_size) {
