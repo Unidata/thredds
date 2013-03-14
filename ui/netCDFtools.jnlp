@@ -18,6 +18,7 @@
     <jar href="netcdfUI.jar"/>
     <jar href="bounce.jar"/>
     <jar href="bufr.jar"/>
+    <jar href="bzip2.jar"/>
     <jar href="cdm.jar"/>
     <jar href="commons-codec.jar"/>
     <jar href="commons-httpclient.jar"/>
@@ -25,6 +26,7 @@
     <jar href="ehcache.jar"/>
     <jar href="forms.jar"/>
     <jar href="grib.jar"/>
+    <jar href="imgscalr-lib.jar"/>
     <jar href="jcip-annotations.jar"/>
     <jar href="jcl-over-slf4j.jar"/>
     <jar href="jcommon.jar"/>
@@ -39,6 +41,7 @@
     <jar href="quartz.jar"/>
     <jar href="resourcesOptional.jar"/>
     <jar href="slf4j-api.jar"/>
+    <jar href="slf4j-jdk14.jar"/>
     <jar href="spring-aop.jar"/>
     <jar href="spring-asm.jar"/>
     <jar href="spring-beans.jar"/>
