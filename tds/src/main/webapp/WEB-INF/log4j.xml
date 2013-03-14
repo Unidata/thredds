@@ -288,6 +288,12 @@
     <appender-ref ref="serverStartupAppender"/>
   </logger>
 
+  <!-- temp
+  <logger name="thredds.filesystem.ControllerOS" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="fcScan"/>
+  </logger>  -->
+
   <root>
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>

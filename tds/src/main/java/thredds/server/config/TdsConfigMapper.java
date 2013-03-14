@@ -75,8 +75,8 @@ class TdsConfigMapper
     HTML_CATALOG_CSS_URL( "htmlSetup.catalogCssUrl", null,""),
     GOOGLE_TRACKING_CODE( "htmlSetup.googleTrackingCode", null,""),
 
-    HTML_FOLDER_ICON_URL( "htmlSetup.folderIconUrl", null,""),
-    HTML_FOLDER_ICON_ALT( "htmlSetup.folderIconAlt", null,""),
+    HTML_FOLDER_ICON_URL( "htmlSetup.folderIconUrl", null,"folder.gif"),
+    HTML_FOLDER_ICON_ALT( "htmlSetup.folderIconAlt", null,"Folder"),
     HTML_DATASET_ICON_URL( "htmlSetup.datasetIconUrl", null,""),
     HTML_DATASET_ICON_ALT( "htmlSetup.datasetIconAlt", null,"");
 

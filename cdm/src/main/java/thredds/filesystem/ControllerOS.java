@@ -242,8 +242,14 @@ public class ControllerOS implements MController {
       this.dir = dir;
 
       fileList = new ArrayList<File>();
+      if (dir == null) return;  // LOOK WHY
+
+      if (logger.isDebugEnabled()) logger.debug("List Directory "+dir);
       List<File> subdirList = new ArrayList<File>();
       for (File f : dir.listFiles()) {  /// 1
+        if (f == null) logger.warn("  NULL FILE "+f+" in directory "+dir);
+        if (logger.isDebugEnabled()) logger.debug("  File "+f);
+
         if (f.isDirectory())
           subdirList.add(f);
         else
