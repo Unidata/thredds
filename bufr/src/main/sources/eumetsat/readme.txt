@@ -18,7 +18,6 @@ B:
 
 
 D:
-
  **No key 3-6-20 in second table
  **No key 3-6-21 in second table
  **No key 3-6-22 in second table
@@ -51,4 +50,7 @@ D:
  0-21-051, 0-21-014, 0-21-017, 0-25-030,
  0-21-051, 0-21-014, 0-21-017, 0-21-030,
 
-
+3/14/2013
+ download http://www.eumetsat.int/groups/ops/documents/document/bufr_tbl_txt_b_v13.txt
+ and use now for any center 254 version 13.
+ rename to eumetsat_b_v13.txt

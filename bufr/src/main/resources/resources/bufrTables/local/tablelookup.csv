@@ -55,6 +55,8 @@ FSL,     59,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/
 ECMWF.13, 98,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/ecmwf.B0000000000098013001.TXT, ecmwf, resource:/resources/bufrTables/local/ecmwf.D0000000000098013001.TXT, ecmwf
 #
 # EUMETSAT
+# name,     center,subcenter,master,local,cat,  tableB,tableBformat,tableD,tableDformat, mode
+EUMETSAT.13, 254,    -1,       13,    -1,   -1, resource:/resources/bufrTables/local/eumetsat_b_v13.txt, ecmwf, , ,
 EUMETSAT.11, 254,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/eumetsat.B3L-254-011-B.diff, mel_bufr, , ,
 #
 # EUMETNET OPERA - using -1 !!!!
