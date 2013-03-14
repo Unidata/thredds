@@ -59,7 +59,7 @@ import ucar.nc2.util.xml.RuntimeConfigParser;
  * </pre>
  */
 public final class ThreddsConfig {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ThreddsConfig.class );
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
   private static String _filename;
   private static Element rootElem;
 
@@ -78,7 +78,8 @@ public final class ThreddsConfig {
 
     File file = new File(_filename);
     if (!file.exists()) return;
-    System.out.println( "ThreddsConfig:INFO: reading xml file = " + _filename);
+    //System.out.println( "ThreddsConfig:INFO: reading xml file = " + _filename);
+    log.info( "ThreddsConfig.readConfig()  reading xml file = " + _filename);
 
     org.jdom.Document doc;
     try {
@@ -86,10 +87,12 @@ public final class ThreddsConfig {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(is);
     } catch (IOException e) {
-      System.out.println( "ThreddsConfig:ERROR: incorrectly formed xml file [" + _filename + "]: " + e.getMessage());
+      //System.out.println( "ThreddsConfig:ERROR: incorrectly formed xml file [" + _filename + "]: " + e.getMessage());
+    	log.error( "ThreddsConfig: incorrectly formed xml file [" + _filename + "]: " + e.getMessage());
       return;
     } catch (JDOMException e) {
-      System.out.println( "ThreddsConfig:ERROR: incorrectly formed xml file [" + _filename + "]: " + e.getMessage() );
+      //System.out.println( "ThreddsConfig:ERROR: incorrectly formed xml file [" + _filename + "]: " + e.getMessage() );
+    	log.error( "ThreddsConfig: incorrectly formed xml file [" + _filename + "]: " + e.getMessage() );
       return;
     }
     rootElem = doc.getRootElement();
@@ -99,7 +102,8 @@ public final class ThreddsConfig {
       String location = StringUtils.cleanPath( catrootElem.getTextNormalize() );
       if (location.length() > 0) {
         catalogRoots.add( location );
-        System.out.println( "ThreddsConfig:INFO: adding catalogRoot = " + location);
+        //System.out.println( "ThreddsConfig:INFO: adding catalogRoot = " + location);
+        log.info( "ThreddsConfig: adding catalogRoot = " + location);
       }
     }
 
@@ -113,7 +117,8 @@ public final class ThreddsConfig {
         if ( ! location.isEmpty() )
         {
           contentRootList.add( location );
-          System.out.println( "ThreddsConfig:INFO: adding contentRoot [" + location + "]." );
+          //System.out.println( "ThreddsConfig:INFO: adding contentRoot [" + location + "]." );
+          log.info( "ThreddsConfig: adding contentRoot [" + location + "]." );
         }
       }
     }
@@ -138,7 +143,8 @@ public final class ThreddsConfig {
       StringBuilder errlog = new StringBuilder();
       RuntimeConfigParser.read( elem, errlog);
       if (errlog.length() > 0)
-        System.out.println( "ThreddsConfig:WARN: " + errlog.toString());
+        //System.out.println( "ThreddsConfig:WARN: " + errlog.toString());
+    	  log.warn( "ThreddsConfig: " + errlog.toString());
     }
   }
 
