@@ -128,6 +128,7 @@ public class ToolsUI extends JPanel {
   private FeatureScanPanel ftPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
+  private GeotiffPanel geotiffPanel;
   private GribFilesPanel gribFilesPanel;
   private GribIndexPanel gribIdxPanel;
   private Grib2CollectionPanel gribNewPanel;
@@ -146,12 +147,11 @@ public class ToolsUI extends JPanel {
   private ImagePanel imagePanel;
   private NcStreamPanel ncStreamPanel;
   private NCdumpPanel ncdumpPanel;
-  private OpPanel ncmlEditorPanel, geotiffPanel;
+  private NcmlEditorPanel ncmlEditorPanel;
   private PointFeaturePanel pointFeaturePanel;
   private StationRadialPanel stationRadialPanel;
   private RadialPanel radialPanel;
   private ThreddsUI threddsUI;
-  //private TrajectoryTablePanel trajTablePanel;
   private UnitsPanel unitsPanel;
   private URLDumpPane urlPanel;
   private WmoCCPanel wmoCommonCodePanel;
@@ -176,7 +176,7 @@ public class ToolsUI extends JPanel {
   // debugging
   private JMenu debugFlagMenu;
   private DebugFlags debugFlags;
-  private boolean debug = false, debugTab = false, debugNcmlWrite = false, debugCB = false;
+  private boolean debug = false, debugTab = false, debugCB = false;
 
 
   public ToolsUI(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) {
@@ -3715,12 +3715,10 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
 
   private class NcmlEditorPanel extends OpPanel {
-    NetcdfDataset ds = null;
     NcmlEditor editor;
 
     void closeOpenFiles() throws IOException {
-      if (ds != null) ds.close();
-      ds = null;
+      editor.closeOpenFiles();
     }
 
     NcmlEditorPanel(PreferencesExt p) {

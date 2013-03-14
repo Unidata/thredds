@@ -151,7 +151,6 @@ public class NcmlEditor extends JPanel {
 
     AbstractAction netcdfAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-      if (ds == null) return;
       if (outChooser == null) {
         outChooser = new NetcdfOutputChooser((Frame) null);
         outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
@@ -209,10 +208,19 @@ public class NcmlEditor extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
   }
 
+  public void closeOpenFiles() {
+    try {
+     if (ds != null) ds.close();
+  } catch (IOException ioe) {
+   }
+     ds = null;
+   }
+
   public boolean setNcml(String cmd) {
     if (cmd.endsWith(".xml") || cmd.endsWith(".ncml")) {
       if (!cmd.startsWith("http:") && !cmd.startsWith("file:"))
         cmd = "file:" + cmd;
+      ncmlLocation = cmd;
       String text = IO.readURLcontents(cmd);
       editor.setText(text);
     } else {
@@ -221,13 +229,11 @@ public class NcmlEditor extends JPanel {
     return true;
   }
 
+  // write ncml from given dataset
   boolean writeNcml(String location) {
     boolean err = false;
 
-    try {
-      if (ds != null) ds.close();
-    } catch (IOException ioe) {
-    }
+    closeOpenFiles();
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
     try {
