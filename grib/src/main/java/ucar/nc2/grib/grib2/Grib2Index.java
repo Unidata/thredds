@@ -215,10 +215,11 @@ public class Grib2Index extends GribIndex {
   ////////////////////////////////////////////////////////////////////////////////
 
   // LOOK what about extending an index ??
-  public boolean makeIndex(String filename, Formatter f) throws IOException {
+  public boolean makeIndex(String filename, RandomAccessFile dataRaf, Formatter f) throws IOException {
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
     FileOutputStream fout = new FileOutputStream(idxFile);
     RandomAccessFile raf = null;
+
     try {
       //// header message
       fout.write(MAGIC_START.getBytes("UTF-8"));
@@ -231,8 +232,12 @@ public class Grib2Index extends GribIndex {
       Grib2IndexProto.Grib2Index.Builder rootBuilder = Grib2IndexProto.Grib2Index.newBuilder();
       rootBuilder.setFilename(filename);
 
-      raf = new RandomAccessFile(filename, "r");
-      Grib2RecordScanner scan = new Grib2RecordScanner(raf);
+      if (dataRaf == null)  {
+        raf = new RandomAccessFile(filename, "r");
+        dataRaf = raf;
+      }
+
+      Grib2RecordScanner scan = new Grib2RecordScanner(dataRaf);
       while (scan.hasNext()) {
         Grib2Record r = scan.next();
         if (r == null) break; // done
@@ -258,7 +263,7 @@ public class Grib2Index extends GribIndex {
 
     } finally {
       fout.close();
-      if (raf != null) raf.close();
+      if (raf != null) raf.close(); // only close if we opened it
     }
   }
 
@@ -341,7 +346,7 @@ public class Grib2Index extends GribIndex {
   static public void main(String args[]) throws IOException {
     String filename = "G:/tigge/uv/z_tigge_c_kwbc_20110605120000_glob_prod_cf_HGHT_0000_000_10_uv.grib";
     //String filename = "G:/mlode/ndfdProb/extract.grib2";
-    new Grib2Index().makeIndex(filename, new Formatter(System.out));
+    new Grib2Index().makeIndex(filename, null, new Formatter(System.out));
   }
 
 }

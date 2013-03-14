@@ -546,7 +546,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     Grib1Index index = new Grib1Index();
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-      index.makeIndex(mfile.getPath(), f);
+      index.makeIndex(mfile.getPath(), null, f);
     }
 
     for (Grib1SectionGridDefinition gds : index.getGds()) {

@@ -422,7 +422,7 @@ public class Grib2ReportPanel extends JPanel {
       // make sure its a grib2 file
       RandomAccessFile raf = new RandomAccessFile(path, "r");
       if (!Grib2RecordScanner.isValidFile(raf)) return null;
-      index.makeIndex(path, f);
+      index.makeIndex(path, null, f);
     }
     return index;
   }

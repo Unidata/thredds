@@ -109,7 +109,7 @@ public abstract class GribIndex {
 
     // make or remake the index
     if (!readOk) {
-      gribIndex.makeIndex(filename, f);
+      gribIndex.makeIndex(filename, dataRaf, f);
       f.format("  Index written: %s%n", filename + GBX9_IDX);
     } else if (debug) {
       f.format("  Index read: %s%n", filename + GBX9_IDX);
@@ -142,7 +142,7 @@ public abstract class GribIndex {
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
 
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked against the data file
-      index.makeIndex(mfile.getPath(), f);
+      index.makeIndex(mfile.getPath(), null, f);
       f.format("  Index written: %s == %d records %n", mfile.getName() + GBX9_IDX, index.getNRecords());
     } else if (debug) {
       f.format("  Index read: %s == %d records %n", mfile.getName() + GBX9_IDX, index.getNRecords());
@@ -176,11 +176,12 @@ public abstract class GribIndex {
    * Make the gbx9 index file.
    *
    * @param location location of the data file
+   * @param dataRaf already opened data raf; may be null
    * @param f put error message here
    * @return true
    * @throws IOException on io error
    */
-  public abstract boolean makeIndex(String location, Formatter f) throws IOException;
+  public abstract boolean makeIndex(String location, RandomAccessFile dataRaf, Formatter f) throws IOException;
 
   /**
    * The number of records in the index.

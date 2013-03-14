@@ -459,7 +459,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     Grib2Index index = new Grib2Index();
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-      index.makeIndex(mfile.getPath(), f);
+      index.makeIndex(mfile.getPath(), null, f);
     }
 
     for (Grib2SectionGridDefinition gds : index.getGds()) {
@@ -514,7 +514,7 @@ public class Grib2CollectionPanel extends JPanel {
 
       Grib2Index index = new Grib2Index();
       if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-        index.makeIndex(mfile.getPath(), f);
+        index.makeIndex(mfile.getPath(), null, f);
       }
 
       for (Grib2Record gr : index.getRecords()) {

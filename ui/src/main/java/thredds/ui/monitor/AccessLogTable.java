@@ -207,7 +207,7 @@ public class AccessLogTable extends JPanel {
     clientTable = new BeanTableSorted(Service.class, (PreferencesExt) prefs.node("Service"), false);
     clientTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        Service accum = (Service) clientTable.getSelectedBean();
+        Client accum = (Client) clientTable.getSelectedBean();
         if (accum == null) return;
       }
     });

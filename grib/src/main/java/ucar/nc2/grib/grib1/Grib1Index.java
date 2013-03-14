@@ -194,7 +194,7 @@ public class Grib1Index extends GribIndex {
   ////////////////////////////////////////////////////////////////////////////////
 
   // LOOK what about extending an index ??
-  public boolean makeIndex(String filename, Formatter f) throws IOException {
+  public boolean makeIndex(String filename, RandomAccessFile dataRaf, Formatter f) throws IOException {
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
     FileOutputStream fout = new FileOutputStream(idxFile);
     RandomAccessFile raf = null;
@@ -210,8 +210,12 @@ public class Grib1Index extends GribIndex {
       Grib1IndexProto.Grib1Index.Builder rootBuilder = Grib1IndexProto.Grib1Index.newBuilder();
       rootBuilder.setFilename(filename);
 
-      raf = new RandomAccessFile(filename, "r");
-      Grib1RecordScanner scan = new Grib1RecordScanner(raf);
+      if (dataRaf == null)  {
+        raf = new RandomAccessFile(filename, "r");
+        dataRaf = raf;
+      }
+
+      Grib1RecordScanner scan = new Grib1RecordScanner(dataRaf);
       while (scan.hasNext()) {
         Grib1Record r = scan.next();
         if (r == null) break; // done
@@ -276,7 +280,7 @@ public class Grib1Index extends GribIndex {
   static public void main(String args[]) throws IOException {
     String filename = "G:/tigge/uv/z_tigge_c_kwbc_20110605120000_glob_prod_cf_HGHT_0000_000_10_uv.grib";
     //String filename = "G:/mlode/ndfdProb/extract.Grib1";
-    new Grib1Index().makeIndex(filename, new Formatter(System.out));
+    new Grib1Index().makeIndex(filename, null, new Formatter(System.out));
   }
 
 }
