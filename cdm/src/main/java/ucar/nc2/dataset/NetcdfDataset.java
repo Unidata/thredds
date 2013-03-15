@@ -614,7 +614,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static public NetcdfFile acquireFile(ucar.nc2.util.cache.FileFactory factory, Object hashKey,
                                        String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
-    // must use the factory if there is one
+    // must use the factory if there is one but no fileCache
     if ((fileCache == null) && (factory != null)) {
       return (NetcdfFile) factory.open(location, buffer_size, cancelTask, spiObject);
     }
@@ -700,6 +700,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   @Urlencoded
   static private ServiceType disambiguateHttp(String location) throws IOException {
+
+    // aggregation cache files are of form  http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis2.dailyavgs/pressure/air.1981.nc#320092027
+    int pos = location.indexOf('#') ;
+    if (pos > 0)
+      location = location.substring(0, pos);
 
     HTTPSession session = new HTTPSession(location);
 
