@@ -73,7 +73,7 @@ import ucar.nc2.util.cache.FileCache;
 public class CdmInit implements InitializingBean,  DisposableBean{
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  private DiskCache2 aggCache, gribCache;
+  private DiskCache2 aggCache, gribCache, cdmrCache;
   private Timer timer;
   private thredds.inventory.MController cacheManager;
   
@@ -95,8 +95,8 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     String dir = ThreddsConfig.get("CdmRemote.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
     int scourSecs = ThreddsConfig.getSeconds("CdmRemote.scour", 30 * 60);
     int maxAgeSecs = ThreddsConfig.getSeconds("CdmRemote.maxAge", 60 * 60);
-    DiskCache2 cache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
-    CdmrFeatureController.setDiskCache(cache);
+    cdmrCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
+    CdmrFeatureController.setDiskCache(cdmrCache);
     startupLog.info("CdmInit:  CdmRemote= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
     /* new for 4.3.15: grib index file placement, using DiskCache2  */
@@ -260,6 +260,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     FileCache.shutdown();
     if (aggCache != null) aggCache.exit();
     if (gribCache != null) gribCache.exit();
+    if (cdmrCache != null) cdmrCache.exit();
     if (cacheManager != null) cacheManager.close();
     thredds.inventory.bdb.MetadataManager.closeAll();
     CollectionUpdater.INSTANCE.shutdown();

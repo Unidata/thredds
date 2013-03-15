@@ -393,9 +393,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     try {
       return open(raf, location, cancelTask, iospMessage);
-    } catch (IOException ioe) {
+    } catch (Throwable t) {
       raf.close();
-      throw ioe;
+      throw new IOException(t);
     }
   }
 
