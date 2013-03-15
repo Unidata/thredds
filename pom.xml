@@ -339,6 +339,12 @@
         <artifactId>spring-test</artifactId>
         <version>${org.springframework.version}</version>
       </dependency>
+      <!-- db stuff for wmotables -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>${org.springframework.version}</version>
+      </dependency>
 
       <!-- client -->
       <dependency>
