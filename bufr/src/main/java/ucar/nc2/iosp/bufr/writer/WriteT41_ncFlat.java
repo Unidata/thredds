@@ -326,7 +326,7 @@ public class WriteT41_ncFlat {
     //String fileIn = "C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr";
     //String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
     //String fileIn = "R:/testdata2/bufr/edition3/idd/profiler/PROFILER_1.bufr";
-    String fileIn = "D:/motherlode/bufr/cat.out";
+    String fileIn = "D:/mlode/bufr/cat.out";
     NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
     System.out.println(ncf.toString());
 
@@ -334,7 +334,7 @@ public class WriteT41_ncFlat {
     StructureData sdata = s.readStructure(2);
     PrintWriter pw = new PrintWriter(System.out);
     NCdumpW.printStructureData(pw, sdata);  */
-    new WriteT41_ncFlat(ncf, "D:/motherlode/bufr/cat2.nc", true);
+    new WriteT41_ncFlat(ncf, "D:/mlode/bufr/cat2.nc", true);
 
     //Variable v = ncf.findVariable("recordIndex");
     //NCdumpW.printArray(v.read(), "recordIndex", pw, null);

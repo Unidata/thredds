@@ -1425,7 +1425,7 @@ public class FmrcInventory {
   }
 
   public static void doOne(String cat, int n) throws Exception {
-    String server = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/";
+    String server = "http://thredds.ucar.edu/thredds/catalog/fmrc/";
     String writeDir = "D:/temp/modelDef/";
     new File(writeDir).mkdirs();
 

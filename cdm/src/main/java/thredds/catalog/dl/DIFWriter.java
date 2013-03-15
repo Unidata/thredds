@@ -488,7 +488,7 @@ public class DIFWriter {
   public static void main (String[] args) throws Exception {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
 
-    doCatalog(catFactory, "http://motherlode.ucar.edu:9080/thredds/idd/models.xml");
+    doCatalog(catFactory, "http://thredds.ucar.edu:9080/thredds/idd/models.xml");
   }
 
 }

@@ -172,7 +172,7 @@ public class CatalogCollectionManager extends MFileCollectionManager implements 
   }
 
   public static void main(String arg[]) throws IOException {
-    String catUrl = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml";
+    String catUrl = "http://thredds.ucar.edu/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml";
     CatalogCollectionManager man = new CatalogCollectionManager(catUrl);
     man.debug = true;
     man.scan(true);

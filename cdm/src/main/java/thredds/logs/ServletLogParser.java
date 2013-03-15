@@ -270,7 +270,7 @@ public class ServletLogParser implements LogReader.LogParser {
     long startElapsed = System.nanoTime();
     LogReader.Stats stats = new LogReader.Stats();
 
-    reader.readAll(new File("D:/motherlode/logs/servlet/"), null, new LogReader.Closure() {
+    reader.readAll(new File("D:/mlode/logs/servlet/"), null, new LogReader.Closure() {
       public void process(LogReader.Log log) throws IOException {
         //if (count < limit) System.out.printf(" %s %n", log);
       }

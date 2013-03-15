@@ -219,7 +219,7 @@ public class ADNWriter {
     entries.addContent( entry);
     String id = StringUtil2.allow(ds.getUniqueID(), ".", '-');
     entry.setAttribute("entry", id);
-    entry.addContent("THREDDS-motherlode");
+    entry.addContent("THREDDS");
 
     DateType today = new DateType(false, new Date());
     Element dateInfo = new Element("dateInfo", defNS);
@@ -452,7 +452,7 @@ public class ADNWriter {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
 
     // doOne(catFactory, "file:///C:/dev/thredds/catalog/test/data/TestHarvest.xml");
-    doOne(catFactory, "http://motherlode.ucar.edu:9080/thredds/idd/models.xml");
+    doOne(catFactory, "http://thredds.ucar.edu:9080/thredds/idd/models.xml");
     //doOne(catFactory, "http://motherlode.ucar.edu:8088/thredds/configCatGenModels.xml");
   }
 

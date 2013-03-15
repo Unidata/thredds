@@ -300,7 +300,7 @@ public class LogReader {
     long startElapsed = System.nanoTime();
     Stats stats = new Stats();
 
-    reader.readAll(new File("d:/motherlode/logs/all/"), new MyFF(), new Closure() {
+    reader.readAll(new File("d:/mlode/logs/all/"), new MyFF(), new Closure() {
       long count = 0;
       public void process(Log log) throws IOException {
         if (count % 1000 == 0) System.out.printf("%s %s %s%n", log.path, log.client, log.ip);
