@@ -1,17 +1,11 @@
 package thredds.server.ncSubset.params;
 
-import java.text.ParseException;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import thredds.server.ncSubset.validation.TimeParamsConstraint;
 import thredds.server.ncSubset.validation.VarParamConstraint;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
 
 @TimeParamsConstraint
 public class RequestParamsBean {

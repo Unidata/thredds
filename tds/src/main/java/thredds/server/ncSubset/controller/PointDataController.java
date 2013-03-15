@@ -43,7 +43,7 @@ import ucar.unidata.geoloc.ProjectionPoint;
 
 @Controller
 @RequestMapping(value="/ncss/grid/**")
-class PointDataController extends AbstratNcssDataRequestController{ 
+class PointDataController extends AbstractNcssDataRequestController{ 
 
 	static private final Logger log = LoggerFactory.getLogger(PointDataController.class);
 
