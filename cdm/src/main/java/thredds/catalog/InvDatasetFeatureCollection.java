@@ -68,9 +68,7 @@ import java.util.regex.Pattern;
 @ThreadSafe
 public abstract class InvDatasetFeatureCollection extends InvCatalogRef implements CollectionManager.TriggerListener {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
-
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
-  static protected String LATEST_FILE_NAME = "Latest File";
   static protected final String LATEST_SERVICE = "latest";
   static protected final String VARIABLES = "?metadata=variableMap";
   static protected final String FILES = "files";
@@ -129,10 +127,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       result.finishConstruction(); // stuff that shouldnt be done in a constructor
     }
 
-    if (config.gribConfig.latestNamer != null) {
-      LATEST_FILE_NAME = config.gribConfig.latestNamer;
-    }
-
     return result;
   }
 
@@ -178,6 +172,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   @GuardedBy("lock")
   protected State state;
   protected final Object lock = new Object();
+  protected String latestFileName = "Latest File";
 
   protected InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, buildCatalogServiceHref( path) );
@@ -186,9 +181,12 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
 
     this.config = config;
+    if (config.gribConfig.latestNamer != null) {
+      this.latestFileName = config.gribConfig.latestNamer;
+    }
 
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
-      dcm = new CatalogCollectionManager(config.spec);
+    dcm = new CatalogCollectionManager(config.spec);
 
     } else {
       Formatter errlog = new Formatter();
@@ -256,6 +254,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   public String getPath() {
     return path;
+  }
+
+  public String getLatestFileName() {
+    return latestFileName;
   }
 
   public String getTopDirectoryLocation() {
@@ -388,7 +390,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     //if (id == null) id = getPath();
 
     if (addLatest) {
-      InvDatasetImpl ds = new InvDatasetImpl(this, LATEST_FILE_NAME);
+      InvDatasetImpl ds = new InvDatasetImpl(this, getLatestFileName());
       ds.setUrlPath(LATEST_DATASET_CATALOG);
       // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
       ds.setServiceName(LATEST_SERVICE);
@@ -438,7 +440,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
      InvDatasetImpl top = new InvDatasetImpl(this);
      top.setParent(null);
      top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local
-     top.setName(LATEST_FILE_NAME);
+     top.setName(getLatestFileName());
 
      // add Variables, GeospatialCoverage, TimeCoverage
      // ThreddsMetadata tmi = top.getLocalMetadataInheritable();
