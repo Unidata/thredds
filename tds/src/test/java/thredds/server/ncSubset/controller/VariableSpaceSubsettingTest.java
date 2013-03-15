@@ -119,7 +119,8 @@ public class VariableSpaceSubsettingTest {
 				
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		gridDataController.setGridDataset(gds);
-		gridDataController.setRequestPathInfo(pathInfo);
+		//gridDataController.setRequestPathInfo(pathInfo);
+		gridDataController.extractRequestPathInfo(pathInfo);
 		params = new GridDataRequestParamsBean(); 
 		params.setVar(vars);
 		params.setAccept(accept);	

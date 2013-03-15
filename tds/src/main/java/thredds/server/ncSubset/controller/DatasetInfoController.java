@@ -93,6 +93,29 @@ class DatasetInfoController extends AbstractNcssController{
 	
 	private String buildDatasetUrl(String path) {
 		return  NcssRequestUtils.getTdsContext().getContextPath() + servletPath + "/" + path;
-	}	
+	}
+
+	/* (non-Javadoc)
+	 * @see thredds.server.ncSubset.controller.AbstractNcssController#extractRequestPathInfo(java.lang.String)
+	 */
+	@Override
+	String extractRequestPathInfo(String requestPathInfo) {
+		
+		if( requestPathInfo.endsWith("xml") || requestPathInfo.endsWith("html")   ){
+			requestPathInfo = requestPathInfo.trim(); 
+			String[] pathInfoArr = requestPathInfo.split("/");			  
+			StringBuilder sb = new StringBuilder();
+			int len = pathInfoArr.length;
+			sb.append(pathInfoArr[1]);
+			for(int i= 2;  i<len-1; i++  ){
+				sb.append("/"+pathInfoArr[i]);
+			}
+			requestPathInfo = sb.toString();
+		}
+		this.requestPathInfo = requestPathInfo;
+		
+		return requestPathInfo;
+	}
+
 
 }
