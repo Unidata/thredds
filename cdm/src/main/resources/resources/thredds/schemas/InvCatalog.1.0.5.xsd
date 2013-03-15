@@ -462,33 +462,35 @@
           <xsd:attribute name="to" type="xsd:int" use="required"/>
         </xsd:complexType>
       </xsd:element>
+
+        <xsd:element name="latestNamer" minOccurs="0" maxOccurs="1">
+            <xsd:complexType>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+        </xsd:element>
+
+        <xsd:element name="bestNamer" minOccurs="0" maxOccurs="1">
+            <xsd:complexType>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+        </xsd:element>
+
+        <xsd:element name="filesSort" minOccurs="0" maxOccurs="1">
+            <xsd:complexType>
+                <xsd:choice>
+                    <xsd:element name="lexigraphicByName">
+                        <xsd:complexType>
+                            <xsd:attribute name="increasing" type="xsd:boolean"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
     </xsd:sequence>
 
     <xsd:attribute name="datasetTypes" type="gribDatasetTypes"/>
 
-    <xsd:element name="latestNamer">
-      <xsd:complexType>
-          <xsd:attribute name="name" type="xsd:string" use="required"/>
-      </xsd:complexType>
-    </xsd:element>
 
-    <xsd:element name="bestNamer">
-      <xsd:complexType>
-         <xsd:attribute name="name" type="xsd:string" use="required"/>
-      </xsd:complexType>
-    </xsd:element>
-
-    <xsd:element name="filesSort">
-      <xsd:complexType>
-        <xsd:choice>
-          <xsd:element name="lexigraphicByName">
-            <xsd:complexType>
-              <xsd:attribute name="increasing" type="xsd:boolean"/>
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
 
   </xsd:complexType>
 
