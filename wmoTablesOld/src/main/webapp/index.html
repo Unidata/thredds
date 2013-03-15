@@ -1,0 +1,114 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="John Caron">
+   <title>WMO Tables</title>
+<style type="text/css">
+<!--
+body {
+	background-image: url();
+}
+-->
+</style></head>
+<body>
+<h1> <img src="images/unidataLogo.png" alt="Unidata" width="73" height="75" align="absbottom" longdesc="http://www.unidata.ucar.edu/"> WMO Tables </h1>
+<hr>
+<p> For GRIB and BUFR to be used across institutions or to archive data, we  need  canonical, standardized, machine-readable  tables, shared between producer and client software. The WMO is now making the<a href="http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/2010edition/latestTables.zip"> standard tables available in machine readable form</a>. </p>
+<h2>WMO Standard Tables</h2>
+<ul>
+  <li><a href="tables/grib2/standardTables.html">GRIB-2</a></li>
+</ul>
+<h2>Local  Tables</h2>
+<p>&nbsp;</p>
+<p> A missing table entry makes an entire BUFR message unreadable. An incorrect entry may make the BUFR record unreadable, or  worse, silently give incorrect data values. </p>
+<p>We are publishing our BUFR tables in machine-readable format along with a <a href="validate.html">validation service</a> that allows users to upload BUFR records and test them against our reader. In this way we hope  that centers/users will help verify that our tables and software are correct, validate their BUFR formats, and contribute their own local tables as needed. Ideally a canonical repository of machine-readable BUFR tables will eventually be  hosted by the WMO. </p>
+<p><em>What follows is our current understanding of BUFR. Please send corrections and comments to  <a href="mailto:caron@unidata.ucar.edu">John Caron</a> or to the <a href="mailto:bufrtables@unidata.ucar.edu">bufrtables email list</a> for discussion (you must <a href="http://www.unidata.ucar.edu/support/mailinglist/mailing-list-form.html">sign up</a> first).</em></p>
+<h3>Standard WMO BUFR Tables </h3>
+<p>Specific areas of BUFR tables B and D are reserved for <em><strong>local data descriptors</strong></em>, namely categories 48-63 inclusive, and entries 192-255 inclusive (cf p L3-49 of the <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/BUFRCREXPreface_en.html">BUFR Guide</a>). All other entries in tables B and D are  reserved for globally shared descriptors, which we call <strong><em> standard WMO data descriptors</em></strong>. The <a href="http://www.wmo.int/pages/prog/www/WMOCodes/TDCFtables.html">standard WMO tables</a> are available from the WMO in Microsoft Word and PDF format. Extracting   tables from these formats is an error-prone and time-consuming process, that is to say, neither Word nor PDF is  machine readable  in this context. However, there is now an effort at WMO to publish their tables in Excel format, which are easy to extract programatically. </p>
+<p>Past practice at national centers in creating local data descriptors and proposing new standard descriptors has been confusing. After some discussion, we think that the following are the agreed-upon assumptions on how to handle BUFR Tables:</p>
+<ul>
+  <li>BUFR tables do not depend on the edition number of the BUFR record</li>
+  <li>Local tables cannot  override  the standard WMO data descriptors.</li>
+  <li>All table versions up to and including version 13 are  compatible with WMO table version 13. Therefore a reader can use WMO table version 13 for all BUFR messages with version 13 or less.</li>
+  <li>WMO table versions 14 and later may have incompatible changes. BUFR messages using version 14 and hight must encode the correct version number in order to be decoded properly.</li>
+</ul>
+<p>The WMO is now (Feb 2011) supplying versions of the tables in XML and TXT. The official status of these is unknown, they probably should be considered as &quot;pre-release&quot;.</p>
+<ul>
+  <li><a href="ftp://ftp.wmo.int/In-box/To-www/DM/Codes/TDCF_Tables/" wrap="">WMO Tables in XML (FTP fite)</a> </li>
+  <li><a href="http://www.wmo.int/pages/disclaimer/copyright_en.html">WMO copyright</a> applies to these files</li>
+</ul>
+<h3>BUFR Message Validator Services</h3>
+<ul>
+  <li><a href="validate.html">Unidata BUFR Record Validator</a></li>
+  <li><a href="http://www.ecmwf.int/products/data/d/check/">ECMWF BUFR/CREX format checker</a> </li>
+</ul>
+<h3>The bufrtables email list</h3>
+<p wrap="">An informal technical working group for developers of software that read and write  BUFR messages. </p>
+<ul>
+  <li><a href="mailto:bufrtables@unidata.ucar.edu">Add or remove</a> yourself to the <strong>bufrtables</strong> email list</li>
+  <li><a href="http://www.unidata.ucar.edu/mailing_lists/archives/bufrtables/">Archives</a><a href="http://www.unidata.ucar.edu/mailing_lists/archives/bufrtables/"></a></li>
+</ul>
+<h3>Other Documents</h3>
+<ul>
+  <li><a href="Summary.html">Summary report on the suitability of GRIB/BUFR for archiving data</a></li>
+  <li><a href="table.html">Current Tables used by CDM decoder</a></li>
+  <li><a href="issues.html">Issues encountered</a></li>
+</ul>
+<hr />
+<h2>External links</h2>
+<h3>WMO</h3>
+<ul>
+  <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes.html">WMO Codes</a>  </li>
+  <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes/TDCFtables.html">TDCF tables extracted from the Manual on Codes</a></li>
+  <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/BUFRCREXPreface_en.html">Guide to WMO Table-Driven      Code Forms</a></li>
+  <li><a href="http://www.wmo.ch/pages/prog/www/WDM/Guides/Guide-binary-1B.html">GUIDE TO THE CODE FORM FM-94 BUFR</a></li>
+</ul>
+<h3>NCEP</h3>
+<ul>
+  <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/data_processing/">Observational  Data  Processing  at NCEP</a></li>
+  <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/">Data Processing Pages</a></li>
+  <li><a href="http://www.nco.ncep.noaa.gov/sib/decoders/BUFRLIB/">BUFRLIB decoder</a>
+      <ul>
+        <li><a href="http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/fix/">NCEP internal tables</a></li>
+        <li><a href="http://www.nco.ncep.noaa.gov/sib/decoders/BUFRLIB/toc/dfbftab/">Description and Format of NCEP internal format BUFR Tables</a></li>
+      </ul>
+  </li>
+  <li> National Digital Forecast&nbsp; Database (NDFD)
+    <ul>
+      <li><a href="http://www.weather.gov/forecasts/graphical/docs/grib_design.html">GRIB2 Encoding Details for the National Weather Service Digital Forecast Database</a></li>
+      <li><a href="http://www.nws.noaa.gov/mdl/degrib/">degrib</a> (  NDFD GRIB2 decoder) </li>
+    </ul>
+  </li>
+</ul>
+<h3>ECMWF</h3>
+<ul>
+  <li><a href="http://www.ecmwf.int/products/data/software/bufr.html">BUFRDC encoding/decoding   software</a> contains tables in their decoding software. <a href="ecmwf/">Tables from BUFRDC version 3.51 (Feb 12 2008)</a>.</li>
+</ul>
+<h3 id="product-title">Environment Canada </h3>
+<ul>
+  <li><a href="https://launchpad.net/libecbufr">BUFR Library</a></li>
+</ul>
+<h3>INOE / CPTEC (Brazil)</h3>
+<ul>
+  <li><a href="http://downloads.cptec.inpe.br/publicacoes/distribuicao.jsp">MBUFR Tools</a></li>
+</ul>
+<h3>Northern Lighthouse</h3>
+<ul>
+  <li><a href="http://www.northern-lighthouse.com/cipher/bufrtool.html">Cipher BUFRtool</a></li>
+  <li><a href="http://www.northern-lighthouse.com/tables/bufr_tables.html">BUFR Tables</a></li>
+  <li>BUFR: A METEOROLOGICAL CODE FOR THE 21ST CENTURY (<a href="http://www.northern-lighthouse.com/Karhila_2010.pdf">paper</a>)</li>
+</ul>
+<h3><a href="http://www.knmi.nl/opera/">EUMETNET OPERA</a></h3>
+<ul>
+  <li><a href="http://www.knmi.nl/opera/bufr/bufr_3.0.zip">BUFR Software</a> for radar data</li>
+</ul>
+<hr WIDTH="100%">
+<address>
+<a href="NetcdfUsers.htm"><img src="images/nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a>
+and was last updated on July 2011
+</address>
+
+</body>
+</html>

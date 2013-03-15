@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>WMO issues</title>
+</head>
+
+<body>
+<h2><strong>Differences between WMO and ECMWF table D</strong></h2>
+<p>WMO table D is extracted from <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/BufrTabD-11-2007.doc">BufrTabD-11-2007.doc</a><br />
+ECMWF table D taken from  <a href="http://www.ecmwf.int/products/data/software/download/software_files/bufr_000360.tar.gz">BUFRDC download</a> , file D0000000000098013001.TXT</p>
+<hr />
+<strong><br>
+</strong>
+<pre><strong>3-1-34 </strong>
+ WMO:    [0-1-5, 0-2-1, 3-1-11, 3-1-12, 3-1-23]
+ ECMWF:  [0-1-5, 0-2-1, 3-1-11, 3-1-12, 3-1-23, 0-1-5, 0-1-12, 0-1-13, 0-2-1, 3-1-11, 3-1-12, 3-1-23]
+ </pre>
+<hr />
+<p><br />
+  <strong>3 02 044</strong> (Evaporation data)</p>
+<pre>   0 04 024 Time period in hours
+   0 02 004 Type of instrument for evaporation
+   <strong>0 13 003</strong> Evaporation /evapotranspiration
+
+ECMWF
+
+ 302044  3 004024<br />           002004<br />           <strong>013033</strong></pre>
+<p>  But given that:<br>
+</p>
+<pre>
+0 13 003 Relative humidity %                   0 0 7  %      0 3
+0 13 033 Evaporation/evapotranspiration kg m–2 1 0 10 kg m-2 1 4<br />
+</pre>
+<p>Its most likely that 33 is correct, and the WMO table is wrong. <a href="bufrData/LNDSYN.bufr">Here</a> is a message that uses this element, and it only parses correctly if 33 is used.</p>
+<hr />
+<pre><strong>3-2-56 </strong>
+   WMO:     [0-2-38, 0-7-63, 0-22-43, 0-7-63]
+   ECMWF:   [0-2-38, 0-22-43]
+ </pre>
+<hr />
+<p>WMO</p>
+<p><strong>3 07 084</strong> (Sequence for representation of synoptic reports from a fixed land station suitable for SYNOP data in compliance with reporting practices in RA IV)</p>
+<pre>   3 01 090 Fixed surface station identification, time, horizontal and vertical coordinates
+   3 02 031 Pressure data
+   3 02 035 Basic synoptic “instantaneous” data
+   3 02 036 Clouds with bases below station level
+   3 02 047 Direction of cloud drift
+   0 08 002 Vertical significance (= missing to cancel the previous value)
+   3 02 048 Direction and elevation of cloud
+   3 02 037 State of ground, snow depth, ground minimum temperature
+   0 20 055 State of sky in tropics
+   1 01 000 Delayed replication of 1 descriptor
+   <strong>0 31 001</strong> Delayed descriptor replication factor
+   2 05 001 Character field of 1 character
+   3 02 043 Basic synoptic “period” data
+   3 02 044 Evaporation data
+   1 01 002 Replicate next descriptor 2 times
+   3 02 045 Radiation data (from 1 hour and/or 24 hour period)
+   3 02 046 Temperature change
+
+
+ECMWF
+
+307084 17 301090 BUFR template for synoptic reports RA IV<br />           302031<br />           302035<br />           302036<br />           302047<br />           008002<br />           302048<br />           302037<br />           020055<br />           101000<br />           <strong>031000</strong><br />           205001<br />           302043<br />           302044<br />           101002<br />           302045<br />           302046<br /> 
+1 01 000 says its a delayed replicaton of 1 field
+
+0 31 001 says the number of replications is encoded in an 8-bit field
+0 31 000 is just a way to indicate missing data
+
+2 05 001 1 char is optionally inserted
+
+
+either one might be correct
+</pre>
+<hr />
+<pre>
+
+<strong>3-12-6</strong><br />WMO   <br />[0-25-60, 0-25-62, 0-40-1, 0-40-2, 0-21-62, 0-21-151, 0-21-152, 0-21-153, 0-21-154, 0-21-62, <strong>0-21-88</strong>, 0-40-3, 0-40-4, 0-40-5, 0-40-6, 0-40-7, 0-20-65, 0-40-8, 0-40-9, 0-40-10]<br />ECMWF<br />[0-25-60, 0-25-62, 0-40-1, 0-40-2, 0-21-62, 0-21-151, 0-21-152, 0-21-153, 0-21-154, 0-21-62, <strong>0-21-62</strong>, 0-40-3, 0-40-4, 0-40-5, 0-40-6, 0-40-7, 0-20-65, 0-40-8, 0-40-9, 0-40-10]<br />0 21 088 Wet backscatter dB 2 -5000 13 dB 2 4
+0 21 062 Backscatter dB     2 –5000 13 dB 2 4
+<br />
+name only change<br />
+</pre>
+</body>
+</html>

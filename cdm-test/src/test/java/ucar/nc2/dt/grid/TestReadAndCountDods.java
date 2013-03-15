@@ -89,11 +89,10 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml", 53, 12, 14, 9);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_20km/files/latest.xml", 74, 15, 17, 11);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 74, 15, 17, 11);
-
   }
 
   public void utestProblem() throws Exception {
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml", 52, -1, -1, 9);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_20km/files/latest.xml", 74, 15, 17, 11);
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
