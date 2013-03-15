@@ -1,4 +1,3 @@
-// $Id:GeoKey.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -39,7 +38,6 @@ import java.util.*;
  *  The value may be a String, an array of integers, or an array of doubles.
  *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 
 class GeoKey  {

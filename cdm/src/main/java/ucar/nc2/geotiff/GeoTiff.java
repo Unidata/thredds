@@ -42,7 +42,6 @@ import java.util.*;
  *
  * @author John Caron
  * @author Yuan Ho
- * @see GeotiffWriter
  */
 public class GeoTiff {
   private String filename;

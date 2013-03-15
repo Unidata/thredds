@@ -1,4 +1,3 @@
-// $Id:FieldType.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -37,7 +36,6 @@ package ucar.nc2.geotiff;
 /**
  *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 
 class FieldType {
