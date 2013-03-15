@@ -83,7 +83,7 @@ import ucar.unidata.geoloc.ProjectionRect;
 
 @Controller
 @RequestMapping(value = "/ncss/grid/")
-class GridDataController extends AbstratNcssDataRequestController {
+class GridDataController extends AbstractNcssDataRequestController {
 
   static private final Logger log = LoggerFactory.getLogger(GridDataController.class);
 
