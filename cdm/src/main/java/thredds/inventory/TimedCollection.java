@@ -42,7 +42,7 @@ import java.util.List;
 
 /**
  * Manage collections of files that we can assign date ranges to.
- * A wrap of DatasetCollectionManager.
+ * A wrap of CollectionManager.
  *
  * @author caron
  * @since May 19, 2009

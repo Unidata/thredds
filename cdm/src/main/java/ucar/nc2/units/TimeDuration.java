@@ -305,7 +305,20 @@ public class TimeDuration {
     }
   }
 
-  public static void main(String[] args) {
+  public static void main2(String[] args) {
     doDuration("3 days");
+  }
+
+  public static void main(String arg[]) throws Exception {
+
+    DatatypeFactory factory = DatatypeFactory.newInstance();
+
+    Duration d = factory.newDuration("P3D");
+    long secs1 = d.getTimeInMillis(new Date()) / 1000;
+    Calendar c = Calendar.getInstance();
+    c.set(1970, 0, 1, 0, 0, 0);
+    long secs2 = d.getTimeInMillis(c.getTime()) / 1000;
+
+    System.out.printf("%d %d same = %s%n", secs1, secs2, secs1 == secs2);
   }
 }
