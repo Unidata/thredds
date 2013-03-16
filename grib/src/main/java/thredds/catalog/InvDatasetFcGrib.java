@@ -79,7 +79,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
   static private final String BEST_DATASET = "best";
-  static private String BEST_DATASET_NAME = "Best Timeseries";
 
   static protected final String LATEST_DATASET = "latest";
   static protected final String LATEST_DATASET_NAME = "Latest Run";
@@ -107,6 +106,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private final AtomicBoolean needsProto = new AtomicBoolean();
   private boolean first = true;
   private DataFormatType format;
+  private String bestDatasetName = "Best Timeseries";
 
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, path, fcType, config);
@@ -133,7 +133,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     tmi.setDataType(FeatureType.GRID); // override GRIB
 
     if (config.gribConfig.bestNamer != null) {
-      BEST_DATASET_NAME = config.gribConfig.bestNamer;
+      this.bestDatasetName = config.gribConfig.bestNamer;
     }
 
     finish();
@@ -275,7 +275,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         ds.tmi.setTimeCoverage(extractCalendarDateRange(group));
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
-          InvDatasetImpl best = new InvDatasetImpl(this, BEST_DATASET_NAME);
+          InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
           String path = dpath + "/" + BEST_DATASET;
           best.setUrlPath(path);
           best.setID(path);
@@ -296,7 +296,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       if (isSingleGroup) {
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
-          InvDatasetImpl best = new InvDatasetImpl(this, BEST_DATASET_NAME);
+          InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
           String path = getPath() + "/" + BEST_DATASET;
           best.setUrlPath(path);
           best.setID(path);
@@ -305,7 +305,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile)) {
-          InvDatasetImpl ds2 = new InvDatasetImpl(this, LATEST_FILE_NAME);
+          InvDatasetImpl ds2 = new InvDatasetImpl(this, getLatestFileName());
           ds2.setUrlPath(FILES+"/"+LATEST_DATASET_CATALOG);
           ds2.setID(FILES+"/"+LATEST_DATASET_CATALOG);
           ds2.setServiceName(LATEST_SERVICE);
@@ -317,7 +317,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           String dname =  getPath() + "/" + BEST_DATASET;
-          InvCatalogRef ds = new InvCatalogRef(this, BEST_DATASET_NAME, getCatalogHref(dname));
+          InvCatalogRef ds = new InvCatalogRef(this, getBestDatasetName(), getCatalogHref(dname));
           top.addDataset(ds);
         }
       }
@@ -506,15 +506,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
 
         if (isSingleGroup) {
-          ds = new InvDatasetImpl(this, BEST_DATASET_NAME +" for "+ partitionName);
+          ds = new InvDatasetImpl(this, getBestDatasetName() +" for "+ partitionName);
           dpath = this.path + "/" + partitionName + "/" + BEST_DATASET;
 
         } else if (isBest) { // over all partitions
-          ds = new InvDatasetImpl(this, BEST_DATASET_NAME +" for "+ groupId);
+          ds = new InvDatasetImpl(this, getBestDatasetName() +" for "+ groupId);
           dpath = this.path + "/" + groupId + "/" + BEST_DATASET;
 
         } else { // specific to a partition and group
-          ds = new InvDatasetImpl(this, BEST_DATASET_NAME +" for "+ partitionName+" and "+groupId);
+          ds = new InvDatasetImpl(this, getBestDatasetName() +" for "+ partitionName+" and "+groupId);
           dpath = this.path + "/" + partitionName + "/" + groupId + "/" + BEST_DATASET;
         }
 
@@ -612,7 +612,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);
     top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local
-    top.setName(LATEST_FILE_NAME);
+    top.setName(getLatestFileName());
 
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
@@ -709,6 +709,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+
+  protected String getBestDatasetName() {
+      return bestDatasetName;
+  }
 
   @Override
   public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
