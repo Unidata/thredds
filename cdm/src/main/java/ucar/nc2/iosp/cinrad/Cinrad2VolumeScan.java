@@ -1,5 +1,4 @@
 /*
- * $Id:Cinrad2VolumeScan.java 63 2006-07-12 21:50:51Z edavis $
  *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -33,7 +32,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package ucar.nc2.iosp.cinrad;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -47,7 +45,6 @@ import java.util.*;
 
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.bzip2.BZip2ReadException;
-//import org.apache.tools.bzip2.CBZip2InputStream;
 
 
 /**
@@ -62,7 +59,6 @@ import ucar.unidata.io.bzip2.BZip2ReadException;
  *
  * @author caron
  * @author David Priegnitz
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class Cinrad2VolumeScan {
 

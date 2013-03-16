@@ -82,9 +82,10 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     NexradStationDB.init();
-    this.raf = raf;
 
-    volScan = new Level2VolumeScan( raf, cancelTask);
+    volScan = new Level2VolumeScan( raf, cancelTask); // note raf may change when compressed
+    this.raf = volScan.raf;
+
     if (volScan.hasDifferentDopplarResolutions())
       throw new IllegalStateException("volScan.hasDifferentDopplarResolutions");
 

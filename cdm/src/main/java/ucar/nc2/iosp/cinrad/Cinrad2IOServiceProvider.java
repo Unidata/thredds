@@ -156,7 +156,9 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     super.open(raf, ncfile, cancelTask);
     NexradStationDB.init();
 
-    volScan = new Cinrad2VolumeScan( raf, cancelTask);
+    volScan = new Cinrad2VolumeScan( raf, cancelTask); // raf may change if uncompressed
+    this.raf = volScan.raf;
+
     if (volScan.hasDifferentDopplarResolutions())
       throw new IllegalStateException("volScan.hasDifferentDopplarResolutions");
 
@@ -560,7 +562,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
         ii.setByteNext( Cinrad2Record.MISSING_DATA);
       return;
     }
-    r.readData(volScan.raf, datatype, gateRange, ii);
+    r.readData(this.raf, datatype, gateRange, ii);
   }
 
   private class Vgroup {

@@ -31,7 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package ucar.nc2.iosp.nexrad2;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -47,7 +46,6 @@ import java.nio.channels.OverlappingFileLockException;
 
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.bzip2.BZip2ReadException;
-
 
 /**
  * This class reads a NEXRAD level II data file.
