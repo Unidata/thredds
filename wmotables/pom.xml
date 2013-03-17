@@ -12,7 +12,7 @@
             Module Description
         =========================================================== -->
    <!-- groupId>edu.ucar</groupId-->
-   <artifactId>wmoTables</artifactId>
+   <artifactId>wmotables</artifactId>
    <packaging>war</packaging>
    <name>WMO tables webapp</name>
     <description>
@@ -57,14 +57,6 @@
        <groupId>edu.ucar</groupId>
        <artifactId>grib</artifactId>
      </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>opendap</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>visadCdm</artifactId>
-    </dependency>
 
      <dependency>
        <groupId>commons-fileupload</groupId>
@@ -108,6 +100,7 @@
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
@@ -122,7 +115,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.1.1</version>
         <configuration>
           <attachClasses>true</attachClasses>
           <archive>

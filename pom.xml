@@ -572,12 +572,12 @@
       </dependency>
 
       <!-- webapps -->
-      <!-- dependency>
+      <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>wmoTables</artifactId>
+        <artifactId>wmotables</artifactId>
         <version>${project.version}</version>
         <type>war</type>
-      </dependency -->
+      </dependency>
 
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -753,7 +753,7 @@
     <module>ui</module>
     <module>tds</module>
     <module>tdm</module>
-    <!-- module>wmoTables</module -->
+    <module>wmotables</module>
     <module>cdmvalidator</module>
     <module>cdm-test</module>
     <module>it</module>
