@@ -1,0 +1,64 @@
+body {
+ font-size: 10pt;
+ font-family: verdana, arial, helvetica, sans-serif;
+}
+
+h1 {
+ font-size: 12pt;
+}
+
+h3 {
+ font-size: 10pt;
+}
+
+ul {
+ width: 100%;
+ list-style: none;
+ margin: 0 0 10px 0;
+ padding: 0;
+ float: left;
+ position: absolute; 
+}
+
+ul li {
+ width: 100%;
+ display: inline;
+ margin: 0 15px 10px 0;
+ padding: 0;   
+ float: left;
+ position: relative; 
+ bottom: 0;
+}
+
+ul li label {
+ margin: 0;
+ padding: 0;
+ text-align:left;
+}
+
+table {
+	background-color: #CDCDCD;
+	margin:10px 0pt 15px;
+	font-size: 8pt;
+	width: 100%;
+	text-align: left;
+}
+table thead tr th, table tfoot tr th {
+	background-color: #e6EEEE;
+	border: 1px solid #FFF;
+	font-size: 8pt;
+	padding: 4px;
+}
+table thead tr  {
+	background-image: url(bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+table tbody td {
+	color: #3D3D3D;
+	padding: 4px;
+	background-color: #FFF;
+	vertical-align: top;
+}
+

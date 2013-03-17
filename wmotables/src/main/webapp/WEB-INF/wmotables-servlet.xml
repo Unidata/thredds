@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+           http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	       http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/util 
+           http://www.springframework.org/schema/util/spring-util-3.0.xsd
+	       http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+  
+  <!-- Static resources since we are handling all requests -->
+  <mvc:resources mapping="/resources/**" location="/resources/" />
+  <mvc:resources mapping="/tables/**" location="/tables/" />
+
+
+  <!-- Activates various annotations to be detected in bean classes -->
+  <context:annotation-config />
+
+  <!-- Scans the classpath of this application for @Components to deploy as beans -->
+  <context:component-scan base-package="edu.ucar.unidata.wmotables" />
+
+  <!-- Configures the @Controller programming model -->
+  <mvc:annotation-driven />
+
+  <bean id="propertyConfigurer" 
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="locations">
+         <list>
+            <value>classpath:jdbc.properties</value>
+            <value>classpath:wmotables.properties</value>
+         </list>
+      </property>
+  </bean>     
+
+
+
+  <!-- File upload multipart resolver -->
+  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+      <property name="maxUploadSize" value="1048576"/>
+  </bean>
+
+  <!-- Message source resolver to use messages.properties file in the 'war/WEB-INF/classes' directory -->
+  <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+      <property name="basename" value="messages"/>
+  </bean>
+
+  <!-- Resolves view names to the .jsp resources within the /WEB-INF/views directory --> 
+  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+      <property name="prefix" value="/WEB-INF/views/"></property>
+      <property name="suffix" value=".jsp"></property>        
+  </bean>
+
+  <import resource="jdbc-context.xml" />
+
+</beans>
