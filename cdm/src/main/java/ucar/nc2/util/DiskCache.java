@@ -346,8 +346,9 @@ public class DiskCache {
   // reverse sort - latest come first
   static private class FileAgeComparator implements Comparator<File> {
     public int compare(File f1, File f2) {
-      //return (int) (f2.lastModified() - f1.lastModified());
-      return (f1.lastModified()<f2.lastModified() ? 1 : (f1.lastModified()==f2.lastModified() ? 0 : -1));  // Steve Ansari 6/3/2010
+      long f1Age = f1.lastModified();
+      long f2Age = f2.lastModified();
+      return (f1Age < f2Age) ? 1 : (f1Age == f2Age ? 0 : -1);  // Steve Ansari 6/3/2010
     }
   }
 
