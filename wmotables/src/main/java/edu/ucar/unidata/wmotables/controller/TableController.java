@@ -2,8 +2,6 @@ package edu.ucar.unidata.wmotables.controller;
 
 import org.apache.log4j.Logger;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
