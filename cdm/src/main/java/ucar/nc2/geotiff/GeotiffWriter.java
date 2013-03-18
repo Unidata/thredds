@@ -97,12 +97,13 @@ public class GeotiffWriter {
       yStart = yaxis.getCoordEdge((int) yaxis.getSize()) * scaler;
     }
 
-    if (gcs.isLatLon()) {
+    /*  remove - i think unneeded, monotonic lon handled in CoordinateAxis1D. JC 3/18/2013
+     if (gcs.isLatLon()) {
       Array lon = xaxis.read();
       data = geoShiftDataAtLon(data, lon);
       xStart = geoShiftGetXstart(lon, xInc);
       //xStart = -180.0;
-    }
+    }  */
 
     if (!xaxis.isRegular() || !yaxis.isRegular()) {
       throw new IllegalArgumentException("Must be evenly spaced grid = " + grid.getFullName());
@@ -517,16 +518,15 @@ public class GeotiffWriter {
     }
   }
 
+  // WTF ?? is this the seam crossing ??
   private double geoShiftGetXstart(Array lon, double inc) {
-    int count = 0;
     Index ilon = lon.getIndex();
     int[] lonShape = lon.getShape();
     IndexIterator lonIter = lon.getIndexIterator();
     double xlon = 0.0;
 
     LatLonPoint p0 = new LatLonPointImpl(0, lon.getFloat(ilon.set(0)));
-    LatLonPoint pN =
-            new LatLonPointImpl(0, lon.getFloat(ilon.set(lonShape[0] - 1)));
+    LatLonPoint pN = new LatLonPointImpl(0, lon.getFloat(ilon.set(lonShape[0] - 1)));
 
     xlon = p0.getLongitude();
     while (lonIter.hasNext()) {
