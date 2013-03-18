@@ -111,7 +111,7 @@
         <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
               <latestNamer name="Latest NCEP DGEX Alaska 12km"/>
-              <!--bestNamer name="" / -->
+              <bestNamer name="Best NCEP DGEX Alaska 12km Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -148,7 +148,7 @@
         <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
               <latestNamer name="Latest NCEP GEFS 1.0 degree Ensemble"/>
-              <!--bestNamer name="" / -->
+              <bestNamer name="Best NCEP GEFS 1.0 degree Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -170,7 +170,7 @@
         <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
               <latestNamer name="Latest NCEP GEFS 1.0 degree Ensemble Derived Products"/>
-              <!--bestNamer name="" / -->
+              <bestNamer name="Best NCEP GEFS 1.0 degree Ensemble Derived Products Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -210,7 +210,7 @@
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
               <latestNamer name="Latest NCEP GFS Global 0.5 degree"/>
-              <!--bestNamer name="" / -->
+              <bestNamer name="Best NCEP GFS Global 0.5 degree Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -236,7 +236,7 @@
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
               <latestNamer name="Latest NCEP GFS Global 1.0 degree"/>
-              <!--bestNamer name="" / -->
+              <bestNamer name="Best NCEP GFS Global 1.0 degree Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -260,7 +260,7 @@
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
               <latestNamer name="Latest NCEP GFS Global 2.5 degree"/>
-              <!--bestNamer name="" / -->
+              <bestNamer name="Best NCEP GFS Global 2.5 degree Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -286,7 +286,7 @@
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
               <latestNamer name="Latest NCEP GFS Northern Hemispheric 381km"/>
-              <!--bestNamer name="" / -->
+              <bestNamer name="Best NCEP GFS Northern Hemispheric 381km Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -311,8 +311,8 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
-              <latestNamer name="NCEP GFS Pacific 40km"/>
-              <!--bestNamer name="" / -->
+              <latestNamer name="Latest NCEP GFS Pacific 40km"/>
+              <bestNamer name="Best NCEP GFS Pacific 40km Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -337,8 +337,8 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
-              <latestNamer name="NCEP GFS Puerto Rico 0.5 degree"/>
-              <!--bestNamer name="" / -->
+              <latestNamer name="Latest NCEP GFS Puerto Rico 0.5 degree"/>
+              <bestNamer name="Best NCEP GFS Puerto Rico 0.5 degree Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -361,8 +361,8 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
-              <latestNamer name="NCEP GFS Alaska 191km"/>
-              <!--bestNamer name="" / -->
+              <latestNamer name="Latest NCEP GFS Alaska 191km"/>
+              <bestNamer name="Best NCEP GFS Alaska 191km Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -385,8 +385,8 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
-              <latestNamer name="NCEP GFS Hawaii 160km"/>
-              <!--bestNamer name="" / -->
+              <latestNamer name="Latest NCEP GFS Hawaii 160km"/>
+              <bestNamer name="Best NCEP GFS Hawaii 160km Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -408,8 +408,8 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
-              <latestNamer name="NCEP GFS CONUS 80km"/>
-              <!--bestNamer name="" / -->
+              <latestNamer name="Latest NCEP GFS CONUS 80km"/>
+              <bestNamer name="Best NCEP GFS CONUS 80km Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -433,8 +433,8 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
-              <latestNamer name="NCEP GFS CONUS 95km"/>
-              <!--bestNamer name="" / -->
+              <latestNamer name="Latest NCEP GFS CONUS 95km"/>
+              <bestNamer name="Best NCEP GFS CONUS 95km Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -457,8 +457,8 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
-              <latestNamer name="NCEP GFS CONUS 191km"/>
-              <!--bestNamer name="" / -->
+              <latestNamer name="Latest NCEP GFS CONUS 191km"/>
+              <bestNamer name="Best NCEP GFS CONUS 191km Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -485,8 +485,8 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
           <gribConfig datasetTypes="Best LatestFile Files">
-              <latestNamer name="NCEP GFS Puerto Rico 191km"/>
-              <!--bestNamer name="" / -->
+              <latestNamer name="Latest NCEP GFS Puerto Rico 191km"/>
+              <bestNamer name="Best NCEP GFS Puerto Rico 191km Time Series" />
               <filesSort>
                   <lexigraphicByName increasing="false" />
               </filesSort>
@@ -524,7 +524,7 @@
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
           <latestNamer name="Latest NCEP NAM Alaska 11km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best Latest NCEP NAM Alaska 11km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -547,7 +547,7 @@
         <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP NAM Alaska 22km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM Alaska 22km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -572,7 +572,7 @@
         <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP NAM Alaska 45km (NOAAPORT)"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM Alaska 45km (NOAAPORT) Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -599,7 +599,7 @@
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
           <latestNamer name="Latest NCEP NAM Alaska 45km (CONDUIT)"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM Alaska 45km (CONDUIT) Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -622,7 +622,7 @@
         <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP NAM Alaska 95km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM Alaska 95km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -653,7 +653,7 @@
             <variable id="0-1-10"/>
           </intvFilter>
           <latestNamer name="Latest NCEP NAM CONUS 12km (NOAAPORT)"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM CONUS 12km (NOAAPORT) Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -685,7 +685,7 @@
             <variable id="0-1-10"/>
           </intvFilter>
           <latestNamer name="Latest NCEP NAM CONUS 12km (CONDUIT)"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM CONUS 12km (CONDUIT) Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -710,7 +710,7 @@
         <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP NAM CONUS 20km (NOAAPORT)"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM CONUS 20km (NOAAPORT) Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -740,7 +740,7 @@
             <variable id="0-1-10"/>
           </intvFilter>
           <latestNamer name="Latest NCEP NAM CONUS 20km (surface)"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM CONUS 20km (surface) Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -771,7 +771,7 @@
             <variable id="0-1-10"/>
           </intvFilter>
           <latestNamer name="Latest NCEP NAM CONUS 20km (select surface)"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM CONUS 20km (select surface) Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -802,7 +802,7 @@
             <variable id="0-1-10"/>
           </intvFilter>
           <latestNamer name="Latest NCEP NAM CONUS 40km (CONDUIT)"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM CONUS 40km (CONDUIT) Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -825,7 +825,7 @@
         <tdm startup="false" rescan="0 6,21,36,51 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP NAM CONUS 80km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM CONUS 80km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -850,7 +850,7 @@
         <gribConfig datasetTypes="Best LatestFile Files">
           <intvFilter excludeZero="true"/>
           <latestNamer name="Latest NCEP NAM Polar 90km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM Polar 90km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -887,7 +887,7 @@
           <groupNamer>Firewxnest</groupNamer>
           <intvFilter excludeZero="true"/>
           <latestNamer name="Latest NCEP NAM FireWX Nest"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP NAM FireWX Nest Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -921,7 +921,7 @@
         <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files" >
           <latestNamer name="Latest NWS National Digital Forecast Database CONUS 5km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NWS National Digital Forecast Database CONUS 5km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -947,7 +947,7 @@
         <gribConfig datasetTypes="Best LatestFile Files">
           <gdsHash from="-2121584860" to="28944332"/>
           <latestNamer name="Latest NWS National Digital Forecast Database CONUS 5km (CONDUIT)"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NWS National Digital Forecast Database CONUS 5km (CONDUIT) Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -968,7 +968,7 @@
         <tdm startup="false" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NWS National Digital Forecast Database Fire Weather 5km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NWS National Digital Forecast Database Fire Weather 5km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1006,7 +1006,7 @@
         <gribConfig datasetTypes="Best LatestFile Files">
           <useGenType/>
           <latestNamer name="Latest Real Time Mesoscale Analysis CONUS 2.5km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best Real Time Mesoscale Analysis CONUS 2.5km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1030,7 +1030,7 @@
         <gribConfig datasetTypes="Best LatestFile Files">
           <useGenType/>
           <latestNamer name="Latest Real Time Mesoscale Analysis Guam 2.5km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best Real Time Mesoscale Analysis Guam 2.5km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1066,7 +1066,7 @@
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest Rapid Refresh 13km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best Rapid Refresh 13km Time Series" />
           <filesSort>
               <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1096,7 +1096,7 @@
         </gribConfig -->
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest Rapid Refresh 20km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best Rapid Refresh 20km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1119,7 +1119,7 @@
         <tdm startup="true" rescan="0 9,24,39,53 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest Rapid Refresh 40km"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best Rapid Refresh 40km Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1156,7 +1156,7 @@
             <variable id="0-1-8"/>
           </intvFilter>
           <latestNamer name="Latest NCEP SREF 40km Ensemble Derived Products"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP SREF 40km Ensemble Derived Products Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1181,7 +1181,7 @@
         <tdm startup="false" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP SREF 40km Ensemble Bias-Corrected Derived Products"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP SREF 40km Ensemble Bias-Corrected Derived Products Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1223,7 +1223,7 @@
             <variable id="0-1-8"/>
           </intvFilter>
           <latestNamer name="Latest NCEP SREF Alaska 45km Ensemble Derived Products"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP SREF Alaska 45km Ensemble Derived Products Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1248,7 +1248,7 @@
             <variable id="0-1-8"/>
           </intvFilter>
           <latestNamer name="Latest NCEP SREF Pacific NE 0.4 degree Ensemble Derived Products"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP SREF Pacific NE 0.4 degree Ensemble Derived Products Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1280,7 +1280,7 @@
         <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP Wave Watch III Global"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP Wave Watch III Global Time Series" />
           <filesSort>
             <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1303,7 +1303,7 @@
         <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP Wave Watch III Alaska"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP Wave Watch III Alaska Time Series" />
           <filesSort>
               <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1326,7 +1326,7 @@
         <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
             <latestNamer name="Latest NCEP Wave Watch III Coastal Alaska"/>
-            <!--bestNamer name="" / -->
+            <bestNamer name="Best NCEP Wave Watch III Coastal Alaska Time Series" />
             <filesSort>
               <lexigraphicByName increasing="false" />
             </filesSort>
@@ -1349,7 +1349,7 @@
         <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP Wave Watch III Eastern Pacific"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP Wave Watch III Eastern Pacific Time Series" />
           <filesSort>
               <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1372,7 +1372,7 @@
         <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP Wave Watch III US East Coast"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP Wave Watch III US East Coast Time Series" />
           <filesSort>
               <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1395,7 +1395,7 @@
         <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP Wave Watch III US West Coast"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP Wave Watch III US West Coast Time Series" />
           <filesSort>
               <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1418,7 +1418,7 @@
         <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP Wave Watch III Coastal US East Coast"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP Wave Watch III Coastal US East Coast Time Series" />
           <filesSort>
               <lexigraphicByName increasing="false" />
           </filesSort>
@@ -1441,7 +1441,7 @@
         <tdm startup="false" rescan="0 4,19,34,49 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest NCEP Wave Watch III Coastal US West Coast"/>
-          <!--bestNamer name="" / -->
+          <bestNamer name="Best NCEP Wave Watch III Coastal US West Coast Time Series" />
           <filesSort>
               <lexigraphicByName increasing="false" />
           </filesSort>
