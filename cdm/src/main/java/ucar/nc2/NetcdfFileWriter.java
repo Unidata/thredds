@@ -347,7 +347,7 @@ public class NetcdfFileWriter {
     */
    public Group addGroup(Group parent, String name) {
      if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-     if (parent == null) return ncfile.getRootGroup();
+     if (parent == null) parent = ncfile.getRootGroup();
 
      Group result = new Group(ncfile, parent, name);
      parent.addGroup(result);
