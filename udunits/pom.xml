@@ -5,13 +5,13 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.16-SNAPSHOT</version>
+    <version>4.3.16</version>
   </parent>
 
   <artifactId>udunits</artifactId>
   <packaging>jar</packaging>
   <name>udunits</name>
-  <version>4.3.16-SNAPSHOT</version>
+  <version>4.3.16</version>
   <url>http://www.unidata.ucar.edu/software/udunits//</url>
 
   <description>The ucar.units Java package is for decoding and encoding
