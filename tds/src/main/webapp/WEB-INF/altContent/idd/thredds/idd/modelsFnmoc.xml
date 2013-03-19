@@ -44,26 +44,33 @@
       </timeCoverage>
     </metadata>
 
-    <dataset name="Navy Operational Global Atmospheric Prediction System (NOGAPS) Model">
-      <metadata inherited="true">
+    <dataset name=" NAVy Global Environmental Model (NAVGEM) Model">
+      <!--metadata inherited="true">
         <documentation xlink:href="http://www.nrlmry.navy.mil/nogaps_his.htm"
                        xlink:title="NOGAPS home page"/>
-      </metadata>
+      </metadata-->
 
-      <featureCollection name="FNMOC-NOGAPS-Global_1p0deg" featureType="GRIB" harvest="true" path="grib/FNMOC/NOGAPS/Global_1p0deg">
+      <featureCollection name="FNMOC-NAVGEM-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/FNMOC/NAVGEM/Global_0p5deg">
         <metadata inherited="true">
-          <documentation type="summary">FNMOC NOGAPS Global_1p0deg Model : Global Lat/Lon grid.
-            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out 180 hours.
-            Horizontal = 181 by 360 points, resolution 1 degree, Lat/Lon projection.
-            Vertical = 1013 to 4 hPa mandatory pressure levels (30 levels); surface, height above ground, pressure layers.
+          <documentation type="summary">FNMOC NAVGEM Global_0p5deg Model : Global Lat/Lon grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out 66 hours.
+            Horizontal = 361 by 720 points, resolution 0.5 degree, Lat/Lon projection.
+            Vertical = 1013 to 4 hPa pressure levels (33 levels); surface, height above ground, pressure layers.
           </documentation>
         </metadata>
 
-        <collection spec="/data/ldm/pub/native/grid/FNMOC/NOGAPS/Global_1p0deg/FNMOC_NOGAPS_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
-                    name="FNMOC_NOGAPS_Global_1p0deg"
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/NAVGEM/Global_0p5deg/FNMOC_NAVGEM_Global_0p5deg_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_NAVGEM_Global_0p5deg"
                     olderThan="5 min"/>
         <!-- tdm startup="true" rescan="0 0 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest FNMOC NAVGEM Global 0.5 degree"/>
+          <bestNamer name="Best FNMOC NAVGEM Global 0.5 degree Time Series" />
+          <filesSort>
+            <lexigraphicByName increasing="false" />
+          </filesSort>
+        </gribConfig>
       </featureCollection>
 
     </dataset>
@@ -87,6 +94,13 @@
                     olderThan="5 min"/>
         <!-- tdm startup="true" rescan="0 1 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest FNMOC WW3 Global 1.0 degree"/>
+          <bestNamer name="Best FNMOC WW3 Global 1.0 degree Time Series" />
+          <filesSort>
+            <lexigraphicByName increasing="false" />
+          </filesSort>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="FNMOC-WW3-Mediterranean" featureType="GRIB" harvest="true" path="grib/FNMOC/WW3/Mediterranean">
@@ -102,6 +116,13 @@
                     olderThan="5 min"/>
         <!-- tdm startup="true" rescan="0 2 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest FNMOC WW3 Mediterranean 0.2 degree"/>
+          <bestNamer name="Best FNMOC WW3 Mediterranean 0.2 degree Time Series" />
+          <filesSort>
+            <lexigraphicByName increasing="false" />
+          </filesSort>
+        </gribConfig>
       </featureCollection>
 
     </dataset>
@@ -125,6 +146,13 @@
                     olderThan="5 min"/>
         <!-- tdm startup="true" rescan="0 3 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest FNMOC FAROP Global 1.0 degree"/>
+          <bestNamer name="Best FNMOC FAROP Global 1.0 degree Time Series" />
+          <filesSort>
+            <lexigraphicByName increasing="false" />
+          </filesSort>
+        </gribConfig>
       </featureCollection>
 
     </dataset>
@@ -150,6 +178,13 @@
                     olderThan="5 min"/>
         <!-- tdm startup="true" rescan="0 4 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest FNMOC COAMPS Western Atlantic 0.2 degree"/>
+          <bestNamer name="Best FNMOC COAMPS Western Atlantic 0.2 degree Time Series" />
+          <filesSort>
+            <lexigraphicByName increasing="false" />
+          </filesSort>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="FNMOC-COAMPS-Central_America" featureType="GRIB" harvest="true" path="grib/FNMOC/COAMPS/Central_America">
@@ -165,6 +200,13 @@
                     olderThan="5 min"/>
         <!-- tdm startup="true" rescan="0 5 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest FNMOC COAMPS Central America 0.2 degree"/>
+          <bestNamer name="Best FNMOC COAMPS Central America 0.2 degree Time Series" />
+          <filesSort>
+            <lexigraphicByName increasing="false" />
+          </filesSort>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="FNMOC-COAMPS-Eastern_Pacific" featureType="GRIB" harvest="true" path="grib/FNMOC/COAMPS/Eastern_Pacific">
@@ -180,6 +222,13 @@
                     olderThan="5 min"/>
         <!-- tdm startup="true" rescan="0 6 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest FNMOC COAMPS Eastern Pacific 0.2 degree"/>
+          <bestNamer name="Best FNMOC COAMPS Eastern Pacific 0.2 degree Time Series" />
+          <filesSort>
+            <lexigraphicByName increasing="false" />
+          </filesSort>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="FNMOC-COAMPS-Europe" featureType="GRIB" harvest="true" path="grib/FNMOC/COAMPS/Europe">
@@ -195,6 +244,13 @@
                     olderThan="5 min"/>
         <!-- tdm startup="true" rescan="0 7 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest FNMOC COAMPS Europe 0.2 degree"/>
+          <bestNamer name="Best FNMOC COAMPS Europe 0.2 degree Time Series" />
+          <filesSort>
+            <lexigraphicByName increasing="false" />
+          </filesSort>
+        </gribConfig>
       </featureCollection>
     </dataset>
 
@@ -217,6 +273,13 @@
                     olderThan="5 min"/>
         <!-- tdm startup="true" rescan="0 8 * * * ? *" trigger="allow"/-->
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest FNMOC NCODA Global 0.25 degree"/>
+          <bestNamer name="Best FNMOC NCODA Global 0.25 degree Time Series" />
+          <filesSort>
+            <lexigraphicByName increasing="false" />
+          </filesSort>
+        </gribConfig>
       </featureCollection>
 
     </dataset>
