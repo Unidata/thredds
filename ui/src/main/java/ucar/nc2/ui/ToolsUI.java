@@ -5688,7 +5688,7 @@ public class ToolsUI extends JPanel {
     String version;
     try {
       InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README");
-      if (is == null) return "4.3.14";
+      if (is == null) return "4.3.17";
 // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
       StringBuilder sbuff = new StringBuilder();

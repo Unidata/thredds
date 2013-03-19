@@ -58,11 +58,15 @@
        <artifactId>grib</artifactId>
      </dependency>
 
-     <dependency>
+    <dependency>
+       <groupId>commons-dbcp</groupId>
+       <artifactId>commons-dbcp</artifactId>
+     </dependency>
+    <dependency>
        <groupId>commons-fileupload</groupId>
        <artifactId>commons-fileupload</artifactId>
      </dependency>
-    <dependency>
+     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
@@ -104,6 +108,11 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
     </dependency>
 
   </dependencies>
