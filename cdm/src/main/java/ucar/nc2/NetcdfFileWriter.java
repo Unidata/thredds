@@ -341,13 +341,16 @@ public class NetcdfFileWriter {
 
   /**
     * Add a Group to the file. Must be in define mode.
-    * @param parent the parent of this group, null if root group.
-    * @param name the name of this group, unique qithin parent
+    * If pass in null as the parent then the root group is returned and the name is ignored. 
+    * This is how you get the root group. Note this is different from other uses of parent group.  
+    * 
+    * @param parent the parent of this group, if null then returns the root group.
+    * @param name the name of this group, unique within parent
     * @return the created group
     */
    public Group addGroup(Group parent, String name) {
      if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-     if (parent == null) parent = ncfile.getRootGroup();
+     if (parent == null) return ncfile.getRootGroup();
 
      Group result = new Group(ncfile, parent, name);
      parent.addGroup(result);
