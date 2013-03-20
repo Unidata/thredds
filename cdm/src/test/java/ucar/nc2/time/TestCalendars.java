@@ -116,5 +116,15 @@ public class TestCalendars {
     CalendarDateFormatter cdf = new CalendarDateFormatter("yyyyMMdd");
     System.out.printf("%s%n", cdf.toString(cdate));
   }
+
+  @Test
+  public void testNemoDate() {
+    for (Calendar cal : Calendar.values()) {
+      CalendarDateUnit unit = CalendarDateUnit.withCalendar(cal, "days since -4713-01-01T00:00:00Z");
+      CalendarDate cd1 = unit.makeCalendarDate(2434567);
+      System.out.printf("%s with Calendar %s%n", cd1, cal);
+    }
+  }
+
 }
 

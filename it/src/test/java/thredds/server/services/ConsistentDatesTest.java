@@ -14,6 +14,7 @@ import java.util.List;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
@@ -122,8 +123,11 @@ public class ConsistentDatesTest {
     //xPath.addNamespace("wcs", doc.getRootElement().getNamespaceURI());
    // List<Element> timePositionNodes = xPath.selectNodes(doc);
 
+    Namespace wcs = Namespace.getNamespace("wcs", doc.getRootElement().getNamespaceURI());
+    Namespace gml = Namespace.getNamespace("gml", "http://www.opengis.net/gml");
     XPathExpression<Element> xpath =
-        XPathFactory.instance().compile("//wcs:temporalDomain/gml:timePosition", Filters.element());
+        XPathFactory.instance().compile("//wcs:temporalDomain/gml:timePosition", Filters.element(),
+                null, wcs, gml);
     List<Element> timePositionNodes = xpath.evaluate(doc);
 
     List<DateTime> timePositionDateTime = new ArrayList<DateTime>();

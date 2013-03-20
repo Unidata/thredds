@@ -1,10 +1,9 @@
 package ucar.nc2.time;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 /**
- * Describe
+ * CalendarDate testing
  *
  * @author caron
  * @since 12/4/12
