@@ -33,7 +33,7 @@
 
 package thredds.catalog;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import java.io.IOException;
 import java.io.File;

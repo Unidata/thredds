@@ -49,9 +49,9 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.FeatureType;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Element;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Element;
 
 import javax.swing.plaf.metal.MetalTheme;
 

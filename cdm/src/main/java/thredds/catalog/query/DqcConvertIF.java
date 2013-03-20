@@ -43,7 +43,7 @@ package thredds.catalog.query;
 
 public interface DqcConvertIF {
 
-  public QueryCapability parseXML( DqcFactory fac, org.jdom.Document domDoc, java.net.URI docURI) throws java.io.IOException;
+  public QueryCapability parseXML( DqcFactory fac, org.jdom2.Document domDoc, java.net.URI docURI) throws java.io.IOException;
 
   public void writeXML(QueryCapability qc, java.io.OutputStream os) throws java.io.IOException;
 

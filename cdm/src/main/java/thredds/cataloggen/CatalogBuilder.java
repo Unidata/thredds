@@ -40,7 +40,7 @@ import thredds.crawlabledataset.CrawlableDataset;
 import java.io.IOException;
 import java.util.List;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 /**
  * An interface for building catalogs where each instance only builds

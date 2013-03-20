@@ -11,13 +11,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.jdom.xpath.XPath;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.filter.Filters;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.xpath.XPath;
+import org.jdom2.xpath.XPathExpression;
+import org.jdom2.xpath.XPathFactory;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Rule;
@@ -113,9 +116,16 @@ public class ConsistentDatesTest {
     Reader in = new StringReader(xml);
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
-    XPath xPath = XPath.newInstance("//wcs:temporalDomain/gml:timePosition");
-    xPath.addNamespace("wcs", doc.getRootElement().getNamespaceURI());
-    List<Element> timePositionNodes = xPath.selectNodes(doc);
+
+    // old way - deprecated
+    //XPath xPath = XPath.newInstance("//wcs:temporalDomain/gml:timePosition");
+    //xPath.addNamespace("wcs", doc.getRootElement().getNamespaceURI());
+   // List<Element> timePositionNodes = xPath.selectNodes(doc);
+
+    XPathExpression<Element> xpath =
+        XPathFactory.instance().compile("//wcs:temporalDomain/gml:timePosition", Filters.element());
+    List<Element> timePositionNodes = xpath.evaluate(doc);
+
     List<DateTime> timePositionDateTime = new ArrayList<DateTime>();
     for (Element e : timePositionNodes) {
       System.out.printf("Date= %s%n", e.getText());
@@ -136,8 +146,14 @@ public class ConsistentDatesTest {
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
-    XPath xPath = XPath.newInstance("/grid/point/data[@name='date']");
-    List<Element> dataTimeNodes = xPath.selectNodes(doc);
+    // old way
+    //XPath xPath = XPath.newInstance("/grid/point/data[@name='date']");
+    //List<Element> dataTimeNodes = xPath.selectNodes(doc);
+
+    XPathExpression<Element> xpath =
+        XPathFactory.instance().compile("/grid/point/data[@name='date']", Filters.element());
+    List<Element> dataTimeNodes = xpath.evaluate(doc);
+
     List<DateTime> timePositionDateTime = new ArrayList<DateTime>();
     for (Element e : dataTimeNodes) {
       System.out.printf("Date= %s%n", e.getText());

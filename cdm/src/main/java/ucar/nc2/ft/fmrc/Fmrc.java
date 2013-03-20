@@ -33,7 +33,7 @@
 package ucar.nc2.ft.fmrc;
 
 import net.jcip.annotations.ThreadSafe;
-import org.jdom.Element;
+import org.jdom2.Element;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.dataset.NetcdfDataset;

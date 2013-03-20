@@ -32,9 +32,9 @@
  */
 package ucar.nc2.util.xml;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class Parse {
    * @throws java.io.IOException on read error
    */
   static public Element readRootElement(String location) throws IOException {
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(location);
@@ -77,7 +77,7 @@ public class Parse {
     boolean bad = false;
     for (int i = 0, len = text.length(); i < len; i++) {
       int ch = text.charAt(i);
-      if (!org.jdom.Verifier.isXMLCharacter(ch)) {
+      if (!org.jdom2.Verifier.isXMLCharacter(ch)) {
         bad = true;
         break;
       }
@@ -88,7 +88,7 @@ public class Parse {
     StringBuilder sbuff = new StringBuilder(text.length());
     for (int i = 0, len = text.length(); i < len; i++) {
       int ch = text.charAt(i);
-      if (org.jdom.Verifier.isXMLCharacter(ch))
+      if (org.jdom2.Verifier.isXMLCharacter(ch))
         sbuff.append((char) ch);
     }
     return sbuff.toString();

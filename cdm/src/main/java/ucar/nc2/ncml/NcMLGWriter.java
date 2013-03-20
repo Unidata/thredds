@@ -39,9 +39,9 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.ma2.*;
 
-import org.jdom.*;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
+import org.jdom2.*;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
 
 import java.io.*;
 import java.util.*;
@@ -217,7 +217,7 @@ public class NcMLGWriter {
 
     if (att.isString()) {
       String value = att.getStringValue();
-      String err = org.jdom.Verifier.checkCharacterData(value);
+      String err = org.jdom2.Verifier.checkCharacterData(value);
       if (err != null) {
         value = "NcMLWriter invalid attribute value, err= "+err;
         System.out.println(value);
@@ -242,7 +242,7 @@ public class NcMLGWriter {
 
     if (att.isString()) {
       String value = att.getStringValue();
-      String err = org.jdom.Verifier.checkCharacterData(value);
+      String err = org.jdom2.Verifier.checkCharacterData(value);
       if (err != null) {
         value = "NcMLWriter invalid attribute value, err= "+err;
         System.out.println(value);

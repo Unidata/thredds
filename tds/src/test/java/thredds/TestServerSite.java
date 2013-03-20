@@ -573,7 +573,7 @@ public class TestServerSite extends TestCase
   {
     // Get InvCatalogImp of this response.
     InvCatalogImpl cat = null;
-    org.jdom.input.DOMBuilder builder = new org.jdom.input.DOMBuilder();
+    org.jdom2.input.DOMBuilder builder = new org.jdom2.input.DOMBuilder();
     try
     {
       cat = InvCatalogFactory.getDefaultFactory( false ).readXML( builder.build( catDoc), new URI( respUrlString ) );

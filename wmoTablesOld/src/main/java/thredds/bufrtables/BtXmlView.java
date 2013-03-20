@@ -33,9 +33,9 @@
 package thredds.bufrtables;
 
 import org.springframework.web.servlet.view.AbstractView;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

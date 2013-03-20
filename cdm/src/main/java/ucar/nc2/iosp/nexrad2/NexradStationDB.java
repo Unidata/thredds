@@ -42,8 +42,8 @@ import java.util.Map;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.jdom.*;
-import org.jdom.input.*;
+import org.jdom2.*;
+import org.jdom2.input.*;
 
 /**
  * Manage Nexrad Stations "database"

@@ -32,9 +32,9 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
 import java.io.IOException;
 import java.io.FileInputStream;
@@ -81,7 +81,7 @@ public class CompareTableB {
   static Map<Integer, Feature> bmTable = new TreeMap<Integer, Feature>();
 
   public void readBmt() throws IOException {
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(bmt);
@@ -284,7 +284,7 @@ public class CompareTableB {
   // compare tables, accumulate problem messages
 
   /* public void readTableXML() throws IOException {
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(robbxml);

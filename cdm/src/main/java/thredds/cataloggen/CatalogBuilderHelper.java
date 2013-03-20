@@ -41,7 +41,7 @@ import thredds.crawlabledataset.CrawlableDatasetFactory;
 
 import java.io.IOException;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 /**
  * _more_

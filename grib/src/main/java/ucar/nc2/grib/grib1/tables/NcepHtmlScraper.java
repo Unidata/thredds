@@ -32,8 +32,8 @@
 
 package ucar.nc2.grib.grib1.tables;
 
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -105,20 +105,20 @@ public class NcepHtmlScraper {
   }
 
   private void writeTable3Xml(String name, String source, String filename, List<GribLevelType> stuff) throws IOException {
-     org.jdom.Element rootElem = new org.jdom.Element("table3");
-     org.jdom.Document doc = new org.jdom.Document(rootElem);
-     rootElem.addContent(new org.jdom.Element("title").setText(name));
-     rootElem.addContent(new org.jdom.Element("source").setText(source));
+     org.jdom2.Element rootElem = new org.jdom2.Element("table3");
+     org.jdom2.Document doc = new org.jdom2.Document(rootElem);
+     rootElem.addContent(new org.jdom2.Element("title").setText(name));
+     rootElem.addContent(new org.jdom2.Element("source").setText(source));
 
      for (GribLevelType p : stuff) {
-       org.jdom.Element paramElem = new org.jdom.Element("parameter");
+       org.jdom2.Element paramElem = new org.jdom2.Element("parameter");
        paramElem.setAttribute("code", Integer.toString(p.getCode()));
-       paramElem.addContent(new org.jdom.Element("description").setText(p.getDatum()));
-       paramElem.addContent(new org.jdom.Element("abbrev").setText(p.getAbbrev()));
-       if (p.getUnits() != null) paramElem.addContent(new org.jdom.Element("units").setText(p.getUnits()));
-       if (p.getDatum() != null) paramElem.addContent(new org.jdom.Element("datum").setText(p.getDatum()));
-       if (p.isPositiveUp()) paramElem.addContent(new org.jdom.Element("isPositiveUp").setText("true"));
-       if (p.isLayer()) paramElem.addContent(new org.jdom.Element("isLayer").setText("true"));
+       paramElem.addContent(new org.jdom2.Element("description").setText(p.getDatum()));
+       paramElem.addContent(new org.jdom2.Element("abbrev").setText(p.getAbbrev()));
+       if (p.getUnits() != null) paramElem.addContent(new org.jdom2.Element("units").setText(p.getUnits()));
+       if (p.getDatum() != null) paramElem.addContent(new org.jdom2.Element("datum").setText(p.getDatum()));
+       if (p.isPositiveUp()) paramElem.addContent(new org.jdom2.Element("isPositiveUp").setText("true"));
+       if (p.isLayer()) paramElem.addContent(new org.jdom2.Element("isLayer").setText("true"));
        rootElem.addContent(paramElem);
      }
 
@@ -211,15 +211,15 @@ public class NcepHtmlScraper {
   }
 
   private void writeTableAXml(String name, String source, String filename, List<Stuff> stuff) throws IOException {
-    org.jdom.Element rootElem = new org.jdom.Element("tableA");
-    org.jdom.Document doc = new org.jdom.Document(rootElem);
-    rootElem.addContent(new org.jdom.Element("title").setText(name));
-    rootElem.addContent(new org.jdom.Element("source").setText(source));
+    org.jdom2.Element rootElem = new org.jdom2.Element("tableA");
+    org.jdom2.Document doc = new org.jdom2.Document(rootElem);
+    rootElem.addContent(new org.jdom2.Element("title").setText(name));
+    rootElem.addContent(new org.jdom2.Element("source").setText(source));
 
     for (Stuff p : stuff) {
-      org.jdom.Element paramElem = new org.jdom.Element("parameter");
+      org.jdom2.Element paramElem = new org.jdom2.Element("parameter");
       paramElem.setAttribute("code", Integer.toString(p.no));
-      paramElem.addContent(new org.jdom.Element("description").setText(p.desc));
+      paramElem.addContent(new org.jdom2.Element("description").setText(p.desc));
       rootElem.addContent(paramElem);
     }
 
@@ -310,17 +310,17 @@ public class NcepHtmlScraper {
   String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
 
   private void writeTable2Xml(String name, String source, String filename, List<Param> params) throws IOException {
-    org.jdom.Element rootElem = new org.jdom.Element("parameterMap");
-    org.jdom.Document doc = new org.jdom.Document(rootElem);
-    rootElem.addContent(new org.jdom.Element("title").setText(name));
-    rootElem.addContent(new org.jdom.Element("source").setText(source));
+    org.jdom2.Element rootElem = new org.jdom2.Element("parameterMap");
+    org.jdom2.Document doc = new org.jdom2.Document(rootElem);
+    rootElem.addContent(new org.jdom2.Element("title").setText(name));
+    rootElem.addContent(new org.jdom2.Element("source").setText(source));
 
     for (Param p : params) {
-      org.jdom.Element paramElem = new org.jdom.Element("parameter");
+      org.jdom2.Element paramElem = new org.jdom2.Element("parameter");
       paramElem.setAttribute("code", Integer.toString(p.pnum));
-      paramElem.addContent(new org.jdom.Element("shortName").setText(p.name));
-      paramElem.addContent(new org.jdom.Element("description").setText(p.desc));
-      paramElem.addContent(new org.jdom.Element("units").setText(p.unit));
+      paramElem.addContent(new org.jdom2.Element("shortName").setText(p.name));
+      paramElem.addContent(new org.jdom2.Element("description").setText(p.desc));
+      paramElem.addContent(new org.jdom2.Element("units").setText(p.unit));
       rootElem.addContent(paramElem);
     }
 

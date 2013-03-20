@@ -35,8 +35,8 @@ package thredds.catalog;
 
 import javax.xml.parsers.*;
 import org.xml.sax.*;
-import org.jdom.input.SAXBuilder;
-import org.jdom.Namespace;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.Namespace;
 
 import java.lang.reflect.*;
 import java.io.*;

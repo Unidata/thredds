@@ -151,7 +151,7 @@ public class Grib1ParamTables {
    * @return Grib1Tables
    * @throws IOException on read error
    */
-  static public Grib1ParamTables factory(org.jdom.Element paramTableElem) throws IOException {
+  static public Grib1ParamTables factory(org.jdom2.Element paramTableElem) throws IOException {
     if (paramTableElem == null) return new Grib1ParamTables();
 
     Grib1ParamTables result = new Grib1ParamTables();

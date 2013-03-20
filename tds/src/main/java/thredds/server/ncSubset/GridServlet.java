@@ -55,11 +55,11 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.InvalidRangeException;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.transform.XSLTransformer;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.transform.XSLTransformer;
 
 /**
  * Netcdf Subset Service for Grids.

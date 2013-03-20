@@ -35,8 +35,8 @@ package thredds.wcs.v1_0_0_1;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
-import org.jdom.Element;
-import org.jdom.Namespace;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 import thredds.wcs.Request;
 
 /**

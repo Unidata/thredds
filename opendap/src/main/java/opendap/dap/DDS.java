@@ -49,7 +49,7 @@ import java.io.*;
 import opendap.dap.parsers.DDSXMLParser;
 import opendap.dap.parsers.*;
 import opendap.util.Debug;
-import org.jdom.Document;
+import org.jdom2.Document;
 
 /**
  * The OPeNDAP Data Descriptor Object (DDS) is a data structure used by

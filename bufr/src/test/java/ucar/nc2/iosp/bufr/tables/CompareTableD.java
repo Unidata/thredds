@@ -32,9 +32,9 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -61,7 +61,7 @@ public class CompareTableD {
   String bmt = "file:C:/dev/tds/bufr/resources/source/ukmet/original/BUFR_D_080731.xml";
   static Map<Integer, Sequence> bmTable = new TreeMap<Integer, Sequence>();
   public void readBmt() throws IOException {
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(bmt);
@@ -199,7 +199,7 @@ public class CompareTableD {
   // read robb's table
 
   public void readTable() throws IOException {
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(robbxml);

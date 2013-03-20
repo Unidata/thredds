@@ -32,10 +32,10 @@
  */
 package ucar.unidata.geoloc.ogc;
 
-import org.jdom.output.XMLOutputter;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Namespace;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class CoordRefSysToGML
   public static void writeCoordRefSysAsGML( PrintWriter pw, ucar.nc2.dataset.CoordinateSystem coordSys )
           throws IOException
   {
-    XMLOutputter xmlOutputter = new XMLOutputter( org.jdom.output.Format.getPrettyFormat() );
+    XMLOutputter xmlOutputter = new XMLOutputter( org.jdom2.output.Format.getPrettyFormat() );
     xmlOutputter.output( genCoordRefSysAsGML( coordSys), pw );
   }
 

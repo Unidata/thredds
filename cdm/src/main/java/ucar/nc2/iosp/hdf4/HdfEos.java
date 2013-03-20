@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Formatter;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * Parse structural metadata from HDF-EOS.
@@ -170,7 +170,7 @@ public class HdfEos {
     // SWATH
     Element swathStructure = root.getChild("SwathStructure");
     if (swathStructure != null) {
-      List<Element> swaths = (List<Element>) swathStructure.getChildren();
+      List<Element> swaths = swathStructure.getChildren();
       for (Element elemSwath : swaths) {
         Element swathNameElem = elemSwath.getChild("SwathName");
         if (swathNameElem == null) {
@@ -193,7 +193,7 @@ public class HdfEos {
     // GRID
     Element gridStructure = root.getChild("GridStructure");
     if (gridStructure != null) {
-      List<Element> grids = (List<Element>) gridStructure.getChildren();
+      List<Element> grids = gridStructure.getChildren();
       for (Element elemGrid : grids) {
         Element gridNameElem = elemGrid.getChild("GridName");
         if (gridNameElem == null) {
@@ -215,7 +215,7 @@ public class HdfEos {
     // POINT - NOT DONE YET
     Element pointStructure = root.getChild("PointStructure");
     if (pointStructure != null) {
-      List<Element> pts = (List<Element>) pointStructure.getChildren();
+      List<Element> pts = pointStructure.getChildren();
       for (Element elem : pts) {
         Element nameElem = elem.getChild("PointName");
         if (nameElem == null) {
@@ -248,7 +248,7 @@ public class HdfEos {
 
     // Dimensions
     Element d = swathElem.getChild("Dimension");
-    List<Element> dims = (List<Element>) d.getChildren();
+    List<Element> dims = d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
       name = NetcdfFile.makeValidCdmObjectName(name);
@@ -279,7 +279,7 @@ public class HdfEos {
 
     // Dimension Maps
     Element dmap = swathElem.getChild("DimensionMap");
-    List<Element> dimMaps = (List<Element>) dmap.getChildren();
+    List<Element> dimMaps = dmap.getChildren();
     for (Element elem : dimMaps) {
       String geoDimName = elem.getChild("GeoDimension").getText();
       geoDimName = NetcdfFile.makeValidCdmObjectName(geoDimName);
@@ -309,7 +309,7 @@ public class HdfEos {
     if (geoFieldsG != null) {
       Variable latAxis = null, lonAxis = null;
       Element floc = swathElem.getChild("GeoField");
-      List<Element> varsLoc = (List<Element>) floc.getChildren();
+      List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText();
         Variable v = geoFieldsG.findVariable(varname);
@@ -321,7 +321,7 @@ public class HdfEos {
         if (axis == AxisType.Lon) lonAxis = v;
 
         Element dimList = elem.getChild("DimList");
-        List<Element> values = (List<Element>) dimList.getChildren("value");
+        List<Element> values = dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
         if (showWork) System.out.printf(" set coordinate %s %n", v);
       }
@@ -337,7 +337,7 @@ public class HdfEos {
     if (dataG == null) dataG = parent.findGroup(DATA_FIELDS2);
     if (dataG != null) {
       Element f = swathElem.getChild("DataField");
-      List<Element> vars = (List<Element>) f.getChildren();
+      List<Element> vars = f.getChildren();
       for (Element elem : vars) {
         Element dataFieldNameElem = elem.getChild("DataFieldName");
         if (dataFieldNameElem == null) continue;
@@ -351,7 +351,7 @@ public class HdfEos {
         }
 
         Element dimList = elem.getChild("DimList");
-        List<Element> values = (List<Element>) dimList.getChildren("value");
+        List<Element> values = dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
       }
     }
@@ -446,7 +446,7 @@ public class HdfEos {
 
     // global Dimensions
     Element d = gridElem.getChild("Dimension");
-    List<Element> dims = (List<Element>) d.getChildren();
+    List<Element> dims = d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
       name = NetcdfFile.makeValidCdmObjectName(name);
@@ -477,7 +477,7 @@ public class HdfEos {
 
     if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
-      List<Element> varsLoc = (List<Element>) floc.getChildren();
+      List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText();
         Variable v = geoFieldsG.findVariable(varname);
@@ -486,7 +486,7 @@ public class HdfEos {
         assert v != null : varname;
 
         Element dimList = elem.getChild("DimList");
-        List<Element> values = (List<Element>) dimList.getChildren("value");
+        List<Element> values = dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims, location);
       }
     }
@@ -497,7 +497,7 @@ public class HdfEos {
 
     if (dataG != null) {
       Element f = gridElem.getChild("DataField");
-      List<Element> vars = (List<Element>) f.getChildren();
+      List<Element> vars = f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText();
         varname = NetcdfFile.makeValidCdmObjectName( varname);
@@ -507,7 +507,7 @@ public class HdfEos {
         assert v != null : varname;
 
         Element dimList = elem.getChild("DimList");
-        List<Element> values = (List<Element>) dimList.getChildren("value");
+        List<Element> values = dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims, location);
       }
 
@@ -539,7 +539,7 @@ public class HdfEos {
     Element child = elem.getChild(name);
     if (child == null) return;
     if (isDoubleArray) {
-      List<Element> vElems = (List<Element>) child.getChildren();
+      List<Element> vElems = child.getChildren();
       List<Double> values = new ArrayList<Double>();
       for (Element ve : vElems) {
         String valueS = ve.getText();

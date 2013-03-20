@@ -38,11 +38,11 @@ import thredds.catalog.MetadataConverterIF;
 import thredds.catalog.InvDataset;
 import thredds.catalog.ServiceType;
 
-import org.jdom.*;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.*;
-import org.jdom.output.*;
+import org.jdom2.*;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.*;
+import org.jdom2.output.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -116,7 +116,7 @@ public class CatGenConfigMetadataFactory
    * @param mdataElement - the metadata element as an org.w3c.dom.Element
    * @return an object representing the metadata which is an ArrayList of CatalogGenConfig instances.
    */
-  public Object readMetadataContent( InvDataset dataset, org.jdom.Element mdataElement )
+  public Object readMetadataContent( InvDataset dataset, org.jdom2.Element mdataElement )
   {
     log.debug( "readMetadataContent(): ." );
 
@@ -136,7 +136,7 @@ public class CatGenConfigMetadataFactory
    * @param mdataJdomElement - add content to this org.w3c.dom.Element
    * @param contentObject - the content model
    */
-  public void addMetadataContent( org.jdom.Element mdataJdomElement, Object contentObject )
+  public void addMetadataContent( org.jdom2.Element mdataJdomElement, Object contentObject )
   {
     // convert to JDOM element
     //Element mdataJdomElement = builder.build( mdataElement );
@@ -347,7 +347,7 @@ public class CatGenConfigMetadataFactory
   // Private methods to support addMetadataContent()
 
   /** Create a 'catalogGenConfig' JDOM element */
-  private org.jdom.Element createCatGenConfigElement( CatalogGenConfig cgc)
+  private org.jdom2.Element createCatGenConfigElement( CatalogGenConfig cgc)
   {
     // @todo Need to deal with the 0.6 and 1.0 namespaces.
     Element cgcElem = new Element("catalogGenConfig", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
@@ -368,7 +368,7 @@ public class CatGenConfigMetadataFactory
   }
 
   /** Create a 'DatasetSource' JDOM element */
-  private org.jdom.Element createDatasetSourceElement( DatasetSource dsSource)
+  private org.jdom2.Element createDatasetSourceElement( DatasetSource dsSource)
   {
     Element dssElem = new Element("datasetSource", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
     if ( dsSource != null)
@@ -425,7 +425,7 @@ public class CatGenConfigMetadataFactory
   }
 
   /** Create a 'DatasetNamer' JDOM element */
-  private org.jdom.Element createDatasetNamerElement( DatasetNamer dsNamer)
+  private org.jdom2.Element createDatasetNamerElement( DatasetNamer dsNamer)
   {
     Element dsnElem = new Element("datasetNamer", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
     if ( dsNamer != null)
@@ -475,7 +475,7 @@ public class CatGenConfigMetadataFactory
   }
 
   /** Create a 'DatasetFilter' JDOM element */
-  private org.jdom.Element createDatasetFilterElement( DatasetFilter dsFilter)
+  private org.jdom2.Element createDatasetFilterElement( DatasetFilter dsFilter)
   {
     Element dsfElem = new Element("datasetFilter", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
     if ( dsFilter != null)
@@ -519,7 +519,7 @@ public class CatGenConfigMetadataFactory
   }
 
   /** Create a 'ResultService' JDOM element */
-  private org.jdom.Element createResultServiceElement( ResultService resultService)
+  private org.jdom2.Element createResultServiceElement( ResultService resultService)
   {
     Element rsElem = new Element("resultService", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
     if ( resultService != null)

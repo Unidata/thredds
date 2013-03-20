@@ -50,12 +50,12 @@ import ucar.nc2.constants._Coordinate;
 import java.util.*;
 import java.io.*;
 
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import thredds.inventory.MFile;
 import thredds.inventory.CollectionManager;
 
@@ -574,7 +574,7 @@ public class GridDatasetInv {
    */
   private static GridDatasetInv readXML(byte[] xmlString) throws IOException {
     InputStream is = new BufferedInputStream(new ByteArrayInputStream(xmlString));
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(is);

@@ -32,10 +32,10 @@
  */
 package thredds.server.cataloggen;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.*;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.*;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
 
 import java.util.List;
 import java.util.ArrayList;

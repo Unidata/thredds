@@ -36,9 +36,9 @@ import junit.framework.*;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.XMLEntityResolver;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
-import org.jdom.*;
-import org.jdom.output.XMLOutputter;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.*;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.input.SAXBuilder;
 
 import java.io.*;
 import java.util.List;
@@ -98,7 +98,7 @@ public class TestDatasetScanFilter extends TestCase
     // Write the resulting element to string.
     ByteArrayOutputStream inBaos = new ByteArrayOutputStream();
     ByteArrayOutputStream outBaos = new ByteArrayOutputStream();
-    XMLOutputter fmt = new XMLOutputter( org.jdom.output.Format.getPrettyFormat() );
+    XMLOutputter fmt = new XMLOutputter( org.jdom2.output.Format.getPrettyFormat() );
     try
     {
       fmt.output( inFilterElem, inBaos );

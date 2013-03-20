@@ -33,7 +33,7 @@
 // $Id: DatasetScanCatalogBuilder.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.cataloggen;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 import thredds.catalog.*;
 import thredds.crawlabledataset.CrawlableDataset;
 

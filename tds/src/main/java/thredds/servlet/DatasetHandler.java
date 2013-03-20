@@ -211,7 +211,7 @@ public class DatasetHandler {
     }
 
     // wrap with ncml if needed : for DatasetScan only
-    org.jdom.Element netcdfElem = DataRootHandler.getInstance().getNcML(reqPath);
+    org.jdom2.Element netcdfElem = DataRootHandler.getInstance().getNcML(reqPath);
     if (netcdfElem != null) {
       NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, null); // do not enhance !!
       new NcMLReader().readNetcdf(reqPath, ncd, ncd, netcdfElem, null);
@@ -257,7 +257,7 @@ public class DatasetHandler {
     }
 
     public NetcdfFile open(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-      org.jdom.Element netcdfElem = ds.getNcmlElement();
+      org.jdom2.Element netcdfElem = ds.getNcmlElement();
       return NcMLReader.readNcML(cacheName, netcdfElem, cancelTask);
     }
   }

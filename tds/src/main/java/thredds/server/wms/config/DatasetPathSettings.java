@@ -35,8 +35,8 @@ import java.util.Map;
 import org.apache.oro.text.GlobCompiler;
 import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.Perl5Matcher;
-import org.jdom.Element;
-import org.jdom.xpath.XPath;
+import org.jdom2.Element;
+import org.jdom2.xpath.XPath;
 
 /**
  * LayerSettings for a certain dataset path

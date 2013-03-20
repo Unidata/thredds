@@ -37,8 +37,8 @@ package thredds.catalog.parser.jdom;
 import thredds.catalog.*;
 import thredds.catalog.query.*;
 
-import org.jdom.*;
-import org.jdom.output.*;
+import org.jdom2.*;
+import org.jdom2.output.*;
 
 import java.io.*;
 import java.net.*;
@@ -71,7 +71,7 @@ public class DqcConvert4 implements DqcConvertIF {
    * @param uri : the URI that the XML doc is at.
    * @return an QueryCapability object
    */
-  public QueryCapability parseXML(DqcFactory fac, org.jdom.Document jdomDoc, URI uri) throws IOException {
+  public QueryCapability parseXML(DqcFactory fac, org.jdom2.Document jdomDoc, URI uri) throws IOException {
     this.factory = fac;
     this.docURI = uri;
 
@@ -606,7 +606,7 @@ public class DqcConvert4 implements DqcConvertIF {
    * @throws IOException
    */
   public void writeXML(QueryCapability qc, OutputStream os) throws IOException {
-    XMLOutputter fmt = new XMLOutputter(org.jdom.output.Format.getPrettyFormat()); 
+    XMLOutputter fmt = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat());
     fmt.output(writeQC(qc), os);
   }
 

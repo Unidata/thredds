@@ -79,7 +79,7 @@ public class InvDatasetImpl extends InvDataset {
   // inheritable InvMetadata
   protected ThreddsMetadata tmi = new ThreddsMetadata(true); // local inheritable metadata (canonicalization)
   protected ThreddsMetadata tmi6 = new ThreddsMetadata(true); // local catalog 0.6 inheritable metadata
-  protected org.jdom.Element ncmlElement;
+  protected org.jdom2.Element ncmlElement;
 
   // validation
   protected StringBuilder log = new StringBuilder();
@@ -703,11 +703,11 @@ public class InvDatasetImpl extends InvDataset {
   /**
    * @return the ncml element if it exists, else return null.
    */
-  public org.jdom.Element getNcmlElement() {
+  public org.jdom2.Element getNcmlElement() {
     return ncmlElement;
   }
 
-  public void setNcmlElement(org.jdom.Element ncmlElement) {
+  public void setNcmlElement(org.jdom2.Element ncmlElement) {
     this.ncmlElement = ncmlElement;
   }
 

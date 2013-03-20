@@ -39,9 +39,9 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.Variable;
 
-import org.jdom.*;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
+import org.jdom2.*;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
 import ucar.unidata.util.Parameter;
 
 import java.io.File;

@@ -49,10 +49,10 @@ import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.ma2.DataType;
 
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import java.io.OutputStream;
 import java.io.IOException;

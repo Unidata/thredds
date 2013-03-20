@@ -40,6 +40,7 @@ import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.junit.Test;
+import ucar.nc2.TestLocal;
 import ucar.nc2.util.UnitTestCommon;
 
 import java.io.*;
@@ -362,7 +363,7 @@ public class TestAuth extends UnitTestCommon
         );
 
         // Remove any old file
-        File target1 = new File("./serial1");
+        File target1 = new File(TestLocal.temporaryDataDir + "serial1");
         target1.delete();
 
         // serialize out

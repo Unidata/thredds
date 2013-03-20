@@ -1,7 +1,7 @@
 package thredds.util;
 
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -128,13 +128,13 @@ public class UnidataTdsDataPathRemapper {
             }
 
             SAXBuilder builder = new SAXBuilder();
-            org.jdom.Document doc = builder.build(is);
-            org.jdom.Element root = doc.getRootElement();
-            List<org.jdom.Element> dsElems = root.getChildren("urlMap");
-            for (org.jdom.Element dsElem : dsElems) {
+            org.jdom2.Document doc = builder.build(is);
+            org.jdom2.Element root = doc.getRootElement();
+            List<org.jdom2.Element> dsElems = root.getChildren("urlMap");
+            for (org.jdom2.Element dsElem : dsElems) {
                 String dsType = dsElem.getAttributeValue("type");
-                List<org.jdom.Element> params = dsElem.getChildren("urlPath");
-                for (org.jdom.Element elem : params) {
+                List<org.jdom2.Element> params = dsElem.getChildren("urlPath");
+                for (org.jdom2.Element elem : params) {
                     String oldUrlPath = elem.getAttributeValue("oldUrlPath");
                     String newUrlPath = elem.getAttributeValue("newUrlPath");
                     beans.add(new UrlRemapperBean(dsType,oldUrlPath,newUrlPath));

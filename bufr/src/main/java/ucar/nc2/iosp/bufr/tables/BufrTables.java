@@ -47,9 +47,9 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import ucar.nc2.wmo.Util;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -823,7 +823,7 @@ public class BufrTables {
   }
 
   static private void readBmetTableB(InputStream ios, TableB b) throws IOException {
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(ios);

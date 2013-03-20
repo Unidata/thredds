@@ -33,12 +33,12 @@
 
 package ucar.nc2.dt.fmrc;
 
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 import java.io.*;
 import java.util.*;
@@ -623,7 +623,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     if (!xml.exists()) return false;
 
     InputStream is = new BufferedInputStream(new FileInputStream(xmlLocation));
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(is);

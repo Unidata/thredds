@@ -32,8 +32,8 @@
  */
 package ucar.nc2.util.xml;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.*;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.*;
 import ucar.unidata.util.Format;
 
 import java.io.IOException;

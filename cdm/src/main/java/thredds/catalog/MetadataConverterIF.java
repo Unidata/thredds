@@ -44,13 +44,13 @@ package thredds.catalog;
 public interface MetadataConverterIF {
 
    /**
-    * Create an InvMetadata content object from an org.jdom.Element.
+    * Create an InvMetadata content object from an org.jdom2.Element.
     *
     * @param dataset : the containing dataset
     * @param mdataElement : the <metadata> element
     * @return an object representing the metadata content. The type depends on the metadata handler.
     */
-  public Object readMetadataContent( InvDataset dataset, org.jdom.Element mdataElement);
+  public Object readMetadataContent( InvDataset dataset, org.jdom2.Element mdataElement);
 
   /**
    * Create an InvMetadata content object from an XML document at a named URL.
@@ -65,12 +65,12 @@ public interface MetadataConverterIF {
 
 
    /**
-    * Serialize the InvMetadata content object to a org.jdom.Element and add ro the <metadata> element.
+    * Serialize the InvMetadata content object to a org.jdom2.Element and add ro the <metadata> element.
     *
     * @param mdataElement : the org.w3c.dom.Element to add to
     * @param contentObject : the InvMetadata content object
     */
-  public void addMetadataContent( org.jdom.Element mdataElement, Object contentObject);
+  public void addMetadataContent( org.jdom2.Element mdataElement, Object contentObject);
 
   /**
    * Validate internal data structures.

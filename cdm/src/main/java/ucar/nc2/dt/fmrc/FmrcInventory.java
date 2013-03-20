@@ -39,10 +39,10 @@ import java.util.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
 
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvAccess;

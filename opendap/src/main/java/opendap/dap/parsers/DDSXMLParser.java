@@ -45,8 +45,9 @@ import java.io.*;
 import java.util.List;
 import java.util.Iterator;
 
-import org.jdom.*;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.*;
+import org.jdom2.Attribute;
+import org.jdom2.input.SAXBuilder;
 
 import opendap.dap.*;
 import opendap.util.Debug;
@@ -275,7 +276,7 @@ public class DDSXMLParser {
             // dataBLOB?
             // The schema says that the href attribute is
             // required for the dataBLOB element.
-            org.jdom.Attribute hrefAttr = e.getAttribute("href");
+            org.jdom2.Attribute hrefAttr = e.getAttribute("href");
 
             // Since it's required we know that the getAttribute()
             // method is not going to return null.
@@ -317,11 +318,9 @@ public class DDSXMLParser {
                     parseGrid(e, indent);
                 } else {
                     // Otherwise, recurse on the children
-                    Iterator ci = e.getChildren().iterator();
-                    while (ci.hasNext()) {
-                        Element child = (Element) ci.next();
-                        parseBase(child, indent + "    ");
-                    }
+                  for (Element child : e.getChildren()) {
+                    parseBase(child, indent + "    ");
+                  }
                 }
                 // restore my parent
                 parentDC = myParentDC;
@@ -357,69 +356,66 @@ public class DDSXMLParser {
         int numDims = 0;
 
 
-        Iterator li = ArrayElement.getChildren().iterator();
-        while (li.hasNext()) {
+      for (Element e : ArrayElement.getChildren()) {
 
-            Element e = (Element) li.next();
+        if (_Debug) System.out.println(indent + "Working on Array element: " + e.getName());
 
-            if (_Debug) System.out.println(indent + "Working on Array element: " + e.getName());
-
-            // Is this element an Attribute of the Array?
-            if (e.getName().equals("Attribute")) {
-                //Then ignore it!
-            }
-            // Is this element an Attribute of the Alias?
-            else if (e.getName().equals("Alias")) {
-                //Then ignore it!
-            }
-            // Is this element an array dimension?
-            else if (e.getName().equals("dimension")) {
-
-                // Then count it,
-                numDims++;
-
-                // And now let's add it to the array...
-
-                // Array dimension are not required to have names, so
-                // the schema does not enforce the use of the name attribute.
-
-                // try to get the dimension's name, and use it id it's there.
-                String name = null;
-                org.jdom.Attribute nameAttr = e.getAttribute("name");
-
-                if (nameAttr != null)
-                    name = nameAttr.getValue();
-
-                // The presence of the 'size' attribute is enforeced by the schema.
-                // get it, parse it, use it.
-                int size = Integer.parseInt(e.getAttribute("size").getValue());
-
-                // add the dimension to the array.
-                da.appendDim(size, (name));
-            } else { // otherwise, it must be THE template element.
-
-                // Just to make sure the schema validation didn't fail (because
-                // I am basically paranoid about software) count the number of
-                // template candidates we find and throw an Exception later
-                // if there was more than one.
-                countTemplateVars++;
-
-                // The template element is just another BaseType
-                // derived element. So, let's go build it!
-                BaseType template = buildArrayTemplate(e, indent);
-
-                // Oddly, in the OPeNDAP implementation of Array, the Array variable
-                // takes it's name from it's (internal) template variable. This
-                // is probably an artifact of the original DDSParser.
-
-                // So, set the name of the template variable to the name of the Array.
-                template.setClearName(da.getClearName());
-
-                // Add the template variable to the Array
-                da.addVariable(template);
-
-            }
+        // Is this element an Attribute of the Array?
+        if (e.getName().equals("Attribute")) {
+          //Then ignore it!
         }
+        // Is this element an Attribute of the Alias?
+        else if (e.getName().equals("Alias")) {
+          //Then ignore it!
+        }
+        // Is this element an array dimension?
+        else if (e.getName().equals("dimension")) {
+
+          // Then count it,
+          numDims++;
+
+          // And now let's add it to the array...
+
+          // Array dimension are not required to have names, so
+          // the schema does not enforce the use of the name attribute.
+
+          // try to get the dimension's name, and use it id it's there.
+          String name = null;
+          Attribute nameAttr = e.getAttribute("name");
+
+          if (nameAttr != null)
+            name = nameAttr.getValue();
+
+          // The presence of the 'size' attribute is enforeced by the schema.
+          // get it, parse it, use it.
+          int size = Integer.parseInt(e.getAttribute("size").getValue());
+
+          // add the dimension to the array.
+          da.appendDim(size, (name));
+        } else { // otherwise, it must be THE template element.
+
+          // Just to make sure the schema validation didn't fail (because
+          // I am basically paranoid about software) count the number of
+          // template candidates we find and throw an Exception later
+          // if there was more than one.
+          countTemplateVars++;
+
+          // The template element is just another BaseType
+          // derived element. So, let's go build it!
+          BaseType template = buildArrayTemplate(e, indent);
+
+          // Oddly, in the OPeNDAP implementation of Array, the Array variable
+          // takes it's name from it's (internal) template variable. This
+          // is probably an artifact of the original DDSParser.
+
+          // So, set the name of the template variable to the name of the Array.
+          template.setClearName(da.getClearName());
+
+          // Add the template variable to the Array
+          da.addVariable(template);
+
+        }
+      }
 
         if (_Debug) {
             System.out.println(indent + "Built Array: ");
@@ -478,11 +474,9 @@ public class DDSXMLParser {
                 parseGrid(template, indent);
             } else {
                 // Otherwise, recurse on the children
-                Iterator cii = template.getChildren().iterator();
-                while (cii.hasNext()) {
-                    Element child = (Element) cii.next();
-                    parseBase(child, indent + "    ");
-                }
+              for (Element child : template.getChildren()) {
+                parseBase(child, indent + "    ");
+              }
             }
             // restore my parent
             parentDC = myParentDC;
@@ -510,9 +504,7 @@ public class DDSXMLParser {
             System.out.println("Parsing Grid Element: " + gridElement);
             System.out.println("Grid Elements: ");
             //showXMLElement(gridElement, indent);
-            Iterator kids = gridElement.getChildren().iterator();
-            while (kids.hasNext())
-                System.out.println(kids.next());
+          for (Element element : gridElement.getChildren()) System.out.println(element);
         }
 
         // Get and parse the grid's Array element.
@@ -535,7 +527,7 @@ public class DDSXMLParser {
             System.out.println("Parsing Map elements.");
             System.out.println("Asking for element: '" + eName + "' in namespace: '" + opendapNameSpace + "'");
         }
-        List mapElements = gridElement.getChildren("Map", opendapNameSpace);
+        List<Element> mapElements = gridElement.getChildren("Map", opendapNameSpace);
 
         // Make sure the number of Map elements matches the dimension of the Grid Array.
         if (mapElements.size() != gridArray.numDimensions())
@@ -545,20 +537,17 @@ public class DDSXMLParser {
                     "of the data array.");
 
         // Parse each Map element and poke it into the Grid.
-        for (int i = 0; i < mapElements.size(); i++) {
+      for (Element mapElement : mapElements) {
+        DArray thisMap = (DArray) newBaseType(mapElement);
+        parseArray(mapElement, thisMap, indent + "    ");
 
-            Element mapElement = (Element) mapElements.get(i);
+        if (thisMap.numDimensions() != 1)
+          throw new BadSemanticsException("Error in Grid syntax: " +
+                  "Maps may have only one dimension.");
 
-            DArray thisMap = (DArray) newBaseType(mapElement);
-            parseArray(mapElement, thisMap, indent + "    ");
+        myGrid.addVariable(thisMap, DGrid.MAPS);
 
-            if (thisMap.numDimensions() != 1)
-                throw new BadSemanticsException("Error in Grid syntax: " +
-                        "Maps may have only one dimension.");
-
-            myGrid.addVariable(thisMap, DGrid.MAPS);
-
-        }
+      }
 
         parseLevel--;
 
@@ -580,19 +569,15 @@ public class DDSXMLParser {
         //System.out.println("");
 
 
-        Iterator atts = e.getAttributes().iterator();
-        while (atts.hasNext()) {
-            org.jdom.Attribute att = (org.jdom.Attribute) atts.next();
-            //System.out.print(parseLevel + indent + "    ");
-            System.out.print(att.getName() + ": " + att.getValue() + "  ");
-        }
+      for (Attribute att : e.getAttributes()) {
+        //System.out.print(parseLevel + indent + "    ");
+        System.out.print(att.getName() + ": " + att.getValue() + "  ");
+      }
         System.out.println("");
 
-        Iterator kids = e.getChildren().iterator();
-        while (kids.hasNext()) {
-            Element kid = (Element) kids.next();
-            showXMLElement(kid, indent + "    ");
-        }
+      for (Element kid : e.getChildren()) {
+        showXMLElement(kid, indent + "    ");
+      }
 
 
     }
@@ -621,7 +606,7 @@ public class DDSXMLParser {
         // What is the name of this variable? Since BaseType derived types
         // are not required to have names we have to do this carefully.
         String name = null;
-        org.jdom.Attribute nameAttr = e.getAttribute("name");
+        org.jdom2.Attribute nameAttr = e.getAttribute("name");
 
         if (nameAttr != null)
             name = nameAttr.getValue();
@@ -748,118 +733,108 @@ public class DDSXMLParser {
             System.out.println(subIndent + "currentBT: " + currentBT.getTypeName() + " " + currentBT.getClearName());
 
         // Get all of the Attribute elements (tagged <Attribute>)
-        Iterator attrElements = e.getChildren("Attribute", opendapNameSpace).iterator();
+      for (Element attrElement : e.getChildren("Attribute", opendapNameSpace)) {
 
+        String name = null;
+        Attribute nameAttr = attrElement.getAttribute("name");
+        // no need to check that the getAttribute call worked because the Schema enforces
+        // the presence of the "name" attribute for the <Attribute> tag in the OPeNDAP namespace
+        name = nameAttr.getValue();
 
-        while (attrElements.hasNext()) {
+        String typeName = null;
+        Attribute typeAttr = attrElement.getAttribute("type");
+        // no need to check that the getAttribute call worked because the Schema enforces
+        // the presence of the "type" attribute for the <Attribute> tag in the OPeNDAP namespace
+        typeName = typeAttr.getValue();
 
-            Element attrElement = (Element) attrElements.next();
+        // Is this Attribute a container??
+        if (typeName.equals("Container")) {
 
-            String name = null;
-            org.jdom.Attribute nameAttr = attrElement.getAttribute("name");
-            // no need to check that the getAttribute call worked because the Schema enforces
-            // the presence of the "name" attribute for the <Attribute> tag in the OPeNDAP namespace
-            name = nameAttr.getValue();
+          // Make sure that the document is valid for Attribute Containers and Values
+          Iterator valueChildren = attrElement.getChildren("value", opendapNameSpace).iterator();
+          if (valueChildren.hasNext())
+            throw new AttributeBadValueException(
+                    "Container Attributes may " +
+                            "contain only other Attributes.\n" +
+                            "Container Attributes may NOT " +
+                            "contain values.");
 
-            String typeName = null;
-            org.jdom.Attribute typeAttr = attrElement.getAttribute("type");
-            // no need to check that the getAttribute call worked because the Schema enforces
-            // the presence of the "type" attribute for the <Attribute> tag in the OPeNDAP namespace
-            typeName = typeAttr.getValue();
+          // Cache the currentAT (AttributeTable), this might be a null
+          // in which case the the container should be added to the currentBT.
+          AttributeTable cacheAttributeTable = currentAT;
 
-            // Is this Attribute a container??
-            if (typeName.equals("Container")) {
+          if (_Debug)
+            System.out.println(indent + "currentBT: " + currentBT.getTypeName() + " " + currentBT.getClearName());
+          if (_Debug) System.out.println(indent + "Attribute '" + name + "' is type " + typeName);
 
-                // Make sure that the document is valid for Attribute Containers and Values
-                Iterator valueChildren = attrElement.getChildren("value", opendapNameSpace).iterator();
-                if (valueChildren.hasNext())
-                    throw new AttributeBadValueException(
-                            "Container Attributes may " +
-                                    "contain only other Attributes.\n" +
-                                    "Container Attributes may NOT " +
-                                    "contain values.");
+          // Add the Attribute container to the appropriate object.
+          // If the currentAT is null, this indicates that we are working
+          // on the top level attributes for the currentBT, if it's not
+          // then we are working on the Attributes for some AttributeTable
+          // contained within the top level Attributes in the currentBT.
+          // Set the currentAT to the newly built (and returned) AttributeTable
+          if (currentAT == null)
+            currentAT = currentBT.appendAttributeContainer(name);
+          else
+            currentAT = currentAT.appendContainer(name);
 
-                // Cache the currentAT (AttributeTable), this might be a null
-                // in which case the the container should be added to the currentBT.
-                AttributeTable cacheAttributeTable = currentAT;
+          // Go parse the child Attributes of this Attribute table.
+          // Note that this is a recursive call.
+          parseAttributes(attrElement, indent + "    ");
 
-                if (_Debug)
-                    System.out.println(indent + "currentBT: " + currentBT.getTypeName() + " " + currentBT.getClearName());
-                if (_Debug) System.out.println(indent + "Attribute '" + name + "' is type " + typeName);
+          // Now parse all of the Aliases that exist in this Attribute table.
+          parseAliases(attrElement, "+++ ");
 
-                // Add the Attribute container to the appropriate object.
-                // If the currentAT is null, this indicates that we are working
-                // on the top level attributes for the currentBT, if it's not
-                // then we are working on the Attributes for some AttributeTable
-                // contained within the top level Attributes in the currentBT.
-                // Set the currentAT to the newly built (and returned) AttributeTable
-                if (currentAT == null)
-                    currentAT = currentBT.appendAttributeContainer(name);
-                else
-                    currentAT = currentAT.appendContainer(name);
+          // restore the currentAT from the cached one, thus regaining the
+          // the state that we entered this method with.
+          currentAT = cacheAttributeTable;
 
-                // Go parse the child Attributes of this Attribute table.
-                // Note that this is a recursive call.
-                parseAttributes(attrElement, indent + "    ");
+        } else {
 
-                // Now parse all of the Aliases that exist in this Attribute table.
-                parseAliases(attrElement, "+++ ");
+          // Make sure that the document is valid for Attribute Containers and Values
+          Iterator attrChildren = attrElement.getChildren("Attribute", opendapNameSpace).iterator();
+          if (attrChildren.hasNext())
+            throw new AttributeBadValueException(
+                    "Attributes must be of type Container " +
+                            "in order to contain other Attributes.\n" +
+                            "Attributes of types other than Container " +
+                            "must contain values.");
 
-                // restore the currentAT from the cached one, thus regaining the
-                // the state that we entered this method with.
-                currentAT = cacheAttributeTable;
+          // Walk through the <value> elements
+          for (Element valueChild : attrElement.getChildren("value", opendapNameSpace)) {
+            // Get the content of the value.
+            // There are several methods for getting this content in the
+            // org.jdom2.Element object. The method getText() makes no effort
+            // to "normalize" the white space content. IE tabs, spaces,
+            // carriage return, newlines are all preserved. This might not
+            // be the right thing to do, but only time will tell.
+            String value = valueChild.getText();
 
-            } else {
-
-                // Make sure that the document is valid for Attribute Containers and Values
-                Iterator attrChildren = attrElement.getChildren("Attribute", opendapNameSpace).iterator();
-                if (attrChildren.hasNext())
-                    throw new AttributeBadValueException(
-                            "Attributes must be of type Container " +
-                                    "in order to contain other Attributes.\n" +
-                                    "Attributes of types other than Container " +
-                                    "must contain values.");
-
-                // Get the  <value> elements
-                Iterator valueChildren = attrElement.getChildren("value", opendapNameSpace).iterator();
-
-                // Walk through the <value> elements
-                while (valueChildren.hasNext()) {
-                    Element valueChild = (Element) valueChildren.next();
-
-                    // Get the content of the value.
-                    // There are several methods for getting this content in the
-                    // org.jdom.Element object. The method getText() makes no effort
-                    // to "normalize" the white space content. IE tabs, spaces,
-                    // carriage return, newlines are all preserved. This might not
-                    // be the right thing to do, but only time will tell.
-                    String value = valueChild.getText();
-
-                    if (_Debug) {
-                        System.out.println(subIndent + "Attribute '" + name + "' of " + currentBT.getClearName() +
-                                " is type " + typeName + " and has value: " + value);
-                    }
-
-                    // get the Attribute value type code.
-                    int typeVal = opendap.dap.Attribute.getTypeVal(typeName);
-
-                    // Add the attribute and it's value to the appropriat
-                    // container. Note that the interface for appending
-                    // values to opendap.dap.Attributes is built such that
-                    // the Attribute must be named each time. If the Attribte
-                    // name already exists, then the value is added to the list
-                    // of values for the Attribute. If the Attribute name does not
-                    // already exist, a new Attribute is made to hold the value.
-                    if (currentAT == null)
-                        currentBT.appendAttribute(name, typeVal, value, true);
-                    else
-                        currentAT.appendAttribute(name, typeVal, value, true);
-
-                }
-
+            if (_Debug) {
+              System.out.println(subIndent + "Attribute '" + name + "' of " + currentBT.getClearName() +
+                      " is type " + typeName + " and has value: " + value);
             }
 
+            // get the Attribute value type code.
+            int typeVal = opendap.dap.Attribute.getTypeVal(typeName);
+
+            // Add the attribute and it's value to the appropriat
+            // container. Note that the interface for appending
+            // values to opendap.dap.Attributes is built such that
+            // the Attribute must be named each time. If the Attribte
+            // name already exists, then the value is added to the list
+            // of values for the Attribute. If the Attribute name does not
+            // already exist, a new Attribute is made to hold the value.
+            if (currentAT == null)
+              currentBT.appendAttribute(name, typeVal, value, true);
+            else
+              currentAT.appendAttribute(name, typeVal, value, true);
+
+          }
+
         }
+
+      }
 
 
         parseLevel--;
@@ -882,42 +857,33 @@ public class DDSXMLParser {
             System.out.println(subIndent + "currentBT: " + currentBT.getTypeName() + " " + currentBT.getClearName());
 
         // Get the Alias elements
-        Iterator aliasElements = e.getChildren("Alias", opendapNameSpace).iterator();
+      for (Element aliasElement : e.getChildren("Alias", opendapNameSpace)) {
+        String name = null;
+        Attribute nameAttr = aliasElement.getAttribute("name");
+        // no need to check that the getAttribute call worked because the Schema enforces
+        // the presence of the "name" attribute for the <Alias> tag in the OPeNDAP namespace
+        name = nameAttr.getValue();
 
+        String attributeName = null;
+        Attribute attributeAttr = aliasElement.getAttribute("Attribute");
+        // no need to check that the getAttribute call worked because the Schema enforces
+        // the presence of the "Attribute" attribute for the <Alias> tag in the OPeNDAP namespace
+        attributeName = attributeAttr.getValue();
 
-        while (aliasElements.hasNext()) {
-
-
-            Element aliasElement = (Element) aliasElements.next();
-
-            String name = null;
-            org.jdom.Attribute nameAttr = aliasElement.getAttribute("name");
-            // no need to check that the getAttribute call worked because the Schema enforces
-            // the presence of the "name" attribute for the <Alias> tag in the OPeNDAP namespace
-            name = nameAttr.getValue();
-
-            String attributeName = null;
-            org.jdom.Attribute attributeAttr = aliasElement.getAttribute("Attribute");
-            // no need to check that the getAttribute call worked because the Schema enforces
-            // the presence of the "Attribute" attribute for the <Alias> tag in the OPeNDAP namespace
-            attributeName = attributeAttr.getValue();
-
-            if (_Debug) {
-                System.out.println(subIndent + "The name '" + name +
-                        "' is aliased to dds attribute: '" + attributeName + "'");
-            }
-
-            // Add the Alias to the appropriate container.
-            if (currentAT == null)
-                currentBT.addAttributeAlias(name, attributeName);
-            else
-                currentAT.addAlias(name, attributeName);
-
+        if (_Debug) {
+          System.out.println(subIndent + "The name '" + name +
+                  "' is aliased to dds attribute: '" + attributeName + "'");
         }
 
+        // Add the Alias to the appropriate container.
+        if (currentAT == null)
+          currentBT.addAttributeAlias(name, attributeName);
+        else
+          currentAT.addAlias(name, attributeName);
+
+      }
+
         parseLevel--;
-
-
     }
 
 
@@ -950,7 +916,7 @@ public class DDSXMLParser {
         String xmlQuote = "&quot;";
 
         boolean Debug = false;
-        StringBuffer sb = new StringBuffer(s);
+        StringBuilder sb = new StringBuilder(s);
 
         for (int offset = 0; offset < sb.length(); offset++) {
 

@@ -8,10 +8,10 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
-import org.jdom.Document;
-import org.jdom.Namespace;
-import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
+import org.jdom2.Document;
+import org.jdom2.Namespace;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.xpath.XPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

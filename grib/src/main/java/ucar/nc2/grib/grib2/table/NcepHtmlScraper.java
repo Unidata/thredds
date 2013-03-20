@@ -32,8 +32,8 @@
 
 package ucar.nc2.grib.grib2.table;
 
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -149,16 +149,16 @@ public class NcepHtmlScraper  {
   //     writeCodeTableXml(filename, title, url, tableName, stuff);
 
   private void writeCodeTableXml(String filename, String title, String source, String tableName, List<Code> stuff) throws IOException {
-    org.jdom.Element rootElem = new org.jdom.Element("codeTable");
-    org.jdom.Document doc = new org.jdom.Document(rootElem);
-    rootElem.addContent(new org.jdom.Element("table").setText(tableName));
-    rootElem.addContent(new org.jdom.Element("title").setText(title));
-    rootElem.addContent(new org.jdom.Element("source").setText(source));
+    org.jdom2.Element rootElem = new org.jdom2.Element("codeTable");
+    org.jdom2.Document doc = new org.jdom2.Document(rootElem);
+    rootElem.addContent(new org.jdom2.Element("table").setText(tableName));
+    rootElem.addContent(new org.jdom2.Element("title").setText(title));
+    rootElem.addContent(new org.jdom2.Element("source").setText(source));
 
     for (Code p : stuff) {
-      org.jdom.Element paramElem = new org.jdom.Element("parameter");
+      org.jdom2.Element paramElem = new org.jdom2.Element("parameter");
       paramElem.setAttribute("code", Integer.toString(p.no));
-      paramElem.addContent(new org.jdom.Element("description").setText(p.desc));
+      paramElem.addContent(new org.jdom2.Element("description").setText(p.desc));
       rootElem.addContent(paramElem);
     }
 
@@ -277,18 +277,18 @@ public class NcepHtmlScraper  {
   //     writeCodeTableXml(filename, title, url, tableName, stuff);
 
   private void writeParamTableXml(String filename, String title, String source, String tableName, List<Param> stuff) throws IOException {
-    org.jdom.Element rootElem = new org.jdom.Element("parameterMap");
-    org.jdom.Document doc = new org.jdom.Document(rootElem);
-    rootElem.addContent(new org.jdom.Element("table").setText(tableName));
-    rootElem.addContent(new org.jdom.Element("title").setText(title));
-    rootElem.addContent(new org.jdom.Element("source").setText(source));
+    org.jdom2.Element rootElem = new org.jdom2.Element("parameterMap");
+    org.jdom2.Document doc = new org.jdom2.Document(rootElem);
+    rootElem.addContent(new org.jdom2.Element("table").setText(tableName));
+    rootElem.addContent(new org.jdom2.Element("title").setText(title));
+    rootElem.addContent(new org.jdom2.Element("source").setText(source));
 
     for (Param p : stuff) {
-      org.jdom.Element paramElem = new org.jdom.Element("parameter");
+      org.jdom2.Element paramElem = new org.jdom2.Element("parameter");
       paramElem.setAttribute("code", Integer.toString(p.pnum));
-      paramElem.addContent(new org.jdom.Element("shortName").setText(p.name));
-      paramElem.addContent(new org.jdom.Element("description").setText(p.desc));
-      paramElem.addContent(new org.jdom.Element("units").setText(p.unit));
+      paramElem.addContent(new org.jdom2.Element("shortName").setText(p.name));
+      paramElem.addContent(new org.jdom2.Element("description").setText(p.desc));
+      paramElem.addContent(new org.jdom2.Element("units").setText(p.unit));
       rootElem.addContent(paramElem);
     }
 

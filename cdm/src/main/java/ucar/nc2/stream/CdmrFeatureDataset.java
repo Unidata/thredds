@@ -46,10 +46,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.input.SAXBuilder;
 
 /**
  * Factory for FeatureDataset using CdmrRemote protocol. GRID, POINT, STATION so far
@@ -91,8 +91,8 @@ public class CdmrFeatureDataset {
     }
   }
 
-  static private org.jdom.Document getCapabilities(String endpoint) throws IOException {
-    org.jdom.Document doc;
+  static private org.jdom2.Document getCapabilities(String endpoint) throws IOException {
+    org.jdom2.Document doc;
     InputStream in = null;
     try {
       in = CdmRemote.sendQuery(endpoint, "req=capabilities");

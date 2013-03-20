@@ -32,13 +32,12 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.Element;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.Element;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.util.StringUtil2;
 
-import javax.lang.model.util.ElementScanner6;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -111,10 +110,10 @@ public class CodeFlagTables {
 
     try {
       SAXBuilder builder = new SAXBuilder();
-      org.jdom.Document tdoc = builder.build(is);
-      org.jdom.Element root = tdoc.getRootElement();
+      org.jdom2.Document tdoc = builder.build(is);
+      org.jdom2.Element root = tdoc.getRootElement();
 
-      List<Element> elems = (List<Element>) root.getChildren("Exp_CodeFlagTables_E");
+      List<Element> elems = root.getChildren("Exp_CodeFlagTables_E");
       for (Element elem : elems) {
         String fxyS = elem.getChildText("FXY");
         String desc = elem.getChildText("ElementName_E");
@@ -195,7 +194,7 @@ public class CodeFlagTables {
         int pos1 = line.indexOf('"');
         if (pos1 >= 0) {
           int pos2 = line.indexOf('"', pos1 + 1);
-          StringBuffer sb = new StringBuffer(line);
+          StringBuilder sb = new StringBuilder(line);
           for (int i = pos1; i < pos2; i++)
             if (sb.charAt(i) == ',') sb.setCharAt(i, ' ');
           line = sb.toString();

@@ -32,10 +32,10 @@
 
 package ucar.nc2.grib.grib1.tables;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.Namespace;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.ncml.NcMLReader;
@@ -103,7 +103,7 @@ public class Grib1ParamTable {
    * @param paramTableElem the jdom tree
    * @throws IOException on io error
    */
-  public Grib1ParamTable(org.jdom.Element paramTableElem) throws IOException {
+  public Grib1ParamTable(org.jdom2.Element paramTableElem) throws IOException {
     this.name = paramTableElem.getChildText("title");
     DssParser p = new DssParser(NcMLReader.ncNS);
     this.parameters = p.parseXml(paramTableElem);
@@ -412,7 +412,7 @@ TBLE2 cptec_254_params[] = {
       if (is == null) return false;
 
       SAXBuilder builder = new SAXBuilder();
-      org.jdom.Document doc = builder.build(is);
+      org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
       parameters = parser.parseXml(root);  // all at once - thread safe
       return true;

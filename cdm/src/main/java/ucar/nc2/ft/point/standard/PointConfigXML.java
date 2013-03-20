@@ -32,12 +32,12 @@
 
 package ucar.nc2.ft.point.standard;
 
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -297,7 +297,7 @@ public class PointConfigXML {
       System.out.println(" contents=\n" + IO.readContents(is2));
     }
 
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder(false);
       if (debugURL) System.out.println(" PointConfig URL = <" + resourceLocation + ">");
@@ -323,7 +323,7 @@ public class PointConfigXML {
 
   public TableConfig readConfigXML(String fileLocation, FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
 
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder(false);
       if (debugURL) System.out.println(" PointConfig URL = <" + fileLocation + ">");
@@ -426,19 +426,19 @@ public class PointConfigXML {
 
     }
 
-    List<Element> coordList = (List<Element>) tableElem.getChildren("coordinate");
+    List<Element> coordList = tableElem.getChildren("coordinate");
     for (Element coordElem : coordList) {
       String coordNameType = coordElem.getAttributeValue("type");
       Table.CoordName coordName = Table.CoordName.valueOf(coordNameType);
       tc.setCoordinateVariableName(coordName, coordElem.getText());
     }
 
-    List<Element> joinList = (List<Element>) tableElem.getChildren("join");
+    List<Element> joinList = tableElem.getChildren("join");
     for (Element joinElem : joinList) {
       tc.addJoin( readJoinArray(ds, joinElem));
     }
 
-    List<Element> nestedTableList = (List<Element>) tableElem.getChildren("table");
+    List<Element> nestedTableList = tableElem.getChildren("table");
     for (Element nestedTable : nestedTableList)
       tc.addChild( parseTableConfig(ds, nestedTable, tc));
 

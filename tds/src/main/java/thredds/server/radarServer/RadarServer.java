@@ -56,11 +56,11 @@ import java.net.URL;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.transform.XSLTransformer;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.transform.XSLTransformer;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.StringUtil2;
 

@@ -41,10 +41,10 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;
 
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import ucar.unidata.util.Parameter;
 
 import java.util.*;

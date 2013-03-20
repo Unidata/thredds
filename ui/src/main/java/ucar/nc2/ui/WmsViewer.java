@@ -58,9 +58,9 @@ import java.util.*;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.Element;
-import org.jdom.Namespace;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 import org.apache.commons.httpclient.Header;
 
 /**
@@ -223,8 +223,8 @@ public class WmsViewer extends JPanel {
 
       StringBufferInputStream is = new StringBufferInputStream(contents);
       SAXBuilder builder = new SAXBuilder();
-      org.jdom.Document tdoc = builder.build(is);
-      org.jdom.Element root = tdoc.getRootElement();
+      org.jdom2.Document tdoc = builder.build(is);
+      org.jdom2.Element root = tdoc.getRootElement();
       parseGetCapabilities(root);
 
     } catch (Exception e) {
@@ -238,7 +238,7 @@ public class WmsViewer extends JPanel {
     return true;
   }
 
-  private void parseGetCapabilities(org.jdom.Element root) {
+  private void parseGetCapabilities(org.jdom2.Element root) {
 
     Element capElem = root.getChild("Capability", wmsNamespace);
     Element layer1Elem = capElem.getChild("Layer", wmsNamespace);

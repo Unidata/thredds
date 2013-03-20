@@ -32,8 +32,8 @@
 
 package ucar.nc2.iosp.bufr.tables;
 
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,10 +67,10 @@ public class TableA {
     HashMap<Integer, String> map = new HashMap<Integer, String>(100);
     try {
       SAXBuilder builder = new SAXBuilder();
-      org.jdom.Document tdoc = builder.build(is);
-      org.jdom.Element root = tdoc.getRootElement();
+      org.jdom2.Document tdoc = builder.build(is);
+      org.jdom2.Element root = tdoc.getRootElement();
 
-      List<Element> elems = (List<Element>) root.getChildren("Exp_BUFRTableA_E");
+      List<Element> elems = root.getChildren("Exp_BUFRTableA_E");
       for (Element elem : elems) {
         String line = elem.getChildText("No");
         String codeS = elem.getChildText("CodeFigure");

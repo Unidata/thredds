@@ -33,8 +33,8 @@
 
 package thredds.catalog;
 
-import org.jdom.*;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.*;
+import org.jdom2.input.SAXBuilder;
 
 import java.io.*;
 import java.net.*;
@@ -309,7 +309,7 @@ public class InvCatalogFactory {
     errMessages.setLength(0);
     fatalMessages.setLength(0);
 
-    org.jdom.Document jdomDoc;
+    org.jdom2.Document jdomDoc;
     InputStream is = null;
     try {
       jdomDoc = saxBuilder.build(uri.toURL());
@@ -417,7 +417,7 @@ public class InvCatalogFactory {
     errMessages.setLength(0);
     fatalMessages.setLength(0);
 
-    org.jdom.Document jdomDoc;
+    org.jdom2.Document jdomDoc;
     try {
       jdomDoc = saxBuilder.build(docIs);
     } catch (Exception e) {
@@ -450,7 +450,7 @@ public class InvCatalogFactory {
    * @param uri : the URI of the document, used for resolving reletive references.
    * @return an InvCatalogImpl object
    */
-  public InvCatalogImpl readXML(org.jdom.Document jdomDoc, URI uri) {
+  public InvCatalogImpl readXML(org.jdom2.Document jdomDoc, URI uri) {
 
     // decide on converter based on namespace
     Element root = jdomDoc.getRootElement();

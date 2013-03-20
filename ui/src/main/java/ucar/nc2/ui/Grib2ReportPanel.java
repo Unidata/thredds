@@ -2,10 +2,10 @@ package ucar.nc2.ui;
 
 import org.itadaki.bzip2.BZip2OutputStream;
 import org.itadaki.bzip2.BitOutputStream;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFileCollectionManager;

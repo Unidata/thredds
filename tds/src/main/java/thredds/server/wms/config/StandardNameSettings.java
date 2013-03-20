@@ -28,7 +28,7 @@
 
 package thredds.server.wms.config;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 import ucar.nc2.units.SimpleUnit;
 import ucar.units.ConversionException;
 import uk.ac.rdg.resc.edal.util.Range;

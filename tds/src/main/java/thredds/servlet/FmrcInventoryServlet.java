@@ -33,10 +33,10 @@
 
 package thredds.servlet;
 
-import org.jdom.Document;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.transform.XSLTransformer;
+import org.jdom2.Document;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.transform.XSLTransformer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

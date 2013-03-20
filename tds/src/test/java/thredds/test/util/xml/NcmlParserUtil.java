@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.xpath.XPath;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.xpath.XPath;
 
 public class NcmlParserUtil {
 	

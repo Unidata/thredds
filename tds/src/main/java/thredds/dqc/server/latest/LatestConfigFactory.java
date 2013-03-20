@@ -33,10 +33,10 @@
 // $Id: LatestConfigFactory.java 51 2006-07-12 17:13:13Z caron $
 package thredds.dqc.server.latest;
 
-import org.jdom.*;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.input.*;
+import org.jdom2.*;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.input.*;
 
 import java.io.*;
 import java.util.Iterator;

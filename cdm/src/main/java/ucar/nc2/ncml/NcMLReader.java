@@ -42,9 +42,9 @@ import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
 
 import thredds.catalog.XMLEntityResolver;
-import org.jdom.*;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.*;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -76,7 +76,7 @@ public class NcMLReader {
     debugAggDetail = debugFlag.isSet("NcML/debugAggDetail");
   }
 
-  private static boolean validate = false;
+   // private static boolean validate = false;
 
   /**
    * Use NCML to modify a dataset, getting the NcML document as a resource stream.
@@ -99,9 +99,9 @@ public class NcMLReader {
       System.out.println(" contents=\n" + IO.readContents(is2));
     }
 
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
-      SAXBuilder builder = new SAXBuilder(validate);
+      SAXBuilder builder = new SAXBuilder();
       if (debugURL) System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
       doc = builder.build(is);
     } catch (JDOMException e) {
@@ -131,9 +131,9 @@ public class NcMLReader {
    * @throws IOException on read error
    */
   static public void wrapNcML(NetcdfDataset ncDataset, String ncmlLocation, CancelTask cancelTask) throws IOException {
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
-      SAXBuilder builder = new SAXBuilder(validate);
+      SAXBuilder builder = new SAXBuilder();
       if (debugURL) System.out.println(" NetcdfDataset URL = <" + ncmlLocation + ">");
       doc = builder.build(ncmlLocation);
     } catch (JDOMException e) {
@@ -225,9 +225,9 @@ public class NcMLReader {
       System.out.println("  file = " + url.getFile());
     }
 
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
-      SAXBuilder builder = new SAXBuilder(validate);
+      SAXBuilder builder = new SAXBuilder();
       if (debugURL) System.out.println(" NetcdfDataset URL = <" + url + ">");
       doc = builder.build(url);
     } catch (JDOMException e) {
@@ -265,9 +265,9 @@ public class NcMLReader {
    */
   static public NetcdfDataset readNcML(InputStream ins, CancelTask cancelTask) throws IOException {
 
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
-      SAXBuilder builder = new SAXBuilder(validate);
+      SAXBuilder builder = new SAXBuilder();
       doc = builder.build(ins);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
@@ -310,9 +310,9 @@ public class NcMLReader {
    */
   static public NetcdfDataset readNcML(Reader r, String ncmlLocation, CancelTask cancelTask) throws IOException {
 
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
-      SAXBuilder builder = new SAXBuilder(validate);
+      SAXBuilder builder = new SAXBuilder();
       doc = builder.build(r);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
@@ -854,7 +854,7 @@ public class NcMLReader {
     }
 
     // exists already
-    DataType dtype = null;
+    DataType dtype;
     String typeS = varElem.getAttributeValue("type");
     if (typeS != null)
       dtype = DataType.getType(typeS);
@@ -977,7 +977,7 @@ public class NcMLReader {
       }
 
       String indexS = viewElem.getAttributeValue("index");
-      int index = -1;
+      int index;
       if (null == indexS) {
         errlog.format("NcML logicalSlice: index is required, variable=%s %n", v.getFullName());
         return;
@@ -996,7 +996,6 @@ public class NcMLReader {
 
       } catch (InvalidRangeException e) {
         errlog.format("Invalid logicalSlice (%d,%d) on variable=%s error=%s %n", dim, index, v.getFullName(), e.getMessage());
-        return;
       }
     }
 
@@ -1173,7 +1172,7 @@ public class NcMLReader {
     // check if values are specified by attribute
     String fromAttribute = valuesElem.getAttributeValue("fromAttribute");
     if (fromAttribute != null) {
-      Attribute att = null;
+      Attribute att;
       int pos = fromAttribute.indexOf('@'); // varName@attName
       if (pos > 0) {
         String varName = fromAttribute.substring(0, pos);
@@ -1208,7 +1207,7 @@ public class NcMLReader {
     if ((startS != null) && (incrS != null)) {
       double start = Double.parseDouble(startS);
       double incr = Double.parseDouble(incrS);
-      ds.setValues(v, npts, start, incr);
+      v.setValues(npts, start, incr);
       return;
     }
 
@@ -1234,7 +1233,7 @@ public class NcMLReader {
       StringTokenizer tokn = new StringTokenizer(values, sep);
       while (tokn.hasMoreTokens())
         valList.add(tokn.nextToken());
-      ds.setValues(v, valList);
+      v.setValues(valList);
     }
   }
 

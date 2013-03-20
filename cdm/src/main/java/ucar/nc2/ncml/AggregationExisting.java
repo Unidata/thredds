@@ -55,7 +55,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * JoinExisting Aggregation.

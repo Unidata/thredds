@@ -33,8 +33,8 @@
 
 package ucar.nc2.util.xml;
 
-import org.jdom.*;
-import org.jdom.input.*;
+import org.jdom2.*;
+import org.jdom2.input.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class RuntimeConfigParser {
     read(doc.getRootElement(), errlog);
   }
 
-  public static void read(org.jdom.Element root, StringBuilder errlog) {
+  public static void read(org.jdom2.Element root, StringBuilder errlog) {
 
     List children = root.getChildren();
     for (int i = 0; i < children.size(); i++) {

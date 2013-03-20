@@ -1674,7 +1674,7 @@ public final class DataRootHandler implements InitializingBean{
    * @param path the reletive path, ie req.getServletPath() + req.getPathInfo()
    * @return the NcML (as a JDom element) assocated assocated with this path, or null if no dataroot matches, or no associated NcML.
    */
-  public org.jdom.Element getNcML(String path) {
+  public org.jdom2.Element getNcML(String path) {
     if (path.startsWith("/"))
       path = path.substring(1);
 

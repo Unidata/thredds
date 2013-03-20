@@ -32,9 +32,9 @@
 
 package ucar.nc2.grib.grib1.tables;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribStatType;
@@ -188,7 +188,7 @@ public class NcepTables extends Grib1Customizer {
       }
 
       SAXBuilder builder = new SAXBuilder();
-      org.jdom.Document doc = builder.build(is);
+      org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
       HashMap<Integer, String> result = new HashMap<Integer, String>(200);

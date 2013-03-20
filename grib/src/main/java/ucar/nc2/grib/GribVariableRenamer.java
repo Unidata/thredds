@@ -1,8 +1,8 @@
 package ucar.nc2.grib;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.GridDataset;
@@ -236,7 +236,7 @@ public class GribVariableRenamer {
       }
 
       SAXBuilder builder = new SAXBuilder();
-      org.jdom.Document doc = builder.build(is);
+      org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
       List<Element> dsElems = root.getChildren("dataset");
       for (Element dsElem : dsElems) {

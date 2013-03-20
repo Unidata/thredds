@@ -39,9 +39,9 @@ import ucar.nc2.util.URLnaming;
 import ucar.nc2.dataset.*;
 
 import thredds.catalog.XMLEntityResolver;
-import org.jdom.*;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
+import org.jdom2.*;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
 import ucar.nc2.util.xml.Parse;
 
 import java.io.*;

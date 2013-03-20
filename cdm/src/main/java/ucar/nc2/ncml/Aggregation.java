@@ -45,7 +45,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.io.*;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 import ucar.unidata.util.StringUtil2;
 
 /**

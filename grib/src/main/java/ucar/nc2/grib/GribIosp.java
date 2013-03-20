@@ -32,7 +32,7 @@
 
 package ucar.nc2.grib;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.ncml.NcMLReader;
@@ -85,8 +85,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       return null;
     }
 
-    if (special instanceof org.jdom.Element) {  // the root element will be <iospParam>
-      Element root = (org.jdom.Element) special;
+    if (special instanceof org.jdom2.Element) {  // the root element will be <iospParam>
+      Element root = (org.jdom2.Element) special;
       gribConfig.configFromXml(root, NcMLReader.ncNS);
       return null;
     }

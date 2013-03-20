@@ -32,9 +32,9 @@
  */
 package ucar.nc2.grib.grib2.table;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribNumbers;
 
 import java.io.IOException;
@@ -145,7 +145,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
         return null;
       }
 
-      org.jdom.Document doc;
+      org.jdom2.Document doc;
       try {
         SAXBuilder builder = new SAXBuilder();
         doc = builder.build(ios);

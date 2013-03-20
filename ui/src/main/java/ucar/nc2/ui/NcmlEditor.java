@@ -98,7 +98,7 @@ public class NcmlEditor extends JPanel {
     editor.setEditorKit(kit);
 
     // Set the font style.
-    editor.setFont(new Font("Courier", Font.PLAIN, 12));
+    editor.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
     // Set the tab size
     editor.getDocument().putProperty(PlainDocument.tabSizeAttribute, 2);

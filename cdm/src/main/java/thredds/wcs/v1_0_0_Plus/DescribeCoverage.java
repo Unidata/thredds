@@ -32,10 +32,10 @@
  */
 package thredds.wcs.v1_0_0_Plus;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Attribute;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.Attribute;
+import org.jdom2.output.XMLOutputter;
 
 import java.util.List;
 import java.util.Date;
@@ -96,7 +96,7 @@ public class DescribeCoverage extends WcsRequest
   public void writeDescribeCoverageDoc( PrintWriter pw )
           throws IOException
   {
-    XMLOutputter xmlOutputter = new XMLOutputter( org.jdom.output.Format.getPrettyFormat() );
+    XMLOutputter xmlOutputter = new XMLOutputter( org.jdom2.output.Format.getPrettyFormat() );
     xmlOutputter.output( getDescribeCoverageDoc(), pw );
   }
 

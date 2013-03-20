@@ -31,11 +31,11 @@
  */
 package thredds.inventory;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.Namespace;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
 
 import thredds.catalog.XMLEntityResolver;
 import ucar.nc2.util.URLnaming;
@@ -75,7 +75,7 @@ public class NcmlCollectionReader {
     
     URL url = new URL(ncmlLocation);
 
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder(validate);
       if (debugURL) System.out.println(" NetcdfDataset URL = <" + url + ">");

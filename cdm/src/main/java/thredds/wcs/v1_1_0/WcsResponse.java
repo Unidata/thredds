@@ -32,9 +32,9 @@
  */
 package thredds.wcs.v1_1_0;
 
-import org.jdom.Namespace;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
+import org.jdom2.Namespace;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
 
 /**
  * _more_

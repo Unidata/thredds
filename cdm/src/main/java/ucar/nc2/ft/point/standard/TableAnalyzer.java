@@ -44,10 +44,10 @@ import java.util.*;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 /**
  * Analyzes the coordinate systems of a dataset to try to identify the Feature Type and the

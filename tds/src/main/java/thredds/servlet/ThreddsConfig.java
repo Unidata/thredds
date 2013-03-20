@@ -42,9 +42,9 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.Collections;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.JDOMException;
-import org.jdom.Element;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.JDOMException;
+import org.jdom2.Element;
 import org.springframework.util.StringUtils;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.xml.RuntimeConfigParser;
@@ -81,7 +81,7 @@ public final class ThreddsConfig {
     //System.out.println( "ThreddsConfig:INFO: reading xml file = " + _filename);
     log.info( "ThreddsConfig.readConfig()  reading xml file = " + _filename);
 
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       InputStream is = new FileInputStream(_filename);
       SAXBuilder builder = new SAXBuilder();

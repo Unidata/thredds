@@ -32,11 +32,11 @@
  */
 package thredds.wcs.v1_1_0;
 
-import org.jdom.Namespace;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
+import org.jdom2.Namespace;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.GridDataset;
 

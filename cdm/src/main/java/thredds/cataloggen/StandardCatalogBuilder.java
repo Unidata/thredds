@@ -39,7 +39,7 @@ import thredds.crawlabledataset.*;
 import java.io.IOException;
 import java.util.*;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 /**
  * _more_

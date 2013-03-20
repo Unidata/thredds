@@ -47,9 +47,9 @@ import thredds.cataloggen.datasetenhancer.RegExpAndDurationTimeCoverageEnhancer;
 import thredds.cataloggen.inserter.SimpleLatestProxyDsHandler;
 import thredds.cataloggen.inserter.LatestCompleteProxyDsHandler;
 
-import org.jdom.*;
-import org.jdom.input.*;
-import org.jdom.output.*;
+import org.jdom2.*;
+import org.jdom2.input.*;
+import org.jdom2.output.*;
 
 import java.io.*;
 import java.net.*;
@@ -108,7 +108,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return location;
   }
 
-  public InvCatalogImpl parseXML( InvCatalogFactory fac, org.jdom.Document jdomDoc, URI uri) {
+  public InvCatalogImpl parseXML( InvCatalogFactory fac, org.jdom2.Document jdomDoc, URI uri) {
     this.factory = fac;
     return readCatalog( jdomDoc.getRootElement(), uri);
   }
@@ -1350,7 +1350,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   /* MetadataConverterIF */
-  public Object readMetadataContent(InvDataset dataset, org.jdom.Element mdataElement) {
+  public Object readMetadataContent(InvDataset dataset, org.jdom2.Element mdataElement) {
     InvMetadata m = readMetadata(dataset.getParentCatalog(), (InvDatasetImpl) dataset, mdataElement);
     return m.getThreddsMetadata();
   }
@@ -1390,7 +1390,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   // dummy LOOK
   public boolean validateMetadataContent(Object contentObject, StringBuilder out) { return true; }
 
-  public void addMetadataContent( org.jdom.Element mdataElement, Object contentObject) { }
+  public void addMetadataContent( org.jdom2.Element mdataElement, Object contentObject) { }
 
   protected InvProperty readProperty( Element s) {
     String name = s.getAttributeValue("name");
@@ -1710,7 +1710,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     //fmt.setNewlines(true);
     //fmt.setIndent("  ");
     //fmt.setTrimAllWhite( true);
-    XMLOutputter fmt = new XMLOutputter(org.jdom.output.Format.getPrettyFormat());  // LOOK maybe compact ??
+    XMLOutputter fmt = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat());  // LOOK maybe compact ??
     fmt.output(writeCatalog(catalog), os);
   }
 
@@ -2213,7 +2213,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
 
     if (showNcML && ds.getNcmlElement() != null) {
-      org.jdom.Element ncml = (org.jdom.Element) ds.getNcmlElement().clone();
+      org.jdom2.Element ncml = (org.jdom2.Element) ds.getNcmlElement().clone();
       ncml.detach();
       dsElem.addContent(ncml);
     }

@@ -38,7 +38,7 @@ import thredds.catalog.*;
 
 import java.io.IOException;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 /**
  * Provide a simple interface for building single-level catalogs at any level

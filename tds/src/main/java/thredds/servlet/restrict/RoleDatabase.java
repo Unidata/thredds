@@ -33,9 +33,9 @@
 
 package thredds.servlet.restrict;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.JDOMException;
-import org.jdom.Element;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.JDOMException;
+import org.jdom2.Element;
 
 import java.io.*;
 import java.util.List;
@@ -55,7 +55,7 @@ public class RoleDatabase implements RoleSource {
   RoleDatabase( String filename) throws IOException {
 
     InputStream is = new BufferedInputStream( new FileInputStream( filename));
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(is);
@@ -66,9 +66,8 @@ public class RoleDatabase implements RoleSource {
     //   <user username="ccsmData" roles="ccsmData, restrictedDatasetUser"/>
 
     Element rootElem = doc.getRootElement();
-    List elems = rootElem.getChildren("user");
-    for (Object elem1 : elems) {
-      Element elem = (Element) elem1;
+    List<Element> elems = rootElem.getChildren("user");
+    for (Element elem : elems) {
       String username = elem.getAttributeValue("username");
       User user = new User(username);
       String roles = elem.getAttributeValue("roles");

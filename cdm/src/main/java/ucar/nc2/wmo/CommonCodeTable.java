@@ -32,9 +32,9 @@
 */
 package ucar.nc2.wmo;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -330,7 +330,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
         throw new IllegalStateException("CommonCodeTable cant open " + version.getResourceName());
       }
 
-      org.jdom.Document doc;
+      org.jdom2.Document doc;
       try {
         SAXBuilder builder = new SAXBuilder();
         doc = builder.build(ios);

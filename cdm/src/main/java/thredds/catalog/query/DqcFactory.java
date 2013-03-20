@@ -37,8 +37,8 @@ package thredds.catalog.query;
 import thredds.catalog.XMLEntityResolver;
 import ucar.nc2.util.IO;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.*;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.*;
 
 import java.io.*;
 import java.net.*;
@@ -289,7 +289,7 @@ public class DqcFactory {
    * @return an InvCatalogImpl object
    * @throws IOException on failure
    */
-  private QueryCapability readXML(org.jdom.Document doc, URI uri) throws IOException {
+  private QueryCapability readXML(org.jdom2.Document doc, URI uri) throws IOException {
 
     if (doc == null) { // parse failed
       QueryCapability dqc = new QueryCapability();

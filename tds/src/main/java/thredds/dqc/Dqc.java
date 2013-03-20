@@ -33,8 +33,8 @@
 // $Id: Dqc.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.dqc;
 
-import org.jdom.*;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.*;
+import org.jdom2.input.SAXBuilder;
 
 import java.util.List;
 import java.util.ArrayList;

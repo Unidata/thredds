@@ -33,7 +33,7 @@
 
 package ucar.nc2.util.xml;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import java.io.*;
 import java.util.List;

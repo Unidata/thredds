@@ -32,10 +32,10 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
-import org.jdom.*;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.*;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.input.SAXBuilder;
 
 import java.io.*;
 import java.util.Formatter;
@@ -116,7 +116,7 @@ public class CodeTableGen {
   // try to pretty print the WORD xml
 
   static public void prettyPrint() throws IOException {
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build("C:/docs/bufr/wmo/Code-FlagTables-11-2007.xml");
@@ -185,12 +185,12 @@ public class CodeTableGen {
   // unfortunately, we then have to hand-edit the result
   // next time, probably beter to start with the NCEP HTML pages
   static public void passOne() throws IOException {
-    org.jdom.Document orgDoc;
+    org.jdom2.Document orgDoc;
     try {
       SAXBuilder builder = new SAXBuilder();
       orgDoc = builder.build(orgXml);
 
-      org.jdom.Document tdoc = new org.jdom.Document();
+      org.jdom2.Document tdoc = new org.jdom2.Document();
       Element root = new Element("tdoc");
       tdoc.setRootElement(root);
       transform(orgDoc.getRootElement(), root);
@@ -261,12 +261,12 @@ public class CodeTableGen {
 
   // pass 2 - transform the hand-edited XML to its final form
   static public void passTwo() throws IOException {
-    org.jdom.Document tdoc;
+    org.jdom2.Document tdoc;
     try {
       SAXBuilder builder = new SAXBuilder();
       tdoc = builder.build(trans1);
 
-      org.jdom.Document ndoc = new org.jdom.Document();
+      org.jdom2.Document ndoc = new org.jdom2.Document();
       Element nroot = new Element("ndoc");
       ndoc.setRootElement(nroot);
 
@@ -344,12 +344,12 @@ public class CodeTableGen {
 
   // pass 3 - look for problems
   static public void passThree() throws IOException {
-    org.jdom.Document tdoc;
+    org.jdom2.Document tdoc;
     try {
       SAXBuilder builder = new SAXBuilder();
       tdoc = builder.build(trans2);
 
-      /* org.jdom.Document ndoc = new org.jdom.Document();
+      /* org.jdom2.Document ndoc = new org.jdom2.Document();
       Element nroot = new Element("ndoc");
       ndoc.setRootElement(nroot);  */
 

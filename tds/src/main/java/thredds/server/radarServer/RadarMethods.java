@@ -43,8 +43,8 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.File;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

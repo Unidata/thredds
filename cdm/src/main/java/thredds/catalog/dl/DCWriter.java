@@ -39,8 +39,8 @@ import ucar.nc2.units.DateType;
 import ucar.nc2.units.DateRange;
 
 
-import org.jdom.*;
-import org.jdom.output.*;
+import org.jdom2.*;
+import org.jdom2.output.*;
 
 import java.io.*;
 import java.util.*;

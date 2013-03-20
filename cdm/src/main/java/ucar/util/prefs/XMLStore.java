@@ -37,12 +37,12 @@ import java.beans.XMLEncoder;
 import java.beans.XMLDecoder;
 import java.beans.ExceptionListener;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.xml.sax.*;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Indent;
@@ -241,7 +241,7 @@ public class XMLStore {
   }
 
   private InputStream convert2XmlDecoder(InputStream is) throws IOException {
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder(false);
       doc = builder.build(is);
@@ -257,7 +257,7 @@ public class XMLStore {
     }
 
     Element root = doc.getRootElement();
-    org.jdom.Document convertDoc = new Document();
+    org.jdom2.Document convertDoc = new Document();
     Element convertRoot = new Element("java");
     convertRoot.setAttribute("version", "1.4.1_01");
     convertRoot.setAttribute("class", "java.beans.XMLDecoder");

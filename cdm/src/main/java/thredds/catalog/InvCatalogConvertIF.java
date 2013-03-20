@@ -53,7 +53,7 @@ public interface InvCatalogConvertIF {
    * @param uri : the URI for the document.
    * @return an InvCatalog object
    */
-  public InvCatalogImpl parseXML( InvCatalogFactory fac, org.jdom.Document doc, java.net.URI uri);
+  public InvCatalogImpl parseXML( InvCatalogFactory fac, org.jdom2.Document doc, java.net.URI uri);
 
   /**
    * Write the catalog as an XML document to the specified stream.
