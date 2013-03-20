@@ -12,7 +12,6 @@ import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.thredds.MetadataExtractor;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.FileNotFoundException;

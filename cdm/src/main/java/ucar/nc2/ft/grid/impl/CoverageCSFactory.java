@@ -11,8 +11,8 @@ import ucar.unidata.geoloc.projection.RotatedPole;
 import java.util.*;
 
 /**
- * Factory for Coverages.
- * WIll eventually replace ucar.nc2.dt.grid
+ * Factory for Coverage Coordinate Systems.
+ * Replaces complexity in ucar.nc2.dt.grid.GridCoordSys.isGridCoordSys()
  *
  * @author John
  * @since 12/23/12
@@ -292,6 +292,6 @@ public class CoverageCSFactory {
       }
     }
     return f2.toString();
-
   }
+
 }
