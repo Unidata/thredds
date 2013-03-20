@@ -10,442 +10,105 @@ public final class PointStreamProto {
   }
   public interface LocationOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
-    
+
     // required double time = 1;
+    /**
+     * <code>required double time = 1;</code>
+     */
     boolean hasTime();
+    /**
+     * <code>required double time = 1;</code>
+     */
     double getTime();
-    
+
     // required double lat = 2;
+    /**
+     * <code>required double lat = 2;</code>
+     */
     boolean hasLat();
+    /**
+     * <code>required double lat = 2;</code>
+     */
     double getLat();
-    
+
     // required double lon = 3;
+    /**
+     * <code>required double lon = 3;</code>
+     */
     boolean hasLon();
+    /**
+     * <code>required double lon = 3;</code>
+     */
     double getLon();
-    
+
     // optional double alt = 4;
+    /**
+     * <code>optional double alt = 4;</code>
+     */
     boolean hasAlt();
+    /**
+     * <code>optional double alt = 4;</code>
+     */
     double getAlt();
-    
+
     // optional double nomTime = 5;
+    /**
+     * <code>optional double nomTime = 5;</code>
+     */
     boolean hasNomTime();
+    /**
+     * <code>optional double nomTime = 5;</code>
+     */
     double getNomTime();
   }
+  /**
+   * Protobuf type {@code pointStream.Location}
+   */
   public static final class Location extends
       com.google.protobuf.GeneratedMessage
       implements LocationOrBuilder {
     // Use Location.newBuilder() to construct.
-    private Location(Builder builder) {
+    private Location(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Location(boolean noInit) {}
-    
+    private Location(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final Location defaultInstance;
     public static Location getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public Location getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Location_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Location_fieldAccessorTable;
-    }
-    
-    private int bitField0_;
-    // required double time = 1;
-    public static final int TIME_FIELD_NUMBER = 1;
-    private double time_;
-    public boolean hasTime() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    public double getTime() {
-      return time_;
-    }
-    
-    // required double lat = 2;
-    public static final int LAT_FIELD_NUMBER = 2;
-    private double lat_;
-    public boolean hasLat() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    public double getLat() {
-      return lat_;
-    }
-    
-    // required double lon = 3;
-    public static final int LON_FIELD_NUMBER = 3;
-    private double lon_;
-    public boolean hasLon() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public double getLon() {
-      return lon_;
-    }
-    
-    // optional double alt = 4;
-    public static final int ALT_FIELD_NUMBER = 4;
-    private double alt_;
-    public boolean hasAlt() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    public double getAlt() {
-      return alt_;
-    }
-    
-    // optional double nomTime = 5;
-    public static final int NOMTIME_FIELD_NUMBER = 5;
-    private double nomTime_;
-    public boolean hasNomTime() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    public double getNomTime() {
-      return nomTime_;
-    }
-    
-    private void initFields() {
-      time_ = 0D;
-      lat_ = 0D;
-      lon_ = 0D;
-      alt_ = 0D;
-      nomTime_ = 0D;
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
-      if (!hasTime()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasLat()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasLon()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-    
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeDouble(1, time_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeDouble(2, lat_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeDouble(3, lon_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeDouble(4, alt_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeDouble(5, nomTime_);
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(1, time_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(2, lat_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(3, lon_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(4, alt_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(5, nomTime_);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
-      return super.writeReplace();
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
     }
-    
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
+    private Location(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.Location prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements ucar.nc2.ft.point.remote.PointStreamProto.LocationOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Location_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Location_fieldAccessorTable;
-      }
-      
-      // Construct using ucar.nc2.ft.point.remote.PointStreamProto.Location.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-      
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-      
-      public Builder clear() {
-        super.clear();
-        time_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        lat_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        lon_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        alt_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        nomTime_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        return this;
-      }
-      
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.Location.getDescriptor();
-      }
-      
-      public ucar.nc2.ft.point.remote.PointStreamProto.Location getDefaultInstanceForType() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.Location.getDefaultInstance();
-      }
-      
-      public ucar.nc2.ft.point.remote.PointStreamProto.Location build() {
-        ucar.nc2.ft.point.remote.PointStreamProto.Location result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-      
-      private ucar.nc2.ft.point.remote.PointStreamProto.Location buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        ucar.nc2.ft.point.remote.PointStreamProto.Location result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
-      public ucar.nc2.ft.point.remote.PointStreamProto.Location buildPartial() {
-        ucar.nc2.ft.point.remote.PointStreamProto.Location result = new ucar.nc2.ft.point.remote.PointStreamProto.Location(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.time_ = time_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.lat_ = lat_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.lon_ = lon_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.alt_ = alt_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.nomTime_ = nomTime_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.Location) {
-          return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.Location)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.Location other) {
-        if (other == ucar.nc2.ft.point.remote.PointStreamProto.Location.getDefaultInstance()) return this;
-        if (other.hasTime()) {
-          setTime(other.getTime());
-        }
-        if (other.hasLat()) {
-          setLat(other.getLat());
-        }
-        if (other.hasLon()) {
-          setLon(other.getLon());
-        }
-        if (other.hasAlt()) {
-          setAlt(other.getAlt());
-        }
-        if (other.hasNomTime()) {
-          setNomTime(other.getNomTime());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      public final boolean isInitialized() {
-        if (!hasTime()) {
-          
-          return false;
-        }
-        if (!hasLat()) {
-          
-          return false;
-        }
-        if (!hasLon()) {
-          
-          return false;
-        }
-        return true;
-      }
-      
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
           int tag = input.readTag();
           switch (tag) {
             case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
+              done = true;
+              break;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
+                done = true;
               }
               break;
             }
@@ -476,209 +139,902 @@ public final class PointStreamProto {
             }
           }
         }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
       }
-      
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Location_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Location_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.ft.point.remote.PointStreamProto.Location.class, ucar.nc2.ft.point.remote.PointStreamProto.Location.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Location> PARSER =
+        new com.google.protobuf.AbstractParser<Location>() {
+      public Location parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Location(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Location> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required double time = 1;
+    public static final int TIME_FIELD_NUMBER = 1;
+    private double time_;
+    /**
+     * <code>required double time = 1;</code>
+     */
+    public boolean hasTime() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required double time = 1;</code>
+     */
+    public double getTime() {
+      return time_;
+    }
+
+    // required double lat = 2;
+    public static final int LAT_FIELD_NUMBER = 2;
+    private double lat_;
+    /**
+     * <code>required double lat = 2;</code>
+     */
+    public boolean hasLat() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required double lat = 2;</code>
+     */
+    public double getLat() {
+      return lat_;
+    }
+
+    // required double lon = 3;
+    public static final int LON_FIELD_NUMBER = 3;
+    private double lon_;
+    /**
+     * <code>required double lon = 3;</code>
+     */
+    public boolean hasLon() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required double lon = 3;</code>
+     */
+    public double getLon() {
+      return lon_;
+    }
+
+    // optional double alt = 4;
+    public static final int ALT_FIELD_NUMBER = 4;
+    private double alt_;
+    /**
+     * <code>optional double alt = 4;</code>
+     */
+    public boolean hasAlt() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional double alt = 4;</code>
+     */
+    public double getAlt() {
+      return alt_;
+    }
+
+    // optional double nomTime = 5;
+    public static final int NOMTIME_FIELD_NUMBER = 5;
+    private double nomTime_;
+    /**
+     * <code>optional double nomTime = 5;</code>
+     */
+    public boolean hasNomTime() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional double nomTime = 5;</code>
+     */
+    public double getNomTime() {
+      return nomTime_;
+    }
+
+    private void initFields() {
+      time_ = 0D;
+      lat_ = 0D;
+      lon_ = 0D;
+      alt_ = 0D;
+      nomTime_ = 0D;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasTime()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLat()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLon()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeDouble(1, time_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeDouble(2, lat_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeDouble(3, lon_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeDouble(4, alt_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeDouble(5, nomTime_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(1, time_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, lat_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(3, lon_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(4, alt_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(5, nomTime_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Location parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.Location prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code pointStream.Location}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.ft.point.remote.PointStreamProto.LocationOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Location_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Location_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.ft.point.remote.PointStreamProto.Location.class, ucar.nc2.ft.point.remote.PointStreamProto.Location.Builder.class);
+      }
+
+      // Construct using ucar.nc2.ft.point.remote.PointStreamProto.Location.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        time_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lat_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        lon_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        alt_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        nomTime_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Location_descriptor;
+      }
+
+      public ucar.nc2.ft.point.remote.PointStreamProto.Location getDefaultInstanceForType() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.Location.getDefaultInstance();
+      }
+
+      public ucar.nc2.ft.point.remote.PointStreamProto.Location build() {
+        ucar.nc2.ft.point.remote.PointStreamProto.Location result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.ft.point.remote.PointStreamProto.Location buildPartial() {
+        ucar.nc2.ft.point.remote.PointStreamProto.Location result = new ucar.nc2.ft.point.remote.PointStreamProto.Location(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.time_ = time_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.lat_ = lat_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.lon_ = lon_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.alt_ = alt_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.nomTime_ = nomTime_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.Location) {
+          return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.Location)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.Location other) {
+        if (other == ucar.nc2.ft.point.remote.PointStreamProto.Location.getDefaultInstance()) return this;
+        if (other.hasTime()) {
+          setTime(other.getTime());
+        }
+        if (other.hasLat()) {
+          setLat(other.getLat());
+        }
+        if (other.hasLon()) {
+          setLon(other.getLon());
+        }
+        if (other.hasAlt()) {
+          setAlt(other.getAlt());
+        }
+        if (other.hasNomTime()) {
+          setNomTime(other.getNomTime());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasTime()) {
+          
+          return false;
+        }
+        if (!hasLat()) {
+          
+          return false;
+        }
+        if (!hasLon()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.ft.point.remote.PointStreamProto.Location parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.ft.point.remote.PointStreamProto.Location) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
       private int bitField0_;
-      
+
       // required double time = 1;
       private double time_ ;
+      /**
+       * <code>required double time = 1;</code>
+       */
       public boolean hasTime() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required double time = 1;</code>
+       */
       public double getTime() {
         return time_;
       }
+      /**
+       * <code>required double time = 1;</code>
+       */
       public Builder setTime(double value) {
         bitField0_ |= 0x00000001;
         time_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required double time = 1;</code>
+       */
       public Builder clearTime() {
         bitField0_ = (bitField0_ & ~0x00000001);
         time_ = 0D;
         onChanged();
         return this;
       }
-      
+
       // required double lat = 2;
       private double lat_ ;
+      /**
+       * <code>required double lat = 2;</code>
+       */
       public boolean hasLat() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required double lat = 2;</code>
+       */
       public double getLat() {
         return lat_;
       }
+      /**
+       * <code>required double lat = 2;</code>
+       */
       public Builder setLat(double value) {
         bitField0_ |= 0x00000002;
         lat_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required double lat = 2;</code>
+       */
       public Builder clearLat() {
         bitField0_ = (bitField0_ & ~0x00000002);
         lat_ = 0D;
         onChanged();
         return this;
       }
-      
+
       // required double lon = 3;
       private double lon_ ;
+      /**
+       * <code>required double lon = 3;</code>
+       */
       public boolean hasLon() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
+      /**
+       * <code>required double lon = 3;</code>
+       */
       public double getLon() {
         return lon_;
       }
+      /**
+       * <code>required double lon = 3;</code>
+       */
       public Builder setLon(double value) {
         bitField0_ |= 0x00000004;
         lon_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required double lon = 3;</code>
+       */
       public Builder clearLon() {
         bitField0_ = (bitField0_ & ~0x00000004);
         lon_ = 0D;
         onChanged();
         return this;
       }
-      
+
       // optional double alt = 4;
       private double alt_ ;
+      /**
+       * <code>optional double alt = 4;</code>
+       */
       public boolean hasAlt() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
+      /**
+       * <code>optional double alt = 4;</code>
+       */
       public double getAlt() {
         return alt_;
       }
+      /**
+       * <code>optional double alt = 4;</code>
+       */
       public Builder setAlt(double value) {
         bitField0_ |= 0x00000008;
         alt_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>optional double alt = 4;</code>
+       */
       public Builder clearAlt() {
         bitField0_ = (bitField0_ & ~0x00000008);
         alt_ = 0D;
         onChanged();
         return this;
       }
-      
+
       // optional double nomTime = 5;
       private double nomTime_ ;
+      /**
+       * <code>optional double nomTime = 5;</code>
+       */
       public boolean hasNomTime() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
+      /**
+       * <code>optional double nomTime = 5;</code>
+       */
       public double getNomTime() {
         return nomTime_;
       }
+      /**
+       * <code>optional double nomTime = 5;</code>
+       */
       public Builder setNomTime(double value) {
         bitField0_ |= 0x00000010;
         nomTime_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>optional double nomTime = 5;</code>
+       */
       public Builder clearNomTime() {
         bitField0_ = (bitField0_ & ~0x00000010);
         nomTime_ = 0D;
         onChanged();
         return this;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:pointStream.Location)
     }
-    
+
     static {
       defaultInstance = new Location(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:pointStream.Location)
   }
-  
+
   public interface PointFeatureOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
-    
+
     // required .pointStream.Location loc = 1;
+    /**
+     * <code>required .pointStream.Location loc = 1;</code>
+     */
     boolean hasLoc();
+    /**
+     * <code>required .pointStream.Location loc = 1;</code>
+     */
     ucar.nc2.ft.point.remote.PointStreamProto.Location getLoc();
+    /**
+     * <code>required .pointStream.Location loc = 1;</code>
+     */
     ucar.nc2.ft.point.remote.PointStreamProto.LocationOrBuilder getLocOrBuilder();
-    
+
     // required bytes data = 3;
+    /**
+     * <code>required bytes data = 3;</code>
+     *
+     * <pre>
+     * fixed length data
+     * </pre>
+     */
     boolean hasData();
+    /**
+     * <code>required bytes data = 3;</code>
+     *
+     * <pre>
+     * fixed length data
+     * </pre>
+     */
     com.google.protobuf.ByteString getData();
-    
+
     // repeated string sdata = 4;
-    java.util.List<String> getSdataList();
+    /**
+     * <code>repeated string sdata = 4;</code>
+     *
+     * <pre>
+     * Strings
+     * </pre>
+     */
+    java.util.List<java.lang.String>
+    getSdataList();
+    /**
+     * <code>repeated string sdata = 4;</code>
+     *
+     * <pre>
+     * Strings
+     * </pre>
+     */
     int getSdataCount();
-    String getSdata(int index);
+    /**
+     * <code>repeated string sdata = 4;</code>
+     *
+     * <pre>
+     * Strings
+     * </pre>
+     */
+    java.lang.String getSdata(int index);
+    /**
+     * <code>repeated string sdata = 4;</code>
+     *
+     * <pre>
+     * Strings
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getSdataBytes(int index);
   }
+  /**
+   * Protobuf type {@code pointStream.PointFeature}
+   */
   public static final class PointFeature extends
       com.google.protobuf.GeneratedMessage
       implements PointFeatureOrBuilder {
     // Use PointFeature.newBuilder() to construct.
-    private PointFeature(Builder builder) {
+    private PointFeature(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private PointFeature(boolean noInit) {}
-    
+    private PointFeature(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final PointFeature defaultInstance;
     public static PointFeature getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public PointFeature getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PointFeature(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              ucar.nc2.ft.point.remote.PointStreamProto.Location.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = loc_.toBuilder();
+              }
+              loc_ = input.readMessage(ucar.nc2.ft.point.remote.PointStreamProto.Location.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(loc_);
+                loc_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000002;
+              data_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                sdata_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              sdata_.add(input.readBytes());
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          sdata_ = new com.google.protobuf.UnmodifiableLazyStringList(sdata_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeature_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeature_fieldAccessorTable;
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeature_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.class, ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.Builder.class);
     }
-    
+
+    public static com.google.protobuf.Parser<PointFeature> PARSER =
+        new com.google.protobuf.AbstractParser<PointFeature>() {
+      public PointFeature parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PointFeature(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PointFeature> getParserForType() {
+      return PARSER;
+    }
+
     private int bitField0_;
     // required .pointStream.Location loc = 1;
     public static final int LOC_FIELD_NUMBER = 1;
     private ucar.nc2.ft.point.remote.PointStreamProto.Location loc_;
+    /**
+     * <code>required .pointStream.Location loc = 1;</code>
+     */
     public boolean hasLoc() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required .pointStream.Location loc = 1;</code>
+     */
     public ucar.nc2.ft.point.remote.PointStreamProto.Location getLoc() {
       return loc_;
     }
+    /**
+     * <code>required .pointStream.Location loc = 1;</code>
+     */
     public ucar.nc2.ft.point.remote.PointStreamProto.LocationOrBuilder getLocOrBuilder() {
       return loc_;
     }
-    
+
     // required bytes data = 3;
     public static final int DATA_FIELD_NUMBER = 3;
     private com.google.protobuf.ByteString data_;
+    /**
+     * <code>required bytes data = 3;</code>
+     *
+     * <pre>
+     * fixed length data
+     * </pre>
+     */
     public boolean hasData() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
+    /**
+     * <code>required bytes data = 3;</code>
+     *
+     * <pre>
+     * fixed length data
+     * </pre>
+     */
     public com.google.protobuf.ByteString getData() {
       return data_;
     }
-    
+
     // repeated string sdata = 4;
     public static final int SDATA_FIELD_NUMBER = 4;
     private com.google.protobuf.LazyStringList sdata_;
-    public java.util.List<String>
+    /**
+     * <code>repeated string sdata = 4;</code>
+     *
+     * <pre>
+     * Strings
+     * </pre>
+     */
+    public java.util.List<java.lang.String>
         getSdataList() {
       return sdata_;
     }
+    /**
+     * <code>repeated string sdata = 4;</code>
+     *
+     * <pre>
+     * Strings
+     * </pre>
+     */
     public int getSdataCount() {
       return sdata_.size();
     }
-    public String getSdata(int index) {
+    /**
+     * <code>repeated string sdata = 4;</code>
+     *
+     * <pre>
+     * Strings
+     * </pre>
+     */
+    public java.lang.String getSdata(int index) {
       return sdata_.get(index);
     }
-    
+    /**
+     * <code>repeated string sdata = 4;</code>
+     *
+     * <pre>
+     * Strings
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getSdataBytes(int index) {
+      return sdata_.getByteString(index);
+    }
+
     private void initFields() {
       loc_ = ucar.nc2.ft.point.remote.PointStreamProto.Location.getDefaultInstance();
       data_ = com.google.protobuf.ByteString.EMPTY;
@@ -688,7 +1044,7 @@ public final class PointStreamProto {
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
-      
+
       if (!hasLoc()) {
         memoizedIsInitialized = 0;
         return false;
@@ -704,7 +1060,7 @@ public final class PointStreamProto {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -719,12 +1075,12 @@ public final class PointStreamProto {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -747,92 +1103,83 @@ public final class PointStreamProto {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.PointFeature prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code pointStream.PointFeature}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureOrBuilder {
@@ -840,18 +1187,21 @@ public final class PointStreamProto {
           getDescriptor() {
         return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeature_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeature_fieldAccessorTable;
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeature_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.class, ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.Builder.class);
       }
-      
+
       // Construct using ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -863,7 +1213,7 @@ public final class PointStreamProto {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         if (locBuilder_ == null) {
@@ -878,20 +1228,20 @@ public final class PointStreamProto {
         bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.getDescriptor();
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeature_descriptor;
       }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.PointFeature getDefaultInstanceForType() {
         return ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.getDefaultInstance();
       }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.PointFeature build() {
         ucar.nc2.ft.point.remote.PointStreamProto.PointFeature result = buildPartial();
         if (!result.isInitialized()) {
@@ -899,17 +1249,7 @@ public final class PointStreamProto {
         }
         return result;
       }
-      
-      private ucar.nc2.ft.point.remote.PointStreamProto.PointFeature buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        ucar.nc2.ft.point.remote.PointStreamProto.PointFeature result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.PointFeature buildPartial() {
         ucar.nc2.ft.point.remote.PointStreamProto.PointFeature result = new ucar.nc2.ft.point.remote.PointStreamProto.PointFeature(this);
         int from_bitField0_ = bitField0_;
@@ -936,7 +1276,7 @@ public final class PointStreamProto {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.PointFeature) {
           return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.PointFeature)other);
@@ -945,7 +1285,7 @@ public final class PointStreamProto {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.PointFeature other) {
         if (other == ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.getDefaultInstance()) return this;
         if (other.hasLoc()) {
@@ -967,7 +1307,7 @@ public final class PointStreamProto {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasLoc()) {
           
@@ -983,62 +1323,39 @@ public final class PointStreamProto {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              ucar.nc2.ft.point.remote.PointStreamProto.Location.Builder subBuilder = ucar.nc2.ft.point.remote.PointStreamProto.Location.newBuilder();
-              if (hasLoc()) {
-                subBuilder.mergeFrom(getLoc());
-              }
-              input.readMessage(subBuilder, extensionRegistry);
-              setLoc(subBuilder.buildPartial());
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000002;
-              data_ = input.readBytes();
-              break;
-            }
-            case 34: {
-              ensureSdataIsMutable();
-              sdata_.add(input.readBytes());
-              break;
-            }
+        ucar.nc2.ft.point.remote.PointStreamProto.PointFeature parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.ft.point.remote.PointStreamProto.PointFeature) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
+
       // required .pointStream.Location loc = 1;
       private ucar.nc2.ft.point.remote.PointStreamProto.Location loc_ = ucar.nc2.ft.point.remote.PointStreamProto.Location.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           ucar.nc2.ft.point.remote.PointStreamProto.Location, ucar.nc2.ft.point.remote.PointStreamProto.Location.Builder, ucar.nc2.ft.point.remote.PointStreamProto.LocationOrBuilder> locBuilder_;
+      /**
+       * <code>required .pointStream.Location loc = 1;</code>
+       */
       public boolean hasLoc() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required .pointStream.Location loc = 1;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Location getLoc() {
         if (locBuilder_ == null) {
           return loc_;
@@ -1046,6 +1363,9 @@ public final class PointStreamProto {
           return locBuilder_.getMessage();
         }
       }
+      /**
+       * <code>required .pointStream.Location loc = 1;</code>
+       */
       public Builder setLoc(ucar.nc2.ft.point.remote.PointStreamProto.Location value) {
         if (locBuilder_ == null) {
           if (value == null) {
@@ -1059,6 +1379,9 @@ public final class PointStreamProto {
         bitField0_ |= 0x00000001;
         return this;
       }
+      /**
+       * <code>required .pointStream.Location loc = 1;</code>
+       */
       public Builder setLoc(
           ucar.nc2.ft.point.remote.PointStreamProto.Location.Builder builderForValue) {
         if (locBuilder_ == null) {
@@ -1070,6 +1393,9 @@ public final class PointStreamProto {
         bitField0_ |= 0x00000001;
         return this;
       }
+      /**
+       * <code>required .pointStream.Location loc = 1;</code>
+       */
       public Builder mergeLoc(ucar.nc2.ft.point.remote.PointStreamProto.Location value) {
         if (locBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001) &&
@@ -1086,6 +1412,9 @@ public final class PointStreamProto {
         bitField0_ |= 0x00000001;
         return this;
       }
+      /**
+       * <code>required .pointStream.Location loc = 1;</code>
+       */
       public Builder clearLoc() {
         if (locBuilder_ == null) {
           loc_ = ucar.nc2.ft.point.remote.PointStreamProto.Location.getDefaultInstance();
@@ -1096,11 +1425,17 @@ public final class PointStreamProto {
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
+      /**
+       * <code>required .pointStream.Location loc = 1;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Location.Builder getLocBuilder() {
         bitField0_ |= 0x00000001;
         onChanged();
         return getLocFieldBuilder().getBuilder();
       }
+      /**
+       * <code>required .pointStream.Location loc = 1;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.LocationOrBuilder getLocOrBuilder() {
         if (locBuilder_ != null) {
           return locBuilder_.getMessageOrBuilder();
@@ -1108,6 +1443,9 @@ public final class PointStreamProto {
           return loc_;
         }
       }
+      /**
+       * <code>required .pointStream.Location loc = 1;</code>
+       */
       private com.google.protobuf.SingleFieldBuilder<
           ucar.nc2.ft.point.remote.PointStreamProto.Location, ucar.nc2.ft.point.remote.PointStreamProto.Location.Builder, ucar.nc2.ft.point.remote.PointStreamProto.LocationOrBuilder> 
           getLocFieldBuilder() {
@@ -1121,15 +1459,36 @@ public final class PointStreamProto {
         }
         return locBuilder_;
       }
-      
+
       // required bytes data = 3;
       private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>required bytes data = 3;</code>
+       *
+       * <pre>
+       * fixed length data
+       * </pre>
+       */
       public boolean hasData() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required bytes data = 3;</code>
+       *
+       * <pre>
+       * fixed length data
+       * </pre>
+       */
       public com.google.protobuf.ByteString getData() {
         return data_;
       }
+      /**
+       * <code>required bytes data = 3;</code>
+       *
+       * <pre>
+       * fixed length data
+       * </pre>
+       */
       public Builder setData(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
@@ -1139,13 +1498,20 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>required bytes data = 3;</code>
+       *
+       * <pre>
+       * fixed length data
+       * </pre>
+       */
       public Builder clearData() {
         bitField0_ = (bitField0_ & ~0x00000002);
         data_ = getDefaultInstance().getData();
         onChanged();
         return this;
       }
-      
+
       // repeated string sdata = 4;
       private com.google.protobuf.LazyStringList sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureSdataIsMutable() {
@@ -1154,18 +1520,57 @@ public final class PointStreamProto {
           bitField0_ |= 0x00000004;
          }
       }
-      public java.util.List<String>
+      /**
+       * <code>repeated string sdata = 4;</code>
+       *
+       * <pre>
+       * Strings
+       * </pre>
+       */
+      public java.util.List<java.lang.String>
           getSdataList() {
         return java.util.Collections.unmodifiableList(sdata_);
       }
+      /**
+       * <code>repeated string sdata = 4;</code>
+       *
+       * <pre>
+       * Strings
+       * </pre>
+       */
       public int getSdataCount() {
         return sdata_.size();
       }
-      public String getSdata(int index) {
+      /**
+       * <code>repeated string sdata = 4;</code>
+       *
+       * <pre>
+       * Strings
+       * </pre>
+       */
+      public java.lang.String getSdata(int index) {
         return sdata_.get(index);
       }
+      /**
+       * <code>repeated string sdata = 4;</code>
+       *
+       * <pre>
+       * Strings
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getSdataBytes(int index) {
+        return sdata_.getByteString(index);
+      }
+      /**
+       * <code>repeated string sdata = 4;</code>
+       *
+       * <pre>
+       * Strings
+       * </pre>
+       */
       public Builder setSdata(
-          int index, String value) {
+          int index, java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1174,7 +1579,15 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
-      public Builder addSdata(String value) {
+      /**
+       * <code>repeated string sdata = 4;</code>
+       *
+       * <pre>
+       * Strings
+       * </pre>
+       */
+      public Builder addSdata(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1183,208 +1596,431 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>repeated string sdata = 4;</code>
+       *
+       * <pre>
+       * Strings
+       * </pre>
+       */
       public Builder addAllSdata(
-          java.lang.Iterable<String> values) {
+          java.lang.Iterable<java.lang.String> values) {
         ensureSdataIsMutable();
         super.addAll(values, sdata_);
         onChanged();
         return this;
       }
+      /**
+       * <code>repeated string sdata = 4;</code>
+       *
+       * <pre>
+       * Strings
+       * </pre>
+       */
       public Builder clearSdata() {
         sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
-      void addSdata(com.google.protobuf.ByteString value) {
-        ensureSdataIsMutable();
+      /**
+       * <code>repeated string sdata = 4;</code>
+       *
+       * <pre>
+       * Strings
+       * </pre>
+       */
+      public Builder addSdataBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureSdataIsMutable();
         sdata_.add(value);
         onChanged();
+        return this;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:pointStream.PointFeature)
     }
-    
+
     static {
       defaultInstance = new PointFeature(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:pointStream.PointFeature)
   }
-  
+
   public interface MemberOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
-    
+
     // required string name = 1;
+    /**
+     * <code>required string name = 1;</code>
+     */
     boolean hasName();
-    String getName();
-    
+    /**
+     * <code>required string name = 1;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
     // optional string desc = 2;
+    /**
+     * <code>optional string desc = 2;</code>
+     */
     boolean hasDesc();
-    String getDesc();
-    
+    /**
+     * <code>optional string desc = 2;</code>
+     */
+    java.lang.String getDesc();
+    /**
+     * <code>optional string desc = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getDescBytes();
+
     // optional string units = 3;
+    /**
+     * <code>optional string units = 3;</code>
+     */
     boolean hasUnits();
-    String getUnits();
-    
+    /**
+     * <code>optional string units = 3;</code>
+     */
+    java.lang.String getUnits();
+    /**
+     * <code>optional string units = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getUnitsBytes();
+
     // required .ncstream.DataType dataType = 4;
+    /**
+     * <code>required .ncstream.DataType dataType = 4;</code>
+     */
     boolean hasDataType();
+    /**
+     * <code>required .ncstream.DataType dataType = 4;</code>
+     */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
-    
+
     // required .ncstream.Section section = 5;
+    /**
+     * <code>required .ncstream.Section section = 5;</code>
+     */
     boolean hasSection();
+    /**
+     * <code>required .ncstream.Section section = 5;</code>
+     */
     ucar.nc2.stream.NcStreamProto.Section getSection();
+    /**
+     * <code>required .ncstream.Section section = 5;</code>
+     */
     ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder();
   }
+  /**
+   * Protobuf type {@code pointStream.Member}
+   */
   public static final class Member extends
       com.google.protobuf.GeneratedMessage
       implements MemberOrBuilder {
     // Use Member.newBuilder() to construct.
-    private Member(Builder builder) {
+    private Member(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Member(boolean noInit) {}
-    
+    private Member(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final Member defaultInstance;
     public static Member getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public Member getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Member(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              name_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              desc_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              units_ = input.readBytes();
+              break;
+            }
+            case 32: {
+              int rawValue = input.readEnum();
+              ucar.nc2.stream.NcStreamProto.DataType value = ucar.nc2.stream.NcStreamProto.DataType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(4, rawValue);
+              } else {
+                bitField0_ |= 0x00000008;
+                dataType_ = value;
+              }
+              break;
+            }
+            case 42: {
+              ucar.nc2.stream.NcStreamProto.Section.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                subBuilder = section_.toBuilder();
+              }
+              section_ = input.readMessage(ucar.nc2.stream.NcStreamProto.Section.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(section_);
+                section_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000010;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Member_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Member_fieldAccessorTable;
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Member_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.ft.point.remote.PointStreamProto.Member.class, ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder.class);
     }
-    
+
+    public static com.google.protobuf.Parser<Member> PARSER =
+        new com.google.protobuf.AbstractParser<Member>() {
+      public Member parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Member(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Member> getParserForType() {
+      return PARSER;
+    }
+
     private int bitField0_;
     // required string name = 1;
     public static final int NAME_FIELD_NUMBER = 1;
-    private Object name_;
+    private java.lang.Object name_;
+    /**
+     * <code>required string name = 1;</code>
+     */
     public boolean hasName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getName() {
-      Object ref = name_;
-      if (ref instanceof String) {
-        return (String) ref;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           name_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getNameBytes() {
-      Object ref = name_;
-      if (ref instanceof String) {
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         name_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
+
     // optional string desc = 2;
     public static final int DESC_FIELD_NUMBER = 2;
-    private Object desc_;
+    private java.lang.Object desc_;
+    /**
+     * <code>optional string desc = 2;</code>
+     */
     public boolean hasDesc() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getDesc() {
-      Object ref = desc_;
-      if (ref instanceof String) {
-        return (String) ref;
+    /**
+     * <code>optional string desc = 2;</code>
+     */
+    public java.lang.String getDesc() {
+      java.lang.Object ref = desc_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           desc_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getDescBytes() {
-      Object ref = desc_;
-      if (ref instanceof String) {
+    /**
+     * <code>optional string desc = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDescBytes() {
+      java.lang.Object ref = desc_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         desc_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
+
     // optional string units = 3;
     public static final int UNITS_FIELD_NUMBER = 3;
-    private Object units_;
+    private java.lang.Object units_;
+    /**
+     * <code>optional string units = 3;</code>
+     */
     public boolean hasUnits() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    public String getUnits() {
-      Object ref = units_;
-      if (ref instanceof String) {
-        return (String) ref;
+    /**
+     * <code>optional string units = 3;</code>
+     */
+    public java.lang.String getUnits() {
+      java.lang.Object ref = units_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           units_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getUnitsBytes() {
-      Object ref = units_;
-      if (ref instanceof String) {
+    /**
+     * <code>optional string units = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getUnitsBytes() {
+      java.lang.Object ref = units_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         units_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
+
     // required .ncstream.DataType dataType = 4;
     public static final int DATATYPE_FIELD_NUMBER = 4;
     private ucar.nc2.stream.NcStreamProto.DataType dataType_;
+    /**
+     * <code>required .ncstream.DataType dataType = 4;</code>
+     */
     public boolean hasDataType() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
+    /**
+     * <code>required .ncstream.DataType dataType = 4;</code>
+     */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
       return dataType_;
     }
-    
+
     // required .ncstream.Section section = 5;
     public static final int SECTION_FIELD_NUMBER = 5;
     private ucar.nc2.stream.NcStreamProto.Section section_;
+    /**
+     * <code>required .ncstream.Section section = 5;</code>
+     */
     public boolean hasSection() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
+    /**
+     * <code>required .ncstream.Section section = 5;</code>
+     */
     public ucar.nc2.stream.NcStreamProto.Section getSection() {
       return section_;
     }
+    /**
+     * <code>required .ncstream.Section section = 5;</code>
+     */
     public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
       return section_;
     }
-    
+
     private void initFields() {
       name_ = "";
       desc_ = "";
@@ -1396,7 +2032,7 @@ public final class PointStreamProto {
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
-      
+
       if (!hasName()) {
         memoizedIsInitialized = 0;
         return false;
@@ -1416,7 +2052,7 @@ public final class PointStreamProto {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -1437,12 +2073,12 @@ public final class PointStreamProto {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -1468,92 +2104,83 @@ public final class PointStreamProto {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.Member parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.Member prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code pointStream.Member}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.ft.point.remote.PointStreamProto.MemberOrBuilder {
@@ -1561,18 +2188,21 @@ public final class PointStreamProto {
           getDescriptor() {
         return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Member_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Member_fieldAccessorTable;
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Member_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.ft.point.remote.PointStreamProto.Member.class, ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder.class);
       }
-      
+
       // Construct using ucar.nc2.ft.point.remote.PointStreamProto.Member.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -1584,7 +2214,7 @@ public final class PointStreamProto {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -1603,20 +2233,20 @@ public final class PointStreamProto {
         bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.Member.getDescriptor();
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Member_descriptor;
       }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.Member getDefaultInstanceForType() {
         return ucar.nc2.ft.point.remote.PointStreamProto.Member.getDefaultInstance();
       }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.Member build() {
         ucar.nc2.ft.point.remote.PointStreamProto.Member result = buildPartial();
         if (!result.isInitialized()) {
@@ -1624,17 +2254,7 @@ public final class PointStreamProto {
         }
         return result;
       }
-      
-      private ucar.nc2.ft.point.remote.PointStreamProto.Member buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        ucar.nc2.ft.point.remote.PointStreamProto.Member result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.Member buildPartial() {
         ucar.nc2.ft.point.remote.PointStreamProto.Member result = new ucar.nc2.ft.point.remote.PointStreamProto.Member(this);
         int from_bitField0_ = bitField0_;
@@ -1667,7 +2287,7 @@ public final class PointStreamProto {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.Member) {
           return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.Member)other);
@@ -1676,17 +2296,23 @@ public final class PointStreamProto {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.Member other) {
         if (other == ucar.nc2.ft.point.remote.PointStreamProto.Member.getDefaultInstance()) return this;
         if (other.hasName()) {
-          setName(other.getName());
+          bitField0_ |= 0x00000001;
+          name_ = other.name_;
+          onChanged();
         }
         if (other.hasDesc()) {
-          setDesc(other.getDesc());
+          bitField0_ |= 0x00000002;
+          desc_ = other.desc_;
+          onChanged();
         }
         if (other.hasUnits()) {
-          setUnits(other.getUnits());
+          bitField0_ |= 0x00000004;
+          units_ = other.units_;
+          onChanged();
         }
         if (other.hasDataType()) {
           setDataType(other.getDataType());
@@ -1697,7 +2323,7 @@ public final class PointStreamProto {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasName()) {
           
@@ -1717,87 +2343,69 @@ public final class PointStreamProto {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              name_ = input.readBytes();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              desc_ = input.readBytes();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              units_ = input.readBytes();
-              break;
-            }
-            case 32: {
-              int rawValue = input.readEnum();
-              ucar.nc2.stream.NcStreamProto.DataType value = ucar.nc2.stream.NcStreamProto.DataType.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(4, rawValue);
-              } else {
-                bitField0_ |= 0x00000008;
-                dataType_ = value;
-              }
-              break;
-            }
-            case 42: {
-              ucar.nc2.stream.NcStreamProto.Section.Builder subBuilder = ucar.nc2.stream.NcStreamProto.Section.newBuilder();
-              if (hasSection()) {
-                subBuilder.mergeFrom(getSection());
-              }
-              input.readMessage(subBuilder, extensionRegistry);
-              setSection(subBuilder.buildPartial());
-              break;
-            }
+        ucar.nc2.ft.point.remote.PointStreamProto.Member parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.ft.point.remote.PointStreamProto.Member) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
+
       // required string name = 1;
-      private Object name_ = "";
+      private java.lang.Object name_ = "";
+      /**
+       * <code>required string name = 1;</code>
+       */
       public boolean hasName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getName() {
-        Object ref = name_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           name_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setName(String value) {
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1806,34 +2414,72 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string name = 1;</code>
+       */
       public Builder clearName() {
         bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
         onChanged();
         return this;
       }
-      void setName(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         name_ = value;
         onChanged();
+        return this;
       }
-      
+
       // optional string desc = 2;
-      private Object desc_ = "";
+      private java.lang.Object desc_ = "";
+      /**
+       * <code>optional string desc = 2;</code>
+       */
       public boolean hasDesc() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getDesc() {
-        Object ref = desc_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+      /**
+       * <code>optional string desc = 2;</code>
+       */
+      public java.lang.String getDesc() {
+        java.lang.Object ref = desc_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           desc_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setDesc(String value) {
+      /**
+       * <code>optional string desc = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDescBytes() {
+        java.lang.Object ref = desc_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          desc_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string desc = 2;</code>
+       */
+      public Builder setDesc(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1842,34 +2488,72 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional string desc = 2;</code>
+       */
       public Builder clearDesc() {
         bitField0_ = (bitField0_ & ~0x00000002);
         desc_ = getDefaultInstance().getDesc();
         onChanged();
         return this;
       }
-      void setDesc(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
+      /**
+       * <code>optional string desc = 2;</code>
+       */
+      public Builder setDescBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         desc_ = value;
         onChanged();
+        return this;
       }
-      
+
       // optional string units = 3;
-      private Object units_ = "";
+      private java.lang.Object units_ = "";
+      /**
+       * <code>optional string units = 3;</code>
+       */
       public boolean hasUnits() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
-      public String getUnits() {
-        Object ref = units_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+      /**
+       * <code>optional string units = 3;</code>
+       */
+      public java.lang.String getUnits() {
+        java.lang.Object ref = units_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           units_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setUnits(String value) {
+      /**
+       * <code>optional string units = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getUnitsBytes() {
+        java.lang.Object ref = units_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          units_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string units = 3;</code>
+       */
+      public Builder setUnits(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1878,26 +2562,46 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional string units = 3;</code>
+       */
       public Builder clearUnits() {
         bitField0_ = (bitField0_ & ~0x00000004);
         units_ = getDefaultInstance().getUnits();
         onChanged();
         return this;
       }
-      void setUnits(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000004;
+      /**
+       * <code>optional string units = 3;</code>
+       */
+      public Builder setUnitsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
         units_ = value;
         onChanged();
+        return this;
       }
-      
+
       // required .ncstream.DataType dataType = 4;
       private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
+      /**
+       * <code>required .ncstream.DataType dataType = 4;</code>
+       */
       public boolean hasDataType() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
+      /**
+       * <code>required .ncstream.DataType dataType = 4;</code>
+       */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
         return dataType_;
       }
+      /**
+       * <code>required .ncstream.DataType dataType = 4;</code>
+       */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
           throw new NullPointerException();
@@ -1907,20 +2611,29 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>required .ncstream.DataType dataType = 4;</code>
+       */
       public Builder clearDataType() {
         bitField0_ = (bitField0_ & ~0x00000008);
         dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
         onChanged();
         return this;
       }
-      
+
       // required .ncstream.Section section = 5;
       private ucar.nc2.stream.NcStreamProto.Section section_ = ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> sectionBuilder_;
+      /**
+       * <code>required .ncstream.Section section = 5;</code>
+       */
       public boolean hasSection() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
+      /**
+       * <code>required .ncstream.Section section = 5;</code>
+       */
       public ucar.nc2.stream.NcStreamProto.Section getSection() {
         if (sectionBuilder_ == null) {
           return section_;
@@ -1928,6 +2641,9 @@ public final class PointStreamProto {
           return sectionBuilder_.getMessage();
         }
       }
+      /**
+       * <code>required .ncstream.Section section = 5;</code>
+       */
       public Builder setSection(ucar.nc2.stream.NcStreamProto.Section value) {
         if (sectionBuilder_ == null) {
           if (value == null) {
@@ -1941,6 +2657,9 @@ public final class PointStreamProto {
         bitField0_ |= 0x00000010;
         return this;
       }
+      /**
+       * <code>required .ncstream.Section section = 5;</code>
+       */
       public Builder setSection(
           ucar.nc2.stream.NcStreamProto.Section.Builder builderForValue) {
         if (sectionBuilder_ == null) {
@@ -1952,6 +2671,9 @@ public final class PointStreamProto {
         bitField0_ |= 0x00000010;
         return this;
       }
+      /**
+       * <code>required .ncstream.Section section = 5;</code>
+       */
       public Builder mergeSection(ucar.nc2.stream.NcStreamProto.Section value) {
         if (sectionBuilder_ == null) {
           if (((bitField0_ & 0x00000010) == 0x00000010) &&
@@ -1968,6 +2690,9 @@ public final class PointStreamProto {
         bitField0_ |= 0x00000010;
         return this;
       }
+      /**
+       * <code>required .ncstream.Section section = 5;</code>
+       */
       public Builder clearSection() {
         if (sectionBuilder_ == null) {
           section_ = ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance();
@@ -1978,11 +2703,17 @@ public final class PointStreamProto {
         bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
+      /**
+       * <code>required .ncstream.Section section = 5;</code>
+       */
       public ucar.nc2.stream.NcStreamProto.Section.Builder getSectionBuilder() {
         bitField0_ |= 0x00000010;
         onChanged();
         return getSectionFieldBuilder().getBuilder();
       }
+      /**
+       * <code>required .ncstream.Section section = 5;</code>
+       */
       public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
         if (sectionBuilder_ != null) {
           return sectionBuilder_.getMessageOrBuilder();
@@ -1990,6 +2721,9 @@ public final class PointStreamProto {
           return section_;
         }
       }
+      /**
+       * <code>required .ncstream.Section section = 5;</code>
+       */
       private com.google.protobuf.SingleFieldBuilder<
           ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> 
           getSectionFieldBuilder() {
@@ -2003,153 +2737,310 @@ public final class PointStreamProto {
         }
         return sectionBuilder_;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:pointStream.Member)
     }
-    
+
     static {
       defaultInstance = new Member(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:pointStream.Member)
   }
-  
+
   public interface PointFeatureCollectionOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
-    
+
     // required string name = 1;
+    /**
+     * <code>required string name = 1;</code>
+     */
     boolean hasName();
-    String getName();
-    
+    /**
+     * <code>required string name = 1;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
     // required string timeUnit = 2;
+    /**
+     * <code>required string timeUnit = 2;</code>
+     */
     boolean hasTimeUnit();
-    String getTimeUnit();
-    
+    /**
+     * <code>required string timeUnit = 2;</code>
+     */
+    java.lang.String getTimeUnit();
+    /**
+     * <code>required string timeUnit = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getTimeUnitBytes();
+
     // repeated .pointStream.Member members = 3;
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Member> 
         getMembersList();
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     ucar.nc2.ft.point.remote.PointStreamProto.Member getMembers(int index);
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     int getMembersCount();
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     java.util.List<? extends ucar.nc2.ft.point.remote.PointStreamProto.MemberOrBuilder> 
         getMembersOrBuilderList();
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     ucar.nc2.ft.point.remote.PointStreamProto.MemberOrBuilder getMembersOrBuilder(
         int index);
   }
+  /**
+   * Protobuf type {@code pointStream.PointFeatureCollection}
+   */
   public static final class PointFeatureCollection extends
       com.google.protobuf.GeneratedMessage
       implements PointFeatureCollectionOrBuilder {
     // Use PointFeatureCollection.newBuilder() to construct.
-    private PointFeatureCollection(Builder builder) {
+    private PointFeatureCollection(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private PointFeatureCollection(boolean noInit) {}
-    
+    private PointFeatureCollection(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final PointFeatureCollection defaultInstance;
     public static PointFeatureCollection getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public PointFeatureCollection getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PointFeatureCollection(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              name_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              timeUnit_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                members_ = new java.util.ArrayList<ucar.nc2.ft.point.remote.PointStreamProto.Member>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              members_.add(input.readMessage(ucar.nc2.ft.point.remote.PointStreamProto.Member.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          members_ = java.util.Collections.unmodifiableList(members_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeatureCollection_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeatureCollection_fieldAccessorTable;
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeatureCollection_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.class, ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.Builder.class);
     }
-    
+
+    public static com.google.protobuf.Parser<PointFeatureCollection> PARSER =
+        new com.google.protobuf.AbstractParser<PointFeatureCollection>() {
+      public PointFeatureCollection parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PointFeatureCollection(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PointFeatureCollection> getParserForType() {
+      return PARSER;
+    }
+
     private int bitField0_;
     // required string name = 1;
     public static final int NAME_FIELD_NUMBER = 1;
-    private Object name_;
+    private java.lang.Object name_;
+    /**
+     * <code>required string name = 1;</code>
+     */
     public boolean hasName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getName() {
-      Object ref = name_;
-      if (ref instanceof String) {
-        return (String) ref;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           name_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getNameBytes() {
-      Object ref = name_;
-      if (ref instanceof String) {
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         name_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
+
     // required string timeUnit = 2;
     public static final int TIMEUNIT_FIELD_NUMBER = 2;
-    private Object timeUnit_;
+    private java.lang.Object timeUnit_;
+    /**
+     * <code>required string timeUnit = 2;</code>
+     */
     public boolean hasTimeUnit() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getTimeUnit() {
-      Object ref = timeUnit_;
-      if (ref instanceof String) {
-        return (String) ref;
+    /**
+     * <code>required string timeUnit = 2;</code>
+     */
+    public java.lang.String getTimeUnit() {
+      java.lang.Object ref = timeUnit_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           timeUnit_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getTimeUnitBytes() {
-      Object ref = timeUnit_;
-      if (ref instanceof String) {
+    /**
+     * <code>required string timeUnit = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTimeUnitBytes() {
+      java.lang.Object ref = timeUnit_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         timeUnit_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
+
     // repeated .pointStream.Member members = 3;
     public static final int MEMBERS_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Member> members_;
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     public java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Member> getMembersList() {
       return members_;
     }
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     public java.util.List<? extends ucar.nc2.ft.point.remote.PointStreamProto.MemberOrBuilder> 
         getMembersOrBuilderList() {
       return members_;
     }
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     public int getMembersCount() {
       return members_.size();
     }
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     public ucar.nc2.ft.point.remote.PointStreamProto.Member getMembers(int index) {
       return members_.get(index);
     }
+    /**
+     * <code>repeated .pointStream.Member members = 3;</code>
+     */
     public ucar.nc2.ft.point.remote.PointStreamProto.MemberOrBuilder getMembersOrBuilder(
         int index) {
       return members_.get(index);
     }
-    
+
     private void initFields() {
       name_ = "";
       timeUnit_ = "";
@@ -2159,7 +3050,7 @@ public final class PointStreamProto {
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
-      
+
       if (!hasName()) {
         memoizedIsInitialized = 0;
         return false;
@@ -2177,7 +3068,7 @@ public final class PointStreamProto {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -2192,12 +3083,12 @@ public final class PointStreamProto {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2215,92 +3106,83 @@ public final class PointStreamProto {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code pointStream.PointFeatureCollection}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollectionOrBuilder {
@@ -2308,18 +3190,21 @@ public final class PointStreamProto {
           getDescriptor() {
         return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeatureCollection_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeatureCollection_fieldAccessorTable;
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeatureCollection_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.class, ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.Builder.class);
       }
-      
+
       // Construct using ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -2331,7 +3216,7 @@ public final class PointStreamProto {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -2346,20 +3231,20 @@ public final class PointStreamProto {
         }
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.getDescriptor();
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_PointFeatureCollection_descriptor;
       }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection getDefaultInstanceForType() {
         return ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.getDefaultInstance();
       }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection build() {
         ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection result = buildPartial();
         if (!result.isInitialized()) {
@@ -2367,17 +3252,7 @@ public final class PointStreamProto {
         }
         return result;
       }
-      
-      private ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection buildPartial() {
         ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection result = new ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection(this);
         int from_bitField0_ = bitField0_;
@@ -2403,7 +3278,7 @@ public final class PointStreamProto {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection) {
           return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection)other);
@@ -2412,14 +3287,18 @@ public final class PointStreamProto {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection other) {
         if (other == ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.getDefaultInstance()) return this;
         if (other.hasName()) {
-          setName(other.getName());
+          bitField0_ |= 0x00000001;
+          name_ = other.name_;
+          onChanged();
         }
         if (other.hasTimeUnit()) {
-          setTimeUnit(other.getTimeUnit());
+          bitField0_ |= 0x00000002;
+          timeUnit_ = other.timeUnit_;
+          onChanged();
         }
         if (membersBuilder_ == null) {
           if (!other.members_.isEmpty()) {
@@ -2450,7 +3329,7 @@ public final class PointStreamProto {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasName()) {
           
@@ -2468,68 +3347,69 @@ public final class PointStreamProto {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              name_ = input.readBytes();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              timeUnit_ = input.readBytes();
-              break;
-            }
-            case 26: {
-              ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder subBuilder = ucar.nc2.ft.point.remote.PointStreamProto.Member.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addMembers(subBuilder.buildPartial());
-              break;
-            }
+        ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
+
       // required string name = 1;
-      private Object name_ = "";
+      private java.lang.Object name_ = "";
+      /**
+       * <code>required string name = 1;</code>
+       */
       public boolean hasName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getName() {
-        Object ref = name_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           name_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setName(String value) {
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2538,34 +3418,72 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string name = 1;</code>
+       */
       public Builder clearName() {
         bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
         onChanged();
         return this;
       }
-      void setName(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         name_ = value;
         onChanged();
+        return this;
       }
-      
+
       // required string timeUnit = 2;
-      private Object timeUnit_ = "";
+      private java.lang.Object timeUnit_ = "";
+      /**
+       * <code>required string timeUnit = 2;</code>
+       */
       public boolean hasTimeUnit() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getTimeUnit() {
-        Object ref = timeUnit_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+      /**
+       * <code>required string timeUnit = 2;</code>
+       */
+      public java.lang.String getTimeUnit() {
+        java.lang.Object ref = timeUnit_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           timeUnit_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setTimeUnit(String value) {
+      /**
+       * <code>required string timeUnit = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTimeUnitBytes() {
+        java.lang.Object ref = timeUnit_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          timeUnit_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string timeUnit = 2;</code>
+       */
+      public Builder setTimeUnit(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2574,18 +3492,29 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string timeUnit = 2;</code>
+       */
       public Builder clearTimeUnit() {
         bitField0_ = (bitField0_ & ~0x00000002);
         timeUnit_ = getDefaultInstance().getTimeUnit();
         onChanged();
         return this;
       }
-      void setTimeUnit(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
+      /**
+       * <code>required string timeUnit = 2;</code>
+       */
+      public Builder setTimeUnitBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         timeUnit_ = value;
         onChanged();
+        return this;
       }
-      
+
       // repeated .pointStream.Member members = 3;
       private java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Member> members_ =
         java.util.Collections.emptyList();
@@ -2595,10 +3524,13 @@ public final class PointStreamProto {
           bitField0_ |= 0x00000004;
          }
       }
-      
+
       private com.google.protobuf.RepeatedFieldBuilder<
           ucar.nc2.ft.point.remote.PointStreamProto.Member, ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder, ucar.nc2.ft.point.remote.PointStreamProto.MemberOrBuilder> membersBuilder_;
-      
+
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Member> getMembersList() {
         if (membersBuilder_ == null) {
           return java.util.Collections.unmodifiableList(members_);
@@ -2606,6 +3538,9 @@ public final class PointStreamProto {
           return membersBuilder_.getMessageList();
         }
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public int getMembersCount() {
         if (membersBuilder_ == null) {
           return members_.size();
@@ -2613,6 +3548,9 @@ public final class PointStreamProto {
           return membersBuilder_.getCount();
         }
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Member getMembers(int index) {
         if (membersBuilder_ == null) {
           return members_.get(index);
@@ -2620,6 +3558,9 @@ public final class PointStreamProto {
           return membersBuilder_.getMessage(index);
         }
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public Builder setMembers(
           int index, ucar.nc2.ft.point.remote.PointStreamProto.Member value) {
         if (membersBuilder_ == null) {
@@ -2634,6 +3575,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public Builder setMembers(
           int index, ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder builderForValue) {
         if (membersBuilder_ == null) {
@@ -2645,6 +3589,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public Builder addMembers(ucar.nc2.ft.point.remote.PointStreamProto.Member value) {
         if (membersBuilder_ == null) {
           if (value == null) {
@@ -2658,6 +3605,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public Builder addMembers(
           int index, ucar.nc2.ft.point.remote.PointStreamProto.Member value) {
         if (membersBuilder_ == null) {
@@ -2672,6 +3622,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public Builder addMembers(
           ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder builderForValue) {
         if (membersBuilder_ == null) {
@@ -2683,6 +3636,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public Builder addMembers(
           int index, ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder builderForValue) {
         if (membersBuilder_ == null) {
@@ -2694,6 +3650,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public Builder addAllMembers(
           java.lang.Iterable<? extends ucar.nc2.ft.point.remote.PointStreamProto.Member> values) {
         if (membersBuilder_ == null) {
@@ -2705,6 +3664,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public Builder clearMembers() {
         if (membersBuilder_ == null) {
           members_ = java.util.Collections.emptyList();
@@ -2715,6 +3677,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public Builder removeMembers(int index) {
         if (membersBuilder_ == null) {
           ensureMembersIsMutable();
@@ -2725,10 +3690,16 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder getMembersBuilder(
           int index) {
         return getMembersFieldBuilder().getBuilder(index);
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.MemberOrBuilder getMembersOrBuilder(
           int index) {
         if (membersBuilder_ == null) {
@@ -2736,6 +3707,9 @@ public final class PointStreamProto {
           return membersBuilder_.getMessageOrBuilder(index);
         }
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public java.util.List<? extends ucar.nc2.ft.point.remote.PointStreamProto.MemberOrBuilder> 
            getMembersOrBuilderList() {
         if (membersBuilder_ != null) {
@@ -2744,15 +3718,24 @@ public final class PointStreamProto {
           return java.util.Collections.unmodifiableList(members_);
         }
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder addMembersBuilder() {
         return getMembersFieldBuilder().addBuilder(
             ucar.nc2.ft.point.remote.PointStreamProto.Member.getDefaultInstance());
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder addMembersBuilder(
           int index) {
         return getMembersFieldBuilder().addBuilder(
             index, ucar.nc2.ft.point.remote.PointStreamProto.Member.getDefaultInstance());
       }
+      /**
+       * <code>repeated .pointStream.Member members = 3;</code>
+       */
       public java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder> 
            getMembersBuilderList() {
         return getMembersFieldBuilder().getBuilderList();
@@ -2771,553 +3754,144 @@ public final class PointStreamProto {
         }
         return membersBuilder_;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:pointStream.PointFeatureCollection)
     }
-    
+
     static {
       defaultInstance = new PointFeatureCollection(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:pointStream.PointFeatureCollection)
   }
-  
+
   public interface StationOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
-    
+
     // required string id = 1;
+    /**
+     * <code>required string id = 1;</code>
+     */
     boolean hasId();
-    String getId();
-    
+    /**
+     * <code>required string id = 1;</code>
+     */
+    java.lang.String getId();
+    /**
+     * <code>required string id = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getIdBytes();
+
     // required double lat = 2;
+    /**
+     * <code>required double lat = 2;</code>
+     */
     boolean hasLat();
+    /**
+     * <code>required double lat = 2;</code>
+     */
     double getLat();
-    
+
     // required double lon = 3;
+    /**
+     * <code>required double lon = 3;</code>
+     */
     boolean hasLon();
+    /**
+     * <code>required double lon = 3;</code>
+     */
     double getLon();
-    
+
     // optional double alt = 4;
+    /**
+     * <code>optional double alt = 4;</code>
+     */
     boolean hasAlt();
+    /**
+     * <code>optional double alt = 4;</code>
+     */
     double getAlt();
-    
+
     // optional string desc = 5;
+    /**
+     * <code>optional string desc = 5;</code>
+     */
     boolean hasDesc();
-    String getDesc();
-    
+    /**
+     * <code>optional string desc = 5;</code>
+     */
+    java.lang.String getDesc();
+    /**
+     * <code>optional string desc = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getDescBytes();
+
     // optional string wmoId = 6;
+    /**
+     * <code>optional string wmoId = 6;</code>
+     */
     boolean hasWmoId();
-    String getWmoId();
+    /**
+     * <code>optional string wmoId = 6;</code>
+     */
+    java.lang.String getWmoId();
+    /**
+     * <code>optional string wmoId = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getWmoIdBytes();
   }
+  /**
+   * Protobuf type {@code pointStream.Station}
+   */
   public static final class Station extends
       com.google.protobuf.GeneratedMessage
       implements StationOrBuilder {
     // Use Station.newBuilder() to construct.
-    private Station(Builder builder) {
+    private Station(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Station(boolean noInit) {}
-    
+    private Station(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final Station defaultInstance;
     public static Station getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public Station getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_fieldAccessorTable;
-    }
-    
-    private int bitField0_;
-    // required string id = 1;
-    public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
-    public boolean hasId() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // required double lat = 2;
-    public static final int LAT_FIELD_NUMBER = 2;
-    private double lat_;
-    public boolean hasLat() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    public double getLat() {
-      return lat_;
-    }
-    
-    // required double lon = 3;
-    public static final int LON_FIELD_NUMBER = 3;
-    private double lon_;
-    public boolean hasLon() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public double getLon() {
-      return lon_;
-    }
-    
-    // optional double alt = 4;
-    public static final int ALT_FIELD_NUMBER = 4;
-    private double alt_;
-    public boolean hasAlt() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    public double getAlt() {
-      return alt_;
-    }
-    
-    // optional string desc = 5;
-    public static final int DESC_FIELD_NUMBER = 5;
-    private Object desc_;
-    public boolean hasDesc() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    public String getDesc() {
-      Object ref = desc_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          desc_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getDescBytes() {
-      Object ref = desc_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        desc_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // optional string wmoId = 6;
-    public static final int WMOID_FIELD_NUMBER = 6;
-    private Object wmoId_;
-    public boolean hasWmoId() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
-    }
-    public String getWmoId() {
-      Object ref = wmoId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          wmoId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getWmoIdBytes() {
-      Object ref = wmoId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        wmoId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    private void initFields() {
-      id_ = "";
-      lat_ = 0D;
-      lon_ = 0D;
-      alt_ = 0D;
-      desc_ = "";
-      wmoId_ = "";
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
-      if (!hasId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasLat()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasLon()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-    
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeDouble(2, lat_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeDouble(3, lon_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeDouble(4, alt_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getDescBytes());
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeBytes(6, getWmoIdBytes());
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(2, lat_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(3, lon_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(4, alt_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getDescBytes());
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, getWmoIdBytes());
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
-      return super.writeReplace();
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
     }
-    
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+    private Station(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.Station prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements ucar.nc2.ft.point.remote.PointStreamProto.StationOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_fieldAccessorTable;
-      }
-      
-      // Construct using ucar.nc2.ft.point.remote.PointStreamProto.Station.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-      
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-      
-      public Builder clear() {
-        super.clear();
-        id_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        lat_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        lon_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        alt_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        desc_ = "";
-        bitField0_ = (bitField0_ & ~0x00000010);
-        wmoId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000020);
-        return this;
-      }
-      
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.Station.getDescriptor();
-      }
-      
-      public ucar.nc2.ft.point.remote.PointStreamProto.Station getDefaultInstanceForType() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.Station.getDefaultInstance();
-      }
-      
-      public ucar.nc2.ft.point.remote.PointStreamProto.Station build() {
-        ucar.nc2.ft.point.remote.PointStreamProto.Station result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-      
-      private ucar.nc2.ft.point.remote.PointStreamProto.Station buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        ucar.nc2.ft.point.remote.PointStreamProto.Station result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
-      public ucar.nc2.ft.point.remote.PointStreamProto.Station buildPartial() {
-        ucar.nc2.ft.point.remote.PointStreamProto.Station result = new ucar.nc2.ft.point.remote.PointStreamProto.Station(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.id_ = id_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.lat_ = lat_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.lon_ = lon_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.alt_ = alt_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.desc_ = desc_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000020;
-        }
-        result.wmoId_ = wmoId_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.Station) {
-          return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.Station)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.Station other) {
-        if (other == ucar.nc2.ft.point.remote.PointStreamProto.Station.getDefaultInstance()) return this;
-        if (other.hasId()) {
-          setId(other.getId());
-        }
-        if (other.hasLat()) {
-          setLat(other.getLat());
-        }
-        if (other.hasLon()) {
-          setLon(other.getLon());
-        }
-        if (other.hasAlt()) {
-          setAlt(other.getAlt());
-        }
-        if (other.hasDesc()) {
-          setDesc(other.getDesc());
-        }
-        if (other.hasWmoId()) {
-          setWmoId(other.getWmoId());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      public final boolean isInitialized() {
-        if (!hasId()) {
-          
-          return false;
-        }
-        if (!hasLat()) {
-          
-          return false;
-        }
-        if (!hasLon()) {
-          
-          return false;
-        }
-        return true;
-      }
-      
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
           int tag = input.readTag();
           switch (tag) {
             case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
+              done = true;
+              break;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
+                done = true;
               }
               break;
             }
@@ -3353,26 +3927,606 @@ public final class PointStreamProto {
             }
           }
         }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
       }
-      
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.ft.point.remote.PointStreamProto.Station.class, ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Station> PARSER =
+        new com.google.protobuf.AbstractParser<Station>() {
+      public Station parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Station(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Station> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string id = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private java.lang.Object id_;
+    /**
+     * <code>required string id = 1;</code>
+     */
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string id = 1;</code>
+     */
+    public java.lang.String getId() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          id_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getIdBytes() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        id_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required double lat = 2;
+    public static final int LAT_FIELD_NUMBER = 2;
+    private double lat_;
+    /**
+     * <code>required double lat = 2;</code>
+     */
+    public boolean hasLat() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required double lat = 2;</code>
+     */
+    public double getLat() {
+      return lat_;
+    }
+
+    // required double lon = 3;
+    public static final int LON_FIELD_NUMBER = 3;
+    private double lon_;
+    /**
+     * <code>required double lon = 3;</code>
+     */
+    public boolean hasLon() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required double lon = 3;</code>
+     */
+    public double getLon() {
+      return lon_;
+    }
+
+    // optional double alt = 4;
+    public static final int ALT_FIELD_NUMBER = 4;
+    private double alt_;
+    /**
+     * <code>optional double alt = 4;</code>
+     */
+    public boolean hasAlt() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional double alt = 4;</code>
+     */
+    public double getAlt() {
+      return alt_;
+    }
+
+    // optional string desc = 5;
+    public static final int DESC_FIELD_NUMBER = 5;
+    private java.lang.Object desc_;
+    /**
+     * <code>optional string desc = 5;</code>
+     */
+    public boolean hasDesc() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string desc = 5;</code>
+     */
+    public java.lang.String getDesc() {
+      java.lang.Object ref = desc_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          desc_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string desc = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDescBytes() {
+      java.lang.Object ref = desc_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        desc_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string wmoId = 6;
+    public static final int WMOID_FIELD_NUMBER = 6;
+    private java.lang.Object wmoId_;
+    /**
+     * <code>optional string wmoId = 6;</code>
+     */
+    public boolean hasWmoId() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional string wmoId = 6;</code>
+     */
+    public java.lang.String getWmoId() {
+      java.lang.Object ref = wmoId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          wmoId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string wmoId = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getWmoIdBytes() {
+      java.lang.Object ref = wmoId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        wmoId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      id_ = "";
+      lat_ = 0D;
+      lon_ = 0D;
+      alt_ = 0D;
+      desc_ = "";
+      wmoId_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLat()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLon()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeDouble(2, lat_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeDouble(3, lon_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeDouble(4, alt_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getDescBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getWmoIdBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, lat_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(3, lon_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(4, alt_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getDescBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getWmoIdBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.Station prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code pointStream.Station}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.ft.point.remote.PointStreamProto.StationOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.ft.point.remote.PointStreamProto.Station.class, ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder.class);
+      }
+
+      // Construct using ucar.nc2.ft.point.remote.PointStreamProto.Station.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        id_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lat_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        lon_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        alt_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        desc_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        wmoId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_descriptor;
+      }
+
+      public ucar.nc2.ft.point.remote.PointStreamProto.Station getDefaultInstanceForType() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.Station.getDefaultInstance();
+      }
+
+      public ucar.nc2.ft.point.remote.PointStreamProto.Station build() {
+        ucar.nc2.ft.point.remote.PointStreamProto.Station result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.ft.point.remote.PointStreamProto.Station buildPartial() {
+        ucar.nc2.ft.point.remote.PointStreamProto.Station result = new ucar.nc2.ft.point.remote.PointStreamProto.Station(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.lat_ = lat_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.lon_ = lon_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.alt_ = alt_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.desc_ = desc_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.wmoId_ = wmoId_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.Station) {
+          return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.Station)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.Station other) {
+        if (other == ucar.nc2.ft.point.remote.PointStreamProto.Station.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          bitField0_ |= 0x00000001;
+          id_ = other.id_;
+          onChanged();
+        }
+        if (other.hasLat()) {
+          setLat(other.getLat());
+        }
+        if (other.hasLon()) {
+          setLon(other.getLon());
+        }
+        if (other.hasAlt()) {
+          setAlt(other.getAlt());
+        }
+        if (other.hasDesc()) {
+          bitField0_ |= 0x00000010;
+          desc_ = other.desc_;
+          onChanged();
+        }
+        if (other.hasWmoId()) {
+          bitField0_ |= 0x00000020;
+          wmoId_ = other.wmoId_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasId()) {
+          
+          return false;
+        }
+        if (!hasLat()) {
+          
+          return false;
+        }
+        if (!hasLon()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.ft.point.remote.PointStreamProto.Station parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.ft.point.remote.PointStreamProto.Station) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
       private int bitField0_;
-      
+
       // required string id = 1;
-      private Object id_ = "";
+      private java.lang.Object id_ = "";
+      /**
+       * <code>required string id = 1;</code>
+       */
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public java.lang.String getId() {
+        java.lang.Object ref = id_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           id_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setId(String value) {
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getIdBytes() {
+        java.lang.Object ref = id_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          id_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public Builder setId(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -3381,97 +4535,171 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string id = 1;</code>
+       */
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
         id_ = getDefaultInstance().getId();
         onChanged();
         return this;
       }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public Builder setIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
+        return this;
       }
-      
+
       // required double lat = 2;
       private double lat_ ;
+      /**
+       * <code>required double lat = 2;</code>
+       */
       public boolean hasLat() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required double lat = 2;</code>
+       */
       public double getLat() {
         return lat_;
       }
+      /**
+       * <code>required double lat = 2;</code>
+       */
       public Builder setLat(double value) {
         bitField0_ |= 0x00000002;
         lat_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required double lat = 2;</code>
+       */
       public Builder clearLat() {
         bitField0_ = (bitField0_ & ~0x00000002);
         lat_ = 0D;
         onChanged();
         return this;
       }
-      
+
       // required double lon = 3;
       private double lon_ ;
+      /**
+       * <code>required double lon = 3;</code>
+       */
       public boolean hasLon() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
+      /**
+       * <code>required double lon = 3;</code>
+       */
       public double getLon() {
         return lon_;
       }
+      /**
+       * <code>required double lon = 3;</code>
+       */
       public Builder setLon(double value) {
         bitField0_ |= 0x00000004;
         lon_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required double lon = 3;</code>
+       */
       public Builder clearLon() {
         bitField0_ = (bitField0_ & ~0x00000004);
         lon_ = 0D;
         onChanged();
         return this;
       }
-      
+
       // optional double alt = 4;
       private double alt_ ;
+      /**
+       * <code>optional double alt = 4;</code>
+       */
       public boolean hasAlt() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
+      /**
+       * <code>optional double alt = 4;</code>
+       */
       public double getAlt() {
         return alt_;
       }
+      /**
+       * <code>optional double alt = 4;</code>
+       */
       public Builder setAlt(double value) {
         bitField0_ |= 0x00000008;
         alt_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>optional double alt = 4;</code>
+       */
       public Builder clearAlt() {
         bitField0_ = (bitField0_ & ~0x00000008);
         alt_ = 0D;
         onChanged();
         return this;
       }
-      
+
       // optional string desc = 5;
-      private Object desc_ = "";
+      private java.lang.Object desc_ = "";
+      /**
+       * <code>optional string desc = 5;</code>
+       */
       public boolean hasDesc() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
-      public String getDesc() {
-        Object ref = desc_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+      /**
+       * <code>optional string desc = 5;</code>
+       */
+      public java.lang.String getDesc() {
+        java.lang.Object ref = desc_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           desc_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setDesc(String value) {
+      /**
+       * <code>optional string desc = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDescBytes() {
+        java.lang.Object ref = desc_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          desc_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string desc = 5;</code>
+       */
+      public Builder setDesc(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -3480,34 +4708,72 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional string desc = 5;</code>
+       */
       public Builder clearDesc() {
         bitField0_ = (bitField0_ & ~0x00000010);
         desc_ = getDefaultInstance().getDesc();
         onChanged();
         return this;
       }
-      void setDesc(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000010;
+      /**
+       * <code>optional string desc = 5;</code>
+       */
+      public Builder setDescBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
         desc_ = value;
         onChanged();
+        return this;
       }
-      
+
       // optional string wmoId = 6;
-      private Object wmoId_ = "";
+      private java.lang.Object wmoId_ = "";
+      /**
+       * <code>optional string wmoId = 6;</code>
+       */
       public boolean hasWmoId() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
-      public String getWmoId() {
-        Object ref = wmoId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+      /**
+       * <code>optional string wmoId = 6;</code>
+       */
+      public java.lang.String getWmoId() {
+        java.lang.Object ref = wmoId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           wmoId_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setWmoId(String value) {
+      /**
+       * <code>optional string wmoId = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getWmoIdBytes() {
+        java.lang.Object ref = wmoId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          wmoId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string wmoId = 6;</code>
+       */
+      public Builder setWmoId(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -3516,91 +4782,205 @@ public final class PointStreamProto {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional string wmoId = 6;</code>
+       */
       public Builder clearWmoId() {
         bitField0_ = (bitField0_ & ~0x00000020);
         wmoId_ = getDefaultInstance().getWmoId();
         onChanged();
         return this;
       }
-      void setWmoId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000020;
+      /**
+       * <code>optional string wmoId = 6;</code>
+       */
+      public Builder setWmoIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
         wmoId_ = value;
         onChanged();
+        return this;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:pointStream.Station)
     }
-    
+
     static {
       defaultInstance = new Station(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:pointStream.Station)
   }
-  
+
   public interface StationListOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
-    
+
     // repeated .pointStream.Station stations = 1;
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Station> 
         getStationsList();
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     ucar.nc2.ft.point.remote.PointStreamProto.Station getStations(int index);
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     int getStationsCount();
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     java.util.List<? extends ucar.nc2.ft.point.remote.PointStreamProto.StationOrBuilder> 
         getStationsOrBuilderList();
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     ucar.nc2.ft.point.remote.PointStreamProto.StationOrBuilder getStationsOrBuilder(
         int index);
   }
+  /**
+   * Protobuf type {@code pointStream.StationList}
+   */
   public static final class StationList extends
       com.google.protobuf.GeneratedMessage
       implements StationListOrBuilder {
     // Use StationList.newBuilder() to construct.
-    private StationList(Builder builder) {
+    private StationList(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private StationList(boolean noInit) {}
-    
+    private StationList(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final StationList defaultInstance;
     public static StationList getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public StationList getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private StationList(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                stations_ = new java.util.ArrayList<ucar.nc2.ft.point.remote.PointStreamProto.Station>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              stations_.add(input.readMessage(ucar.nc2.ft.point.remote.PointStreamProto.Station.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          stations_ = java.util.Collections.unmodifiableList(stations_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_StationList_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_StationList_fieldAccessorTable;
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_StationList_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.ft.point.remote.PointStreamProto.StationList.class, ucar.nc2.ft.point.remote.PointStreamProto.StationList.Builder.class);
     }
-    
+
+    public static com.google.protobuf.Parser<StationList> PARSER =
+        new com.google.protobuf.AbstractParser<StationList>() {
+      public StationList parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new StationList(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StationList> getParserForType() {
+      return PARSER;
+    }
+
     // repeated .pointStream.Station stations = 1;
     public static final int STATIONS_FIELD_NUMBER = 1;
     private java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Station> stations_;
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     public java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Station> getStationsList() {
       return stations_;
     }
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     public java.util.List<? extends ucar.nc2.ft.point.remote.PointStreamProto.StationOrBuilder> 
         getStationsOrBuilderList() {
       return stations_;
     }
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     public int getStationsCount() {
       return stations_.size();
     }
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     public ucar.nc2.ft.point.remote.PointStreamProto.Station getStations(int index) {
       return stations_.get(index);
     }
+    /**
+     * <code>repeated .pointStream.Station stations = 1;</code>
+     */
     public ucar.nc2.ft.point.remote.PointStreamProto.StationOrBuilder getStationsOrBuilder(
         int index) {
       return stations_.get(index);
     }
-    
+
     private void initFields() {
       stations_ = java.util.Collections.emptyList();
     }
@@ -3608,7 +4988,7 @@ public final class PointStreamProto {
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
-      
+
       for (int i = 0; i < getStationsCount(); i++) {
         if (!getStations(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -3618,7 +4998,7 @@ public final class PointStreamProto {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -3627,12 +5007,12 @@ public final class PointStreamProto {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       for (int i = 0; i < stations_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -3642,92 +5022,83 @@ public final class PointStreamProto {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.StationList prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code pointStream.StationList}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.ft.point.remote.PointStreamProto.StationListOrBuilder {
@@ -3735,18 +5106,21 @@ public final class PointStreamProto {
           getDescriptor() {
         return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_StationList_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_StationList_fieldAccessorTable;
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_StationList_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.ft.point.remote.PointStreamProto.StationList.class, ucar.nc2.ft.point.remote.PointStreamProto.StationList.Builder.class);
       }
-      
+
       // Construct using ucar.nc2.ft.point.remote.PointStreamProto.StationList.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -3758,7 +5132,7 @@ public final class PointStreamProto {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         if (stationsBuilder_ == null) {
@@ -3769,20 +5143,20 @@ public final class PointStreamProto {
         }
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.ft.point.remote.PointStreamProto.StationList.getDescriptor();
+        return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_StationList_descriptor;
       }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.StationList getDefaultInstanceForType() {
         return ucar.nc2.ft.point.remote.PointStreamProto.StationList.getDefaultInstance();
       }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.StationList build() {
         ucar.nc2.ft.point.remote.PointStreamProto.StationList result = buildPartial();
         if (!result.isInitialized()) {
@@ -3790,17 +5164,7 @@ public final class PointStreamProto {
         }
         return result;
       }
-      
-      private ucar.nc2.ft.point.remote.PointStreamProto.StationList buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        ucar.nc2.ft.point.remote.PointStreamProto.StationList result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public ucar.nc2.ft.point.remote.PointStreamProto.StationList buildPartial() {
         ucar.nc2.ft.point.remote.PointStreamProto.StationList result = new ucar.nc2.ft.point.remote.PointStreamProto.StationList(this);
         int from_bitField0_ = bitField0_;
@@ -3816,7 +5180,7 @@ public final class PointStreamProto {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.StationList) {
           return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.StationList)other);
@@ -3825,7 +5189,7 @@ public final class PointStreamProto {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.StationList other) {
         if (other == ucar.nc2.ft.point.remote.PointStreamProto.StationList.getDefaultInstance()) return this;
         if (stationsBuilder_ == null) {
@@ -3857,7 +5221,7 @@ public final class PointStreamProto {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         for (int i = 0; i < getStationsCount(); i++) {
           if (!getStations(i).isInitialized()) {
@@ -3867,42 +5231,26 @@ public final class PointStreamProto {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder subBuilder = ucar.nc2.ft.point.remote.PointStreamProto.Station.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addStations(subBuilder.buildPartial());
-              break;
-            }
+        ucar.nc2.ft.point.remote.PointStreamProto.StationList parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.ft.point.remote.PointStreamProto.StationList) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
+
       // repeated .pointStream.Station stations = 1;
       private java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Station> stations_ =
         java.util.Collections.emptyList();
@@ -3912,10 +5260,13 @@ public final class PointStreamProto {
           bitField0_ |= 0x00000001;
          }
       }
-      
+
       private com.google.protobuf.RepeatedFieldBuilder<
           ucar.nc2.ft.point.remote.PointStreamProto.Station, ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder, ucar.nc2.ft.point.remote.PointStreamProto.StationOrBuilder> stationsBuilder_;
-      
+
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Station> getStationsList() {
         if (stationsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(stations_);
@@ -3923,6 +5274,9 @@ public final class PointStreamProto {
           return stationsBuilder_.getMessageList();
         }
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public int getStationsCount() {
         if (stationsBuilder_ == null) {
           return stations_.size();
@@ -3930,6 +5284,9 @@ public final class PointStreamProto {
           return stationsBuilder_.getCount();
         }
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Station getStations(int index) {
         if (stationsBuilder_ == null) {
           return stations_.get(index);
@@ -3937,6 +5294,9 @@ public final class PointStreamProto {
           return stationsBuilder_.getMessage(index);
         }
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public Builder setStations(
           int index, ucar.nc2.ft.point.remote.PointStreamProto.Station value) {
         if (stationsBuilder_ == null) {
@@ -3951,6 +5311,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public Builder setStations(
           int index, ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder builderForValue) {
         if (stationsBuilder_ == null) {
@@ -3962,6 +5325,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public Builder addStations(ucar.nc2.ft.point.remote.PointStreamProto.Station value) {
         if (stationsBuilder_ == null) {
           if (value == null) {
@@ -3975,6 +5341,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public Builder addStations(
           int index, ucar.nc2.ft.point.remote.PointStreamProto.Station value) {
         if (stationsBuilder_ == null) {
@@ -3989,6 +5358,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public Builder addStations(
           ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder builderForValue) {
         if (stationsBuilder_ == null) {
@@ -4000,6 +5372,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public Builder addStations(
           int index, ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder builderForValue) {
         if (stationsBuilder_ == null) {
@@ -4011,6 +5386,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public Builder addAllStations(
           java.lang.Iterable<? extends ucar.nc2.ft.point.remote.PointStreamProto.Station> values) {
         if (stationsBuilder_ == null) {
@@ -4022,6 +5400,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public Builder clearStations() {
         if (stationsBuilder_ == null) {
           stations_ = java.util.Collections.emptyList();
@@ -4032,6 +5413,9 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public Builder removeStations(int index) {
         if (stationsBuilder_ == null) {
           ensureStationsIsMutable();
@@ -4042,10 +5426,16 @@ public final class PointStreamProto {
         }
         return this;
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder getStationsBuilder(
           int index) {
         return getStationsFieldBuilder().getBuilder(index);
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.StationOrBuilder getStationsOrBuilder(
           int index) {
         if (stationsBuilder_ == null) {
@@ -4053,6 +5443,9 @@ public final class PointStreamProto {
           return stationsBuilder_.getMessageOrBuilder(index);
         }
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public java.util.List<? extends ucar.nc2.ft.point.remote.PointStreamProto.StationOrBuilder> 
            getStationsOrBuilderList() {
         if (stationsBuilder_ != null) {
@@ -4061,15 +5454,24 @@ public final class PointStreamProto {
           return java.util.Collections.unmodifiableList(stations_);
         }
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder addStationsBuilder() {
         return getStationsFieldBuilder().addBuilder(
             ucar.nc2.ft.point.remote.PointStreamProto.Station.getDefaultInstance());
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder addStationsBuilder(
           int index) {
         return getStationsFieldBuilder().addBuilder(
             index, ucar.nc2.ft.point.remote.PointStreamProto.Station.getDefaultInstance());
       }
+      /**
+       * <code>repeated .pointStream.Station stations = 1;</code>
+       */
       public java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder> 
            getStationsBuilderList() {
         return getStationsFieldBuilder().getBuilderList();
@@ -4088,18 +5490,18 @@ public final class PointStreamProto {
         }
         return stationsBuilder_;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:pointStream.StationList)
     }
-    
+
     static {
       defaultInstance = new StationList(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:pointStream.StationList)
   }
-  
+
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_pointStream_Location_descriptor;
   private static
@@ -4130,7 +5532,7 @@ public final class PointStreamProto {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_pointStream_StationList_fieldAccessorTable;
-  
+
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
@@ -4167,49 +5569,37 @@ public final class PointStreamProto {
           internal_static_pointStream_Location_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_pointStream_Location_descriptor,
-              new java.lang.String[] { "Time", "Lat", "Lon", "Alt", "NomTime", },
-              ucar.nc2.ft.point.remote.PointStreamProto.Location.class,
-              ucar.nc2.ft.point.remote.PointStreamProto.Location.Builder.class);
+              new java.lang.String[] { "Time", "Lat", "Lon", "Alt", "NomTime", });
           internal_static_pointStream_PointFeature_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_pointStream_PointFeature_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_pointStream_PointFeature_descriptor,
-              new java.lang.String[] { "Loc", "Data", "Sdata", },
-              ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.class,
-              ucar.nc2.ft.point.remote.PointStreamProto.PointFeature.Builder.class);
+              new java.lang.String[] { "Loc", "Data", "Sdata", });
           internal_static_pointStream_Member_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_pointStream_Member_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_pointStream_Member_descriptor,
-              new java.lang.String[] { "Name", "Desc", "Units", "DataType", "Section", },
-              ucar.nc2.ft.point.remote.PointStreamProto.Member.class,
-              ucar.nc2.ft.point.remote.PointStreamProto.Member.Builder.class);
+              new java.lang.String[] { "Name", "Desc", "Units", "DataType", "Section", });
           internal_static_pointStream_PointFeatureCollection_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_pointStream_PointFeatureCollection_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_pointStream_PointFeatureCollection_descriptor,
-              new java.lang.String[] { "Name", "TimeUnit", "Members", },
-              ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.class,
-              ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.Builder.class);
+              new java.lang.String[] { "Name", "TimeUnit", "Members", });
           internal_static_pointStream_Station_descriptor =
             getDescriptor().getMessageTypes().get(4);
           internal_static_pointStream_Station_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_pointStream_Station_descriptor,
-              new java.lang.String[] { "Id", "Lat", "Lon", "Alt", "Desc", "WmoId", },
-              ucar.nc2.ft.point.remote.PointStreamProto.Station.class,
-              ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder.class);
+              new java.lang.String[] { "Id", "Lat", "Lon", "Alt", "Desc", "WmoId", });
           internal_static_pointStream_StationList_descriptor =
             getDescriptor().getMessageTypes().get(5);
           internal_static_pointStream_StationList_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_pointStream_StationList_descriptor,
-              new java.lang.String[] { "Stations", },
-              ucar.nc2.ft.point.remote.PointStreamProto.StationList.class,
-              ucar.nc2.ft.point.remote.PointStreamProto.StationList.Builder.class);
+              new java.lang.String[] { "Stations", });
           return null;
         }
       };
@@ -4219,6 +5609,6 @@ public final class PointStreamProto {
           ucar.nc2.stream.NcStreamProto.getDescriptor(),
         }, assigner);
   }
-  
+
   // @@protoc_insertion_point(outer_class_scope)
 }

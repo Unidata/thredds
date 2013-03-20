@@ -46,5 +46,5 @@ message StationList {
   repeated Station stations = 1;
 }
 
-// cd c:/dev/tds4.2n/cdm/src/main/java
+// cd c:/dev/github/thredds/cdm/src/main/java
 // protoc --proto_path=. --java_out=. ucar/nc2/ft/point/remote/pointStream.proto
