@@ -23,7 +23,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
 
      private SimpleJdbcInsert insertActor;
 
-    /*
+    /**
      * Looks up and retrieves a user from the persistence mechanism using the user id.
      * 
      * @param userId  The id of the user we are trying to locate (will be unique for each user). 
@@ -39,7 +39,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         return users.get(0);
     }
 
-    /*
+    /**
      * Requests a List of all users from the persistence mechanism.
      * 
      * @return  A List of users.   
@@ -50,7 +50,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         return users;
     }
 
-    /*
+    /**
      * Queries the persistence mechanism and returns the number of users.
      * 
      * @return  The total number of users as an int.   
@@ -61,7 +61,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         return users.size();
     }
 
-    /*
+    /**
      * Finds and removes the user from the persistence mechanism.
      * 
      * @param userId  The user id in the persistence mechanism.  
@@ -75,7 +75,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         }   
     }
 
-    /*
+    /**
      * Creates a new user.
      * 
      * @param user  The user to be created. 
@@ -94,7 +94,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         }   
     }
 
-    /*
+    /**
      * Saves changes made to an existing user.
      * 
      * @param user   The existing user with changes that needs to be saved. 
@@ -115,11 +115,11 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
     } 
 
 
-    /**
+    /***
      * Maps each row of the ResultSet to a User object.
      */
     private static class UserMapper implements RowMapper<User> {
-        /*
+        /**
          * Maps each row of data in the ResultSet to the User object.
          * 
          * @param rs  The ResultSet to be mapped.

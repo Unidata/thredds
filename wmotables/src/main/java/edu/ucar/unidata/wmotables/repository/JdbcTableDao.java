@@ -24,7 +24,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
 
      private SimpleJdbcInsert insertActor;
 
-    /*
+    /**
      * Looks up and retrieves a table from the database using the table id.
      * 
      * @param tableId  The id of the table we are trying to locate (will be unique for each table). 
@@ -40,7 +40,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         return tables.get(0);
     }
 
-    /*
+    /**
      * Requests a List of ALL tables from the persistence mechanism.
      * 
      * @return  A List of tables.   
@@ -51,7 +51,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         return tables;
     }
 
-    /*
+    /**
      * Requests a List of tables owned by a particular user from the persistence mechanism.
      * 
      * @param userId  The id of the user what owns the tables.
@@ -63,7 +63,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         return tables;
     }
 
-    /*
+    /**
      * Requests a List of tables owned by a particular user from the persistence mechanism.
      * 
      * @param user  The User what owns the tables.
@@ -73,7 +73,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         return getTableList(user.getUserId());
     }
 
-    /*
+    /**
      * Queries the persistence mechanism and returns the number of tables.
      * 
      * @return  The total number of tables as an int.   
@@ -84,7 +84,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         return tables.size();
     }
 
-    /*
+    /**
      * Queries the persistence mechanism and returns the number of tables owned by a user.
      * 
      * @param userId  The id of the user that owns the tables.
@@ -96,7 +96,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         return tables.size();
     }
 
-    /*
+    /**
      * Queries the persistence mechanism and returns the number of tables owned by a user.
      * 
      * @param user  The User that owns the tables.
@@ -106,7 +106,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         return getTableCount(user.getUserId());
     }
 
-    /*
+    /**
      * Toggles the table's visiblity attribute to in the persistence mechanism.
      * 
      * @param table  The table in the persistence mechanism. 
@@ -124,7 +124,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         }
     }
 
-    /*
+    /**
      * Creates a new table.
      * 
      * @param table  The table to be created.  
@@ -143,18 +143,19 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         }                
     }
 
-    /*
+    /**
      * Saves changes made to an existing table. 
      * 
      * @param table   The existing table with changes that needs to be saved. 
      * @throws RecoverableDataAccessException  If unable to find the table to update. 
      */
     public void updateTable(Table table) {
-        String sql = "UPDATE tables SET title = ?, description = ?, visibility = ?, dateModified = ? WHERE tableId = ?";
+        String sql = "UPDATE tables SET title = ?, description = ?, version = ?, visibility = ?, dateModified = ? WHERE tableId = ?";
         int rowsAffected = getJdbcTemplate().update(sql, new Object[] {
             // order matters here
             table.getTitle(),
             table.getDescription(), 
+            table.getVersion(), 
             table.getVisibility(), 
             table.getDateModified(),
             table.getTableId()
@@ -165,11 +166,11 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
     } 
 
 
-    /**
+    /***
      * Maps each row of the ResultSet to a Table object.
      */
     private static class TableMapper implements RowMapper<Table> {
-        /*
+        /**
          * Maps each row of data in the ResultSet to the Table object.
          * 
          * @param rs  The ResultSet to be mapped.

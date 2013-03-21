@@ -2,6 +2,8 @@ package edu.ucar.unidata.wmotables.controller;
 
 import org.apache.log4j.Logger;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
@@ -44,7 +46,7 @@ public class TableController implements HandlerExceptionResolver {
     @Resource(name="tableManager")
     private TableManager tableManager;
 
-    /*
+    /**
      * Accepts a GET request for a List of Table objects, retrieves the List from 
      * the TableManager, and passes the List<Table> to the View for display. Also
      * gets a list of available Users from the UserManager and creates a 
@@ -70,7 +72,7 @@ public class TableController implements HandlerExceptionResolver {
         return "listTables";
     }
 
-    /*
+    /**
      * Accepts a GET request for a List of Table objects, retrieves the List
      * from the TableManager based on the userId URI Template patten matching, 
      * and passes the List<Table> to the View for display. The User object is 
@@ -90,7 +92,7 @@ public class TableController implements HandlerExceptionResolver {
         return "listTables";
     }
 
-    /*
+    /**
      * Accepts a GET request to create a new Table object, retrieves the 
      * corresponding User object from the UserManager based on the userId 
      * URI Template patten matching, and passes it to the View for display. 
@@ -107,7 +109,7 @@ public class TableController implements HandlerExceptionResolver {
         return "createTable";
     }
 
-    /*
+    /**
      * Accepts a POST request to create a new Table object, sets the visibility 
      * of the Table object and persists it.  The corresponding User object is
      * retrieved from the UserManager and passes it to the View for display. 
@@ -134,7 +136,7 @@ public class TableController implements HandlerExceptionResolver {
         return new ModelAndView(new RedirectView("/" + new Integer(table.getUserId()).toString(), true));
     }
 
-    /*
+    /**
      * Accepts a GET request to update an existing Table object, retrieves the 
      * requested Table object from the TableManager based on the tableId URI 
      * Template patten matching, and passes it to the View for display. The 
@@ -155,7 +157,7 @@ public class TableController implements HandlerExceptionResolver {
         return "updateTable";
     }
 
-    /*
+    /**
      * Accepts a POST request to create a new Table object, sets the visibility 
      * of the Table object and persists it.  The corresponding User object is
      * retrieved from the UserManager and passes it to the View for display. 
@@ -180,7 +182,7 @@ public class TableController implements HandlerExceptionResolver {
         return new ModelAndView(new RedirectView("/" + new Integer(table.getUserId()).toString(), true));
     }
 
-    /*
+    /**
      * Accepts a POST request to create a new Table object, sets the visibility 
      * of the Table object and persists it.  The corresponding User object is
      * retrieved from the UserManager and passes it to the View for display. 
@@ -207,33 +209,37 @@ public class TableController implements HandlerExceptionResolver {
 
 
 
-    /*
+    /**
      * This method gracefully handles any uncaught exception that are fatal 
      * in nature and unresolvable by the user.
      * 
      * @param request   The current HttpServletRequest request.
      * @param response  The current HttpServletRequest response.
      * @param handler  The executed handler, or null if none chosen at the time of the exception.  
-     * @param handler  The  exception that got thrown during handler execution.
+     * @param exception  The  exception that got thrown during handler execution.
      * @return  The error page containing the appropriate message to the user. 
      */
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception exception) {
-        Map<Object, Object> model = new HashMap<Object, Object>();
+        String message = "";
         if (exception instanceof MaxUploadSizeExceededException){ 
-            logger.error("File size should be less then "+ ((MaxUploadSizeExceededException)exception).getMaxUploadSize()+" byte.");
+            message = "File size should be less then "+ ((MaxUploadSizeExceededException)exception).getMaxUploadSize()+" byte.";
         } else if (exception instanceof NullPointerException) {
-            logger.error("Problem with the tableStashDir argument during File creation.  Verify the wmotables.home value in the wmotables.properties file is correct: " + exception.getMessage());
+            message = "Problem with the tableStashDir argument during File creation.  Verify the wmotables.home value in the wmotables.properties file is correct: " + exception.getMessage();
         } else if (exception instanceof FileNotFoundException) {
-            logger.error("Unable to create FileOutputStream for File: " + exception.getMessage());
+            message = "Unable to create FileOutputStream for File: " + exception.getMessage();
         } else if (exception instanceof IOException) {
-            logger.error("An IO error occured with the FileOutputStream for File: " + exception.getMessage());
+            message = "An IO error occured with the FileOutputStream for File: " + exception.getMessage();
         } else if (exception instanceof SecurityException) {
-            logger.error("JVM security manager configuration conflict.  Unable to write File: " + exception.getMessage());
+            message = "JVM security manager configuration conflict.  Unable to write File: " + exception.getMessage();
         } else {
-           logger.error("An error has occurred: " + exception.getClass().getName());
-           logger.error(exception.getMessage());
+            message = "An error has occurred: " + exception.getClass().getName() + ": " + exception.getMessage();  
         }        
-        return new ModelAndView("fatalError");
+
+        logger.error(message);
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("message", message);
+        ModelAndView modelAndView = new ModelAndView("fatalError", model);
+        return modelAndView;
     }
 }
