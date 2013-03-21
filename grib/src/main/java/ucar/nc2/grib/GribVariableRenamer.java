@@ -42,6 +42,7 @@ public class GribVariableRenamer {
   }
 
   public List<String> getMappedNamesGrib2(String oldName) {
+    if (map2 == null) initMap2();
     List<String> result = new ArrayList<String>();
     Renamer mbean = map2.get(oldName);
     if (mbean == null) return null;
@@ -52,6 +53,7 @@ public class GribVariableRenamer {
   }
 
   public List<String> getMappedNamesGrib1(String oldName) {
+    if (map1 == null) initMap1();
     List<String> result = new ArrayList<String>();
     Renamer mbean = map1.get(oldName);
     if (mbean == null) return null;
