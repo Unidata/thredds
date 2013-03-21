@@ -18,7 +18,6 @@
   
   <!-- Static resources since we are handling all requests -->
   <mvc:resources mapping="/resources/**" location="/resources/" />
-  <mvc:resources mapping="/tables/**" location="/tables/" />
 
 
   <!-- Activates various annotations to be detected in bean classes -->
@@ -34,7 +33,6 @@
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">
          <list>
-            <value>classpath:jdbc.properties</value>
             <value>classpath:wmotables.properties</value>
          </list>
       </property>
@@ -58,6 +56,7 @@
       <property name="suffix" value=".jsp"></property>        
   </bean>
 
+  <!-- Database -->
   <import resource="jdbc-context.xml" />
 
 </beans>

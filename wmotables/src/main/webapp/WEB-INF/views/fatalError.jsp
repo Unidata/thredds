@@ -14,6 +14,10 @@
 
    <h3><spring:message code="fatal.error.title"/></h3>
    <p><spring:message code="fatal.error.message"/></p>
+    
+   <pre>
+   <c:out value="${message}" />
+   </pre>
 
   </body>
  </html>

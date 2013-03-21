@@ -27,13 +27,12 @@
      </h3>
      <p><a href="${baseUrl}<c:out value="${user.userId}" />/create"><spring:message code="table.create.title"/></a></p>
      <p><a href="${baseUrl}"><spring:message code="table.list.title"/></a></p>
-     <p><a href="${baseUrl}users"><spring:message code="user.list.title"/></a></p>
      </c:when>
      <c:otherwise>
       <h3><spring:message code="table.list.title"/></h3>
      </c:otherwise>
     </c:choose>
-
+     <p><a href="${baseUrl}users"><spring:message code="user.list.title"/></a></p>
 
    <table class="tablesorter">   
     <c:choose>
@@ -43,9 +42,13 @@
         <th colspan="2">
          Actions
         </th>
-        <th>
-         Owner
-        </th>
+        <c:choose>
+         <c:when test="${fn:length(users) gt 0}">
+          <th>
+           Owner
+          </th>
+         </c:when>
+        </c:choose>
         <th>
          Title
         </th>
@@ -88,17 +91,17 @@
             </form>
             </a>
            </td>
-           <td>
-            <c:forEach items="${users}" var="entry">
-             <c:choose>
-              <c:when test="${entry.key == table.userId}">
+           <c:forEach items="${users}" var="entry">
+            <c:choose>
+             <c:when test="${entry.key == table.userId}">
+              <td>
                <a href="${baseUrl}<c:out value="${table.userId}" />">
                 <c:out value="${entry.value.fullName}" />
                </a>
-              </c:when>
-             </c:choose>
-            </c:forEach>
-           </td>
+              </td>
+             </c:when>
+            </c:choose>
+           </c:forEach>
            <td>
             <c:out value="${table.title}" />
            </td>
@@ -115,7 +118,7 @@
             <c:out value="${table.version}" />
            </td>
            <td>
-            <c:out value="${table.dateCreated}" />
+            <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
            </td>
            <td>
             <a href="${baseUrl}tables/<c:out value="${table.md5}" />"><img src="${baseUrl}resources/img/view.png" alt="view file"/></a>

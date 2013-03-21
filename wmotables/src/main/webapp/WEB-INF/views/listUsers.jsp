@@ -9,6 +9,7 @@
    <h1><spring:message code="global.title"/></h1>
    <h3><spring:message code="user.list.title"/></h3>
 
+  <p><a href="${baseUrl}"><spring:message code="table.list.title"/></a></p>
    <p><a href="${baseUrl}users/create">Create a New User</a></p>
    <table class="tablesorter">    
     <c:choose>
@@ -64,10 +65,10 @@
           <c:out value="${user.affiliation}" />
          </td>
          <td>
-          <c:out value="${user.dateCreated}" />
+          <fmt:formatDate value="${user.dateCreated}" type="BOTH" dateStyle="default"/>
          </td>
          <td>
-          <c:out value="${user.dateModified}" />
+          <fmt:formatDate value="${user.dateModified}" type="BOTH" dateStyle="default"/>
          </td>
         </tr>
        </tbody>

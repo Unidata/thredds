@@ -32,6 +32,10 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
+    <listener>
+        <listener-class>edu.ucar.unidata.wmotables.ApplicationInitialization</listener-class>
+    </listener>
+
     <servlet>
         <servlet-name>wmotables</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

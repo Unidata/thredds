@@ -39,7 +39,7 @@
     <property name="maxActive" value="20" />
     <property name="maxIdle" value="-1" />
     <property name="maxWait" value="-1" />
-    <property name="validationQuery" value="SELECT 1" />
+    <property name="validationQuery" value="${jdbc.validationQuery}" />
  </bean>
  
 
