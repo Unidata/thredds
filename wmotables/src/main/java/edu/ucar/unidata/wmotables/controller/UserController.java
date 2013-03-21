@@ -37,7 +37,7 @@ public class UserController implements HandlerExceptionResolver {
     @Resource(name="userManager")
     private UserManager userManager;
 
-    /*
+    /**
      * Accepts a GET request for a List of User objects, retrieves the List from 
      * the UserManager, and passes the List<User> to the View for display.
      * View is a list of all User objects in the persistence mechanism.
@@ -52,7 +52,7 @@ public class UserController implements HandlerExceptionResolver {
         return "listUsers";
     }
 
-    /*
+    /**
      * Accepts a GET request to create a new User object, retrieves the 
      * View is a web form to create the new User.
      * 
@@ -63,7 +63,7 @@ public class UserController implements HandlerExceptionResolver {
         return "createUser";
     }
 
-    /*
+    /**
      * Accepts a POST request to create a new User object and persist it. 
      * A List of all User objects is retrieved from the UserManager, and 
      * passed the View for display.
@@ -86,7 +86,7 @@ public class UserController implements HandlerExceptionResolver {
         return "listUsers";
     }
 
-    /*
+    /**
      * Accepts a GET request to update an existing User object, retrieves the 
      * requested User object from the UserManager based on the userId URI 
      * Template patten matching, and passes it to the View for display. 
@@ -103,7 +103,7 @@ public class UserController implements HandlerExceptionResolver {
         return "updateUser";
     }
 
-    /*
+    /**
      * Accepts a POST request to update an existing User object.  A List of all User
      * objects is retrieved from the UserManager, and passed the View for display.
      * View is a list of all User objects, including the updated User.
@@ -125,7 +125,7 @@ public class UserController implements HandlerExceptionResolver {
         return "listUsers";
     }
 
-    /*
+    /**
      * Accepts a POST request to delete an existing User object from the persistence
      * mechanism.  The UserManager deletes the User, retrieves a List of remaining
      * User objects, and then passed the List to the View for display.
@@ -149,23 +149,24 @@ public class UserController implements HandlerExceptionResolver {
     }
 
 
-    /*
+    /**
      * This method gracefully handles any uncaught exception that are fatal 
      * in nature and unresolvable by the user.
      * 
      * @param request   The current HttpServletRequest request.
      * @param response  The current HttpServletRequest response.
      * @param handler  The executed handler, or null if none chosen at the time of the exception.  
-     * @param handler  The  exception that got thrown during handler execution.
+     * @param exception  The  exception that got thrown during handler execution.
      * @return  The error page containing the appropriate message to the user. 
      */
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception exception) {
-        Map<Object, Object> model = new HashMap<Object, Object>();
-        logger.error("An error has occurred: " + exception.getClass().getName());
-        logger.error(exception.getMessage());   
-        model.put("error", exception.getMessage()); 
-        return new ModelAndView("fatalError");
+        String message = "An error has occurred: " + exception.getClass().getName() + ": " + exception.getMessage();   
+        logger.error(message);
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("message", message);
+        ModelAndView modelAndView = new ModelAndView("fatalError", model);
+        return modelAndView;
     }
 
 }
