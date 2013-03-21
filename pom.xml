@@ -356,6 +356,11 @@
          <artifactId>standard</artifactId>
          <version>${taglibs.version}</version>
        </dependency>
+      <dependency>
+         <groupId>org.apache.derby</groupId>
+         <artifactId>derby</artifactId>
+         <version>${derby.version}</version>
+       </dependency>
 
       <!-- client -->
       <dependency>
@@ -805,6 +810,7 @@
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
     <commons-io.version>2.4</commons-io.version>
+    <derby.version>10.9.1.0</derby.version>
     <javax.servlet.version>2.5</javax.servlet.version>
     <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
     <jaxen.version>1.1.4</jaxen.version>
