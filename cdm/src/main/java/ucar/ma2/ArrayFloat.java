@@ -101,7 +101,7 @@ public class ArrayFloat extends Array {
   }
 
   /** create new Array with given indexImpl and same backing store */
-  Array createView( Index index) {
+  protected Array createView( Index index) {
     return ArrayFloat.factory( index, storage);
   }
 
@@ -109,14 +109,14 @@ public class ArrayFloat extends Array {
   public Object getStorage() { return storage; }
 
       // copy from javaArray to storage using the iterator: used by factory( Object);
-  void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     float[] ja = (float []) javaArray;
     for (int i=0; i<ja.length; i++)
       iter.setFloatNext( ja[i]);
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
-  void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     float[] ja = (float []) javaArray;
     for (int i=0; i<ja.length; i++)
       ja[i] = iter.getFloatNext();

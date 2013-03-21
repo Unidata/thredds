@@ -52,7 +52,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  Array createView(Index index) {
+  protected Array createView(Index index) {
     return this;
   }
 
@@ -62,12 +62,12 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
-  void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 
