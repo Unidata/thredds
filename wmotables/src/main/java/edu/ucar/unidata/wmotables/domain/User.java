@@ -20,7 +20,7 @@ public class User implements Serializable {
     private Date dateCreated;
     private Date dateModified;
 
-    /*
+    /**
      * Returns the id of the user in the database.
      * 
      * @return  The user id. 
@@ -29,7 +29,7 @@ public class User implements Serializable {
         return userId;
     }
 
-    /*
+    /**
      * Sets the id of the user in the database.
      * 
      * @param userId  The user id. 
@@ -38,7 +38,7 @@ public class User implements Serializable {
         this.userId = userId;
     }
 
-    /*
+    /**
      * Returns the email address of the user.
      * 
      * @return  The user's email address.  
@@ -47,7 +47,7 @@ public class User implements Serializable {
         return emailAddress;
     }
 
-    /*
+    /**
      * Sets the email address of the user.
      * 
      * @param emailAddress  The user's email address. 
@@ -56,7 +56,7 @@ public class User implements Serializable {
         this.emailAddress = emailAddress;
     }
 
-    /*
+    /**
      * Returns the full name of the user.
      * 
      * @return  The user's full name.  
@@ -65,7 +65,7 @@ public class User implements Serializable {
         return fullName;
     }
 
-    /*
+    /**
      * Sets the full name of the user.
      * 
      * @param fullName  The user's full name. 
@@ -74,7 +74,7 @@ public class User implements Serializable {
         this.fullName = fullName;
     }
 
-    /*
+    /**
      * Returns the affiliation of the user.
      * 
      * @return  The user's affiliation.  
@@ -83,7 +83,7 @@ public class User implements Serializable {
         return affiliation;
     }
 
-    /*
+    /**
      * Sets the affiliation of the user.
      * 
      * @param affiliation  The user's affiliation. 
@@ -92,7 +92,7 @@ public class User implements Serializable {
         this.affiliation = affiliation;
     }
 
-    /*
+    /**
      * Returns date the user was created.
      * 
      * @return  The user's creation date.
@@ -101,7 +101,7 @@ public class User implements Serializable {
         return dateCreated;
     }
     
-    /*
+    /**
      * Sets the date the user was created.
      * 
      * @param dateCreated   The user's creation date.
@@ -110,7 +110,7 @@ public class User implements Serializable {
         this.dateCreated = dateCreated;
     }
 
-    /*
+    /**
      * Returns date the user's account was last modified.
      * 
      * @return  The user account last modified date.
@@ -119,7 +119,7 @@ public class User implements Serializable {
         return dateModified;
     }
     
-    /*
+    /**
      * Sets the date the user's account was last modified.
      * 
      * @param dateModified   The user account last modified date.

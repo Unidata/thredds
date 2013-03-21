@@ -27,7 +27,7 @@ public class Table implements Serializable {
     private Date dateCreated;
     private Date dateModified;
 
-    /*
+    /**
      * Returns the uploaded file in CommonsMultipartFile format.
      * 
      * @return  The CommonsMultipartFile file. 
@@ -36,7 +36,7 @@ public class Table implements Serializable {
         return file;
     }
 
-    /*
+    /**
      * Sets the uploaded file as a CommonsMultipartFile file. 
      * 
      * @param file  The CommonsMultipartFile file. 
@@ -46,7 +46,7 @@ public class Table implements Serializable {
         this.file = file;
     }
 
-    /*
+    /**
      * Returns the id of the wmo table in the database.
      * 
      * @return  The table id.
@@ -55,7 +55,7 @@ public class Table implements Serializable {
         return tableId;
     }
 
-    /*
+    /**
      * Sets the id of the wmo table in the database.
      * 
      * @param tableId  The table id. 
@@ -64,7 +64,7 @@ public class Table implements Serializable {
         this.tableId = tableId;
     }
 
-    /*
+    /**
      * Returns the title of the table.
      * 
      * @return  The table's title.  
@@ -73,7 +73,7 @@ public class Table implements Serializable {
         return title;
     }
 
-    /*
+    /**
      * Sets the title of the table.
      * 
      * @param title  The table's title. 
@@ -82,7 +82,7 @@ public class Table implements Serializable {
         this.title = title;
     }
 
-    /*
+    /**
      * Returns the description of the table.
      * 
      * @return  The table's description.  
@@ -91,7 +91,7 @@ public class Table implements Serializable {
         return description;
     }
 
-    /*
+    /**
      * Sets the description of the table.
      * 
      * @param description  The table's description. 
@@ -100,7 +100,7 @@ public class Table implements Serializable {
         this.description = description;
     }
 
-    /*
+    /**
      * Returns the original name of the table as it was when upload to the registry.
      * 
      * @return  The table's original name. 
@@ -109,7 +109,7 @@ public class Table implements Serializable {
         return originalName;
     }
 
-    /*
+    /**
      * Sets the original name of the table as it was when upload to the registry.
      * 
      * @param originalName  The table's original name. 
@@ -118,7 +118,7 @@ public class Table implements Serializable {
         this.originalName = originalName;
     }
 
-    /*
+    /**
      * Returns the version of the table.
      * 
      * @return  The table's version. 
@@ -127,7 +127,7 @@ public class Table implements Serializable {
         return version;
     }
 
-    /*
+    /**
      * Sets the version of the table.
      * 
      * @param version  The table's version. 
@@ -136,7 +136,7 @@ public class Table implements Serializable {
         this.version = version;
     }
 
-    /*
+    /**
      * Returns the table's md5 checksum.
      * 
      * @return  The md5 checksum. 
@@ -145,7 +145,7 @@ public class Table implements Serializable {
         return md5;
     }
 
-    /*
+    /**
      * Sets the table's md5 checksum.
      * 
      * @param md5  The md5 checksum. 
@@ -154,7 +154,7 @@ public class Table implements Serializable {
         this.md5 = md5;
     }
 
-    /*
+    /**
      * Returns the visibility attribute of the table.
      * 
      * @return  The visibility attribute.
@@ -163,7 +163,7 @@ public class Table implements Serializable {
         return visibility;
     }
 
-    /*
+    /**
      * Sets the visibility attribute of the table.
      * 
      * @param visibility  The visibility attribute. 
@@ -172,7 +172,7 @@ public class Table implements Serializable {
         this.visibility = visibility;
     }
 
-    /*
+    /**
      * Returns the id of the User who owns the table.
      * 
      * @return  The user id.
@@ -181,7 +181,7 @@ public class Table implements Serializable {
         return userId;
     }
 
-    /*
+    /**
      * Sets the id of the User who owns the table.
      * 
      * @param userId  The user id. 
@@ -190,7 +190,7 @@ public class Table implements Serializable {
         this.userId = userId;
     }
 
-    /*
+    /**
      * Returns date the table entry was created.
      * 
      * @return  The table entry's creation date.
@@ -199,7 +199,7 @@ public class Table implements Serializable {
         return dateCreated;
     }
     
-    /*
+    /**
      * Sets the date the table entry was created.
      * 
      * @param dateCreated   The table entry's creation date.
@@ -208,7 +208,7 @@ public class Table implements Serializable {
         this.dateCreated = dateCreated;
     }
 
-    /*
+    /**
      * Returns date the table was last modified.
      * 
      * @return  The table last modified date.
@@ -217,7 +217,7 @@ public class Table implements Serializable {
         return dateModified;
     }
     
-    /*
+    /**
      * Sets the date the table was last modified.
      * 
      * @param dateModified   The table last modified date.

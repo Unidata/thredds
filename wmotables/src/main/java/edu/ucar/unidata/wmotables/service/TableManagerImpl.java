@@ -1,5 +1,7 @@
 package edu.ucar.unidata.wmotables.service;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,7 +26,7 @@ public class TableManagerImpl implements TableManager {
     @Value("${wmotables.home}")
     private String wmotablesHome;
 
-    /*
+    /**
      * Sets the data access object which will acquire and persist the data 
      * passed to it via the methods of this TableManager. 
      * 
@@ -34,7 +36,7 @@ public class TableManagerImpl implements TableManager {
         this.tableDao = tableDao;
     }
 
-    /*
+    /**
      * Looks up and retrieves a table from the persistence mechanism using the table id.
      * 
      * @param tableId  The id of the table we are trying to locate (will be unique for each table).
@@ -44,7 +46,7 @@ public class TableManagerImpl implements TableManager {
         return tableDao.lookupTable(tableId);  
     }
 
-    /*
+    /**
      * Requests a List of ALL tables from the persistence mechanism.
      * 
      * @return  A List of tables.   
@@ -53,7 +55,7 @@ public class TableManagerImpl implements TableManager {
         return tableDao.getTableList();
     }
    
-    /*
+    /**
      * Requests a List of tables owned by a particular user from the persistence mechanism.
      * 
      * @param userId  The id of the user what owns the tables.
@@ -63,7 +65,7 @@ public class TableManagerImpl implements TableManager {
         return tableDao.getTableList(userId);
     }
 
-    /*
+    /**
      * Requests a List of tables owned by a particular user from the persistence mechanism.
      * 
      * @param user  The User what owns the tables.
@@ -73,7 +75,7 @@ public class TableManagerImpl implements TableManager {
         return tableDao.getTableList(user);
     }
 
-    /*
+    /**
      * Queries the persistence mechanism and returns the number of tables.
      * 
      * @return  The total number of tables as an int.   
@@ -82,7 +84,7 @@ public class TableManagerImpl implements TableManager {
         return tableDao.getTableCount();
     }
 
-    /*
+    /**
      * Queries the persistence mechanism and returns the number of tables owned by a user.
      * 
      * @param userId  The id of the user that owns the tables.
@@ -92,7 +94,7 @@ public class TableManagerImpl implements TableManager {
         return tableDao.getTableCount(userId);
     }
 
-    /*
+    /**
      * Queries the persistence mechanism and returns the number of tables owned by a user.
      * 
      * @param user  The User that owns the tables.
@@ -102,7 +104,7 @@ public class TableManagerImpl implements TableManager {
         return tableDao.getTableCount(user);
     }
 
-    /*
+    /**
      * Toggles the table's visiblity attribute to in the persistence mechanism.
      * 
      * @param table  The table in the persistence mechanism. 
@@ -111,7 +113,7 @@ public class TableManagerImpl implements TableManager {
         tableDao.toggleTableVisibility(table);     
     }
 
-    /*
+    /**
      * Creates a new table. A WMO table is uploaded as a CommonsMultipartFile, 
      * an MD5 Checksum is generated from its contents, and the Table is 
      * stored on disk using the MD5 as a name). 
@@ -120,7 +122,7 @@ public class TableManagerImpl implements TableManager {
      * @throws IOException  If an IO error occurs when writing the table to the file system.
      */
     public void createTable(Table table) throws IOException {
-        File tableStashDir = new File(wmotablesHome + "/tables");
+        File tableStashDir = new File(wmotablesHome + "/tables/");
         if (!tableStashDir.exists()) {
             if (!tableStashDir.mkdirs()) {
                 throw new IOException("Unable to create the following directory: " + tableStashDir);
@@ -144,13 +146,12 @@ public class TableManagerImpl implements TableManager {
      
     }
 
-    /*
+    /**
      * Saves changes made to an existing table (meaning changes made to table
      * attributes in the persistence mechanism and NOT the creation/deletion of tables
      * contained within the table). 
      * 
      * @param table   The existing table with changes that needs to be saved. 
-     * @return  The updated Table object.
      */
     public void updateTable(Table table) {
         table.setDateModified(new Date(System.currentTimeMillis()));
