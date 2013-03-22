@@ -1,4 +1,4 @@
-package ucar.nc2;
+package ucar.grib;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,12 +15,13 @@ import java.util.List;
 
 public class GribConverterUtility {
     public static void main(final String[] args) {
-        String usage = "usage: ucar.nc2.dataset.GribConverterUtility -grib1|-grib2 <fileIn> <oldGribName>";
-        String grbFile = null;    // declare a grbFile filename
-        String grbType = null;    // declare a grbFile type - should be grib1 or grib2
-        String oldGribName = null;// declare the old Grib Variable Name
+        String usage = "usage: ucar.nc2.dataset.GribConverterUtility -grib1|-grib2 <fileIn> <oldGribName> [-matchNCEP]";
+        String grbFile = null;      // declare a grbFile filename
+        String grbType = null;      // declare a grbFile type - should be grib1 or grib2
+        String oldGribName = null;  // declare the old Grib Variable Name
+        Boolean matchNCEP = false;  // don't default to matching NCEP
 
-        if (args.length == 3) {
+        if (args.length == 3 || args.length == 4) {
             String s = args[0];
             if (s.equalsIgnoreCase("-grib1")) {
                 grbType = "grib1";
@@ -32,6 +33,9 @@ public class GribConverterUtility {
                      }
             grbFile = args[1];
             oldGribName = args[2];
+            if (args.length == 4) {
+                matchNCEP = true;  // could be any fourth command line token, but assume this is what the user means
+            }
         }  else {
                System.out.println(usage);
         }
@@ -42,9 +46,17 @@ public class GribConverterUtility {
             r = new GribVariableRenamer();
             List result = null;
             if (grbType.equalsIgnoreCase("grib1")) {
-                result = r.getMappedNamesGrib1(oldGribName);
+                if (matchNCEP) {
+                    result = r.matchNcepNames(gds, oldGribName);
+                } else {
+                    result = r.getMappedNamesGrib1(oldGribName);
+                }
             } else {
-                result = r.getMappedNamesGrib2(oldGribName);
+                if (matchNCEP) {
+                    result = r.matchNcepNames(gds, oldGribName);
+                } else {
+                    result = r.getMappedNamesGrib2(oldGribName);
+                }
             }
             if (null == result) {
                 System.out.println("Could not find \"" + oldGribName + "\" in " + grbFile);
