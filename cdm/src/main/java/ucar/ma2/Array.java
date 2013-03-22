@@ -532,14 +532,6 @@ public abstract class Array {
   public abstract Class getElementType();
 
   /**
-   * create new Array with given Index and the same backing store
-   *
-   * @param index use this Index
-   * @return a view of the Array using the given Index
-   */
-  abstract Array createView(Index index);
-
-  /**
    * Get underlying primitive array storage.
    * Exposed for efficiency, use at your own risk.
    *
@@ -547,10 +539,28 @@ public abstract class Array {
    */
   public abstract Object getStorage();
 
-  // used to create Array from java array
-  abstract void copyFrom1DJavaArray(IndexIterator iter, Object javaArray);
+  // So it turns out that non-public, non-protected abstract
+  // methods cannot be overridden in classes in other packages.
+  // If the methods are declared protected, however, they
+  // can be overridden; just one of those Java things.
+  // 
+  // So, modify the following methods to be protected:
+  //     copyFrom1DJavaArray, copyTo1DJavaArray, and createView.
+  // 
+  // This has consequences all over ucar.ma2.
 
-  abstract void copyTo1DJavaArray(IndexIterator iter, Object javaArray);
+  // used to create Array from java array
+  abstract protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray);
+
+  abstract protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray);
+
+  /**
+   * create new Array with given Index and the same backing store
+   *
+   * @param index use this Index
+   * @return a view of the Array using the given Index
+   */
+  abstract protected Array createView(Index index);
 
   /**
    * Create a new Array as a subsection of this Array, with rank reduction.
@@ -1293,6 +1303,5 @@ public abstract class Array {
   public void resetLocalIterator() {
     ii = null;
   }
-
 }
 

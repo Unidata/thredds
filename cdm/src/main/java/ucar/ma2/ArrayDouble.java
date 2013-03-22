@@ -85,7 +85,7 @@ public class ArrayDouble extends Array {
 
 
   /** create new Array with given indexImpl and the same backing store */
-  Array createView( Index index) {
+  protected Array createView( Index index) {
     return ArrayDouble.factory(index, storageD);
   }
 
@@ -109,14 +109,14 @@ public class ArrayDouble extends Array {
   public Object getStorage() { return storageD; }
 
   // copy from javaArray to storage using the iterator: used by factory( Object);
-  void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     double[] ja = (double []) javaArray;
     for (int i=0; i<ja.length; i++)
       iter.setDoubleNext( ja[i]);
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
-  void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     double[] ja = (double []) javaArray;
     for (int i=0; i<ja.length; i++)
       ja[i] = iter.getDoubleNext();

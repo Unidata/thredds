@@ -51,7 +51,7 @@ public class ArrayRagged extends Array {
   /**
    * DO NOT USE, throws UnsupportedOperationException
    */
-  public Array createView(Index index) {
+  protected Array createView(Index index) {
     if (index.getSize() == getSize()) return this;
     throw new UnsupportedOperationException();
   }
@@ -60,11 +60,11 @@ public class ArrayRagged extends Array {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
   }// used to create Array from java array
 
-  void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 
-  void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 

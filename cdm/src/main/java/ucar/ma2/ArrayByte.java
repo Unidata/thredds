@@ -111,7 +111,7 @@ public class ArrayByte extends Array {
       storage = new byte[(int) ima.getSize()];
   }
 
-  Array createView(Index index) {
+  protected Array createView(Index index) {
     Array result = ArrayByte.factory(index, storage);
     result.setUnsigned( isUnsigned());
     return result;
@@ -122,14 +122,14 @@ public class ArrayByte extends Array {
   }
 
   // copy from javaArray to storage using the iterator: used by factory( Object);
-  void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     byte[] ja = (byte[]) javaArray;
     for (int i = 0; i < ja.length; i++)
       iter.setByteNext(ja[i]);
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
-  void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     byte[] ja = (byte[]) javaArray;
     for (int i = 0; i < ja.length; i++)
       ja[i] = iter.getByteNext();

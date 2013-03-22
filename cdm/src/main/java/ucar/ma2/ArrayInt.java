@@ -115,7 +115,7 @@ public class ArrayInt extends Array {
   /**
    * create new Array with given indexImpl and same backing store
    */
-  Array createView(Index index) {
+  protected Array createView(Index index) {
     Array result = ArrayInt.factory(index, storage);
     result.setUnsigned( isUnsigned());
     return result;
@@ -127,14 +127,14 @@ public class ArrayInt extends Array {
   }
 
   // copy from javaArray to storage using the iterator: used by factory( Object);
-  void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     int[] ja = (int[]) javaArray;
     for (int i = 0; i < ja.length; i++)
       iter.setIntNext(ja[i]);
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
-  void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     int[] ja = (int[]) javaArray;
     for (int i = 0; i < ja.length; i++)
       ja[i] = iter.getIntNext();

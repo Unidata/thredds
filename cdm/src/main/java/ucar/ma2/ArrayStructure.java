@@ -112,14 +112,14 @@ public abstract class ArrayStructure extends Array {
   }
 
   // copy from javaArray to storage using the iterator: used by factory( Object);
-  void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     Object[] ja = (Object[]) javaArray;
     for (Object aJa : ja)
       iter.setObjectNext(aJa);
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
-  void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
+  protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     Object[] ja = (Object[]) javaArray;
     for (int i = 0; i < ja.length; i++)
       ja[i] = iter.getObjectNext();
