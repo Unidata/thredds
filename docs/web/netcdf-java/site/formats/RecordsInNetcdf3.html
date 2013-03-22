@@ -19,7 +19,6 @@
   <li><a href="#Sounding">Using Records for Sounding Data</a></li>
   <li><a href="#Conclusions">Conclusions</a></li>
 </ul>
-<p>also see: <a href="UnidataObsConvention.html">Unidata  Observation Dataset Conventions</a></p>
 <hr>
 <h2>Structures<a name="Structures"></a> and Record variables</h2>
 <p>In the NetCDF version 3 data model, <em><strong>record variables</strong></em> are ones that use the <strong>unlimited dimension</strong> (also known as the <strong>record dimension</strong>). These are laid out on disk differently than non-record variables. All of the data for a non-record variable is stored contiguously on disk. Record variables, in contrast, are divided up into <strong>records</strong>, and each record contains the data for all record variables for the ith record dimension index. You can append an unlimited number of records to a NetCDF file. </p>
