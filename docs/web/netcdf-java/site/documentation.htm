@@ -66,7 +66,7 @@ mvn install</pre>
 <h3><strong>Caveats and not-so-stable APIs</strong>:</h3>
 <ul>
   <li><strong>Writing</strong> to netCDF-3 format is supported, but new features in the CDM, e.g. groups, structures,  long data types are not  yet supported. </li>
-  <li><strong>Writing</strong> to netCDF-4 format is supported, if you have the <a href="reference/netcdf4Clibrary.html">netCDF C library loaded</a>. As of 4.3.14, this is consideder BETA software.</li>
+  <li><strong>Writing</strong> to netCDF-4 format is supported, if you have the <a href="reference/netcdf4Clibrary.html">netCDF C library loaded</a>. As of 4.3.14, this is  BETA software.</li>
   <li>The catalog API will be redone, however the current API will remain supported.</li>
 </ul>
 <h3><strong>Related Documents:</strong></h3>
@@ -119,12 +119,16 @@ mvn install</pre>
 <ul>
   <li><a href="../../thredds/tech/tds4.3/reference/collections/FeatureCollections.html">Feature Collections</a> (draft)</li>
   <li><a href="reference/FeatureDatasets/CFpointImplement.html">CDM implementation of CF discrete sampling  features (DRAFT)</a></li>
-  <li><a href="stream/CdmRemote.html">Experimental CDM Remote web service</a></li>
   <li>Complete <a href="reference/FeatureDatasets/PointUML.html">Point Feature UML</a></li>
   <li><a href="reference/FeatureDatasets/Overview.html">Feature Types (Overview)</a></li>
   <li> <a href="tutorial/GridDatatype.html">Grid Datatype</a></li>
   <li><a href="formats/RecordsInNetcdf3.html">Using Records in NetCDF-3 files</a></li>
   <li>Adding unstructured grids to the CDM <a href="http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_NetCDF_Java.pdf">statement of work</a></li>
+</ul>
+<h3>Streaming NetCDF (Experimental)</h3>
+<ul>
+  <li><a href="stream/NcStream.html">NetCDF Streaming Format</a></li>
+  <li><a href="stream/CdmRemote.html">CDM Remote Web Service</a></li>
 </ul>
 <h3>Software libraries used by the Netcdf-Java library: </h3>
 <ul>
@@ -161,6 +165,8 @@ mvn install</pre>
 <hr>
 <h3>Miscellaneous Resources</h3>
 <ul>
+  <li>Talk at netCDF workshop 2012 (<a href="http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2012.pptx">pptx</a>)</li>
+  <li>Streaming NetCDF (netCDF workshop 2011) (<a href="http://www.unidata.ucar.edu/staff/caron/presentations/Streaming_NetCDF.pptx">pptx</a>)</li>
   <li>Talk at netCDF workshop 2010 (<a href="http://www.unidata.ucar.edu/staff/caron/presentations/DataSummit2010.pptx">pptx</a>)</li>
   <li>Talk at netCDF workshop 2009 (<a href="talks/NetCDFworkshop2009.ppt">ppt</a>)</li>
   <li>Unidata public <a href="http://artifacts.unidata.ucar.edu/">Maven repository</a> for version 4.3</li>
@@ -240,7 +246,7 @@ mvn install</pre>
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated November 2012
+and was last updated March 2013
 </address>
 
 </body>
