@@ -1,4 +1,4 @@
-package ucar.grib;
+package ucar.nc2.grib;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,6 +38,8 @@ public class GribConverterUtility {
             }
         }  else {
                System.out.println(usage);
+               System.exit(0);
+
         }
 
         try {
