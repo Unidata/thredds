@@ -30,17 +30,41 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.bufrtables;
-
-import org.springframework.web.servlet.view.xslt.AbstractXsltView;
+package edu.ucar.unidata.bufrvalidate;
 
 /**
- * Create an XML doc out of the list of BUFR messages.
- * This is the return of the validation request.
- *
  * @author caron
- * @since Oct 3, 2008
+ * @since Oct 4, 2008
  */
-public class BtXsltView extends AbstractXsltView {
+public class UrlUploadBean {
+  private String username;
+  private String url;
+  private boolean xml;
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public boolean isXml() {
+    return xml;
+  }
+
+  public void setXml(boolean xml) {
+    this.xml = xml;
+  }
 
 }
+
+

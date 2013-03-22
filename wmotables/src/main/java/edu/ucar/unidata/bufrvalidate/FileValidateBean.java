@@ -30,28 +30,23 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.bufrtables;
-
-import org.springframework.web.multipart.MultipartFile;
+package edu.ucar.unidata.bufrvalidate;
 
 /**
- * Model object for uploading a BUFR file
  * @author caron
  * @since Oct 3, 2008
  */
-public class FileUploadBean {
-  private String username;
+public class FileValidateBean {
+  private String filename;
   private boolean xml;
-  private MultipartFile file;
 
-  public String getUsername() {
-    return username;
+  public String getFilename() {
+    return filename;
   }
 
-  public void setUsername(String username) {
-    this.username = username;
+  public void setFilename(String filename) {
+    this.filename = filename;
   }
-
 
   public boolean isXml() {
     return xml;
@@ -59,14 +54,6 @@ public class FileUploadBean {
 
   public void setXml(boolean xml) {
     this.xml = xml;
-  }
-
-  public void setFile(MultipartFile file) {
-    this.file = file;
-  }
-
-  public MultipartFile getFile() {
-    return file;
   }
 
 }

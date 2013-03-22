@@ -30,36 +30,43 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.bufrtables;
+package edu.ucar.unidata.bufrvalidate;
 
-import org.springframework.web.servlet.view.AbstractView;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.output.Format;
-import org.jdom2.Document;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
-import java.io.OutputStream;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
+ * Model object for uploading a BUFR file
  * @author caron
- * @since Oct 4, 2008
+ * @since Oct 3, 2008
  */
-public class BtXmlView extends AbstractView {
+public class FileUploadBean {
+  private String username;
+  private boolean xml;
+  private MultipartFile file;
 
-  protected void renderMergedOutputModel(Map model, HttpServletRequest request, HttpServletResponse res) throws Exception {
-    Document doc = (Document) model.get("doc");
+  public String getUsername() {
+    return username;
+  }
 
-    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    String infoString = fmt.outputString(doc);
-    res.setContentLength(infoString.length());
-    res.setContentType("text/xml; charset=UTF-8");
-    res.setContentLength(infoString.length());
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    OutputStream out = res.getOutputStream();
-    out.write(infoString.getBytes());
-    out.flush();
+
+  public boolean isXml() {
+    return xml;
+  }
+
+  public void setXml(boolean xml) {
+    this.xml = xml;
+  }
+
+  public void setFile(MultipartFile file) {
+    this.file = file;
+  }
+
+  public MultipartFile getFile() {
+    return file;
   }
 
 }
