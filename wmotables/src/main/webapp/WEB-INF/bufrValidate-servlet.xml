@@ -24,14 +24,14 @@
   </bean>
 
   <!-- controller for url uploading -->
-  <bean id="btUrlUploadController" class="thredds.bufrtables.BtUrlUploadController" >
-    <property name="commandClass" value="thredds.bufrtables.UrlUploadBean"/>
+  <bean id="btUrlUploadController" class="edu.ucar.unidata.bufrvalidate.BtUrlUploadController" >
+    <property name="commandClass" value="edu.ucar.unidata.bufrvalidate.UrlUploadBean"/>
     <property name="cache" ref="cache"/>
   </bean>
 
   <!-- controller for file uploading -->
-  <bean id="btFileUploadController" class="thredds.bufrtables.BtFileUploadController" >
-    <property name="commandClass" value="thredds.bufrtables.FileUploadBean"/>
+  <bean id="btFileUploadController" class="edu.ucar.unidata.bufrvalidate.BtFileUploadController" >
+    <property name="commandClass" value="edu.ucar.unidata.bufrvalidate.FileUploadBean"/>
     <property name="cache" ref="cache"/>
   </bean>
 
@@ -41,14 +41,14 @@
   </bean>
 
   <!-- controller for validation results on BUFR files already uploaded -->
-  <bean id="btValidateController" class="thredds.bufrtables.BtValidateController">
-    <property name="commandClass" value="thredds.bufrtables.FileValidateBean"/>
+  <bean id="btValidateController" class="edu.ucar.unidata.bufrvalidate.BtValidateController">
+    <property name="commandClass" value="edu.ucar.unidata.bufrvalidate.FileValidateBean"/>
     <property name="cache" ref="cache"/>
     <property name="uniqueMessageFile" value="C:/temp/cache/uniqueMessages.bufr"/>
   </bean>
 
   <!-- controller for getting info from individual messages -->
-  <bean id="btMessInfoController" class="thredds.bufrtables.BtMessInfoController">
+  <bean id="btMessInfoController" class="edu.ucar.unidata.bufrvalidate.BtMessInfoController">
     <property name="cache" ref="cache"/>
   </bean>
 
@@ -65,11 +65,11 @@
   </bean>
 
   <!-- view using Xslt -->
-  <bean id="xsltView" class="thredds.bufrtables.BtXsltView">
-    <property name="stylesheetLocation" value="/WEB-INF/xsl/validation.xsl" />
+  <bean id="xsltView" class="edu.ucar.unidata.bufrvalidate.BtXsltView">
+    <property name="stylesheetLocation" value="/resources/xsl/validation.xsl" />
   </bean>
 
   <!-- view using XML -->
-  <bean id="xmlView" class="thredds.bufrtables.BtXmlView" />
+  <bean id="xmlView" class="edu.ucar.unidata.bufrvalidate.BtXmlView" />
 
 </beans>

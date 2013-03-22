@@ -49,8 +49,7 @@
           </th>
          </c:when>
         </c:choose>
-        <th>
-         Title
+        <th>                                                                                                                         Title
         </th>
         <th>
          Description

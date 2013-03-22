@@ -30,30 +30,66 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.bufrtables;
+package edu.ucar.unidata.bufrvalidate;
+
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.validation.BindException;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.Map;
+import java.util.HashMap;
+
+import ucar.nc2.util.DiskCache2;
 
 /**
+ * Get a submitted file for BUFR validation, copy to disk, redirect client
+ *
  * @author caron
  * @since Oct 3, 2008
  */
-public class FileValidateBean {
-  private String filename;
-  private boolean xml;
+public class BtFileUploadController extends SimpleFormController {
+  private DiskCache2 diskCache = null;
 
-  public String getFilename() {
-    return filename;
+  public void setCache(DiskCache2 cache) {
+    diskCache = cache;
   }
 
-  public void setFilename(String filename) {
-    this.filename = filename;
-  }
+  protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
+                                  Object command, BindException errors) throws Exception {
 
-  public boolean isXml() {
-    return xml;
-  }
+    // cast the bean
+    FileUploadBean bean = (FileUploadBean) command;
 
-  public void setXml(boolean xml) {
-    this.xml = xml;
+    // let's see if there's content there
+    MultipartFile file = bean.getFile();
+    if (file == null) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No file was uploaded");
+      return null;
+    }
+
+    String username = bean.getUsername();
+    if (username == null) username = "anon";
+    username = username.trim();
+    if (username.length() == 0) username = "anon";
+
+    String fname = username+"/"+file.getOriginalFilename();
+
+    String redirectURL = "/validate/file";
+
+    Map map = new HashMap();
+    map.put("filename", fname);
+    map.put("xml", bean.isXml());
+
+    // copy into the cache,
+    File dest = diskCache.getCacheFile(fname);
+    file.transferTo(dest);
+
+    return new ModelAndView(new RedirectView(redirectURL, true), map);
   }
 
 }

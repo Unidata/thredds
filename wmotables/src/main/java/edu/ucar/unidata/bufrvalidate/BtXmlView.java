@@ -30,41 +30,36 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.bufrtables;
+package edu.ucar.unidata.bufrvalidate;
+
+import org.springframework.web.servlet.view.AbstractView;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.Format;
+import org.jdom2.Document;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+import java.io.OutputStream;
 
 /**
  * @author caron
  * @since Oct 4, 2008
  */
-public class UrlUploadBean {
-  private String username;
-  private String url;
-  private boolean xml;
+public class BtXmlView extends AbstractView {
 
-  public String getUrl() {
-    return url;
-  }
+  protected void renderMergedOutputModel(Map model, HttpServletRequest request, HttpServletResponse res) throws Exception {
+    Document doc = (Document) model.get("doc");
 
-  public void setUrl(String url) {
-    this.url = url;
-  }
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    String infoString = fmt.outputString(doc);
+    res.setContentLength(infoString.length());
+    res.setContentType("text/xml; charset=UTF-8");
+    res.setContentLength(infoString.length());
 
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public boolean isXml() {
-    return xml;
-  }
-
-  public void setXml(boolean xml) {
-    this.xml = xml;
+    OutputStream out = res.getOutputStream();
+    out.write(infoString.getBytes());
+    out.flush();
   }
 
 }
-
-

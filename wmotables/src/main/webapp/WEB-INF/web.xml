@@ -21,30 +21,45 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
                              http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0"
-         metadata-complete="true"> 
+         metadata-complete="true">
 
-    <display-name>wmotables</display-name>
-    <description>
-        WMO Tables
-    </description>
+  <display-name>wmotables</display-name>
+  <description>
+    WMO Tables
+  </description>
 
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
 
-    <listener>
-        <listener-class>edu.ucar.unidata.wmotables.ApplicationInitialization</listener-class>
-    </listener>
+  <listener>
+    <listener-class>edu.ucar.unidata.wmotables.ApplicationInitialization</listener-class>
+  </listener>
 
-    <servlet>
-        <servlet-name>wmotables</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
+  <listener>
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
 
-    <servlet-mapping>
-        <servlet-name>wmotables</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
+  <servlet>
+    <servlet-name>wmotables</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>bufrValidate</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>wmotables</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>bufrValidate</servlet-name>
+    <url-pattern>/bufrvalidate/*</url-pattern>
+  </servlet-mapping>
 
 </web-app>
