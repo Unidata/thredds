@@ -68,7 +68,7 @@ public class GribConverterUtility {
             }
         } catch (IOException e) {
             System.out.println("oops...");
-            System.out.println(e);
+//            System.out.println(e);
             System.out.println("Check filename " + grbFile);
         } catch (Exception e) {
             System.out.println("oops...");
