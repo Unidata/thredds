@@ -1004,7 +1004,9 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
-          <useGenType/>
+          <pdsHash>
+            <useGenType>true</useGenType>
+          </pdsHash>
           <latestNamer name="Latest Real Time Mesoscale Analysis CONUS 2.5km"/>
           <bestNamer name="Best Real Time Mesoscale Analysis CONUS 2.5km Time Series" />
           <filesSort>
@@ -1028,7 +1030,9 @@
         <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
         <tdm startup="false" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
-          <useGenType/>
+          <pdsHash>
+            <useGenType>true</useGenType>
+          </pdsHash>
           <latestNamer name="Latest Real Time Mesoscale Analysis Guam 2.5km"/>
           <bestNamer name="Best Real Time Mesoscale Analysis Guam 2.5km Time Series" />
           <filesSort>

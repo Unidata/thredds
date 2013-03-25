@@ -329,8 +329,8 @@ public class FeatureCollectionConfig {
     public String lookupTablePath, paramTablePath;
     public String latestNamer, bestNamer;
     public Element paramTable;
-    public Boolean intvMerge = null;
-    public Boolean useGenType = null;
+    public Map<String,Boolean> pdsHash = new HashMap<String,Boolean>();
+    //public Boolean useGenType = null;
     public Boolean filesSortIncreasing = true;
     public GribIntvFilter intvFilter;
 
@@ -398,10 +398,23 @@ public class FeatureCollectionConfig {
         }
       }
 
-      if (configElem.getChild("intvMerge", ns) != null)
-        intvMerge = true;
-      if (configElem.getChild("useGenType", ns) != null)
-        useGenType = true;
+      Element pdsHashElement = configElem.getChild("pdsHash", ns);
+      readValue(pdsHashElement, "intvMerge", ns, true);
+      readValue(pdsHashElement, "useGenType", ns, false);
+      readValue(pdsHashElement, "useTableVersion", ns, true);
+    }
+
+    private void readValue(Element pdsHashElement, String key, Namespace ns, boolean value) {
+      if (pdsHashElement != null) {
+        Element e = pdsHashElement.getChild(key, ns);
+        if (e != null) {
+          value = true; // no value means true
+          String t = e.getTextNormalize();
+          if (t != null && t.equalsIgnoreCase("true")) value = true;
+          if (t != null && t.equalsIgnoreCase("false")) value = false;
+        }
+      }
+      pdsHash.put(key, value);
     }
 
     public void addDatasetType(String datasetTypes) {

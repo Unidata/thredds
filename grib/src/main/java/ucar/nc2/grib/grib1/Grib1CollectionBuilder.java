@@ -57,7 +57,7 @@ import java.util.*;
 public class Grib1CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   protected static final int version = 9;
-  private static final boolean intvMergeDefault = true;
+  //private static final boolean intvMergeDefault = true;
 
   public static final String MAGIC_START = "Grib1CollectionIndex";
 
@@ -433,8 +433,9 @@ public class Grib1CollectionBuilder {
   public List<Group> makeAggregatedGroups(ArrayList<String> filenames, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<Integer, Integer> gdsConvert = null;
+    Map<String, Boolean> pdsConvert = null;
     Grib1Rectilyser.Counter stats = new Grib1Rectilyser.Counter();
-    boolean intvMerge = intvMergeDefault;
+    //boolean intvMerge = intvMergeDefault;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
@@ -443,8 +444,9 @@ public class Grib1CollectionBuilder {
       f.format(" dcm= %s%n", dcm);
       FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
       if (config != null) gdsConvert = config.gdsHash;
+      if (config != null) pdsConvert = config.pdsHash;
       FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
-      intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
+      // intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -463,9 +465,9 @@ public class Grib1CollectionBuilder {
 
         for (Grib1Record gr : index.getRecords()) {
           gr.setFile(fileno); // each record tracks which file it belongs to
-          int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
+          int gdsHash = gr.getGDSsection().getGDS().hashCode();      // use GDS hash code to group records
           if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
-            gdsHash = gdsConvert.get(gdsHash);               // and we need exact hash matching
+            gdsHash = gdsConvert.get(gdsHash);                       // and we need exact hash matching
           if (cust == null)
             cust = Grib1Customizer.factory(gr, null);
           if (config != null)
@@ -490,7 +492,7 @@ public class Grib1CollectionBuilder {
     }
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash, intvMerge);
+      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash, pdsConvert);
       g.rect.make(stats);
     }
 

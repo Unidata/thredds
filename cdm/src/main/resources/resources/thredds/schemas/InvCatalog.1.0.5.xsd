@@ -439,6 +439,17 @@
       </xsd:element>
 
       <xsd:element name="groupNamer" minOccurs="0" maxOccurs="1"/>
+
+      <xsd:element name="pdsHash" minOccurs="0" maxOccurs="unbounded">
+         <xsd:complexType>
+           <xsd:sequence>
+             <xsd:element name="useGenType" minOccurs="0" maxOccurs="1"/>
+             <xsd:element name="useTableVersion" minOccurs="0" maxOccurs="1"/>
+             <xsd:element name="mergeIntv" minOccurs="0" maxOccurs="1"/>
+           </xsd:sequence>
+         </xsd:complexType>
+       </xsd:element>
+
       <xsd:element name="useGenType" minOccurs="0" maxOccurs="1"/>
 
       <xsd:element name="intvFilter" minOccurs="0" maxOccurs="unbounded">
@@ -489,8 +500,6 @@
     </xsd:sequence>
 
     <xsd:attribute name="datasetTypes" type="gribDatasetTypes"/>
-
-
 
   </xsd:complexType>
 

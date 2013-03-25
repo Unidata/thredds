@@ -438,7 +438,7 @@ public class DiskCache2 {
 
     public void run() {
       StringBuilder sbuff = new StringBuilder();
-      sbuff.append("CacheScourTask on").append(root).append("\n");
+      sbuff.append("DiskCache2 scour on directory= ").append(root).append("\n");
       cleanCache( new File(root), sbuff, true);
       sbuff.append("----------------------\n");
       if (cacheLog != null) cacheLog.info(sbuff.toString());

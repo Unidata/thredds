@@ -61,7 +61,9 @@ public class Grib1Rectilyser {
   private Grib1Customizer cust;
   private final List<Grib1Record> records;
   private final int gdsHash;
+
   private final boolean intvMerge;
+  private final boolean useTableVersion;
 
   private List<VariableBag> gribvars;
 
@@ -70,11 +72,21 @@ public class Grib1Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib1Rectilyser(Grib1Customizer cust, List<Grib1Record> records, int gdsHash, boolean intvMerge) {
+  public Grib1Rectilyser(Grib1Customizer cust, List<Grib1Record> records, int gdsHash, Map<String, Boolean> pdsHash) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
-    this.intvMerge = intvMerge;
+
+    intvMerge = assignValue(pdsHash, "intvMerge", true);
+    useTableVersion = assignValue(pdsHash, "useTableVersion", true);
+  }
+
+  private boolean assignValue(Map<String, Boolean> pdsHash, String key, boolean value) {
+    if (pdsHash != null) {
+      Boolean b = pdsHash.get(key);
+      if (b != null) value = b;
+    }
+    return value;
   }
 
   public List<Grib1Record> getRecords() {
@@ -101,7 +113,7 @@ public class Grib1Rectilyser {
     // unique variables using Grib1Record.cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
     for (Grib1Record gr : records) {
-      int cdmHash = cdmVariableHash(gr, gdsHash);
+      int cdmHash = cdmVariableHash(gr, gdsHash, intvMerge, useTableVersion);
       VariableBag bag = vbHash.get(cdmHash);
       if (bag == null) {
         bag = new VariableBag(gr, cdmHash);
@@ -189,6 +201,11 @@ public class Grib1Rectilyser {
     counter.vars += gribvars.size();
   }
 
+  // debugging
+  public int cdmVariableHash(Grib1Record gr, int gdsHash) {
+    return cdmVariableHash(gr, gdsHash, false, false);
+  }
+
   /**
    * A hash code to group records into a CDM variable
    * Herein lies the semantics of a variable object identity.
@@ -197,7 +214,7 @@ public class Grib1Rectilyser {
    * @param gdsHash can override the gdsHash
    * @return this records hash code, to group like records into a variable
    */
-  public int cdmVariableHash(Grib1Record gr, int gdsHash) {
+  private int cdmVariableHash(Grib1Record gr, int gdsHash, boolean intvMerge, boolean useTableVersion) {
     int result = 17;
 
     Grib1SectionGridDefinition gdss = gr.getGDSsection();
@@ -211,7 +228,8 @@ public class Grib1Rectilyser {
     if (cust.isLayer(pdss.getLevelType())) result += result * 37 + 1;
 
     result += result * 37 + pdss.getParameterNumber();
-    result += result * 37 + pdss.getTableVersion();
+    if (useTableVersion)
+      result += result * 37 + pdss.getTableVersion();
 
     Grib1ParamTime ptime = pdss.getParamTime(cust);
     if (ptime.isInterval()) {

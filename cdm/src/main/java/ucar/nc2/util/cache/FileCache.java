@@ -362,12 +362,14 @@ public class FileCache {
     // find it in the file cache
     CacheElement.CacheFile file = files.get(ncfile); // using hashCode of the FileCacheable
     if (file != null) {
-      if (!file.isLocked.get())
-        cacheLog.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked");
+      if (!file.isLocked.get()) {
+        Exception e = new Exception("Stack trace");
+        cacheLog.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked; hash= "+ncfile.hashCode(), e);
+      }
       file.lastAccessed = System.currentTimeMillis();
       file.countAccessed++;
       file.isLocked.set(false);
-      if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation());
+      if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation()+"; hash= "+ncfile.hashCode());
       if (debugPrint) System.out.println("  FileCache " + name + " release " + ncfile.getLocation());
       return;
     }

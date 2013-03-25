@@ -48,12 +48,13 @@ import java.util.*;
  */
 public class Grib2Rectilyser {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
-  static private final boolean useGenType = false; // LOOK dummy for now
+  //static private final boolean useGenType = false; // LOOK dummy for now
 
   private final Grib2Customizer cust;
   private final int gdsHash;
   private final boolean intvMerge;
-  //private final boolean useGenType;
+  private final boolean useGenType;
+  private final boolean useTableVersion;
 
   private final List<Grib2Record> records;
   private List<VariableBag> gribvars;
@@ -63,12 +64,22 @@ public class Grib2Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, boolean intvMerge) {
+  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, Map<String, Boolean> pdsHash) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
-    this.intvMerge = intvMerge;
-    //this.useGenType = useGenType;
+
+    intvMerge = assignValue(pdsHash, "intvMerge", true);
+    useTableVersion = assignValue(pdsHash, "useTableVersion", true);
+    useGenType = assignValue(pdsHash, "useGenType", false);
+  }
+
+  private boolean assignValue(Map<String, Boolean> pdsHash, String key, boolean value) {
+    if (pdsHash != null) {
+      Boolean b = pdsHash.get(key);
+      if (b != null) value = b;
+    }
+    return value;
   }
 
   public List<Grib2Record> getRecords() {
@@ -505,7 +516,7 @@ public class Grib2Rectilyser {
         result += result * 37 + id.getSubcenter_id();
     }
 
-    // only use the GenProcessType when "error" 2/8/2012
+    // only use the GenProcessType when "error" 2/8/2012 LOOK WTF ??
     int genType = pds2.getGenProcessType();
     if (useGenType || (genType == 6 || genType == 7)) {
       result += result * 37 + genType;
