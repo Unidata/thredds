@@ -24,10 +24,10 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
      private SimpleJdbcInsert insertActor;
 
     /**
-     * Looks up and retrieves a user from the persistence mechanism using the user id.
+     * Looks up and retrieves a user from the persistence mechanism using the userId.
      * 
      * @param userId  The id of the user we are trying to locate (will be unique for each user). 
-     * @return  The user represented as a User object.   
+     * @return  The user represented as a User object.  
      * @throws RecoverableDataAccessException  If unable to lookup table with the given user id. 
      */
     public User lookupUser(int userId) {
@@ -35,6 +35,22 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         List<User> users = getJdbcTemplate().query(sql, new UserMapper(), userId);        
         if (users.isEmpty()) {
             throw new RecoverableDataAccessException("Unable to look up user. No user found in the database for userId: " + new Integer(userId).toString());
+        }   
+        return users.get(0);
+    }
+
+    /**
+     * Looks up and retrieves a user from the persistence mechanism using the userName.
+     * 
+     * @param userName  The userName of the user we are trying to locate (will be unique for each user). 
+     * @return  The user represented as a User object.
+     * @throws RecoverableDataAccessException  If unable to lookup table with the given user id. 
+     */
+    public User lookupUser(String userName) {
+        String sql = "SELECT * FROM users WHERE userName = ?";
+        List<User> users = getJdbcTemplate().query(sql, new UserMapper(), userName);        
+        if (users.isEmpty()) {
+            throw new RecoverableDataAccessException("Unable to look up user. No user found in the database for userName: " + userName);
         }   
         return users.get(0);
     }
@@ -64,7 +80,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
     /**
      * Finds and removes the user from the persistence mechanism.
      * 
-     * @param userId  The user id in the persistence mechanism.  
+     * @param userId  The userId in the persistence mechanism.
      * @throws RecoverableDataAccessException  If unable to find and delete the user. 
      */
     public void deleteUser(int userId) {
@@ -72,6 +88,20 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         int rowsAffected  = getJdbcTemplate().update(sql, userId);
         if (rowsAffected <= 0) {
             throw new RecoverableDataAccessException("Unable to delete user. No user found in the database for userId: " + new Integer(userId).toString());
+        }   
+    }
+
+    /**
+     * Finds and removes the user from the persistence mechanism.
+     * 
+     * @param userName  The userName in the persistence mechanism
+     * @throws RecoverableDataAccessException  If unable to find and delete the user. 
+     */
+    public void deleteUser(String userName) {
+        String sql = "DELETE FROM users WHERE userName = ?";
+        int rowsAffected  = getJdbcTemplate().update(sql, userName);
+        if (rowsAffected <= 0) {
+            throw new RecoverableDataAccessException("Unable to delete user. No user found in the database for userName: " + userName);
         }   
     }
 
@@ -101,9 +131,10 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
      * @throws RecoverableDataAccessException  If unable to find the user to update. 
      */
     public void updateUser(User user)  {
-        String sql = "UPDATE users SET fullName = ?, affiliation= ?, dateModified = ? WHERE userId = ?";
+        String sql = "UPDATE users SET emailAddress = ?, fullName = ?, affiliation= ?, dateModified = ? WHERE userId = ?";
         int rowsAffected  = getJdbcTemplate().update(sql, new Object[] {
             // order matters here
+            user.getEmailAddress(), 
             user.getFullName(),
             user.getAffiliation(), 
             user.getDateModified(),
@@ -130,6 +161,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
             User user = new User();
             user.setUserId(rs.getInt("userId"));
+            user.setUserName(rs.getString("userName"));
             user.setEmailAddress(rs.getString("emailAddress"));
             user.setFullName(rs.getString("fullName"));
             user.setAffiliation(rs.getString("affiliation"));

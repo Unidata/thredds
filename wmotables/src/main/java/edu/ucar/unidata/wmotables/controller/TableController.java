@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,20 +48,29 @@ public class TableController implements HandlerExceptionResolver {
     private TableManager tableManager;
 
     /**
-     * Accepts a GET request for a List of Table objects, retrieves the List from 
-     * the TableManager, and passes the List<Table> to the View for display. Also
-     * gets a list of available Users from the UserManager and creates a 
-     * Map<String, User> to display corresponding User information with each Table.
+     * Accepts a GET request for a main home page.
+     * View is main index page.
+     * 
+     * @return  The 'index' path for the ViewResolver.
+     */
+    @RequestMapping(value="/", method=RequestMethod.GET)
+    public String listAllTables() { 
+        return "index";
+    }
+
+
+
+    /**
+     * Accepts a GET request for a List of Table objects.
      * View is a list of ALL Table objects in the persistence mechanism.
      * 
      * @param model  The Model used by the View.
      * @return  The 'listTables' path for the ViewResolver.
      */
-    @RequestMapping(value="/", method=RequestMethod.GET)
+    @RequestMapping(value="/table", method=RequestMethod.GET)
     public String listAllTables(Model model) { 
         List<Table> tables = tableManager.getTableList();
         model.addAttribute("tables", tables);   
-
         Map<String, User> users = new HashMap<String, User>();
         Iterator<Table> iterator = tables.iterator();
 	    while (iterator.hasNext()) {
@@ -73,138 +83,119 @@ public class TableController implements HandlerExceptionResolver {
     }
 
     /**
-     * Accepts a GET request for a List of Table objects, retrieves the List
-     * from the TableManager based on the userId URI Template patten matching, 
-     * and passes the List<Table> to the View for display. The User object is 
-     * also added to the model for use in the view.
-     * View is a list of Table objects owned by a particular User.
+     * Accepts a GET request for a specific Table object.
+     * View is a requested Table object.
      * 
-     * @param userId  The userId as provided by @PathVariable.
+     * @param md5  The md5 as provided by @PathVariable.
      * @param model  The Model used by the View.
-     * @return  The 'listTables' path for the ViewResolver.
+     * @return  The 'viewTable' path for the ViewResolver.
      */
-    @RequestMapping(value="/{userId}", method=RequestMethod.GET)
-    public String listUserTables(@PathVariable int userId, Model model) { 
-        List<Table> tables = tableManager.getTableList(userId);
-        model.addAttribute("tables", tables);         
-        User user = userManager.lookupUser(userId);   
+    @RequestMapping(value="/table/{md5}", method=RequestMethod.GET)
+    public String viewTable(@PathVariable String md5, Model model) { 
+        Table table = tableManager.lookupTable(md5);
+        model.addAttribute("table", table);         
+        User user = userManager.lookupUser(table.getUserId());   
         model.addAttribute("user", user);    
-        return "listTables";
+        return "viewTable";
     }
 
     /**
-     * Accepts a GET request to create a new Table object, retrieves the 
-     * corresponding User object from the UserManager based on the userId 
-     * URI Template patten matching, and passes it to the View for display. 
+     * Accepts a GET request to create a new Table object. 
      * View is a web form to upload a new Table.
      * 
-     * @param userId  The userId as provided by @PathVariable. 
      * @param model  The Model used by the view.
-     * @return  The 'createTable' path for the ViewResolver.
+     * @return  The 'tableForm' path for the ViewResolver.
      */
-    @RequestMapping(value="/{userId}/create", method=RequestMethod.GET)
-    public String createTable(@PathVariable int userId, Model model) { 
-        User user = userManager.lookupUser(userId);   
-        model.addAttribute("user", user);       
-        return "createTable";
+    @RequestMapping(value="/table/create", method=RequestMethod.GET)
+    public String createTable(Model model) { 
+        User user = userManager.lookupUser("fooBarBaz");   
+        model.addAttribute("user", user);    
+        model.addAttribute("formAction", "create");     
+        return "tableForm";
     }
 
     /**
-     * Accepts a POST request to create a new Table object, sets the visibility 
-     * of the Table object and persists it.  The corresponding User object is
-     * retrieved from the UserManager and passes it to the View for display. 
-     * View is a list of Table objects owned by a particular User.
-     *
-     * NOTE: exceptions surrounding File creation are being thrown instead of 
-     * handled in this method.  The resolveException method gracefully handles 
-     * any uncaught exceptions.
+     * Accepts a POST request to create a new Table object. 
+     * View is the newly created Table object.
      * 
      * @param table  The Table to persist. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
-     * @return  The redirect to /{userId}
+     * @return  The redirect to viewTable view (/table/{md5})
      * @throws IOException  If an IO error occurs when writing the table to the file system.
      */
-    @RequestMapping(value="/create", method=RequestMethod.POST)
+    @RequestMapping(value="/table/create", method=RequestMethod.POST)
     public ModelAndView createTable(Table table, BindingResult result, Model model) throws IOException {   
         table.setVisibility(1);
         tableManager.createTable(table);
-        List<Table> tables = tableManager.getTableList(table.getUserId());
-        model.addAttribute("tables", tables);
+        model.addAttribute("table", table);         
         User user = userManager.lookupUser(table.getUserId());   
-        model.addAttribute("user", user);          
-        return new ModelAndView(new RedirectView("/" + new Integer(table.getUserId()).toString(), true));
+        model.addAttribute("user", user);     
+        return new ModelAndView(new RedirectView("/table/" + table.getMd5(), true));
     }
 
     /**
-     * Accepts a GET request to update an existing Table object, retrieves the 
-     * requested Table object from the TableManager based on the tableId URI 
-     * Template patten matching, and passes it to the View for display. The 
-     * User object is also added to the model for use in the view.
-     * View is a web form to update a few selected attributes of an existing Table.
+     * Accepts a GET request to update an existing Table object.
+     * View is a web form to update an existing Table.
      * 
-     * @param userId  The userId as provided by @PathVariable. 
+     * @param md5  The md5 as provided by @PathVariable. 
      * @param tableId  The tableId as provided by @PathVariable.
      * @param model  The Model used by the view.
-     * @return  The 'updateTable' path for the ViewResolver.
+     * @return  The 'tableForm' path for the ViewResolver.
      */
-    @RequestMapping(value="/{userId}/{tableId}/update", method=RequestMethod.GET)
-    public String updateTable(@PathVariable int userId, @PathVariable int tableId, Model model) { 
-        Table table = tableManager.lookupTable(tableId);
+    @RequestMapping(value="/table/{md5}/update", method=RequestMethod.GET)
+    public String updateTable(@PathVariable String md5, Model model) { 
+        Table table = tableManager.lookupTable(md5);
         model.addAttribute("table", table);         
-        User user = userManager.lookupUser(userId);   
+        User user = userManager.lookupUser(table.getUserId());   
         model.addAttribute("user", user);       
-        return "updateTable";
+        model.addAttribute("formAction", "update");  
+        return "tableForm";
     }
 
     /**
-     * Accepts a POST request to create a new Table object, sets the visibility 
-     * of the Table object and persists it.  The corresponding User object is
-     * retrieved from the UserManager and passes it to the View for display. 
-     * View is a list of Table objects owned by a particular User.
-     *
-     * NOTE: exceptions surrounding File creation are being thrown instead of 
-     * handled in this method.  The resolveException method gracefully handles 
-     * any uncaught exceptions.
+     * Accepts a POST request to update an existing Table object. 
+     * View is the updated Table object.
      * 
      * @param table  The Table to update. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
-     * @return  The redirect to /{userId}
+     * @return  The redirect to viewTable view (/table/{md5})
      */
-    @RequestMapping(value="/update", method=RequestMethod.POST)
+    @RequestMapping(value="/table/update", method=RequestMethod.POST)
     public ModelAndView updateTable(Table table, BindingResult result, Model model) {  
         tableManager.updateTable(table);
-        List<Table> tables = tableManager.getTableList(table.getUserId());
-        model.addAttribute("tables", tables); 
+        table = tableManager.lookupTable(table.getTableId());
+        model.addAttribute("table", table);         
         User user = userManager.lookupUser(table.getUserId());   
-        model.addAttribute("user", user);          
-        return new ModelAndView(new RedirectView("/" + new Integer(table.getUserId()).toString(), true));
+        model.addAttribute("user", user);     
+        return new ModelAndView(new RedirectView("/table/" + table.getMd5(), true));
     }
 
     /**
-     * Accepts a POST request to create a new Table object, sets the visibility 
-     * of the Table object and persists it.  The corresponding User object is
-     * retrieved from the UserManager and passes it to the View for display. 
+     * Accepts a POST request to hide a new Table object. 
      * View is a list of Table objects owned by a particular User.
-     *
-     * NOTE: exceptions surrounding File creation are being thrown instead of 
-     * handled in this method.  The resolveException method gracefully handles 
-     * any uncaught exceptions.
      * 
      * @param table  The Table to update. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
-     * @return  The redirect to /{userId}
+     * @return  The redirect to /table/{md5}
      */
-    @RequestMapping(value="/hide", method=RequestMethod.POST)
+    @RequestMapping(value="/table/hide", method=RequestMethod.POST)
     public ModelAndView hideTable(Table table, BindingResult result, Model model) {  
-        tableManager.toggleTableVisibility(table); 
-        List<Table> tables = tableManager.getTableList(table.getUserId());
-        model.addAttribute("tables", tables); 
+        logger.warn(table.getVisibility());
+        if (table.getVisibility() == 1) {
+            table.setVisibility(0);
+        } else {
+            table.setVisibility(1);
+        }
+        logger.warn(table.getVisibility());
+        tableManager.toggleTableVisibility(table);
+        table = tableManager.lookupTable(table.getTableId());
+        model.addAttribute("table", table);         
         User user = userManager.lookupUser(table.getUserId());   
-        model.addAttribute("user", user);          
-        return new ModelAndView(new RedirectView("/" + new Integer(table.getUserId()).toString(), true));
+        model.addAttribute("user", user);     
+        return new ModelAndView(new RedirectView("/table/" + table.getMd5(), true));
     }
 
 
