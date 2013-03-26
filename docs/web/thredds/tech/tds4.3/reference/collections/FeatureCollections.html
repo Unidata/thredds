@@ -186,7 +186,7 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
   <li>If a variable does not appears in the prototype dataset, it will not appear in the feature collection dataset, even if it appears in other datasets.</li>
 </ol>
 <h3>update element</h3>
-<p>For collections that change, the <strong>update</strong> element provides options to update the collection, either synchronously (while a user request waits) or asynchronously (in a background task, so that requests do not wait). If there is no update element, then the dataset is considered <em>static</em>, and  the indexes are never updated by the TDS. (To force updated indices, delete the collection index, ususally<strong> &lt;collection root directory&gt; / &lt;dataset name&gt;.ncx</strong>.)</p>
+<p>For collections that change, the <strong>update</strong> element provides options to update the collection, either synchronously (while a user request waits) or asynchronously (in a background task, so that requests do not wait). If there is no update element, then the dataset is considered <em>static</em>, and  the indexes are never updated by the TDS. (To force updated indices, delete the collection index, usually<strong> &lt;collection root directory&gt; / &lt;dataset name&gt;.ncx</strong>.)</p>
 <pre>&lt;update startup=&quot;true&quot; rescan=&quot;cron expr&quot;<strong> </strong>trigger=&quot;allow&quot; <strong></strong>/&gt;
 
 &lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;</pre>
