@@ -47,10 +47,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.LastModified;
 
+import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
@@ -290,6 +295,13 @@ public abstract class AbstractNcssController implements LastModified{
 	      return gds;
 	}	
 	
+	
+	//Exception handlers
+	@ExceptionHandler
+	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
+	public @ResponseBody String handle(NcssException ncsse ){
+		return "NetCDF Subset Service exception handled : "+ncsse.getMessage();
+	}	
 	
 	
 	public static final String getServletPath() {

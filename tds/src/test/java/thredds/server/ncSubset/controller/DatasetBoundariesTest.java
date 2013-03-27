@@ -53,6 +53,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncSubset.format.SupportedFormat;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -96,6 +97,27 @@ public class DatasetBoundariesTest {
 		
 		assertNotNull(handler.getGridDataset());
 		assertNull(handler.getGridDataset().getNetcdfFile() );
+		
+	}
+	
+	
+	@Test
+	public void defaultContentType() throws Exception{
+		
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/grid/testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
+				.servletPath("/ncss/grid/testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries");
+		
+		this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.WKT.getResponseContentType() ) );		
+		
+	}	
+	
+	@Test
+	public void jsonResponseHasContentType() throws Exception{
+		
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/grid/testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
+				.servletPath("/ncss/grid/testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries").param("accept", "json");
+		
+		this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.JSON.getResponseContentType() ) );		
 		
 	}
 	
