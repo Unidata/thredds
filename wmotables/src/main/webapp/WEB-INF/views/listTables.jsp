@@ -2,138 +2,76 @@
 <!DOCTYPE HTML>
  <html>
   <head>
-   <title>
-    <spring:message code="global.title"/>: 
-    <c:choose>
-     <c:when test="${user != null}">
-      <spring:message code="table.list.title.owner"/>
-       <c:out value="${user.fullName}" />
-     </c:when>
-     <c:otherwise>
-      <spring:message code="table.list.title"/>
-     </c:otherwise>
-    </c:choose>
-   </title>
+   <title><spring:message code="global.title"/>: <spring:message code="table.list.title"/></title>
 <%@ include file="/WEB-INF/views/include/resources.jsp" %>
   </head>
   <body> 
-   <h1><spring:message code="global.title"/></h1>
-
-   <c:choose>
-    <c:when test="${user != null}">
-     <h3>
-      <spring:message code="table.list.title.owner"/>
-      <a href="mailto:<c:out value="${user.emailAddress}" />"><c:out value="${user.fullName}" /></a>, <c:out value="${user.affiliation}" />
-     </h3>
-     <p><a href="${baseUrl}<c:out value="${user.userId}" />/create"><spring:message code="table.create.title"/></a></p>
-     <p><a href="${baseUrl}"><spring:message code="table.list.title"/></a></p>
-     </c:when>
-     <c:otherwise>
-      <h3><spring:message code="table.list.title"/></h3>
-     </c:otherwise>
-    </c:choose>
-     <p><a href="${baseUrl}users"><spring:message code="user.list.title"/></a></p>
-
-   <table class="tablesorter">   
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
+<%@ include file="/WEB-INF/views/include/nav.jsp" %>
+   <h3><spring:message code="table.list.title"/></h3>
+   <table class="tablesorter"> 
     <c:choose>
      <c:when test="${fn:length(tables) gt 0}">
       <thead>
        <tr>
-        <th colspan="2">
-         Actions
+        <th>
+         Action
         </th>
-        <c:choose>
-         <c:when test="${fn:length(users) gt 0}">
-          <th>
-           Owner
-          </th>
-         </c:when>
-        </c:choose>
-        <th>                                                                                                                         Title
+        <th>
+         Title
         </th>
         <th>
          Description
         </th>
         <th>
-         MD5 Checksum
+         MD5 Check Sum
         </th>
         <th>
-         Original Name
-        </th>
-        <th>
-         Version
+         Owner
         </th>
         <th>
          Date Created
         </th>
-        <th>
-         View File
-        </th>
        </tr>
       </thead>
       <tbody>
-       <c:forEach items="${tables}" var="table">
+       <c:forEach items="${tables}" var="table">    
+       <tr
         <c:choose>
-         <c:when test="${table.visibility > 0}">
-          <tr>
-           <td>
-            <form action="${baseUrl}<c:out value="${table.userId}" />/<c:out value="${table.tableId}" />/update" method="GET">
-             <button type="submit" value="update">update</button>
-            </form>
-           </td>
-           <td>
-            <form action="${baseUrl}hide" method="POST">
-             <input type="hidden" name="tableId" value="<c:out value="${table.tableId}" />"/>
-             <input type="hidden" name="userId" value="<c:out value="${table.userId}" />"/>
-             <input type="hidden" name="visibility" value="0"/>
-             <button type="submit" value="hide">hide</button>
-            </form>
-            </a>
-           </td>
-           <c:forEach items="${users}" var="entry">
-            <c:choose>
-             <c:when test="${entry.key == table.userId}">
-              <td>
-               <a href="${baseUrl}<c:out value="${table.userId}" />">
-                <c:out value="${entry.value.fullName}" />
-               </a>
-              </td>
-             </c:when>
-            </c:choose>
-           </c:forEach>
-           <td>
-            <c:out value="${table.title}" />
-           </td>
-           <td>
-            <c:out value="${table.description}" />
-           </td>
-           <td>
-            <c:out value="${table.md5}" />
-           </td>
-           <td>
-            <c:out value="${table.originalName}" />
-           </td>
-           <td>
-            <c:out value="${table.version}" />
-           </td>
-           <td>
-            <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
-           </td>
-           <td>
-            <a href="${baseUrl}tables/<c:out value="${table.md5}" />"><img src="${baseUrl}resources/img/view.png" alt="view file"/></a>
-           </td>
-          </tr>
+         <c:when test="${table.visibility < 1}">
+           class="hidden"
          </c:when>
-         <c:otherwise>
-          <tr>
-           <td>
-            <c:out value="${table.tableId}" /> is hidden
-           </td>
-          </tr>
-         </c:otherwise>
         </c:choose>
-       </c:forEach>
-      </tbody>
+       >
+         <td>
+          <form id="FORM" action="${baseUrl}/table/<c:out value="${table.md5}" />" method="GET">
+           <input type="submit" value="<spring:message code="table.view.title"/>" />        
+          </form>
+         </td>
+         <td>
+          <c:out value="${table.title}" />
+         </td>
+         <td>
+          <c:out value="${table.description}" />
+         </td>
+         <td>
+          <c:out value="${table.md5}" />
+         </td>
+         <td>
+          <c:forEach items="${users}" var="entry">
+           <c:choose>
+            <c:when test="${entry.key == table.userId}">
+             <c:out value="${entry.value.fullName}" />
+            </c:when>
+           </c:choose>
+          </c:forEach>
+         </td>
+         <td>
+          <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
+         </td>
+        </tr>
+       </tbody>
+      </c:forEach>
      </c:when>
      <c:otherwise>
       <tr>
@@ -143,6 +81,13 @@
       </tr>
      </c:otherwise>
     </c:choose>
-   </table>
+   </table> 
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
   </body>
  </html>
+
+
+
+
+
+

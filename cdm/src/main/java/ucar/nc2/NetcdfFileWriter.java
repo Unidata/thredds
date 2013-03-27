@@ -469,7 +469,7 @@ public class NetcdfFileWriter {
 
     shortName = makeValidObjectName(shortName);
     if (!isValidDataType(dataType))
-      throw new IllegalArgumentException("illegal dataType: "+dataType);
+      throw new IllegalArgumentException("illegal dataType: "+dataType+" not supported in netcdf-3");
 
     // check unlimited if netcdf-3
     if (!version.isNetdf4format()) {

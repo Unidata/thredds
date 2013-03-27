@@ -18,6 +18,8 @@ public final class FormatsAvailabilityService {
 		formatsAvailability.put(SupportedFormat.CSV , true);
 		formatsAvailability.put(SupportedFormat.NETCDF3 , true);
 		formatsAvailability.put(SupportedFormat.NETCDF4 , false);
+		formatsAvailability.put(SupportedFormat.WKT , true);
+		formatsAvailability.put(SupportedFormat.JSON , true);
 	}
 	
 	private FormatsAvailabilityService(){

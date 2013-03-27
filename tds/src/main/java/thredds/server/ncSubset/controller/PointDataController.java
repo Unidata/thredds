@@ -195,7 +195,7 @@ class PointDataController extends AbstractNcssDataRequestController{
 		
 		return varsGroupsByLevels;
 	}
-	
+
 	
 
 	//Exception handlers
@@ -230,6 +230,8 @@ class PointDataController extends AbstractNcssDataRequestController{
 	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
 	public @ResponseBody String handleValidationException(MethodArgumentNotValidException ve){
 		return "Bad request: "+ve.getMessage();
-	}	
+	}
+
+	
 
 }

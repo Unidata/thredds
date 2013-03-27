@@ -14,6 +14,7 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     private int userId;
+    private String userName;
     private String emailAddress;
     private String fullName;
     private String affiliation;
@@ -21,7 +22,7 @@ public class User implements Serializable {
     private Date dateModified;
 
     /**
-     * Returns the id of the user in the database.
+     * Returns the id of the user in the database (immutable/unique to each user).
      * 
      * @return  The user id. 
      */
@@ -30,7 +31,7 @@ public class User implements Serializable {
     }
 
     /**
-     * Sets the id of the user in the database.
+     * Sets the id of the user in the database (immutable/unique to each user).
      * 
      * @param userId  The user id. 
      */
@@ -39,7 +40,25 @@ public class User implements Serializable {
     }
 
     /**
-     * Returns the email address of the user.
+     * Returns the user name of the user (immutable/unique to each user).
+     * 
+     * @return  The user's user name.  
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * Sets the user name of the user (immutable/unique to each user).
+     * 
+     * @param userName  The user's user name. 
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * Returns the email address of the user (mutable/unique to each user).
      * 
      * @return  The user's email address.  
      */ 
@@ -48,7 +67,7 @@ public class User implements Serializable {
     }
 
     /**
-     * Sets the email address of the user.
+     * Sets the email address of the user (mutable/unique to each user).
      * 
      * @param emailAddress  The user's email address. 
      */

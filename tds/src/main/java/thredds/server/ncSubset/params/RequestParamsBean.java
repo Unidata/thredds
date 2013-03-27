@@ -8,14 +8,14 @@ import thredds.server.ncSubset.validation.TimeParamsConstraint;
 import thredds.server.ncSubset.validation.VarParamConstraint;
 
 @TimeParamsConstraint
-public class RequestParamsBean {
+public class RequestParamsBean extends ParamsBean {
 	
 	//@NotNull(message="var param may not be null")
 	@VarParamConstraint
 	private List<String> var;
 	
 	//@NotNull(message="accept param may not be null")
-	private String accept;
+	//private String accept;
 	
 	@Valid
 	private String time_start;
@@ -84,13 +84,13 @@ public class RequestParamsBean {
 		return this.temporal;
 	}	
 	
-	public void setAccept(String accept){
+	/*public void setAccept(String accept){
 		this.accept = accept;
 	}
 	 
 	public String getAccept(){
 		return this.accept;
-	}
+	}*/
 	
 	public Double getVertCoord() {
 		return vertCoord;

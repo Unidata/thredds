@@ -17,6 +17,7 @@ import thredds.server.ncSubset.format.SupportedFormat;
 enum SupportedOperation {
 	
 	DATASET_INFO_REQUEST("Dataset info request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML })),SupportedFormat.XML),
+	DATASET_BOUNDARIES_REQUEST("Dataset grid boundaries request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.JSON, SupportedFormat.WKT })),SupportedFormat.WKT),
 	POINT_REQUEST("Grid as Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML, SupportedFormat.CSV, SupportedFormat.NETCDF3, SupportedFormat.NETCDF4})),SupportedFormat.XML),
 	GRID_REQUEST("Grid data request",Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.NETCDF3, SupportedFormat.NETCDF4})),SupportedFormat.NETCDF3);
 	

@@ -41,6 +41,22 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
     }
 
     /**
+     * Looks up and retrieves a table from the persistence mechanism using the md5 value.
+     * 
+     * @param md5  The md5 check sum of the table we are trying to locate (will be unique for each table). 
+     * @return  The table represented as a Table object.   
+     * @throws RecoverableDataAccessException  If unable to lookup table with the given table md5.
+     */
+    public Table lookupTable(String md5) {
+        String sql = "SELECT * FROM tables WHERE md5 = ?";
+        List<Table> tables = getJdbcTemplate().query(sql, new TableMapper(), md5); 
+        if (tables.isEmpty()) {
+            throw new RecoverableDataAccessException("Unable to look up table. No table found in the database for md5: " + md5);
+        }         
+        return tables.get(0);
+    }
+
+    /**
      * Requests a List of ALL tables from the persistence mechanism.
      * 
      * @return  A List of tables.   
@@ -61,16 +77,6 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         String sql = "SELECT * FROM tables WHERE userId = ? ORDER BY dateCreated DESC";               
         List<Table> tables = getJdbcTemplate().query(sql, new TableMapper(), userId);
         return tables;
-    }
-
-    /**
-     * Requests a List of tables owned by a particular user from the persistence mechanism.
-     * 
-     * @param user  The User what owns the tables.
-     * @return  A List of tables.   
-     */
-    public List<Table> getTableList(User user) {
-        return getTableList(user.getUserId());
     }
 
     /**
@@ -97,19 +103,9 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
     }
 
     /**
-     * Queries the persistence mechanism and returns the number of tables owned by a user.
-     * 
-     * @param user  The User that owns the tables.
-     * @return  The total number of tables as an int.   
-     */
-    public int getTableCount(User user) {
-        return getTableCount(user.getUserId());
-    }
-
-    /**
      * Toggles the table's visiblity attribute to in the persistence mechanism.
      * 
-     * @param table  The table in the persistence mechanism. 
+     * @param tableId  The ID of the table in the persistence mechanism. 
      * @throws RecoverableDataAccessException  If unable to find the table to toggle. 
      */
     public void toggleTableVisibility(Table table) {
@@ -150,13 +146,12 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
      * @throws RecoverableDataAccessException  If unable to find the table to update. 
      */
     public void updateTable(Table table) {
-        String sql = "UPDATE tables SET title = ?, description = ?, version = ?, visibility = ?, dateModified = ? WHERE tableId = ?";
+        String sql = "UPDATE tables SET title = ?, description = ?, version = ?, dateModified = ? WHERE tableId = ?";
         int rowsAffected = getJdbcTemplate().update(sql, new Object[] {
             // order matters here
             table.getTitle(),
             table.getDescription(), 
             table.getVersion(), 
-            table.getVisibility(), 
             table.getDateModified(),
             table.getTableId()
         });

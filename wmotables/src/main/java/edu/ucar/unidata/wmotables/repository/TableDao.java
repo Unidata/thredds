@@ -20,6 +20,14 @@ public interface TableDao {
     public Table lookupTable(int tableId);
 
     /**
+     * Looks up and retrieves a table from the persistence mechanism using the md5 value.
+     * 
+     * @param md5  The md5 check sum of the table we are trying to locate (will be unique for each table). 
+     * @return  The table represented as a Table object.   
+     */
+    public Table lookupTable(String md5);
+
+    /**
      * Requests a List of ALL tables from the persistence mechanism.
      * 
      * @return  A List of tables.   
@@ -33,14 +41,6 @@ public interface TableDao {
      * @return  A List of tables. 
      */
     public List<Table> getTableList(int userId);
-
-    /**
-     * Requests a List of tables owned by a particular user from the persistence mechanism.
-     * 
-     * @param user  The User what owns the tables.
-     * @return  A List of tables.   
-     */
-    public List<Table> getTableList(User user);
 
     /**
      * Queries the persistence mechanism and returns the number of tables.
@@ -57,13 +57,6 @@ public interface TableDao {
      */
     public int getTableCount(int userId);
 
-    /**
-     * Queries the persistence mechanism and returns the number of tables owned by a user.
-     * 
-     * @param user  The User that owns the tables.
-     * @return  The total number of tables as an int.   
-     */
-    public int getTableCount(User user);
 
     /**
      * Toggles the table's visiblity attribute to in the persistence mechanism.
