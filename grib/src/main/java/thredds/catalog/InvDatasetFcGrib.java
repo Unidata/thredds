@@ -222,14 +222,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private void updateCollection(StateGrib localState, CollectionManager.Force force) throws IOException {
     if (config.timePartition != null) {
       TimePartition previous = localState.timePartition;
-      localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, new Formatter());
+      localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force);
       localState.gribCollection = null;
       if (previous != null) previous.close(); // LOOK thread safety
       logger.debug("{}: TimePartition object was recreated", getName());
 
     } else {
       GribCollection previous = localState.gribCollection;
-      localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, new Formatter());
+      localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force);
       localState.timePartition = null;
       if (previous != null) previous.close(); // LOOK thread safety
       logger.debug("{}: GribCollection object was recreated", getName());

@@ -376,7 +376,7 @@ public class Grib2DataPanel extends JPanel {
 
     Grib2Index index = new Grib2Index();
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-      index.makeIndex(mfile.getPath(), null, f);
+      index.makeIndex(mfile.getPath(), null);
     }
 
     for (Grib2SectionGridDefinition gds : index.getGds()) {
@@ -431,7 +431,7 @@ public class Grib2DataPanel extends JPanel {
 
       Grib2Index index = new Grib2Index();
       if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-        index.makeIndex(mfile.getPath(), null, f);
+        index.makeIndex(mfile.getPath(), null);
       }
 
       for (Grib2Record gr : index.getRecords()) {
@@ -447,7 +447,7 @@ public class Grib2DataPanel extends JPanel {
     agg.dump(f, cust);
     stats.recordsTotal = records.size();
 
-    stats.show(f);
+    f.format("%s", stats.show());
   }
 
   /* public void runCollate(Formatter f) throws IOException {
@@ -479,7 +479,7 @@ public class Grib2DataPanel extends JPanel {
       filename += GribCollection.NCX_IDX;
     File idxFile = new File(filename);
 
-    Grib2CollectionBuilder.writeIndexFile(idxFile, dcm, f);
+    Grib2CollectionBuilder.writeIndexFile(idxFile, dcm);
     return true;
   }
 

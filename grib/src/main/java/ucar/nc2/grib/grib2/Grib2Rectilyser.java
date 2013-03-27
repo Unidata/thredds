@@ -207,11 +207,12 @@ public class Grib2Rectilyser {
     public int filter;
     public int vars;
 
-    public void show (Formatter f) {
-      // debugging and validation
+    public String show () {
+      Formatter f = new Formatter();
       float dupPercent = ((float) dups) / (recordsTotal - filter);
       f.format(" Rectilyser2: nvars=%d records total=%d filtered=%d unique=%d dups=%d (%f)%n",
               vars, recordsTotal, filter, recordsUnique, dups, dupPercent);
+      return f.toString();
     }
   }
 

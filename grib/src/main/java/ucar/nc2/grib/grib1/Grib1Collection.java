@@ -75,7 +75,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
       for (String file : filenames) { // LOOK linear lookup
         if (file.endsWith(filename)) {
           Formatter f = new Formatter();
-          GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig);  // LOOK thread-safety : creating ncx
 
           Grib1Iosp iosp = new Grib1Iosp(gc);
           iosp.setLookupTablePath(gribConfig.lookupTablePath);
@@ -107,8 +107,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
     } else {
       for (String file : filenames) {  // LOOK linear lookup
         if (file.endsWith(filename)) {
-          Formatter f = new Formatter();
-          GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig);  // LOOK thread-safety : creating ncx
 
           Grib1Iosp iosp = new Grib1Iosp(gc);
           iosp.setLookupTablePath(gribConfig.lookupTablePath);
@@ -131,7 +130,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
     Formatter f = new Formatter();
     CollectionManager dcm = new MFileCollectionManager(name, spec, f);
     File idxFile = new File( dcm.getRoot(), name);
-    boolean ok = Grib1CollectionBuilder.writeIndexFile(idxFile, dcm, f);
+    boolean ok = Grib1CollectionBuilder.writeIndexFile(idxFile, dcm);
     System.out.printf("GribCollectionBuilder.writeIndexFile ok = %s%n", ok);
 
     long took = System.currentTimeMillis() - start;

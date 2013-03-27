@@ -59,7 +59,7 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
     if ((satName == null) || !(satName.equalsIgnoreCase("Aqua")))
       return false;
 
-    String instName = ncfile.findAttValueIgnoreCase(null, "INTRUMENT_NAME", null);
+    String instName = ncfile.findAttValueIgnoreCase(null, "INTRUMENT_NAME", null);    // LOOK "INTRUMENT_NAME" ??
     if ((instName == null) || !(instName.equalsIgnoreCase("modis")))
       return false;
 

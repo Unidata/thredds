@@ -169,6 +169,7 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
         if (v.getRank() != 2)  continue;
         if (!v.getDimension(0).equals(dimY))  continue;
         if (!v.getDimension(1).equals(dimX))  continue;
+
         v.addAttribute(new Attribute(CF.GRID_MAPPING, CRS));
         if (addTimeCoord) {
           v.addAttribute(new Attribute(_Coordinate.Axes, TIME_NAME+" "+DIMX_NAME + " " + DIMY_NAME));

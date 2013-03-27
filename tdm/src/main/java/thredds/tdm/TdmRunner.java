@@ -160,7 +160,7 @@ public class TdmRunner {
           logger.debug("**** running TimePartitionBuilder.factory {} thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
-            TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, f); // "we know collection has changed, dont test again" ??? LOOK
+            TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always); // "we know collection has changed, dont test again" ??? LOOK
             tp.close();
             if (config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
               String path = "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
@@ -176,7 +176,7 @@ public class TdmRunner {
           logger.debug("**** running GribCollectionBuilder.factory {} Thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
-            GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, f);
+            GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always);
             gc.close();
             if (config.tdmConfig.triggerOk && sendTriggers) { // LOOK is there any point if you dont have trigger = true ?
               String path = "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();

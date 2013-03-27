@@ -422,7 +422,7 @@ public class Grib2ReportPanel extends JPanel {
       // make sure its a grib2 file
       RandomAccessFile raf = new RandomAccessFile(path, "r");
       if (!Grib2RecordScanner.isValidFile(raf)) return null;
-      index.makeIndex(path, null, f);
+      index.makeIndex(path, null);
     }
     return index;
   }
@@ -609,7 +609,7 @@ public class Grib2ReportPanel extends JPanel {
     Grib2Index index = createIndex(ff, fm);
     if (index == null) return;
 
-    GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(ff, CollectionManager.Force.nocheck, null, fm);
+    GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(ff, CollectionManager.Force.nocheck, null);
     gc.close();
 
     GridDataset ncfile = null;

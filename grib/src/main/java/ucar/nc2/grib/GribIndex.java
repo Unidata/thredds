@@ -56,6 +56,7 @@ import java.util.Formatter;
  * @since 9/5/11
  */
 public abstract class GribIndex {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribIndex.class);
   public static final String GBX9_IDX = ".gbx9";
   public static final boolean debug = false;
 
@@ -89,12 +90,11 @@ public abstract class GribIndex {
    * @param dataRaf the grib file already open
    * @param config  special configuration
    * @param force  force writing index
-   * @param f      put info here
    * @return the resulting GribCollection
    * @throws IOException on io error
    */
   public static GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
-                                                                CollectionManager.Force force, Formatter f) throws IOException {
+                                                                CollectionManager.Force force) throws IOException {
 
     GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index() ;
 
@@ -109,18 +109,18 @@ public abstract class GribIndex {
 
     // make or remake the index
     if (!readOk) {
-      gribIndex.makeIndex(filename, dataRaf, f);
-      f.format("  Index written: %s%n", filename + GBX9_IDX);
+      gribIndex.makeIndex(filename, dataRaf);
+      logger.debug("  Index written: {}", filename + GBX9_IDX);
     } else if (debug) {
-      f.format("  Index read: %s%n", filename + GBX9_IDX);
+      logger.debug("  Index read: {}", filename + GBX9_IDX);
     }
 
     // heres where the ncx file date is checked against the data file
     MFile mfile = new MFileOS(dataFile);
     if (isGrib1)
-      return Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, f);
+      return Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config);
     else
-      return Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, f);
+      return Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config);
   }
 
   /**
@@ -132,20 +132,19 @@ public abstract class GribIndex {
    * @param mfile the grib file
    * @param config  special configuration
    * @param force  force writing index
-   * @param f      put info here
    * @return the resulting GribIndex
    * @throws IOException on io error
    */
   public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, boolean createCollectionIndex,
-         MFile mfile, FeatureCollectionConfig.GribConfig config, CollectionManager.Force force, Formatter f) throws IOException {
+         MFile mfile, FeatureCollectionConfig.GribConfig config, CollectionManager.Force force) throws IOException {
 
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
 
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked against the data file
-      index.makeIndex(mfile.getPath(), null, f);
-      f.format("  Index written: %s == %d records %n", mfile.getName() + GBX9_IDX, index.getNRecords());
+      index.makeIndex(mfile.getPath(), null);
+      logger.debug("  Index written: {} == {} records", mfile.getName() + GBX9_IDX, index.getNRecords());
     } else if (debug) {
-      f.format("  Index read: %s == %d records %n", mfile.getName() + GBX9_IDX, index.getNRecords());
+      logger.debug("  Index read: {} == {} records", mfile.getName() + GBX9_IDX, index.getNRecords());
     }
 
     if (!createCollectionIndex) return index;
@@ -153,9 +152,9 @@ public abstract class GribIndex {
      // heres where the ncx file date is checked against the data file
     GribCollection gc;
     if (isGrib1)
-      gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, f);
+      gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config);
     else
-      gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, f);
+      gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config);
     gc.close(); // dont need this right now
 
     return index;
@@ -177,11 +176,10 @@ public abstract class GribIndex {
    *
    * @param location location of the data file
    * @param dataRaf already opened data raf; may be null
-   * @param f put error message here
    * @return true
    * @throws IOException on io error
    */
-  public abstract boolean makeIndex(String location, RandomAccessFile dataRaf, Formatter f) throws IOException;
+  public abstract boolean makeIndex(String location, RandomAccessFile dataRaf) throws IOException;
 
   /**
    * The number of records in the index.

@@ -132,8 +132,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   static private Nc4prototypes load(){
-	  
-	
+
     if (nc4 == null) {
       if (jnaPath == null) {
         jnaPath = System.getProperty(JNA_PATH);
@@ -145,8 +144,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       //Native.setProtected(true);      
    	  nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
-   	  
-      
+
       if (debug)
         System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
     }
@@ -1727,6 +1725,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case OPAQUE:
         log.warn("Skipping Opaque Type");
         return -1;
+      case STRUCTURE:
+        return Nc4prototypes.NC_COMPOUND;
     }
     throw new IllegalArgumentException("unimplemented type == " + dt);
   }
@@ -1920,6 +1920,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (debugWrite) System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
     }
 
+    // types
+    for (Variable v : g4.g.getVariables()) {
+      switch (v.getDataType()) {
+        case STRUCTURE:
+          createCompoundType((Structure) v);
+          break;
+      }
+    }
+
     // variables
     for (Variable v : g4.g.getVariables()) {
       int[] dimids = new int[v.getRank()];
@@ -1942,7 +1951,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       int ret = nc4.nc_def_var(grpid, v.getShortName(), typid, dimids.length, dimids, varidp);
       if (ret != 0)
-        throw new IOException(nc4.nc_strerror(ret));
+        throw new IOException(nc4.nc_strerror(ret)+" on\n"+v);
       int varid = varidp.getValue();
 
       if (version == NetcdfFileWriter.Version.netcdf4) {
@@ -1981,6 +1990,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       int nestedId = grpidp.getValue();
       createGroup(nestedId, new Group4(nested, g4));
     }
+  }
+
+  private void createCompoundType(Structure s) {
+
   }
 
   private Integer findDimensionId(Group4 g4, Dimension d) {

@@ -434,7 +434,7 @@ de-referencing the catalogRefs, and simplifying:
   </blockquote>
   <h4>2) gdsName: Set group names</h4>
   <blockquote>
-    <p>When a daatset has multiple groups, the groups are automatically named by the projection used and the horizontal dimension size, eg<strong> LatLon-360x720</strong>.</p>
+    <p>When a dataset has multiple groups, the groups are automatically named by the projection used and the horizontal dimension size, eg<strong> LatLon-360x720</strong>.</p>
     <p>A user can set group names manually in the TDS configuration catalog. To do so, find the group hash as in the gdsHash example above. Then use the gdsName element like this:</p>
     <pre>&lt;gribConfig&gt;
   &lt;gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/&gt;
@@ -444,7 +444,7 @@ de-referencing the catalogRefs, and simplifying:
 &lt;/gribConfig&gt;</pre>
   </blockquote>
   <h4>3) groupNamer: Not available yet</h4>
-  <h4>4) pdsHash: Control how pds are made into variables</h4>
+  <h4>4) pdsHash: Control how pds are made into variables (as of 4.3.17)</h4>
   <blockquote>
     <p><strong>4.1 useGenType</strong>: GRIB-2 only. Control whether  generating type (octet 12) is used. Default is false.</p>
     <pre> &lt;pdsHash&gt;

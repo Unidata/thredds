@@ -61,18 +61,18 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   static private final boolean trace = false;
 
   // called by tdm
-  static public boolean update(TimePartitionCollection tpc, Formatter f) throws IOException {
+  static public boolean update(TimePartitionCollection tpc) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
     if (!builder.needsUpdate()) return false;
-    builder.readOrCreateIndex(CollectionManager.Force.always, f);
+    builder.readOrCreateIndex(CollectionManager.Force.always);
     builder.gc.close();
     return true;
   }
 
     // read in the index, create if it doesnt exist or is out of date
-  static public Grib2TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
+  static public Grib2TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
-    builder.readOrCreateIndex(force, f);
+    builder.readOrCreateIndex(force);
     return builder.tp;
   }
 
@@ -90,15 +90,14 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
    *
    * @param tpc use this collection
    * @param force force index
-   * @param f put status messagess here
    * @return true if index was written
    * @throws IOException on error
    */
-  static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
+  static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionManager.Force force) throws IOException {
     Grib2TimePartitionBuilder builder = null;
     try {
       builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
-      return builder.readOrCreateIndex(force, f);
+      return builder.readOrCreateIndex(force);
 
     } finally {
       if ((builder != null) && (builder.tp != null))
@@ -138,23 +137,23 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   } */
 
   // old
-  private boolean readOrCreateIndex(CollectionManager.Force ff, Formatter f) throws IOException {
+  private boolean readOrCreateIndex(CollectionManager.Force ff) throws IOException {
     File idx = gc.getIndexFile();
 
      // force new index or test for new index needed
-    boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate(idx.lastModified(), f)));
+    boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate(idx.lastModified())));
 
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       logger.info("TimePartitionBuilder createIndex {}", idx.getPath());
-      createPartitionedIndex(f);   // write out index
+      createPartitionedIndex();   // write out index
       readIndex(idx.getPath()); // read back in index
       return true;
     }
     return false;
   }
 
-  private boolean needsUpdate(long collectionLastModified, Formatter f) throws IOException {
+  private boolean needsUpdate(long collectionLastModified) throws IOException {
     CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
     for (CollectionManager dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
       File idxFile = GribCollection.getIndexFile(dcm);
@@ -173,7 +172,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   ///////////////////////////////////////////////////
   // create the index
 
-  private boolean createPartitionedIndex(Formatter f) throws IOException {
+  private boolean createPartitionedIndex() throws IOException {
     long start = System.currentTimeMillis();
 
     // create partitions based on TimePartitionCollections object
@@ -184,11 +183,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     List<TimePartition.Partition> bad = new ArrayList<TimePartition.Partition>();
     for (TimePartition.Partition dc : tp.getPartitions()) {
       try {
-        dc.makeGribCollection(f);         // ensure collection has been read successfully
-        if (trace) f.format(" Open partition %s%n", dc.getDcm().getCollectionName());
+        dc.makeGribCollection();         // ensure collection has been read successfully
+        if (trace) logger.debug(" Open partition {}", dc.getDcm().getCollectionName());
       } catch (Throwable t) {
         logger.error(" Failed to open partition " + dc.getName(), t);
-        f.format(" FAIL on partition %s (remove) %n", dc.getDcm().getCollectionName());
         bad.add(dc);
       }
     }
@@ -201,17 +199,16 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     int n = tp.getPartitions().size();
     if (n == 0) {
       logger.error(" Nothing in this partition = "+tp.getName());
-      f.format(" FAIL Partition empty collection = %s%n", tp.getName());
       return false;
     }
     int idx = tpc.getProtoIndex(n);
     TimePartition.Partition canon = tp.getPartitions().get(idx);
-    f.format(" Using canonical partition %s%n", canon.getDcm().getCollectionName());
+    logger.debug(" Using canonical partition {}", canon.getDcm().getCollectionName());
 
     // check consistency across vert and ens coords
+    Formatter f= new Formatter();
     if (!checkPartitions(canon, f)) {
       logger.error(" Partition check failed, index not written on {} message = {}", tp.getName(), f.toString());
-      f.format(" FAIL Partition check collection = %s%n", tp.getName());
       return false;
     }
 
@@ -237,7 +234,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     boolean ok = true;
 
     // for each group in canonical Partition
-    for (GribCollection.GroupHcs firstGroup : canon.makeGribCollection(f).getGroups()) {
+    for (GribCollection.GroupHcs firstGroup : canon.makeGribCollection().getGroups()) {
       String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
@@ -259,7 +256,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
         if (trace) f.format(" Check Partition %s%n",  tpp.getName());
 
         // get corresponding group
-        GribCollection gc = tpp.makeGribCollection(f);
+        GribCollection gc = tpp.makeGribCollection();
         int groupIdx = gc.findGroupIdxById(firstGroup.getId());
         if (groupIdx < 0) {
           f.format(" Cant find group %s in partition %s%n", gname, tpp.getName());
@@ -334,14 +331,14 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     boolean ok = true;
 
     // for each group in canonical Partition
-    for (GribCollection.GroupHcs firstGroup : canon.makeGribCollection(f).getGroups()) {
+    for (GribCollection.GroupHcs firstGroup : canon.makeGribCollection().getGroups()) {
       String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // get list of corresponding groups from all the time partition, so we dont have to keep looking it up
       List<PartGroup> pgList = new ArrayList<PartGroup>(partitions.size());
       for (TimePartition.Partition dc : partitions) {
-        GribCollection.GroupHcs gg = dc.makeGribCollection(f).findGroupById(gname);
+        GribCollection.GroupHcs gg = dc.makeGribCollection().findGroupById(gname);
         if (gg == null)
           logger.error(" Cant find group {} in partition {}", gname, dc.getName());
         else
@@ -437,7 +434,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
       indexBuilder.setName(tp.getName());
 
-      GribCollection canonGc = canon.makeGribCollection(f);
+      GribCollection canonGc = canon.makeGribCollection();
       for (GribCollection.GroupHcs g : canonGc.getGroups())
         indexBuilder.addGroups(writeGroupProto(g));
 

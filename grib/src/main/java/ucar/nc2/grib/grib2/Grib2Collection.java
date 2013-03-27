@@ -70,8 +70,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
 
       for (String file : filenames) { // LOOK linear lookup
         if (file.endsWith(filename)) {
-          Formatter f = new Formatter();
-          GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig);  // LOOK thread-safety : creating ncx
 
           Grib2Iosp iosp = new Grib2Iosp(gc);
           NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
@@ -96,7 +95,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
       for (String file : filenames) {  // LOOK linear lookup
         if (file.endsWith(filename)) {
           Formatter f = new Formatter();
-          GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig);  // LOOK thread-safety : creating ncx
 
           Grib2Iosp iosp = new Grib2Iosp(gc);
           NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
@@ -115,7 +114,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
     Formatter f = new Formatter();
     CollectionManager dcm = new MFileCollectionManager(name, spec, f);
     File idxFile = new File( dcm.getRoot(), name);
-    boolean ok = Grib2CollectionBuilder.writeIndexFile(idxFile, dcm, f);
+    boolean ok = Grib2CollectionBuilder.writeIndexFile(idxFile, dcm);
     System.out.printf("GribCollectionBuilder.writeIndexFile ok = %s%n", ok);
 
     long took = System.currentTimeMillis() - start;
