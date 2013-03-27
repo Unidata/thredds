@@ -97,7 +97,11 @@
        <artifactId>derby</artifactId>
      </dependency>
 
-
+    <dependency>
+	   <groupId>javax.activation</groupId>
+	   <artifactId>activation</artifactId>
+    </dependency>
+            
     <dependency>
        <groupId>org.springframework</groupId>
        <artifactId>spring-webmvc</artifactId>

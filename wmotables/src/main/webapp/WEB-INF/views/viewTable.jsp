@@ -2,14 +2,14 @@
 <!DOCTYPE HTML>
  <html>
   <head>
-   <title><spring:message code="global.title"/>: <spring:message code="table.view.title"/>: <c:out value="${table.md5}" /></title>
+   <title><spring:message code="global.title"/>: <spring:message code="table.view.title"/>: <c:out value="${table.checksum}" /></title>
 <%@ include file="/WEB-INF/views/include/resources.jsp" %>
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
 <%@ include file="/WEB-INF/views/include/nav.jsp" %>
-   <h3><spring:message code="table.view.title"/>: <c:out value="${table.md5}" /></h3>
-   <table class="tablesorter"> 
+   <h3><spring:message code="table.view.title"/>: <c:out value="${table.checksum}" /></h3>
+   <table> 
     <thead>
      <tr>
       <th colspan="2">
@@ -28,7 +28,13 @@
        Version
       </th>
       <th>
-       MD5 Check Sum
+       Table Type
+      </th>
+      <th>
+       Mime Type
+      </th>
+      <th>
+       Checksum
       </th>
       <th>
        Owner
@@ -50,7 +56,7 @@
       </c:choose>
      >
       <td>
-       <form id="FORM" action="${baseUrl}/table/<c:out value="${table.md5}" />/update/" method="GET">
+       <form id="FORM" action="${baseUrl}/table/update/<c:out value="${table.checksum}" />" method="GET">
         <input type="submit" value="<spring:message code="table.update.title"/>" />        
        </form>
       </td>
@@ -83,7 +89,13 @@
        <c:out value="${table.version}" />
       </td>
       <td>
-       <c:out value="${table.md5}" />
+       <c:out value="${table.tableType}" />
+      </td>
+      <td>
+       <c:out value="${table.mimeType}" />
+      </td>
+      <td>
+       <c:out value="${table.checksum}" />
       </td>
       <td>
        <c:out value="${user.userName}" />
@@ -92,7 +104,7 @@
        <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
       </td>
       <td>
-       <a href="${baseUrl}/<c:out value="${table.md5}" />">
+       <a href="${baseUrl}/table/download/<c:out value="${table.checksum}" />">
         <img src="${baseUrl}/resources/img/view.png" alt="View Table">
        </a>
       </td>

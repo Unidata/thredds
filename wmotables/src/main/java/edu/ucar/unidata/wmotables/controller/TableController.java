@@ -2,8 +2,6 @@ package edu.ucar.unidata.wmotables.controller;
 
 import org.apache.log4j.Logger;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
@@ -62,7 +60,7 @@ public class TableController implements HandlerExceptionResolver {
 
     /**
      * Accepts a GET request for a List of Table objects.
-     * View is a list of ALL Table objects in the persistence mechanism.
+     * View is a list of ALL Tables in the persistence mechanism.
      * 
      * @param model  The Model used by the View.
      * @return  The 'listTables' path for the ViewResolver.
@@ -86,13 +84,13 @@ public class TableController implements HandlerExceptionResolver {
      * Accepts a GET request for a specific Table object.
      * View is a requested Table object.
      * 
-     * @param md5  The md5 as provided by @PathVariable.
+     * @param checksum  The 'checksum' as provided by @PathVariable.
      * @param model  The Model used by the View.
      * @return  The 'viewTable' path for the ViewResolver.
      */
-    @RequestMapping(value="/table/{md5}", method=RequestMethod.GET)
-    public String viewTable(@PathVariable String md5, Model model) { 
-        Table table = tableManager.lookupTable(md5);
+    @RequestMapping(value="/table/{checksum}", method=RequestMethod.GET)
+    public String viewTable(@PathVariable String checksum, Model model) { 
+        Table table = tableManager.lookupTable(checksum);
         model.addAttribute("table", table);         
         User user = userManager.lookupUser(table.getUserId());   
         model.addAttribute("user", user);    
@@ -100,15 +98,30 @@ public class TableController implements HandlerExceptionResolver {
     }
 
     /**
+     * Accepts a GET request to download a specific Table.
+     * No view is produced.  The file is streamed to the client for download.
+     * 
+     * @param checksum  The 'checksum' as provided by @PathVariable.
+     * @param response  The HttpServletResponse response.
+     */
+    @RequestMapping(value="/table/download/{checksum}", method=RequestMethod.GET)
+    public void downloadTable(@PathVariable String checksum, HttpServletResponse response) { 
+        Table table = tableManager.lookupTable(checksum);
+        tableManager.downloadTableFile(table, response);
+    }
+
+
+    /**
      * Accepts a GET request to create a new Table object. 
      * View is a web form to upload a new Table.
      * 
+     * @param userName  The 'userName' as provided by @PathVariable. 
      * @param model  The Model used by the view.
      * @return  The 'tableForm' path for the ViewResolver.
      */
-    @RequestMapping(value="/table/create", method=RequestMethod.GET)
-    public String createTable(Model model) { 
-        User user = userManager.lookupUser("fooBarBaz");   
+    @RequestMapping(value="/table/create/{userName}", method=RequestMethod.GET)
+    public String createTable(@PathVariable String userName, Model model) { 
+        User user = userManager.lookupUser(userName);  
         model.addAttribute("user", user);    
         model.addAttribute("formAction", "create");     
         return "tableForm";
@@ -121,7 +134,7 @@ public class TableController implements HandlerExceptionResolver {
      * @param table  The Table to persist. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
-     * @return  The redirect to viewTable view (/table/{md5})
+     * @return  The redirect to viewTable view (/table/{checksum})
      * @throws IOException  If an IO error occurs when writing the table to the file system.
      */
     @RequestMapping(value="/table/create", method=RequestMethod.POST)
@@ -131,21 +144,20 @@ public class TableController implements HandlerExceptionResolver {
         model.addAttribute("table", table);         
         User user = userManager.lookupUser(table.getUserId());   
         model.addAttribute("user", user);     
-        return new ModelAndView(new RedirectView("/table/" + table.getMd5(), true));
+        return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));
     }
 
     /**
      * Accepts a GET request to update an existing Table object.
      * View is a web form to update an existing Table.
      * 
-     * @param md5  The md5 as provided by @PathVariable. 
-     * @param tableId  The tableId as provided by @PathVariable.
+     * @param checksum  The checksum as provided by @PathVariable. 
      * @param model  The Model used by the view.
      * @return  The 'tableForm' path for the ViewResolver.
      */
-    @RequestMapping(value="/table/{md5}/update", method=RequestMethod.GET)
-    public String updateTable(@PathVariable String md5, Model model) { 
-        Table table = tableManager.lookupTable(md5);
+    @RequestMapping(value="/table/update/{checksum}", method=RequestMethod.GET)
+    public String updateTable(@PathVariable String checksum, Model model) { 
+        Table table = tableManager.lookupTable(checksum);
         model.addAttribute("table", table);         
         User user = userManager.lookupUser(table.getUserId());   
         model.addAttribute("user", user);       
@@ -160,7 +172,7 @@ public class TableController implements HandlerExceptionResolver {
      * @param table  The Table to update. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
-     * @return  The redirect to viewTable view (/table/{md5})
+     * @return  The redirect to 'viewTable' view (/table/{checksum})
      */
     @RequestMapping(value="/table/update", method=RequestMethod.POST)
     public ModelAndView updateTable(Table table, BindingResult result, Model model) {  
@@ -169,17 +181,17 @@ public class TableController implements HandlerExceptionResolver {
         model.addAttribute("table", table);         
         User user = userManager.lookupUser(table.getUserId());   
         model.addAttribute("user", user);     
-        return new ModelAndView(new RedirectView("/table/" + table.getMd5(), true));
+        return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));
     }
 
     /**
      * Accepts a POST request to hide a new Table object. 
-     * View is a list of Table objects owned by a particular User.
+     * View is the hidden Table object.
      * 
      * @param table  The Table to update. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
-     * @return  The redirect to /table/{md5}
+     * @return  The redirect to 'viewTable' view (/table/{checksum})
      */
     @RequestMapping(value="/table/hide", method=RequestMethod.POST)
     public ModelAndView hideTable(Table table, BindingResult result, Model model) {  
@@ -189,13 +201,12 @@ public class TableController implements HandlerExceptionResolver {
         } else {
             table.setVisibility(1);
         }
-        logger.warn(table.getVisibility());
         tableManager.toggleTableVisibility(table);
         table = tableManager.lookupTable(table.getTableId());
         model.addAttribute("table", table);         
         User user = userManager.lookupUser(table.getUserId());   
         model.addAttribute("user", user);     
-        return new ModelAndView(new RedirectView("/table/" + table.getMd5(), true));
+        return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));
     }
 
 

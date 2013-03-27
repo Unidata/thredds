@@ -41,17 +41,17 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
     }
 
     /**
-     * Looks up and retrieves a table from the persistence mechanism using the md5 value.
+     * Looks up and retrieves a table from the persistence mechanism using the checksum value.
      * 
-     * @param md5  The md5 check sum of the table we are trying to locate (will be unique for each table). 
+     * @param checksum  The checksum of the table we are trying to locate (will be unique for each table). 
      * @return  The table represented as a Table object.   
-     * @throws RecoverableDataAccessException  If unable to lookup table with the given table md5.
+     * @throws RecoverableDataAccessException  If unable to lookup table with the given table checksum.
      */
-    public Table lookupTable(String md5) {
-        String sql = "SELECT * FROM tables WHERE md5 = ?";
-        List<Table> tables = getJdbcTemplate().query(sql, new TableMapper(), md5); 
+    public Table lookupTable(String checksum) {
+        String sql = "SELECT * FROM tables WHERE checksum = ?";
+        List<Table> tables = getJdbcTemplate().query(sql, new TableMapper(), checksum); 
         if (tables.isEmpty()) {
-            throw new RecoverableDataAccessException("Unable to look up table. No table found in the database for md5: " + md5);
+            throw new RecoverableDataAccessException("Unable to look up table. No table found in the database for checksum: " + checksum);
         }         
         return tables.get(0);
     }
@@ -127,8 +127,8 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
      * @throws RecoverableDataAccessException  If the table we are trying to create already exists.
      */
     public void createTable(Table table) {        
-        String sql = "SELECT * FROM tables WHERE md5 = ?";
-        List<Table> tables = getJdbcTemplate().query(sql, new TableMapper(), table.getMd5());        
+        String sql = "SELECT * FROM tables WHERE checksum = ?";
+        List<Table> tables = getJdbcTemplate().query(sql, new TableMapper(), table.getChecksum());        
         if (!tables.isEmpty()) {
             throw new RecoverableDataAccessException("Table already exists: " + table.toString());
         } else {
@@ -146,12 +146,13 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
      * @throws RecoverableDataAccessException  If unable to find the table to update. 
      */
     public void updateTable(Table table) {
-        String sql = "UPDATE tables SET title = ?, description = ?, version = ?, dateModified = ? WHERE tableId = ?";
+        String sql = "UPDATE tables SET title = ?, description = ?, version = ?, tableType = ?, dateModified = ? WHERE tableId = ?";
         int rowsAffected = getJdbcTemplate().update(sql, new Object[] {
             // order matters here
             table.getTitle(),
             table.getDescription(), 
             table.getVersion(), 
+            table.getTableType(), 
             table.getDateModified(),
             table.getTableId()
         });
@@ -180,7 +181,9 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
             table.setDescription(rs.getString("description"));
             table.setOriginalName(rs.getString("originalName"));
             table.setVersion(rs.getString("version"));
-            table.setMd5(rs.getString("md5"));
+            table.setTableType(rs.getString("tableType"));
+            table.setMimeType(rs.getString("mimeType"));
+            table.setChecksum(rs.getString("checksum"));
             table.setUserId(rs.getInt("userId"));
             table.setVisibility(rs.getInt("visibility"));
             table.setDateCreated(rs.getTimestamp("dateCreated"));

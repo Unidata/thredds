@@ -196,8 +196,10 @@ public class ApplicationInitialization implements ServletContextListener {
                                       "title VARCHAR(100) not null, " +
                                       "description VARCHAR(255) not null, " +
                                       "originalName VARCHAR(100) not null, " +
-                                      "version VARCHAR(100) not null, " + 
-                                      "md5 CHAR(32) not null, " +
+                                      "version VARCHAR(100), " + 
+                                      "mimeType VARCHAR(100) not null, " +
+                                      "tableType VARCHAR(100), " +
+                                      "checkSum CHAR(32) not null, " +
                                       "visibility SMALLINT not null, " +
                                       "userId INTEGER not null, " +
                                       "dateCreated TIMESTAMP not null, " +

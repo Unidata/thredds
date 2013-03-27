@@ -1,21 +1,5 @@
 $(document).ready(function() {
-
-      $("table tbody tr:nth-child(odd)", this).addClass("odd");
-    $("table").tablesorter();
+    $("table tbody tr:nth-child(odd)").addClass("odd");
 });
-
-/* 
- Generic JQuery POST function 
- */
-function doPost (url, data, callback, dataType) {
-    $.post(
-        url, 
-        data,
-        function(data) {
-            callback
-        }, 
-        dataType
-    );
-}
 
 
