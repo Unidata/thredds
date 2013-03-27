@@ -63,6 +63,8 @@ import java.util.List;
  * @since 6/29/11
  */
 public class GribCollectionIndexPanel extends JPanel {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollectionIndexPanel.class);
+
   private PreferencesExt prefs;
 
   private BeanTableSorted groupTable, varTable, vertCoordTable, timeCoordTable;

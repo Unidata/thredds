@@ -231,7 +231,7 @@ public class ControllerOS implements MController {
     }
   }
 
-  // traversal of one directory
+ // traversal of one directory
   private class Traversal {
     File dir; // top directory
     List<File> fileList;  // list of files
@@ -243,11 +243,15 @@ public class ControllerOS implements MController {
 
       fileList = new ArrayList<File>();
       if (dir == null) return;  // LOOK WHY
+      if (dir.listFiles() == null) return;
 
       if (logger.isDebugEnabled()) logger.debug("List Directory "+dir);
       List<File> subdirList = new ArrayList<File>();
       for (File f : dir.listFiles()) {  /// 1
-        if (f == null) logger.warn("  NULL FILE "+f+" in directory "+dir);
+        if (f == null) {
+          logger.warn("  NULL FILE "+f+" in directory "+dir);
+          continue;
+        }
         if (logger.isDebugEnabled()) logger.debug("  File "+f);
 
         if (f.isDirectory())

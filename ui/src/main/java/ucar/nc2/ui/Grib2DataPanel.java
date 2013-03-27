@@ -80,6 +80,7 @@ import java.util.zip.Deflater;
  */
 public class Grib2DataPanel extends JPanel {
   static private Map<String, WmoTemplateTable> gribTemplates = null;
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2DataPanel.class);
 
   private PreferencesExt prefs;
 
@@ -479,7 +480,7 @@ public class Grib2DataPanel extends JPanel {
       filename += GribCollection.NCX_IDX;
     File idxFile = new File(filename);
 
-    Grib2CollectionBuilder.writeIndexFile(idxFile, dcm);
+    Grib2CollectionBuilder.writeIndexFile(idxFile, dcm, logger);
     return true;
   }
 

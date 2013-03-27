@@ -65,7 +65,6 @@
     <appender-ref ref="fileLogger" />
   </logger>
 
-
   <root>
     <level value="WARN"/>
     <appender-ref ref="consoleLogger"/>

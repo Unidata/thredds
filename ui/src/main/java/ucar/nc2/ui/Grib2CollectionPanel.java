@@ -74,6 +74,7 @@ import java.util.List;
  */
 public class Grib2CollectionPanel extends JPanel {
   static private Map<String, WmoTemplateTable> gribTemplates = null;
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionPanel.class);
 
   private PreferencesExt prefs;
 

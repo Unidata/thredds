@@ -44,6 +44,8 @@ import java.util.List;
  * @since Dec 13, 2010
  */
 public class Grib2ReportPanel extends JPanel {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
+
   public static enum Report {
     checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord,
     rename, renameCheck, copyCompress
@@ -609,7 +611,7 @@ public class Grib2ReportPanel extends JPanel {
     Grib2Index index = createIndex(ff, fm);
     if (index == null) return;
 
-    GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(ff, CollectionManager.Force.nocheck, null);
+    GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(ff, CollectionManager.Force.nocheck, null, logger);
     gc.close();
 
     GridDataset ncfile = null;

@@ -43,6 +43,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.util.log.LoggerFactory;
+import ucar.nc2.util.log.LoggerFactoryImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,19 +68,21 @@ import java.util.regex.Pattern;
  */
 @ThreadSafe
 public abstract class InvDatasetFeatureCollection extends InvCatalogRef implements CollectionManager.TriggerListener {
-  //static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
   static protected final String LATEST_SERVICE = "latest";
   static protected final String VARIABLES = "?metadata=variableMap";
   static protected final String FILES = "files";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
 
+  static private String catalogServletName = "/catalog";
   static protected String context = "/thredds";
+  static private String cdmrFeatureServiceUrlPath = "/cdmrFeature";
+  static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
+
   static public void setContext( String c ) {
     context = c;
   }
 
-  static private String catalogServletName = "/catalog";
   static public void setCatalogServletName( String catServletName ) {
     catalogServletName = catServletName;
   }
@@ -87,17 +91,16 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return context + ( catalogServletName == null ? "" : catalogServletName ) + "/" + path + "/catalog.xml";
   }
 
-  static private String cdmrFeatureServiceUrlPath = "/cdmrFeature";
   static public void setCdmrFeatureServiceUrlPath( String urlPath) {
     cdmrFeatureServiceUrlPath = urlPath;
   }
 
-  private InvService makeCdmrFeatureService() {
-    return new InvService( "cdmrFeature","cdmrFeature", context + cdmrFeatureServiceUrlPath, null,null );
+  static public void setLoggerFactory( LoggerFactory fac) {
+    loggerFactory = fac;
   }
 
-  protected String getCatalogHref( String what) {
-    return buildCatalogServiceHref( path + "/" + what );
+  static private InvService makeCdmrFeatureService() {
+    return new InvService( "cdmrFeature","cdmrFeature", context + cdmrFeatureServiceUrlPath, null,null );
   }
 
   static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
@@ -178,7 +181,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     super(parent, name, buildCatalogServiceHref( path) );
     this.path = path;
     this.fcType = fcType;
-    this.logger = org.slf4j.LoggerFactory.getLogger("fc."+getName()); // seperate log file for each feature collection (!!)
+    this.logger = loggerFactory.getLogger("fc."+getName()); // seperate log file for each feature collection (!!)
 
     this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
 
@@ -205,6 +208,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected void finishConstruction() {
     dcm.addEventListener(this); // now wired for events
     CollectionUpdater.INSTANCE.scheduleTasks(config, dcm); // see if any background tasks are needed
+  }
+
+  protected String getCatalogHref( String what) {
+    return buildCatalogServiceHref( path + "/" + what );
   }
 
   // call this first time a request comes in

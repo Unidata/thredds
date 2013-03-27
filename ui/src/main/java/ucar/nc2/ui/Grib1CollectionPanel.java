@@ -70,6 +70,7 @@ import java.util.List;
  * @since 9/3/11
  */
 public class Grib1CollectionPanel extends JPanel {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionPanel.class);
 
   private PreferencesExt prefs;
 
@@ -371,7 +372,7 @@ public class Grib1CollectionPanel extends JPanel {
       filename += GribCollection.NCX_IDX;
     File idxFile = new File(filename);
 
-    Grib1CollectionBuilder.writeIndexFile(idxFile, dcm);
+    Grib1CollectionBuilder.writeIndexFile(idxFile, dcm, logger);
     return true;
   }
 
