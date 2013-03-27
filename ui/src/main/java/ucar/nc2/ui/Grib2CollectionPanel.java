@@ -562,7 +562,7 @@ public class Grib2CollectionPanel extends JPanel {
       filename += GribCollection.NCX_IDX;
     File idxFile = new File(filename);
 
-    Grib2CollectionBuilder.writeIndexFile(idxFile, dcm);
+    Grib2CollectionBuilder.writeIndexFile(idxFile, dcm, logger);
     return true;
   }
 

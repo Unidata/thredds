@@ -87,7 +87,8 @@ public class TimePartitionCollection extends MFileCollectionManager {
     List<CollectionManager> result;
     /* if (setfromExistingIndices)
       result = makePartitionsFromIndices();
-    else */ if (config.timePartition.equalsIgnoreCase("directory"))
+    else */
+    if (config.timePartition.equalsIgnoreCase("directory"))
       result = makePartitionsFromSubdirs();
     else
       result = makePartitionsByDays();
@@ -194,7 +195,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
         return null;
       }
 
-      MFileCollectionManager dcm = new MFileCollectionManager(mfile.getName(), mcs, cdate);
+      MFileCollectionManager dcm = new MFileCollectionManager(collectionName+"-"+mfile.getName(), mcs, cdate);
       dcm.setDateExtractor(dateExtractor);
       if (config != null && config.gribConfig != null)
         dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
@@ -265,8 +266,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
     TimePartitionCollectionManager curr = null;
     for (DatedMFile dmf : files) {
       if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
-        // String name = collectionName+"_"+ cdf.toString(dmf.cdate);
-        String name = cdf.toString(dmf.cdate);
+        String name = collectionName + "-"+ cdf.toString(dmf.cdate);
         curr = new TimePartitionCollectionManager(name, dmf, getRoot(), this.auxInfo);
         result.add(curr);
       }
@@ -310,12 +310,13 @@ public class TimePartitionCollection extends MFileCollectionManager {
   private class TimePartitionCollectionManager extends CollectionManagerAbstract {
     String root;
     CalendarDate startPartition, endPartition;
+    CalendarPeriod period = CalendarPeriod.of(config.timePartition);
     List<MFile> files;
 
     TimePartitionCollectionManager(String name, DatedMFile dmf, String root, Map<String, Object> auxInfo) {
       super(name);
       this.startPartition = dmf.cdate;
-      this.endPartition = dmf.cdate.add( CalendarPeriod.of(1, CalendarPeriod.Field.Day));
+      this.endPartition = dmf.cdate.add( period);
       this.files = new ArrayList<MFile>();
       this.root = root;
       this.auxInfo = auxInfo;

@@ -132,7 +132,7 @@ public class Grib1Iosp extends GribIosp {
     // create the gbx9 index file if not already there
     boolean isGrib = (raf != null) && Grib1RecordScanner.isValidFile(raf);
     if (isGrib) {
-      this.gribCollection = GribIndex.makeGribCollectionFromSingleFile(true, raf, gribConfig, CollectionManager.Force.test);
+      this.gribCollection = GribIndex.makeGribCollectionFromSingleFile(true, raf, gribConfig, CollectionManager.Force.test, logger);
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
     }
 
@@ -172,10 +172,10 @@ public class Grib1Iosp extends GribIosp {
       String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName();
 
       if (isTimePartitioned) {
-        timePartition = Grib1TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
+        timePartition = Grib1TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf, logger);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib1CollectionBuilder.createFromIndex(name, f.getParentFile(), raf, gribConfig);
+        gribCollection = Grib1CollectionBuilder.createFromIndex(name, f.getParentFile(), raf, gribConfig, logger);
       }
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
 
@@ -320,7 +320,7 @@ public class Grib1Iosp extends GribIosp {
       v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
       v.addAttribute(new Attribute(CDM.UNITS, makeVariableUnits(cust, gribCollection, vindex)));
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, MISSING_VALUE));
-      v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
+      if (!hcs.isLatLon()) v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
 
       // Grib attributes
       v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, cust.makeVariableNameFromRecord(gribCollection, vindex)));

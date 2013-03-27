@@ -55,7 +55,7 @@ import java.util.*;
  * @since 4/6/11
  */
 public class Grib1CollectionBuilder {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
+  //static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
   protected static final int version = 9;
   //private static final boolean intvMergeDefault = true;
 
@@ -63,15 +63,15 @@ public class Grib1CollectionBuilder {
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
   static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionManager.Force force,
-                                                               FeatureCollectionConfig.GribConfig config) throws IOException {
-    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(file, config);
+                                                               FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(file, config, logger);
     builder.readOrCreateIndex(force);
     return builder.gc;
   }
 
   // called by tdm
-  static public boolean update(CollectionManager dcm) throws IOException {
-    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm);
+  static public boolean update(CollectionManager dcm, org.slf4j.Logger logger) throws IOException {
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm, logger);
     if (!builder.needsUpdate()) return false;
     builder.readOrCreateIndex(CollectionManager.Force.always);
     builder.gc.close();
@@ -80,36 +80,39 @@ public class Grib1CollectionBuilder {
 
   // from a collection, read in the index, create if it doesnt exist or is out of date
   // assume that the CollectionManager is up to date, eg doesnt need to be scanned
-  static public GribCollection factory(CollectionManager dcm, CollectionManager.Force force) throws IOException {
-    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm);
+  static public GribCollection factory(CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm, logger);
     builder.readOrCreateIndex(force);
     return builder.gc;
   }
 
   // read in the index, index raf already open
-  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile indexRaf, FeatureCollectionConfig.GribConfig config) throws IOException {
-    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(name, directory, config);
+  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile indexRaf,
+                                               FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(name, directory, config, logger);
     if (builder.readIndex(indexRaf))
       return builder.gc;
     throw new IOException("Reading index failed");
   }
 
   // this writes the index always
-  static public boolean writeIndexFile(File indexFile, CollectionManager dcm) throws IOException {
-    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm);
+  static public boolean writeIndexFile(File indexFile, CollectionManager dcm, org.slf4j.Logger logger) throws IOException {
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm, logger);
     return builder.createIndex(indexFile);
   }
 
   ////////////////////////////////////////////////////////////////
 
-  private final List<CollectionManager> collections = new ArrayList<CollectionManager>();
+  protected final List<CollectionManager> collections = new ArrayList<CollectionManager>();
   protected GribCollection gc;
   protected Grib1Customizer cust;
-  protected boolean isSingleFile;
+  protected final boolean isSingleFile;
+  protected final org.slf4j.Logger logger;
 
   // single file
-  private Grib1CollectionBuilder(MFile file, FeatureCollectionConfig.GribConfig config) throws IOException {
+  private Grib1CollectionBuilder(MFile file, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     this.isSingleFile = true;
+    this.logger = logger;
     try {
       //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
       CollectionManager dcm = new CollectionManagerSingleFile(file);
@@ -125,18 +128,24 @@ public class Grib1CollectionBuilder {
     }
   }
 
-  private Grib1CollectionBuilder(CollectionManager dcm) {
+  private Grib1CollectionBuilder(CollectionManager dcm, org.slf4j.Logger logger) {
+    this.isSingleFile = false;
+    this.logger = logger;
     this.collections.add(dcm);
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), config);
   }
 
-  private Grib1CollectionBuilder(String name, File directory, FeatureCollectionConfig.GribConfig config) {
+  private Grib1CollectionBuilder(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
+    this.isSingleFile = false;
+    this.logger = logger;
     this.gc = new Grib1Collection(name, directory, config);
   }
 
-  protected Grib1CollectionBuilder() {
+  protected Grib1CollectionBuilder(org.slf4j.Logger logger) {
     this.gc = null;
+    this.logger = logger;
+    this.isSingleFile = false;
   }
 
   protected int getVersion() {
@@ -152,8 +161,8 @@ public class Grib1CollectionBuilder {
     // otherwise, we're good as long as the index file exists
     File idx = gc.getIndexFile(); // LOOK problem - index exists but its out of date - trigger rewrite, but not writeable.
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
-      idx = gc.makeNewIndexFile(); // make sure we have a writeable index
-      logger.debug("{}: createIndex {}", gc.getName(), idx.getPath());
+      idx = gc.makeNewIndexFile(logger); // make sure we have a writeable index
+      logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx);        // write out index
       gc.setIndexRaf(new RandomAccessFile(idx.getPath(), "r"));
       readIndex(gc.getIndexRaf()); // read back in index
@@ -211,7 +220,7 @@ public class Grib1CollectionBuilder {
 
       int size = NcStream.readVInt(raf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
-        logger.warn("GribCollection {}: invalid index ", gc.getName());
+        logger.warn("GribCollection {}: invalid or empty index ", gc.getName());
         return false;
       }
 
@@ -422,7 +431,7 @@ public class Grib1CollectionBuilder {
     createIndex(indexFile, groups, filenames);
 
     long took = System.currentTimeMillis() - start;
-    logger.debug("That took {} msecs%n", took);
+    if (logger.isDebugEnabled()) logger.debug("That took {} msecs", took);
     return true;
   }
 
@@ -450,14 +459,13 @@ public class Grib1CollectionBuilder {
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
-        filenames.add(mfile.getPath());
 
-        Grib1Index index = null;
+        Grib1Index index;
         try {
-          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, !isSingleFile, mfile, config, CollectionManager.Force.test);
+          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, !isSingleFile, mfile, config, CollectionManager.Force.test, logger);
+          filenames.add(mfile.getPath());  // only add on success
 
         } catch (IOException ioe) {
-          //logger.warn("GribCollectionBuilder {}: reading/Creating gbx9 index failed err={}", gc.getName(), ioe.getMessage());
           logger.error("Grib1CollectionBuilder "+gc.getName()+" : reading/Creating gbx9 index for file "+ mfile.getPath()+" failed", ioe);
           continue;
         }
@@ -546,6 +554,7 @@ public class Grib1CollectionBuilder {
 
   private void createIndex(File indexFile, List<Group> groups, ArrayList<String> filenames) throws IOException {
     Grib1Record first = null; // take global metadata from here
+    boolean deleteOnClose = false;
 
     if (indexFile.exists()) {
       if (!indexFile.delete())
@@ -577,9 +586,11 @@ public class Grib1CollectionBuilder {
         }
       }
       long bytesPerRecord = countBytes / ((countRecords == 0) ? 1 : countRecords);
-      if (logger.isDebugEnabled()) logger.debug("  write RecordMaps: bytes = {} records = {} bytesPerRecord={}", new Object[] {countBytes, countRecords, bytesPerRecord});
+      if (logger.isDebugEnabled())
+        logger.debug("  write RecordMaps: bytes = {} records = {} bytesPerRecord={}", countBytes, countRecords, bytesPerRecord);
 
       if (first == null) {
+        deleteOnClose = true;
         logger.error("GribCollection {}: has no files", gc.getName());
         throw new IOException("GribCollection " + gc.getName() + " has no files");
       }
@@ -619,8 +630,12 @@ public class Grib1CollectionBuilder {
       logger.debug("  write GribCollectionIndex= {} bytes", b.length);
 
     } finally {
-      logger.debug("  file size =  %d bytes%n", raf.length());
+      logger.debug("  file size =  %d bytes", raf.length());
       raf.close();
+
+      // remove it on failure
+      if (deleteOnClose && !indexFile.delete())
+        logger.error(" cant delete index file {}", indexFile.getPath());
     }
   }
 

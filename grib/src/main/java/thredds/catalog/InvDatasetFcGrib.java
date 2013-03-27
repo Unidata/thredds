@@ -33,7 +33,6 @@
 package thredds.catalog;
 
 import net.jcip.annotations.ThreadSafe;
-import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
@@ -76,7 +75,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @ThreadSafe
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
-  static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
+  //static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
   static private final String BEST_DATASET = "best";
 
@@ -222,14 +221,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private void updateCollection(StateGrib localState, CollectionManager.Force force) throws IOException {
     if (config.timePartition != null) {
       TimePartition previous = localState.timePartition;
-      localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force);
+      localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, logger);
       localState.gribCollection = null;
       if (previous != null) previous.close(); // LOOK thread safety
       logger.debug("{}: TimePartition object was recreated", getName());
 
     } else {
       GribCollection previous = localState.gribCollection;
-      localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force);
+      localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, logger);
       localState.timePartition = null;
       if (previous != null) previous.close(); // LOOK thread safety
       logger.debug("{}: GribCollection object was recreated", getName());
@@ -732,13 +731,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (dp == null) return null;
 
     if (localState.timePartition == null) {
-      return localState.gribCollection.getGridDataset(dp.group, dp.filename, gribConfig);
+      return localState.gribCollection.getGridDataset(dp.group, dp.filename, gribConfig, logger);
 
     } else {
       if (dp.partition != null)
-        return dp.partition.getGribCollection().getGridDataset(dp.group, dp.filename, gribConfig);
+        return dp.partition.getGribCollection().getGridDataset(dp.group, dp.filename, gribConfig, logger);
       else
-        return localState.timePartition.getGridDataset(dp.group, dp.filename, gribConfig);
+        return localState.timePartition.getGridDataset(dp.group, dp.filename, gribConfig, logger);
     }
 
   }
@@ -761,13 +760,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (dp == null) return null;
 
     if (localState.timePartition == null) {
-      return localState.gribCollection.getNetcdfDataset(dp.group, dp.filename, gribConfig); // case 1 and 2
+      return localState.gribCollection.getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 1 and 2
 
     } else {
       if (dp.partition != null)
-        return dp.partition.getGribCollection().getNetcdfDataset(dp.group, dp.filename, gribConfig); // case 4
+        return dp.partition.getGribCollection().getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 4
       else
-        return localState.timePartition.getNetcdfDataset(dp.group, dp.filename, gribConfig); // case 3
+        return localState.timePartition.getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 3
     }
   }
 

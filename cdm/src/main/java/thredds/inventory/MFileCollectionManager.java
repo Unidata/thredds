@@ -514,12 +514,14 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
         continue;
       }
 
-      while (iter.hasNext()) {  /// NCDC
+      int count = 0;
+      while (iter.hasNext()) {
         MFile mfile = iter.next();
         mfile.setAuxInfo(mc.getAuxInfo());
         map.put(mfile.getPath(), mfile);
+        count++;
       }
-      logger.info("{} : was scanned {} ", collectionName, mc);
+      logger.info("{} : was scanned nfiles= {} ", collectionName, count);
     }
 
   }

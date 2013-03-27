@@ -64,7 +64,6 @@ import java.util.*;
  */
 @ThreadSafe
 public abstract class GribCollection implements FileCacheable {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   public static final String NCX_IDX = ".ncx";
   public static final long MISSING_RECORD = -1;
 
@@ -172,19 +171,19 @@ public abstract class GribCollection implements FileCacheable {
    * @return GribCollection
    * @throws IOException on io error
    */
-  static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force) throws IOException {
-    if (isGrib1) return Grib1CollectionBuilder.factory(dcm, force);
-    return Grib2CollectionBuilder.factory(dcm, force);
+  static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.factory(dcm, force, logger);
+    return Grib2CollectionBuilder.factory(dcm, force, logger);
   }
 
-  static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config) throws IOException {
-    if (isGrib1) return Grib1CollectionBuilder.createFromIndex(name, directory, raf, config);
-    return Grib2CollectionBuilder.createFromIndex(name, directory, raf, config);
+  static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.createFromIndex(name, directory, raf, config, logger);
+    return Grib2CollectionBuilder.createFromIndex(name, directory, raf, config, logger);
   }
 
-  static public boolean update(boolean isGrib1, CollectionManager dcm) throws IOException {
-    if (isGrib1) return Grib1CollectionBuilder.update(dcm);
-    return Grib2CollectionBuilder.update(dcm);
+  static public boolean update(boolean isGrib1, CollectionManager dcm, org.slf4j.Logger logger) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.update(dcm, logger);
+    return Grib2CollectionBuilder.update(dcm, logger);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -237,7 +236,7 @@ public abstract class GribCollection implements FileCacheable {
     return indexFile;
   }
 
-  public File makeNewIndexFile() {
+  public File makeNewIndexFile(org.slf4j.Logger logger) {
     if (indexFile != null && indexFile.exists()) {
       if (!indexFile.delete())
         logger.warn("Failed to delete {}", indexFile.getPath());
@@ -297,9 +296,9 @@ public abstract class GribCollection implements FileCacheable {
   /////////////////////////////////////////////
 
   // stuff for InvDatasetFcGrib
-  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException;
+  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException;
 
-  public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException;
+  public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException;
 
   public GroupHcs getGroup(int index) {
     return groups.get(index);

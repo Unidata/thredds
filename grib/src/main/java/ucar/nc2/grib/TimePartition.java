@@ -55,7 +55,7 @@ import java.util.*;
  * @since 4/17/11
  */
 public abstract class TimePartition extends GribCollection {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
+  // static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
   static public final byte VERT_COORDS_DIFFER = 1;
   static public final byte ENS_COORDS_DIFFER = 2;
 
@@ -76,7 +76,7 @@ public abstract class TimePartition extends GribCollection {
       File f = new File(location);
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCollection.createFromIndex(p.isGrib1(), p.getName(), f.getParentFile(), raf, p.getConfig()); // LOOK not sure what the parent directory is for
+      return GribCollection.createFromIndex(p.isGrib1(), p.getName(), f.getParentFile(), raf, p.getConfig(), p.getLogger()); // LOOK not sure what the parent directory is for
     }
   };
 
@@ -87,14 +87,14 @@ public abstract class TimePartition extends GribCollection {
 
   ///////////////////////////////////////////////////////////////////////
 
-  static public boolean update(boolean isGrib1, TimePartitionCollection tpc) throws IOException {
-    if (isGrib1) return Grib1TimePartitionBuilder.update(tpc);
-    return Grib2TimePartitionBuilder.update(tpc);
+  static public boolean update(boolean isGrib1, TimePartitionCollection tpc, org.slf4j.Logger logger) throws IOException {
+    if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, logger);
+    return Grib2TimePartitionBuilder.update(tpc, logger);
   }
 
-  static public TimePartition factory(boolean isGrib1, TimePartitionCollection tpc, CollectionManager.Force force) throws IOException {
-    if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force);
-    return Grib2TimePartitionBuilder.factory(tpc, force);
+  static public TimePartition factory(boolean isGrib1, TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+    if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, logger);
+    return Grib2TimePartitionBuilder.factory(tpc, force, logger);
   }
 
   // wrapper around a GribCollection
@@ -122,6 +122,10 @@ public abstract class TimePartition extends GribCollection {
 
     public FeatureCollectionConfig.GribConfig getConfig() {
       return gribConfig;
+    }
+
+    public org.slf4j.Logger getLogger() {
+      return logger;          // in TimePartition
     }
 
     // null if it came from the index
@@ -167,7 +171,7 @@ public abstract class TimePartition extends GribCollection {
 
     public GribCollection makeGribCollection() throws IOException {
       if (gribCollection == null) {
-        gribCollection = GribCollection.factory(isGrib1, dcm, CollectionManager.Force.test);  // LOOK why test ??
+        gribCollection = GribCollection.factory(isGrib1, dcm, CollectionManager.Force.test, logger);  // LOOK why test ??
         indexFilename = gribCollection.getIndexFile().getPath();
       }
       return gribCollection;
@@ -233,9 +237,11 @@ public abstract class TimePartition extends GribCollection {
 
   protected Map<String, Partition> partitionMap;
   protected List<Partition> partitions;
+  protected final org.slf4j.Logger logger;
 
-  protected TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1) {
+  protected TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1, org.slf4j.Logger logger) {
     super(name, directory, dcm, isGrib1);
+    this.logger = logger;
   }
 
   @Override

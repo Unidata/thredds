@@ -208,7 +208,7 @@
   </logger>
 
   <logger name="org.quartz" additivity="false">
-    <level value="INFO"/>
+    <level value="WARN"/>
     <appender-ref ref="fcScan"/>
   </logger>
 

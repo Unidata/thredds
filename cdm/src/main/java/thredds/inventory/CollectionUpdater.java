@@ -186,7 +186,7 @@ public enum CollectionUpdater {
 
       try {
         scheduler.scheduleJob(startupTrigger);
-        logger.info("Schedule startup scan for {} at {}", config.spec, runTime);
+        logger.info("Schedule startup scan for '{}' at {}", config.name, runTime);
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
@@ -202,7 +202,7 @@ public enum CollectionUpdater {
 
       try {
         scheduler.scheduleJob(rescanTrigger);
-        logger.info("Schedule recurring scan for {} cronExpr={}", config.spec, updateConfig.rescan);
+        logger.info("Schedule recurring scan for '{}' cronExpr={}", config.name, updateConfig.rescan);
 
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule cron Job", e);
@@ -227,7 +227,7 @@ public enum CollectionUpdater {
                 .withSchedule(CronScheduleBuilder.cronSchedule(pconfig.change))
                 .build();
         scheduler.scheduleJob(protoJob, protoTrigger);
-        logger.info("Schedule Reread Proto for {}",jobName);
+        logger.info("Schedule proto update for '{}' cronExpr={}", config.name, pconfig.change);
 
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule RereadProtoJob", e);

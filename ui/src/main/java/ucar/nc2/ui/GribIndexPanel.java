@@ -1,6 +1,9 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.Grib1Index;
+import ucar.nc2.grib.grib1.Grib1IndexProto;
+import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.ui.widget.BAMutil;
@@ -138,12 +141,23 @@ public class GribIndexPanel extends JPanel {
       raf.close();
       readIndex2(indexFile);
     }
-    //else if (magic.equals(Grib1Index.MAGIC_START))
-    //  readIndex1(raf);
-
+    else if (magic.equals(Grib1Index.MAGIC_START))  {
+      raf.close();
+      readIndex1(indexFile);
+    }
     else
       throw new IOException("Not a grib index file ="+magic);
 
+  }
+
+  public void readIndex1(String filename) throws IOException {
+    Grib1Index g1idx =  new Grib1Index();
+    g1idx.readIndex(filename, 0, thredds.inventory.CollectionManager.Force.nocheck);
+
+    java.util.List<RecordBean> records = new ArrayList<RecordBean>();
+     for (Grib1Record gr : g1idx.getRecords())
+       records.add(new RecordBean(gr));
+     recordTable.setBeans(records);
   }
 
   public void readIndex2(String filename) throws IOException {
@@ -154,7 +168,6 @@ public class GribIndexPanel extends JPanel {
      for (Grib2Record gr : g2idx.getRecords())
        records.add(new RecordBean(gr));
      recordTable.setBeans(records);
-
   }
 
 
@@ -162,25 +175,30 @@ public class GribIndexPanel extends JPanel {
 
 
   public class RecordBean {
-    Grib2Record gr;
+    Grib1Record gr1;
+    Grib2Record gr2;
 
     public RecordBean() {
     }
 
     public RecordBean(Grib2Record gr) {
-      this.gr = gr;
+      this.gr2 = gr;
+    }
+
+    public RecordBean(Grib1Record gr) {
+      this.gr1 = gr;
     }
 
     public int getFile() {
-      return gr.getFile();
+      return (gr2 == null) ? gr1.getFile() : gr2.getFile();
     }
 
     public String getReferenceDate() {
-      return gr.getReferenceDate().toString();
+      return (gr2 == null) ? gr1.getReferenceDate().toString() : gr2.getReferenceDate().toString();
     }
 
     private void show(Formatter f) {
-      gr.show(f);
+      if (gr2 == null) gr1.show(f); else gr2.show(f);
     }
 
   }

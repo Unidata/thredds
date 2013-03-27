@@ -307,7 +307,7 @@ public class Grib2Iosp extends GribIosp {
 
     boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
     if (isGribFile) {
-      this.gribCollection = GribIndex.makeGribCollectionFromSingleFile(false, raf, gribConfig, CollectionManager.Force.test);
+      this.gribCollection = GribIndex.makeGribCollectionFromSingleFile(false, raf, gribConfig, CollectionManager.Force.test, logger);
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
     }
 
@@ -347,10 +347,10 @@ public class Grib2Iosp extends GribIosp {
       String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName();
 
       if (isTimePartitioned) {
-        timePartition = Grib2TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
+        timePartition = Grib2TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf, logger);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf, gribConfig);
+        gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf, gribConfig, logger);
       }
 
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
@@ -532,7 +532,7 @@ public class Grib2Iosp extends GribIosp {
           v.addAttribute(new Attribute(CF.COORDINATES, s));
         }
       } else {
-        v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
+        if (!hcs.isLatLon()) v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
       }
 
       v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));

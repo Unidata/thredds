@@ -47,15 +47,14 @@ import java.io.IOException;
  * @since 1/4/12
  */
 public class Grib2TimePartition extends TimePartition {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartition.class);
 
-  Grib2TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm) {
-    super(name, directory, dcm, false);
+  Grib2TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm, org.slf4j.Logger logger) {
+    super(name, directory, dcm, false, logger);
   }
 
   // LOOK - needs time partition collection iosp or something
   @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
     GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
@@ -65,7 +64,7 @@ public class Grib2TimePartition extends TimePartition {
   }
 
   @Override
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
+  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
     GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 

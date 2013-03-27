@@ -44,7 +44,6 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Formatter;
 
 /**
  * Abstract superclass for Grib1Index and Grib2Index.
@@ -56,7 +55,7 @@ import java.util.Formatter;
  * @since 9/5/11
  */
 public abstract class GribIndex {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribIndex.class);
+  //static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribIndex.class);
   public static final String GBX9_IDX = ".gbx9";
   public static final boolean debug = false;
 
@@ -94,7 +93,7 @@ public abstract class GribIndex {
    * @throws IOException on io error
    */
   public static GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
-                                                                CollectionManager.Force force) throws IOException {
+                                                                CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
 
     GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index() ;
 
@@ -118,9 +117,9 @@ public abstract class GribIndex {
     // heres where the ncx file date is checked against the data file
     MFile mfile = new MFileOS(dataFile);
     if (isGrib1)
-      return Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config);
+      return Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
     else
-      return Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config);
+      return Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
   }
 
   /**
@@ -136,7 +135,7 @@ public abstract class GribIndex {
    * @throws IOException on io error
    */
   public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, boolean createCollectionIndex,
-         MFile mfile, FeatureCollectionConfig.GribConfig config, CollectionManager.Force force) throws IOException {
+         MFile mfile, FeatureCollectionConfig.GribConfig config, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
 
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
 
@@ -152,9 +151,9 @@ public abstract class GribIndex {
      // heres where the ncx file date is checked against the data file
     GribCollection gc;
     if (isGrib1)
-      gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config);
+      gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
     else
-      gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config);
+      gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
     gc.close(); // dont need this right now
 
     return index;

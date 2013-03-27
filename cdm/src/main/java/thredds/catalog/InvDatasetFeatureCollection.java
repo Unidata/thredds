@@ -34,7 +34,6 @@ package thredds.catalog;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
-import org.slf4j.Logger;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -67,7 +66,7 @@ import java.util.regex.Pattern;
  */
 @ThreadSafe
 public abstract class InvDatasetFeatureCollection extends InvCatalogRef implements CollectionManager.TriggerListener {
-  static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
+  //static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
   static protected final String LATEST_SERVICE = "latest";
   static protected final String VARIABLES = "?metadata=variableMap";
@@ -102,7 +101,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
-    InvDatasetFeatureCollection result = null;
+    InvDatasetFeatureCollection result;
     if (fcType == FeatureCollectionType.FMRC)
       result = new InvDatasetFcFmrc(parent, name, path, fcType, config);
 
@@ -115,7 +114,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
         result = (InvDatasetFeatureCollection) ctor.newInstance(parent, name, path, fcType, config);
 
       } catch (Throwable e) {
-        logger.error("Failed to open "+name+ " path= "+path, e);
+        //logger.error("Failed to open "+name+ " path= "+path, e);
         return null;
       }
 
@@ -161,6 +160,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // not changed after first call
   protected InvService orgService, virtualService;
   protected InvService cdmrService;  // LOOK why do we need to specify this seperately ??
+  protected org.slf4j.Logger logger;
 
   // from the config catalog
   protected final String path;
@@ -178,6 +178,8 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     super(parent, name, buildCatalogServiceHref( path) );
     this.path = path;
     this.fcType = fcType;
+    this.logger = org.slf4j.LoggerFactory.getLogger("fc."+getName()); // seperate log file for each feature collection (!!)
+
     this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
 
     this.config = config;

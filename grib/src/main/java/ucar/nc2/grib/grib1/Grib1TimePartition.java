@@ -33,7 +33,6 @@
 package ucar.nc2.grib.grib1;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.TimePartition;
@@ -48,14 +47,13 @@ import java.io.IOException;
  * @since 1/7/12
  */
 public class Grib1TimePartition extends TimePartition {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1TimePartition.class);
 
-  Grib1TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig tpc) {
-    super(name, directory, tpc, true);
+  Grib1TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig tpc, org.slf4j.Logger logger) {
+    super(name, directory, tpc, true, logger);
   }
 
   @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
     GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
@@ -69,7 +67,7 @@ public class Grib1TimePartition extends TimePartition {
   }
 
   @Override
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
+  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
     GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 

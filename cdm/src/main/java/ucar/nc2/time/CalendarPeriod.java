@@ -36,6 +36,7 @@ import net.jcip.annotations.Immutable;
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * A CalendarPeriod is a logical duration of time, it requires a Calendar to convert to an actual duration of time.
@@ -63,7 +64,8 @@ public class CalendarPeriod {
   /**
    * Convert a period string into a CalendarPeriod.Field.
    * @param udunit period string
-   * @return CalendarPeriod enum
+   * @return CalendarPeriod.Field enum
+   * @throws IllegalArgumentException if not valid format
    */
   public static CalendarPeriod.Field fromUnitString(String udunit) {
     udunit = udunit.trim();
@@ -96,6 +98,23 @@ public class CalendarPeriod {
 
   public static CalendarPeriod of(int value, Field field) {
     return new CalendarPeriod(value, field);
+  }
+
+  /**
+   * Convert a udunit period string into a CalendarPeriod
+   * @param udunit period string
+   * @return CalendarPeriod  or null if illegal
+   */
+  public static CalendarPeriod of(String udunit) {
+    String[] split = StringUtil2.splitString(udunit);
+    if (split.length != 2) return null;
+    try {
+      int value = Integer.parseInt(split[0]);
+      CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(split[1]);
+      return CalendarPeriod.of(value, unit);
+    } catch (Throwable t) {
+      return null;
+    }
   }
 
   ////////////////////////

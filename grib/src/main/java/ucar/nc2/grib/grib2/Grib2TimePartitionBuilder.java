@@ -56,13 +56,13 @@ import java.util.*;
 public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2Partition0Index";
 
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartitionBuilder.class);
+  //static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartitionBuilder.class);
   //static private final int versionTP = 4;  // this needs to update when grib2collection version does
   static private final boolean trace = false;
 
   // called by tdm
-  static public boolean update(TimePartitionCollection tpc) throws IOException {
-    Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
+  static public boolean update(TimePartitionCollection tpc, org.slf4j.Logger logger) throws IOException {
+    Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     if (!builder.needsUpdate()) return false;
     builder.readOrCreateIndex(CollectionManager.Force.always);
     builder.gc.close();
@@ -70,15 +70,15 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   }
 
     // read in the index, create if it doesnt exist or is out of date
-  static public Grib2TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force) throws IOException {
-    Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
+  static public Grib2TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+    Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.readOrCreateIndex(force);
     return builder.tp;
   }
 
   // read in the index, index raf already open
-  static public Grib2TimePartition createFromIndex(String name, File directory, RandomAccessFile raf) throws IOException {
-    Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(name, directory, null);
+  static public Grib2TimePartition createFromIndex(String name, File directory, RandomAccessFile raf, org.slf4j.Logger logger) throws IOException {
+    Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(name, directory, null, logger);
     if (builder.readIndex(raf)) {
       return builder.tp;
     }
@@ -93,10 +93,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
    * @return true if index was written
    * @throws IOException on error
    */
-  static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionManager.Force force) throws IOException {
+  static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilder builder = null;
     try {
-      builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
+      builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
       return builder.readOrCreateIndex(force);
 
     } finally {
@@ -110,10 +110,11 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private final TimePartitionCollection tpc; // defines the partition
   private final Grib2TimePartition tp;  // build this object
 
-  private Grib2TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc) {
+  private Grib2TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc, org.slf4j.Logger logger) {
+    super(logger);
     FeatureCollectionConfig.GribConfig config = null;
     if (tpc != null) config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-    this.tp = new Grib2TimePartition(name, directory, config);
+    this.tp = new Grib2TimePartition(name, directory, config, logger);
     this.gc = tp;
     this.tpc = tpc;
   }
@@ -145,7 +146,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
-      logger.info("TimePartitionBuilder createIndex {}", idx.getPath());
+      logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
       createPartitionedIndex();   // write out index
       readIndex(idx.getPath()); // read back in index
       return true;
@@ -627,7 +628,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     Formatter f = new Formatter();
     String indexName = (args.length > 0) ? args[0] : "F:/nomads/NOMADS-cfsrr-timeseries.ncx";
     RandomAccessFile raf = new RandomAccessFile(indexName, "r");
-    Grib2TimePartition gtc = Grib2TimePartitionBuilder.createFromIndex("test", null, raf);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartitionBuilder.class);
+    Grib2TimePartition gtc = Grib2TimePartitionBuilder.createFromIndex("test", null, raf, logger);
     gtc.showIndex(f);
     System.out.printf("%s%n", f);
   }

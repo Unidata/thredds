@@ -256,7 +256,7 @@ public class GribCollectionIndexPanel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = Grib2CollectionBuilder.createFromIndex(file.getPath(), file.getParentFile(), raf, null);
+      GribCollection cgc = Grib2CollectionBuilder.createFromIndex(file.getPath(), file.getParentFile(), raf, null, logger);
       List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
@@ -314,13 +314,13 @@ public class GribCollectionIndexPanel extends JPanel {
     raf.read(b);
     String magic = new String(b);
     if (magic.equals(Grib2CollectionBuilder.MAGIC_START))
-      gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf, null);
+      gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf, null, logger);
     else if (magic.equals(Grib1CollectionBuilder.MAGIC_START))
-      gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf, null);
+      gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf, null, logger);
     else if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START))
-      gc = Grib2TimePartitionBuilder.createFromIndex(indexFile, null, raf);
+      gc = Grib2TimePartitionBuilder.createFromIndex(indexFile, null, raf, logger);
     else if (magic.equals(Grib1TimePartitionBuilder.MAGIC_START))
-      gc = Grib1TimePartitionBuilder.createFromIndex(indexFile, null, raf);
+      gc = Grib1TimePartitionBuilder.createFromIndex(indexFile, null, raf, logger);
 
     else
       throw new IOException("Not a grib collection index file ="+magic);
