@@ -2,7 +2,15 @@ package edu.ucar.unidata.wmotables.service;
 
 import org.apache.log4j.Logger;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
+
+import javax.activation.MimetypesFileTypeMap;
+
+import javax.servlet.http.HttpServletResponse;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -22,7 +30,7 @@ import edu.ucar.unidata.wmotables.repository.TableDao;
 public class TableManagerImpl implements TableManager {
 
     private TableDao tableDao;
-
+    protected static Logger logger = Logger.getLogger(TableManagerImpl.class);
     @Value("${wmotables.home}")
     private String wmotablesHome;
 
@@ -47,13 +55,13 @@ public class TableManagerImpl implements TableManager {
     }
 
     /**
-     * Looks up and retrieves a table from the persistence mechanism using the md5 value.
+     * Looks up and retrieves a table from the persistence mechanism using the checkSum value.
      * 
-     * @param md5  The md5 check sum of the table we are trying to locate (will be unique for each table). 
+     * @param checkSum  The checkSum check sum of the table we are trying to locate (will be unique for each table). 
      * @return  The table represented as a Table object.   
      */
-    public Table lookupTable(String md5) {
-        return tableDao.lookupTable(md5);  
+    public Table lookupTable(String checkSum) {
+        return tableDao.lookupTable(checkSum);  
     }
 
     /**
@@ -105,8 +113,8 @@ public class TableManagerImpl implements TableManager {
 
     /**
      * Creates a new table. A WMO table is uploaded as a CommonsMultipartFile, 
-     * an MD5 Checksum is generated from its contents, and the Table is 
-     * stored on disk using the MD5 as a name). 
+     * an Checksum (MD5) is generated from its contents, and the Table is 
+     * stored on disk using the checksum as a name). 
      * 
      * @param table  The table to be created. 
      * @throws IOException  If an IO error occurs when writing the table to the file system.
@@ -119,21 +127,28 @@ public class TableManagerImpl implements TableManager {
             }                    
         }  
         byte[] fileData = table.getFile().getFileItem().get();
-        String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fileData);
+        String checksum = DigestUtils.md5Hex(fileData);
 
-        table.setMd5(md5);
+        table.setChecksum(checksum);
         table.setDateCreated(new Date(System.currentTimeMillis()));
         table.setDateModified(new Date(System.currentTimeMillis()));
-        tableDao.createTable(table);
         FileOutputStream outputStream = null; 
         try {
-            outputStream = new FileOutputStream(new File(tableStashDir + "/" + md5)); 
-            outputStream.write(fileData);
+            File file = new File(tableStashDir + "/" + table.getOriginalName());
+            outputStream = new FileOutputStream(file); 
+            outputStream.write(fileData);           
+            String mimeType = new MimetypesFileTypeMap().getContentType(file);
+            table.setMimeType(mimeType);
             outputStream.flush();
+            if (file.renameTo(new File(tableStashDir + "/" + checksum))) {
+                tableDao.createTable(table);  
+            } else {
+                throw new IOException("Unable to rename file: " + file);
+            }
         } finally {
             outputStream.close();
         }
-     
+   
     }
 
     /**
@@ -146,5 +161,35 @@ public class TableManagerImpl implements TableManager {
     public void updateTable(Table table) {
         table.setDateModified(new Date(System.currentTimeMillis()));
         tableDao.updateTable(table);
+    }
+
+    /**
+     * Access the table file on disk and streams it to the response object.
+     * 
+     * @param table  The Table object representing the file to download.
+     * @param response  The current HttpServletRequest response.
+     * @throws RuntimeException  If unable to stream the file to the response object.
+     */
+    public void downloadTableFile(Table table, HttpServletResponse response) throws RuntimeException {
+        File tableFile = new File(wmotablesHome + "/tables/" + table.getChecksum());
+        FileInputStream inputStream = null; 
+		try {
+			inputStream = new FileInputStream(tableFile);
+            response.setContentType(table.getMimeType());
+            // copy it to response's OutputStream
+            IOUtils.copy(inputStream, response.getOutputStream());
+            response.flushBuffer();
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+		} finally {
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+                }
+			} catch (IOException e) {
+				logger.error(e.getMessage());
+			}
+		}     
     }
 }

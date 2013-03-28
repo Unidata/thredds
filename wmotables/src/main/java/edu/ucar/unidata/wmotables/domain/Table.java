@@ -21,7 +21,9 @@ public class Table implements Serializable {
     private String description;
     private String originalName;
     private String version;
-    private String md5;
+    private String mimeType;
+    private String tableType;
+    private String checksum;
     private int visibility;
     private int userId;
     private Date dateCreated;
@@ -137,21 +139,57 @@ public class Table implements Serializable {
     }
 
     /**
-     * Returns the table's md5 checksum.
+     * Returns the table's mimeType.
      * 
-     * @return  The md5 checksum. 
+     * @return  The mimeType. 
      */
-    public String getMd5() {
-        return md5;
+    public String getMimeType() {
+        return mimeType;
     }
 
     /**
-     * Sets the table's md5 checksum.
+     * Sets the table's mimeType.
      * 
-     * @param md5  The md5 checksum. 
+     * @param mimeType  The mimeType. 
      */
-    public void setMd5(String md5) {
-        this.md5 = md5;
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    /**
+     * Returns the table's tableType.
+     * 
+     * @return  The tableType. 
+     */
+    public String getTableType() {
+        return tableType;
+    }
+
+    /**
+     * Sets the table's tableType.
+     * 
+     * @param tableType  The tableType. 
+     */
+    public void setTableType(String tableType) {
+        this.tableType = tableType;
+    }
+
+    /**
+     * Returns the table's checksum.
+     * 
+     * @return  The checksum. 
+     */
+    public String getChecksum() {
+        return checksum;
+    }
+
+    /**
+     * Sets the table's checksum.
+     * 
+     * @param checksum  The checksum. 
+     */
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
     }
 
     /**

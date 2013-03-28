@@ -41,8 +41,8 @@ public class UserController implements HandlerExceptionResolver {
     private TableManager tableManager;
 
     /**
-     * Accepts a GET request for a List of User objects.
-     * View is a list of all User objects in the persistence mechanism.
+     * Accepts a GET request for a List of all User objects.
+     * View is a list of all Users in the persistence mechanism.
      * 
      * @param model  The Model used by the View.
      * @return  The 'listUsers' path for the ViewResolver.
@@ -56,9 +56,9 @@ public class UserController implements HandlerExceptionResolver {
 
     /**
      * Accepts a GET request for a specific User object.
-     * View is the requested User object in the persistence mechanism.
+     * View is the requested User.
      * 
-     * @param userName  The userName as provided by @PathVariable.
+     * @param userName  The 'userName' as provided by @PathVariable.
      * @param model  The Model used by the View.
      * @return  The 'viewUser' path for the ViewResolver.
      */
@@ -91,24 +91,27 @@ public class UserController implements HandlerExceptionResolver {
      * @param user  The User to persist. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
-     * @return  The redirect to viewUser View (/user/{userName})
+     * @return  The redirect to 'viewUser' View (/user/{userName})
      */
     @RequestMapping(value="/user/create", method=RequestMethod.POST)
     public ModelAndView createUser(User user, BindingResult result, Model model) {   
         userManager.createUser(user);
-        model.addAttribute("user", user);      
+        user = userManager.lookupUser(user.getUserName());  
+        model.addAttribute("user", user);     
+        List<Table> tables = tableManager.getTableList(user.getUserId());
+        model.addAttribute("tables", tables);   
         return new ModelAndView(new RedirectView("/user/" + user.getUserName(), true));     
     }
 
     /**
      * Accepts a GET request to update an existing User object. 
-     * View is a web form to update a few selected attributes of an existing User.
+     * View is a web form to update an existing User.
      * 
-     * @param userName  The userName as provided by @PathVariable. 
+     * @param userName  The 'userName' as provided by @PathVariable. 
      * @param model  The Model used by the view.
      * @return  The 'userForm' path for the ViewResolver.
      */
-    @RequestMapping(value="/user/{userName}/update", method=RequestMethod.GET)
+    @RequestMapping(value="/user/update/{userName}", method=RequestMethod.GET)
     public String updateUser(@PathVariable String userName, Model model) {        
         User user = userManager.lookupUser(userName);   
         model.addAttribute("user", user);   
@@ -123,23 +126,26 @@ public class UserController implements HandlerExceptionResolver {
      * @param user  The User to update. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
-     * @return  The redirect to viewUser View (/user/{userName})
+     * @return  The redirect to 'viewUser' View (/user/{userName})
      */
     @RequestMapping(value="/user/update", method=RequestMethod.POST)
     public ModelAndView updateUser(User user, BindingResult result, Model model) {   
         userManager.updateUser(user);
-        model.addAttribute("user", user);          
+        model.addAttribute("user", user);     
+        List<Table> tables = tableManager.getTableList(user.getUserId());
+        model.addAttribute("tables", tables);           
         return new ModelAndView(new RedirectView("/user/" + user.getUserName(), true));   
     }
 
     /**
      * Accepts a POST request to delete an existing User object. 
-     * View is a list of all User objects.
+     * View is a list of all remaining User objects.
+     * TODO: handle tables owned by user.
      * 
      * @param user  The User to delete. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
-     * @return  The redirect to listUsers View (/user)
+     * @return  The redirect to 'listUsers' View (/user)
      */
     @RequestMapping(value="/user/delete", method=RequestMethod.POST)
     public ModelAndView deleteUser(User user, BindingResult result, Model model) {   

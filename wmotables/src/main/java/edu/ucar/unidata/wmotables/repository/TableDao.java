@@ -20,12 +20,12 @@ public interface TableDao {
     public Table lookupTable(int tableId);
 
     /**
-     * Looks up and retrieves a table from the persistence mechanism using the md5 value.
+     * Looks up and retrieves a table from the persistence mechanism using the checksum value.
      * 
-     * @param md5  The md5 check sum of the table we are trying to locate (will be unique for each table). 
+     * @param checksum  The checksum of the table we are trying to locate (will be unique for each table). 
      * @return  The table represented as a Table object.   
      */
-    public Table lookupTable(String md5);
+    public Table lookupTable(String checksum);
 
     /**
      * Requests a List of ALL tables from the persistence mechanism.
@@ -56,7 +56,6 @@ public interface TableDao {
      * @return  The total number of tables as an int.  
      */
     public int getTableCount(int userId);
-
 
     /**
      * Toggles the table's visiblity attribute to in the persistence mechanism.

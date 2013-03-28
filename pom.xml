@@ -366,6 +366,12 @@
         <artifactId>commons-lang3</artifactId>
         <version>3.1</version>
       </dependency>
+      <dependency>
+	    <groupId>javax.activation</groupId>
+	    <artifactId>activation</artifactId>
+	    <version>${activation.version}</version>
+      </dependency>
+            
 
       <!-- client -->
       <dependency>
@@ -806,6 +812,7 @@
     <org.geotoolkit.version>3.17</org.geotoolkit.version>
     <eds.threddsIso.version>2.2.2</eds.threddsIso.version>
 
+    <activation.version>1.1.1</activation.version>
     <atg.taglib.json.version>0.4.1</atg.taglib.json.version>
     <cas.version>2.1.1</cas.version>
     <com.google.protobuf.version>2.5.0</com.google.protobuf.version>

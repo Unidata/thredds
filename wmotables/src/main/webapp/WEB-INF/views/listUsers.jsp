@@ -9,7 +9,10 @@
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
 <%@ include file="/WEB-INF/views/include/nav.jsp" %>
    <h3><spring:message code="user.list.title"/></h3>
-   <table class="tablesorter"> 
+
+   <p><a href="${baseUrl}/user/create">Create new user</a></p>
+
+   <table> 
     <c:choose>
      <c:when test="${fn:length(users) gt 0}">
       <thead>

@@ -9,7 +9,8 @@
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
 <%@ include file="/WEB-INF/views/include/nav.jsp" %>
    <h3><spring:message code="table.list.title"/></h3>
-   <table class="tablesorter"> 
+
+   <table> 
     <c:choose>
      <c:when test="${fn:length(tables) gt 0}">
       <thead>
@@ -24,7 +25,10 @@
          Description
         </th>
         <th>
-         MD5 Check Sum
+         Table Type
+        </th>
+        <th>
+         Checksum
         </th>
         <th>
          Owner
@@ -44,7 +48,7 @@
         </c:choose>
        >
          <td>
-          <form id="FORM" action="${baseUrl}/table/<c:out value="${table.md5}" />" method="GET">
+          <form id="FORM" action="${baseUrl}/table/<c:out value="${table.checksum}" />" method="GET">
            <input type="submit" value="<spring:message code="table.view.title"/>" />        
           </form>
          </td>
@@ -55,7 +59,10 @@
           <c:out value="${table.description}" />
          </td>
          <td>
-          <c:out value="${table.md5}" />
+          <c:out value="${table.tableType}" />
+         </td>
+         <td>
+          <c:out value="${table.checksum}" />
          </td>
          <td>
           <c:forEach items="${users}" var="entry">

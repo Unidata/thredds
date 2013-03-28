@@ -46,6 +46,7 @@ import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.ParamsBean;
 import ucar.nc2.dt.grid.GridDatasetInfo;
+import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
 
 
 
@@ -60,19 +61,33 @@ public class DatasetBoundariesController extends AbstractNcssController{
 	static private final Logger log = LoggerFactory.getLogger(DatasetBoundariesController.class);
 	
 	@RequestMapping(value = { "datasetBoundaries" } )
-	//void getDatasetBoundaries(@Valid PointDataRequestParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException{
 	void getDatasetBoundaries(ParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException{
 		
 		//Checking request format...			
-		SupportedFormat sf = getSupportedFormat( params, SupportedOperation.DATASET_BOUNDARIES_REQUEST  );
-		
-		GridDatasetInfo writer = new GridDatasetInfo( gridDataset , "path");
-		String boundaries = writer.getDatasetBoundariesWKT();
+		SupportedFormat sf = getSupportedFormat( params, SupportedOperation.DATASET_BOUNDARIES_REQUEST  );				
+		String boundaries = getBoundaries( sf );		
+
+		res.setContentType(sf.getResponseContentType());
 		
 		res.getWriter().write(boundaries);
 		res.getWriter().flush();
 		
 	}
+	
+	private String getBoundaries(SupportedFormat format){
+		
+		String boundaries ="";
+		GridBoundariesExtractor gbe =GridBoundariesExtractor.valueOf(gridDataset);
+		
+		if( format == SupportedFormat.WKT )
+			boundaries = gbe.getDatasetBoundariesWKT();
+		if( format == SupportedFormat.JSON )
+			boundaries = gbe.getDatasetBoundariesGeoJSON();
+						
+		return boundaries;
+	}
+	
+
 
 	/* (non-Javadoc)
 	 * @see thredds.server.ncSubset.controller.AbstractNcssController#extractRequestPathInfo(java.lang.String)

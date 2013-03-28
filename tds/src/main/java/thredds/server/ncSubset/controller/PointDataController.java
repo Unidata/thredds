@@ -198,12 +198,7 @@ class PointDataController extends AbstractNcssDataRequestController{
 
 	
 
-	//Exception handlers
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
-	public @ResponseBody String handle(NcssException ncsse ){
-		return "NetCDF Subset Service exception handled : "+ncsse.getMessage();
-	}
+
 	
 	
 	@ExceptionHandler
