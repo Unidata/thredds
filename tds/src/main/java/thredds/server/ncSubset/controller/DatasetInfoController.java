@@ -49,6 +49,11 @@ import thredds.server.ncSubset.util.NcssRequestUtils;
 @Controller
 class DatasetInfoController extends AbstractNcssController{
 	
+	
+	private boolean wantXML = false;
+	private boolean showForm = false;
+	private boolean showPointForm = false;
+	
 	static private final Logger log = LoggerFactory.getLogger(DatasetInfoController.class);
 	
 	@Autowired
@@ -57,27 +62,10 @@ class DatasetInfoController extends AbstractNcssController{
 	@RequestMapping(value = { "/ncss/grid/**/dataset.html", "/ncss/grid/**/dataset.xml","/ncss/grid/**/pointDataset.html" })
 	void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-		String pathInfo = requestPathInfo;
+		//String pathInfo = requestPathInfo;
 
-		// the forms and dataset description
-		boolean wantXML = pathInfo.endsWith("/dataset.xml");
-		boolean showForm = pathInfo.endsWith("/dataset.html");
-		boolean showPointForm = pathInfo.endsWith("/pointDataset.html");
-		if (wantXML || showForm || showPointForm) {
-			int len = pathInfo.length();
-			if (wantXML)
-				pathInfo = pathInfo.substring(0, len - 12);
-			else if (showForm)
-				pathInfo = pathInfo.substring(0, len - 13);
-			else if (showPointForm)
-				pathInfo = pathInfo.substring(0, len - 18);
 
-			if (pathInfo.startsWith("/"))
-				pathInfo = pathInfo.substring(1);
-
-		}
-
-		String strResponse = ncssShowDatasetInfo.showForm(getGridDataset(), buildDatasetUrl(pathInfo), wantXML, showPointForm);
+		String strResponse = ncssShowDatasetInfo.showForm(getGridDataset(), buildDatasetUrl(requestPathInfo), wantXML, showPointForm);
 
 		res.setContentLength(strResponse.length());
 		if (wantXML)
@@ -100,18 +88,27 @@ class DatasetInfoController extends AbstractNcssController{
 	 */
 	@Override
 	String extractRequestPathInfo(String requestPathInfo) {
+
+		// the forms and dataset description
+		wantXML = requestPathInfo.endsWith("/dataset.xml");
+		showForm = requestPathInfo.endsWith("/dataset.html");
+		showPointForm = requestPathInfo.endsWith("/pointDataset.html");
 		
-		if( requestPathInfo.endsWith("xml") || requestPathInfo.endsWith("html")   ){
-			requestPathInfo = requestPathInfo.trim(); 
-			String[] pathInfoArr = requestPathInfo.split("/");			  
-			StringBuilder sb = new StringBuilder();
-			int len = pathInfoArr.length;
-			sb.append(pathInfoArr[1]);
-			for(int i= 2;  i<len-1; i++  ){
-				sb.append("/"+pathInfoArr[i]);
-			}
-			requestPathInfo = sb.toString();
-		}
+		if (wantXML || showForm || showPointForm) {
+			int len = requestPathInfo.length();
+			if (wantXML)
+				requestPathInfo = requestPathInfo.substring(0, len - 12);
+			else if (showForm)
+				requestPathInfo = requestPathInfo.substring(0, len - 13);
+			else if (showPointForm)
+				requestPathInfo = requestPathInfo.substring(0, len - 18);
+
+			if (requestPathInfo.startsWith("/"))
+				requestPathInfo = requestPathInfo.substring(1);
+
+		}		
+		
+
 		this.requestPathInfo = requestPathInfo;
 		
 		return requestPathInfo;
