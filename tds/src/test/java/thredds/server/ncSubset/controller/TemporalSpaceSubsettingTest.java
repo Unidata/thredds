@@ -124,7 +124,8 @@ public class TemporalSpaceSubsettingTest {
 		
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		gridDataController.setGridDataset(gds);
-		gridDataController.setRequestPathInfo(pathInfo);
+		//gridDataController.setRequestPathInfo(pathInfo);
+		gridDataController.extractRequestPathInfo(pathInfo);
 		List<String> var = new ArrayList<String>();
 		//var.add("Pressure");
 		var.add("Temperature");				

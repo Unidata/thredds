@@ -169,13 +169,12 @@ public abstract class GribCollection implements FileCacheable {
    * @param isGrib1 true if files are grib1, else grib2
    * @param dcm     the file collection : assume its been scanned
    * @param force   should index file be used or remade?
-   * @param f       error messages here
    * @return GribCollection
    * @throws IOException on io error
    */
-  static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, Formatter f) throws IOException {
-    if (isGrib1) return Grib1CollectionBuilder.factory(dcm, force, f);
-    return Grib2CollectionBuilder.factory(dcm, force, f);
+  static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.factory(dcm, force);
+    return Grib2CollectionBuilder.factory(dcm, force);
   }
 
   static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config) throws IOException {
@@ -183,9 +182,9 @@ public abstract class GribCollection implements FileCacheable {
     return Grib2CollectionBuilder.createFromIndex(name, directory, raf, config);
   }
 
-  static public boolean update(boolean isGrib1, CollectionManager dcm, Formatter f) throws IOException {
-    if (isGrib1) return Grib1CollectionBuilder.update(dcm, f);
-    return Grib2CollectionBuilder.update(dcm, f);
+  static public boolean update(boolean isGrib1, CollectionManager dcm) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.update(dcm);
+    return Grib2CollectionBuilder.update(dcm);
   }
 
   ////////////////////////////////////////////////////////////////

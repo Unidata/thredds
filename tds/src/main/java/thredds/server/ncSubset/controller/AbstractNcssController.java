@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -48,17 +47,24 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.LastModified;
 
+import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.params.ParamsBean;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DataRootHandler;
+import thredds.servlet.DatasetHandler;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
@@ -82,9 +88,9 @@ public abstract class AbstractNcssController implements LastModified{
 	protected String requestPathInfo = null;
 	protected GridDataset gridDataset = null;		
 	
-	void setRequestPathInfo(String requestPathInfo) {
+	/*void setRequestPathInfo(String requestPathInfo) {
 		this.requestPathInfo = requestPathInfo;
-	}
+	}*/
 
 	public String getRequestPathInfo() {
 		return this.requestPathInfo;
@@ -93,12 +99,17 @@ public abstract class AbstractNcssController implements LastModified{
 	void setGridDataset(GridDataset gds) {
 		this.gridDataset = gds;
 	}
+	
+	/**
+	 * Extracts and set the requestPathInfo from the request servlet path for the controllers. 
+	 * It depends on the controller how to get it.
+	 * @param requestPathInfo 
+	 */
+	abstract String extractRequestPathInfo(String requestPathInfo);
 
 	public GridDataset getGridDataset() {
 		return this.gridDataset;
 	}
-	
-	
 	
 	/**
 	 *   
@@ -232,7 +243,7 @@ public abstract class AbstractNcssController implements LastModified{
 		}	
 	}
 	
-	protected SupportedFormat getSupportedFormat(RequestParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException{
+	protected SupportedFormat getSupportedFormat(ParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException{
 		
 		//Cheking request format...
 		SupportedFormat sf;		
@@ -250,6 +261,47 @@ public abstract class AbstractNcssController implements LastModified{
 		return sf;		
 	}
 	
+	
+	protected GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String pathInfo) throws IOException{
+		  GridDataset gds = null;
+		  
+		 /* if( pathInfo.endsWith("xml") || pathInfo.endsWith("html") || pathInfo.endsWith("datasetBoundaries")  ){
+			  pathInfo = pathInfo.trim(); 
+			  String[] pathInfoArr = pathInfo.split("/");			  
+			  StringBuilder sb = new StringBuilder();
+			  int len = pathInfoArr.length;
+			  sb.append(pathInfoArr[1]);
+			  for(int i= 2;  i<len-1; i++  ){
+				  sb.append("/"+pathInfoArr[i]);
+			  }
+			  pathInfo = sb.toString();
+		  }*/
+		  
+	      try {
+	          gds = DatasetHandler.openGridDataset(req, res, pathInfo);
+	          if (null == gds) {
+	            res.sendError(HttpServletResponse.SC_NOT_FOUND);
+	          }
+
+	        } catch (java.io.FileNotFoundException ioe) {
+	          if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
+
+	        } catch (Throwable e) {
+	          log.error("GridServlet.showForm", e);
+	          if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+	        }
+	      
+	      return gds;
+	}	
+	
+	
+	//Exception handlers
+	@ExceptionHandler
+	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
+	public @ResponseBody String handle(NcssException ncsse ){
+		return "NetCDF Subset Service exception handled : "+ncsse.getMessage();
+	}	
 	
 	
 	public static final String getServletPath() {

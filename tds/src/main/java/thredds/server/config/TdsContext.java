@@ -227,8 +227,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean {
     if ( rootPath == null )
     {
       String msg = "Webapp [" + this.webappName + "] must run with exploded deployment directory (not from .war).";
-      System.out.println( "ERROR - TdsContext.init(): " + msg );
-      //logServerStartup.error( "TdsContext.init(): " + msg );
+      //System.out.println( "ERROR - TdsContext.init(): " + msg );
+      logServerStartup.error( "TdsContext.init(): " + msg );
       throw new IllegalStateException( msg );
     }
     this.rootDirectory = new File( rootPath );
@@ -255,15 +255,15 @@ public final class TdsContext implements ServletContextAware, InitializingBean {
         if ( !this.tomcatLogDir.exists() )
         {
           String msg = "'catalina.base' directory not found";
-          System.out.println( "WARN - TdsContext.init(): " + msg );
-          //logServerStartup.error( "TdsContext.init(): " + msg );
+          //System.out.println( "WARN - TdsContext.init(): " + msg );
+          logServerStartup.error( "TdsContext.init(): " + msg );
         }
       }
       else
       {
         String msg = "'catalina.base' property not found - probably not a tomcat server";
-        System.out.println( "WARN - TdsContext.init(): " + msg );
-        //logServerStartup.warn( "TdsContext.init(): " + msg );
+        //System.out.println( "WARN - TdsContext.init(): " + msg );
+        logServerStartup.warn( "TdsContext.init(): " + msg );
       }
 
     } catch (IOException e)

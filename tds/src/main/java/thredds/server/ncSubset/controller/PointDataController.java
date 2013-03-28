@@ -195,15 +195,10 @@ class PointDataController extends AbstractNcssDataRequestController{
 		
 		return varsGroupsByLevels;
 	}
-	
+
 	
 
-	//Exception handlers
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
-	public @ResponseBody String handle(NcssException ncsse ){
-		return "NetCDF Subset Service exception handled : "+ncsse.getMessage();
-	}
+
 	
 	
 	@ExceptionHandler
@@ -230,6 +225,8 @@ class PointDataController extends AbstractNcssDataRequestController{
 	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
 	public @ResponseBody String handleValidationException(MethodArgumentNotValidException ve){
 		return "Bad request: "+ve.getMessage();
-	}	
+	}
+
+	
 
 }

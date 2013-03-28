@@ -1029,6 +1029,12 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       if (fullName.equals(vp.v.getFullName()))
         return vp;
     }
+
+    for (VarProcess vp : varList) {
+      if (fullName.equals(vp.v.getShortName()))
+        return vp;
+    }
+
     return null;
   }
 

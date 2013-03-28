@@ -13,7 +13,10 @@
   <mvc:annotation-driven />
   
   <!-- Handler Mapping -->
-  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+  <!--  In Spring 3.2  DefaultAnnotationHandlerMapping was deprecated in favor of   RequestMappingHandlerMapping-->
+  <!--  bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /-->
+  
+  <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
    
   <!-- ncss interceptor -->
   <mvc:interceptors>

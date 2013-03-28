@@ -87,14 +87,14 @@ public abstract class TimePartition extends GribCollection {
 
   ///////////////////////////////////////////////////////////////////////
 
-  static public boolean update(boolean isGrib1, TimePartitionCollection tpc, Formatter f) throws IOException {
-    if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, f);
-    return Grib2TimePartitionBuilder.update(tpc, f);
+  static public boolean update(boolean isGrib1, TimePartitionCollection tpc) throws IOException {
+    if (isGrib1) return Grib1TimePartitionBuilder.update(tpc);
+    return Grib2TimePartitionBuilder.update(tpc);
   }
 
-  static public TimePartition factory(boolean isGrib1, TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
-    if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, f);
-    return Grib2TimePartitionBuilder.factory(tpc, force, f);
+  static public TimePartition factory(boolean isGrib1, TimePartitionCollection tpc, CollectionManager.Force force) throws IOException {
+    if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force);
+    return Grib2TimePartitionBuilder.factory(tpc, force);
   }
 
   // wrapper around a GribCollection
@@ -165,9 +165,9 @@ public abstract class TimePartition extends GribCollection {
       this.name = dcm.getCollectionName();
     }
 
-    public GribCollection makeGribCollection(Formatter f) throws IOException {
+    public GribCollection makeGribCollection() throws IOException {
       if (gribCollection == null) {
-        gribCollection = GribCollection.factory(isGrib1, dcm, CollectionManager.Force.test, f);  // LOOK why test ??
+        gribCollection = GribCollection.factory(isGrib1, dcm, CollectionManager.Force.test);  // LOOK why test ??
         indexFilename = gribCollection.getIndexFile().getPath();
       }
       return gribCollection;

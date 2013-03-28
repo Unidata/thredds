@@ -81,7 +81,7 @@ import java.util.*;
  * @since 9/5/11
  */
 public class Grib1Index extends GribIndex {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
 
   public static final String MAGIC_START = "Grib1Index";
   private static final int version = 5;
@@ -121,7 +121,7 @@ public class Grib1Index extends GribIndex {
     try {
       //// check header is ok
       if (!NcStream.readAndTest(fin, MAGIC_START.getBytes())) {
-        log.info("Bad magic number of grib index, on file" + idxFile);
+        logger.info("Bad magic number of grib index, on file" + idxFile);
         return false;
       }
 
@@ -129,13 +129,13 @@ public class Grib1Index extends GribIndex {
       if (v != version) {
         if ((v == 0) || (v > version))
           throw new IOException("Grib1Index found version " + v + ", want version " + version + " on " + filename);
-        if (log.isDebugEnabled()) log.debug("Grib1Index found version " + v + ", want version " + version + " on " + filename);
+        if (logger.isDebugEnabled()) logger.debug("Grib1Index found version " + v + ", want version " + version + " on " + filename);
         return false;
       }
 
       int size = NcStream.readVInt(fin);
       if (size <= 0 || size > 100 * 1000 * 1000) { // try to catch garbage
-        log.warn("Grib1Index bad size = {} for {} ", size, filename);
+        logger.warn("Grib1Index bad size = {} for {} ", size, filename);
         return false;
       }
 
@@ -160,11 +160,11 @@ public class Grib1Index extends GribIndex {
       if (debug) System.out.printf(" read %d records%n", records.size());
 
     } catch (java.lang.NegativeArraySizeException e) {
-      log.error("GribIndex failed on " + filename, e);
+      logger.error("GribIndex failed on " + filename, e);
       return false;
 
     } catch (IOException e) {
-      log.error("GribIndex failed on "+filename, e);
+      logger.error("GribIndex failed on " + filename, e);
       return false;
 
     } finally {
@@ -194,7 +194,7 @@ public class Grib1Index extends GribIndex {
   ////////////////////////////////////////////////////////////////////////////////
 
   // LOOK what about extending an index ??
-  public boolean makeIndex(String filename, RandomAccessFile dataRaf, Formatter f) throws IOException {
+  public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
     FileOutputStream fout = new FileOutputStream(idxFile);
     RandomAccessFile raf = null;
@@ -238,7 +238,7 @@ public class Grib1Index extends GribIndex {
       byte[] b = index.toByteArray();
       NcStream.writeVInt(fout, b.length); // message size
       fout.write(b);  // message  - all in one gulp
-      f.format("  made gbx9 index for %s size=%d%n", filename, b.length);
+      logger.debug("  made gbx9 index for {} size={}", filename, b.length);
       return true;
 
     } finally {
@@ -280,7 +280,7 @@ public class Grib1Index extends GribIndex {
   static public void main(String args[]) throws IOException {
     String filename = "G:/tigge/uv/z_tigge_c_kwbc_20110605120000_glob_prod_cf_HGHT_0000_000_10_uv.grib";
     //String filename = "G:/mlode/ndfdProb/extract.Grib1";
-    new Grib1Index().makeIndex(filename, null, new Formatter(System.out));
+    new Grib1Index().makeIndex(filename, null);
   }
 
 }

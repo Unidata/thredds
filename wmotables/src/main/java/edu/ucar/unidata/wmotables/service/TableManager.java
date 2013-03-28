@@ -1,5 +1,7 @@
 package edu.ucar.unidata.wmotables.service;
 
+import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -21,6 +23,14 @@ public interface TableManager {
     public Table lookupTable(int tableId);
 
     /**
+     * Looks up and retrieves a table from the persistence mechanism using the checksum value.
+     * 
+     * @param checksum  The checksum of the table we are trying to locate (will be unique for each table). 
+     * @return  The table represented as a Table object.   
+     */
+    public Table lookupTable(String checksum);
+
+    /**
      * Requests a List of ALL tables from the persistence mechanism.
      * 
      * @return  A List of tables.   
@@ -36,14 +46,6 @@ public interface TableManager {
     public List<Table> getTableList(int userId);
 
     /**
-     * Requests a List of tables owned by a particular user from the persistence mechanism.
-     * 
-     * @param user  The User what owns the tables.
-     * @return  A List of tables.   
-     */
-    public List<Table> getTableList(User user);
-
-    /**
      * Queries the persistence mechanism and returns the number of tables.
      * 
      * @return  The total number of tables as an int.   
@@ -57,14 +59,6 @@ public interface TableManager {
      * @return  The total number of tables as an int.  
      */
     public int getTableCount(int userId);
-
-    /**
-     * Queries the persistence mechanism and returns the number of tables owned by a user.
-     * 
-     * @param user  The User that owns the tables.
-     * @return  The total number of tables as an int.   
-     */
-    public int getTableCount(User user);
 
     /**
      * Toggles the table's visiblity attribute to in the persistence mechanism.
@@ -87,4 +81,12 @@ public interface TableManager {
      * @param table   The existing table with changes that needs to be saved. 
      */
     public void updateTable(Table table);
+
+    /**
+     * Access the table file on disk and streams it to the response object.
+     * 
+     * @param table  The Table object representing the file to download.
+     * @param response  The current HttpServletRequest response.
+     */
+    public void downloadTableFile(Table table, HttpServletResponse response);
 }

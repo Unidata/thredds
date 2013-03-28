@@ -76,7 +76,8 @@ public class PointDataTest {
 	public void setUp() throws IOException{
 		
 		pointDataController = new PointDataController(); 
-		pointDataController.setRequestPathInfo(pathInfo);
+		//pointDataController.setRequestPathInfo(pathInfo);
+		pointDataController.extractRequestPathInfo(pathInfo);
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		pointDataController.setGridDataset(gds );
 		
@@ -108,7 +109,7 @@ public class PointDataTest {
 		
 		pointDataController.getGridDataset().close();
 		pointDataController.setGridDataset(null);
-		pointDataController.setRequestPathInfo("");
+		//pointDataController.setRequestPathInfo("");
 	}
 	
 	

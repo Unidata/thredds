@@ -11,11 +11,12 @@ import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 public enum SupportedFormat{
 	
-		
 	CSV("CSV", "text/plain", "text/csv", "csv"  ),
 	XML("XML",  "application/xml", "text/xml", "xml"),
 	NETCDF3("NETCDF3",  "application/x-netcdf","netcdf"),	
-	NETCDF4("NETCDF4",  "application/x-netcdf4" , "netcdf4");
+	NETCDF4("NETCDF4",  "application/x-netcdf4" , "netcdf4"),
+	JSON("JSON", "application/json", "json", "geojson"),
+	WKT("WKT", "text/plain", "wkt");
 
 	
 	/*

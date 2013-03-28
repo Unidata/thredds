@@ -6,18 +6,22 @@
 <%@ include file="/WEB-INF/views/include/resources.jsp" %>
   </head>
   <body> 
-   <h1><spring:message code="global.title"/></h1>
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
+<%@ include file="/WEB-INF/views/include/nav.jsp" %>
    <h3><spring:message code="user.list.title"/></h3>
 
-  <p><a href="${baseUrl}"><spring:message code="table.list.title"/></a></p>
-   <p><a href="${baseUrl}users/create">Create a New User</a></p>
-   <table class="tablesorter">    
+   <p><a href="${baseUrl}/user/create">Create new user</a></p>
+
+   <table> 
     <c:choose>
      <c:when test="${fn:length(users) gt 0}">
       <thead>
        <tr>
-        <th colspan="3">
-         Actions
+        <th>
+         Action
+        </th>
+        <th>
+         User Name
         </th>
         <th>
          Full Name
@@ -31,29 +35,18 @@
         <th>
          Date Created
         </th>
-        <th>
-         Date Modified
-        </th>
        </tr>
       </thead>
       <tbody>
        <c:forEach items="${users}" var="user">    
         <tr>
          <td>
-          <form action="${baseUrl}<c:out value="${user.userId}" />" method="GET">
-           <button type="submit" value="View User Tables">View User Tables</button>
+          <form id="FORM" action="${baseUrl}/user/<c:out value="${user.userName}" />" method="GET">
+           <input type="submit" value="<spring:message code="user.view.title"/>" />        
           </form>
          </td>
          <td>
-          <form action="${baseUrl}users/<c:out value="${user.userId}" />/update" method="GET">
-           <button type="submit" value="Edit">Edit</button>
-          </form>
-         </td>
-         <td>
-          <form action="${baseUrl}users/delete" method="POST">
-           <input type="hidden" name="userId" value="<c:out value="${user.userId}" />"/>
-           <button type="submit" value="Delete">Delete</button>
-          </form>
+          <c:out value="${user.userName}" />
          </td>
          <td>
           <c:out value="${user.fullName}" />
@@ -66,9 +59,6 @@
          </td>
          <td>
           <fmt:formatDate value="${user.dateCreated}" type="BOTH" dateStyle="default"/>
-         </td>
-         <td>
-          <fmt:formatDate value="${user.dateModified}" type="BOTH" dateStyle="default"/>
          </td>
         </tr>
        </tbody>
@@ -83,5 +73,6 @@
      </c:otherwise>
     </c:choose>
    </table> 
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
   </body>
  </html>

@@ -83,7 +83,8 @@ public class AllVariablesSubsettingTest {
 		String pathInfo = PathInfoParams.getPatInfo().get(0);
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		gridDataController.setGridDataset(gds);
-		gridDataController.setRequestPathInfo(pathInfo);
+		gridDataController.extractRequestPathInfo(pathInfo);
+		//gridDataController.setRequestPathInfo(pathInfo);
 		
 		List<String> var = new ArrayList<String>();
 		var.add("all");

@@ -370,7 +370,7 @@ public class GribFilesPanel extends JPanel {
       try {
         index = new Grib2Index();
         if (!index.readIndex(m.getPath(), m.getLastModified())) {
-          index.makeIndex(m.getPath(), null, new Formatter());
+          index.makeIndex(m.getPath(), null);
         }
 
         Map<Long, Grib2SectionGridDefinition> gdsSet = new HashMap<Long, Grib2SectionGridDefinition>();

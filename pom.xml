@@ -366,6 +366,12 @@
         <artifactId>commons-lang3</artifactId>
         <version>3.1</version>
       </dependency>
+      <dependency>
+	    <groupId>javax.activation</groupId>
+	    <artifactId>activation</artifactId>
+	    <version>${activation.version}</version>
+      </dependency>
+            
 
       <!-- client -->
       <dependency>
@@ -806,6 +812,7 @@
     <org.geotoolkit.version>3.17</org.geotoolkit.version>
     <eds.threddsIso.version>2.2.2</eds.threddsIso.version>
 
+    <activation.version>1.1.1</activation.version>
     <atg.taglib.json.version>0.4.1</atg.taglib.json.version>
     <cas.version>2.1.1</cas.version>
     <com.google.protobuf.version>2.5.0</com.google.protobuf.version>
@@ -831,7 +838,8 @@
     <org.jdom.version>2.0.4</org.jdom.version>
     <org.quartz-scheduler.version>2.1.1</org.quartz-scheduler.version>
     <org.slf4j.version>1.6.4</org.slf4j.version>
-    <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
+    <!-- org.springframework.version>3.1.1.RELEASE</org.springframework.version-->
+    <org.springframework.version>3.2.2.RELEASE</org.springframework.version>
     <oro.version>2.0.8</oro.version>
     <taglibs.version>1.1.2</taglibs.version>
 

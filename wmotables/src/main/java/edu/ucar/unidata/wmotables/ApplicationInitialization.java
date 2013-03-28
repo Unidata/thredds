@@ -42,8 +42,12 @@ public class ApplicationInitialization implements ServletContextListener {
     private String wmotablesHome = null;
     private String databaseSelected = null;
 
-	/** {@inheritDoc}
-	 */
+    /**
+     * Find the application home (wmotables.home) and make sure it exists.  if not, create it.
+     * Find out what database was selected for use and create the database if it doesn't exist.
+     * 
+     * @param sce  The event class.
+     */
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent)  {
         ServletContext servletContext = servletContextEvent.getServletContext();
@@ -98,10 +102,22 @@ public class ApplicationInitialization implements ServletContextListener {
         }
     }  
 
-	/** {@inheritDoc}
-	 */
+    /**
+     * Shutdown the database if it hasn't already been shutdown.
+     * 
+     * @param sce  The event class.
+     */
     @Override
-    public void contextDestroyed(ServletContextEvent sce) {}
+    public void contextDestroyed(ServletContextEvent sce) {
+        if (databaseSelected.equals("derby")) {
+            String derbyUrl = "jdbc:derby:" + wmotablesHome + "/db/wmotables";
+            try { 
+                DriverManager.getConnection( derbyUrl + ";shutdown=true");
+            } catch (SQLException e) {
+                logger.error(e.getMessage()); 
+            }  
+        }
+    }
 
     /**
      * Creates a directory (and parent directories as needed) using the provided file.
@@ -142,7 +158,8 @@ public class ApplicationInitialization implements ServletContextListener {
                     logger.error(e.getMessage()); 
                 }        
             } else {
-                logger.info("Database already exists yet. Our work here is done.");
+                logger.info("Database already exists.");
+                logger.info("Our work here is done.");
             }
         } else {
             // mySQL
@@ -165,6 +182,7 @@ public class ApplicationInitialization implements ServletContextListener {
         String createUsersTableSQL = "CREATE TABLE users" +
                                      "(" +
                                      "userId INTEGER primary key not null GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+                                     "userName VARCHAR(100) not null, " +
                                      "emailAddress VARCHAR(100) not null, " +
                                      "fullName VARCHAR(100) not null, " +
                                      "affiliation VARCHAR(255) not null, " +
@@ -178,8 +196,10 @@ public class ApplicationInitialization implements ServletContextListener {
                                       "title VARCHAR(100) not null, " +
                                       "description VARCHAR(255) not null, " +
                                       "originalName VARCHAR(100) not null, " +
-                                      "version VARCHAR(100) not null, " + 
-                                      "md5 CHAR(32) not null, " +
+                                      "version VARCHAR(100), " + 
+                                      "mimeType VARCHAR(100) not null, " +
+                                      "tableType VARCHAR(100), " +
+                                      "checkSum CHAR(32) not null, " +
                                       "visibility SMALLINT not null, " +
                                       "userId INTEGER not null, " +
                                       "dateCreated TIMESTAMP not null, " +

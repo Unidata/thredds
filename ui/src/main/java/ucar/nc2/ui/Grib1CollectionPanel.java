@@ -371,7 +371,7 @@ public class Grib1CollectionPanel extends JPanel {
       filename += GribCollection.NCX_IDX;
     File idxFile = new File(filename);
 
-    Grib1CollectionBuilder.writeIndexFile(idxFile, dcm, f);
+    Grib1CollectionBuilder.writeIndexFile(idxFile, dcm);
     return true;
   }
 
@@ -546,7 +546,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     Grib1Index index = new Grib1Index();
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-      index.makeIndex(mfile.getPath(), null, f);
+      index.makeIndex(mfile.getPath(), null);
     }
 
     for (Grib1SectionGridDefinition gds : index.getGds()) {
