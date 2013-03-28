@@ -140,6 +140,16 @@
     <appender-ref ref="catalogInit"/>
   </logger>
 
+  <logger name="thredds.catalog.parser" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="catalogInit"/>
+  </logger>
+
+  <logger name="thredds.featurecollection.FeatureCollectionConfig" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="catalogInit"/>
+  </logger>
+
   <logger name="serverStartup" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="serverStartupAppender"/>

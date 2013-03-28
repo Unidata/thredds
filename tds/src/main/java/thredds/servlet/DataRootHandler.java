@@ -72,7 +72,6 @@ import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetScan;
 import thredds.catalog.InvProperty;
 import thredds.catalog.InvService;
-import thredds.catalog.ServiceType;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetDods;
@@ -110,6 +109,7 @@ public final class DataRootHandler implements InitializingBean{
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
   //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
   static private DataRootHandler singleton = null;
+  static private final String ERROR = "*** ERROR ";
 
   /**
    * Initialize the DataRootHandler singleton instance.
@@ -136,7 +136,7 @@ public final class DataRootHandler implements InitializingBean{
    */
   static public DataRootHandler getInstance() {
     if (singleton == null) {
-      logCatalogInit.error("getInstance(): Called without setInstance() having been called.");
+      logCatalogInit.error(ERROR+"getInstance(): Called without setInstance() having been called.");
       throw new IllegalStateException("setInstance() must be called first.");
     }
     return singleton;
@@ -266,7 +266,7 @@ public final class DataRootHandler implements InitializingBean{
         fin.close();
 
       } catch (IOException e) {
-        logCatalogInit.error("Error on getExtraCatalogs ", e);
+        logCatalogInit.error(ERROR+"getExtraCatalogs ", e);
       }
     }
   }
@@ -345,7 +345,7 @@ public final class DataRootHandler implements InitializingBean{
         logCatalogInit.info("\n**************************************\nCatalog init " + path + "\n[" + CalendarDate.present() + "]");
         initCatalog(path, true, true);
       } catch (Throwable e) {
-        logCatalogInit.error("initCatalogs(): Error initializing catalog " + path + "; " + e.getMessage(), e);
+        logCatalogInit.error(ERROR+ "initializing catalog " + path + "; " + e.getMessage(), e);
       }
     }
 
@@ -371,13 +371,13 @@ public final class DataRootHandler implements InitializingBean{
     File f = this.tdsContext.getConfigFileSource().getFile(path);
 
     if (f == null) {
-      logCatalogInit.error("initCatalog(): Catalog [" + path + "] does not exist in config directory.");
+      logCatalogInit.error(ERROR+"initCatalog(): Catalog [" + path + "] does not exist in config directory.");
       return;
     }
 
     // make sure we dont already have it
     if (staticCatalogNames.contains(path)) {
-      logCatalogInit.warn("initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
+      logCatalogInit.error(ERROR+"initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
       return;
     }
     staticCatalogNames.add(path);
@@ -386,7 +386,7 @@ public final class DataRootHandler implements InitializingBean{
     InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
     InvCatalogImpl cat = readCatalog(factory, path, f.getPath());
     if (cat == null) {
-      logCatalogInit.warn("initCatalog(): failed to read catalog <" + f.getPath() + ">.");
+      logCatalogInit.error(ERROR+"initCatalog(): failed to read catalog <" + f.getPath() + ">.");
       return;
     }
 
@@ -403,7 +403,7 @@ public final class DataRootHandler implements InitializingBean{
     
     List<String> disallowedServices = AllowableService.checkCatalogServices(cat);    
     if(!disallowedServices.isEmpty()){
- 		logCatalogInit.warn("initCatalog(): declared services: "+ disallowedServices.toString() +" in catalog: "+ f.getPath() +" are disallowed in threddsConfig file" );   	
+ 		logCatalogInit.error(ERROR+"initCatalog(): declared services: "+ disallowedServices.toString() +" in catalog: "+ f.getPath() +" are disallowed in threddsConfig file" );
     }
     
     // old style - in the service elements    
@@ -472,12 +472,12 @@ public final class DataRootHandler implements InitializingBean{
     try {
       uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     } catch (URISyntaxException e) {
-      logCatalogInit.error("readCatalog(): URISyntaxException=" + e.getMessage());
+      logCatalogInit.error(ERROR+"readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
 
     // read the catalog
-    logCatalogInit.info("readCatalog(): full path=" + catalogFullPath + "; path=" + path);
+    logCatalogInit.info("\n-------readCatalog(): full path=" + catalogFullPath + "; path=" + path);
     InvCatalogImpl cat = null;
     FileInputStream ios = null;
     try {
@@ -486,14 +486,14 @@ public final class DataRootHandler implements InitializingBean{
 
       StringBuilder sbuff = new StringBuilder();
       if (!cat.check(sbuff)) {
-        logCatalogInit.error("   invalid catalog -- " + sbuff.toString());
+        logCatalogInit.error(ERROR+"   invalid catalog -- " + sbuff.toString());
         return null;
       }
-      logCatalogInit.info("   valid catalog -- " + sbuff.toString());
+      // logCatalogInit.info("   valid catalog -- " + sbuff.toString());
 
     } catch (Throwable t) {
       String msg = (cat == null) ? "null catalog" : cat.getLog();
-      logCatalogInit.error("  Exception on catalog=" + catalogFullPath + " " + t.getMessage() + "\n log=" + msg, t);
+      logCatalogInit.error(ERROR+"  Exception on catalog=" + catalogFullPath + " " + t.getMessage() + "\n log=" + msg, t);
       return null;
 
     } finally {
@@ -528,7 +528,7 @@ public final class DataRootHandler implements InitializingBean{
       String id = invDataset.getUniqueID();
       if (id != null) {
         if (idHash.contains(id)) {
-          logCatalogInit.warn("Duplicate id on  '" + invDataset.getFullName() + "' id= '" + id + "'");
+          logCatalogInit.error(ERROR+"Duplicate id on  '" + invDataset.getFullName() + "' id= '" + id + "'");
         } else {
           idHash.add(id);
         }
@@ -542,7 +542,7 @@ public final class DataRootHandler implements InitializingBean{
         InvDatasetScan ds = (InvDatasetScan) invDataset;
         InvService service = ds.getServiceDefault();
         if (service == null) {
-          logCatalogInit.error("InvDatasetScan " + ds.getFullName() + " has no default Service - skipping");
+          logCatalogInit.error(ERROR+"InvDatasetScan " + ds.getFullName() + " has no default Service - skipping");
           continue;
         }
         if (!addRoot(ds))
@@ -595,7 +595,7 @@ public final class DataRootHandler implements InitializingBean{
             path = href.substring(contextPathPlus.length()); // absolute starting from content root
           } else if (href.startsWith("/")) {
             // Drop the catRef because it points to a non-TDS served catalog.
-            logCatalogInit.warn("**Warning: Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path [" + contextPathPlus + "]. " +
+            logCatalogInit.error(ERROR+"Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path [" + contextPathPlus + "]. " +
                     "Parent catalog info: Name=\"" + catref.getParentCatalog().getName() + "\"; Base URI=\"" + catref.getParentCatalog().getUriString() + "\"; dirPath=\"" + dirPath + "\".");
             continue;
           } else {
@@ -618,14 +618,14 @@ public final class DataRootHandler implements InitializingBean{
     String path = dscan.getPath();
 
     if (path == null) {
-      logCatalogInit.error("**Error: " + dscan.getFullName() + " missing a path attribute.");
+      logCatalogInit.error(ERROR+dscan.getFullName() + " missing a path attribute.");
       return false;
     }
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
       if (!droot.dirLocation.equals(dscan.getScanLocation())) {
-        logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+        logCatalogInit.error(ERROR+"DatasetScan already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
                 " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog " + dscan.getParentCatalog().getUriString());
       }
 
@@ -634,7 +634,7 @@ public final class DataRootHandler implements InitializingBean{
 
     // Check whether InvDatasetScan is valid before adding.
     if (!dscan.isValid()) {
-      logCatalogInit.error(dscan.getInvalidMessage() + "\n... Dropping this datasetScan [" + path + "].");
+      logCatalogInit.error(ERROR+dscan.getInvalidMessage() + "\n... Dropping this datasetScan [" + path + "].");
       return false;
     }
 
@@ -652,13 +652,13 @@ public final class DataRootHandler implements InitializingBean{
     String path = fmrc.getPath();
 
     if (path == null) {
-      logCatalogInit.error(fmrc.getFullName() + " missing a path attribute.");
+      logCatalogInit.error(ERROR+fmrc.getFullName() + " missing a path attribute.");
       return false;
     }
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+      logCatalogInit.error(ERROR+"DatasetFmrc already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
               " wanted to use by FMRC Dataset =<" + fmrc.getFullName() + ">");
       return false;
     }
@@ -669,7 +669,7 @@ public final class DataRootHandler implements InitializingBean{
     if (droot.dirLocation != null) {
       File file = new File(droot.dirLocation);
       if (!file.exists()) {
-        logCatalogInit.error("**Error: DatasetFmrc =" + droot.path + " directory= <" + droot.dirLocation + "> does not exist");
+        logCatalogInit.error(ERROR+"DatasetFmrc =" + droot.path + " directory= <" + droot.dirLocation + "> does not exist\n");
         return false;
       }
     }
@@ -708,14 +708,14 @@ public final class DataRootHandler implements InitializingBean{
     String path = fc.getPath();
 
     if (path == null) {
-      logCatalogInit.error(fc.getFullName() + " missing a path attribute.");
+      logCatalogInit.error(ERROR+fc.getName() + " missing a path attribute.");
       return false;
     }
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-              " wanted to use by FeatureCollection Dataset =<" + fc.getFullName() + ">");
+      logCatalogInit.error(ERROR+"FeatureCollection already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+              " wanted to use by FeatureCollection Dataset =<" + fc.getName() + ">");
       return false;
     }
 
@@ -725,13 +725,12 @@ public final class DataRootHandler implements InitializingBean{
     if (droot.dirLocation != null) {
       File file = new File(droot.dirLocation);
       if (!file.exists()) {
-        logCatalogInit.error("**Error: DatasetFmrc =" + droot.path + " directory= <" + droot.dirLocation + "> does not exist");
+        logCatalogInit.error(ERROR+"FeatureCollection = '" + fc.getName() + "' directory= <" + droot.dirLocation + "> does not exist\n");
         return false;
       }
     }
 
     pathMatcher.put(path, droot);
-
     logCatalogInit.debug(" added rootPath=<" + path + ">  for feature collection= <" + fc.getFullName() + ">");
     return true;
   }
@@ -742,7 +741,7 @@ public final class DataRootHandler implements InitializingBean{
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
       if (wantErr)
-        logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+        logCatalogInit.error(ERROR+"already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
                 " wanted to map to <" + dirLocation + ">");
 
       return false;
@@ -750,7 +749,7 @@ public final class DataRootHandler implements InitializingBean{
 
     File file = new File(dirLocation);
     if (!file.exists()) {
-      logCatalogInit.error("**Error: Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
+      logCatalogInit.error(ERROR+"Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
       return false;
     }
 
@@ -770,7 +769,7 @@ public final class DataRootHandler implements InitializingBean{
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
       if (wantErr)
-        logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+        logCatalogInit.error(ERROR+"DataRootConfig already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
                 " wanted to map to <" + location + ">");
 
       return false;
@@ -778,7 +777,7 @@ public final class DataRootHandler implements InitializingBean{
 
     File file = new File(location);
     if (!file.exists()) {
-      logCatalogInit.error("**Error: Data Root =" + path + " directory= <" + location + "> does not exist");
+      logCatalogInit.error(ERROR+"DataRootConfig path =" + path + " directory= <" + location + "> does not exist");
       return false;
     }
 
@@ -815,7 +814,6 @@ public final class DataRootHandler implements InitializingBean{
       this.path = featCollection.getPath();
       this.featCollection = featCollection;
       this.dirLocation = featCollection.getTopDirectoryLocation();
-      logCatalogInit.info(" DataRoot adding featureCollection {}\n", featCollection.getConfig());
     }
 
     DataRoot(InvDatasetFmrc fmrc) {
@@ -1416,7 +1414,7 @@ public final class DataRootHandler implements InitializingBean{
         }
 
       } else {
-        logCatalogInit.error("Static catalog does not exist that we expected = " + workPath);
+        logCatalogInit.error(ERROR+"Static catalog does not exist that we expected = " + workPath);
       }
     }
 

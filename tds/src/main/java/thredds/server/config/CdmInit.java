@@ -38,18 +38,21 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.log4j.Level;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.inventory.CollectionUpdater;
 import thredds.server.cdmremote.CdmrFeatureController;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
+import thredds.util.LoggerFactorySpecial;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.TimePartition;
@@ -90,6 +93,9 @@ public class CdmInit implements InitializingBean,  DisposableBean{
   public void afterPropertiesSet(){
     // prefer cdmRemote when available
     ThreddsDataFactory.setPreferCdm(true);
+
+    // 4.3.17
+    InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(Level.INFO));
 
     // 4.3.16
     String dir = ThreddsConfig.get("CdmRemote.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
