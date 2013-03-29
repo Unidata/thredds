@@ -47,8 +47,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
@@ -65,60 +72,40 @@ import ucar.nc2.dt.GridDataset;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class AllVariablesSubsettingTest {
 
 	@Autowired
-	private GridDataController gridDataController;
+	private WebApplicationContext wac;
 	
-	private GridDataRequestParamsBean params;	
-	private BindingResult validationResult;
-	private MockHttpServletResponse response ;
-	
-	
+	private MockMvc mockMvc;		
+	private RequestBuilder requestBuilder;
+		
 	
 	@Before
 	public void setUp() throws IOException{
 		
-		String pathInfo = PathInfoParams.getPatInfo().get(0);
-		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		gridDataController.setGridDataset(gds);
-		gridDataController.extractRequestPathInfo(pathInfo);
-		//gridDataController.setRequestPathInfo(pathInfo);
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();	
+		String servletPath = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);		
+		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath).param("var", "all");
 		
-		List<String> var = new ArrayList<String>();
-		var.add("all");
-		
-		params = new GridDataRequestParamsBean();
-		
-		params.setVar(var);		
-		validationResult = new BeanPropertyBindingResult(params, "params");
-		response = new MockHttpServletResponse();
 	}
 	
 	@Test
-	public void shoudGetAllVariables() throws NcssException, InvalidRangeException, ParseException, IOException{
+	public void shoudGetAllVariables() throws Exception{
 				
-		gridDataController.getGridSubset(params, validationResult, response);
+		MvcResult mvc = this.mockMvc.perform(requestBuilder).andReturn();
+		assertEquals(200, mvc.getResponse().getStatus());
 		
-		assertEquals(200, response.getStatus());
 		//Open the binary response in memory
-		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getContentAsByteArray() );	
+		//NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getContentAsByteArray() );
+		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", mvc.getResponse().getContentAsByteArray() );
 		
 		ucar.nc2.dt.grid.GridDataset gdsDataset =new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));		
 		assertTrue( gdsDataset.getCalendarDateRange().isPoint());
 		assertEquals(7, gdsDataset.getDataVariables().size());
 		
 	}
-	
-	@After
-	public void tearDown() throws IOException{
-		
-		GridDataset gds = gridDataController.getGridDataset();
-		gds.close();
-		gds = null;
-		gridDataController =null;
-		
-	}	
 	
 }

@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.After;
@@ -48,8 +49,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
@@ -70,15 +78,16 @@ import ucar.nc2.dt.GridDataset;
  *
  */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class CoordinateSpaceSubsettingTest {
-	
+		
 	@Autowired
-	private GridDataController gridDataController;
+	private WebApplicationContext wac;
+
+	private MockMvc mockMvc;	
 	
-	private GridDataRequestParamsBean params;	
-	private BindingResult validationResult;
-	private MockHttpServletResponse response ;	
+	private RequestBuilder requestBuilder;	
 	
 	private String pathInfo;
 	private int[][] expectedShapes;
@@ -107,30 +116,36 @@ public class CoordinateSpaceSubsettingTest {
 	}
 	
 	@Before
-	public void setUp() throws IOException{
+	public void setUp() throws IOException{		
 		
-		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		gridDataController.setGridDataset(gds);
-		params = new GridDataRequestParamsBean(); 
-		params.setVar(vars);
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();		
+		String servletPath = AbstractNcssDataRequestController.servletPath + pathInfo;
+				
+		Iterator<String> it = vars.iterator();
+		String varParamVal = it.next();
+		while(it.hasNext()){
+			String next = it.next();
+			varParamVal =varParamVal+","+next;
+		}
 		
-		params.setMinx(projectionRectParams[0]);
-		params.setMiny(projectionRectParams[1]);
-		params.setMaxx(projectionRectParams[2]);
-		params.setMaxy(projectionRectParams[3]);
+		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath)
+				.param("var",  varParamVal)
+				.param("minx", Double.valueOf(projectionRectParams[0]).toString())
+				.param("miny", Double.valueOf(projectionRectParams[1]).toString())
+				.param("maxx", Double.valueOf(projectionRectParams[2]).toString())
+				.param("maxy", Double.valueOf(projectionRectParams[3]).toString());		
 		
-		validationResult = new BeanPropertyBindingResult(params, "params");
-		response = new MockHttpServletResponse();
 	}
 	
 	@Test
-	public void shoudSubsetGrid() throws NcssException, InvalidRangeException, ParseException, IOException{
+	public void shoudSubsetGrid() throws Exception{
 				
-		gridDataController.getGridSubset(params, validationResult, response);
+		MvcResult mvc = this.mockMvc.perform(requestBuilder).andReturn();
+		assertEquals(200, mvc.getResponse().getStatus());
 		
-		assertEquals(200, response.getStatus());
+		
 		//Open the binary response in memory
-		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getContentAsByteArray() );	
+		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", mvc.getResponse().getContentAsByteArray() );	
 		
 		ucar.nc2.dt.grid.GridDataset gdsDataset =new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));		
 		assertTrue( gdsDataset.getCalendarDateRange().isPoint());		
@@ -140,25 +155,12 @@ public class CoordinateSpaceSubsettingTest {
 		int[][] shapes = new int[vars.size()][];
 		int cont = 0;
 		for(VariableSimpleIF var : vars){
-			//int[] shape =var.getShape();
 			shapes[cont] = var.getShape();
 			cont++;
-			//String dimensions =var.getDimensions().toString();
-			//int rank =var.getRank();
 		}
 		
 		assertArrayEquals(expectedShapes, shapes);
 		
 	}
-	
-	@After
-	public void tearDown() throws IOException{
 		
-		GridDataset gds = gridDataController.getGridDataset();
-		gds.close();
-		gds = null;
-		gridDataController =null;
-		
-	}
-	
 }

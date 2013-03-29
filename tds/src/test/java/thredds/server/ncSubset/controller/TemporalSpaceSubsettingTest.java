@@ -47,8 +47,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
@@ -69,16 +76,15 @@ import ucar.nc2.dt.GridDataset;
  *
  */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class TemporalSpaceSubsettingTest {
 	
-	
 	@Autowired
-	private GridDataController gridDataController;
+	private WebApplicationContext wac;
 	
-	private GridDataRequestParamsBean params;	
-	private BindingResult validationResult;
-	private MockHttpServletResponse response ;
+	private MockMvc mockMvc;		
+	private RequestBuilder requestBuilder;	
 	
 	private String pathInfo;
 	private int lengthTimeDim; //Expected time dimension length
@@ -107,57 +113,39 @@ public class TemporalSpaceSubsettingTest {
 	
 	public TemporalSpaceSubsettingTest(SupportedFormat format, int expectedLengthTimeDim, String pathInfoForTest,String temporal, String time, String time_window, String time_start, String time_end, String time_duration){
 		lengthTimeDim = expectedLengthTimeDim;
-		pathInfo = pathInfoForTest;		
-		params = new GridDataRequestParamsBean();
-		params.setAccept(format.getAliases().get(0));
-		params.setTemporal(temporal);
-		params.setTime(time);
-		params.setTime_window(time_window);
-		params.setTime_duration(time_duration);
-		params.setTime_start(time_start);
-		params.setTime_end(time_end);
-		params.setTime_duration(time_duration);
+		pathInfo = pathInfoForTest;
+		
+		String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;
+		
+		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath)
+				.param("accept", format.getAliases().get(0))
+				.param("temporal", temporal)
+				.param("time", time)
+				.param("time_window", time_window)
+				.param("time_duration", time_duration)
+				.param("time_start", time_start)
+				.param("time_end", time_end)
+				.param("var", "Temperature");
+
 	}
 	
 	@Before
-	public void setUp() throws IOException{
-		
-		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		gridDataController.setGridDataset(gds);
-		//gridDataController.setRequestPathInfo(pathInfo);
-		gridDataController.extractRequestPathInfo(pathInfo);
-		List<String> var = new ArrayList<String>();
-		//var.add("Pressure");
-		var.add("Temperature");				
-		params.setVar(var);
-				
-		validationResult = new BeanPropertyBindingResult(params, "params");
-		response = new MockHttpServletResponse();
+	public void setUp() throws IOException{				
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();				
 	}
 	
 	@Test
-	public void shouldGetTimeRange() throws NcssException, InvalidRangeException, ParseException, IOException{
+	public void shouldGetTimeRange() throws Exception{
 		
-		gridDataController.getGridSubset(params, validationResult, response);
 		
-		assertEquals(200, response.getStatus());
+		MvcResult mvc = this.mockMvc.perform(requestBuilder).andReturn();		
 		//Open the binary response in memory
-		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getContentAsByteArray() );
+		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", mvc.getResponse().getContentAsByteArray() );
 		NetcdfDataset ds = new NetcdfDataset(nf);
 		Dimension time =ds.findDimension("time");
 		
 		assertEquals( lengthTimeDim, time.getLength());
 						
 	}
-	
-	@After
-	public void tearDown() throws IOException{
 		
-		GridDataset gds = gridDataController.getGridDataset();
-		gds.close();
-		gds = null;
-		gridDataController =null;
-		
-	}	
-
 }

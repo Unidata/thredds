@@ -31,13 +31,13 @@
  */
 package thredds.server.ncSubset.controller;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.After;
@@ -45,17 +45,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
@@ -71,15 +76,22 @@ import ucar.unidata.geoloc.LatLonRect;
  *
  */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class SpatialSubsettingTest {
 
-	@Autowired
-	private GridDataController gridDataController;
+	//@Autowired
+	//private GridDataController gridDataController;
 	
-	private GridDataRequestParamsBean params;	
-	private BindingResult validationResult;
-	private MockHttpServletResponse response ;	
+	//private GridDataRequestParamsBean params;	
+	//private BindingResult validationResult;
+	//private MockHttpServletResponse response ;
+	
+	@Autowired
+	private WebApplicationContext wac;
+	
+	private MockMvc mockMvc;		
+	private RequestBuilder requestBuilder;	
 	
 	private String accept;
 	private String pathInfo;
@@ -94,12 +106,12 @@ public class SpatialSubsettingTest {
 		
 		return Arrays.asList( new Object[][]{
 				{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
-				//{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
+				{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
 				//{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(2) }, //bounding box that contains data but doesn't intersect the declared bbox
 				//{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(3) }, //bounding box doesn't intersect the declared bbox
 				
 				{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
-				//{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
+				{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
 				//{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(2) } //bounding box that contains data but doesn't intersect the declared bbox				
 								
 			});
@@ -116,50 +128,64 @@ public class SpatialSubsettingTest {
 	@Before
 	public void setUp() throws IOException{
 		
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();	
+		String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;
+		
+		//Creates values for param var
+		Iterator<String> it = vars.iterator();
+		String varParamVal = it.next();
+		while(it.hasNext()){
+			String next = it.next();
+			varParamVal =varParamVal+","+next;
+		}
+		
+		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath).param("var", varParamVal)
+				.param("west", String.valueOf( latlonRectParams[0]))
+				.param("south",String.valueOf( latlonRectParams[1]))
+				.param("east", String.valueOf( latlonRectParams[2]))
+				.param("north",String.valueOf( latlonRectParams[3]))
+				.param("accept", accept);				;
+		
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		gridDataController.setGridDataset(gds);
-		//gridDataController.setRequestPathInfo(pathInfo);
-		gridDataController.extractRequestPathInfo(pathInfo);
-		params = new GridDataRequestParamsBean(); 
-		params.setVar(vars);
-		
-		params.setWest(latlonRectParams[0]);
-		params.setSouth(latlonRectParams[1]);
-		params.setEast(latlonRectParams[2]);
-		params.setNorth(latlonRectParams[3]);
-		
-		params.setAccept(accept);
 		
 		requestedBBOX = new LatLonRect(new LatLonPointImpl(latlonRectParams[1], latlonRectParams[0]), new LatLonPointImpl(latlonRectParams[3], latlonRectParams[2]) );
 		datasetBBOX = gds.getBoundingBox();
-		validationResult = new BeanPropertyBindingResult(params, "params");
-		response = new MockHttpServletResponse();
+
 	}
 	
 	@Test
-	public void shoudGetVariablesSubset() throws NcssException, InvalidRangeException, ParseException, IOException{
+	public void shoudGetVariablesSubset() throws Exception{
 				
-		gridDataController.getGridSubset(params, validationResult, response);
+		//gridDataController.getGridSubset(params, validationResult, response);
 		
-		assertEquals(200, response.getStatus());
-		//Open the binary response in memory
-		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getContentAsByteArray() );	
-		
-		ucar.nc2.dt.grid.GridDataset gdsDataset =new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
-		LatLonRect responseBBox= gdsDataset.getBoundingBox();		
+		this.mockMvc.perform(requestBuilder)
+		.andExpect(MockMvcResultMatchers.status().isOk())
+		.andExpect(new ResultMatcher(){
+			public void match(MvcResult result) throws Exception{
+				
+				//Open the binary response in memory
+				NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", result.getResponse().getContentAsByteArray() );				
+				ucar.nc2.dt.grid.GridDataset gdsDataset =new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
+				LatLonRect responseBBox= gdsDataset.getBoundingBox();		
 
-		assertTrue( responseBBox.intersect((datasetBBOX))!= null &&  responseBBox.intersect((requestedBBOX))!= null);
-		assertTrue( !responseBBox.equals(datasetBBOX));
+				assertTrue( responseBBox.intersect((datasetBBOX))!= null &&  responseBBox.intersect((requestedBBOX))!= null);
+				assertTrue( !responseBBox.equals(datasetBBOX));				
+			}
+		});
+		
+	
+		
+
 		
 	}
 	
-	@After
-	public void tearDown() throws IOException{
-		
-		GridDataset gds =gridDataController.getGridDataset();
-		gds.close();
-		gds =null;
-		gridDataController.setGridDataset(null);
-		
-	}
+//	@After
+//	public void tearDown() throws IOException{
+//		
+//		GridDataset gds =gridDataController.getGridDataset();
+//		gds.close();
+//		gds =null;
+//		gridDataController.setGridDataset(null);
+//		
+//	}
 }

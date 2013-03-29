@@ -31,17 +31,6 @@ public abstract class AbstractNcssDataRequestController extends AbstractNcssCont
 	
 	String extractRequestPathInfo(String requestPathInfo){
 		
-		/*if( requestPathInfo.endsWith("xml") || requestPathInfo.endsWith("html")   ){
-			requestPathInfo = requestPathInfo.trim(); 
-			String[] pathInfoArr = requestPathInfo.split("/");			  
-			StringBuilder sb = new StringBuilder();
-			int len = pathInfoArr.length;
-			sb.append(pathInfoArr[1]);
-			for(int i= 2;  i<len-1; i++  ){
-				sb.append("/"+pathInfoArr[i]);
-			}
-			requestPathInfo = sb.toString();
-		}*/
 		this.requestPathInfo = requestPathInfo;
 		
 		return requestPathInfo;

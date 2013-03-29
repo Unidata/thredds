@@ -42,11 +42,11 @@ public final class PointDataParameters {
 			
 			pathInfo = new ArrayList<String>();									
 			//dataset must contain the corresponding variables array
-			pathInfo =Arrays.asList( new String[]{"testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z", 
-												  "testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
+			pathInfo =Arrays.asList( new String[]{"/testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z", 
+												  "/testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
 												  //"testFeatureCollection/files/GFS_CONUS_80km_20120418_1200.nc",
-												  "testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
-												  "testNCSS/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4"
+												  "/testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
+												  "/testNCSS/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4"
 					});
 			
 			Map<String,List<String>> noVertLevels = new HashMap<String,List<String> >();

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -12,11 +13,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.context.WebApplicationContext;
 
+import thredds.mock.params.PathInfoParams;
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.NcssException;
@@ -33,28 +44,36 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class PointDataTest {
 
+	
+	@Autowired
+	private WebApplicationContext wac;
+	
+	private MockMvc mockMvc;		
+	private RequestBuilder requestBuilder;
+	
 	private List<String> vars;
 	private String accept;
 	
 	private LatLonPoint point;
 	private String pathInfo;
 	
-	private PointDataRequestParamsBean params;
-	private BindingResult result;
-	private PointDataController pointDataController;
+	//private PointDataRequestParamsBean params;
+	//private BindingResult result;
+	//private PointDataController pointDataController;
 	
 	@Parameters
 	public static List<Object[]> getTestParameters(){
 		
 	
 		return Arrays.asList(new Object[][]{  
-				//{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
-				//{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
-				//{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
-				//{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
+				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
+				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF3, PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
 				
 				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
 				{SupportedFormat.NETCDF4, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
@@ -75,16 +94,19 @@ public class PointDataTest {
 	@Before
 	public void setUp() throws IOException{
 		
-		pointDataController = new PointDataController(); 
-		//pointDataController.setRequestPathInfo(pathInfo);
-		pointDataController.extractRequestPathInfo(pathInfo);
-		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		pointDataController.setGridDataset(gds );
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();	
+		String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;		
 		
-		params = new PointDataRequestParamsBean();
-		params.setVar(vars);
-		params.setLatitude(point.getLatitude());
-		params.setLongitude(point.getLongitude());
+		//Creates values for param var
+		Iterator<String> it = vars.iterator();
+		String varParamVal = it.next();
+		while(it.hasNext()){
+			String next = it.next();
+			varParamVal =varParamVal+","+next;
+		}
+		
+		//Values for time subsetting
+		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gds, vars);
 		List<CalendarDate> dates = gridAsPointDataset.getDates();		
 		Random rand = new Random();
@@ -93,35 +115,23 @@ public class PointDataTest {
 		int start = Math.min(randInt, randIntNext);
 		int end = Math.max(randInt, randIntNext);				
 		String startDate= dates.get(start).toString();
-		params.setTime_start(startDate);	
 		String endDate= dates.get(end).toString();
-		params.setTime_end(endDate);
-		params.setPoint(true);		
 		
-	
-		params.setAccept(accept);
-		//params.setVertCoord(300.0);
-		result = new BeanPropertyBindingResult(params, "params");
+		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath)
+				.param("var", varParamVal)
+				.param("latitude", String.valueOf(point.getLatitude()) )
+				.param("longitude", String.valueOf(point.getLongitude() ) )
+				.param("time_start", startDate)
+				.param("time_end", endDate)
+				.param("accept", accept);		
+		
 	}
 	
-	@After
-	public void tearDown() throws IOException{
-		
-		pointDataController.getGridDataset().close();
-		pointDataController.setGridDataset(null);
-		//pointDataController.setRequestPathInfo("");
-	}
 	
 	
 	@Test
-	public void shouldGetData() throws ParseException, NcssException, IOException, InvalidRangeException{
-	
-		//fail("No yet implemented");
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		pointDataController.getPointData(params, result, response);
-		assertEquals(200, response.getStatus());
-	}
-	
-	
-	
+	public void shouldGetData() throws Exception{	
+		this.mockMvc.perform(requestBuilder)
+		.andExpect(MockMvcResultMatchers.status().isOk());
+	}	
 }
