@@ -22,6 +22,7 @@ public enum CollectionUpdater {
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
   static private final String DCM_NAME = "dcm";
+  static private final String LOGGER = "logger";
   static private final long startupWait = 10 * 1000; // 10 secs
   static private boolean disabled = false;
 
@@ -163,6 +164,7 @@ public enum CollectionUpdater {
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(DCM_NAME, manager);
+    map.put(LOGGER, org.slf4j.LoggerFactory.getLogger("fc."+manager.getCollectionName()));
     JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
             .withIdentity(jobName, "UpdateCollection")
             .storeDurably()
@@ -215,6 +217,7 @@ public enum CollectionUpdater {
     if (pconfig.change != null) {
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
       pmap.put(DCM_NAME, manager);
+      map.put(LOGGER, org.slf4j.LoggerFactory.getLogger("fc."+manager.getCollectionName()));
       JobDetail protoJob = JobBuilder.newJob(ChangeProtoJob.class)
               .withIdentity(jobName, "UpdateProto")
               .usingJobData(pmap)
@@ -250,6 +253,7 @@ public enum CollectionUpdater {
     }
   }
 
+  // Called by TDS collectionController when trigger is received externally
   public void triggerUpdate(String collectionName, String triggerType) {
     Trigger trigger = TriggerBuilder.newTrigger()
             .withIdentity(collectionName, triggerType)
@@ -273,11 +277,13 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
         CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
-        logger.debug("Update for {} trigger = {}", manager.getCollectionName(), context.getTrigger().getKey());
+        org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
         String groupName = context.getTrigger().getKey().getGroup();
         if (groupName.equals("nocheck")) {
+          loggerfc.info("UpdateCollection {} nocheck", manager.getCollectionName());
           manager.updateNocheck(); // update(CollectionManager.Force.nocheck)
         } else {
+          loggerfc.debug("UpdateCollection {} scan(true)", manager.getCollectionName());
           manager.scan(true);
         }
       } catch (Throwable e) {
@@ -293,11 +299,12 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
         CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
+        org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
         if (manager == null) {
-          logger.error("Update resetProto failed: no manager object on {}", context);
+          loggerfc.error("Update resetProto failed: no manager object on {}", context);
           return;
         }
-        logger.debug("Update resetProto for {}", manager.getCollectionName());
+        logger.info("ResetProto for {}", manager.getCollectionName());
         manager.resetProto();
       } catch (Throwable e) {
         logger.error("ChangeProtoJob.execute failed", e);
