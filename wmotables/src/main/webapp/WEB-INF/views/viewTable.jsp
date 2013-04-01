@@ -2,19 +2,16 @@
 <!DOCTYPE HTML>
  <html>
   <head>
-   <title><spring:message code="global.title"/>: <spring:message code="table.view.title"/>: <c:out value="${table.checksum}" /></title>
+   <title><spring:message code="global.title"/>: <spring:message code="table.view.title"/></title>
 <%@ include file="/WEB-INF/views/include/resources.jsp" %>
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
-<%@ include file="/WEB-INF/views/include/nav.jsp" %>
-   <h3><spring:message code="table.view.title"/>: <c:out value="${table.checksum}" /></h3>
+   <h3><spring:message code="table.view.title"/></h3>
+   <p><spring:message code="table.view.message"/></p>
    <table> 
     <thead>
      <tr>
-      <th colspan="2">
-       Actions
-      </th>
       <th>
        Title
       </th>
@@ -22,16 +19,10 @@
        Description
       </th>
       <th>
-       Original Name
-      </th>
-      <th>
        Version
       </th>
       <th>
        Table Type
-      </th>
-      <th>
-       Mime Type
       </th>
       <th>
        Checksum
@@ -45,6 +36,24 @@
       <th>
        View Table
       </th>
+      <c:choose>
+       <c:when test="${loggedIn}">
+        <c:choose>
+         <c:when test="${user.userName eq authUserName}">
+          <th>
+           Actions
+          </th>
+         </c:when>
+         <c:otherwise>
+          <sec:authorize access="hasRole('ROLE_ADMIN')">
+           <th>
+            Actions
+           </th>
+          </sec:authorize>
+         </c:otherwise>
+        </c:choose>
+       </c:when>
+      </c:choose> 
      </tr>
     </thead>
     <tbody>   
@@ -56,43 +65,16 @@
       </c:choose>
      >
       <td>
-       <form id="FORM" action="${baseUrl}/table/update/<c:out value="${table.checksum}" />" method="GET">
-        <input type="submit" value="<spring:message code="table.update.title"/>" />        
-       </form>
-      </td>
-      <td>
-       <form id="FORM" action="${baseUrl}/table/hide" method="POST">
-        <input type="hidden" name="tableId" value="<c:out value="${table.tableId}" />"/>
-        <input type="hidden" name="visibility" value="<c:out value="${table.visibility}" />"/>
-        <input type="submit" 
-         <c:choose>
-          <c:when test="${table.visibility == 0}">
-            value="<spring:message code="table.unhide.title"/>"
-          </c:when>
-          <c:otherwise>
-            value="<spring:message code="table.hide.title"/>"
-          </c:otherwise>
-         </c:choose>
-         />
-       </form>
-      </td>
-      <td>
        <c:out value="${table.title}" />
       </td>
       <td>
        <c:out value="${table.description}" />
       </td>
       <td>
-       <c:out value="${table.originalName}" />
-      </td>
-      <td>
        <c:out value="${table.version}" />
       </td>
       <td>
        <c:out value="${table.tableType}" />
-      </td>
-      <td>
-       <c:out value="${table.mimeType}" />
       </td>
       <td>
        <c:out value="${table.checksum}" />
@@ -104,10 +86,62 @@
        <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
       </td>
       <td>
-       <a href="${baseUrl}/table/download/<c:out value="${table.checksum}" />">
-        <img src="${baseUrl}/resources/img/view.png" alt="View Table">
-       </a>
+       <form action="${baseUrl}/table/download/<c:out value="${table.checksum}" />" method="GET">
+        <input class="action download" type="submit" value="download" />        
+       </form>
       </td>
+
+      <c:choose>
+       <c:when test="${loggedIn}">
+        <c:choose>
+         <c:when test="${user.userName eq authUserName}">
+          <td>
+           <form action="${baseUrl}/table/update/<c:out value="${table.checksum}" />" method="GET">
+            <input class="action edit" type="submit" value="<spring:message code="table.update.title"/>" />        
+           </form>
+           <form action="${baseUrl}/table/hide" method="POST">
+            <input type="hidden" name="tableId" value="<c:out value="${table.tableId}" />"/>
+            <input type="hidden" name="visibility" value="<c:out value="${table.visibility}" />"/>
+            <input class="action hide" type="submit" 
+             <c:choose>
+              <c:when test="${table.visibility == 0}">
+               value="<spring:message code="table.unhide.title"/>"
+              </c:when>
+              <c:otherwise>
+                value="<spring:message code="table.hide.title"/>"
+              </c:otherwise>
+             </c:choose>
+             />
+           </form>
+          </td>
+         </c:when>
+         <c:otherwise>
+          <sec:authorize access="hasRole('ROLE_ADMIN')">
+           <td>
+            <form action="${baseUrl}/table/update/<c:out value="${table.checksum}" />" method="GET">
+             <input class="action edit" type="submit" value="Edit" />        
+            </form>
+            <form action="${baseUrl}/table/hide" method="POST">
+             <input type="hidden" name="tableId" value="<c:out value="${table.tableId}" />"/>
+             <input type="hidden" name="visibility" value="<c:out value="${table.visibility}" />"/>
+             <input class="action hide" type="submit" 
+              <c:choose>
+               <c:when test="${table.visibility == 0}">
+                value="<spring:message code="table.unhide.title"/>"
+               </c:when>
+               <c:otherwise>
+                 value="<spring:message code="table.hide.title"/>"
+               </c:otherwise>
+              </c:choose>
+              />
+            </form>
+           </td>
+          </sec:authorize>
+         </c:otherwise>
+        </c:choose>
+       </c:when>
+      </c:choose> 
+
      </tr>
     </tbody>
    </table> 

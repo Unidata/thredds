@@ -21,7 +21,7 @@ import edu.ucar.unidata.wmotables.domain.User;
 
 public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
 
-     private SimpleJdbcInsert insertActor;
+    private SimpleJdbcInsert insertActor;
 
     /**
      * Looks up and retrieves a user from the persistence mechanism using the userId.
@@ -145,6 +145,25 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         }     
     } 
 
+    /**
+     * Updates the User's Password
+     * 
+     * @param user  The user to whose password we need to update. 
+     * @throws RecoverableDataAccessException  If unable to find the user to update. 
+     */
+    public void updatePassword(User user)  {
+        String sql = "UPDATE users SET password = ?, dateModified = ? WHERE userId = ?";
+        int rowsAffected  = getJdbcTemplate().update(sql, new Object[] {
+            // order matters here
+            user.getPassword(), 
+            user.getDateModified(),
+            user.getUserId()
+        });
+        if (rowsAffected  <= 0) {
+            throw new RecoverableDataAccessException("Unable to update user.  No entry found in the database for user: " + user.toString());
+        }     
+    } 
+
 
     /***
      * Maps each row of the ResultSet to a User object.
@@ -162,6 +181,8 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
             User user = new User();
             user.setUserId(rs.getInt("userId"));
             user.setUserName(rs.getString("userName"));
+            user.setPassword(rs.getString("password"));
+            user.setAccessLevel(rs.getInt("accessLevel"));
             user.setEmailAddress(rs.getString("emailAddress"));
             user.setFullName(rs.getString("fullName"));
             user.setAffiliation(rs.getString("affiliation"));

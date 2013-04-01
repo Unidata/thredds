@@ -11,12 +11,13 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -74,10 +75,12 @@ public class UserController implements HandlerExceptionResolver {
     /**
      * Accepts a GET request to create a new User object.
      * View is a web form to create the new User.
+     * Only application administrators are allowed to create users.
      * 
      * @param model  The Model used by the View.
      * @return  The 'userForm' path for the ViewResolver.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value="/user/create", method=RequestMethod.GET)
     public String createUser(Model model) {   
         model.addAttribute("formAction", "create");  
@@ -87,12 +90,14 @@ public class UserController implements HandlerExceptionResolver {
     /**
      * Accepts a POST request to create a new User object and persist it. 
      * View is the newly created User object.
+     * Only application administrators are allowed to create users.
      * 
      * @param user  The User to persist. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
      * @return  The redirect to 'viewUser' View (/user/{userName})
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value="/user/create", method=RequestMethod.POST)
     public ModelAndView createUser(User user, BindingResult result, Model model) {   
         userManager.createUser(user);
@@ -106,13 +111,15 @@ public class UserController implements HandlerExceptionResolver {
     /**
      * Accepts a GET request to update an existing User object. 
      * View is a web form to update an existing User.
+     * Only the user and application administrators are allowed to update the user account.
      * 
      * @param userName  The 'userName' as provided by @PathVariable. 
      * @param model  The Model used by the view.
      * @return  The 'userForm' path for the ViewResolver.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #userName == authentication.name")
     @RequestMapping(value="/user/update/{userName}", method=RequestMethod.GET)
-    public String updateUser(@PathVariable String userName, Model model) {        
+    public String updateUser(@PathVariable String userName, Model model) {   
         User user = userManager.lookupUser(userName);   
         model.addAttribute("user", user);   
         model.addAttribute("formAction", "update");      
@@ -122,12 +129,14 @@ public class UserController implements HandlerExceptionResolver {
     /**
      * Accepts a POST request to update an existing User object.
      * View is the updated User object.
+     * Only the user and application administrators are allowed to update the user account.
      * 
      * @param user  The User to update. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
      * @return  The redirect to 'viewUser' View (/user/{userName})
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #user.userName == authentication.name")
     @RequestMapping(value="/user/update", method=RequestMethod.POST)
     public ModelAndView updateUser(User user, BindingResult result, Model model) {   
         userManager.updateUser(user);
@@ -141,12 +150,14 @@ public class UserController implements HandlerExceptionResolver {
      * Accepts a POST request to delete an existing User object. 
      * View is a list of all remaining User objects.
      * TODO: handle tables owned by user.
+     * Only application administrators are allowed to delete users.
      * 
      * @param user  The User to delete. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
      * @return  The redirect to 'listUsers' View (/user)
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value="/user/delete", method=RequestMethod.POST)
     public ModelAndView deleteUser(User user, BindingResult result, Model model) {   
         userManager.deleteUser(user.getUserId());
@@ -167,11 +178,19 @@ public class UserController implements HandlerExceptionResolver {
      */
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception exception) {
-        String message = "An error has occurred: " + exception.getClass().getName() + ": " + exception.getMessage();   
-        logger.error(message);
+        String message = "";
+        ModelAndView modelAndView = new ModelAndView();
         Map<String, Object> model = new HashMap<String, Object>();
+        if (exception instanceof AccessDeniedException){ 
+            message = exception.getMessage();
+            modelAndView.setViewName("denied");
+        } else  {
+            message = "An error has occurred: " + exception.getClass().getName() + ": " + exception.getMessage();  
+            modelAndView.setViewName("fatalError"); 
+        }
+        logger.error(message);       
         model.put("message", message);
-        ModelAndView modelAndView = new ModelAndView("fatalError", model);
+        modelAndView.addAllObjects(model);
         return modelAndView;
     }
   

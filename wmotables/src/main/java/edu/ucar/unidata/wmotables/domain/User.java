@@ -15,6 +15,8 @@ public class User implements Serializable {
 
     private int userId;
     private String userName;
+    private String password;
+    private int accessLevel;
     private String emailAddress;
     private String fullName;
     private String affiliation;
@@ -55,6 +57,42 @@ public class User implements Serializable {
      */
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    /**
+     * Returns the user's password.
+     * 
+     * @return  The user's password.  
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Sets the user's password.
+     * 
+     * @param password  The user's password. 
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * Returns the access level of the user.
+     * 
+     * @return  The user's access level. 
+     */
+    public int getAccessLevel() {
+        return accessLevel;
+    }
+
+    /**
+     * Sets the access level of the user.
+     * 
+     * @param accessLevel  The user's access level. 
+     */
+    public void setAccessLevel(int accessLevel) {
+        this.accessLevel = accessLevel;
     }
 
     /**
@@ -146,6 +184,4 @@ public class User implements Serializable {
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
     }
-
-
 }

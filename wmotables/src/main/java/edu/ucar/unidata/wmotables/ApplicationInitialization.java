@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -183,9 +184,11 @@ public class ApplicationInitialization implements ServletContextListener {
                                      "(" +
                                      "userId INTEGER primary key not null GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
                                      "userName VARCHAR(100) not null, " +
+                                     "password CHAR(32) not null, " +
+                                     "accessLevel INTEGER not null, " +
                                      "emailAddress VARCHAR(100) not null, " +
                                      "fullName VARCHAR(100) not null, " +
-                                     "affiliation VARCHAR(255) not null, " +
+                                     "affiliation VARCHAR(100) not null, " +
                                      "dateCreated TIMESTAMP not null, " +
                                      "dateModified TIMESTAMP not null" +
                                      ")";
@@ -200,17 +203,30 @@ public class ApplicationInitialization implements ServletContextListener {
                                       "mimeType VARCHAR(100) not null, " +
                                       "tableType VARCHAR(100), " +
                                       "checkSum CHAR(32) not null, " +
-                                      "visibility SMALLINT not null, " +
+                                      "visibility INTEGER not null, " +
                                       "userId INTEGER not null, " +
                                       "dateCreated TIMESTAMP not null, " +
                                       "dateModified TIMESTAMP not null" +
                                       ")";
- 
+
+        String insertAdminUserSQL = "INSERT INTO users " +
+                                    "(userName, password, accessLevel, emailAddress, fullName, affiliation, dateCreated, dateModified) VALUES " +
+                                    "(?,?,?,?,?,?,?,?)"; 
         try {
             connection = getDatabaseConnection(driver, url, username, password);
             preparedStatement = connection.prepareStatement(createUsersTableSQL);
             preparedStatement.executeUpdate();
             preparedStatement = connection.prepareStatement(createTablesTableSQL);
+			preparedStatement.executeUpdate();
+            preparedStatement = connection.prepareStatement(insertAdminUserSQL);
+            preparedStatement.setString(1, "admin");
+            preparedStatement.setString(2, "4cb9c8a8048fd02294477fcb1a41191a");
+            preparedStatement.setInt(3, 2);
+            preparedStatement.setString(4, "plaza@unidata.ucar.edu");
+            preparedStatement.setString(5, "WMO Tables Admin");
+            preparedStatement.setString(6, "Unidata");
+            preparedStatement.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
+            preparedStatement.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
 			preparedStatement.executeUpdate();
         } catch (SQLException e) { 
             logger.error(e.getMessage()); 

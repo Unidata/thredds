@@ -1,5 +1,7 @@
 package edu.ucar.unidata.wmotables.service;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +14,7 @@ import edu.ucar.unidata.wmotables.repository.UserDao;
 /**
  * Service for processing User objects. 
  */
-public class UserManagerImpl implements UserManager {
+public class UserManagerImpl implements UserManager { 
 
     private UserDao userDao;
 
@@ -88,6 +90,9 @@ public class UserManagerImpl implements UserManager {
      * @param user  The user to be created. 
      */
     public void createUser(User user) {
+        String password = DigestUtils.md5Hex("changeme");
+        user.setPassword(password);
+        user.setAccessLevel(1);
         Date now = new Date(System.currentTimeMillis());
         user.setDateCreated(now);
         user.setDateModified(now);
@@ -103,5 +108,18 @@ public class UserManagerImpl implements UserManager {
         Date now = new Date(System.currentTimeMillis());
         user.setDateModified(now);
         userDao.updateUser(user);
+    }
+
+    /**
+     * Updates the User's Password
+     * 
+     * @param user  The user to whose password we need to update. 
+     */
+    public void updatePassword(User user) {
+        String password = DigestUtils.md5Hex(user.getPassword());
+        user.setPassword(password);
+        Date now = new Date(System.currentTimeMillis());
+        user.setDateModified(now);
+        userDao.updatePassword(user);
     }
 }

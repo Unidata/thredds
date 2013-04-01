@@ -7,14 +7,11 @@
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
-<%@ include file="/WEB-INF/views/include/nav.jsp" %>
    <h3><spring:message code="user.view.title"/>: <c:out value="${user.userName}" /></h3>
+   <p><spring:message code="user.view.message"/></p>
    <table>    
     <thead>
      <tr>
-      <th colspan="2">
-       Actions
-      </th>
       <th>
        User Name
       </th>
@@ -30,21 +27,28 @@
       <th>
        Date Created
       </th>
+      <c:choose>
+       <c:when test="${loggedIn}">
+        <c:choose>
+         <c:when test="${user.userName eq authUserName}">
+          <th>
+           Actions
+          </th>
+         </c:when>
+         <c:otherwise>
+          <sec:authorize access="hasRole('ROLE_ADMIN')">
+           <th>
+            Actions
+           </th>
+          </sec:authorize>
+         </c:otherwise>
+        </c:choose>
+       </c:when>
+      </c:choose> 
      </tr>
     </thead>
     <tbody> 
      <tr>
-      <td>
-       <form id="FORM" action="${baseUrl}/user/update/<c:out value="${user.userName}" />" method="GET">
-        <input type="submit" value="<spring:message code="user.update.title"/>" />        
-       </form>
-      </td>
-      <td>
-       <form id="FORM" action="${baseUrl}/user/delete" method="POST">
-        <input type="hidden" name="userId" value="<c:out value="${user.userId}" />"/>
-        <input type="submit" value="<spring:message code="user.delete.title"/>" disabled/>        
-       </form>
-      </td>
       <td>
        <c:out value="${user.userName}" />
       </td>
@@ -60,20 +64,57 @@
       <td>
        <fmt:formatDate value="${user.dateCreated}" type="BOTH" dateStyle="default"/>
       </td>
+      <c:choose>
+       <c:when test="${loggedIn}">
+        <c:choose>
+         <c:when test="${user.userName eq authUserName}">
+          <td>
+           <form action="${baseUrl}/user/update/<c:out value="${user.userName}" />" method="GET">
+            <input class="action edit" type="submit" value="<spring:message code="user.update.title"/>" />        
+           </form>
+           <sec:authorize access="hasRole('ROLE_ADMIN')">
+            <form action="${baseUrl}/user/delete" method="POST">
+             <input type="hidden" name="userId" value="<c:out value="${user.userId}" />"/>
+             <input class="action delete" type="submit" value="<spring:message code="user.delete.title"/>"/>        
+            </form>
+           </sec:authorize>
+          </td>
+         </c:when>
+         <c:otherwise>
+          <sec:authorize access="hasRole('ROLE_ADMIN')">
+           <td>
+            <form action="${baseUrl}/user/update/<c:out value="${user.userName}" />" method="GET">
+             <input class="action edit" type="submit" value="<spring:message code="user.update.title"/>" />        
+            </form>
+            <form action="${baseUrl}/user/delete" method="POST">
+             <input type="hidden" name="userId" value="<c:out value="${user.userId}" />"/>
+             <input class="action delete" type="submit" value="<spring:message code="user.delete.title"/>"/>        
+            </form>
+          </sec:authorize>
+         </c:otherwise>
+        </c:choose>
+       </c:when>
+      </c:choose>
      </tr>
     </tbody>
    </table> 
 
-   <p><a href="${baseUrl}/table/create/<c:out value="${user.userName}" />">Create new table</a></p>
-
-   <table> 
+   <c:choose>
+    <c:when test="${loggedIn}">
+     <c:choose>
+      <c:when test="${user.userName eq authUserName}">
+       <p><a href="${baseUrl}/table/create/<c:out value="${user.userName}" />">Create new table</a></p>
+      </c:when>
+     </c:choose>
+    </c:when>
+   </c:choose> 
+  
+   <h3><spring:message code="user.view.table.title"/>: <c:out value="${user.userName}" /></h3>
+   <table class="list"> 
     <c:choose>
      <c:when test="${fn:length(tables) gt 0}">
       <thead>
        <tr>
-        <th>
-         Action
-        </th>
         <th>
          Title
         </th>
@@ -85,9 +126,6 @@
         </th>
         <th>
          Checksum
-        </th>
-        <th>
-         Owner
         </th>
         <th>
          Date Created
@@ -104,37 +142,32 @@
         </c:choose>
        >
          <td>
-          <form id="FORM" action="${baseUrl}/table/<c:out value="${table.checksum}" />" method="GET">
-           <input type="submit" value="<spring:message code="table.view.title"/>" />        
-          </form>
+          <a href="${baseUrl}/table/<c:out value="${table.title}" />">
+           <c:out value="${table.title}" />
+          </a>
          </td>
          <td>
-          <c:out value="${table.title}" />
+          <a href="${baseUrl}/table/<c:out value="${table.description}" />">
+           <c:out value="${table.description}" />
+          </a>
          </td>
          <td>
-          <c:out value="${table.description}" />
+          <a href="${baseUrl}/table/<c:out value="${table.tableType}" />">
+           <c:out value="${table.tableType}" />
+          </a>
          </td>
          <td>
-          <c:out value="${table.tableType}" />
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.checksum}" />
+          </a>
          </td>
          <td>
-          <c:out value="${table.checksum}" />
-         </td>
-         <td>
-          <c:forEach items="${users}" var="entry">
-           <c:choose>
-            <c:when test="${entry.key == table.userId}">
-             <c:out value="${entry.value.fullName}" />
-            </c:when>
-           </c:choose>
-          </c:forEach>
-         </td>
-         <td>
-          <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
+          <a href="${baseUrl}/table/<c:out value="${table.dateCreated}" />">
+           <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/></a>
          </td>
         </tr>
-       </tbody>
-      </c:forEach>
+       </c:forEach>
+      </tbody>
      </c:when>
      <c:otherwise>
       <tr>
