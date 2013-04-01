@@ -4,6 +4,8 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib1.Grib1IndexProto;
 import ucar.nc2.grib.grib1.Grib1Record;
+import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.ui.widget.BAMutil;
@@ -151,6 +153,9 @@ public class GribIndexPanel extends JPanel {
   }
 
   public void readIndex1(String filename) throws IOException {
+    if (filename.endsWith(GribIndex.GBX9_IDX))
+      filename = filename.substring(0, filename.length()-GribIndex.GBX9_IDX.length());
+
     Grib1Index g1idx =  new Grib1Index();
     g1idx.readIndex(filename, 0, thredds.inventory.CollectionManager.Force.nocheck);
 
@@ -161,6 +166,9 @@ public class GribIndexPanel extends JPanel {
   }
 
   public void readIndex2(String filename) throws IOException {
+    if (filename.endsWith(GribIndex.GBX9_IDX))
+      filename = filename.substring(0, filename.length()-GribIndex.GBX9_IDX.length());
+
     Grib2Index g2idx =  new Grib2Index();
     g2idx.readIndex(filename, 0, thredds.inventory.CollectionManager.Force.nocheck);
 
@@ -197,10 +205,27 @@ public class GribIndexPanel extends JPanel {
       return (gr2 == null) ? gr1.getReferenceDate().toString() : gr2.getReferenceDate().toString();
     }
 
-    private void show(Formatter f) {
-      if (gr2 == null) gr1.show(f); else gr2.show(f);
+    public long getStart() {
+      return (gr2 == null) ? gr1.getIs().getStartPos() : gr2.getIs().getStartPos();
     }
 
+    public long getLength() {
+      return (gr2 == null) ? gr1.getIs().getMessageLength() : gr2.getIs().getMessageLength();
+    }
+
+    private void show(Formatter f) {
+      if (gr2 == null) show(gr1, f); else show(gr2, f);
+    }
+
+    private void show(Grib1Record gr1, Formatter f) {
+      Grib1SectionProductDefinition pds = gr1.getPDSsection();
+      Grib1Customizer cust = Grib1Customizer.factory(gr1, null);
+      pds.showPds(cust, f);
+    }
+
+    private void show(Grib2Record gr2, Formatter f) {
+      gr2.show(f);
+    }
   }
 
 }

@@ -37,7 +37,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
-import java.util.Formatter;
 
 /**
  * A Grib1 message.
@@ -131,10 +130,6 @@ public class Grib1Record {
 
   public CalendarDate getReferenceDate() {
     return pdss.getReferenceDate();
-  }
-
-  public void show(Formatter f) {
-    f.format("discipline=%d ", is.getMessageLength());
   }
 
   public int getFile() {

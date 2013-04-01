@@ -1009,28 +1009,29 @@ public class ToolsUI extends JPanel {
 
   public void save() {
     fileChooser.save();
-    if (bufrFileChooser != null) bufrFileChooser.save();
     if (aggPanel != null) aggPanel.save();
+    if (bufrFileChooser != null) bufrFileChooser.save();
     if (bufrPanel != null) bufrPanel.save();
     if (bufrTableBPanel != null) bufrTableBPanel.save();
     if (bufrTableDPanel != null) bufrTableDPanel.save();
     if (bufrCodePanel != null) bufrCodePanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
     if (cdmremotePanel != null) cdmremotePanel.save();
-    if (ftPanel != null) ftPanel.save();
-    if (fmrcPanel != null) fmrcPanel.save();
+    if (cdmIdxPanel != null) cdmIdxPanel.save();
     if (collectionPanel != null) collectionPanel.save();
     if (coveragePanel != null) coveragePanel.save();
+    if (ftPanel != null) ftPanel.save();
+    if (fmrcPanel != null) fmrcPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribFilesPanel != null) gribFilesPanel.save();
     if (gribNewPanel != null) gribNewPanel.save();
     if (grib2DataPanel != null) grib2DataPanel.save();
-    if (cdmIdxPanel != null) cdmIdxPanel.save();
+    if (gribCodePanel != null) gribCodePanel.save();
+    if (gribIdxPanel != null) gribIdxPanel.save();
+    if (gribTemplatePanel != null) gribTemplatePanel.save();
     if (grib1RawPanel != null) grib1RawPanel.save();
     if (grib1ReportPanel != null) grib1ReportPanel.save();
     if (grib2ReportPanel != null) grib2ReportPanel.save();
-    if (gribCodePanel != null) gribCodePanel.save();
-    if (gribTemplatePanel != null) gribTemplatePanel.save();
     if (grib1TablePanel != null) grib1TablePanel.save();
     if (grib2TablePanel != null) grib2TablePanel.save();
     if (gribVariableRenamePanel != null) gribVariableRenamePanel.save();
