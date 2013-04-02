@@ -52,7 +52,6 @@ import thredds.catalog.crawl.CatalogCrawler;
  */
 @ThreadSafe
 public class CatalogCollectionManager extends MFileCollectionManager implements CatalogCrawler.Listener {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogCollectionManager.class);
   private final String catalogUrl;
   private boolean debug = false;
 
@@ -83,7 +82,7 @@ public class CatalogCollectionManager extends MFileCollectionManager implements 
     StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
     if (!isValid) {
-      log.warn("Catalog invalid= "+catalogUrl+" validation output= "+ buff);
+      logger.warn("Catalog invalid= "+catalogUrl+" validation output= "+ buff);
       return;
     }
 

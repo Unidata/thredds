@@ -62,7 +62,6 @@ import thredds.inventory.filter.*;
 public class MFileCollectionManager extends CollectionManagerAbstract {
   static public final String CATALOG = "catalog:";
 
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MFileCollectionManager.class);
   static private MController controller;
 
   /**

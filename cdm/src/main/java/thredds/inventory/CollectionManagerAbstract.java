@@ -49,6 +49,8 @@ import java.util.*;
 public abstract class CollectionManagerAbstract implements CollectionManager {
 
   protected String collectionName;
+  protected final org.slf4j.Logger logger;
+
   protected TimeDuration recheck;
   protected FeatureCollectionConfig.ProtoChoice protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;  // default
 
@@ -58,6 +60,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
 
   protected CollectionManagerAbstract( String collectionName) {
     this.collectionName = collectionName; // +"-" + Integer.toHexString(hashCode()); // make sure name is unique
+    this.logger = org.slf4j.LoggerFactory.getLogger("fc."+this.collectionName);
   }
 
   public boolean isStatic() {

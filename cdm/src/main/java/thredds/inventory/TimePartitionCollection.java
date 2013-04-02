@@ -40,7 +40,6 @@ import ucar.nc2.time.CalendarPeriod;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -52,7 +51,6 @@ import java.util.*;
  * @since 4/16/11
  */
 public class TimePartitionCollection extends MFileCollectionManager {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartitionCollection.class);
   static private enum Type {setfromExistingIndices, directory, days}
 
   static public TimePartitionCollection factory(FeatureCollectionConfig config, Formatter errlog) {
@@ -71,13 +69,13 @@ public class TimePartitionCollection extends MFileCollectionManager {
 
   //////////////////////////////
 
-  private int npartitions;
-  private boolean setfromExistingIndices;
+  //private int npartitions;
+  //private boolean setfromExistingIndices;
   private Type type;
 
   private TimePartitionCollection(FeatureCollectionConfig config, boolean setfromExistingIndices, Formatter errlog) {
     super(config, errlog);
-    this.setfromExistingIndices = setfromExistingIndices;
+    //this.setfromExistingIndices = setfromExistingIndices;
     if (dateExtractor == null)
       throw new IllegalArgumentException("Time partition must specify a date extractor");
   }
@@ -92,7 +90,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
       result = makePartitionsFromSubdirs();
     else
       result = makePartitionsByDays();
-    npartitions = result.size();
+    //npartitions = result.size();
     return result;
   }
 
@@ -306,7 +304,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
     }
   }
 
-  // repartition a collection, currently just by grouping all files that have the same day as their CalendarDate.
+  // repartition a collection, based on time intervals
   private class TimePartitionCollectionManager extends CollectionManagerAbstract {
     String root;
     CalendarDate startPartition, endPartition;
