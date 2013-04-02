@@ -37,7 +37,7 @@ public class ApplicationInitialization implements ServletContextListener {
 
     protected static Logger logger = Logger.getLogger(ApplicationInitialization.class);
 
-    private static final String DEFAULT_HOME = System.getProperty("catalina.base") + "/content/wmotables";
+    private static final String DEFAULT_HOME = System.getProperty("catalina.home") + "/content/wmotables";
     private static final String DEFAULT_DATABASE = "derby";
 
     private String wmotablesHome = null;
@@ -47,7 +47,7 @@ public class ApplicationInitialization implements ServletContextListener {
      * Find the application home (wmotables.home) and make sure it exists.  if not, create it.
      * Find out what database was selected for use and create the database if it doesn't exist.
      * 
-     * @param sce  The event class.
+     * @param servletContextEvent  The event class.
      */
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent)  {

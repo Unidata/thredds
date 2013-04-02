@@ -38,7 +38,7 @@ import edu.ucar.unidata.wmotables.domain.Table;
 import edu.ucar.unidata.wmotables.domain.User;
 import edu.ucar.unidata.wmotables.service.TableManager;
 import edu.ucar.unidata.wmotables.service.UserManager;
-import edu.ucar.unidata.wmotables.service.UserValidator;
+// import edu.ucar.unidata.wmotables.service.UserValidator;
 
 /**
  * Controller to handle and modify a WMO table. 
@@ -52,8 +52,8 @@ public class TableController implements HandlerExceptionResolver {
     private UserManager userManager;
     @Resource(name="tableManager")
     private TableManager tableManager;
-    @Resource(name="userValidator")
-    private UserValidator userValidator;
+    //@Resource(name="userValidator")
+    // private UserValidator userValidator;
 
     private String authName;
 
