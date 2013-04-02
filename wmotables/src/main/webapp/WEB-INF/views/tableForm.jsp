@@ -18,43 +18,83 @@
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
-<%@ include file="/WEB-INF/views/include/nav.jsp" %>
 
-   <h3>
+
    <c:choose>
     <c:when test="${table != null}">
-     <spring:message code="table.update.title"/>:
-     <c:out value="${table.checksum}" />
+     <h3><spring:message code="table.update.title"/></h3>
+     <p><spring:message code="table.update.message"/></p>
     </c:when>
     <c:otherwise>
-     <spring:message code="table.create.title"/>
+     <h3><spring:message code="table.create.title"/></h3>
+     <p><spring:message code="table.create.message"/></p>
     </c:otherwise>
    </c:choose>
-   </h3>
-   <p>* denotes required fields.</p>
 
-   <form id="FORM" action="${baseUrl}/table/<c:out value="${formAction}" />" method="POST" enctype="multipart/form-data">
+   
+   <form action="${baseUrl}/table/<c:out value="${formAction}" />" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="userId" value="<c:out value="${user.userId}" />"/>
     <c:choose>
      <c:when test="${table != null}">
       <input type="hidden" name="tableId" value="<c:out value="${table.tableId}" />"/>
      </c:when>
     </c:choose>   
-    <ul> 
-     <c:choose>
-      <c:when test="${table == null}">
-       <li>
-        <label>
-         * Upload your table:<br />
-         <input type="file" name="file" value=""/>
-        </label>
-       </li>
-      </c:when>
-     </c:choose>
-     <li>
-      <label>
-       * Title<br />
-       <input type="text" 
+
+    <table> 
+     <thead>
+      <tr>
+       <c:choose>
+        <c:when test="${table == null}">
+         <th>
+          Upload Table
+         </th>
+        </c:when>
+       </c:choose>
+       <th>
+        Title
+       </th>
+       <th>
+        Description
+       </th>
+       <th>
+        Version
+       </th>
+       <th>
+        Table Type
+       </th>
+       <c:choose>
+        <c:when test="${table != null}">
+         <th>
+          Checksum
+         </th>
+        </c:when>
+       </c:choose>
+       <th>
+        Owner
+       </th>
+       <c:choose>
+        <c:when test="${table != null}">
+         <th>
+           Date Created
+         </th>
+        </c:when>
+       </c:choose>
+       <th>
+        Action
+       </th>
+      </tr>
+     </thead>
+     <tbody>   
+      <tr>
+       <c:choose>
+        <c:when test="${table == null}">
+         <td>
+          <input type="file" name="file" value=""/>
+         </td>
+        </c:when>
+       </c:choose>
+       <td>
+        <input type="text" 
               name="title" 
               <c:choose>
                <c:when test="${table != null}">
@@ -65,12 +105,9 @@
                </c:otherwise>
               </c:choose>
          />
-      </label>
-     </li>
-     <li>
-      <label>
-       * Description<br />
-       <input type="text" 
+       </td>
+       <td>
+        <input type="text" 
               name="description" 
               <c:choose>
                <c:when test="${table != null}">
@@ -81,12 +118,9 @@
                </c:otherwise>
               </c:choose>
          />
-      </label>
-     </li>
-     <li>
-      <label>
-       Version<br />
-       <input type="text" 
+       </td>
+       <td>
+        <input type="text" 
               name="version" 
               <c:choose>
                <c:when test="${table != null}">
@@ -97,12 +131,9 @@
                </c:otherwise>
               </c:choose>
          />
-      </label>
-     </li>
-     <li>
-      <label>
-       Table Type<br />
-       <select name="tableType">
+       </td>
+       <td>
+               <select name="tableType">
         <option value="BUFR"
          <c:choose>
           <c:when test="${table != null}">
@@ -118,7 +149,7 @@
          <c:choose>
           <c:when test="${table != null}">
            <c:choose>
-            <c:when test="${table.tableType eq GRIB-1}">
+            <c:when test="${table.tableType eq GRIB1}">
              selected
             </c:when>
            </c:choose>
@@ -129,7 +160,7 @@
          <c:choose>
           <c:when test="${table != null}">
            <c:choose>
-            <c:when test="${table.tableType eq GRIB-2}">
+            <c:when test="${table.tableType eq GRIB2}">
              selected
             </c:when>
            </c:choose>
@@ -148,13 +179,37 @@
          </c:choose>
         >other</option>
        </select>
-      </label>
-     </li>
-     <li>
-      <input type="submit" value="<c:out value="${formAction}" />" />
-     </li> 
-    </ul>
+       </td>
+       <c:choose>
+        <c:when test="${table != null}">
+         <td>
+          <c:out value="${table.checksum}" />
+         </td>
+        </c:when>
+       </c:choose>
+       <td>
+        <c:out value="${user.userName}" />
+       </td>
+       <c:choose>
+        <c:when test="${table != null}">
+         <td>
+          <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
+         </td>
+        </c:when>
+       </c:choose>
+       <td>
+        <input type="submit" value="<c:out value="${formAction}" />" />    
+       </td>
+      </tr>
+     </tbody>
+    </table> 
    </form>
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
   </body>
  </html>
+
+
+
+
+
+

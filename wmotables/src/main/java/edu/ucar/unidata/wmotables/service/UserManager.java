@@ -67,4 +67,11 @@ public interface UserManager {
      * @param user   The existing user with changes that needs to be saved. 
      */
     public void updateUser(User user);
+
+    /**
+     * Updates the User's Password
+     * 
+     * @param user  The user to whose password we need to update. 
+     */
+    public void updatePassword(User user);
 }

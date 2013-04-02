@@ -7,17 +7,13 @@
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
-<%@ include file="/WEB-INF/views/include/nav.jsp" %>
    <h3><spring:message code="table.list.title"/></h3>
-
-   <table> 
+   <p><spring:message code="table.list.message"/></p>
+   <table class="list"> 
     <c:choose>
      <c:when test="${fn:length(tables) gt 0}">
       <thead>
        <tr>
-        <th>
-         Action
-        </th>
         <th>
          Title
         </th>
@@ -48,37 +44,43 @@
         </c:choose>
        >
          <td>
-          <form id="FORM" action="${baseUrl}/table/<c:out value="${table.checksum}" />" method="GET">
-           <input type="submit" value="<spring:message code="table.view.title"/>" />        
-          </form>
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.title}" />
+          </a>
          </td>
          <td>
-          <c:out value="${table.title}" />
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.description}" />
+          </a>
          </td>
          <td>
-          <c:out value="${table.description}" />
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.tableType}" />
+          </a>
          </td>
          <td>
-          <c:out value="${table.tableType}" />
-         </td>
-         <td>
-          <c:out value="${table.checksum}" />
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.checksum}" />
+          </a>
          </td>
          <td>
           <c:forEach items="${users}" var="entry">
            <c:choose>
             <c:when test="${entry.key == table.userId}">
-             <c:out value="${entry.value.fullName}" />
+             <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+              <c:out value="${entry.value.userName}" />
+             </a>
             </c:when>
            </c:choose>
           </c:forEach>
          </td>
          <td>
-          <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/></a>
          </td>
         </tr>
-       </tbody>
-      </c:forEach>
+       </c:forEach>
+      </tbody>
      </c:when>
      <c:otherwise>
       <tr>

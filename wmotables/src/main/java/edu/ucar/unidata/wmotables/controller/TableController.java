@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,12 +16,18 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -45,6 +52,9 @@ public class TableController implements HandlerExceptionResolver {
     @Resource(name="tableManager")
     private TableManager tableManager;
 
+    private String authName;
+
+
     /**
      * Accepts a GET request for a main home page.
      * View is main index page.
@@ -55,8 +65,6 @@ public class TableController implements HandlerExceptionResolver {
     public String listAllTables() { 
         return "index";
     }
-
-
 
     /**
      * Accepts a GET request for a List of Table objects.
@@ -114,11 +122,13 @@ public class TableController implements HandlerExceptionResolver {
     /**
      * Accepts a GET request to create a new Table object. 
      * View is a web form to upload a new Table.
+     * Only the user and application administrators are allowed to create tables for the user account.
      * 
      * @param userName  The 'userName' as provided by @PathVariable. 
      * @param model  The Model used by the view.
      * @return  The 'tableForm' path for the ViewResolver.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #userName == authentication.name")
     @RequestMapping(value="/table/create/{userName}", method=RequestMethod.GET)
     public String createTable(@PathVariable String userName, Model model) { 
         User user = userManager.lookupUser(userName);  
@@ -130,86 +140,111 @@ public class TableController implements HandlerExceptionResolver {
     /**
      * Accepts a POST request to create a new Table object. 
      * View is the newly created Table object.
+     * Only the user and application administrators are allowed to create tables for the user account.
      * 
      * @param table  The Table to persist. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
      * @return  The redirect to viewTable view (/table/{checksum})
      * @throws IOException  If an IO error occurs when writing the table to the file system.
+     * @thows AccessDeniedException  If logged in user does not have permission to create the table.
      */
     @RequestMapping(value="/table/create", method=RequestMethod.POST)
-    public ModelAndView createTable(Table table, BindingResult result, Model model) throws IOException {   
-        table.setVisibility(1);
-        tableManager.createTable(table);
-        model.addAttribute("table", table);         
-        User user = userManager.lookupUser(table.getUserId());   
-        model.addAttribute("user", user);     
-        return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));
+    public ModelAndView createTable(Table table, BindingResult result, Model model) throws IOException, AccessDeniedException {   
+        // The first thing we do is validate that the user has permission to create a table
+        User user = userManager.lookupUser(table.getUserId()); 
+        if (isAuthorized(user.getUserName())) {
+           table.setVisibility(1);
+           tableManager.createTable(table);
+           model.addAttribute("table", table);
+           model.addAttribute("user", user);     
+           return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));
+        } else {   
+           throw new AccessDeniedException ("User: " + getAuthName()  + " is attempting to create under the user account: "  + user.getUserName());
+        }
     }
 
     /**
      * Accepts a GET request to update an existing Table object.
      * View is a web form to update an existing Table.
+     * Only the user and application administrators are allowed to update tables for the user account.
      * 
      * @param checksum  The checksum as provided by @PathVariable. 
      * @param model  The Model used by the view.
      * @return  The 'tableForm' path for the ViewResolver.
+     * @thows AccessDeniedException  If logged in user does not have permission to update the table.
      */
     @RequestMapping(value="/table/update/{checksum}", method=RequestMethod.GET)
-    public String updateTable(@PathVariable String checksum, Model model) { 
+    public String updateTable(@PathVariable String checksum, Model model) throws AccessDeniedException { 
         Table table = tableManager.lookupTable(checksum);
-        model.addAttribute("table", table);         
+        // The first thing we do is validate that the user has permission to update a table
         User user = userManager.lookupUser(table.getUserId());   
-        model.addAttribute("user", user);       
-        model.addAttribute("formAction", "update");  
-        return "tableForm";
+        if (isAuthorized(user.getUserName())) {
+           model.addAttribute("table", table);         
+           model.addAttribute("user", user);       
+           model.addAttribute("formAction", "update");  
+           return "tableForm";
+        } else {   
+           throw new AccessDeniedException ("User: " + getAuthName()  + " is attempting to update a table that belongs to the user account: "  + user.getUserName());
+        }
     }
 
     /**
      * Accepts a POST request to update an existing Table object. 
      * View is the updated Table object.
+     * Only the user and application administrators are allowed to update tables for the user account.
      * 
      * @param table  The Table to update. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
      * @return  The redirect to 'viewTable' view (/table/{checksum})
+     * @thows AccessDeniedException  If logged in user does not have permission to update the table.
      */
     @RequestMapping(value="/table/update", method=RequestMethod.POST)
-    public ModelAndView updateTable(Table table, BindingResult result, Model model) {  
-        tableManager.updateTable(table);
-        table = tableManager.lookupTable(table.getTableId());
-        model.addAttribute("table", table);         
-        User user = userManager.lookupUser(table.getUserId());   
-        model.addAttribute("user", user);     
-        return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));
+    public ModelAndView updateTable(Table table, BindingResult result, Model model) throws AccessDeniedException {  
+        // The first thing we do is validate that the user has permission to create a table
+        User user = userManager.lookupUser(table.getUserId()); 
+        if (isAuthorized(user.getUserName())) {
+            tableManager.updateTable(table);
+            table = tableManager.lookupTable(table.getTableId());
+            model.addAttribute("table", table);         
+            model.addAttribute("user", user);     
+            return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));
+        } else {   
+           throw new AccessDeniedException ("User: " + getAuthName()  + " is attempting to update a table that belongs to the user account: "  + user.getUserName());
+        }
     }
 
     /**
      * Accepts a POST request to hide a new Table object. 
      * View is the hidden Table object.
+     * Only the user and application administrators are allowed to hide tables for the user account.
      * 
      * @param table  The Table to update. 
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the view.
      * @return  The redirect to 'viewTable' view (/table/{checksum})
+     * @thows AccessDeniedException  If logged in user does not have permission to delete the table.
      */
     @RequestMapping(value="/table/hide", method=RequestMethod.POST)
-    public ModelAndView hideTable(Table table, BindingResult result, Model model) {  
-        logger.warn(table.getVisibility());
-        if (table.getVisibility() == 1) {
-            table.setVisibility(0);
-        } else {
-            table.setVisibility(1);
+    public ModelAndView hideTable(Table table, BindingResult result, Model model) throws AccessDeniedException {  
+        // The first thing we do is validate that the user has permission to create a table
+        User user = userManager.lookupUser(table.getUserId()); 
+        if (isAuthorized(user.getUserName())) {
+            if (table.getVisibility() == 1) {
+                table.setVisibility(0);
+            } else {
+                table.setVisibility(1);
+            }
+            tableManager.toggleTableVisibility(table);
+            table = tableManager.lookupTable(table.getTableId());
+            model.addAttribute("table", table);         
+            model.addAttribute("user", user);     
+            return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));
+        } else {   
+           throw new AccessDeniedException ("User: " + getAuthName()  + " is attempting to hide a table that belongs to the user account: "  + user.getUserName());
         }
-        tableManager.toggleTableVisibility(table);
-        table = tableManager.lookupTable(table.getTableId());
-        model.addAttribute("table", table);         
-        User user = userManager.lookupUser(table.getUserId());   
-        model.addAttribute("user", user);     
-        return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));
     }
-
-
 
     /**
      * This method gracefully handles any uncaught exception that are fatal 
@@ -224,7 +259,13 @@ public class TableController implements HandlerExceptionResolver {
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception exception) {
         String message = "";
-        if (exception instanceof MaxUploadSizeExceededException){ 
+        ModelAndView modelAndView = new ModelAndView();
+        Map<String, Object> model = new HashMap<String, Object>();
+        modelAndView.setViewName("fatalError"); 
+        if (exception instanceof AccessDeniedException){ 
+            message = exception.getMessage();
+            modelAndView.setViewName("denied");
+        } else if (exception instanceof MaxUploadSizeExceededException){ 
             message = "File size should be less then "+ ((MaxUploadSizeExceededException)exception).getMaxUploadSize()+" byte.";
         } else if (exception instanceof NullPointerException) {
             message = "Problem with the tableStashDir argument during File creation.  Verify the wmotables.home value in the wmotables.properties file is correct: " + exception.getMessage();
@@ -237,11 +278,55 @@ public class TableController implements HandlerExceptionResolver {
         } else {
             message = "An error has occurred: " + exception.getClass().getName() + ": " + exception.getMessage();  
         }        
-
         logger.error(message);
-        Map<String, Object> model = new HashMap<String, Object>();
         model.put("message", message);
-        ModelAndView modelAndView = new ModelAndView("fatalError", model);
+        modelAndView.addAllObjects(model);
         return modelAndView;
+    }
+
+
+    /**
+     * Checks the authenticated user's credentials and roles to determine if the user
+     * has permission to perform the required method action.  Returns true if authorized.
+     * 
+     * @param userName  The user name we will evaluate the logged in user against. 
+     * @return  The boolean determining if the user is authorized to perform the method action.
+     */
+    public boolean isAuthorized(String userName) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        // Get logged in username
+        String authName = auth.getName(); 
+        if (authName.equals(userName)) {
+            return true;
+        } else {
+            Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+            Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+            while (iterator.hasNext()) {
+                GrantedAuthority grantedAuthority = iterator.next();
+                String authority = grantedAuthority.getAuthority();
+                if (authority.equals("ROLE_ADMIN")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Returns the authenticated user name.
+     * 
+     * @return  The authenticated user name.
+     */
+    public String getAuthName() {
+        return authName;
+    }
+
+    /**
+     * Sets the authenticated user name.
+     * 
+     * @param authName  The authenticated user name.
+     */
+    public void setAuthName(String authName) {
+        this.authName = authName;
     }
 }

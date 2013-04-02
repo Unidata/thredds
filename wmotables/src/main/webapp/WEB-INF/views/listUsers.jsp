@@ -7,19 +7,14 @@
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
-<%@ include file="/WEB-INF/views/include/nav.jsp" %>
    <h3><spring:message code="user.list.title"/></h3>
+   <p><spring:message code="user.list.message"/></p>
 
-   <p><a href="${baseUrl}/user/create">Create new user</a></p>
-
-   <table> 
+   <table class="list"> 
     <c:choose>
      <c:when test="${fn:length(users) gt 0}">
       <thead>
        <tr>
-        <th>
-         Action
-        </th>
         <th>
          User Name
         </th>
@@ -41,28 +36,31 @@
        <c:forEach items="${users}" var="user">    
         <tr>
          <td>
-          <form id="FORM" action="${baseUrl}/user/<c:out value="${user.userName}" />" method="GET">
-           <input type="submit" value="<spring:message code="user.view.title"/>" />        
-          </form>
+          <a href="${baseUrl}/user/<c:out value="${user.userName}" />">
+           <c:out value="${user.userName}" />
+          </a>
          </td>
          <td>
-          <c:out value="${user.userName}" />
-         </td>
-         <td>
+          <a href="${baseUrl}/user/<c:out value="${user.userName}" />">
           <c:out value="${user.fullName}" />
+          </a>
          </td>
          <td>
+          <a href="${baseUrl}/user/<c:out value="${user.userName}" />">
           <c:out value="${user.emailAddress}" />
+          </a>
          </td>
          <td>
+          <a href="${baseUrl}/user/<c:out value="${user.userName}" />">
           <c:out value="${user.affiliation}" />
+          </a>
          </td>
          <td>
           <fmt:formatDate value="${user.dateCreated}" type="BOTH" dateStyle="default"/>
          </td>
         </tr>
-       </tbody>
-      </c:forEach>
+       </c:forEach>
+      </tbody>
      </c:when>
      <c:otherwise>
       <tr>

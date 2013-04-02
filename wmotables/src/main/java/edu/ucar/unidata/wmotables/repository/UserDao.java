@@ -68,4 +68,11 @@ public interface UserDao {
      */
     public void updateUser(User user);
 
+    /**
+     * Updates the User's Password
+     * 
+     * @param user  The user to whose password we need to update. 
+     */
+    public void updatePassword(User user);
+
 }
