@@ -18,8 +18,9 @@
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
+
    <c:choose>
-    <c:when test="${user != null}">
+    <c:when test="${formAction == 'update'}">
      <h3><spring:message code="user.update.title"/>:
      <c:out value="${user.userName}" /></h3>
      <p><spring:message code="user.update.message"/></p>
@@ -29,12 +30,11 @@
      <p><spring:message code="user.create.message"/></p>
     </c:otherwise>
    </c:choose>
-   </h3>
-   <form action="${baseUrl}/user/<c:out value="${formAction}" />" method="POST">
+
+   <form:form action="${baseUrl}/user/${formAction}" commandName="user" method="POST">
     <c:choose>
-     <c:when test="${user != null}">
-      <input type="hidden" name="userId" value="<c:out value="${user.userId}" />"/>
-      <input type="hidden" name="userName" value="<c:out value="${user.userName}" />"/>
+     <c:when test="${formAction == 'update'}">
+      <form:hidden path="userId" />
      </c:when>
     </c:choose>
 
@@ -54,7 +54,7 @@
         Affiliation
        </th>
        <c:choose>
-        <c:when test="${user != null}">
+        <c:when test="${user.dateCreated != null}">
          <th>
           Date Created
          </th>
@@ -65,13 +65,13 @@
          <c:choose>
           <c:when test="${user.userName eq authUserName}">
            <th>
-            Actions
+            Action
            </th>
           </c:when>
           <c:otherwise>
            <sec:authorize access="hasRole('ROLE_ADMIN')">
             <th>
-             Actions
+             Action
             </th>
            </sec:authorize>
           </c:otherwise>
@@ -80,71 +80,49 @@
        </c:choose> 
       </tr>
      </thead>
+
+
      <tbody> 
       <tr>
        <td>
         <c:choose>
-         <c:when test="${user != null}">
+         <c:when test="${formAction == update}">
           <c:out value="${user.userName}" />
+          <form:hidden path="userName" />
          </c:when>
          <c:otherwise>
-           <input type="text" name="userName" value="" />
+           <form:errors path="userName" cssClass="error" />
+            <c:out value="${status.userName[0]}"/>
+           <form:input path="userName" />
          </c:otherwise>
         </c:choose>        
        </td>
        <td>
-        <input type="text" 
-              name="fullName" 
-              <c:choose>
-               <c:when test="${user != null}">
-                value="<c:out value="${user.fullName}" />"
-               </c:when>
-               <c:otherwise>
-                 value=""
-               </c:otherwise>
-              </c:choose>
-         />
+        <form:errors path="fullName" cssClass="error" />
+        <form:input path="fullName"/>
        </td>
        <td>
-        <input type="text" 
-              name="emailAddress" 
-              <c:choose>
-               <c:when test="${user != null}">
-                value="<c:out value="${user.emailAddress}" />"
-               </c:when>
-               <c:otherwise>
-                 value=""
-               </c:otherwise>
-              </c:choose>
-         />
+        <form:errors path="emailAddress" cssClass="error" />
+        <form:input path="emailAddress"/>
        </td>
        <td>
-        <input type="text" 
-              name="affiliation" 
-              <c:choose>
-               <c:when test="${user != null}">
-                value="<c:out value="${user.affiliation}" />"
-               </c:when>
-               <c:otherwise>
-                 value=""
-               </c:otherwise>
-              </c:choose>
-         />
+        <form:errors path="affiliation" cssClass="error" />
+        <form:input path="affiliation"/>
        </td>
        <c:choose>
-        <c:when test="${user != null}">
+        <c:when test="${user.dateCreated != null}">
          <td>
           <fmt:formatDate value="${user.dateCreated}" type="BOTH" dateStyle="default"/>
          </td>
         </c:when>
        </c:choose>
        <td>
-        <input type="submit" value="<c:out value="${formAction}" />" />
+        <input type="submit" value="${formAction}" />
        </td>
       </tr>
      </tbody>
     </table> 
-   </form>
+   </form:form>
    <c:choose>
     <c:when test="${loggedIn}">
      <c:choose>

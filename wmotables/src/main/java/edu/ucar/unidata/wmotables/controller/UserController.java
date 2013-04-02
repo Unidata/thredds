@@ -2,19 +2,22 @@ package edu.ucar.unidata.wmotables.controller;
 
 import org.apache.log4j.Logger;
 
-
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+//import org.springframework.web.bind.WebDataBinder;
+//import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +30,7 @@ import edu.ucar.unidata.wmotables.domain.Table;
 import edu.ucar.unidata.wmotables.domain.User;
 import edu.ucar.unidata.wmotables.service.TableManager;
 import edu.ucar.unidata.wmotables.service.UserManager;
+//import edu.ucar.unidata.wmotables.service.UserValidator;
 
 /**
  * Controller to handle and modify a User. 
@@ -40,6 +44,15 @@ public class UserController implements HandlerExceptionResolver {
     private UserManager userManager;
     @Resource(name="tableManager")
     private TableManager tableManager;
+/*
+    @Resource(name="userValidator")
+    private UserValidator userValidator;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.setValidator(this.userValidator);  
+    }   
+*/
 
     /**
      * Accepts a GET request for a List of all User objects.
@@ -84,6 +97,7 @@ public class UserController implements HandlerExceptionResolver {
     @RequestMapping(value="/user/create", method=RequestMethod.GET)
     public String createUser(Model model) {   
         model.addAttribute("formAction", "create");  
+        model.addAttribute("user", new User());  
         return "userForm";
     }
 
@@ -99,13 +113,18 @@ public class UserController implements HandlerExceptionResolver {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value="/user/create", method=RequestMethod.POST)
-    public ModelAndView createUser(User user, BindingResult result, Model model) {   
-        userManager.createUser(user);
-        user = userManager.lookupUser(user.getUserName());  
-        model.addAttribute("user", user);     
-        List<Table> tables = tableManager.getTableList(user.getUserId());
-        model.addAttribute("tables", tables);   
-        return new ModelAndView(new RedirectView("/user/" + user.getUserName(), true));     
+    public ModelAndView createUser(@Valid User user, BindingResult result, Model model) {  
+        if (result.hasErrors()) {
+           model.addAttribute("formAction", "create");  
+           return new ModelAndView("userForm"); 
+        } else {
+            userManager.createUser(user);
+            user = userManager.lookupUser(user.getUserName());  
+            model.addAttribute("user", user);     
+            List<Table> tables = tableManager.getTableList(user.getUserId());
+            model.addAttribute("tables", tables);  
+            return new ModelAndView(new RedirectView("/user/" + user.getUserName(), true)); 
+        }         
     }
 
     /**

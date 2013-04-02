@@ -1,11 +1,12 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>WMO Tables Links</title>
-  <link href="resources/css/tds.css" rel="stylesheet" type="text/css"/>
-</head>
-<body>
+<%@ include file="/WEB-INF/views/include/tablibs.jsp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ <html>
+  <head>
+   <title><spring:message code="global.title"/>: Links and Resources</title>
+<%@ include file="/WEB-INF/views/include/resources.jsp" %>
+  </head>
+  <body> 
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
 <h1> Links and Resources</h1>
 <hr>
 <h2>Web Services</h2>
@@ -71,10 +72,7 @@
 <ul>
   <li><a href="http://www.knmi.nl/opera/bufr.html">BUFR Software</a> for radar data (No new releases of this software are foreseen, and development is stopped.)</li>
 </ul>
-<h3>&nbsp;</h3>
-<hr />
-<p><img src="resources/img/unidataLogo.jpg" alt="Unidata logo" width="60" height="60" align="texttop" /> The&nbsp;<a href="http://www.unidata.ucar.edu/">Unidata Program Center</a>&nbsp;is managed by the&nbsp;<a href="http://www.ucar.edu/">University Corporation for Atmospheric Research</a>, and is funded by the&nbsp;<a href="http://www.nsf.gov/">National Science Foundation</a></p>
-<address>
-</address>
-</body>
-</html>
+   
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+  </body>
+ </html>

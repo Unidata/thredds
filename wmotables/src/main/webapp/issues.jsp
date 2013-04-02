@@ -1,11 +1,12 @@
+<%@ include file="/WEB-INF/views/include/tablibs.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>BUFR issues</title>
-</head>
-
-<body>
+ <html>
+  <head>
+   <title><spring:message code="global.title"/>: BUFR Decoding Issues</title>
+<%@ include file="/WEB-INF/views/include/resources.jsp" %>
+  </head>
+  <body> 
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
 <h1>BUFR Decoding Issues</h1>
 <hr />
 <h2>1. Errors in the <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/BufrTabB-11-2007.pdf">WMO Master Table  version 13</a></h2>
@@ -203,6 +204,7 @@ either one might be correct
 <br />
 name only change<br />
 </pre>
-<p>&nbsp;</p>
-</body>
-</html>
+   
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+  </body>
+ </html>

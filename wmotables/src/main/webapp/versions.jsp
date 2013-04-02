@@ -1,12 +1,12 @@
+<%@ include file="/WEB-INF/views/include/tablibs.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Untitled Document</title>
-</head>
-
-<body>
-
+ <html>
+  <head>
+   <title><spring:message code="global.title"/>: Versions</title>
+<%@ include file="/WEB-INF/views/include/resources.jsp" %>
+  </head>
+  <body> 
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
   <h1>WMO master table differences </h1>
   <p>This is a summary of the differences in scale,offset and/or bit  width among  versions 2 through 13 of the WMO master table, as obtained from the &quot;MEL BUFR&quot; tables (Master Environmental Library / US DoD), which are part oif the GEMPAK / N-AWIPS release.</p>
   <p>The <a href="http://mel.dmso.mil/mel_tools/bufr.jsp">MEL BUFR site</a> seeems to be non-operational</p>
@@ -150,5 +150,8 @@ Differences in ECMF tables B000 00000 00098 002 001.TXT vs B000 00000 00098 013 
 thus all elements possible to check version 6 vs 13 against ECMWF tables failed to verify with the MEL-BUFR tables. So MEL-BUFR may be suspect<br />
 
 </pre>
-</body>
-</html>
+
+   
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+  </body>
+ </html>

@@ -403,6 +403,12 @@
        <artifactId>cglib-nodep</artifactId>
        <version>${cglib.version}</version>
       </dependency>
+      <dependency>
+       <groupId>org.hibernate</groupId>
+       <artifactId>hibernate-validator</artifactId>
+       <version>${org.hibernate.version}</version>
+      </dependency>
+            
             
             
 
@@ -868,6 +874,7 @@
     <net.jcip.version>1.0</net.jcip.version>
     <net.sf.ehcache.version>2.6.2</net.sf.ehcache.version>
     <org.apache.tomcat.version>7.0.27</org.apache.tomcat.version>
+    <org.hibernate.version>4.3.1.Final</org.hibernate.version>
     <org.jsoup.version>1.7.2</org.jsoup.version>
     <org.jdom.version>2.0.4</org.jdom.version>
     <org.quartz-scheduler.version>2.1.1</org.quartz-scheduler.version>

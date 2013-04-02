@@ -5,6 +5,12 @@ $(document).ready(function() {
         $("table tbody tr").removeClass("odd");
         $("table tbody tr:nth-child(odd)").addClass("odd");
     }); 
+
+    // automagically make any image alt a tooltip
+    $(document).tooltip({ items: "img[alt]",
+        content: function() { return $(this).attr("alt") } 
+    });
+
 });
 
 

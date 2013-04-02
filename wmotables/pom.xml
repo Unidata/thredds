@@ -98,6 +98,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+
+
+    <dependency>
        <groupId>javax.activation</groupId>
        <artifactId>activation</artifactId>
     </dependency>

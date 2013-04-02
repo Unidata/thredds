@@ -1,9 +1,12 @@
-<html>
-<head>
-  <title>BUFR Validation</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
-<body>
+<%@ include file="/WEB-INF/views/include/tablibs.jsp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ <html>
+  <head>
+   <title><spring:message code="global.title"/>: BUFR Validation</title>
+<%@ include file="/WEB-INF/views/include/resources.jsp" %>
+  </head>
+  <body> 
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
 <h1>BUFR Record Validator </h1>
 
 <p><em>version 0.5</em></p>
@@ -46,11 +49,7 @@
   <li><a href="WebService.html">BUFR Validation as a web service</a> </li>
   <li><a href="http://www.ecmwf.int/products/data/d/check/">ECMWF BUFR/CREX format checker</a></li>
 </ul>
-<hr WIDTH="100%">
-<address>
-  <a href="http://www.unidata.ucar.edu/software/netcdf-java/"><img src="images/nc.gif" alt="netcdf icon" width="64" height="64"
-                                                                   border="0"></a> This document is maintained by <a
-    href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 03, 2008
-</address>
-</body>
-</html>
+   
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+  </body>
+ </html>

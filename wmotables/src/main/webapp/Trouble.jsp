@@ -1,14 +1,15 @@
+<%@ include file="/WEB-INF/views/include/tablibs.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Untitled Document</title>
-</head>
-
-<body>
-<h1 wrap="">The Trouble with BUFR</h1>
-<p wrap=""><em>Draft Aug 6, 2008</em></p>
-<p wrap=""><em>John Caron, Unidata/UCAR</em></p>
+ <html>
+  <head>
+   <title><spring:message code="global.title"/>: The Trouble with BUFR</title>
+<%@ include file="/WEB-INF/views/include/resources.jsp" %>
+  </head>
+  <body> 
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
+<h1>The Trouble with BUFR</h1>
+<p><em>Draft Aug 6, 2008</em></p>
+<p><em>John Caron, Unidata/UCAR</em></p>
 <h3>1. Specification of BUFR encoding is not clear enough</h3>
 <ol>
   <li><strong><a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/FM94REG-11-2007.pdf">BUFR Code Form and Regulations</a></strong> is a set of &quot;Regulations&quot; that describes the format for edition 3 and 4 in a formal way. </li>
@@ -31,11 +32,11 @@
 <p>Local tables must be found in an ad-hoc way. There is no way to confirm if you have the correct table.</p>
 <p>This makes problem #3 very serious as an exchange format. As an archive format, probably not tenable, as we will be unable to confidently parse arbitrary BUFR messages.</p>
 <h3>5. Table versions</h3>
-<p wrap="">If new versions of the WMO master table can only add new elements, this  would be very good news. It would mean that one really only needs the  latest version of the table. Is there somewhere that is explicitly  stated in the WMO BUFR specification?    The worry that I have is that if a mistake is made in a published  version of a table, and is used to code a BUFR message, that message  will be incorrectly read by a decoder using the corrected version of the  table. Theres no way to unambiguously know what table the coder used. </p>
-<h3 wrap="">6. Use of local tables</h3>
-<p wrap="">The use of local entries for both B and D should be restricted to x=48-63 and y=192-255 inclusive.</p>
-<p wrap="">An examination of ECMWF tables may indicate local use of some table entries not in the local range. For example comparing  ECMWF tables B000 00000 00098 002 001.TXT vs B000 00000 00098 013 001.TXT, the following entries are different:</p>
-<pre wrap=""> 1-22, 4-24, 7-190, 21-17, 25-30 </pre>
+<p>If new versions of the WMO master table can only add new elements, this  would be very good news. It would mean that one really only needs the  latest version of the table. Is there somewhere that is explicitly  stated in the WMO BUFR specification?    The worry that I have is that if a mistake is made in a published  version of a table, and is used to code a BUFR message, that message  will be incorrectly read by a decoder using the corrected version of the  table. Theres no way to unambiguously know what table the coder used. </p>
+<h3>6. Use of local tables</h3>
+<p>The use of local entries for both B and D should be restricted to x=48-63 and y=192-255 inclusive.</p>
+<p>An examination of ECMWF tables may indicate local use of some table entries not in the local range. For example comparing  ECMWF tables B000 00000 00098 002 001.TXT vs B000 00000 00098 013 001.TXT, the following entries are different:</p>
+<pre> 1-22, 4-24, 7-190, 21-17, 25-30 </pre>
 <ul>
   <li>1-22 has different bit width</li>
   <li>4-24 has different reference / bit width</li>
@@ -101,6 +102,7 @@ ISXA40 KWNO 071800     Category= 7 Synoptic features 7.0 local= 0     Center= 
 <p> 4. A reference implemenatation of a decoder should be written. A web service providing decoded output  would be very useful. It should use the canonical tables, and would be a motivation for users to register their local tables.</p>
 <p>5. The master table should only add new entries, and correct or clarify names and units in existing elements. Scale/Reference/BitWidth must never change, and elements must never be deleted. This should be explicitly stated in the BUFR spec.</p>
 <p>6. Local tables must never use entries outside the local range. This should be explicitly stated in the BUFR spec.</p>
-<p></p>
-</body>
-</html>
+   
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+  </body>
+ </html>

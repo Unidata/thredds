@@ -1,12 +1,13 @@
+<%@ include file="/WEB-INF/views/include/tablibs.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-  <title>BUFR validation</title>
-  <link href="resources/css/tds.css" rel="stylesheet" type="text/css"/>
-</head>
+ <html>
+  <head>  
+  <title><spring:message code="global.title"/>: BUFR Validation</title>
+<%@ include file="/WEB-INF/views/include/resources.jsp" %>
+  </head>
+  <body> 
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
 
-<body>
 <h1>BUFR Validation</h1>
 <h3>Background</h3>
 <p>Unidata has developed a 100% Java library for reading BUFR records (editions 2,3,4), as part of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">NetCDF-Java / CDM </a>(Common Data Model) library. For BUFR to be used across institutions or to archive data, we  need  canonical, standardized, machine-readable BUFR tables, shared between producer and client software. A missing table entry makes an entire BUFR message unreadable. An incorrect entry may make the BUFR record unreadable, or  worse, silently give incorrect data values. </p>
@@ -66,8 +67,6 @@
 <blockquote>
   <pre>&lt;bufrValidation fileName=&quot;anon/http--www.unidata.ucar.edu-staff-caron-test.bufr&quot; fileSize=&quot;898&quot;&gt;<br />&minus;<br />&lt;bufrMessage status=&quot;ok&quot; record=&quot;0&quot; pos=&quot;30&quot; dds=&quot;ok&quot; size=&quot;fail&quot; nobs=&quot;5&quot;&gt;<br />&lt;ByteCount&gt;countBytes 782 != 780 dataSize&lt;/ByteCount&gt;<br />&lt;BitCount&gt;countBits 6216 != 6208 dataSizeBits&lt;/BitCount&gt;<br />&lt;WMOheader&gt;IUSV51 KWBC&lt;/WMOheader&gt;<br />&lt;center&gt;7.0 (US National Weather Service (NCEP))&lt;/center&gt;<br />&lt;category&gt;Vertical soundings (other than satellite) (2.0.0)&lt;/category&gt;<br />&lt;date&gt;2008-07-08T00:00:00Z&lt;/date&gt;<br />&lt;/bufrMessage&gt;<br />&lt;/bufrValidation&gt;</pre>
 </blockquote>
-<hr />
-<p><img src="resources/img/unidataLogo.jpg" alt="Unidata logo" width="60" height="60" align="texttop" /> The&nbsp;<a href="http://www.unidata.ucar.edu/">Unidata</a></p>
-<address></address>
-</body>
-</html>
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+  </body>
+ </html>

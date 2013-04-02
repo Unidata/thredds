@@ -1,12 +1,12 @@
+<%@ include file="/WEB-INF/views/include/tablibs.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>WMO Tables Specification</title>
-  <link href="resources/css/tds.css" rel="stylesheet" type="text/css"/>
-</head>
-
-<body>
+ <html>
+  <head>
+   <title><spring:message code="global.title"/>: WMO Tables Specification</title>
+<%@ include file="/WEB-INF/views/include/resources.jsp" %>
+  </head>
+  <body> 
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
 <h1>WMO Tables Web Service Specification</h1>
 <h2>REST URLs</h2>
 <table width="755" border="1">
@@ -54,8 +54,7 @@
 <p>&nbsp;</p>
 <h2>Unique ID</h2>
 <p>Each table is assigned a unique id based on the <a href="http://en.wikipedia.org/wiki/MD5">MD5 hashcode</a> of the table. This means that even if the table only changes by one byte, it will be assigned a different ID. MD5 is a 128-bit (16 byte, 32 hex digits) hash. NOTE: maybe we should use SHA-2 ??</p>
-<p>&nbsp;</p>
-<hr />
-<p><img src="resources/img/unidataLogo.jpg" alt="Unidata logo" width="60" height="60" align="texttop" /> The <a href="http://www.unidata.ucar.edu/">Unidata Program Center</a> is managed by the <a href="http://www.ucar.edu/">University Corporation for Atmospheric Research</a>, and is funded by the <a href="http://www.nsf.gov/">National Science Foundation</a>.</p>
-</body>
-</html>
+   
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+  </body>
+ </html>
