@@ -35,6 +35,7 @@ h3 {
 
 .error {
  color: #FF0000;
+ display: block;
 }
 
 pre {

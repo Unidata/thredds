@@ -38,6 +38,7 @@ import edu.ucar.unidata.wmotables.domain.Table;
 import edu.ucar.unidata.wmotables.domain.User;
 import edu.ucar.unidata.wmotables.service.TableManager;
 import edu.ucar.unidata.wmotables.service.UserManager;
+import edu.ucar.unidata.wmotables.service.UserValidator;
 
 /**
  * Controller to handle and modify a WMO table. 
@@ -51,6 +52,8 @@ public class TableController implements HandlerExceptionResolver {
     private UserManager userManager;
     @Resource(name="tableManager")
     private TableManager tableManager;
+    @Resource(name="userValidator")
+    private UserValidator userValidator;
 
     private String authName;
 
@@ -228,16 +231,17 @@ public class TableController implements HandlerExceptionResolver {
      */
     @RequestMapping(value="/table/hide", method=RequestMethod.POST)
     public ModelAndView hideTable(Table table, BindingResult result, Model model) throws AccessDeniedException {  
+        int visibility = table.getVisibility();
+        table = tableManager.lookupTable(table.getTableId());
         // The first thing we do is validate that the user has permission to create a table
         User user = userManager.lookupUser(table.getUserId()); 
         if (isAuthorized(user.getUserName())) {
-            if (table.getVisibility() == 1) {
+            if (visibility == 1) {
                 table.setVisibility(0);
             } else {
                 table.setVisibility(1);
             }
             tableManager.toggleTableVisibility(table);
-            table = tableManager.lookupTable(table.getTableId());
             model.addAttribute("table", table);         
             model.addAttribute("user", user);     
             return new ModelAndView(new RedirectView("/table/" + table.getChecksum(), true));

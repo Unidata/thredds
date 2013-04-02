@@ -4,6 +4,11 @@ import java.util.Date;
 import java.util.List;
 import java.io.Serializable;
 
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  * Object representing a User.  
  *
@@ -14,11 +19,19 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     private int userId;
+    @NotEmpty 
+    @Size(min = 6, max = 50)
     private String userName;
     private String password;
     private int accessLevel;
+    @NotEmpty 
+    @Email
     private String emailAddress;
+    @NotEmpty 
+    @Size(min = 8, max = 100)
     private String fullName;
+    @NotEmpty 
+    @Size(min = 3, max = 100)
     private String affiliation;
     private Date dateCreated;
     private Date dateModified;

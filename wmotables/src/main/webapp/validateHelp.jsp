@@ -1,22 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Validation Help</title>
-<style type="text/css">
-<!--
-.style1 {color: #990000}
-.style2 {color: #990000; font-weight: bold; }
--->
-</style>
-</head>
-<html>
+<%@ include file="/WEB-INF/views/include/tablibs.jsp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ <html>
   <head>
-    <title>CdmValidation</title>
+   <title><spring:message code="global.title"/>: Validation Help</title>
+<%@ include file="/WEB-INF/views/include/resources.jsp" %>
   </head>
-  <body bgcolor="#FFFFFF">
-    <LINK TYPE="text/css" HREF="/thredds/upc.css" REL="StyleSheet" />
+  <body> 
+<%@ include file="/WEB-INF/views/include/header.jsp" %>
+
     <h1>BUFR Record Validator Help    </h1>
   <hr>
   <p class="style2">A successful validation looks like this: </p>
@@ -253,14 +244,8 @@
           <br>
       </li>
     </ol>
-    <pre>&nbsp;    
- </pre>
-    <hr WIDTH="100%">
-    <address>
-    <a href="NetcdfUsers.htm"><img src="images/nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 13, 2008
-    </address>
-    <blockquote>&nbsp;</blockquote>
+   
+<%@ include file="/WEB-INF/views/include/footer.jsp" %>
   </body>
-</html>
-
+ </html>
 
