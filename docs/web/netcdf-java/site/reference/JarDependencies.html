@@ -15,8 +15,8 @@ dl {margin: 10px 5px 5px 15px;}
 <hr />
 <h2>Version 4.3<a name="v43" id="v43"></a></h2>
 <h3>Which jar file should I use?</h3>
-<p>1. Simplest is to use <strong>netcdfAll-{version}.jar</strong>. This includes all other  jars, and uses JDK logging. Use it when you want all the capabilities of the netCDF-Java/CDM library, and are not concerned about jar size and compatiblity with other libraries.</p>
-<p>2. The <strong>netcdf-{version}.jar</strong> implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netCDF-Java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
+<p>1. Simplest is to use <strong>netcdfAll-{version}.jar</strong>. This includes all other  jars, and uses JDK logging. Use it when you want all the capabilities of the netCDF-Java/CDM library, and are not concerned about jar size and compatiblity with other libraries. Use maven to package your own custom .jar files if you need to.</p>
+<p>2. The <strong>netcdf-{version}.jar</strong> implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netCDF-Java library as part of a bigger system, such as a server. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
 <ol>
   <li>Always include <strong>netcdf-{version}.jar<strong>,<strong> jdom.jar, <strong>jodatime.jar</strong></strong>, </strong></strong> and a logger</li>
   <li>Optionally include:
