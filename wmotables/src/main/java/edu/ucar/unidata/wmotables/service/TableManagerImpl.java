@@ -132,19 +132,13 @@ public class TableManagerImpl implements TableManager {
         table.setChecksum(checksum);
         table.setDateCreated(new Date(System.currentTimeMillis()));
         table.setDateModified(new Date(System.currentTimeMillis()));
+        tableDao.createTable(table);
         FileOutputStream outputStream = null; 
         try {
-            File file = new File(tableStashDir + "/" + table.getOriginalName());
+            File file = new File(tableStashDir + "/" + table.getChecksum());
             outputStream = new FileOutputStream(file); 
-            outputStream.write(fileData);           
-            String mimeType = new MimetypesFileTypeMap().getContentType(file);
-            table.setMimeType(mimeType);
+            outputStream.write(fileData);
             outputStream.flush();
-            if (file.renameTo(new File(tableStashDir + "/" + checksum))) {
-                tableDao.createTable(table);  
-            } else {
-                throw new IOException("Unable to rename file: " + file);
-            }
         } finally {
             outputStream.close();
         }

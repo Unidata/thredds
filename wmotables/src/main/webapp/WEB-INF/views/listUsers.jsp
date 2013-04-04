@@ -10,6 +10,13 @@
    <h3><spring:message code="user.list.title"/></h3>
    <p><spring:message code="user.list.message"/></p>
 
+
+   <c:choose>
+    <c:when test="${error != null}">
+     <p class="error"><b><c:out value="${error}" /></b></p>
+    </c:when>
+   </c:choose>
+
    <table class="list"> 
     <c:choose>
      <c:when test="${fn:length(users) gt 0}">

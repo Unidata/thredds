@@ -12,7 +12,7 @@
     <p><c:out value="${error}" /></p>
    </div>
    <form action="${baseUrl}/j_spring_security_check" method="POST">
-    <ul>   
+    <ul class="format">   
      <li>
       <label>
        User Name:<br />

@@ -5,7 +5,7 @@
    <title>
     <spring:message code="global.title"/>:
     <c:choose>
-     <c:when test="${table != null}">
+     <c:when test="${formAction == 'update'}">
       <spring:message code="table.update.title"/>:
       <c:out value="${table.checksum}" />
      </c:when>
@@ -21,7 +21,7 @@
 
 
    <c:choose>
-    <c:when test="${table != null}">
+    <c:when test="${formAction == 'update'}">
      <h3><spring:message code="table.update.title"/></h3>
      <p><spring:message code="table.update.message"/></p>
     </c:when>
@@ -31,12 +31,18 @@
     </c:otherwise>
    </c:choose>
 
+
+   <c:choose>
+    <c:when test="${error != null}">
+     <p class="error"><b><c:out value="${error}" /></b></p>
+    </c:when>
+   </c:choose>
    
-   <form action="${baseUrl}/table/<c:out value="${formAction}" />" method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="userId" value="<c:out value="${user.userId}" />"/>
+   <form:form action="${baseUrl}/table/${formAction}" commandName="table" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="userId" value="${user.userId}"/>
     <c:choose>
-     <c:when test="${table != null}">
-      <input type="hidden" name="tableId" value="<c:out value="${table.tableId}" />"/>
+     <c:when test="${formAction == 'update'}">
+      <form:hidden path="tableId" />
      </c:when>
     </c:choose>   
 
@@ -44,38 +50,39 @@
      <thead>
       <tr>
        <c:choose>
-        <c:when test="${table == null}">
+        <c:when test="${formAction == 'create'}">
          <th>
-          Upload Table
+          Upload Table  <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.uploadTable.description"/>"/>
          </th>
         </c:when>
        </c:choose>
        <th>
-        Title
+        Title <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.title.description"/>"/>
        </th>
        <th>
-        Description
+        Description <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.description.description"/>"/>
        </th>
        <th>
-        Version
+        Version <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.version.description"/>"/>
+        <small class="deemph">(optional)</small>
        </th>
        <th>
-        Table Type
+        Table Type <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.tableType.description"/>"/>
        </th>
        <c:choose>
-        <c:when test="${table != null}">
+        <c:when test="${formAction == 'update'}">
          <th>
-          Checksum
+          Checksum <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.checksum.description"/>"/>
          </th>
         </c:when>
        </c:choose>
        <th>
-        Owner
+        Owner <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.owner.description"/>"/>
        </th>
        <c:choose>
-        <c:when test="${table != null}">
+        <c:when test="${formAction == 'update'}">
          <th>
-           Date Created
+           Date Created <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.dateCreated.description"/>"/>
          </th>
         </c:when>
        </c:choose>
@@ -84,104 +91,36 @@
        </th>
       </tr>
      </thead>
+
+
      <tbody>   
       <tr>
        <c:choose>
-        <c:when test="${table == null}">
+        <c:when test="${formAction == 'create'}">
          <td>
-          <input type="file" name="file" value=""/>
+          <form:errors path="file" cssClass="error" />
+          <input type="file" name="file"/>
          </td>
         </c:when>
        </c:choose>
        <td>
-        <input type="text" 
-              name="title" 
-              <c:choose>
-               <c:when test="${table != null}">
-                value="<c:out value="${table.title}" />"
-               </c:when>
-               <c:otherwise>
-                 value=""
-               </c:otherwise>
-              </c:choose>
-         />
+        <form:errors path="title" cssClass="error" />
+        <form:input path="title"/>
        </td>
        <td>
-        <input type="text" 
-              name="description" 
-              <c:choose>
-               <c:when test="${table != null}">
-                value="<c:out value="${table.description}" />"
-               </c:when>
-               <c:otherwise>
-                 value=""
-               </c:otherwise>
-              </c:choose>
-         />
+        <form:errors path="description" cssClass="error" />
+        <form:textarea path="description" rows="2" cols="30" />
        </td>
        <td>
-        <input type="text" 
-              name="version" 
-              <c:choose>
-               <c:when test="${table != null}">
-                value="<c:out value="${table.version}" />"
-               </c:when>
-               <c:otherwise>
-                 value=""
-               </c:otherwise>
-              </c:choose>
-         />
+        <form:errors path="version" cssClass="error" />
+        <form:input path="version"/>
        </td>
        <td>
-               <select name="tableType">
-        <option value="BUFR"
-         <c:choose>
-          <c:when test="${table != null}">
-           <c:choose>
-            <c:when test="${table.tableType eq BUFR}">
-             selected
-            </c:when>
-           </c:choose>
-          </c:when>
-         </c:choose>
-        >BUFR</option>
-        <option value="GRIB-1"
-         <c:choose>
-          <c:when test="${table != null}">
-           <c:choose>
-            <c:when test="${table.tableType eq GRIB1}">
-             selected
-            </c:when>
-           </c:choose>
-          </c:when>
-         </c:choose>
-        >GRIB-1</option>
-        <option value="GRIB-2"
-         <c:choose>
-          <c:when test="${table != null}">
-           <c:choose>
-            <c:when test="${table.tableType eq GRIB2}">
-             selected
-            </c:when>
-           </c:choose>
-          </c:when>
-         </c:choose>
-        >GRIB-2</option>
-        <option value="other"
-         <c:choose>
-          <c:when test="${table != null}">
-           <c:choose>
-            <c:when test="${table.tableType eq other}">
-             selected
-            </c:when>
-           </c:choose>
-          </c:when>
-         </c:choose>
-        >other</option>
-       </select>
+        <form:errors path="tableType" cssClass="error" />
+        <form:select path="tableType" items="${tableTypeList}" />
        </td>
        <c:choose>
-        <c:when test="${table != null}">
+        <c:when test="${formAction == 'update'}">
          <td>
           <c:out value="${table.checksum}" />
          </td>
@@ -191,19 +130,19 @@
         <c:out value="${user.userName}" />
        </td>
        <c:choose>
-        <c:when test="${table != null}">
+        <c:when test="${formAction == 'update'}">
          <td>
           <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
          </td>
         </c:when>
        </c:choose>
        <td>
-        <input type="submit" value="<c:out value="${formAction}" />" />    
+        <input type="submit" value="${formAction}" />    
        </td>
       </tr>
      </tbody>
     </table> 
-   </form>
+   </form:form>
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
   </body>
  </html>

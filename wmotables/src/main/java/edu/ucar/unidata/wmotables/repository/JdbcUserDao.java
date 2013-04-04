@@ -1,17 +1,19 @@
 package edu.ucar.unidata.wmotables.repository;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import org.springframework.dao.RecoverableDataAccessException;
 
 import edu.ucar.unidata.wmotables.domain.User;
 
@@ -20,6 +22,8 @@ import edu.ucar.unidata.wmotables.domain.User;
  */
 
 public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
+
+    protected static Logger logger = Logger.getLogger(JdbcUserDao.class);
 
     private SimpleJdbcInsert insertActor;
 
@@ -34,7 +38,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         String sql = "SELECT * FROM users WHERE userId = ?";
         List<User> users = getJdbcTemplate().query(sql, new UserMapper(), userId);        
         if (users.isEmpty()) {
-            throw new RecoverableDataAccessException("Unable to look up user. No user found in the database for userId: " + new Integer(userId).toString());
+            throw new RecoverableDataAccessException("Unable to find user with Id: " + new Integer(userId).toString());
         }   
         return users.get(0);
     }
@@ -50,7 +54,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         String sql = "SELECT * FROM users WHERE userName = ?";
         List<User> users = getJdbcTemplate().query(sql, new UserMapper(), userName);        
         if (users.isEmpty()) {
-            throw new RecoverableDataAccessException("Unable to look up user. No user found in the database for userName: " + userName);
+            throw new RecoverableDataAccessException("Unable to find user with user name: " + userName);
         }   
         return users.get(0);
     }
@@ -87,7 +91,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         String sql = "DELETE FROM users WHERE userId = ?";
         int rowsAffected  = getJdbcTemplate().update(sql, userId);
         if (rowsAffected <= 0) {
-            throw new RecoverableDataAccessException("Unable to delete user. No user found in the database for userId: " + new Integer(userId).toString());
+            throw new RecoverableDataAccessException("Unable to delete user. No user found with Id: " + new Integer(userId).toString());
         }   
     }
 
@@ -101,7 +105,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
         String sql = "DELETE FROM users WHERE userName = ?";
         int rowsAffected  = getJdbcTemplate().update(sql, userName);
         if (rowsAffected <= 0) {
-            throw new RecoverableDataAccessException("Unable to delete user. No user found in the database for userName: " + userName);
+            throw new RecoverableDataAccessException("Unable to delete user. No user found with user name: " + userName);
         }   
     }
 
@@ -112,10 +116,10 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
      * @throws RecoverableDataAccessException  If the user we are trying to create already exists.
      */
     public void createUser(User user) {
-        String sql = "SELECT * FROM users WHERE emailAddress = ?";
-        List<User> users = getJdbcTemplate().query(sql, new UserMapper(), user.getEmailAddress());        
+        String sql = "SELECT * FROM users WHERE userName = ?";
+        List<User> users = getJdbcTemplate().query(sql, new UserMapper(), user.getUserName());        
         if (!users.isEmpty()) {
-            throw new RecoverableDataAccessException("User already exists: " + user.toString());
+            throw new RecoverableDataAccessException("User with user name \"" +  user.getUserName() + "\" already exists.");
         } else {
             this.insertActor = new SimpleJdbcInsert(getDataSource()).withTableName("users").usingGeneratedKeyColumns("userId");
             SqlParameterSource parameters = new BeanPropertySqlParameterSource(user);
@@ -141,7 +145,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
             user.getUserId()
         });
         if (rowsAffected  <= 0) {
-            throw new RecoverableDataAccessException("Unable to update user.  No entry found in the database for user: " + user.toString());
+            throw new RecoverableDataAccessException("Unable to update user.  No user for with user name: " + user.getUserName());
         }     
     } 
 
@@ -160,7 +164,7 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
             user.getUserId()
         });
         if (rowsAffected  <= 0) {
-            throw new RecoverableDataAccessException("Unable to update user.  No entry found in the database for user: " + user.toString());
+            throw new RecoverableDataAccessException("Unable to update user.  User not found: " + user.toString());
         }     
     } 
 

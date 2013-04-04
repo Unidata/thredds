@@ -7,7 +7,7 @@
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
-<h1> Links and Resources</h1>
+<h3> Links and Resources</h3>
 <hr>
 <h2>Web Services</h2>
 <h3>BUFR Message Validator Services</h3>

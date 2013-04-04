@@ -9,6 +9,14 @@
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
    <h3><spring:message code="user.view.title"/>: <c:out value="${user.userName}" /></h3>
    <p><spring:message code="user.view.message"/></p>
+
+   <c:choose>
+    <c:when test="${error != null}">
+     <p class="error"><b><c:out value="${error}" /></b></p>
+    </c:when>
+   </c:choose>
+
+
    <table>    
     <thead>
      <tr>
@@ -142,17 +150,17 @@
         </c:choose>
        >
          <td>
-          <a href="${baseUrl}/table/<c:out value="${table.title}" />">
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
            <c:out value="${table.title}" />
           </a>
          </td>
          <td>
-          <a href="${baseUrl}/table/<c:out value="${table.description}" />">
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
            <c:out value="${table.description}" />
           </a>
          </td>
          <td>
-          <a href="${baseUrl}/table/<c:out value="${table.tableType}" />">
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
            <c:out value="${table.tableType}" />
           </a>
          </td>
@@ -162,7 +170,7 @@
           </a>
          </td>
          <td>
-          <a href="${baseUrl}/table/<c:out value="${table.dateCreated}" />">
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
            <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/></a>
          </td>
         </tr>

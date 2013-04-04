@@ -9,6 +9,13 @@
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
    <h3><spring:message code="table.view.title"/></h3>
    <p><spring:message code="table.view.message"/></p>
+
+   <c:choose>
+    <c:when test="${error != null}">
+     <p class="error"><b><c:out value="${error}" /></b></p>
+    </c:when>
+   </c:choose>
+
    <table> 
     <thead>
      <tr>

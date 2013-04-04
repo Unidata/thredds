@@ -7,6 +7,7 @@
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
+
 <h3>Summary report on the suitability of GRIB/BUFR for archiving data</h3>
 <p><em>John Caron, Feb 2011</em></p>
 <p> A major weakness of the BUFR and GRIB formats are their dependence on   external tables. For GRIB, one must have the correct tables in order to   understand the meaning of the data. For BUFR, the correct tables are   needed both to understand the meaning of the data and also to parse the data.   An important design flaw in these formats is that there is no foolproof   way to know when you have the correct tables, that is, for a reader to   know for certain which tables the writer used.<br />
@@ -29,7 +30,7 @@
 </ol>
 <p>Difficulties with tables are further compounded by mistakes in encoding and decoding software. Therefore I would also recommend that:</p>
 <ul>
-  <li>    The WMO or its delegate creates reference software that can be used to   validate that a BUFR/GRIB message is well-formed,&nbsp; and parses the   message and applies the canonical tables, returning a result that can be   used to validate other software. This could also be a web service, in   addition to being an open-source library. The reference software can be   written in any language and need not be high performance. </li>
+  <li>The WMO or its delegate creates reference software that can be used to   validate that a BUFR/GRIB message is well-formed,&nbsp; and parses the   message and applies the canonical tables, returning a result that can be   used to validate other software. This could also be a web service, in   addition to being an open-source library. The reference software can be   written in any language and need not be high performance. </li>
 </ul>
    
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>

@@ -44,9 +44,7 @@
   </bean>     
 
   <!-- File upload multipart resolver -->
-  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-    <property name="maxUploadSize" value="1048576"/>
-  </bean>
+  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 
   <!-- Message source resolver to use messages.properties file in the 'war/WEB-INF/classes' directory -->
   <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
@@ -74,9 +72,6 @@
       logout-url="/auth/logout"/>
   </security:http>
   
-
-
-
   <!-- Declare an authentication-manager to use a custom userDetailsService -->
   <security:authentication-manager>
     <security:authentication-provider user-service-ref="userDetailsService">
@@ -86,6 +81,8 @@
   
   <!-- Use a Md5 encoder since the user's passwords are stored as Md5 in the database -->
   <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
+
+
 
   <!-- DAO injection -->
 

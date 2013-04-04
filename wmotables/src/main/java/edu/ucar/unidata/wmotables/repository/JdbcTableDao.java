@@ -35,7 +35,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         String sql = "SELECT * FROM tables WHERE tableId = ?";
         List<Table> tables = getJdbcTemplate().query(sql, new TableMapper(), tableId); 
         if (tables.isEmpty()) {
-            throw new RecoverableDataAccessException("Unable to look up table. No table found in the database for tableId: " + new Integer(tableId).toString());
+            throw new RecoverableDataAccessException("Unable to find table with Id: " + new Integer(tableId).toString());
         }         
         return tables.get(0);
     }
@@ -51,7 +51,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         String sql = "SELECT * FROM tables WHERE checksum = ?";
         List<Table> tables = getJdbcTemplate().query(sql, new TableMapper(), checksum); 
         if (tables.isEmpty()) {
-            throw new RecoverableDataAccessException("Unable to look up table. No table found in the database for checksum: " + checksum);
+            throw new RecoverableDataAccessException("Unable to find table with checksum: " + checksum);
         }         
         return tables.get(0);
     }
@@ -116,7 +116,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
             table.getTableId()
         });
         if (rowsAffected <= 0) {
-            throw new RecoverableDataAccessException("Unable to toggle table visibility. No entry found in the database for table: " + table.toString());
+            throw new RecoverableDataAccessException("Unable to toggle table visibility. No table found with checksum: " + table.getChecksum());
         }
     }
 
@@ -130,7 +130,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
         String sql = "SELECT * FROM tables WHERE checksum = ?";
         List<Table> tables = getJdbcTemplate().query(sql, new TableMapper(), table.getChecksum());        
         if (!tables.isEmpty()) {
-            throw new RecoverableDataAccessException("Table already exists: " + table.toString());
+            throw new RecoverableDataAccessException("An identical table has already been uploaded.");
         } else {
             this.insertActor = new SimpleJdbcInsert(getDataSource()).withTableName("tables").usingGeneratedKeyColumns("tableId");
             SqlParameterSource parameters = new BeanPropertySqlParameterSource(table);
@@ -157,7 +157,7 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
             table.getTableId()
         });
         if (rowsAffected <= 0) {
-            throw new RecoverableDataAccessException("Unable to update table.  No entry found in the database for table: " + table.toString());
+            throw new RecoverableDataAccessException("Unable to update table.  No table found with checksum: " + table.getChecksum());
         }
     } 
 

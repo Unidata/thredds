@@ -45,6 +45,7 @@ public class Table implements Serializable {
      */
     public void setFile(CommonsMultipartFile file) {
         setOriginalName(file.getOriginalFilename());
+        setMimeType(file.getContentType());
         this.file = file;
     }
 

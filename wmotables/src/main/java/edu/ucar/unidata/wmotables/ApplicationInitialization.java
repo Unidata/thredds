@@ -37,7 +37,7 @@ public class ApplicationInitialization implements ServletContextListener {
 
     protected static Logger logger = Logger.getLogger(ApplicationInitialization.class);
 
-    private static final String DEFAULT_HOME = System.getProperty("catalina.home") + "/content/wmotables";
+    private static final String DEFAULT_HOME = System.getProperty("catalina.base") + "/content/wmotables";
     private static final String DEFAULT_DATABASE = "derby";
 
     private String wmotablesHome = null;
@@ -47,7 +47,7 @@ public class ApplicationInitialization implements ServletContextListener {
      * Find the application home (wmotables.home) and make sure it exists.  if not, create it.
      * Find out what database was selected for use and create the database if it doesn't exist.
      * 
-     * @param servletContextEvent  The event class.
+     * @param sce  The event class.
      */
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent)  {
@@ -183,12 +183,12 @@ public class ApplicationInitialization implements ServletContextListener {
         String createUsersTableSQL = "CREATE TABLE users" +
                                      "(" +
                                      "userId INTEGER primary key not null GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
-                                     "userName VARCHAR(100) not null, " +
+                                     "userName VARCHAR(50) not null, " +
                                      "password CHAR(32) not null, " +
                                      "accessLevel INTEGER not null, " +
-                                     "emailAddress VARCHAR(100) not null, " +
-                                     "fullName VARCHAR(100) not null, " +
-                                     "affiliation VARCHAR(100) not null, " +
+                                     "emailAddress VARCHAR(75) not null, " +
+                                     "fullName VARCHAR(75) not null, " +
+                                     "affiliation VARCHAR(75) not null, " +
                                      "dateCreated TIMESTAMP not null, " +
                                      "dateModified TIMESTAMP not null" +
                                      ")";
@@ -196,12 +196,12 @@ public class ApplicationInitialization implements ServletContextListener {
         String createTablesTableSQL = "CREATE TABLE tables" +
                                       "(" +
                                       "tableId INTEGER primary key not null GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
-                                      "title VARCHAR(100) not null, " +
+                                      "title VARCHAR(75) not null, " +
                                       "description VARCHAR(255) not null, " +
                                       "originalName VARCHAR(100) not null, " +
-                                      "version VARCHAR(100), " + 
+                                      "version VARCHAR(75), " + 
                                       "mimeType VARCHAR(100) not null, " +
-                                      "tableType VARCHAR(100), " +
+                                      "tableType VARCHAR(100) not null, " +
                                       "checkSum CHAR(32) not null, " +
                                       "visibility INTEGER not null, " +
                                       "userId INTEGER not null, " +

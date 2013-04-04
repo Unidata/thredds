@@ -5,7 +5,7 @@
    <title>
     <spring:message code="global.title"/>:
     <c:choose>
-     <c:when test="${user != null}">
+     <c:when test="${formAction == 'update'}">
       <spring:message code="user.update.title"/>:
       <c:out value="${user.userName}" />
      </c:when>
@@ -31,6 +31,12 @@
     </c:otherwise>
    </c:choose>
 
+   <c:choose>
+    <c:when test="${error != null}">
+     <p class="error"><b><c:out value="${error}" /></b></p>
+    </c:when>
+   </c:choose>
+
    <form:form action="${baseUrl}/user/${formAction}" commandName="user" method="POST">
     <c:choose>
      <c:when test="${formAction == 'update'}">
@@ -42,21 +48,21 @@
      <thead>
       <tr>
        <th>
-        User Name
+        User Name <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.userName.description"/>"/>
        </th>
        <th>
-        Full Name
+        Full Name <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.fullName.description"/>"/>
        </th>
        <th>
-        Email Address
+        Email Address <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.emailAddress.description"/>"/>
        </th>
        <th>
-        Affiliation
+        Affiliation <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.affiliation.description"/>"/>
        </th>
        <c:choose>
         <c:when test="${user.dateCreated != null}">
          <th>
-          Date Created
+          Date Created <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.dateCreated.description"/>"/>
          </th>
         </c:when>
        </c:choose>
@@ -81,12 +87,11 @@
       </tr>
      </thead>
 
-
      <tbody> 
       <tr>
        <td>
         <c:choose>
-         <c:when test="${formAction == update}">
+         <c:when test="${formAction == 'update'}">
           <c:out value="${user.userName}" />
           <form:hidden path="userName" />
          </c:when>
