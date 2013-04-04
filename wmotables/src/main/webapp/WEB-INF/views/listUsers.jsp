@@ -23,19 +23,19 @@
       <thead>
        <tr>
         <th>
-         User Name
+         <spring:message code="user.userName"/>
         </th>
         <th>
-         Full Name
+         <spring:message code="user.fullName"/>
         </th>
         <th>
-         Email Address
+         <spring:message code="user.emailAddress"/>
         </th>
         <th>
-         Affiliation
-        </th>
+         <spring:message code="user.affiliation"/>
+        </th>        
         <th>
-         Date Created
+         <spring:message code="user.dateCreated"/> 
         </th>
        </tr>
       </thead>

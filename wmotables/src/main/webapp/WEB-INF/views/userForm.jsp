@@ -48,21 +48,21 @@
      <thead>
       <tr>
        <th>
-        User Name <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.userName.description"/>"/>
+        <spring:message code="user.userName"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.userName.description"/>"/>
        </th>
        <th>
-        Full Name <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.fullName.description"/>"/>
+        <spring:message code="user.fullName"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.fullName.description"/>"/>
        </th>
        <th>
-        Email Address <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.emailAddress.description"/>"/>
+        <spring:message code="user.emailAddress"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.emailAddress.description"/>"/>
        </th>
        <th>
-        Affiliation <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.affiliation.description"/>"/>
+        <spring:message code="user.affiliation"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.affiliation.description"/>"/>
        </th>
        <c:choose>
         <c:when test="${user.dateCreated != null}">
          <th>
-          Date Created <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.dateCreated.description"/>"/>
+          <spring:message code="user.dateCreated"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.dateCreated.description"/>"/>
          </th>
         </c:when>
        </c:choose>
@@ -71,13 +71,13 @@
          <c:choose>
           <c:when test="${user.userName eq authUserName}">
            <th>
-            Action
+            <spring:message code="form.action.title"/>
            </th>
           </c:when>
           <c:otherwise>
            <sec:authorize access="hasRole('ROLE_ADMIN')">
             <th>
-             Action
+             <spring:message code="form.action.title"/>
             </th>
            </sec:authorize>
           </c:otherwise>

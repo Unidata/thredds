@@ -21,32 +21,32 @@
     <thead>
      <tr>
       <th>
-       User Name
+       <spring:message code="user.userName"/>
       </th>
       <th>
-       Full Name
+       <spring:message code="user.fullName"/>
       </th>
       <th>
-       Email Address
+       <spring:message code="user.emailAddress"/>
       </th>
       <th>
-       Affiliation
-      </th>
+       <spring:message code="user.affiliation"/>
+      </th>   
       <th>
-       Date Created
+       <spring:message code="user.dateCreated"/> 
       </th>
       <c:choose>
        <c:when test="${loggedIn}">
         <c:choose>
          <c:when test="${user.userName eq authUserName}">
           <th>
-           Actions
+           <spring:message code="form.action.title"/>
           </th>
          </c:when>
          <c:otherwise>
           <sec:authorize access="hasRole('ROLE_ADMIN')">
            <th>
-            Actions
+            <spring:message code="form.action.title"/>
            </th>
           </sec:authorize>
          </c:otherwise>
@@ -124,19 +124,19 @@
       <thead>
        <tr>
         <th>
-         Title
+         <spring:message code="table.title"/>
         </th>
         <th>
-         Description
+         <spring:message code="table.description"/>
         </th>
         <th>
-         Table Type
+         <spring:message code="table.tableType"/>
         </th>
         <th>
-         Checksum
+         <spring:message code="table.checksum"/>
         </th>
         <th>
-         Date Created
+         <spring:message code="table.dateCreated"/> 
         </th>
        </tr>
       </thead>

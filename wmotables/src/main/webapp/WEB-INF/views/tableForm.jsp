@@ -52,42 +52,42 @@
        <c:choose>
         <c:when test="${formAction == 'create'}">
          <th>
-          Upload Table  <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.uploadTable.description"/>"/>
+          <spring:message code="table.uploadTable"/>  <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.uploadTable.description"/>"/>
          </th>
         </c:when>
        </c:choose>
        <th>
-        Title <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.title.description"/>"/>
+        <spring:message code="table.title"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.title.description"/>"/>
        </th>
        <th>
-        Description <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.description.description"/>"/>
+        <spring:message code="table.description"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.description.description"/>"/>
        </th>
        <th>
-        Version <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.version.description"/>"/>
+        <spring:message code="table.version"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.version.description"/>"/>
         <small class="deemph">(optional)</small>
        </th>
        <th>
-        Table Type <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.tableType.description"/>"/>
+        <spring:message code="table.tableType"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.tableType.description"/>"/>
        </th>
        <c:choose>
         <c:when test="${formAction == 'update'}">
          <th>
-          Checksum <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.checksum.description"/>"/>
+          <spring:message code="table.checksum"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.checksum.description"/>"/>
          </th>
         </c:when>
        </c:choose>
        <th>
-        Owner <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.owner.description"/>"/>
+        <spring:message code="table.owner"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.owner.description"/>"/>
        </th>
        <c:choose>
         <c:when test="${formAction == 'update'}">
          <th>
-           Date Created <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.dateCreated.description"/>"/>
+           <spring:message code="table.dateCreated"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.dateCreated.description"/>"/>
          </th>
         </c:when>
        </c:choose>
        <th>
-        Action
+        <spring:message code="form.action.title"/>
        </th>
       </tr>
      </thead>

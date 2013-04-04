@@ -22,22 +22,22 @@
       <thead>
        <tr>
         <th>
-         Title
+         <spring:message code="table.title"/>
         </th>
         <th>
-         Description
+         <spring:message code="table.description"/>
         </th>
         <th>
-         Table Type
+         <spring:message code="table.tableType"/>
         </th>
         <th>
-         Checksum
+         <spring:message code="table.checksum"/>
         </th>
         <th>
-         Owner
+         <spring:message code="table.owner"/>
         </th>
         <th>
-         Date Created
+         <spring:message code="table.dateCreated"/> 
         </th>
        </tr>
       </thead>

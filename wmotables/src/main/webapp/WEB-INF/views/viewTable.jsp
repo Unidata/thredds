@@ -20,41 +20,41 @@
     <thead>
      <tr>
       <th>
-       Title
+       <spring:message code="table.title"/>
       </th>
       <th>
-       Description
+       <spring:message code="table.description"/>
       </th>
       <th>
-       Version
+       <spring:message code="table.version"/>
       </th>
       <th>
-       Table Type
+       <spring:message code="table.tableType"/>
       </th>
       <th>
-       Checksum
+       <spring:message code="table.checksum"/>
       </th>
       <th>
-       Owner
+       <spring:message code="table.owner"/>
       </th>
       <th>
-       Date Created
+       <spring:message code="table.dateCreated"/> 
       </th>
       <th>
-       View Table
+       <spring:message code="table.viewTable"/> 
       </th>
       <c:choose>
        <c:when test="${loggedIn}">
         <c:choose>
          <c:when test="${user.userName eq authUserName}">
           <th>
-           Actions
+           <spring:message code="form.action.title"/>
           </th>
          </c:when>
          <c:otherwise>
           <sec:authorize access="hasRole('ROLE_ADMIN')">
            <th>
-            Actions
+            <spring:message code="form.action.title"/>
            </th>
           </sec:authorize>
          </c:otherwise>
