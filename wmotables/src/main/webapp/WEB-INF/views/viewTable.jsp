@@ -26,10 +26,19 @@
        <spring:message code="table.description"/>
       </th>
       <th>
-       <spring:message code="table.version"/>
+       <spring:message code="table.tableType"/>
       </th>
       <th>
-       <spring:message code="table.tableType"/>
+       <spring:message code="table.localVersion"/>
+      </th>
+      <th>
+       <spring:message code="table.center"/>
+      </th>
+      <th>
+       <spring:message code="table.subCenter"/>
+      </th>
+      <th>
+       <spring:message code="table.originalName"/>
       </th>
       <th>
        <spring:message code="table.checksum"/>
@@ -41,7 +50,7 @@
        <spring:message code="table.dateCreated"/> 
       </th>
       <th>
-       <spring:message code="table.viewTable"/> 
+       <spring:message code="table.tableActions"/> 
       </th>
       <c:choose>
        <c:when test="${loggedIn}">
@@ -78,10 +87,19 @@
        <c:out value="${table.description}" />
       </td>
       <td>
-       <c:out value="${table.version}" />
+       <c:out value="${table.tableType}" />
       </td>
       <td>
-       <c:out value="${table.tableType}" />
+       <c:out value="${table.localVersion}" />
+      </td>
+      <td>
+       <c:out value="${table.center}" />
+      </td>
+      <td>
+       <c:out value="${table.subCenter}" />
+      </td>
+      <td>
+       <c:out value="${table.originalName}" />
       </td>
       <td>
        <c:out value="${table.checksum}" />
@@ -94,7 +112,11 @@
       </td>
       <td>
        <form action="${baseUrl}/table/download/<c:out value="${table.checksum}" />" method="GET">
-        <input class="action download" type="submit" value="download" />        
+        <input class="action view" type="submit" value="View" />        
+       </form>
+
+       <form action="${baseUrl}/table/download/<c:out value="${table.checksum}" />" method="GET">
+        <input class="action download" type="submit" value="Download" />        
        </form>
       </td>
 

@@ -7,18 +7,20 @@
   </head>
   <body> 
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
-  <h1>WMO master table differences </h1>
+
+  <h3>WMO Master Table Differences</h3>
+
   <p>This is a summary of the differences in scale,offset and/or bit  width among  versions 2 through 13 of the WMO master table, as obtained from the &quot;MEL BUFR&quot; tables (Master Environmental Library / US DoD), which are part oif the GEMPAK / N-AWIPS release.</p>
-  <p>The <a href="http://mel.dmso.mil/mel_tools/bufr.jsp">MEL BUFR site</a> seeems to be non-operational</p>
-  <p>The difference is always  with the current version (13); &quot;B3M-000-003-B.diff&quot; for example means  it is the difference with mel-bufr table version 3. For example the  line </p>
+  <p>The <a href="http://mel.dmso.mil/mel_tools/bufr.jsp">MEL BUFR site</a> seems to be non-operational.</p>
+  <p>The difference is always  with the current version (13); &quot;B3M-000-003-B.diff&quot; for example means  it is the difference with mel-bufr table version 3. For example the line </p>
   <pre>
      0-2-42 
      width 6 != 2 (B2M-000-002-B.diff) 
-     </pre>
+  </pre>
      
-     means that the bit width for field 0-2-42 was 6 for version 2, and 2 for version 13. 
+  <p>means that the bit width for field 0-2-42 was 6 for version 2, and 2 for version 13.</p> 
      
-   <pre>
+  <pre>
        -------------------------------- 
      
      0-2-42 
@@ -124,32 +126,30 @@
      width 2 != 3 (B2M-000-002-B.diff) 
      width 2 != 3 (B3M-000-003-B.diff) 
      width 2 != 3 (B3M-000-004-B.diff) 
-     width 2 != 3 (B3M-000-005-B.diff) 
+     width 2 != 3 (B3M-000-005-B.diff)      
+   </pre>
      
-     </pre>
-     
-     <p>If we believe these mel-bufr tables (and we havent made some  mistake in analysing them), scale/reference/width seems to be allowed  to change. For example, the last field, 0-29-2, bit width was changed  from 2 to 3 at version 6. If so, then we have no choice but to maintain  versioned code tables, and assume that the version number (BUFR section  1 octet 11) is correct.     </p>
-     <p>Of course the real question is, what values did the coders use? We  have some hope of automatically detecting when bit width is wrong by  counting bits in the message and comparing to the data size. If  scale/offset is wrong, it will take humans and/or more complex  algorithms to detect that. 
-       It would be very helpful to hear what the actual practice is with  tables at the various generating centers. Or to hear that the mel-bufr  tables are wrong, or some other flaw in our conclusion. </p>
-     <p>===========</p>
-     <p>Spot check with ECMF tables B000 00000 00098 006 001.TXT vs
-     B000 00000 00098 013 001.TXT</p>
-     <p>both have:</p>
-     <pre> 002151 RADIOMETER IDENTIFIER                                            CODE TABLE 002151          0            0  11
- 021085 ATSR SEA SURFACE TEMPERATURE ACROSS- TRACK BAND NUMBER           NUMERIC                    0            0   4 
- 022039 METEOROLOGICAL RESIDUAL TIDAL ELEVATION (SURGE OR OFFSET)        M                          3        -5000  12 
- 025050 (missing)
- 025051 AVHRR CHANNEL COMBINATION                                        FLAG TABLE 025051          0            0   7  
+   <p>If we believe these mel-bufr tables (and we havent made some  mistake in analysing them), scale/reference/width seems to be allowed  to change. For example, the last field, 0-29-2, bit width was changed  from 2 to 3 at version 6. If so, then we have no choice but to maintain  versioned code tables, and assume that the version number (BUFR section  1 octet 11) is correct. </p>
+   <p>Of course the real question is, what values did the coders use? We  have some hope of automatically detecting when bit width is wrong by  counting bits in the message and comparing to the data size. If  scale/offset is wrong, it will take humans and/or more complex  algorithms to detect that. It would be very helpful to hear what the actual practice is with  tables at the various generating centers. Or to hear that the mel-bufr  tables are wrong, or some other flaw in our conclusion. </p>
+   <p>===========</p>
+   <p>Spot check with ECMF tables <code>B000 00000 00098 006 001.TXT</code> vs <code>B000 00000 00098 013 001.TXT</code></p>
+   <p>both have:</p>
+   <pre>
+    002151 RADIOMETER IDENTIFIER                                            CODE TABLE 002151          0            0  11
+    021085 ATSR SEA SURFACE TEMPERATURE ACROSS- TRACK BAND NUMBER           NUMERIC                    0            0   4 
+    022039 METEOROLOGICAL RESIDUAL TIDAL ELEVATION (SURGE OR OFFSET)        M                          3        -5000  12 
+    025050 (missing)
+    025051 AVHRR CHANNEL COMBINATION                                        FLAG TABLE 025051          0            0   7  
+   </pre>
+    
+   <p>Differences in ECMF tables <code>B000 00000 00098 002 001.TXT</code> vs <code>B000 00000 00098 013 001.TXT</code></p>
+   <pre>
+    1-22, 4-24, 7-190, 21-17, 25-30 
+   </pre>
+
+   <p>thus all elements possible to check version 6 vs 13 against ECMWF tables failed to verify with the MEL-BUFR tables. So MEL-BUFR may be suspect</p>
 
 
-Differences in ECMF tables B000 00000 00098 002 001.TXT vs B000 00000 00098 013 001.TXT
- 
-  1-22, 4-24, 7-190, 21-17, 25-30 
-
-
-thus all elements possible to check version 6 vs 13 against ECMWF tables failed to verify with the MEL-BUFR tables. So MEL-BUFR may be suspect<br />
-
-</pre>
 
    
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>

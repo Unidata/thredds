@@ -32,8 +32,11 @@
          <spring:message code="user.emailAddress"/>
         </th>
         <th>
-         <spring:message code="user.affiliation"/>
-        </th>        
+         <spring:message code="user.center"/>
+        </th>  
+        <th>
+         <spring:message code="user.subCenter"/>
+        </th>       
         <th>
          <spring:message code="user.dateCreated"/> 
         </th>
@@ -59,7 +62,12 @@
          </td>
          <td>
           <a href="${baseUrl}/user/<c:out value="${user.userName}" />">
-          <c:out value="${user.affiliation}" />
+          <c:out value="${user.center}" />
+          </a>
+         </td>
+         <td>
+          <a href="${baseUrl}/user/<c:out value="${user.userName}" />">
+          <c:out value="${user.subCenter}" />
           </a>
          </td>
          <td>

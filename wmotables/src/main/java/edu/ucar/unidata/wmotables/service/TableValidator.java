@@ -47,7 +47,9 @@ public class TableValidator implements Validator {
         Table table = (Table) obj;
         validateTitle(table.getTitle(), errors);  
         validateDescription(table.getDescription(), errors); 
-        validateVersion(table.getVersion(), errors); 
+        validateLocalVersion(table.getLocalVersion(), errors); 
+        validateCenter(table.getCenter(), errors);
+        validateSubCenter(table.getSubCenter(), errors);
         validateTableType(table.getTableType(), errors);
     }
 
@@ -120,13 +122,43 @@ public class TableValidator implements Validator {
     }
     
     /**
-     * Validates the user input for the version field.
+     * Validates the user input for the local version field.
      * 
      * @param input  The table input to validate.
      * @param error  Object in which to store any validation errors.
      */    
-    public void validateVersion(String input, Errors errors) { 
-        validateInput("version", input, errors); 
+    public void validateLocalVersion(int input, Errors errors) { 
+        if (StringUtils.isBlank(new Integer(input).toString())) {
+            errors.rejectValue("localVersion", "table.error", "Local Version is required!");
+            return;
+        }
+    }
+
+    
+    /**
+     * Validates the user input for the center field.
+     * 
+     * @param input  The user input to validate.
+     * @param error  Object in which to store any validation errors.
+     */    
+    public void validateCenter(int input, Errors errors) {
+        if (StringUtils.isBlank(new Integer(input).toString())) {
+            errors.rejectValue("center", "table.error", "Table center is required!");
+            return;
+        }
+    }
+
+    /**
+     * Validates the user input for the sub center field.
+     * 
+     * @param input  The user input to validate.
+     * @param error  Object in which to store any validation errors.
+     */    
+    public void validateSubCenter(int input, Errors errors) {
+        if (StringUtils.isBlank(new Integer(input).toString())) {
+            errors.rejectValue("subCenter", "table.error", "Table sub center is required!");
+            return;
+        }
     }
 
     /**

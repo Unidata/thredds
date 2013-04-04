@@ -90,7 +90,7 @@ public class UserManagerImpl implements UserManager {
      * @param user  The user to be created. 
      */
     public void createUser(User user) {
-        String password = DigestUtils.md5Hex("changeme");
+        String password = DigestUtils.md5Hex(user.getPassword());
         user.setPassword(password);
         user.setAccessLevel(1);
         Date now = new Date(System.currentTimeMillis());

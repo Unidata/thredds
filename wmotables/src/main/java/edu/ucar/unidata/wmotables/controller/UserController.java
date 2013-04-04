@@ -141,6 +141,7 @@ public class UserController implements HandlerExceptionResolver {
            return new ModelAndView("userForm"); 
         } else {
             try {
+                user.setPassword("changeme");
                 userManager.createUser(user);
                 user = userManager.lookupUser(user.getUserName());  
                 model.addAttribute("user", user);     

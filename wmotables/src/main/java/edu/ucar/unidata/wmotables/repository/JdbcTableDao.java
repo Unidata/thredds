@@ -146,12 +146,14 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
      * @throws RecoverableDataAccessException  If unable to find the table to update. 
      */
     public void updateTable(Table table) {
-        String sql = "UPDATE tables SET title = ?, description = ?, version = ?, tableType = ?, dateModified = ? WHERE tableId = ?";
+        String sql = "UPDATE tables SET title = ?, description = ?, localVersion = ?, center= ?, subCenter= ?, tableType = ?, dateModified = ? WHERE tableId = ?";
         int rowsAffected = getJdbcTemplate().update(sql, new Object[] {
             // order matters here
             table.getTitle(),
             table.getDescription(), 
-            table.getVersion(), 
+            table.getLocalVersion(), 
+            table.getCenter(), 
+            table.getSubCenter(), 
             table.getTableType(), 
             table.getDateModified(),
             table.getTableId()
@@ -180,7 +182,9 @@ public class JdbcTableDao extends JdbcDaoSupport implements TableDao {
             table.setTitle(rs.getString("title"));
             table.setDescription(rs.getString("description"));
             table.setOriginalName(rs.getString("originalName"));
-            table.setVersion(rs.getString("version"));
+            table.setLocalVersion(rs.getInt("localVersion"));
+            table.setCenter(rs.getInt("center"));
+            table.setSubCenter(rs.getInt("subCenter"));
             table.setTableType(rs.getString("tableType"));
             table.setMimeType(rs.getString("mimeType"));
             table.setChecksum(rs.getString("checksum"));

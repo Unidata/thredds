@@ -31,6 +31,12 @@
          <spring:message code="table.tableType"/>
         </th>
         <th>
+         <spring:message code="table.center"/>
+        </th>
+        <th>
+         <spring:message code="table.subCenter"/>
+        </th>
+        <th>
          <spring:message code="table.checksum"/>
         </th>
         <th>
@@ -63,6 +69,16 @@
          <td>
           <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
            <c:out value="${table.tableType}" />
+          </a>
+         </td>
+         <td>
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.center}" />
+          </a>
+         </td>
+         <td>
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.subCenter}" />
           </a>
          </td>
          <td>

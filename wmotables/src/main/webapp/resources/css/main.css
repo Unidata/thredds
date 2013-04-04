@@ -38,17 +38,19 @@ h2 {
  padding: 0;
 }
 h3 {
- font-size: 12pt; 
+ color: #828282;
+ border-bottom: 1px solid #CFCFCF;
+ font-size: 13pt; 
  margin: 0 0 10px 0;
  padding: 0;
 }
 h4 {
- font-size: 10pt; 
+ font-size: 12pt; 
  margin: 0 0 10px 0;
  padding: 0;
 }
 h5 {
- font-size: 8pt; 
+ font-size: 11pt; 
  margin: 0 0 10px 0;
  padding: 0;
 }
@@ -90,7 +92,7 @@ pre {
 #header ul {
  font-weight: bold;
  list-style: none;
- margin: 0 15px;
+ margin: 0 15px 0 2px;
  padding:0;
 }
 #header ul.nav {
@@ -159,26 +161,40 @@ input[type=submit].action {
  cursor:pointer;
  border: none !important;
 }
+
+input[type=hidden] {
+ margin: 0;
+ padding: 0;
+}
+
+input[type=submit].download {
+ margin: 0 0 0 12px;
+}
+
 input,
 textarea,
 select {
- border: 1px solid #696969;
+ border: 1px solid #CFCFCF;
  border-top-left-radius: 4px;
  border-top-right-radius: 4px;
  border-bottom-left-radius: 4px;
  border-bottom-right-radius: 4px;
- padding: 1px;
+ padding: 2px;
 }
+
 .edit {
  background: transparent url('../img/edit.png') no-repeat 0 0;
 }
+.view {
+ background: transparent url('../img/view.png') no-repeat 0 0;
+}
 .download {
- background: transparent url('../img/download.png') no-repeat 0 0;
+ background: transparent url('../img/download.png') no-repeat 2px 0;
 }
 .hide,
 .delete {
  margin-left: 10px !important;
- background: transparent url('../img/delete.png') no-repeat 2px 3px;
+ background: transparent url('../img/delete.png') no-repeat 2px 0;
 }
 
 
@@ -199,7 +215,7 @@ table a:hover {
   text-decoration: none;
 }
 table thead tr {
- background: transparent url('../img/tablebg.gif') repeat-x 0 0;
+ background: #BCC4D0 url('../img/tablebg.gif') repeat-x 0 0;
 }
 table.list thead tr .header {
  background-image: url('../img/bg.gif');
@@ -254,7 +270,7 @@ tr.hidden td {
 
 /* footer */
 #footer {
- color: #696969;
+ color: #828282;
  float: left;
  width: 100%;
  display: block;

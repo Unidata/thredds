@@ -1,7 +1,6 @@
 package edu.ucar.unidata.wmotables.domain;
 
 import java.util.Date;
-import java.util.List;
 import java.io.Serializable;
 
 /**
@@ -19,7 +18,8 @@ public class User implements Serializable {
     private int accessLevel;
     private String emailAddress;
     private String fullName;
-    private String affiliation;
+    private int center;
+    private int subCenter;
     private Date dateCreated;
     private Date dateModified;
 
@@ -132,21 +132,39 @@ public class User implements Serializable {
     }
 
     /**
-     * Returns the affiliation of the user.
+     * Returns the user's center.
      * 
-     * @return  The user's affiliation.  
+     * @return  The user's center.  
      */
-    public String getAffiliation() {
-        return affiliation;
+    public int getCenter() {
+        return center;
     }
 
     /**
-     * Sets the affiliation of the user.
+     * Sets the user's center.
      * 
-     * @param affiliation  The user's affiliation. 
+     * @param center  The user's center. 
      */
-    public void setAffiliation(String affiliation) {
-        this.affiliation = affiliation;
+    public void setCenter(int center) {
+        this.center = center;
+    }
+
+    /**
+     * Returns the user's sub center.
+     * 
+     * @return  The user's sub center.  
+     */
+    public int getSubCenter() {
+        return subCenter;
+    }
+
+    /**
+     * Sets the user's sub enter.
+     * 
+     * @param subCenter  The user's sub center. 
+     */
+    public void setSubCenter(int subCenter) {
+        this.subCenter = subCenter;
     }
 
     /**

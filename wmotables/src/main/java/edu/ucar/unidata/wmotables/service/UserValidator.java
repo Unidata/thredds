@@ -27,6 +27,9 @@ public class UserValidator implements Validator  {
 	private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 		                                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
+	private static final String USER_NAME_PATTERN = "^[a-zA-Z0-9_-]{6,50}$";
+
+
     public boolean supports(Class clazz) {
         return User.class.equals(clazz);
     }
@@ -42,7 +45,8 @@ public class UserValidator implements Validator  {
         validateUserName(user.getUserName(), errors);  
         validateFullName(user.getFullName(), errors); 
         validateEmailAddress(user.getEmailAddress(), errors); 
-        validateAffiliation(user.getAffiliation(), errors);
+        validateCenter(user.getCenter(), errors);
+        validateSubCenter(user.getSubCenter(), errors);
     }
 
     /**
@@ -60,8 +64,10 @@ public class UserValidator implements Validator  {
             errors.rejectValue("userName", "user.error", "The user name must be between 6 and 50 characters in length.");
             return;
         }        
-        if (!StringUtils.isAlphanumeric(input)) {
-            errors.rejectValue("userName", "user.error", "Only alphanumeric characters are allowed. (Spaces, dashes and underscores are NOT allowed.)");
+        pattern = Pattern.compile(USER_NAME_PATTERN);
+        matcher = pattern.matcher(input);
+        if (!matcher.matches()) {
+            errors.rejectValue("userName", "user.error", "Only alphanumeric characters, dashed and underscores are allowed. (Spaces are NOT allowed.)");
             return;
         }
     }
@@ -85,21 +91,29 @@ public class UserValidator implements Validator  {
     }
     
     /**
-     * Validates the user input for the affiliation field.
+     * Validates the user input for the center field.
      * 
      * @param input  The user input to validate.
      * @param error  Object in which to store any validation errors.
      */    
-    public void validateAffiliation(String input, Errors errors) {
-        if (StringUtils.isBlank(input)) {
-            errors.rejectValue("affiliation", "user.error", "User affiliation is required!");
+    public void validateCenter(int input, Errors errors) {
+        if (StringUtils.isBlank(new Integer(input).toString())) {
+            errors.rejectValue("center", "user.error", "User center is required!");
             return;
         }
-        if ((StringUtils.length(input) < 3) || (StringUtils.length(input) > 75)) {
-            errors.rejectValue("affiliation", "user.error", "The user affiliation must be between 3 and 75 characters in length.");
+    }
+
+    /**
+     * Validates the user input for the sub center field.
+     * 
+     * @param input  The user input to validate.
+     * @param error  Object in which to store any validation errors.
+     */    
+    public void validateSubCenter(int input, Errors errors) {
+        if (StringUtils.isBlank(new Integer(input).toString())) {
+            errors.rejectValue("subCenter", "user.error", "User sub center is required!");
             return;
-        }  
-        validateInput("affiliation", input, errors); 
+        }
     }
     
     /**
