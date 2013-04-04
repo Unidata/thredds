@@ -168,7 +168,9 @@ public class DiskCache2 {
     dir.mkdirs();
     if (!dir.exists()) {
       fail = true;
-      cacheLog.error("Failed to create directory "+root);
+      cacheLog.error("DiskCache2 failed to create directory "+root);
+    } else {
+      cacheLog.info("DiskCache2 create directory "+root);
     }
   }
 

@@ -647,7 +647,7 @@ public class ServletUtil {
     catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
-        log.info("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
+        log.debug("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
         return;
       }
 

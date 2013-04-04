@@ -33,10 +33,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.FileManager;
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.ui.widget.*;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -45,6 +42,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.List;
 
@@ -84,17 +82,16 @@ public class WmoCommonCodesPanel extends JPanel {
       }
     });
 
-    /* thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(codeTable.getJTable(), "Options");
-    varPopup.addAction("Show uses", new AbstractAction() {
+    ucar.nc2.ui.widget.PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(codeTable.getJTable(), "Options");
+    varPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
-        if (usedDds != null) {
-          List<Message> list = usedDds.get(csb.getId());
-          if (list != null) {
-            for (Message use : list)
-              use.dumpHeaderShort(out);
-          }
+        TableBean csb = (TableBean) codeTable.getSelectedBean();
+        if (csb == null) return;
+        CommonCodeTable cct = CommonCodeTable.getTable(csb.t.getTableNo());
+        List<EntryBean> beans = setEntries(cct);
+        for (EntryBean bean: beans) {
+          bean.show(out);
         }
         compareTA.setText(out.toString());
         compareTA.gotoTop();
@@ -102,7 +99,7 @@ public class WmoCommonCodesPanel extends JPanel {
       }
     });
 
-    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to current table", false);
+    /* AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to current table", false);
     compareButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         compareToCurrent();
@@ -166,12 +163,13 @@ public class WmoCommonCodesPanel extends JPanel {
     if (fileChooser != null) fileChooser.save();
   }
 
-  public void setEntries(CommonCodeTable codeTable) {
+  public List<EntryBean> setEntries(CommonCodeTable codeTable) {
     List<EntryBean> beans = new ArrayList<EntryBean>(codeTable.entries.size());
     for (CommonCodeTable.TableEntry d : codeTable.entries) {
       beans.add(new EntryBean(d));
     }
     entryTable.setBeans(beans);
+    return beans;
   }
 
   public class TableBean {
@@ -238,6 +236,11 @@ public class WmoCommonCodesPanel extends JPanel {
 
     public int getLine() {
       return te.line;
+    }
+
+    private void show(Formatter f) {
+      if (getCode() > 0)
+      f.format("%4d; %4d; %s%n", getCode(), getCode2(), getValue());
     }
   }
 }

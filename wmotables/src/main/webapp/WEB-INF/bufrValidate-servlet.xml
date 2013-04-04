@@ -15,12 +15,11 @@
     </property>
   </bean>
 
- <bean id="cache" class="ucar.nc2.util.DiskCache2" destroy-method="exit">
-    <constructor-arg type="java.lang.String" value="C:/temp/cache" />
-    <constructor-arg type="boolean" value="false"/>
-    <constructor-arg type="int" value="3600"/>
-    <constructor-arg type="int" value="3600"/>
-    <property name="policy" value="1"/>
+  <bean id="cache" class="ucar.nc2.util.DiskCache2"  destroy-method="exit">
+    <constructor-arg value="C:/temp/cache/bufrv/"/>
+    <constructor-arg value="false"/>
+    <constructor-arg value="30"/>
+    <constructor-arg value="60"/>
   </bean>
 
   <!-- controller for url uploading -->

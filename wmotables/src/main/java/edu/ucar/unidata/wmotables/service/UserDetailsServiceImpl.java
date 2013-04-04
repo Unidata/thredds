@@ -42,8 +42,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * 
      * @param userName  The userName of the person authenticating.
      * @return  The userDetails used by Spring.
-     * @thows UsernameNotFoundException  If unable to find the user in the database.
-     * @thows DataAccessException  If we encounter an issue with accessing the data.
+     * @throws UsernameNotFoundException  If unable to find the user in the database.
+     * @throws DataAccessException  If we encounter an issue with accessing the data.
      */
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException, DataAccessException {
         UserDetails userDetails = null;

@@ -189,13 +189,13 @@ public class TableController implements HandlerExceptionResolver {
      * @param model  The Model used by the View.
      * @return  The redirect to the needed View.
      * @throws IOException  If an IO error occurs when writing the table to the file system.
-     * @thows AccessDeniedException  If logged in user does not have permission to create the table.
+     * @throws AccessDeniedException  If logged in user does not have permission to create the table.
      */
     @RequestMapping(value="/table/create", method=RequestMethod.POST)
     public ModelAndView createTable(@Valid Table table, BindingResult result, Model model) throws IOException, AccessDeniedException {   
         // The first thing we do is validate that the user has permission to create a table
         User user = userManager.lookupUser(table.getUserId()); 
-        // These methods are not part of the validator's validate method.
+        // These methods are not part of the validator's validate method, because dont want it when updating
         tableValidator.validateFileSize(table.getFile(), result);  
         tableValidator.validateFileType(table.getMimeType(), result);  
         if (isAuthorized(user.getUserName())) {
@@ -237,7 +237,7 @@ public class TableController implements HandlerExceptionResolver {
      * @param checksum  The checksum as provided by @PathVariable. 
      * @param model  The Model used by the View.
      * @return  The path for the ViewResolver.
-     * @thows AccessDeniedException  If logged in user does not have permission to update the table.
+     * @throws AccessDeniedException  If logged in user does not have permission to update the table.
      */
     @RequestMapping(value="/table/update/{checksum}", method=RequestMethod.GET)
     public String updateTable(@PathVariable String checksum, Model model) throws AccessDeniedException { 
@@ -271,7 +271,7 @@ public class TableController implements HandlerExceptionResolver {
      * @param result  The BindingResult for error handling.
      * @param model  The Model used by the View.
      * @return  The redirect to the needed View.
-     * @thows AccessDeniedException  If logged in user does not have permission to update the table.
+     * @throws AccessDeniedException  If logged in user does not have permission to update the table.
      */
     @RequestMapping(value="/table/update", method=RequestMethod.POST)
     public ModelAndView updateTable(@Valid Table table, BindingResult result, Model model) throws AccessDeniedException {  

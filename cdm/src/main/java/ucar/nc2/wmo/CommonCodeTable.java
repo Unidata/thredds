@@ -69,119 +69,48 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
 
   //////////////////////////////////////////////////////////////////////////
 /*
-<Exp_CommonTableC01_E>
-  <No>11</No>
-  <CodeFigureForF1F2>09</CodeFigureForF1F2>
-  <CodeFigureForF3F3F3>009</CodeFigureForF3F3F3>
-  <Octet5GRIB1_Octet6BUFR3>9</Octet5GRIB1_Octet6BUFR3>
-  <OriginatingGeneratingCentres_E>US National Weather Service - Other</OriginatingGeneratingCentres_E>
-  <Status>Operational</Status>
-</Exp_CommonTableC01_E>
-
-<Exp_CommonTableC02_E>
-  <No>1</No>
-  <DateOfAssignment_E>Not applicable</DateOfAssignment_E>
-  <CodeFigureForrara>00</CodeFigureForrara>
-  <CodeFigureForBUFR>0</CodeFigureForBUFR>
-  <RadiosondeSoundingSystemUsed_E>Reserved</RadiosondeSoundingSystemUsed_E>
-  <Status>Operational</Status>
-</Exp_CommonTableC02_E>
-
-<Exp_CommonTableC03_E>
-  <No>3</No>
-  <CodeFigureForIXIIXIX>011</CodeFigureForIXIIXIX>
-  <CodeFigureForBUFR>11</CodeFigureForBUFR>
-  <InstrumentMakeAndType_E>Sippican T-5</InstrumentMakeAndType_E>
-  <EquationCoefficients_a>6.828</EquationCoefficients_a>
-  <EquationCoefficients_b>-1.82</EquationCoefficients_b>
-  <Status>Operational</Status>
-</Exp_CommonTableC03_E>
-
-<Exp_CommonTableC04_E>
-  <No>3</No>
-  <CodeFigureForXRXR>03</CodeFigureForXRXR>
-  <CodeFigureForBUFR>3</CodeFigureForBUFR>
-  <Meaning_E>Sippican MK-9</Meaning_E>
-  <Status>Operational</Status>
-</Exp_CommonTableC04_E>
-
-<Exp_CommonTableC05_E>
-  <No>4</No>
-  <CodeFigureForI6I6I6>002</CodeFigureForI6I6I6>
-  <CodeFigureForBUFR>2</CodeFigureForBUFR>
-  <CodeFigureForGRIB2>2</CodeFigureForGRIB2>
-  <SatelliteName_E>ERS 2</SatelliteName_E>
-  <Status>Operational</Status>
-</Exp_CommonTableC05_E>
-
-<Exp_CommonTableC07_E>
-  <No>4</No>
-  <CodeFigureForsasa>03</CodeFigureForsasa>
-  <CodeFigureForBUFR>3</CodeFigureForBUFR>
-  <TrackingTechniquesStatusOfSystemUsed_E>Automatic with auxiliary ranging</TrackingTechniquesStatusOfSystemUsed_E>
-  <Status>Operational</Status>
-</Exp_CommonTableC07_E>
-
-<Exp_CommonTableC07_E>
-  <No>5</No>
-  <CodeFigureForsasa>04</CodeFigureForsasa>
-  <CodeFigureForBUFR>4</CodeFigureForBUFR>
-  <TrackingTechniquesStatusOfSystemUsed_E>Not used</TrackingTechniquesStatusOfSystemUsed_E>
-  <Status>Operational</Status>
-</Exp_CommonTableC07_E>
-
-<Exp_CommonTableC08_E>
-  <No>3</No>
-  <Code>12</Code>
-  <Agency_E>BNSC</Agency_E>
-  <Type_E>Radiometer</Type_E>
-  <InstrumentShortName_E>ATSR-2</InstrumentShortName_E>
-  <InstrumentLongName_E>Along track scanning radiometer - 2</InstrumentLongName_E>
-  <Status>Operational</Status>
-</Exp_CommonTableC08_E>
-
-<Exp_CommonTableC11_E>
-  <No>16</No>
-  <CREX2>00013</CREX2>
-  <GRIB2_BUFR4>13</GRIB2_BUFR4>
-  <OriginatingGeneratingCentre_E>)</OriginatingGeneratingCentre_E>
-  <Status>Operational</Status>
-</Exp_CommonTableC11_E>
-
-<Exp_CommonTableC12_E>
-  <No>8</No>
-  <CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
-  <Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
-  <CodeFigure_SubCentres>219</CodeFigure_SubCentres>
-  <Name_SubCentres_E>Townsville</Name_SubCentres_E>
-  <Status>Operational</Status>
-</Exp_CommonTableC12_E>
-
-<Exp_CommonTableC13_E>
-  <No>46</No>
-  <CodeFigure_DataCategories>003</CodeFigure_DataCategories>
-  <Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
-  <CodeFigure_InternationalDataSubcategories>030</CodeFigure_InternationalDataSubcategories>
-  <Name_InternationalDataSubcategories_E>Hyperspectral temperature/humidity sounding</Name_InternationalDataSubcategories_E>
-  <Status>Validation</Status>
-  </Exp_CommonTableC13_E>
-<Exp_CommonTableC13_E>
-*/
-
-  /*
-  <CommonCodeTable_C1_Nov11_en>
-<No>1</No>
-<CodeFigureForF1F2>00</CodeFigureForF1F2>
-<CodeFigureForF3F3F3>000</CodeFigureForF3F3F3>
-<Octet5GRIB1_Octet6BUFR3>0</Octet5GRIB1_Octet6BUFR3>
-<OriginatingGeneratingCentres_en>WMO Secretariat</OriginatingGeneratingCentres_en>
+<Common_C01_20121107_en>
+<No>7</No>
+<CodeFigureForF1F2>05</CodeFigureForF1F2>
+<CodeFigureForF3F3F3>005</CodeFigureForF3F3F3>
+<Octet5GRIB1_Octet6BUFR3>5</Octet5GRIB1_Octet6BUFR3>
+<OriginatingGeneratingCentres_en>Moscow</OriginatingGeneratingCentres_en>
 <Status>Operational</Status>
-</CommonCodeTable_C1_Nov11_en>
-<
+</Common_C01_20121107_en>
+
+<Common_C03_20121107_en>
+<No>1</No>
+<CodeFigureForIXIIXIX>001</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>1</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-4</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20121107_en>
+
+<Common_C11_20121107_en>
+<No>1</No>
+<CREX2>00000</CREX2>
+<GRIB2_BUFR4>0</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>WMO Secretariat</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20121107_en>
+<Common_C11_20121107_en>
+
+
+<Common_C12_20121107_en>
+<No>5</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_en>Melbourne</Name_OriginatingCentres_en>
+<CodeFigure_SubCentres>211</CodeFigure_SubCentres>
+<Name_SubCentres_en>Melbourne Crib Point 1</Name_SubCentres_en>
+<Status>Operational</Status>
+</Common_C12_20121107_en>
+
    */
   public enum Table {                              // code                code2                  value
     C1("Centers-GRIB1,BUFR3",    1, 1, new String[]{"CodeFigureForF1F2", "CodeFigureForF3F3F3", "OriginatingGeneratingCentres_en"}),
-    C2("Radiosondes",            2, 1, new String[]{"CodeFigureForBUFR", null, "RadiosondeSoundingSystemUsed_en"}),
+    // C2("Radiosondes",            2, 1, new String[]{"CodeFigureForBUFR", null, "RadiosondeSoundingSystemUsed_en"}),
     C3("Water temperature profile instrument", 3, 1, new String[]{"CodeFigureForBUFR", null, "InstrumentMakeAndType_en"}),
     C4("Water temperature profile recorder",   4, 1, new String[]{"CodeFigureForBUFR", null, "Meaning_en"}),
     C5("Satellite identifier",   5, 1, new String[]{"CodeFigureForBUFR", null, "SatelliteName_en"}),
@@ -196,20 +125,26 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     String name;
     String[] elems;
     int num, type; // type 1 = 1 code, type 2 = 2 codes
-
+    String num0;
     Table(String name, int num, int type, String[] elems) {
       this.name = name;
       this.num = num;
       this.type = type;
       this.elems = elems;
+
+      Formatter f = new Formatter();
+      f.format("%02d", num);
+      num0 = f.toString();
     }
 
     public String getResourceName() {
-      return "/resources/wmo/CommonCodeTable_" + this.name() + "_02Nov11_en.xml";
+      //return "/resources/wmo/CommonCodeTable_" + this.name() + "_02Nov11_en.xml"; // previous
+      return "/resources/wmo/Common_C" + this.num0 + "_20121107_en.xml"; // nov 2012
     }
 
     public String getRootElemName() { // CommonCodeTable_C1_Nov11_en
-      return "CommonCodeTable_" + this.name() + "_Nov11_en";
+      //return "Common_C11_20121107_en" + this.name() + "_Nov11_en"; // previous
+      return "Common_C" + this.num0 + "_20121107_en"; // nov 2012
     }
 
     public int getTableNo() {
@@ -349,7 +284,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
           String code = elem.getChildTextNormalize(elems[0]);
           String code2 = (elems[1] != null) ? elem.getChildTextNormalize(elems[1]) : null;
           String value = elem.getChildTextNormalize(elems[2]);
-          if ((value == null || value.length() == 0) && elems[3] != null) value = elem.getChildTextNormalize(elems[3]);
+          //if ((value == null || value.length() == 0) && elems[3] != null) value = elem.getChildTextNormalize(elems[3]);  WTF ?
           Element statusElem = elem.getChild("Status");
           String status = (statusElem == null) ? null : statusElem.getTextNormalize();
           if (value != null && value.equals(")")) value = previousValue;
@@ -519,4 +454,134 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     System.out.printf("%n%s%n", ct.state());
   }
 }
+
+/* previous version
+
+  //////////////////////////////////////////////////////////////////////////
+/*
+<Exp_CommonTableC01_E>
+  <No>11</No>
+  <CodeFigureForF1F2>09</CodeFigureForF1F2>
+  <CodeFigureForF3F3F3>009</CodeFigureForF3F3F3>
+  <Octet5GRIB1_Octet6BUFR3>9</Octet5GRIB1_Octet6BUFR3>
+  <OriginatingGeneratingCentres_E>US National Weather Service - Other</OriginatingGeneratingCentres_E>
+  <Status>Operational</Status>
+</Exp_CommonTableC01_E>
+
+<Exp_CommonTableC02_E>
+  <No>1</No>
+  <DateOfAssignment_E>Not applicable</DateOfAssignment_E>
+  <CodeFigureForrara>00</CodeFigureForrara>
+  <CodeFigureForBUFR>0</CodeFigureForBUFR>
+  <RadiosondeSoundingSystemUsed_E>Reserved</RadiosondeSoundingSystemUsed_E>
+  <Status>Operational</Status>
+</Exp_CommonTableC02_E>
+
+<Exp_CommonTableC03_E>
+  <No>3</No>
+  <CodeFigureForIXIIXIX>011</CodeFigureForIXIIXIX>
+  <CodeFigureForBUFR>11</CodeFigureForBUFR>
+  <InstrumentMakeAndType_E>Sippican T-5</InstrumentMakeAndType_E>
+  <EquationCoefficients_a>6.828</EquationCoefficients_a>
+  <EquationCoefficients_b>-1.82</EquationCoefficients_b>
+  <Status>Operational</Status>
+</Exp_CommonTableC03_E>
+
+<Exp_CommonTableC04_E>
+  <No>3</No>
+  <CodeFigureForXRXR>03</CodeFigureForXRXR>
+  <CodeFigureForBUFR>3</CodeFigureForBUFR>
+  <Meaning_E>Sippican MK-9</Meaning_E>
+  <Status>Operational</Status>
+</Exp_CommonTableC04_E>
+
+<Exp_CommonTableC05_E>
+  <No>4</No>
+  <CodeFigureForI6I6I6>002</CodeFigureForI6I6I6>
+  <CodeFigureForBUFR>2</CodeFigureForBUFR>
+  <CodeFigureForGRIB2>2</CodeFigureForGRIB2>
+  <SatelliteName_E>ERS 2</SatelliteName_E>
+  <Status>Operational</Status>
+</Exp_CommonTableC05_E>
+
+<Exp_CommonTableC07_E>
+  <No>4</No>
+  <CodeFigureForsasa>03</CodeFigureForsasa>
+  <CodeFigureForBUFR>3</CodeFigureForBUFR>
+  <TrackingTechniquesStatusOfSystemUsed_E>Automatic with auxiliary ranging</TrackingTechniquesStatusOfSystemUsed_E>
+  <Status>Operational</Status>
+</Exp_CommonTableC07_E>
+
+<Exp_CommonTableC07_E>
+  <No>5</No>
+  <CodeFigureForsasa>04</CodeFigureForsasa>
+  <CodeFigureForBUFR>4</CodeFigureForBUFR>
+  <TrackingTechniquesStatusOfSystemUsed_E>Not used</TrackingTechniquesStatusOfSystemUsed_E>
+  <Status>Operational</Status>
+</Exp_CommonTableC07_E>
+
+<Exp_CommonTableC08_E>
+  <No>3</No>
+  <Code>12</Code>
+  <Agency_E>BNSC</Agency_E>
+  <Type_E>Radiometer</Type_E>
+  <InstrumentShortName_E>ATSR-2</InstrumentShortName_E>
+  <InstrumentLongName_E>Along track scanning radiometer - 2</InstrumentLongName_E>
+  <Status>Operational</Status>
+</Exp_CommonTableC08_E>
+
+<Exp_CommonTableC11_E>
+  <No>16</No>
+  <CREX2>00013</CREX2>
+  <GRIB2_BUFR4>13</GRIB2_BUFR4>
+  <OriginatingGeneratingCentre_E>)</OriginatingGeneratingCentre_E>
+  <Status>Operational</Status>
+</Exp_CommonTableC11_E>
+
+<Exp_CommonTableC12_E>
+  <No>8</No>
+  <CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+  <Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+  <CodeFigure_SubCentres>219</CodeFigure_SubCentres>
+  <Name_SubCentres_E>Townsville</Name_SubCentres_E>
+  <Status>Operational</Status>
+</Exp_CommonTableC12_E>
+
+<Exp_CommonTableC13_E>
+  <No>46</No>
+  <CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+  <Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+  <CodeFigure_InternationalDataSubcategories>030</CodeFigure_InternationalDataSubcategories>
+  <Name_InternationalDataSubcategories_E>Hyperspectral temperature/humidity sounding</Name_InternationalDataSubcategories_E>
+  <Status>Validation</Status>
+  </Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+*/
+
+  /*
+  <CommonCodeTable_C1_Nov11_en>
+<No>1</No>
+<CodeFigureForF1F2>00</CodeFigureForF1F2>
+<CodeFigureForF3F3F3>000</CodeFigureForF3F3F3>
+<Octet5GRIB1_Octet6BUFR3>0</Octet5GRIB1_Octet6BUFR3>
+<OriginatingGeneratingCentres_en>WMO Secretariat</OriginatingGeneratingCentres_en>
+<Status>Operational</Status>
+</CommonCodeTable_C1_Nov11_en>
+<
+
+  public enum Table {                              // code                code2                  value
+    C1("Centers-GRIB1,BUFR3",    1, 1, new String[]{"CodeFigureForF1F2", "CodeFigureForF3F3F3", "OriginatingGeneratingCentres_en"}),
+    C2("Radiosondes",            2, 1, new String[]{"CodeFigureForBUFR", null, "RadiosondeSoundingSystemUsed_en"}),
+    C3("Water temperature profile instrument", 3, 1, new String[]{"CodeFigureForBUFR", null, "InstrumentMakeAndType_en"}),
+    C4("Water temperature profile recorder",   4, 1, new String[]{"CodeFigureForBUFR", null, "Meaning_en"}),
+    C5("Satellite identifier",   5, 1, new String[]{"CodeFigureForBUFR", null, "SatelliteName_en"}),
+    C7("Satellite tracking",     7, 1, new String[]{"CodeFigureForBUFR", null, "TrackingTechniquesStatusOfSystemUsed_en"}),
+    C8("Satellite instruments",  8, 1, new String[]{"Code", null, "InstrumentLongName_en", "InstrumentShortName_en"}),
+    C11("Centers-GRIB2,BUFR4",    11,1, new String[]{"GRIB2_BUFR4", null, "OriginatingGeneratingCentre_en"}),
+                                                    // code                            value                       code2                  value2
+    C12("Subcenters",             12,2, new String[]{"CodeFigure_OriginatingCentres", "Name_OriginatingCentres_en", "CodeFigure_SubCentres", "Name_SubCentres_en"}),
+    C13("Data sub-categories",    13,2, new String[]{"CodeFigure_DataCategories", "Name_DataCategories_en", "CodeFigure_InternationalDataSubcategories", "Name_InternationalDataSubcategories_en"}),
+    ;
+
+ */
 
