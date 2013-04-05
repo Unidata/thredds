@@ -57,17 +57,23 @@
         </c:when>
        </c:choose>
        <th>
+        <spring:message code="table.tableType"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.tableType.description"/>"/>
+       </th>
+       <th>
+        <spring:message code="table.localVersion"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.localVersion.description"/>"/>
+       </th>
+
+       <th>
+        <spring:message code="table.center"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.center.description"/>"/>
+       </th>
+       <th>
+        <spring:message code="table.subCenter"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.subCenter.description"/>"/>
+       </th>
+       <th>
         <spring:message code="table.title"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.title.description"/>"/>
        </th>
        <th>
         <spring:message code="table.description"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.description.description"/>"/>
-       </th>
-       <th>
-        <spring:message code="table.version"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.version.description"/>"/>
-        <small class="deemph">(optional)</small>
-       </th>
-       <th>
-        <spring:message code="table.tableType"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.tableType.description"/>"/>
        </th>
        <c:choose>
         <c:when test="${formAction == 'update'}">
@@ -76,9 +82,6 @@
          </th>
         </c:when>
        </c:choose>
-       <th>
-        <spring:message code="table.owner"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="table.owner.description"/>"/>
-       </th>
        <c:choose>
         <c:when test="${formAction == 'update'}">
          <th>
@@ -104,20 +107,28 @@
         </c:when>
        </c:choose>
        <td>
+        <form:errors path="tableType" cssClass="error" />
+        <form:select path="tableType" items="${tableTypeList}" />
+       </td>
+       <td>
+        <form:errors path="localVersion" cssClass="error" />
+        <form:input path="localVersion"/>
+       </td>
+       <td>
+        <form:errors path="center" cssClass="error" />
+        <form:input path="center"/>
+       </td>
+       <td>
+        <form:errors path="subCenter" cssClass="error" />
+        <form:input path="subCenter"/>
+       </td>
+       <td>
         <form:errors path="title" cssClass="error" />
         <form:input path="title"/>
        </td>
        <td>
         <form:errors path="description" cssClass="error" />
         <form:textarea path="description" rows="2" cols="30" />
-       </td>
-       <td>
-        <form:errors path="version" cssClass="error" />
-        <form:input path="version"/>
-       </td>
-       <td>
-        <form:errors path="tableType" cssClass="error" />
-        <form:select path="tableType" items="${tableTypeList}" />
        </td>
        <c:choose>
         <c:when test="${formAction == 'update'}">
@@ -126,9 +137,6 @@
          </td>
         </c:when>
        </c:choose>
-       <td>
-        <c:out value="${user.userName}" />
-       </td>
        <c:choose>
         <c:when test="${formAction == 'update'}">
          <td>

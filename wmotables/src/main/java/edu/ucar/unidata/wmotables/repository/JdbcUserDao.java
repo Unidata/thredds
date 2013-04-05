@@ -135,12 +135,13 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
      * @throws RecoverableDataAccessException  If unable to find the user to update. 
      */
     public void updateUser(User user)  {
-        String sql = "UPDATE users SET emailAddress = ?, fullName = ?, affiliation= ?, dateModified = ? WHERE userId = ?";
+        String sql = "UPDATE users SET emailAddress = ?, fullName = ?, center= ?, subCenter= ?, dateModified = ? WHERE userId = ?";
         int rowsAffected  = getJdbcTemplate().update(sql, new Object[] {
             // order matters here
             user.getEmailAddress(), 
             user.getFullName(),
-            user.getAffiliation(), 
+            user.getCenter(), 
+            user.getSubCenter(), 
             user.getDateModified(),
             user.getUserId()
         });
@@ -189,7 +190,8 @@ public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
             user.setAccessLevel(rs.getInt("accessLevel"));
             user.setEmailAddress(rs.getString("emailAddress"));
             user.setFullName(rs.getString("fullName"));
-            user.setAffiliation(rs.getString("affiliation"));
+            user.setCenter(rs.getInt("center"));
+            user.setSubCenter(rs.getInt("subCenter"));
             user.setDateCreated(rs.getTimestamp("dateCreated"));
             user.setDateModified(rs.getTimestamp("dateModified"));
             return user;

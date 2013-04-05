@@ -188,7 +188,8 @@ public class ApplicationInitialization implements ServletContextListener {
                                      "accessLevel INTEGER not null, " +
                                      "emailAddress VARCHAR(75) not null, " +
                                      "fullName VARCHAR(75) not null, " +
-                                     "affiliation VARCHAR(75) not null, " +
+                                     "center INTEGER not null, " +
+                                     "subCenter INTEGER not null, " +
                                      "dateCreated TIMESTAMP not null, " +
                                      "dateModified TIMESTAMP not null" +
                                      ")";
@@ -199,7 +200,10 @@ public class ApplicationInitialization implements ServletContextListener {
                                       "title VARCHAR(75) not null, " +
                                       "description VARCHAR(255) not null, " +
                                       "originalName VARCHAR(100) not null, " +
-                                      "version VARCHAR(75), " + 
+                                      "masterVersion INTEGER, " +
+                                      "localVersion INTEGER not null, " +
+                                      "center INTEGER not null, " +
+                                      "subCenter INTEGER not null, " +
                                       "mimeType VARCHAR(100) not null, " +
                                       "tableType VARCHAR(100) not null, " +
                                       "checkSum CHAR(32) not null, " +
@@ -210,8 +214,8 @@ public class ApplicationInitialization implements ServletContextListener {
                                       ")";
 
         String insertAdminUserSQL = "INSERT INTO users " +
-                                    "(userName, password, accessLevel, emailAddress, fullName, affiliation, dateCreated, dateModified) VALUES " +
-                                    "(?,?,?,?,?,?,?,?)"; 
+                                    "(userName, password, accessLevel, emailAddress, fullName, center, subCenter, dateCreated, dateModified) VALUES " +
+                                    "(?,?,?,?,?,?,?,?,?)"; 
         try {
             connection = getDatabaseConnection(driver, url, username, password);
             preparedStatement = connection.prepareStatement(createUsersTableSQL);
@@ -224,9 +228,10 @@ public class ApplicationInitialization implements ServletContextListener {
             preparedStatement.setInt(3, 2);
             preparedStatement.setString(4, "plaza@unidata.ucar.edu");
             preparedStatement.setString(5, "WMO Tables Admin");
-            preparedStatement.setString(6, "Unidata");
-            preparedStatement.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
+            preparedStatement.setInt(6, 1);
+            preparedStatement.setInt(7, 1);
             preparedStatement.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
+            preparedStatement.setTimestamp(9, new Timestamp(System.currentTimeMillis()));
 			preparedStatement.executeUpdate();
         } catch (SQLException e) { 
             logger.error(e.getMessage()); 

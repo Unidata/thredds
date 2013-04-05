@@ -13,8 +13,8 @@
   <ul>
    <li><a href="/wmotables/table">Browse WMO Table</a>s</li>
    <li>Register as a user by <a href="mailto:wmotables@unidata.ucar.edu">sending email</a> to us</li>
-   <li><a href="WmoTableSpec.jsp">Technical Specifications</a></li>
-   <li><a href="Summary.jsp">Background</a> and <a href="links.jsp">Links</a></li>
+   <li><a href="wmoTableSpec.jsp">Technical Specifications</a></li>
+   <li><a href="summary.jsp">Background</a> and <a href="links.jsp">Links</a></li>
   </ul>
   
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>

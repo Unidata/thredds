@@ -20,7 +20,10 @@ public class Table implements Serializable {
     private String title;
     private String description;
     private String originalName;
-    private String version;
+    private int masterVersion;
+    private int localVersion;
+    private int center;
+    private int subCenter;
     private String mimeType;
     private String tableType;
     private String checksum;
@@ -122,21 +125,75 @@ public class Table implements Serializable {
     }
 
     /**
-     * Returns the version of the table.
+     * Returns the master version of the table.
      * 
-     * @return  The table's version. 
+     * @return  The table's master version. 
      */
-    public String getVersion() {
-        return version;
+    public int getMasterVersion() {
+        return masterVersion;
     }
 
     /**
-     * Sets the version of the table.
+     * Sets the master version of the table.
      * 
-     * @param version  The table's version. 
+     * @param masterVersion  The table's master version. 
      */
-    public void setVersion(String version) {
-        this.version = version;
+    public void setMasterVersion(int masterVersion) {
+        this.masterVersion = masterVersion;
+    }
+
+    /**
+     * Returns the local version of the table.
+     * 
+     * @return  The table's local version. 
+     */
+    public int getLocalVersion() {
+        return localVersion;
+    }
+
+    /**
+     * Sets the local version of the table.
+     * 
+     * @param localVersion  The table's local version. 
+     */
+    public void setLocalVersion(int localVersion) {
+        this.localVersion = localVersion;
+    }
+
+    /**
+     * Returns the table center.
+     * 
+     * @return  The table center.  
+     */
+    public int getCenter() {
+        return center;
+    }
+
+    /**
+     * Sets the table center.
+     * 
+     * @param center  The table center. 
+     */
+    public void setCenter(int center) {
+        this.center = center;
+    }
+
+    /**
+     * Returns the table sub center.
+     * 
+     * @return  The table sub center.  
+     */
+    public int getSubCenter() {
+        return subCenter;
+    }
+
+    /**
+     * Sets the table sub enter.
+     * 
+     * @param subCenter  The table sub center. 
+     */
+    public void setSubCenter(int subCenter) {
+        this.subCenter = subCenter;
     }
 
     /**

@@ -57,7 +57,10 @@
         <spring:message code="user.emailAddress"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.emailAddress.description"/>"/>
        </th>
        <th>
-        <spring:message code="user.affiliation"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.affiliation.description"/>"/>
+        <spring:message code="user.center"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.center.description"/>"/>
+       </th>
+       <th>
+        <spring:message code="user.subCenter"/> <img src="${baseUrl}/<spring:message code="help.path"/>" alt="<spring:message code="user.subCenter.description"/>"/>
        </th>
        <c:choose>
         <c:when test="${user.dateCreated != null}">
@@ -111,8 +114,12 @@
         <form:input path="emailAddress"/>
        </td>
        <td>
-        <form:errors path="affiliation" cssClass="error" />
-        <form:input path="affiliation"/>
+        <form:errors path="center" cssClass="error" />
+        <form:input path="center"/>
+       </td>
+       <td>
+        <form:errors path="subCenter" cssClass="error" />
+        <form:input path="subCenter"/>
        </td>
        <c:choose>
         <c:when test="${user.dateCreated != null}">

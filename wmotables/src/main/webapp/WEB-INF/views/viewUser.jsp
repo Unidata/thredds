@@ -30,7 +30,10 @@
        <spring:message code="user.emailAddress"/>
       </th>
       <th>
-       <spring:message code="user.affiliation"/>
+       <spring:message code="user.center"/>
+      </th>  
+      <th>
+       <spring:message code="user.subCenter"/>
       </th>   
       <th>
        <spring:message code="user.dateCreated"/> 
@@ -67,8 +70,11 @@
        <c:out value="${user.emailAddress}" />
       </td>
       <td>
-       <c:out value="${user.affiliation}" />
-      </td>
+       <c:out value="${user.center}" />
+      </td>  
+      <td>
+       <c:out value="${user.subCenter}" />
+      </td>   
       <td>
        <fmt:formatDate value="${user.dateCreated}" type="BOTH" dateStyle="default"/>
       </td>
@@ -133,6 +139,15 @@
          <spring:message code="table.tableType"/>
         </th>
         <th>
+         <spring:message code="table.localVersion"/>
+        </th>
+        <th>
+         <spring:message code="table.center"/>
+        </th>
+        <th>
+         <spring:message code="table.subCenter"/>
+        </th>
+        <th>
          <spring:message code="table.checksum"/>
         </th>
         <th>
@@ -162,6 +177,21 @@
          <td>
           <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
            <c:out value="${table.tableType}" />
+          </a>
+         </td>
+         <td>
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.localVersion}" />
+          </a>
+         </td>
+         <td>
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.center}" />
+          </a>
+         </td>
+         <td>
+          <a href="${baseUrl}/table/<c:out value="${table.checksum}" />">
+           <c:out value="${table.subCenter}" />
           </a>
          </td>
          <td>
