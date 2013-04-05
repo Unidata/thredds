@@ -10,8 +10,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -96,7 +99,7 @@ public class ApplicationInitialization implements ServletContextListener {
         }
 
         try {
-            createDatabase(wmotablesHome, databaseSelected);
+            createDatabase(wmotablesHome, databaseSelected, servletContext);
         } catch (Exception e) {            
             logger.error(e.getMessage());   
             throw new RuntimeException(e.getMessage());  
@@ -141,7 +144,7 @@ public class ApplicationInitialization implements ServletContextListener {
      * @param wmotablesHome  The value of wmotables.home.
      * @param databaseSelected  The value of wmotables.db.
      */
-    public void createDatabase(String wmotablesHome, String databaseSelected)  {
+    public void createDatabase(String wmotablesHome, String databaseSelected, ServletContext servletContext)  {
         if (databaseSelected.equals("derby")) {
             String derbyDriver = "org.apache.derby.jdbc.EmbeddedDriver";
             String derbyUrl = "jdbc:derby:" + wmotablesHome + "/db/wmotables";
@@ -153,7 +156,7 @@ public class ApplicationInitialization implements ServletContextListener {
                     logger.error(e.getMessage()); 
                 }  
                 try { 
-	    		    createTables(derbyDriver, derbyUrl + ";create=true", null, null);
+	    		    createTables(derbyDriver, derbyUrl + ";create=true", null, null, servletContext);
                     DriverManager.getConnection( derbyUrl + ";shutdown=true");
                 } catch (SQLException e) {
                     logger.error(e.getMessage()); 
@@ -177,7 +180,7 @@ public class ApplicationInitialization implements ServletContextListener {
      * @param password  The database password (null if not used).
      * @throws SQLException  If an SQL error occurs when trying to close the preparedStatement or conenction.
      */
-    private static void createTables(String driver, String url, String username, String password) throws SQLException { 
+    private static void createTables(String driver, String url, String username, String password, ServletContext servletContext) throws SQLException { 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         String createUsersTableSQL = "CREATE TABLE users" +
@@ -213,9 +216,30 @@ public class ApplicationInitialization implements ServletContextListener {
                                       "dateModified TIMESTAMP not null" +
                                       ")";
 
+        String createCentersTableSQL = "CREATE TABLE centers" +
+                                       "(" +
+                                       "centerId INTEGER primary key not null, " +
+                                       "name VARCHAR(255) not null " +
+                                       ")";
+
+        String createSubCentersTableSQL = "CREATE TABLE subCenters" +
+                                          "(" +
+                                          "subCenterId INTEGER primary key not null, " +
+                                          "centerId INTEGER not null, " +
+                                          "name VARCHAR(255) not null " +
+                                          ")";
+
         String insertAdminUserSQL = "INSERT INTO users " +
                                     "(userName, password, accessLevel, emailAddress, fullName, center, subCenter, dateCreated, dateModified) VALUES " +
                                     "(?,?,?,?,?,?,?,?,?)"; 
+
+        String insertCentersSQL = "INSERT INTO centers " +
+                                  "(centerId, name) VALUES " +
+                                  "(?,?)"; 
+
+        String insertSubCentersSQL = "INSERT INTO subCenters " +
+                                     "(subCenterId, centerId, name) VALUES " +
+                                     "(?,?,?)"; 
         try {
             connection = getDatabaseConnection(driver, url, username, password);
             preparedStatement = connection.prepareStatement(createUsersTableSQL);
@@ -233,6 +257,37 @@ public class ApplicationInitialization implements ServletContextListener {
             preparedStatement.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
             preparedStatement.setTimestamp(9, new Timestamp(System.currentTimeMillis()));
 			preparedStatement.executeUpdate();
+            // centers & subcenters
+            preparedStatement = connection.prepareStatement(createCentersTableSQL);
+            preparedStatement.executeUpdate();
+            preparedStatement = connection.prepareStatement(insertCentersSQL);
+            Map<String, String> centers = getCenters(servletContext);
+            Iterator centerIterator = centers.entrySet().iterator();
+	        while (centerIterator.hasNext()) {
+		        Map.Entry mapEntry = (Map.Entry) centerIterator.next();
+                preparedStatement.setInt(1, new Integer((String) mapEntry.getKey()).intValue());
+                preparedStatement.setString(2, (String) mapEntry.getValue());
+                preparedStatement.executeUpdate();
+	        }
+
+            preparedStatement = connection.prepareStatement(createSubCentersTableSQL);
+            preparedStatement.executeUpdate();
+            preparedStatement = connection.prepareStatement(insertSubCentersSQL);
+            Map<String, Map> subCenters = getSubCenters(servletContext);
+            Iterator subCenterIterator = subCenters.entrySet().iterator();
+	        while (subCenterIterator.hasNext()) {
+		        Map.Entry mapEntry = (Map.Entry) subCenterIterator.next();
+                preparedStatement.setInt(1, new Integer((String) mapEntry.getKey()).intValue());
+                Map<String, String> map = (Map<String, String>) mapEntry.getValue();
+                Iterator sIterator = map.entrySet().iterator();
+	            while (sIterator.hasNext()) {
+                    Map.Entry mEntry = (Map.Entry) sIterator.next();
+                    preparedStatement.setInt(2, new Integer((String) mEntry.getKey()).intValue());
+                    preparedStatement.setString(3, (String) mEntry.getValue());
+	            }
+                preparedStatement.executeUpdate();
+            }
+
         } catch (SQLException e) { 
             logger.error(e.getMessage()); 
         } finally { 
@@ -275,4 +330,50 @@ public class ApplicationInitialization implements ServletContextListener {
         } 
         return connection; 
     }
+
+
+    private static Map<String, String> getCenters(ServletContext servletContext) {
+        Map<String, String> map = new HashMap<String, String>();
+        try {
+            File centers = new File(servletContext.getRealPath("") + "/WEB-INF/classes/resources/centers.csv");
+            if (centers.exists()) {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(centers ));
+                String currentLine; 	     		
+ 			    while ((currentLine = bufferedReader.readLine()) != null) {
+                    String[] lineComponents = StringUtils.normalizeSpace(currentLine).split("; ");
+                    map.put(lineComponents[0], lineComponents[1]);
+			    }
+                bufferedReader.close();
+            }
+        } catch (Exception e) {            
+            logger.error(e.getMessage());   
+            throw new RuntimeException(e.getMessage());  
+        }
+        return map;
+    }
+
+
+    private static Map<String, Map> getSubCenters(ServletContext servletContext) {
+        Map<String, Map> map = new HashMap<String, Map>();
+        try {
+            File subcenters = new File(servletContext.getRealPath("") + "/WEB-INF/classes/resources/subcenters.csv");
+            if (subcenters.exists()) {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(subcenters));
+                String currentLine; 	     		
+ 			    while ((currentLine = bufferedReader.readLine()) != null) {
+                    String[] lineComponents = StringUtils.normalizeSpace(currentLine).split("; ");
+                    Map<String, String> m = new HashMap<String, String>();
+                    m.put(lineComponents[0], lineComponents[2]);
+                    map.put(lineComponents[1], m);
+			    }
+                bufferedReader.close();
+            }
+        } catch (Exception e) {            
+            logger.error(e.getMessage());   
+            throw new RuntimeException(e.getMessage());                    
+        }
+        return map;
+    }
+
+
 }

@@ -85,8 +85,9 @@ public interface TableManager {
     /**
      * Access the table file on disk and streams it to the response object.
      * 
+     * @param action  Whether we want to view the file or download the file (influences the mimetype).
      * @param table  The Table object representing the file to download.
      * @param response  The current HttpServletRequest response.
      */
-    public void downloadTableFile(Table table, HttpServletResponse response);
+    public void downloadTableFile(String action, Table table, HttpServletResponse response);
 }

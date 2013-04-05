@@ -135,6 +135,20 @@ public class TableController implements HandlerExceptionResolver {
     }
 
     /**
+     * Accepts a GET request to view a specific Table.
+     *
+     * No view is produced.  The file is streamed to the client for viewing.
+     * 
+     * @param checksum  The 'checksum' as provided by @PathVariable.
+     * @param response  The HttpServletResponse response.
+     */
+    @RequestMapping(value="/table/view/{checksum}", method=RequestMethod.GET)
+    public void viewTableFile(@PathVariable String checksum, HttpServletResponse response) { 
+        Table table = tableManager.lookupTable(checksum);
+        tableManager.downloadTableFile("view", table, response);
+    }
+
+    /**
      * Accepts a GET request to download a specific Table.
      *
      * No view is produced.  The file is streamed to the client for download.
@@ -145,9 +159,8 @@ public class TableController implements HandlerExceptionResolver {
     @RequestMapping(value="/table/download/{checksum}", method=RequestMethod.GET)
     public void downloadTable(@PathVariable String checksum, HttpServletResponse response) { 
         Table table = tableManager.lookupTable(checksum);
-        tableManager.downloadTableFile(table, response);
+        tableManager.downloadTableFile("download", table, response);
     }
-
 
     /**
      * Accepts a GET request to create a new Table object. 

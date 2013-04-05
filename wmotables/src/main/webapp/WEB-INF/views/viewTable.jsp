@@ -111,7 +111,7 @@
        <fmt:formatDate value="${table.dateCreated}" type="BOTH" dateStyle="default"/>
       </td>
       <td>
-       <form action="${baseUrl}/table/download/<c:out value="${table.checksum}" />" method="GET">
+       <form action="${baseUrl}/table/view/<c:out value="${table.checksum}" />" method="GET">
         <input class="action view" type="submit" value="View" />        
        </form>
 

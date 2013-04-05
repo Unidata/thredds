@@ -5,8 +5,6 @@ import org.apache.log4j.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 
-import javax.activation.MimetypesFileTypeMap;
-
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.File;
@@ -160,16 +158,21 @@ public class TableManagerImpl implements TableManager {
     /**
      * Access the table file on disk and streams it to the response object.
      * 
+     * @param action  Whether we want to view the file or download the file (influences the mimetype).
      * @param table  The Table object representing the file to download.
      * @param response  The current HttpServletRequest response.
      * @throws RuntimeException  If unable to stream the file to the response object.
      */
-    public void downloadTableFile(Table table, HttpServletResponse response) throws RuntimeException {
+    public void downloadTableFile(String action, Table table, HttpServletResponse response) throws RuntimeException {
         File tableFile = new File(wmotablesHome + "/tables/" + table.getChecksum());
         FileInputStream inputStream = null; 
 		try {
 			inputStream = new FileInputStream(tableFile);
-            response.setContentType(table.getMimeType());
+            if (action.equals("view")) {
+                response.setContentType(table.getMimeType());
+            } else {
+                response.setContentType("application/wmotables");
+            }
             // copy it to response's OutputStream
             IOUtils.copy(inputStream, response.getOutputStream());
             response.flushBuffer();
