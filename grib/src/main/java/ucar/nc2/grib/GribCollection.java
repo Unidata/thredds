@@ -70,7 +70,7 @@ public abstract class GribCollection implements FileCacheable {
   //////////////////////////////////////////////////////////
   // object cache for data files - these are opened only as raf, not netcdfFile
   private static FileCache dataRafCache;
-  private static DiskCache2 cache = new DiskCache2();
+  private static DiskCache2 diskCache = new DiskCache2();
 
   static public void initDataRafCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     dataRafCache = new ucar.nc2.util.cache.FileCache("GribCollectionDataRafCache ", minElementsInMemory, maxElementsInMemory, -1, period);
@@ -92,7 +92,7 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public File getIndexFile(String path) {
-    return cache.getFile(path);
+    return diskCache.getFile(path);
   }
 
   static public File getIndexFile(CollectionManager dcm) {
@@ -101,17 +101,17 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public void setDiskCache2(DiskCache2 dc) {
-    cache = dc;
+    diskCache = dc;
   }
 
   static public DiskCache2 getDiskCache2() {
-    return cache;
+    return diskCache;
   }
 
   //////////////////////////////////////////////////////////
 
   // canonical order (time, ens, vert)
-  public static int calcIndex(int timeIdx, int ensIdx, int vertIdx, int nens, int nverts) {
+  static public int calcIndex(int timeIdx, int ensIdx, int vertIdx, int nens, int nverts) {
     if (nens == 0) nens = 1;
     if (nverts == 0) nverts = 1;
     return vertIdx + ensIdx * nverts + timeIdx * nverts * nens;
@@ -130,7 +130,7 @@ public abstract class GribCollection implements FileCacheable {
    * @param vcp     vert coord in proto dataset
    * @return index in partition dataset
    */
-  public static int calcIndex(int timeIdx, int ensIdx, int vertIdx, int flag, EnsCoord ec, VertCoord vc, EnsCoord ecp, VertCoord vcp) {
+  static public int calcIndex(int timeIdx, int ensIdx, int vertIdx, int flag, EnsCoord ec, VertCoord vc, EnsCoord ecp, VertCoord vcp) {
     int want_ensIdx = ensIdx;
     if ((flag & TimePartition.ENS_COORDS_DIFFER) != 0) {
       want_ensIdx = findEnsIndex(ensIdx, ec.getCoords(), ecp.getCoords());
@@ -144,7 +144,7 @@ public abstract class GribCollection implements FileCacheable {
     return calcIndex(timeIdx, want_ensIdx, want_vertIdx, (ec == null) ? 0 : ec.getSize(), (vc == null) ? 0 : vc.getSize());
   }
 
-  private static int findEnsIndex(int indexp, List<EnsCoord.Coord> coords, List<EnsCoord.Coord> coordsp) {
+  static private int findEnsIndex(int indexp, List<EnsCoord.Coord> coords, List<EnsCoord.Coord> coordsp) {
     EnsCoord.Coord want = coordsp.get(indexp);
     for (int i = 0; i < coords.size(); i++) {
       EnsCoord.Coord have = coords.get(i);
@@ -153,7 +153,7 @@ public abstract class GribCollection implements FileCacheable {
     return -1;
   }
 
-  private static int findVertIndex(int indexp, List<VertCoord.Level> coords, List<VertCoord.Level> coordsp) {
+  static private int findVertIndex(int indexp, List<VertCoord.Level> coords, List<VertCoord.Level> coordsp) {
     VertCoord.Level want = coordsp.get(indexp);
     for (int i = 0; i < coords.size(); i++) {
       VertCoord.Level have = coords.get(i);
@@ -161,6 +161,8 @@ public abstract class GribCollection implements FileCacheable {
     }
     return -1;
   }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Create a GribCollection from a collection of grib files
@@ -192,7 +194,9 @@ public abstract class GribCollection implements FileCacheable {
   protected File directory;
   protected FeatureCollectionConfig.GribConfig gribConfig;
   protected boolean isGrib1;
-  public int version;
+  protected FileCache objCache = null;  // optional object cache - used in the TDS
+
+  public int version; // the ncx version
 
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
@@ -201,7 +205,7 @@ public abstract class GribCollection implements FileCacheable {
   public List<GroupHcs> groups; // must be kept in order
   public List<Parameter> params;  // used ??
 
-  // LOOK need thread safety
+  // synchronize any access to indexRaf
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file
 
   public String getName() {
@@ -212,9 +216,9 @@ public abstract class GribCollection implements FileCacheable {
     return filenames;
   }
 
-  public RandomAccessFile getIndexRaf() {
-    return indexRaf;
-  }
+  //public RandomAccessFile getIndexRaf() {
+  //  return indexRaf;
+  //}
 
   public void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
@@ -231,7 +235,7 @@ public abstract class GribCollection implements FileCacheable {
     if (indexFile == null) {
       String nameNoBlanks = StringUtil2.replace(name, ' ', "_");
       File f = new File(directory, nameNoBlanks + NCX_IDX);
-      indexFile = cache.getFile(f.getPath());
+      indexFile = diskCache.getFile(f.getPath()); // diskCcahe manages where the index file lives
     }
     return indexFile;
   }
@@ -288,7 +292,6 @@ public abstract class GribCollection implements FileCacheable {
   protected GribCollection(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
-    // this.config = (dcm == null) ? null : (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.gribConfig = dcm;
     this.isGrib1 = isGrib1;
   }
@@ -349,8 +352,6 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   private RandomAccessFile getDataRaf(String location) throws IOException {
-
-
     if (dataRafCache != null) {
       return (RandomAccessFile) dataRafCache.acquire(dataRafFactory, location, null);
     } else {
@@ -359,8 +360,8 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   public void close() throws java.io.IOException {
-    if (fileCache != null) {
-      fileCache.release(this);
+    if (objCache != null) {
+      objCache.release(this);
     } else if (indexRaf != null) {
       indexRaf.close();
       indexRaf = null;
@@ -376,11 +377,6 @@ public abstract class GribCollection implements FileCacheable {
     return getIndexFile().getPath();
   }
 
-  /* @Override
-  public boolean sync() throws IOException {
-    return false;
-  } */
-
   @Override
   public long getLastModified() {
     if (indexFile != null) {
@@ -391,10 +387,9 @@ public abstract class GribCollection implements FileCacheable {
 
   @Override
   public void setFileCache(FileCache fileCache) {
-    this.fileCache = fileCache;
+    this.objCache = fileCache;
   }
 
-  protected FileCache fileCache = null;
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // these objects are created from the ncx index.

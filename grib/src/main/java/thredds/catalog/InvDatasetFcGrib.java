@@ -587,11 +587,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         if ((paths.length == 1) && paths[0].equals(FILES)) {
           TimePartition.Partition p = localState.timePartition.getPartitionLast();
-          return makeLatestCatalog(p.getGribCollection(), groups.get(0), catURI, localState);  // case 1
+          GribCollection pgc = p.getGribCollection();
+          InvCatalogImpl cat = makeLatestCatalog(pgc, groups.get(0), catURI, localState);  // case 1
+          pgc.close();
+          return cat;
 
          } if ((paths.length == 2) && paths[1].equals(FILES)) {
            TimePartition.Partition p = localState.timePartition.getPartitionByName(paths[0]);
-           return makeLatestCatalog(p.getGribCollection(), groups.get(0), catURI, localState);  // case 3
+           GribCollection pgc = p.getGribCollection();
+           InvCatalogImpl cat =  makeLatestCatalog(pgc, groups.get(0), catURI, localState);  // case 3
+           pgc.close();
+           return cat;
          }
       }
 
@@ -730,14 +736,19 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     DatasetParse dp = parse(matchPath, localState);
     if (dp == null) return null;
 
-    if (localState.timePartition == null) {
+    if (localState.timePartition == null) { // not a time partition
       return localState.gribCollection.getGridDataset(dp.group, dp.filename, gribConfig, logger);
 
     } else {
-      if (dp.partition != null)
-        return dp.partition.getGribCollection().getGridDataset(dp.group, dp.filename, gribConfig, logger);
-      else
+      if (dp.partition != null) {   // specific time partition
+        GribCollection gc =  dp.partition.getGribCollection();
+        GridDataset gd = gc.getGridDataset(dp.group, dp.filename, gribConfig, logger);
+        gc.close();
+        return gd;
+
+      } else {  // entire collection
         return localState.timePartition.getGridDataset(dp.group, dp.filename, gribConfig, logger);
+      }
     }
 
   }
@@ -759,14 +770,19 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     DatasetParse dp = parse(matchPath, localState);
     if (dp == null) return null;
 
-    if (localState.timePartition == null) {
+    if (localState.timePartition == null) { // not a time partition
       return localState.gribCollection.getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 1 and 2
 
     } else {
-      if (dp.partition != null)
-        return dp.partition.getGribCollection().getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 4
-      else
+      if (dp.partition != null)  { // specific time partition
+        GribCollection gc =  dp.partition.getGribCollection();
+        NetcdfDataset gd = gc.getNetcdfDataset(dp.group, dp.filename, gribConfig, logger);
+        gc.close();
+        return gd;
+
+      } else { // entire collection
         return localState.timePartition.getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 3
+      }
     }
   }
 

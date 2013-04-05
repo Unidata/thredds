@@ -64,7 +64,7 @@ public abstract class TimePartition extends GribCollection {
   private static FileCache partitionCache;
 
   static public void initPartitionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    partitionCache = new ucar.nc2.util.cache.FileCache("GribCollectionPartitionCache ", minElementsInMemory, maxElementsInMemory, -1, period);
+    partitionCache = new ucar.nc2.util.cache.FileCache("GribCollectionPartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
   }
 
   static public FileCache getPartitionCache() {
@@ -99,7 +99,7 @@ public abstract class TimePartition extends GribCollection {
 
   // wrapper around a GribCollection
   public class Partition implements Comparable<Partition> {
-    private GribCollection gribCollection;
+    //private GribCollection gribCollection;
     private String name, indexFilename;
 
     // constructor from ncx
@@ -133,16 +133,15 @@ public abstract class TimePartition extends GribCollection {
       return dcm;
     }
 
-    // construct GribCollection - caller must call gc.close() or tp.cleanup()
+    // acquire or construct GribCollection - caller must call gc.close() when done
     public GribCollection getGribCollection() throws IOException {
-      if (gribCollection == null) {
-        if (partitionCache != null) {
-          gribCollection = (GribCollection) partitionCache.acquire(collectionFactory, indexFilename, indexFilename, -1, null, this);
-        } else {
-          gribCollection = (GribCollection) collectionFactory.open(indexFilename, -1, null, this);
-        }
+      GribCollection result;
+      if (partitionCache != null) {
+        result = (GribCollection) partitionCache.acquire(collectionFactory, indexFilename, indexFilename, -1, null, this);
+      } else {
+        result = (GribCollection) collectionFactory.open(indexFilename, -1, null, this);
       }
-      return gribCollection;
+      return result;
     }
 
     @Override
@@ -170,11 +169,9 @@ public abstract class TimePartition extends GribCollection {
     }
 
     public GribCollection makeGribCollection() throws IOException {
-      if (gribCollection == null) {
-        gribCollection = GribCollection.factory(isGrib1, dcm, CollectionManager.Force.test, logger);  // LOOK why test ??
-        indexFilename = gribCollection.getIndexFile().getPath();
-      }
-      return gribCollection;
+      GribCollection result = GribCollection.factory(isGrib1, dcm, CollectionManager.Force.test, logger);  // LOOK why test ??
+      indexFilename = result.getIndexFile().getPath();
+      return result;
     }
 
   }
@@ -203,9 +200,11 @@ public abstract class TimePartition extends GribCollection {
       GribCollection gc = p.getGribCollection(); // ensure that its read in
 
       // the group and variable index may vary across partitions
-      GribCollection.GroupHcs g = gc.groups.get(groupno[partno]);   // WRONG
+      GribCollection.GroupHcs g = gc.groups.get(groupno[partno]);   // WRONG LOOK
       GribCollection.VariableIndex vindex = g.varIndex.get(varno[partno]);
       vindex.readRecords();
+
+      gc.close();
       return vindex;
     }
 
@@ -273,12 +272,12 @@ public abstract class TimePartition extends GribCollection {
     return partitions.get( partitions.size()-1);
   }
 
-  public void cleanup() throws IOException {
+  /* public void cleanup() throws IOException {
     if (partitions == null) return;
     for (TimePartition.Partition p : partitions)
       if (p.gribCollection != null)
         p.gribCollection.close();
-  }
+  } */
 
   @Override
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs group, int tableVersion,
@@ -370,14 +369,15 @@ public abstract class TimePartition extends GribCollection {
   public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
     Partition part = getPartitions().get(partno);
     GribCollection gc =  part.getGribCollection();
-    return gc.getDataRaf(fileno);
+    RandomAccessFile raf = gc.getDataRaf(fileno);
+    gc.close();
+    return raf;
   }
 
   public void close() throws java.io.IOException {
-    if (fileCache != null) {
-      fileCache.release(this);
-    } else if (indexRaf != null) {
-      cleanup();
+    if (objCache != null) {
+      objCache.release(this);
+    } else {
       super.close();
     }
   }

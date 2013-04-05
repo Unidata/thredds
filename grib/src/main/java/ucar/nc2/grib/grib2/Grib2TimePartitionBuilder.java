@@ -220,7 +220,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     writeIndex(canon, f);
 
     // close open gc's
-    tp.cleanup();
+    // tp.cleanup();
 
     long took = System.currentTimeMillis() - start;
     f.format(" CreatePartitionedIndex took %d msecs%n", took);

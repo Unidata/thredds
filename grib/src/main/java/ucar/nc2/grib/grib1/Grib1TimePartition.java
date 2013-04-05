@@ -72,6 +72,7 @@ public class Grib1TimePartition extends TimePartition {
     if (want == null) return null;
 
     Grib1Iosp iosp = new Grib1Iosp(want);
+    // optional user configuration
     iosp.setLookupTablePath(gribConfig.lookupTablePath);
     iosp.setParamTablePath(gribConfig.paramTablePath);
     iosp.setParamTable(gribConfig.paramTable);
