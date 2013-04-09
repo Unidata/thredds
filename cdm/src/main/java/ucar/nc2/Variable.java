@@ -168,7 +168,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @return size of the ith dimension
    */
   public int getShape(int index) {
-    return shape.length >= index ? 0 : shape[index];
+    return shape[index];
   }
 
   /**
