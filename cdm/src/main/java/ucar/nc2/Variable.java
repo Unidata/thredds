@@ -207,7 +207,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @return the rank
    */
   public int getRank() {
-    return shape.length);
+    return shape.length;
   }
 
   /**
