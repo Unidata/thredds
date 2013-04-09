@@ -111,8 +111,8 @@ public class TestUnsigned extends TestCase {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
     NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
 
-    Variable v = null;
-    assert(null != (v = ncd.findVariable("bvar")));
+    Variable v = ncd.findVariable("bvar");
+    assert(null != v);
     assert v.getDataType() == DataType.FLOAT;
 
     boolean hasSigned = false;

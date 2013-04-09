@@ -647,24 +647,21 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       location = StringUtil2.replace(location, '\\', "/");
 
       // Some URLS have multiple prefixed protocols (e.g. thredds:resolve)
-      // so, we cannot use URI or URL classes.
+      // so, we cannot use URI or URL classes to parse.
       String[] prefixes = location.split("[:]");
-      if(prefixes.length == 1) {
-          // Not a url at all
-          return NetcdfFile.open(location, buffer_size, cancelTask, spiObject);
-      }
-
-      // "switch" based on the leading protocol
-      String protocol = prefixes[0]; //
       ServiceType svctype = null;
-      if(protocol.equals("file"))
-          svctype = disambiguateFile(location);
-       else
-          svctype = disambiguateURL(protocol,location);
+      if(prefixes.length > 1) {
+          // "switch" based on the leading protocol
+          String protocol = prefixes[0]; //
+          if(protocol.equals("file"))
+              svctype = disambiguateFile(location);
+           else
+              svctype = disambiguateURL(protocol,location);
+      }
 
       if(svctype == ServiceType.OPENDAP)
           return acquireDODS(cache, factory, hashKey, location,
-                                 buffer_size, cancelTask, spiObject); 
+                                 buffer_size, cancelTask, spiObject);
       else if(svctype == ServiceType.CdmRemote)
           return acquireRemote(cache, factory, hashKey, location,
                                    buffer_size, cancelTask, spiObject);
@@ -680,7 +677,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
           if (ncfile == null)
               throw new IOException(log.toString());
           return ncfile;
-      }
+      } else if(svctype != null)
+	throw new IOException("Unknown service type: "+svctype.toString());
+
       // Apparently not a url, see if it looks like an ncml request
       if(location.endsWith(".xml") || location.endsWith(".ncml")) {
           // Pretend it was a file: url
@@ -709,7 +708,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     @Urlencoded
     static ServiceType
     disambiguateFile(String location)
-        throws IOException
     {
         // This should parse as a URL
         URL urx = null;
@@ -721,7 +719,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
             if(path == null || path.length()==0) parses = false;
         }
         if(!parses)
-            throw new IOException("Malformed file: url: "+location);
+            return null;
 
         assert urx.getProtocol().equals("file");
         // Look at the path extensions
@@ -736,10 +734,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
            || path.endsWith(".ncml"))
             return ServiceType.NCML;
         // See if the fragment gives a clue
-        ServiceType st = searchFragment(location);
-        if(st == null)
-            throw new IOException("Cannot determine file type: "+location);
-            return st;
+        return searchFragment(location);
     }
 
   /*
