@@ -355,6 +355,7 @@ public final class Grib1SectionProductDefinition {
     f.format("               Grid Definition : %d%n", getGridDefinition());
     f.format("                    GDS Exists : %s%n", gdsExists());
     f.format("                    BMS Exists : %s%n", bmsExists());
+    f.format("          Decimal Scale Factor : %d%n", getDecimalScale());
   }
 
  ////////////////////////////////////////////////////////

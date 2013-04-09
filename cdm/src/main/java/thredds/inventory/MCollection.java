@@ -102,10 +102,6 @@ public class MCollection {
     return ff;
   }
 
-  /* public DateExtractor getDateExtractor() {
-    return dateExtractor;
-  } */
-
   public boolean accept(MFile file) {
     return ((ff == null) || ff.accept(file));
   }
@@ -118,7 +114,6 @@ public class MCollection {
         ", dirName='" + dirName + '\'' +
         ", wantSubdirs=" + wantSubdirs +
         ", ff=" + ff +
-        // ", dateExtractor=" + dateExtractor +
         '}';
   }
 

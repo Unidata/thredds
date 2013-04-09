@@ -183,7 +183,7 @@ public class CoverageDisplay extends JPanel {
         colorScale = (ColorScale) store.getBean(ColorScaleName, null);
 
       colorScalePanel = new ColorScale.Panel(this, colorScale);
-      csDataMinMax = new JComboBox<ColorScale.MinMaxType>(ColorScale.MinMaxType.values());
+      csDataMinMax = new JComboBox(ColorScale.MinMaxType.values());
       csDataMinMax.setToolTipText("ColorScale Min/Max setting");
       csDataMinMax.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent e) {

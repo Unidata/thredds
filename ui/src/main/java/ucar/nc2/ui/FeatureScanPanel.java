@@ -32,9 +32,6 @@
  */
 package ucar.nc2.ui;
 
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft.grid.CoverageCS;
-import ucar.nc2.ft.grid.impl.CoverageCSFactory;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;

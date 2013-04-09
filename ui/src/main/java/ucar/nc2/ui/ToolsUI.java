@@ -121,26 +121,27 @@ public class ToolsUI extends JPanel {
   private CdmrFeature cdmremotePanel;
   private CdmIndexPanel cdmIdxPanel;
   private CoordSysPanel coordSysPanel;
-  private CollectionPanel collectionPanel;
   private CoveragePanel coveragePanel;
   private DatasetViewerPanel viewerPanel;
   private DatasetWriterPanel writerPanel;
+  private FeatureCollectionPanel fcPanel;
   private FeatureScanPanel ftPanel;
   private FmrcPanel fmrcPanel;
+  private FmrcCollectionPanel fmrcCollectionPanel;
   private GeoGridPanel gridPanel;
   private GeotiffPanel geotiffPanel;
   private GribFilesPanel gribFilesPanel;
   private GribIndexPanel gribIdxPanel;
+  private GribRenamePanel gribVariableRenamePanel;
   private Grib2CollectionPanel gribNewPanel;
   private Grib1CollectionPanel grib1RawPanel;
   private Grib1ReportPanel grib1ReportPanel;
-  private Grib2ReportPanel grib2ReportPanel;
-  private Grib2DataPanel grib2DataPanel;
   private GribCodePanel gribCodePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2TablePanel grib2TablePanel;
-  private GribRenamePanel gribVariableRenamePanel;
+  private Grib2ReportPanel grib2ReportPanel;
+  private Grib2DataPanel grib2DataPanel;
   private Hdf5ObjectPanel hdf5ObjectPanel;
   private Hdf5DataPanel hdf5DataPanel;
   private Hdf4Panel hdf4Panel;
@@ -378,7 +379,7 @@ public class ToolsUI extends JPanel {
     //ftTabPane.addTab("Trajectory", new JLabel("Trajectory"));
     ftTabPane.addTab("Images", new JLabel("Images"));
     ftTabPane.addTab("Radial", new JLabel("Radial"));
-    //ftTabPane.addTab("StationRadial", new JLabel("StationRadial"));
+    ftTabPane.addTab("FeatureCollection", new JLabel("FeatureCollection"));
     ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
     ftTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
@@ -571,6 +572,10 @@ public class ToolsUI extends JPanel {
       ftPanel = new FeatureScanPanel((PreferencesExt) mainPrefs.node("ftPanel"));
       c = ftPanel;
 
+    } else if (title.equals("FeatureCollection")) {
+      fcPanel = new FeatureCollectionPanel((PreferencesExt) mainPrefs.node("fcPanel"));
+      c = fcPanel;
+
     } else if (title.equals("GeoTiff")) {
       geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
       c = geotiffPanel;
@@ -604,8 +609,8 @@ public class ToolsUI extends JPanel {
       c = fmrcPanel;
 
     } else if (title.equals("Collections")) {
-      collectionPanel = new CollectionPanel((PreferencesExt) mainPrefs.node("collections"));
-      c = collectionPanel;
+      fmrcCollectionPanel = new FmrcCollectionPanel((PreferencesExt) mainPrefs.node("collections"));
+      c = fmrcCollectionPanel;
 
     } else if (title.equals("NCDump")) {
       ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
@@ -1018,8 +1023,9 @@ public class ToolsUI extends JPanel {
     if (coordSysPanel != null) coordSysPanel.save();
     if (cdmremotePanel != null) cdmremotePanel.save();
     if (cdmIdxPanel != null) cdmIdxPanel.save();
-    if (collectionPanel != null) collectionPanel.save();
+    if (fmrcCollectionPanel != null) fmrcCollectionPanel.save();
     if (coveragePanel != null) coveragePanel.save();
+    if (fcPanel != null) fcPanel.save();
     if (ftPanel != null) ftPanel.save();
     if (fmrcPanel != null) fmrcPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
@@ -4315,36 +4321,13 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  // new Fmrc
-  private class CollectionPanel extends OpPanel {
-    CollectionTable table;
+  // new Fmrc Collection Metadata storage in bdb
+  private class FmrcCollectionPanel extends OpPanel {
+    FmrcCollectionTable table;
 
-    CollectionPanel(PreferencesExt dbPrefs) {
+    FmrcCollectionPanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "collection:", true, false);
-      table = new CollectionTable(prefs);
-      /* table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
-
-          if (e.getPropertyName().equals("openNetcdfFile")) {
-            if (e.getNewValue() instanceof String)
-              openNetcdfFile((String) e.getNewValue());
-            else
-              openNetcdfFile((NetcdfFile) e.getNewValue());
-
-          } else if (e.getPropertyName().equals("openCoordSys")) {
-            if (e.getNewValue() instanceof String)
-              openCoordSystems((String) e.getNewValue());
-            else
-              openCoordSystems((NetcdfDataset) e.getNewValue());
-
-          } else if (e.getPropertyName().equals("openGridDataset")) {
-            if (e.getNewValue() instanceof String)
-              openGridDataset((String) e.getNewValue());
-            else
-              openGridDataset((NetcdfDataset) e.getNewValue());
-          }
-        }
-      }); */
+      table = new FmrcCollectionTable(prefs);
       add(table, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
@@ -5024,6 +5007,63 @@ public class ToolsUI extends JPanel {
       super.save();
     }
 
+  }
+
+  private class FeatureCollectionPanel extends OpPanel {
+    FeatureCollectionTable table;
+
+    FeatureCollectionPanel(PreferencesExt dbPrefs) {
+      super(dbPrefs, "collection:", true, false);
+      table = new FeatureCollectionTable(prefs);
+      add(table, BorderLayout.CENTER);
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            table.showCollection(f);
+          } catch (Exception e1) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+            e1.printStackTrace(new PrintStream(bos));
+            f.format("%s", bos.toString());
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      if (command == null) return false;
+
+      try {
+        table.setCollection(command);
+        return true;
+
+      } catch (Exception ioe) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+        ioe.printStackTrace();
+        ioe.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailTA.gotoTop();
+        detailWindow.show();
+      }
+
+      return false;
+    }
+
+    void closeOpenFiles() {
+    }
+
+    void save() {
+      table.save();
+      super.save();
+    }
   }
 
 ////////////////////////////////////////////////////////////////////////

@@ -69,7 +69,7 @@ import java.util.List;
  */
 public class Grib1ReportPanel extends JPanel {
   public static enum Report {
-    checkTables, showLocalParams, scanIssues, rename, checkRename// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
+    checkTables, showLocalParams, scanIssues, rename, checkRename, showEncoding// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
   }
 
   private PreferencesExt prefs;
@@ -159,6 +159,9 @@ public class Grib1ReportPanel extends JPanel {
           break;
         case checkRename:
           doCheckRename(f, dcm, useIndex);
+          break;
+        case showEncoding:
+          doShowEncoding(f, dcm, useIndex);
           break;
       }
     }
@@ -410,7 +413,71 @@ public class Grib1ReportPanel extends JPanel {
     }
   }
 
-      ///////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
+
+  private void doShowEncoding(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+    Counter decimals = new Counter("decimalScale");
+    Counter nbits = new Counter("nbits");
+    Counter refVal = new Counter("refVal");
+
+    for (MFile mfile : dcm.getFiles()) {
+      f.format(" %s%n", mfile.getPath());
+      //if (useIndex) doShowEncodingIndex(f, mfile, decimals); else doShowEncoding(f, mfile, decimals);
+      doShowEncoding(f, mfile, decimals, nbits, refVal);
+    }
+
+    decimals.show(f);
+    nbits.show(f);
+    refVal.show(f);
+  }
+
+  /* private void doShowEncodingIndex(Formatter fm, MFile ff, Counter decimals) throws IOException {
+    Grib1Index index = createIndex(ff, f);
+    if (index == null) return;
+
+    String path = ff.getPath();
+    RandomAccessFile raf = new RandomAccessFile(path, "r");
+
+    try {
+    for (ucar.nc2.grib.grib1.Grib1Record gr : index.getRecords()) {
+    } finally {
+    raf.close();
+    }
+  } */
+
+  private void doShowEncoding(Formatter fm, MFile ff, Counter decimals, Counter nbits, Counter refVal) throws IOException {
+    String path = ff.getPath();
+    RandomAccessFile raf = null;
+    try {
+      raf = new ucar.unidata.io.RandomAccessFile(path, "r");
+      raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+      raf.seek(0);
+
+      Grib1RecordScanner reader = new Grib1RecordScanner(raf);
+      while (reader.hasNext()) {
+        ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+        //Grib1SectionGridDefinition gdss = gr.getGDSsection();
+        //String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for CounterS
+
+        Grib1SectionProductDefinition pds = gr.getPDSsection();
+        decimals.count(pds.getDecimalScale());
+        double scale = Math.pow(10, pds.getDecimalScale());
+        Grib1SectionBinaryData data = gr.getDataSection();
+        nbits.count(data.getNBits(raf));
+        refVal.count((int) (scale * data.getRefValue(raf)));
+      }
+
+    } catch (Throwable ioe) {
+      fm.format("Failed on %s == %s%n", path, ioe.getMessage());
+      System.out.printf("Failed on %s%n", path);
+      ioe.printStackTrace();
+
+    } finally {
+      if (raf != null) raf.close();
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////
 
   private void doCheckRename(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
     f.format("CHECK Renaming uniqueness %s%n", dcm.getCollectionName());

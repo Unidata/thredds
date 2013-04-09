@@ -758,7 +758,7 @@ public class GridUI extends JPanel {
 
     // colorscale panel
     colorScalePanel = new ColorScale.Panel(this, controller.getColorScale());
-    csDataMinMax = new JComboBox<ColorScale.MinMaxType>( ColorScale.MinMaxType.values());
+    csDataMinMax = new JComboBox( ColorScale.MinMaxType.values());
     csDataMinMax.setToolTipText("ColorScale Min/Max setting");
     csDataMinMax.addActionListener( new AbstractAction () {
       public void actionPerformed(ActionEvent e) {
