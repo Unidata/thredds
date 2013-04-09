@@ -159,8 +159,10 @@ public final class ThreddsWmsController extends AbstractWmsController
       // all we need is a single layer. This means that a lot of unnecessary objects will be
       // created when only a single layer is needed, e.g. for a GetMap operation. Should create
       //  a means to extract a single layer without creating a whole dataset; however, this
-      //  could be tricky when dealing with virtual layers (e.g. velocities).
-      ThreddsDataset ds = new ThreddsDataset( reqDataset.getPath(), gd, this.wmsConfig );
+      //  could be tricky when dealing with virtual layers (e.g. velocities).      
+      //ThreddsDataset ds = new ThreddsDataset( reqDataset.getPath(), gd, this.wmsConfig );
+      
+      ThreddsDataset ds = ThreddsDataset.getThreddsDatasetForRequest(request, gd, reqDataset, this.wmsConfig, params );
       // Create an object that extracts layers from the dataset
       ThreddsLayerFactory layerFactory = new ThreddsLayerFactory( ds );
 

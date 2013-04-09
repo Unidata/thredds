@@ -55,7 +55,8 @@ import java.util.Formatter;
  * @since Feb 7, 2009
  */
 public class CdmRemote extends ucar.nc2.NetcdfFile {
-  static public final String SCHEME = "cdmremote:";
+  static public final String PROTOCOL = "cdmremote";
+  static public final String SCHEME = PROTOCOL+":";
 
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private boolean showRequest = false;

@@ -94,7 +94,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   // Instance data and methods
 
   protected NetcdfFile ncfile; // physical container for this Variable; where the I/O happens. may be null if Variable is self contained.
-  protected int[] shape;
+  protected int[] shape = new int[0];
   protected Section shapeAsSection;  // derived from the shape, immutable; used for every read, deferred creation
 
   protected DataType dataType;
@@ -168,7 +168,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @return size of the ith dimension
    */
   public int getShape(int index) {
-    return shape[index];
+    return shape.length >= index ? 0 : shape[index];
   }
 
   /**
@@ -255,6 +255,21 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   public boolean isUnsigned() {
     Attribute att = findAttributeIgnoreCase(CDM.UNSIGNED);
     return (att != null) && att.getStringValue().equalsIgnoreCase("true");
+  }
+
+  /**
+   * Say if this Variable is unsigned.
+   * @param b unsigned iff b is true
+   */
+  public void setUnsigned(boolean b) {
+    Attribute att = findAttributeIgnoreCase(CDM.UNSIGNED);
+    if((att == null && !b) || (att != null && b))
+	return; // ok as is
+    if(b) {
+        att = new Attribute(CDM.UNSIGNED,"true");
+        this.addAttribute(att);
+    } else // remove it
+	this.removeAttributeIgnoreCase(CDM.UNSIGNED);
   }
 
   /**

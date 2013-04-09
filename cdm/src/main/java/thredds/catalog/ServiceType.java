@@ -47,6 +47,7 @@ public final class ServiceType {
   public final static ServiceType ADDE = new ServiceType("ADDE");
   public final static ServiceType DODS = new ServiceType("DODS");
   public final static ServiceType OPENDAP = new ServiceType("OPENDAP");
+  public final static ServiceType DAP4 = new ServiceType("DAP4");
   public final static ServiceType OPENDAPG = new ServiceType( "OPENDAP-G" );
 
   public final static ServiceType HTTPServer = new ServiceType( "HTTPServer" );

@@ -311,22 +311,42 @@ static protected boolean compatibleURL(String u1, String u2)
         return false;
     }
 
-    // protocols must be same
-    String s1 = uu1.getSchemeSpecificPart();
-    String s2 = uu2.getSchemeSpecificPart();
-    if( ! (s1 != null && s2 != null && s1.equals(s2)))
+    // For the following we want this truth table
+    // s1    s2    t/f
+    // ---------------
+    //  null  null  match
+    //  null !null  !match
+    // !null  null  !match
+    // !null !null  match = s1.equals(s2)
+    // The if statement condition is the negation of match, namely:
+    // if((s1 != null || s2 != null)
+    //    && s1 != null && s2 != null && !s1.equals(s2))
+    //    return false; // => !match
+
+    // protocols comparison
+    String s1 = uu1.getScheme();
+    String s2 = uu2.getScheme();
+    if((s1 != null || s2 != null)
+       && s1 != null && s2 != null && !s1.equals(s2))
         return false;
 
-    // Missing uu1 user info will match defined uu2 user info
+    // Match user info; differs from table above
+    // because we allow added user info to match null
+    //  null  null  match
+    //  null !null  match <-- different
+    // !null  null  !match
+    // !null !null  match = s1.equals(s2)
     s1 = uu1.getUserInfo();
     s2 = uu2.getUserInfo();
-    if( ! (s1 == null || (s1 != null && s2 != null && s1.equals(s2))))
+    if(s1 != null
+       && (s2 == null || !s1.equals(s2)))
         return false;
 
     // hosts must be same
     s1 = uu1.getHost();
     s2 = uu2.getHost();
-    if( ! (s1 != null && s2 != null && s1.equals(s2)))
+    if((s1 != null || s2 != null)
+       && s1 != null && s2 != null && !s1.equals(s2))
         return false;
 
     // ports must be the same
@@ -335,9 +355,16 @@ static protected boolean compatibleURL(String u1, String u2)
 
     // paths must have prefix relationship
     // and missing is a prefix of anything
+    // s1    s2    t/f
+    // ---------------
+    //  null  null  match
+    //  null !null  !match
+    // !null  null  !match
+    // !null !null  match = (s1.startsWith(s2)||s2.startsWith(s1))
     s1 = uu1.getRawPath();
-    s2 = uu2.getPath();
-    if( ! (s1 == null || s2 == null || (s1.startsWith(s2) || s2.startsWith(s1))))
+    s2 = uu2.getRawPath();
+    if((s1 != null || s2 != null)
+       && s1 != null && s2 != null && !(s1.startsWith(s2) || s2.startsWith(s1)))
         return false;
 
     return true;

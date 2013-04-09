@@ -69,7 +69,8 @@ import java.io.IOException;
  * @author caron
  */
 public class ThreddsDataFactory {
-  static public final String SCHEME = "thredds:";
+  static public final String PROTOCOL = "thredds";
+  static public final String SCHEME = PROTOCOL + ":";
   static private boolean preferCdm = true;
 
   static public void setPreferCdm(boolean prefer) {
