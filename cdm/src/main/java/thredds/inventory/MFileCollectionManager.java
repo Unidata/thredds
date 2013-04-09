@@ -354,6 +354,36 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     return true;
   }
 
+  /**
+   * Do not use
+   * @throws IOException
+   */
+  public void scanDebug(Formatter f) throws IOException {
+    getController(); // make sure a controller is instantiated
+
+    // run through all scanners and collect MFile instances into the Map
+    for (MCollection mc : scanList) {
+
+      // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
+      Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);  /// NCDC wants subdir /global/nomads/nexus/gfsanl/**/gfsanl_3_.*\.grb$
+      if (iter == null) {
+        logger.error(collectionName + ": Invalid collection= " + mc);
+        continue;
+      }
+
+      int count = 0;
+      while (iter.hasNext()) {
+        MFile mfile = iter.next();
+        mfile.setAuxInfo(mc.getAuxInfo());
+        map.put(mfile.getPath(), mfile);
+        count++;
+      }
+      logger.info("{} : was scanned nfiles= {} ", collectionName, count);
+    }
+
+  }
+
+
   @Override
   public boolean scan(boolean sendEvent) throws IOException {
     if (map == null) {

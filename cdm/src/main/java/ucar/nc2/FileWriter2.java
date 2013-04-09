@@ -45,12 +45,7 @@ import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
  * Uses NetcdfFileWriter.
- * This handles entire CDM model (groups, etc) if you are writing to netcdf-4
- * <p/>
- * Copy a NetcdfFile to a Netcdf-3 or Netcdf-4 local file. This allows you, for example, to create a "view" of another
- * NetcdfFile using NcML, and/or to write a remote or OpenDAP file into a local netcdf file.
- * All metadata and data is copied out of the NetcdfFile and into the NetcdfFileWritable.
- * <p/>
+ * This handles the entire CDM model (groups, etc) if you are writing to netcdf-4
  * <p/>
  * The fileIn may be an NcML file which has a referenced dataset in the location URL, the underlying data
  * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
@@ -516,95 +511,6 @@ public class FileWriter2 {
     return (v != null) && (v.getDataType() == DataType.STRUCTURE);
   }
 
-  /*
-   * Add a Variable to the file. The data is copied when finish() is called.
-   * The variable's Dimensions are added for you, if not already been added.
-   *
-   * @param oldVar copy this Variable to new file.
-   *
-  public void writeVariable(Variable oldVar) {
-
-    Dimension[] dims = new Dimension[oldVar.getRank()];
-    List<Dimension> dimvList = oldVar.getDimensions();
-    for (int j = 0; j < dimvList.size(); j++) {
-      Dimension oldD = dimvList.get(j);
-      Dimension newD = dimHash.get(N3iosp.makeValidNetcdfObjectName(oldD.getName()));
-      if (null == newD) {
-        newD = writeDimension(oldD);
-        dimHash.put(newD.getName(), newD);
-      }
-      dims[j] = newD;
-    }
-
-    String useName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
-    if (oldVar.getDataType() == DataType.STRING) {
-      try {
-        // need to get the maximum string length
-        int max_strlen = 0;
-        ArrayObject data = (ArrayObject) oldVar.read();
-        IndexIterator ii = data.getIndexIterator();
-        while (ii.hasNext()) {
-          String s = (String) ii.next();
-          max_strlen = Math.max(max_strlen, s.length());
-        }
-
-        ncfile.addStringVariable(useName, Arrays.asList(dims), max_strlen);
-      } catch (IOException ioe) {
-        log.error("Error reading String variable " + oldVar, ioe);
-        return;
-      }
-    } else
-      ncfile.addVariable(useName, oldVar.getDataType(), dims);
-
-
-    varList.add(oldVar);
-    if (debug) System.out.println("write var= " + oldVar);
-
-    List<Attribute> attList = oldVar.getAttributes();
-    for (Attribute att : attList)
-      writeAttribute(useName, att);
-  }
-
-  /*
-   * Add a list of Variables to the file. The data is copied when finish() is called.
-   * The Variables' Dimensions are added for you, if not already been added.
-   *
-   * @param varList list of Variable
-   *
-  public void writeVariables(List<Variable> varList) {
-    for (Variable v : varList) {
-      writeVariable(v);
-    }
-  }
-
-  private final Structure recordVar = null;
-
-  /*
-   * Read record data from here (when finish is called). Typically much more efficient.
-   * Not sure if this allows subsetting, use with caution!!
-   *
-   * @param recordVar the record Variable.
-   *
-  public void setRecordVariable(Structure recordVar) {
-    this.recordVar = recordVar;
-  }
-  */
-
-  /*
-   * Call this when all attributes, dimensions, and variables have been added. The data from all
-   * Variables will be written to the file. You cannot add any other attributes, dimensions, or variables
-   * after this call.
-   *
-   * @throws IOException on read or write error
-   *
-  public void finish() throws IOException {
-    ncfile.create();
-
-    double total = copyVarData(ncfile, varList, recordVar, null);
-    ncfile.close();
-    if (debug) System.out.println("FileWriter finish total bytes = " + total);
-  } */
-
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   // contributed by  cwardgar@usgs.gov 4/12/2010
 
@@ -706,13 +612,11 @@ public class FileWriter2 {
   }
 
   /**
-   * Main program.
+   * Better to use ucar.nc.dataset.NetcdfDataset main program instead.
    * <p><strong>ucar.nc2.FileWriter -in fileIn -out fileOut</strong>.
    * <p>where: <ul>
    * <li> fileIn : path of any CDM readable file
    * <li> fileOut: local pathname where netdf-3 file will be written
-   * <li> delay: if set and file has record dimension, delay between writing each record, for testing files that
-   * are growing
    * </ol>
    *
    * @param arg -in fileIn -out fileOut [-netcdf4]

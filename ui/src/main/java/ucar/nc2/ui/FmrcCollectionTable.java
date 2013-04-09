@@ -57,7 +57,7 @@ import java.io.IOException;
  * @author caron
  * @since Jan 11, 2010
  */
-public class CollectionTable extends JPanel {
+public class FmrcCollectionTable extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted collectionNameTable, dataTable;
@@ -66,7 +66,7 @@ public class CollectionTable extends JPanel {
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 
-  public CollectionTable(PreferencesExt prefs) {
+  public FmrcCollectionTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
     collectionNameTable = new BeanTableSorted(CollectionBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);

@@ -48,6 +48,44 @@ public class Grib1SectionBinaryData {
   private final int length;
   private final long startingPosition;
 
+  /*   FM 92-XI EXT. GRIB EDITION 1
+  Section 4 – Binary data section
+  Octet   Contents
+  1–3     Length of section
+  4       Flag (see Code table 11) (first 4 bits). Number of unused bits at end of Section 4 (last 4 bits)
+  5–6     Scale factor (E)
+  7–10    Reference value (minimum of packed values)
+  11      Number of bits containing each packed value
+  12–Variable, depending on the flag value in octet 4
+
+  Note: A negative value of E shall be indicated by setting the high-order bit (bit 1) in the left-hand octet to 1 (on).
+
+  Code table 11 – Flag
+  Bit Value Meaning
+  1   0     Grid-point data
+      1     Spherical harmonic coefficients
+  2   0     Simple packing
+      1     Complex or second-order packing
+  3   0     Floating point values (in the original data) are represented
+      1     Integer values (in the original data) are represented
+  4   0     No additional flags at octet 14
+      1     Octet 14 contains additional flag bits
+
+  The following gives the meaning of the bits in octet 14 ONLY if bit 4 is set to 1. Otherwise octet 14 contains
+  regular binary data.
+
+  Bit Value Meaning
+  5         Reserved – set to zero
+  6   0     Single datum at each grid point
+      1     Matrix of values at each grid point
+  7   0     No secondary bit-maps
+      1     Secondary bit-maps present
+  8   0     Second-order values constant width
+      1     Second-order values different widths
+  9–12 Reserved for future use
+
+   */
+
   public Grib1SectionBinaryData(RandomAccessFile raf) throws IOException {
     startingPosition = raf.getFilePointer();
 
@@ -70,5 +108,17 @@ public class Grib1SectionBinaryData {
   public int getLength() {
     return length;
   }
+
+  /////////////////////
+  public int getNBits(RandomAccessFile raf) throws IOException {
+    raf.seek(startingPosition + 10); // go to the data section
+    return raf.read();
+  }
+
+  public float getRefValue(RandomAccessFile raf) throws IOException {
+    raf.seek(startingPosition + 6); // go to the data section
+    return GribNumbers.float4(raf);
+  }
+
 
 }
