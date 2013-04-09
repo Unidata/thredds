@@ -53,8 +53,7 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.util.*;
 
 import org.apache.commons.httpclient.Header;
@@ -647,21 +646,21 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       location = location.trim();
       location = StringUtil2.replace(location, '\\', "/");
 
-      // Start by seeing if the location parses as a URI/URL
-      URL urx;
-      try {
-          urx = new URL(location);
-      } catch (MalformedURLException mue) {
-          urx = null;
+      // Some URLS have multiple prefixed protocols (e.g. thredds:resolve)
+      // so, we cannot use URI or URL classes.
+      String[] prefixes = location.split("[:]");
+      if(prefixes.length == 1) {
+          // Not a url at all
+          return NetcdfFile.open(location, buffer_size, cancelTask, spiObject);
       }
 
+      // "switch" based on the leading protocol
+      String protocol = prefixes[0]; //
       ServiceType svctype = null;
-      if(urx != null) {
-	if(urx.getProtocol().equals("file"))
-	    svctype = disambiguateFile(urx);
-	else 
-	    svctype = disambiguateURL(urx);
-      }
+      if(protocol.equals("file"))
+          svctype = disambiguateFile(location);
+       else
+          svctype = disambiguateURL(protocol,location);
 
       if(svctype == ServiceType.OPENDAP)
           return acquireDODS(cache, factory, hashKey, location,
@@ -704,32 +703,43 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Attempt to map a file: url to a service type
    * (see thredds.catalog.ServiceType).
    *
-   * @param url The (parsed) file: url to disambiguate
+   * @param location The file: url to disambiguate
    * @return ServiceType indicating how to handle the url
    */
     @Urlencoded
     static ServiceType
-    disambiguateFile(URL url)
+    disambiguateFile(String location)
         throws IOException
     {
-        assert (url.getProtocol().equals("file")) : "Internal error";
-	// Look at the path extensions
-	String path = url.getPath();
+        // This should parse as a URL
+        URL urx = null;
+        boolean parses = true;
+        try {urx = new URL(location);} catch (MalformedURLException e) {parses = false;}
+        String path = null;
+        if(parses) {
+            path = urx.getPath();
+            if(path == null || path.length()==0) parses = false;
+        }
+        if(!parses)
+            throw new IOException("Malformed file: url: "+location);
+
+        assert urx.getProtocol().equals("file");
+        // Look at the path extensions
         if(path.endsWith(".dds")
            || path.endsWith(".das")
            || path.endsWith(".dods"))
             return ServiceType.OPENDAP;
         if(path.endsWith(".dmr")
            || path.endsWith(".data"))
-	    return ServiceType.DAP4;
+            return ServiceType.DAP4;
         if(path.endsWith(".xml")
            || path.endsWith(".ncml"))
-            return ServiceType.NCML;        
-	// See if the fragment gives a clue
-	ServiceType st = searchFragment(url.getRef());
-	if(st == null)
-	    throw new IOException("Cannot determine file type: "+url.toString());
-        return st;
+            return ServiceType.NCML;
+        // See if the fragment gives a clue
+        ServiceType st = searchFragment(location);
+        if(st == null)
+            throw new IOException("Cannot determine file type: "+location);
+            return st;
     }
 
   /*
@@ -744,52 +754,56 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * The mapping from url -> ServiceType is many to one, where for example,
    * the url protocol of dap4 and file might both map to ServiceType.DAP4.
    *
-   * @param url The (parsed) url to disambiguate
+   * @param protocol The leading protocol
+   * @param location the url to disambiguate
    * @return ServiceType indicating how to handle the url
    */
     @Urlencoded
     static ServiceType
-    disambiguateURL(URL url)
+    disambiguateURL(String protocol, String location)
         throws IOException
     {
-	assert !url.getProtocol().equals("file") : "Internal Error";
-        if(url.getProtocol().equals("dods"))
+        if(protocol.equals("dods"))
             return ServiceType.OPENDAP;
-        else if(url.getProtocol().equals("dap4"))
+        else if(protocol.equals("dap4"))
             return ServiceType.DAP4;
-        else if(url.getProtocol().equals(CdmRemote.PROTOCOL))
+        else if(protocol.equals(CdmRemote.PROTOCOL))
             return ServiceType.CdmRemote;
-        else if(url.getProtocol().equals(ThreddsDataFactory.PROTOCOL)) //thredds
+        else if(protocol.equals(ThreddsDataFactory.PROTOCOL)) //thredds
             return ServiceType.THREDDS;
-        else if(url.getProtocol().equals("http")
-                  || url.getProtocol().equals("https"))
-            return disambiguateHttp(url); // Actually contact the server
-	return searchFragment(url.getRef());
+        else if(protocol.equals("http") || protocol.equals("https"))
+            return disambiguateHttp(location); // Actually contact the server
+	    return searchFragment(location);
     }
 
     /**
      * Given a fragment, look for
      * markers indicated which protocol to use
+     * @param location the url whose fragment is to be examined
+     * @return The discovered ServiceType, or null
      */
     static ServiceType
-    searchFragment(String fragment)
+    searchFragment(String location)
     {
-	Map<String,String> map = parseFragment(fragment);
-	String protocol = map.get("protocol");
-	if(protocol != null) {
-	    if(protocol.equalsIgnoreCase("dap") 
-	       || protocol.equalsIgnoreCase("dods"))
-		return ServiceType.OPENDAP;
-	    if(protocol.equalsIgnoreCase("dap4"))
-		return ServiceType.DAP4;
-	    if(protocol.equalsIgnoreCase("cdmremote"))
-		return ServiceType.CdmRemote;
-	    if(protocol.equalsIgnoreCase("thredds"))
-		return ServiceType.THREDDS;
-	    if(protocol.equalsIgnoreCase("ncmdl"))
-		return ServiceType.NCML;
-	}
-	return null;
+        int pos = location.lastIndexOf('#');
+        if(pos < 0) return null;
+        String fragment = location.substring(pos+1,location.length());
+        Map<String,String> map = parseFragment(fragment);
+        String protocol = map.get("protocol");
+        if(protocol != null) {
+            if(protocol.equalsIgnoreCase("dap")
+               || protocol.equalsIgnoreCase("dods"))
+            return ServiceType.OPENDAP;
+            if(protocol.equalsIgnoreCase("dap4"))
+            return ServiceType.DAP4;
+            if(protocol.equalsIgnoreCase("cdmremote"))
+            return ServiceType.CdmRemote;
+            if(protocol.equalsIgnoreCase("thredds"))
+            return ServiceType.THREDDS;
+            if(protocol.equalsIgnoreCase("ncmdl"))
+            return ServiceType.NCML;
+        }
+        return null;
     }
 
     /**
@@ -836,18 +850,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * It looks for the header "Content-Description"
    * and uses it value (e.g. "ncstream" or "dods", etc)
    * in order to disambiguate.
-   * @param url The (parsed) url to disambiguate
+   * @param location the url to disambiguate
    * @return ServiceType indicating how to handle the url
    */
     @Urlencoded
     static private ServiceType
-    disambiguateHttp(URL url)
+    disambiguateHttp(String location)
         throws IOException
     {
       // aggregation cache files are of form
       // http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis2.dailyavgs/pressure/air.1981.nc#320092027
 
-        String location = url.toString();
         // remove any fragment
         int pos = location.lastIndexOf("#");
         if(pos >= 0)
