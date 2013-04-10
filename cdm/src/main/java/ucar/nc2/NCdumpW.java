@@ -41,6 +41,7 @@ import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Formatter;
@@ -58,13 +59,47 @@ import java.nio.ByteBuffer;
  */
 
 public class NCdumpW {
-  private static String usage = "usage: NCdumpW <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
+  private static String usage = "usage: NCdumpW <filename> [-unsigned] [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
   /**
    * Tell NCdumpW if you want values printed.
    */
-  public enum WantValues {
+  static public enum WantValues {
     none, coordsOnly, all
+  }
+
+  // Being lazy, I just make this flag global
+  static boolean useUnsigned = false;
+
+  static final public BigInteger BIG_UMASK64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+
+  static Object
+  fixUnsigned(Object o, boolean isunsigned)
+  {
+     if(!useUnsigned || !isunsigned || !(o instanceof Number))
+	return o;
+     if(o instanceof Byte) {
+	int i = ((Byte)o).intValue();
+	i &= 0xFF;
+	return Integer.valueOf(i);
+     }
+     if(o instanceof Short) {
+	int i = ((Short)o).intValue();
+	i &= 0xFFFF;
+	return Integer.valueOf(i);
+     }
+     if(o instanceof Integer) {
+	long l = ((Integer)o).longValue();
+	l &= 0xFFFFFFFFL;
+	return Long.valueOf(l);
+     }
+     if(o instanceof Long) {
+	long l = ((Long)o).longValue();
+	BigInteger bi = BigInteger.valueOf(l);
+	bi = bi.and(BIG_UMASK64);
+	return bi;
+     }
+     return o; // probably some form of float
   }
 
   /**
@@ -182,6 +217,8 @@ public class NCdumpW {
           showValues = WantValues.coordsOnly;
         if (toke.equalsIgnoreCase("-ncml"))
           ncml = true;
+        if (toke.equalsIgnoreCase("-unsigned"))
+          useUnsigned = true;
         if (toke.equalsIgnoreCase("-cdl") || toke.equalsIgnoreCase("-strict"))
           strict = true;
         if (toke.equalsIgnoreCase("-v") && stoke.hasMoreTokens())
@@ -458,7 +495,9 @@ public class NCdumpW {
 
     // scalar
     if (rank == 0) {
-      out.print(ma.getObject(ima).toString());
+      Object o = ma.getObject(ima);
+      o = fixUnsigned(o,ma.isUnsigned());
+      out.print(o.toString());
       return;
     }
 
@@ -469,7 +508,9 @@ public class NCdumpW {
 
     if ((rank == 1) && (ma.getElementType() != StructureData.class)) {
       for (int ii = 0; ii < last; ii++) {
-        out.print(ma.getObject(ima.set(ii)).toString());
+        Object o = ma.getObject(ima.set(ii));
+        o = fixUnsigned(o,ma.isUnsigned());
+        out.print(o.toString());
         if (ii != last - 1) out.print(", ");
         if (ct != null && ct.isCancel()) return;
       }
