@@ -35,6 +35,7 @@ package ucar.nc2.rewrite;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,10 +53,10 @@ public class Rewrite {
   NetcdfFileWriter ncOut;
   NetcdfFileWriter.Version version;
 
-  Rewrite(NetcdfFile ncIn, NetcdfFileWriter ncOut, NetcdfFileWriter.Version version) {
+  Rewrite(NetcdfFile ncIn, NetcdfFileWriter ncOut) {
     this.ncIn = ncIn;
     this.ncOut = ncOut;
-    this.version = version;
+    this.version = ncOut.getVersion();
   }
 
   void rewrite() throws IOException, InvalidRangeException {
@@ -216,9 +217,12 @@ public class Rewrite {
       System.exit(0);
     } */
 
+    Nc4Iosp.setLibraryAndPath("C:\\netcdfc\\netCDF 4.3.0-rc4\\bin", "netcdf");
+
+    long start = System.nanoTime();
     boolean netcdf4 = false;
     String datasetIn = "E:/data/nomads/problem/soilt1.gdas.200603.grb2";
-    String datasetOut = "C:/temp/soilt1.gdas.200603.nc";
+    String datasetOut = "C:/temp/soilt1.gdas.200603.nc3";
 
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     System.out.printf("Read from %s write to %s%n", datasetIn, datasetOut);
@@ -226,14 +230,20 @@ public class Rewrite {
     NetcdfFileWriter.Version version = netcdf4 ? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
 
     NetcdfFileWriter ncOut = NetcdfFileWriter.createNew(version, datasetOut);
-    Rewrite rewrite = new Rewrite(ncfileIn, ncOut, version);
+    Rewrite rewrite = new Rewrite(ncfileIn, ncOut);
     rewrite.rewrite();
     ncfileIn.close();
 
     File oldFile = new File(datasetIn);
     File newFile = new File(datasetOut);
     double r =  (double) newFile.length() / oldFile.length();
-    System.out.printf("%nRewrite from %s (%d) to %s (%d) ratio = %f %n", datasetIn, oldFile.length(), datasetOut, newFile.length(), r);
+
+    double took = (double) (System.nanoTime() - start) / 1000 / 1000 / 1000;
+    System.out.printf("that took %f secs %n", took);
+
+    System.out.printf("%nRewrite from %s (%d) to %s (%d) version = %s ratio = %f %n",
+            datasetIn, oldFile.length(), datasetOut, newFile.length(), version, r);
+
   }
 
 }

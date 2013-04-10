@@ -76,7 +76,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private Nc4prototypes nc4;
-  static private final String JNA_PATH = "jna.library.path";
+  static public final String JNA_PATH = "jna.library.path";
   static private String jnaPath;
   static private String libName = "netcdf";
 
@@ -2119,7 +2119,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         valb = IospHelper.convertCharToByte(valc);
         ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
         if (ret != 0) {
-          log.error("%s on var %s%n", nc4.nc_strerror(ret), v);
+          log.error("{} on var {}", nc4.nc_strerror(ret), v);
           return;
           //throw new IOException(nc4.nc_strerror(ret));
         }
@@ -2137,7 +2137,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         assert valf.length == sectionLen;
         ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
         if (ret != 0) {
-          log.error("%s on var %s%n", nc4.nc_strerror(ret), v);
+          log.error("{} on var {}", nc4.nc_strerror(ret), v);
           return;
           //throw new IOException(nc4.nc_strerror(ret));
         }
@@ -2149,7 +2149,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali) :
                 nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
         if (ret != 0) {
-          log.error("%s on var %s%n", nc4.nc_strerror(ret), v);
+          log.error("{} on var {}", nc4.nc_strerror(ret), v);
           return;
           //throw new IOException(nc4.nc_strerror(ret));
         }
@@ -2222,7 +2222,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         valb = IospHelper.convertCharToByte(valc);
         ret = nc4.nc_put_var_text(grpid, varid, valb);
         if (ret != 0) {
-          log.error("%s on var %s%n", nc4.nc_strerror(ret), v);
+          log.error("{} on var {}", nc4.nc_strerror(ret), v);
           return;
           //throw new IOException(nc4.nc_strerror(ret));
         }
@@ -2238,7 +2238,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         float[] valf = (float[]) data;
         ret = nc4.nc_put_var_float(grpid, varid, valf);
         if (ret != 0) {
-          log.error("%s on var %s%n", nc4.nc_strerror(ret), v);
+          log.error("{} on var {}", nc4.nc_strerror(ret), v);
           return;
           //throw new IOException(nc4.nc_strerror(ret));
         }
@@ -2249,7 +2249,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = isUnsigned ? nc4.nc_put_var_uint(grpid, varid, vali) :
                 nc4.nc_put_var_int(grpid, varid, vali);
         if (ret != 0) {
-          log.error("%s on var %s%n", nc4.nc_strerror(ret), v);
+          log.error("{} on var {}", nc4.nc_strerror(ret), v);
           return;
           //throw new IOException(nc4.nc_strerror(ret));
         }

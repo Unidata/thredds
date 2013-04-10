@@ -93,6 +93,7 @@ public class TimeTDSfixed {
     boolean isCancel = false;
     public boolean isCancel() { return isCancel; }
     public void setError(String msg) { }
+    public void setProgress(String msg, int progress) { }
   }
 
   // breadth first

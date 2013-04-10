@@ -33,6 +33,7 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
@@ -1918,17 +1919,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       System.exit(0);
     }
 
-    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
-    System.out.println("Read from " + datasetIn + " write to " + datasetOut);
+    CancelTaskImpl cancel = new CancelTaskImpl();
+    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
+    System.out.printf("NetcdfDatataset read from %s write to %s ", datasetIn, datasetOut);
 
     NetcdfFileWriter.Version version = netcdf4? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
     FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, version, null);
     writer.getNetcdfFileWriter().setLargeFile(isLargeFile);
-    NetcdfFile ncfileOut = writer.write();
+    NetcdfFile ncfileOut = writer.write(cancel);
+    if (ncfileOut != null) ncfileOut.close();
     ncfileIn.close();
-    ncfileOut.close();
-    System.out.println("NetcdfFile written = " + ncfileOut);
-    System.out.println("Success");
+    System.out.printf("%s%n", cancel);
   }
 
 }

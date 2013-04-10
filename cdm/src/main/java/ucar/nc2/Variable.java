@@ -110,39 +110,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
 
   protected ProxyReader proxyReader = this;
 
-  /**
-   * Get the variable name.
-   * @return full unescaped name
-   * @deprecated use getFullName or getShortName
-   */
-/*
-  public String getName() {
-    return getFullName();
-  }
-*/
-
-  /**
-   * Get the full, unescaped name of this Variable, starting from rootGroup.
-   * The name is unique within the entire NetcdfFile.
-   * @return  full, unescaped name
-   */
-/* see CDMNode.getFullName
-  public String getFullName() {
-    return NetcdfFile.makeFullName(this);
-  }
-*/
-
-  /**
-   * Get the full, escaped name of this Variable. Use for NetcdfFile.findVariable().
-   * @return  full, escaped name
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/CDM/Identifiers.html"
-   */
-  /* suppress
-  public String getFullNameEscaped() {
-    return NetcdfFile.makeFullNameEscaped(this);
-  }  */
-
-  /**
+   /**
    * Get the data type of the Variable.
    */
   public DataType getDataType() {

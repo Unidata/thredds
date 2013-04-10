@@ -1,3 +1,36 @@
+/*
+ * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ *
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
 package ucar.nc2.ui;
 
 import ucar.ma2.Array;
@@ -11,6 +44,7 @@ import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.ProgressMonitor;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -21,6 +55,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
@@ -53,8 +88,7 @@ public class DatasetWriter extends JPanel {
 
   private TextHistoryPane infoTA;
   private StructureTable dataTable;
-  private IndependentWindow infoWindow, dataWindow, dumpWindow, attWindow;
-  private boolean eventsOK = true;
+  private IndependentWindow infoWindow, dataWindow, attWindow;
 
   private Nc4Chunking chunker = Nc4ChunkingStrategyImpl.factory(Nc4Chunking.Strategy.standard, 0, false) ;
 
@@ -175,7 +209,6 @@ public class DatasetWriter extends JPanel {
       return;
     }
 
-
     if (data.version.isNetdf4format()) {
       if (!Nc4Iosp.isClibraryPresent()) {
         JOptionPane.showMessageDialog(this, "NetCDF=4 C library is not loaded");
@@ -183,19 +216,57 @@ public class DatasetWriter extends JPanel {
       }
     }
 
-    try {
-      List beans = nestedTableList.get(0).table.getBeans();
-      BeanChunker bc = new BeanChunker(beans, data.deflate, data.shuffle);
-      FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version, bc);
+    WriterTask task = new WriterTask(data);
+    ProgressMonitor pm = new ProgressMonitor(task);
+    pm.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("success")) {
+          System.out.printf("%s%n",e.getActionCommand());
+        }
+      }
+    });
+    pm.start( null, "Writing "+filename, ds.getVariables().size());
+  }
 
-      NetcdfFile result = writer.write();
-      result.close();
-      JOptionPane.showMessageDialog(this, "File successfully written");
-    } catch (Exception ioe) {
-      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-      ioe.printStackTrace();
+  class WriterTask extends ProgressMonitorTask {
+    NetcdfOutputChooser.Data data;
+
+    WriterTask(NetcdfOutputChooser.Data data) {
+      this.data = data;
+    }
+
+    public void run() {
+      try {
+        List beans = nestedTableList.get(0).table.getBeans();
+        BeanChunker bc = new BeanChunker(beans, data.deflate, data.shuffle);
+        FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version, bc);
+
+        double start = System.nanoTime();
+        NetcdfFile result = writer.write(this);
+        if (result == null) return;
+        result.close();
+
+        double took = (System.nanoTime() - start) / 1000 / 1000 / 1000;
+        File oldFile  = new File(ds.getLocation());
+        File newFile  = new File(data.outputFilename);
+        double r =  (double) newFile.length() / oldFile.length();
+
+        System.out.printf("%nRewrite from %s (%d) to %s (%d) version = %s ratio = %f took= %f secs%n",
+                ds.getLocation(), oldFile.length(), data.outputFilename, newFile.length(), data.version, r, took);
+
+        JOptionPane.showMessageDialog(DatasetWriter.this, "File successfully written took="+took+" secs ratio="+r);
+
+      } catch (Exception ioe) {
+        JOptionPane.showMessageDialog(DatasetWriter.this, "ERROR: " + ioe.getMessage());
+        ioe.printStackTrace();
+
+      } finally {
+        success = !cancel && !isError();
+        done = true;    // do last!
+      }
     }
   }
+
 
   void writeNcstream(String filename) {
     try {
@@ -326,8 +397,6 @@ public class DatasetWriter extends JPanel {
   }
 
   private void setSelected( Variable v ) {
-    eventsOK = false;
-
     List<Variable> vchain = new ArrayList<Variable>();
     vchain.add( v);
 
@@ -342,8 +411,6 @@ public class DatasetWriter extends JPanel {
       NestedTable ntable = setNestedTable(i, vp.getParentStructure());
       ntable.setSelected( vp);
     }
-
-    eventsOK = true;
   }
 
   /* public void showTreeViewWindow() {

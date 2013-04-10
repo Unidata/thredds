@@ -143,6 +143,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
 
       try {
         catalogURI = new URI(catalogName);
+
       } catch (URISyntaxException e) {
         catalog = new InvCatalogImpl(catalogName, null, null);
         catalog.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML URISyntaxException on URL (" +
