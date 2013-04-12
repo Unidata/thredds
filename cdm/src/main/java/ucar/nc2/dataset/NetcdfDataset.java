@@ -728,7 +728,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
            || path.endsWith(".dods"))
             return ServiceType.OPENDAP;
         if(path.endsWith(".dmr")
-           || path.endsWith(".data"))
+           || path.endsWith(".dap")
+           || path.endsWith(".dsr"))
             return ServiceType.DAP4;
         if(path.endsWith(".xml")
            || path.endsWith(".ncml"))
@@ -941,11 +942,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (location.indexOf('?') >= 0) {
       location = location.substring(0, location.indexOf('?'));
     }
-    // Strip off any trailing .data or .dmr
-    if (location.endsWith(".data"))
-      location = location.substring(0, location.length() - ".data".length());
-    if (location.endsWith(".dmr"))
+    // Strip off any trailing DAP4 prefix
+    if (location.endsWith(".dap"))
+      location = location.substring(0, location.length() - ".dap".length());
+    else if (location.endsWith(".dmr"))
       location = location.substring(0, location.length() - ".dmr".length());
+    else if (location.endsWith(".dsr"))
+      location = location.substring(0, location.length() - ".dsr".length());
     try {
       method = HTTPMethod.Get(session, location + ".dmr");
 
@@ -956,8 +959,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
           String v = h.getValue();
           if (v.startsWith("application/vnd.opendap.org"))
             return ServiceType.DAP4;
-          else
-            throw new IOException("DAP4 Server Error= " + method.getResponseAsString());
         }
       }
       if (status == 401)
