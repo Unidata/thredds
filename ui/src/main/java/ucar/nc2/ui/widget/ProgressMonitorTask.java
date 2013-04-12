@@ -32,8 +32,10 @@
  */
 package ucar.nc2.ui.widget;
 
+import ucar.nc2.util.CancelTask;
+
 /**
- * Subclass this for use in a ProgressMonitor. Responsibilities of your sublclass:
+ * Subclass this for use in a ProgressMonitor. Responsibilities of your subclass:
  * <ul> <li> You must provide the run method, which actually does the work that the ProgressMonitor
  *   is showing progress for.
  * <li> You must set the done flag for the ProgressMonitor to complete.  To avoid race conditions,
@@ -54,12 +56,13 @@ package ucar.nc2.ui.widget;
  *
  * @see ProgressMonitor
  */
-public abstract class ProgressMonitorTask implements Runnable {
+public abstract class ProgressMonitorTask implements Runnable, CancelTask {
   protected boolean done = false;
   protected boolean success = false;
   protected boolean cancel = false;
   protected String error = null;
   protected String note = null;
+  protected int progress;
 
   /** Here is where the work gets done. */
   abstract public void run();
@@ -84,8 +87,12 @@ public abstract class ProgressMonitorTask implements Runnable {
   public String getNote() { return note; }
   /** ProgressMonitor displays this progress value in the ProgressMonitor. If <0, ProgressMonitor will show
    * elasped seconds. */
-  public int getProgress() { return -1; }
+  public int getProgress() { return progress; }
 
   /** for compatibility with ucar.nc2.CancelTask */
   public void setError(String error) { this.error = error; }
+  public void setProgress(String msg, int progress) {
+    this.note = msg;
+    if (progress > 0) this.progress = progress;
+  }
 }

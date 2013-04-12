@@ -34,65 +34,68 @@ package ucar.nc2.ui.widget;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import javax.swing.*;
 import javax.swing.event.EventListenerList;
 
 /**
  * This wraps a javax.swing.ProgressMonitor, which allows tasks to be canceled.
  * This class adds extra behavior to javax.swing.ProgressMonitor:
  * <ol>
- * <li> Pass in the ProgressMonitorTask you want to monitor.
- * <li> Throws an actionEvent (on the AWT event thread) when the task is done.
- * <li> If an error, pops up an error message.
- * <li> Get status: success/failed/cancel when task is done.
+ *  <li> Pass in the ProgressMonitorTask you want to monitor.
+ *  <li> Throws an actionEvent (on the AWT event thread) when the task is done.
+ *  <li> If an error, pops up an error message.
+ *  <li> Get status: success/failed/cancel when task is done.
  * </ol>
- *
+ * <p/>
  * The ProgressMonitorTask is run in a background thread while a
  * javax.swing.ProgressMonitor dialog box shows progress. The task is checked every second
  * to see if its done or canceled.
- *
+ * <p/>
  * <pre>
  *  Example:
-
-    AddDatasetTask task = new AddDatasetTask(datasets);
-    ProgressMonitor pm = new ProgressMonitor(task);
-    pm.addActionListener( new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("success")) {
-          doGoodStuff();
-        }
-      }
-    });
-    pm.start( this, "Add Datasets", datasets.size());
-
-   class AddDatasetTask extends ProgressMonitorTask {
-     private List datasets;
-
-     OpenDatasetTask(List datasets) { this.datasets = datasets; }
-
-     public void run() {
-       Iterator iter = datasets.iterator();
-       while (iter.hasNext()) {
-         AddeDataset ads = (AddeDataset) iter.next();
-         this.note = ads.filenameReletive();
-         try {
-           ads.addImageData( currentSM.serverInfo(), results, false);
-         } catch (IOException ioe) {
-         error = ioe.getMessage();
-         break;
-       }
-       if (cancel) break;
-       this.progress++;
-     }
-     success = !cancel && !isError();
-     done = true;    // do last!
-    }
-  }
+ *
+ * AddDatasetTask task = new AddDatasetTask(datasets);
+ * ProgressMonitor pm = new ProgressMonitor(task);
+ * pm.addActionListener( new ActionListener() {
+ * public void actionPerformed(ActionEvent e) {
+ * if (e.getActionCommand().equals("success")) {
+ * doGoodStuff();
+ * }
+ * }
+ * });
+ * pm.start( this, "Add Datasets", datasets.size());
+ *
+ * class AddDatasetTask extends ProgressMonitorTask {
+ * private List datasets;
+ *
+ * OpenDatasetTask(List datasets) { this.datasets = datasets; }
+ *
+ * public void run() {
+ * Iterator iter = datasets.iterator();
+ * while (iter.hasNext()) {
+ * AddeDataset ads = (AddeDataset) iter.next();
+ * this.note = ads.filenameReletive();
+ * try {
+ * ads.addImageData( currentSM.serverInfo(), results, false);
+ * } catch (IOException ioe) {
+ * error = ioe.getMessage();
+ * break;
+ * }
+ * if (cancel) break;
+ * this.progress++;
+ * }
+ * success = !cancel && !isError();
+ * done = true;    // do last!
+ * }
+ * }
  * </pre>
  *
- *
- * @see ProgressMonitorTask
  * @author jcaron
  * @version 1.0
+ * @see ProgressMonitorTask
  */
 
 public class ProgressMonitor {
@@ -100,15 +103,15 @@ public class ProgressMonitor {
   private ProgressMonitorTask task;
   private javax.swing.Timer timer;
   private Thread taskThread;
-  private int millisToPopup = 1000;
-  private int millisToDecideToPopup = 1000;
+  private int millisToPopup = 100;
+  private int millisToDecideToPopup = 100;
   private int secs = 0;
 
   // event handling
   private EventListenerList listenerList = new EventListenerList();
 
   public ProgressMonitor(ProgressMonitorTask task) {
-    this( task, 1000, 1000);
+    this(task, 1000, 1000);
   }
 
   public ProgressMonitor(ProgressMonitorTask task, int millisToPopup, int millisToDecideToPopup) {
@@ -117,19 +120,25 @@ public class ProgressMonitor {
     this.millisToDecideToPopup = millisToDecideToPopup;
   }
 
-  public ProgressMonitorTask getTask() { return task; }
+  public ProgressMonitorTask getTask() {
+    return task;
+  }
 
-  /** Add listener: action event sent when task is done. event.getActionCommand() =
-   *  <ul><li> "success"
-   *  <li> "error"
-   *  <li> "cancel"
-   *  <li> "done" if done, but success/error/cancel not set
-   *  </ul>
+  /**
+   * Add listener: action event sent when task is done. event.getActionCommand() =
+   * <ul><li> "success"
+   * <li> "error"
+   * <li> "cancel"
+   * <li> "done" if done, but success/error/cancel not set
+   * </ul>
    */
   public void addActionListener(ActionListener l) {
     listenerList.add(java.awt.event.ActionListener.class, l);
   }
-  /** Remove listener */
+
+  /**
+   * Remove listener
+   */
   public void removeActionListener(ActionListener l) {
     listenerList.remove(java.awt.event.ActionListener.class, l);
   }
@@ -138,16 +147,17 @@ public class ProgressMonitor {
     // Guaranteed to return a non-null array
     Object[] listeners = listenerList.getListenerList();
     // Process the listeners last to first
-    for (int i = listeners.length-2; i>=0; i-=2) {
-      ((java.awt.event.ActionListener)listeners[i+1]).actionPerformed(event);
+    for (int i = listeners.length - 2; i >= 0; i -= 2) {
+      ((java.awt.event.ActionListener) listeners[i + 1]).actionPerformed(event);
     }
   }
 
   /**
    * Call this from awt event thread.
    * The task is run in a background thread.
-   * @param top put ProgressMonitor on top of this component (may be null)
-   * @param taskName display name of task
+   *
+   * @param top              put ProgressMonitor on top of this component (may be null)
+   * @param taskName         display name of task
    * @param progressMaxCount maximum number of Progress indicator
    */
   public synchronized void start(java.awt.Component top, String taskName, int progressMaxCount) {
@@ -157,7 +167,7 @@ public class ProgressMonitor {
     pm.setMillisToPopup(millisToPopup);
 
     // do task in a seperate, non-event, thread
-    taskThread = new Thread( task);
+    taskThread = new Thread(task);
     taskThread.start();
 
     // create timer, whose events happen on the awt event Thread
@@ -169,9 +179,9 @@ public class ProgressMonitor {
         } else {
           // indicate progress
           String note = task.getNote();
-          pm.setNote(note == null ? secs+" secs" : note);
+          pm.setNote(note == null ? secs + " secs" : note);
           int progress = task.getProgress();
-          pm.setProgress(progress < 0 ? secs : progress);
+          pm.setProgress(progress <= 0 ? secs : progress);
         }
 
         // need to make sure task acknowledges the cancel; so dont shut down
@@ -182,23 +192,77 @@ public class ProgressMonitor {
           // Toolkit.getDefaultToolkit().beep();
 
           if (task.isError()) {
-           javax.swing.JOptionPane.showMessageDialog(null, task.getErrorMessage());
+            javax.swing.JOptionPane.showMessageDialog(null, task.getErrorMessage());
           }
 
           if (task.isSuccess())
-            fireEvent( new ActionEvent(this, 0, "success"));
+            fireEvent(new ActionEvent(this, 0, "success"));
           else if (task.isError())
-            fireEvent( new ActionEvent(this, 0, "error"));
+            fireEvent(new ActionEvent(this, 0, "error"));
           else if (task.isCancel())
-            fireEvent( new ActionEvent(this, 0, "cancel"));
+            fireEvent(new ActionEvent(this, 0, "cancel"));
           else
-            fireEvent( new ActionEvent(this, 0, "done"));
+            fireEvent(new ActionEvent(this, 0, "done"));
         }
       }
     };
 
     timer = new javax.swing.Timer(1000, watcher); // every second
     timer.start();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+
+  static volatile boolean ok = false;  // LOOK must be declared volatile !!
+  public static void main(String args[]) throws IOException {
+    final JButton butt = new JButton("accept");
+
+    JFrame frame = new JFrame("Test");
+    frame.addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+        System.exit(0);
+      }
+    });
+
+    ProgressMonitorTask task = new ProgressMonitorTask() {
+
+      @Override
+      public void run() {
+        try {
+          while (true) {
+            if (ok)
+              break;
+          }
+          this.success = true;
+          System.out.println("task done");
+
+        } finally {
+          this.done = true;    // do last!
+        }
+        System.out.println("task exit");
+      }
+    };
+
+    ProgressMonitor fm = new ProgressMonitor(task);
+    fm.start(frame, "Test", 100);
+
+    butt.addActionListener(new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        System.out.println("butt accept");
+        ok = true;
+      }
+    });
+
+    JPanel main = new JPanel();
+    //main.add(frame);
+    main.add(butt);
+
+    frame.getContentPane().add(main);
+    // cb.setPreferredSize(new java.awt.Dimension(500, 200));
+
+    frame.pack();
+    frame.setLocation(300, 300);
+    frame.setVisible(true);
   }
 
 }

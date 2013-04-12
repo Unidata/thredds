@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -41,6 +41,8 @@ import java.util.Map;
 import ucar.ma2.*;
 import ucar.nc2.jni.netcdf.Nc4Chunking;
 import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.CancelTaskImpl;
 
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
@@ -76,7 +78,7 @@ public class FileWriter2 {
   private final NetcdfFile fileIn;
   private final NetcdfFileWriter writer;
   private final NetcdfFileWriter.Version version;
-  private List<FileWriterProgressListener> progressListeners;
+  //private List<FileWriterProgressListener> progressListeners;
 
   private final Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();  // oldVar, newVar
   private final List<Variable> varList = new ArrayList<Variable>();        // old Vars
@@ -98,10 +100,10 @@ public class FileWriter2 {
     this.version = version;
   }
 
-  public void addProgressListener(FileWriterProgressListener listener) {
+  /* public void addProgressListener(FileWriterProgressListener listener) {
     if (progressListeners == null) progressListeners = new ArrayList<FileWriterProgressListener>();
     progressListeners.add(listener);
-  }
+  } */
 
   public NetcdfFileWriter getNetcdfFileWriter() {
     return writer;
@@ -134,9 +136,9 @@ public class FileWriter2 {
   public Variable addVariable(Variable oldVar) {
     List<Dimension> newDims = getNewDimensions(oldVar);
 
-    Variable newVar = null;
+    Variable newVar;
     if ((oldVar.getDataType().equals(DataType.STRING)) && (!version.isNetdf4format())) {
-      newVar = writer.addStringVariable(null, oldVar,newDims);
+      newVar = writer.addStringVariable(null, oldVar, newDims);
     } else {
       newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), newDims);
     }
@@ -169,11 +171,17 @@ public class FileWriter2 {
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   public NetcdfFile write() throws IOException {
+    return write(null);
+  }
+
+  public NetcdfFile write(CancelTask cancel) throws IOException {
 
     if (version.isNetdf4format())
       addGroup4(null, fileIn.getRootGroup());
     else
       addNetcdf3();
+
+    if (cancel != null && cancel.isCancel()) return null;
 
     if (debugWrite)
       System.out.printf("About to write = %n%s%n", writer.getNetcdfFile());
@@ -191,7 +199,10 @@ public class FileWriter2 {
     boolean useRecordDimension = hasRecordStructure(fileIn) && hasRecordStructure(writer.getNetcdfFile());
     Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;  */
 
-    double total = copyVarData(varList, null);
+    if (cancel != null && cancel.isCancel()) return null;
+    double total = copyVarData(varList, null, cancel);
+    if (cancel != null && cancel.isCancel()) return null;
+
     writer.flush();
     if (debug) System.out.println("FileWriter done total bytes = " + total);
 
@@ -325,7 +336,7 @@ public class FileWriter2 {
           System.out.printf(")%n");
         }
       } else if (debugChunk) {
-        System.out.printf("%s is not Chunked, size = %d bytes%n", v.getFullName(), v.getSize()*v.getElementSize());
+        System.out.printf("%s is not Chunked, size = %d bytes%n", v.getFullName(), v.getSize() * v.getElementSize());
       }
 
       // attributes
@@ -339,22 +350,27 @@ public class FileWriter2 {
 
   }
 
+  public double copyVarData(List<Variable> vars, Structure recordVar) throws IOException {
+    return copyVarData(vars, recordVar, null);
+  }
+
   /**
    * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
    * When theres a record variable, its much more efficient to use it.
    *
-   * @param varlist   list of variables from the original file, with data in them
+   * @param oldVars   list of variables from the original file, with data in them
    * @param recordVar the record variable from the original file, or null means dont use record variables
    * @return total number of bytes written
    * @throws IOException if I/O error
    */
-  public double copyVarData(List<Variable> varlist, Structure recordVar) throws IOException {
+  public double copyVarData(List<Variable> oldVars, Structure recordVar, CancelTask cancel) throws IOException {
 
     boolean useRecordDimension = (recordVar != null);
 
     // write non-record data
     double total = 0;
-    for (Variable oldVar : varlist) {
+    int countVars = 0;
+    for (Variable oldVar : oldVars) {
       if (useRecordDimension && oldVar.isUnlimited())
         continue; // skip record variables
       if (oldVar == recordVar)
@@ -362,6 +378,8 @@ public class FileWriter2 {
 
       if (debug)
         System.out.println("write var= " + oldVar.getShortName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
+      if (cancel != null)
+        cancel.setProgress("writing " + oldVar.getShortName(), countVars++);
 
       long size = oldVar.getSize() * oldVar.getElementSize();
       total += size;
@@ -369,8 +387,10 @@ public class FileWriter2 {
       if (size <= maxSize) {
         copyAll(oldVar, varMap.get(oldVar));
       } else {
-        copySome(oldVar, varMap.get(oldVar), maxSize);
+        copySome(oldVar, varMap.get(oldVar), maxSize, cancel);
       }
+
+      if (cancel != null && cancel.isCancel()) return total;
     }
 
     // write record data
@@ -394,7 +414,7 @@ public class FileWriter2 {
           break;
         }
         totalRecordBytes += sdataSize;
-
+        if (cancel != null && cancel.isCancel()) return total;
       }
       total += totalRecordBytes;
       totalRecordBytes /= 1000 * 1000;
@@ -429,17 +449,17 @@ public class FileWriter2 {
    * @param maxChunkSize the size, <b>in bytes</b>, of the largest chunk to write.
    * @throws IOException if an I/O error occurs.
    */
-  private void copySome(Variable oldVar, Variable newVar, long maxChunkSize) throws IOException {
+  private void copySome(Variable oldVar, Variable newVar, long maxChunkSize, CancelTask cancel) throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
     long byteWriteTotal = 0;
 
-    FileWriterProgressEvent writeProgressEvent = new FileWriterProgressEvent();
+    /* FileWriterProgressEvent writeProgressEvent = new FileWriterProgressEvent();
     writeProgressEvent.setStatus("Variable: " + oldVar.getShortName());
     if (progressListeners != null) {
       for (FileWriterProgressListener listener : progressListeners) {
         listener.writeStatus(writeProgressEvent);
       }
-    }
+    } */
 
     ChunkingIndex index = new ChunkingIndex(oldVar.getShape());
     while (index.currentElement() < index.getSize()) {
@@ -447,12 +467,13 @@ public class FileWriter2 {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
 
-        writeProgressEvent.setWriteStatus("Reading chunk from variable: " + oldVar.getShortName());
+        if (cancel != null) cancel.setProgress("Reading chunk "+new Section(chunkOrigin, chunkShape)+" from variable: " + oldVar.getShortName(), -1);
+        /* writeProgressEvent.setWriteStatus("Reading chunk from variable: " + oldVar.getShortName());
         if (progressListeners != null) {
           for (FileWriterProgressListener listener : progressListeners) {
             listener.writeProgress(writeProgressEvent);
           }
-        }
+        } */
 
         Array data = oldVar.read(chunkOrigin, chunkShape);
         if (!version.isNetdf4format() && oldVar.getDataType() == DataType.STRING) {
@@ -460,13 +481,14 @@ public class FileWriter2 {
         }
 
         if (data.getSize() > 0) {// zero when record dimension = 0
-          writeProgressEvent.setWriteStatus("Writing chunk of variable: " + oldVar.getShortName());
+          if (cancel != null) cancel.setProgress("Writing chunk "+new Section(chunkOrigin, chunkShape)+" from variable: " + oldVar.getShortName(), -1);
+          /* writeProgressEvent.setWriteStatus("Writing chunk of variable: " + oldVar.getShortName());
           writeProgressEvent.setBytesToWrite(data.getSize());
           if (progressListeners != null) {
             for (FileWriterProgressListener listener : progressListeners) {
               listener.writeProgress(writeProgressEvent);
             }
-          }
+          } */
 
           writer.write(newVar, chunkOrigin, data);
           if (debugWrite)
@@ -474,17 +496,18 @@ public class FileWriter2 {
 
           byteWriteTotal += data.getSize();
 
-          writeProgressEvent.setBytesWritten(byteWriteTotal);
+          /* writeProgressEvent.setBytesWritten(byteWriteTotal);
           writeProgressEvent.setProgressPercent(100.0 * byteWriteTotal / oldVar.getSize());
           if (progressListeners != null) {
             for (FileWriterProgressListener listener : progressListeners) {
               listener.writeProgress(writeProgressEvent);
             }
-          }
-
+          } */
         }
 
         index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
+        if (cancel != null && cancel.isCancel()) return;
+
       } catch (InvalidRangeException e) {
         e.printStackTrace();
         throw new IOException(e.getMessage());
@@ -546,10 +569,10 @@ public class FileWriter2 {
     }
   }
 
-  /**
+  /*
    * Track the progress of file writing.
    * use FileWriter2.addProgressListener()
-   */
+   *
   public static class FileWriterProgressEvent {
     private double progressPercent;
     private long bytesWritten;
@@ -603,7 +626,7 @@ public class FileWriter2 {
     void writeProgress(FileWriterProgressEvent event);
 
     void writeStatus(FileWriterProgressEvent event);
-  }
+  }  */
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -641,13 +664,16 @@ public class FileWriter2 {
       System.exit(0);
     }
 
-    System.out.printf("copy %s to%s%n", datasetIn, datasetOut);
-    // NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
-    NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
+    System.out.printf("FileWriter2 copy %s to %s ", datasetIn, datasetOut);
+    CancelTaskImpl cancel = new CancelTaskImpl();
+    NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, cancel);
+    if (cancel.isCancel()) return;
+
     FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null); // currently only the default chunker
-    NetcdfFile ncfileOut = writer2.write();
+    NetcdfFile ncfileOut = writer2.write(cancel);
+    if (ncfileOut != null) ncfileOut.close();
     ncfileIn.close();
-    ncfileOut.close();
+    System.out.printf("%s%n", cancel);
   }
 
   // Q:/cdmUnitTest/formats/netcdf4/tst/tst_groups.nc

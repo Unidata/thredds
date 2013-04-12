@@ -1436,7 +1436,7 @@ public class CoverageDisplay extends JPanel {
     }
   }
 
-  // open remote dataset in canellable task
+  // open remote dataset in cancellable task
   private class OpenDatasetTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
     ucar.nc2.thredds.ThreddsDataFactory factory;
     thredds.catalog.InvDataset invds;

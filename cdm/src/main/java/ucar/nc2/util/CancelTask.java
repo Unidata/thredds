@@ -49,4 +49,12 @@ public interface CancelTask {
    * @param msg message to show user
    */
   public void setError(String msg);
+
+
+  /** Called routine may optionally show a progress message for calling program to show to user.
+   * @param msg message to show user
+   * @param progress count of progress
+   */
+  public void setProgress(String msg, int progress);
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -31,22 +31,92 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.catalog;
+package ucar.nc2.util;
 
 /**
- * Allows asynchronous reading of a catalog.
- * When the catalog is read, setCatalog() is called, else failed() is called.
+ * Simple implementation of CancelTask, used in order to get status return.
+ *
+ * @author caron
+ * @since 4/10/13
  */
-public interface CatalogSetCallback {
+public class CancelTaskImpl implements CancelTask {
+  protected boolean done = false;
+  protected boolean success = false;
+  protected boolean cancel = false;
+  protected String error = null;
+  protected String note = null;
+  protected int progress;
 
   /**
-   * Called when the catalog is done being read.
-   * @param catalog the catalog that was just read in.
+   * Application calls to see if task is success.
    */
-  public void setCatalog(InvCatalogImpl catalog);
+  public boolean isSuccess() {
+    return success;
+  }
 
   /**
-   * Called if the catalog reading fails
+   * Application call this to find out if there was an error.
    */
-  public void failed();
+  public boolean isError() {
+    return error != null;
+  }
+
+  /**
+   * Application call this to get the error message, if any.
+   */
+  public String getErrorMessage() {
+    return error;
+  }
+
+  /**
+   * Application calls to see if task is done.
+   */
+  public boolean isDone() {
+    return done;
+  }
+
+  /**
+   * Application will call this when the user cancels.
+   */
+  public void cancel() {
+    cancel = true;
+  }
+
+  /**
+   * Application call this to get the progress message, if any.
+   */
+  public String getProgressMessage() {
+    return note;
+  }
+
+  /**
+   * Application call this to get the progress count, if any.
+   */
+  public int getProgress() {
+    return progress;
+  }
+
+  @Override
+  public boolean isCancel() {
+    return cancel;
+  }
+
+  @Override
+  public void setError(String error) {
+    this.error = error;
+  }
+
+  @Override
+  public void setProgress(String msg, int progress) {
+    this.note = msg;
+    if (progress > 0) this.progress = progress;
+  }
+
+  @Override
+  public String toString() {
+    if (cancel) return "was canceled";
+    if (isError()) return "error= "+error;
+    if (success) return "success";
+    return "finished="+done;
+  }
 }

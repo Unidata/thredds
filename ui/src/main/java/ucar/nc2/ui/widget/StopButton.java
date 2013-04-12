@@ -39,8 +39,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.event.EventListenerList;
 
-import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.ProgressMonitorTask;
 import ucar.nc2.util.CancelTask;
 
 /**
@@ -120,6 +118,7 @@ public class StopButton extends JButton implements CancelTask {
     }
   }
 
+  @Override
   public boolean isCancel() {
     return isCancelled;
   }
@@ -128,8 +127,14 @@ public class StopButton extends JButton implements CancelTask {
     this.isCancelled = isCancelled;
   }
 
+  @Override
   public void setError(String msg) {
     System.out.println("Got Error= "+msg);
+  }
+
+  @Override
+  public void setProgress(String msg, int progress) {
+    // NOP
   }
 
   /**
