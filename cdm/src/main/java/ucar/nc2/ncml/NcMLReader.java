@@ -1487,7 +1487,7 @@ public class NcMLReader {
   ///////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Read an NcML file and write an equivilent NetcdfFile to a physical file, using Netcdf-3 file format.
+   * Read an NcML file and write an equivalent NetcdfFile to a physical file, using Netcdf-3 file format.
    *
    * @param ncmlLocation read this NcML file
    * @param fileOutName  write to this local file
@@ -1504,7 +1504,7 @@ public class NcMLReader {
   }
 
   /**
-   * Read an NcML and write an equivilent NetcdfFile to a physical file, using Netcdf-3 file format.
+   * Read an NcML and write an equivalent NetcdfFile to a physical file, using Netcdf-3 file format.
    * The NcML may have a referenced dataset in the location URL, in which case the underlying data
    * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
    * then the new file is filled with fill values, like ncgen.

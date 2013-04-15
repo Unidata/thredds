@@ -34,6 +34,25 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Compile the library. See <a href="http://www.unidata.ucar.edu/software/netcdf/docs/building.html" > instructions.</a></li>  
   <li>Set the <em>library path</em> to the directory where the libraries were built in and the library name to <strong><em>netcdf</em></strong>.</li> 
 </ol>
+<h2>Troubleshooting</h2>
+<p>If you get a message like this:</p>
+<pre>
+ Warning! ***HDF5 library version mismatched error***
+ The HDF5 header files used to compile this application do not match
+ the version used by the HDF5 library to which this application is linked.
+ Data corruption or segmentation faults may occur if the application continues.
+ This can happen when an application was compiled by one version of HDF5 but
+ linked with a different version of static or shared HDF5 library.
+ You should recompile the application or check your shared library related
+ settings such as 'LD_LIBRARY_PATH'.
+ You can, at your own risk, disable this warning by setting the environment
+ variable 'HDF5_DISABLE_VERSION_CHECK' to a value of '1'.
+ Setting it to 2 or higher will suppress the warning messages totally.
+ Headers are 1.8.10, library is 1.8.5
+ Bye...
+</pre>
+<p>Make sure that you dont have old version of the HDF5 library in your PATH or LD_LIBRARY_PATH.</p>
+<p>&nbsp;</p>
 <hr />
 <h2>Writing netCDF-4 files</h2>
 <ul>
