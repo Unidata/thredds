@@ -77,6 +77,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private Nc4prototypes nc4;
   static public final String JNA_PATH = "jna.library.path";
+  static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
   static private String jnaPath;
   static private String libName = "netcdf";
 
@@ -122,6 +123,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    */
   static public void setLibraryAndPath(String jna_path, String libname) {
 	    
+    if(jna_path == null) {
+	if(System.getProperty(JNA_PATH) == null) {
+	    String env = System.getenv(JNA_PATH_ENV);
+	    if(env != null && env.length() > 0) {
+		jna_path = env;		
+	    }
+	}
+    }
     if (jna_path != null) {
       jnaPath = jna_path;
       System.setProperty(JNA_PATH, jnaPath);
