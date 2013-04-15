@@ -174,6 +174,12 @@ public class FileWriter2 {
     return write(null);
   }
 
+  /**
+   * Write the input file to the output file.
+   * @param cancel  allow user to cancel; may be null.
+   * @return the open output file.
+   * @throws IOException
+   */
   public NetcdfFile write(CancelTask cancel) throws IOException {
 
     if (version.isNetdf4format())
@@ -360,6 +366,7 @@ public class FileWriter2 {
    *
    * @param oldVars   list of variables from the original file, with data in them
    * @param recordVar the record variable from the original file, or null means dont use record variables
+   * @param cancel  allow user to cancel, may be null.
    * @return total number of bytes written
    * @throws IOException if I/O error
    */
@@ -447,6 +454,7 @@ public class FileWriter2 {
    * @param oldVar       a variable from the original file to copy data from.
    * @param newVar       a variable from the original file to copy data from.
    * @param maxChunkSize the size, <b>in bytes</b>, of the largest chunk to write.
+   * @param cancel      allow user to cancel, may be null.
    * @throws IOException if an I/O error occurs.
    */
   private void copySome(Variable oldVar, Variable newVar, long maxChunkSize, CancelTask cancel) throws IOException {

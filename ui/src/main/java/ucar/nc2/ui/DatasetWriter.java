@@ -65,7 +65,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * For writing datasets to netcdf
+ * UI for writing datasets to netcdf formatted disk files.
  *
  * @author caron
  * @since 12/7/12
@@ -266,7 +266,6 @@ public class DatasetWriter extends JPanel {
       }
     }
   }
-
 
   void writeNcstream(String filename) {
     try {
