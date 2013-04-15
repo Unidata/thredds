@@ -32,7 +32,6 @@
 
 package thredds.server.wms;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,9 +41,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -62,7 +60,6 @@ import uk.ac.rdg.resc.edal.cdm.CdmUtils;
 import uk.ac.rdg.resc.edal.cdm.DataReadingStrategy;
 import uk.ac.rdg.resc.edal.coverage.CoverageMetadata;
 import uk.ac.rdg.resc.ncwms.controller.RequestParams;
-import uk.ac.rdg.resc.ncwms.exceptions.LayerNotDefinedException;
 import uk.ac.rdg.resc.ncwms.exceptions.WmsException;
 import uk.ac.rdg.resc.ncwms.util.WmsUtils;
 import uk.ac.rdg.resc.ncwms.wms.Dataset;
@@ -360,15 +357,31 @@ public class ThreddsDataset implements Dataset
 	 * @param varAtt
 	 * @return
 	 */
-	private static boolean isComponent(String layerName, String varAtt){		
-		
-		if( varAtt.contains("eastward_"+layerName) ||  varAtt.contains("northward_"+layerName) ){
-			return true;
+	static boolean isComponent(String layerName, String varAtt){		
+
+		if( varAtt.contains("eastward_") ||  varAtt.contains("northward_") ){
+			//CF-Conventions
+			String[] tokens = layerName.split("_");
+			
+			StringBuilder sb = new StringBuilder();
+
+			sb.append(tokens[0]+"\\B");
+			for(int i = 1; i < tokens.length-1; i++ ){
+				sb.append(".*\\B"+tokens[i]+"\\B");
+			}
+			sb.append(".*\\B"+tokens[ tokens.length -1 ]+"\\b");
+			
+			Pattern pattern = Pattern.compile(sb.toString());
+			Matcher matcher = pattern.matcher(varAtt);						
+			
+			return matcher.find();
+
 		}
+
 		if( varAtt.contains("u-component of "+layerName) ||  varAtt.contains("v-component of "+layerName) ){
 			return true;
 		}			
-		
+
 		return false;
 	}
 }
