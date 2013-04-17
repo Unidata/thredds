@@ -181,6 +181,9 @@ public final class Range {
 
   /**
    * Create a new Range by composing a Range that is reletive to this Range.
+   * Revised 2013/04/17 by Dennis Heimbigner to handle more cases. See
+   * The commentary associated with the netcdf-c file dceconstraints.h,
+   * function dceslicecompose().
    *
    * @param r range reletive to base
    * @return combined Range, may be EMPTY
@@ -191,10 +194,21 @@ public final class Range {
       return EMPTY;
     if (this == VLEN || r == VLEN)
       return VLEN;
-
+if(false) {// Original version
     int first = element(r.first());
     int stride = stride() * r.stride();
     int last = element(r.last());
+} else {//new version
+    int first  = this.first()+(r.first() * this.stride());
+    int stride = this.stride() * r.stride();
+    int count1 = (this.length() + (this.stride() - 1))/this.stride();
+    int stop1  = this.first() + (count1 * this.stride());
+    int count2 = (r.length() + (r.stride() - 1))/r.stride();
+    int stop2  = r.first() + (count2 * r.stride());
+    int stopx  = this.first() + (stop2 * this.stride());
+    int stopr  = (stopx < stop1 ? stopx : stop1); /* min(stopx,stop1) */
+    int last   = (stopr - 1)
+}
     return new Range(name, first, last, stride);
   }
 
