@@ -198,6 +198,7 @@ if(false) {// Original version
     int first = element(r.first());
     int stride = stride() * r.stride();
     int last = element(r.last());
+    return new Range(name, first, last, stride);
 } else {//new version
     int first  = this.first()+(r.first() * this.stride());
     int stride = this.stride() * r.stride();
@@ -207,9 +208,9 @@ if(false) {// Original version
     int stop2  = r.first() + (count2 * r.stride());
     int stopx  = this.first() + (stop2 * this.stride());
     int stopr  = (stopx < stop1 ? stopx : stop1); /* min(stopx,stop1) */
-    int last   = (stopr - 1)
-}
+    int last   = (stopr - 1);
     return new Range(name, first, last, stride);
+}
   }
 
   /**
