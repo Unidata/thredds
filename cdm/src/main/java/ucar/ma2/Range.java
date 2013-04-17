@@ -194,7 +194,8 @@ public final class Range {
       return EMPTY;
     if (this == VLEN || r == VLEN)
       return VLEN;
-if(false) {// Original version
+// Disable fix until we can figure out why some tests are failing
+if(true) {// Original version
     int first = element(r.first());
     int stride = stride() * r.stride();
     int last = element(r.last());
