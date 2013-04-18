@@ -153,10 +153,10 @@ static public Cookie[] getGlobalCookies()
 
 static private synchronized void kill()
 {
-    for (HTTPSession session : sessionList) {
-        session.close();
-    }
-    sessionList.clear();
+//    for (HTTPSession session : sessionList) {
+//        session.close();
+//    }
+//    sessionList.clear();
     // Rebuild the connection manager
     connmgr.shutdown();
     connmgr = new MultiThreadedHttpConnectionManager();
@@ -256,7 +256,7 @@ static MultiThreadedHttpConnectionManager connmgr;
 //fix: protected static SchemeRegistry schemes;
 static String globalAgent = "/NetcdfJava/HttpClient3";
 static int threadcount = DFALTTHREADCOUNT;
-static List<HTTPSession> sessionList; // List of all HTTPSession instances
+//static List<HTTPSession> sessionList; // List of all HTTPSession instances
 static boolean globalauthpreemptive = false;
 static int globalSoTimeout = 0;
 static int globalConnectionTimeout = 0;
@@ -278,7 +278,7 @@ static {
                                   new EasySSLProtocolSocketFactory(),
                                   8443)); // std tomcat https entry
 
-    sessionList = new ArrayList<HTTPSession>(); // see kill function
+//    sessionList = new ArrayList<HTTPSession>(); // see kill function
     setGlobalConnectionTimeout(DFALTTIMEOUT);
     setGlobalSoTimeout(DFALTTIMEOUT);
     getGlobalProxyD(); // get info from -D if possible
@@ -373,7 +373,7 @@ construct(String legalurl)
 
         setProxy();
 
-        sessionList.add(this);
+//        sessionList.add(this);
 
     } catch (Exception e) {
         throw new HTTPException("url="+legalurl,e);
