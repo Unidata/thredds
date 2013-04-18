@@ -52,6 +52,8 @@ public class TestHTTPMethod extends UnitTestCommon
 
     static final int EXPECTED = 20000;
 
+    static {HTTPSession.TESTING = true;}
+
     //////////////////////////////////////////////////
 
     // Define the test sets
