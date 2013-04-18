@@ -165,6 +165,14 @@ static private synchronized void kill()
     }
 }
 
+// If we are testing, then track the sessions for kill
+static private synchronized void track(HTTPSession session)
+{
+    if(sessionList == null)
+        sessionList = new ArrayList<HTTPSession>();
+    sessionList.add(session);
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 // We need more powerful protocol registry.
@@ -287,8 +295,6 @@ static {
                                   new EasySSLProtocolSocketFactory(),
                                   8443)); // std tomcat https entry
 
-    if(TESTING)
-        sessionList = new ArrayList<HTTPSession>(); // see kill function
     setGlobalConnectionTimeout(DFALTTIMEOUT);
     setGlobalSoTimeout(DFALTTIMEOUT);
     getGlobalProxyD(); // get info from -D if possible
@@ -383,7 +389,7 @@ construct(String legalurl)
 
         setProxy();
 
-        if(TESTING) sessionList.add(this);
+        if(TESTING) HTTPSession.track(this);
 
     } catch (Exception e) {
         throw new HTTPException("url="+legalurl,e);
