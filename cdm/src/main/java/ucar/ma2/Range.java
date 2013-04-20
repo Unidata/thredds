@@ -181,6 +181,9 @@ public final class Range {
 
   /**
    * Create a new Range by composing a Range that is reletive to this Range.
+   * Revised 2013/04/19 by Dennis Heimbigner to handle edge cases.
+   * See the commentary associated with the netcdf-c file dceconstraints.h,
+   * function dceslicecompose().
    *
    * @param r range reletive to base
    * @return combined Range, may be EMPTY
@@ -191,11 +194,21 @@ public final class Range {
       return EMPTY;
     if (this == VLEN || r == VLEN)
       return VLEN;
-
+if(false) {// Original version
+    // Note that this version assumes that range r is
+    // correct with respect to this.
     int first = element(r.first());
     int stride = stride() * r.stride();
     int last = element(r.last());
     return new Range(name, first, last, stride);
+} else {//new version: handles versions all values of r.
+    int sr_stride = stride() * r.stride();
+    int sr_first  = element(r.first()); // MAP(this,i) == element(i)
+    int lastx = element(r.last());
+    int sr_last = (last() < lastx ? last() : lastx); //min(last(),lastx)
+    //unused int sr_length = (sr_last + 1) - sr_first;
+    return new Range(name, sr_first, sr_last, sr_stride);
+}
   }
 
   /**

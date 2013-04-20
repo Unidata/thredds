@@ -153,16 +153,26 @@ static public Cookie[] getGlobalCookies()
 
 static private synchronized void kill()
 {
-    for (HTTPSession session : sessionList) {
-        session.close();
+    if(sessionList != null) {
+        for (HTTPSession session : sessionList) {
+            session.close();
+        }
+        sessionList.clear();
+        // Rebuild the connection manager
+        connmgr.shutdown();
+        connmgr = new MultiThreadedHttpConnectionManager();
+        setGlobalThreadCount(DFALTTHREADCOUNT);
     }
-    sessionList.clear();
-    // Rebuild the connection manager
-    connmgr.shutdown();
-    connmgr = new MultiThreadedHttpConnectionManager();
-    setGlobalThreadCount(DFALTTHREADCOUNT);
-
 }
+
+// If we are testing, then track the sessions for kill
+static private synchronized void track(HTTPSession session)
+{
+    if(sessionList == null)
+        sessionList = new ArrayList<HTTPSession>();
+    sessionList.add(session);
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 // We need more powerful protocol registry.
@@ -256,12 +266,19 @@ static MultiThreadedHttpConnectionManager connmgr;
 //fix: protected static SchemeRegistry schemes;
 static String globalAgent = "/NetcdfJava/HttpClient3";
 static int threadcount = DFALTTHREADCOUNT;
-static List<HTTPSession> sessionList; // List of all HTTPSession instances
 static boolean globalauthpreemptive = false;
 static int globalSoTimeout = 0;
 static int globalConnectionTimeout = 0;
 static Proxy globalproxy = null;
 static List<ProtocolEntry> registry;
+
+// When testing, we need to be able to clean up
+// all existing sessions because JUnit can run all
+// test within a single jvm.
+static List<HTTPSession> sessionList = null; // List of all HTTPSession instances
+                                             // only used when testing flag is set
+static public boolean TESTING = false; // set to true during testing, should be false otherwise
+
 
 static {
     connmgr = new MultiThreadedHttpConnectionManager();
@@ -278,7 +295,6 @@ static {
                                   new EasySSLProtocolSocketFactory(),
                                   8443)); // std tomcat https entry
 
-    sessionList = new ArrayList<HTTPSession>(); // see kill function
     setGlobalConnectionTimeout(DFALTTIMEOUT);
     setGlobalSoTimeout(DFALTTIMEOUT);
     getGlobalProxyD(); // get info from -D if possible
@@ -373,7 +389,7 @@ construct(String legalurl)
 
         setProxy();
 
-        sessionList.add(this);
+        if(TESTING) HTTPSession.track(this);
 
     } catch (Exception e) {
         throw new HTTPException("url="+legalurl,e);

@@ -200,7 +200,8 @@ public class NCdumpW {
     boolean ncml = false;
     boolean strict = false;
     String varNames = null;
-
+    useUnsigned = false;
+    
     if (command != null) {
       StringTokenizer stoke = new StringTokenizer(command);
 

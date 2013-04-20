@@ -71,6 +71,7 @@ public class TestAuth extends UnitTestCommon
                 new Protocol("https",
                         new EasySSLProtocolSocketFactory(),
                         8843));
+	HTTPSession.TESTING = true;
     }
 
     //////////////////////////////////////////////////

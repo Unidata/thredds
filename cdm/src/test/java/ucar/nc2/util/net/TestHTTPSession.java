@@ -56,6 +56,7 @@ public class TestHTTPSession extends UnitTestCommon
   {
     super();
     setTitle("HTTP Session tests");
+    HTTPSession.TESTING = true;
   }
 
   @Test

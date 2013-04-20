@@ -40,6 +40,9 @@ import static junit.framework.Assert.assertTrue;
 
 public class TestMisc extends UnitTestCommon
 {
+
+  static {HTTPSession.TESTING = true;}
+
   //////////////////////////////////////////////////
 
   // Define the test sets
