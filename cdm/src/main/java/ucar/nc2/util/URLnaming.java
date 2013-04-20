@@ -235,6 +235,7 @@ public class URLnaming {
     File base = new File(baseDir);
     if (!base.isDirectory())
       base = base.getParentFile();
+    if (base == null) return filepath;
     return base.getAbsolutePath() + "/" + filepath;
   }
 
