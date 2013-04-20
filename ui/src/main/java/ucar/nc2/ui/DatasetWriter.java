@@ -193,6 +193,8 @@ public class DatasetWriter extends JPanel {
   ///////////////////////////////////////
 
   void writeNetcdf(NetcdfOutputChooser.Data data) {
+    if (ds == null) return;
+
     String filename = data.outputFilename.trim();
     if (filename.length() == 0) {
       JOptionPane.showMessageDialog(this, "Filename has not been set");

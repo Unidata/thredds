@@ -81,6 +81,7 @@ public abstract class ProgressMonitorTask implements Runnable, CancelTask {
   /** ProgressMonitor will call this when the user cancels. */
   public void cancel() {
     cancel = true;
+    success = false;
   }
   /** ProgressMonitor displays this note in the ProgressMonitor. If null, ProgressMonitor will show
    * elasped seconds. */
