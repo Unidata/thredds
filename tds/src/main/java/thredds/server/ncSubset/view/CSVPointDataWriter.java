@@ -257,6 +257,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 						printWriter.write( targetLevel +"," );
 					}
 					printWriter.write( Double.valueOf(gap.getMissingValue(grid)).toString() );
+					if(itVars.hasNext()) printWriter.write(",");
 				}					
 				contVars++;
 			}
@@ -306,6 +307,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 						printWriter.write( targetLevel +"," );
 					}
 					printWriter.write( Double.valueOf(gap.getMissingValue(grid)).toString() );
+					if(itVars.hasNext()) printWriter.write(",");
 				}					
 				contVars++;
 
@@ -387,6 +389,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 						printWriter.write( point.getLongitude() +"," );
 					}
 					printWriter.write( Double.valueOf(gap.getMissingValue(grid)).toString() );
+					if(itVars.hasNext()) printWriter.write(",");
 				}					
 				contVars++;
 			}
