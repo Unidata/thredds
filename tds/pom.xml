@@ -143,6 +143,10 @@
       <groupId>EDS</groupId>
       <artifactId>threddsIso</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>org.jdom</groupId>
+    	<artifactId>jdom-legacy</artifactId>
+    </dependency>
 
     <!-- wms -->
     <dependency>
