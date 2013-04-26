@@ -203,7 +203,7 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
                     Diff diff = new Diff(basename + constraint);
                     StringReader resultrdr = new StringReader(result);
                     FileReader expectedrdr = new FileReader(expectedfile);
-                    pass = !diff.doDiff(resultrdr, expectedrdr, System.err);
+                    pass = !diff.doDiff(resultrdr, expectedrdr, new OutputStreamWriter(System.err));
 
                     try {
                         resultrdr.close();
