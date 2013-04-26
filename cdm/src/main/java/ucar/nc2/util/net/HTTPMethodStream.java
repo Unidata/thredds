@@ -38,7 +38,7 @@ import java.io.FilterInputStream;
 import java.io.InputStream;
 
 /**
- * THe goal of this class is to allow
+ * The goal of this class is to allow
  * other classes to access the data stream
  * associated with a method response.
  * It tracks the method and the session
@@ -112,4 +112,6 @@ class HTTPMethodStream extends FilterInputStream
             }
         } catch (IOException ioe) {/*ignore*/};
       }
+
+    public boolean isClosed() {return closed;}
 }

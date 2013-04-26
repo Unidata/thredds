@@ -36,7 +36,6 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -863,18 +862,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         if(pos >= 0)
             location = location.substring(0,pos);
 
-        HTTPSession session = new HTTPSession(location);
-
-        ServiceType result = checkIfDods(session, location); // dods
+        ServiceType result = checkIfDods(location); // dods
         if(result != null)
             return result;
-        result = checkIfDap4(session, location); // dap4
+        result = checkIfDap4(location); // dap4
         if (result != null)
             return result;
 
         HTTPMethod method = null;
         try {
-            method = HTTPMethod.Head(session);
+            method = HTTPMethod.Head(location);
             int statusCode = method.execute();
             if(statusCode >= 300) {
                 if(statusCode == 401)
@@ -890,12 +887,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
             }
             return null;
         } finally {
-            session.close();
+            if(method != null) method.close();
         }
     }
 
   // not sure what other opendap servers do, so fall back on check for dds
-  static private ServiceType checkIfDods(HTTPSession session, String location) throws IOException {
+  static private ServiceType checkIfDods(String location) throws IOException {
     HTTPMethod method = null;
     // Strip off any trailing constraints
     if (location.indexOf('?') >= 0) {
@@ -912,7 +909,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     try {
       // For some reason, the head method is not using credentials
       // method = session.newMethodHead(location + ".dds");
-      method = HTTPMethod.Get(session, location + ".dds");
+      method = HTTPMethod.Get(location + ".dds");
 
       int status = method.execute();
       if (status == 200) {
@@ -937,7 +934,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   // check for dmr
-  static private ServiceType checkIfDap4(HTTPSession session, String location) throws IOException {
+  static private ServiceType checkIfDap4(String location) throws IOException {
     HTTPMethod method = null;
     // Strip off any trailing constraints
     if (location.indexOf('?') >= 0) {
@@ -951,7 +948,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     else if (location.endsWith(".dsr"))
       location = location.substring(0, location.length() - ".dsr".length());
     try {
-      method = HTTPMethod.Get(session, location + ".dmr");
+      method = HTTPMethod.Get(location + ".dmr");
 
       int status = method.execute();
       if (status == 200) {
@@ -973,25 +970,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
-  /*
-   * Set the HttpClient object - so that a single, shared instance is used within the application.
-   *
-   * @param client the HttpClient object
-   */
-/* IGNORE
-  static public void setHttpSession(HTTPSession client) {
-    httpClient = client;
-    isexternalclient = true;
-  }
 
-  private static HTTPSession httpClient = null;   //fix never reclaimed
   private static boolean isexternalclient = false;
-
-  private static synchronized void initHttpClient() {
-    if (httpClient != null) return;
-    try {httpClient = new HTTPSession(); } catch (HTTPException he) {httpClient = null;}
-  }
-*/
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
                                         String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
