@@ -80,6 +80,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
   static private String jnaPath;
   static private String libName = "netcdf";
+  static public boolean registered = false;
 
   static private int[] zerostride = new int[0];
 
@@ -140,7 +141,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       libName = libname;
   }
 
-  static private Nc4prototypes load(){
+    static private Nc4prototypes load(){
 
     if (nc4 == null) {
       if (jnaPath == null) {
@@ -151,29 +152,39 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
       }
 
-      //Native.setProtected(true);      
-   	  nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
+      //Native.setProtected(true);
+      nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
 
       if (debug)
         System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
     }
 
     return nc4;
-  }
+    }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private final NetcdfFileWriter.Version version;
-  private NetcdfFile ncfile;
+    static {
+        String jnapath = System.getenv(JNA_PATH_ENV);
+        if(jnapath != null && jnapath.length() > 0 && System.getProperty(JNA_PATH) == null)
+            System.setProperty(JNA_PATH, jnapath);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  private NetcdfFileWriter.Version version = null;
+  private NetcdfFile ncfile = null;
   private int ncid = -1;    // file id
-  private int format;       // nc4 or nc3
+  private int format = 0;       // nc4 or nc3
   private boolean isClosed = false;
   private Map<Integer, UserType> userTypes = new HashMap<Integer, UserType>();  // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<Group, Integer>();  // group, nc4 grpid
   private Nc4Chunking chunker = new Nc4ChunkingStrategyImpl();
 
-  public Nc4Iosp(NetcdfFileWriter.Version version) {
+    public Nc4Iosp() {
+        super();
+    }
+
+    public Nc4Iosp(NetcdfFileWriter.Version version) {
     this.version = version;
-  }
+    }
 
   public void setChunker(Nc4Chunking chunker) {
     if (chunker != null)
@@ -181,7 +192,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    return false;
+    boolean match = false;
+    if(registered && raf.getLocation().endsWith(".nc")) {
+        long savepos = raf.getFilePointer();
+        raf.seek(1);
+        byte[] hdr = new byte[3];
+        raf.read(hdr);
+        String shdr = new String(hdr,"US-ASCII");
+        if("HDF".equals(shdr)) match = true;
+        raf.seek(savepos);
+    }
+    return match;
   }
 
   public String getFileTypeId() {

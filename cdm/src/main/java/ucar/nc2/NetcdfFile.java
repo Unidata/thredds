@@ -126,6 +126,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
+    // Do this before H5Iosp
+    if(System.getProperty("ucar.nc2.jni.netcdf.Nc4Iosp") != null) {
+      try {
+          NetcdfFile.registerIOProvider("ucar.nc2.jni.netcdf.Nc4Iosp");
+          ucar.nc2.jni.netcdf.Nc4Iosp.registered = true;
+      } catch (Throwable e) {
+          if (loadWarnings) log.info("Cant load class: " + e);
+      }
+    }
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
