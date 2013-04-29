@@ -140,7 +140,7 @@ public class Grib2DataReader {
     float DD = (float) java.lang.Math.pow((double) 10, (double) D);
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow((double) 2.0, (double) E);
+    float EE = (float) java.lang.Math.pow( 2.0, (double) E);
 
     // LOOK: can # datapoints differ from bitmap and data ?
     // dataPoints are number of points encoded, it could be less than the
@@ -628,7 +628,8 @@ public class Grib2DataReader {
     }
   }
 
-   // Rearrange the data array using the scanning mode.
+  // Rearrange the data array using the scanning mode.
+  // LOOK ight be wrong when a quasi regular (thin) grid ??
   private void scanningModeCheck(float[] data, int scanMode, int Xlength) {
     // Mode  0 +x, -y, adjacent x, adjacent rows same dir
     // Mode  64 +x, +y, adjacent x, adjacent rows same dir
@@ -640,7 +641,7 @@ public class Grib2DataReader {
       // change -x to +x ie east to west -> west to east
     if ((scanMode == 128) || (scanMode == 192)) {
       float tmp;
-      int mid = (int) Xlength / 2;
+      int mid = Xlength / 2;
       for (int index = 0; index < data.length; index += Xlength) {
         for (int idx = 0; idx < mid; idx++) {
           tmp = data[index + idx];
@@ -654,9 +655,9 @@ public class Grib2DataReader {
     // else
     // scanMode == 16, 80, 144, 208 adjacent rows scan opposite dir
     float tmp;
-    int mid = (int) Xlength / 2;
+    int mid = Xlength / 2;
     for (int index = 0; index < data.length; index += Xlength) {
-      int row = (int) index / Xlength;
+      int row = index / Xlength;
       if (row % 2 == 1) {  // odd numbered row, calculate reverse index
         for (int idx = 0; idx < mid; idx++) {
           tmp = data[index + idx];

@@ -844,7 +844,8 @@ public class Grib2Iosp extends GribIosp {
           show( Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, dr.vindex.group.hcs.gdsNumberPoints, dr.vindex.group.hcs.scanMode, dr.vindex.group.hcs.nx);
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, dr.vindex.group.hcs.gdsNumberPoints, dr.vindex.group.hcs.scanMode,
+                dr.vindex.group.hcs.nxRaw,  dr.vindex.group.hcs.nyRaw, dr.vindex.group.hcs.nptsInLine);
         dataReceiver.addData(data, dr.resultIndex, dr.vindex.group.hcs.nx);
       }
       if (rafData != null) rafData.close();
@@ -981,7 +982,8 @@ public class Grib2Iosp extends GribIosp {
           show(Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode,
+                vindex.group.hcs.nxRaw, vindex.group.hcs.nyRaw, vindex.group.hcs.nptsInLine);
         dataReceiver.addData(data, dr.resultIndex, vindex.group.hcs.nx);
       }
       if (rafData != null) rafData.close();

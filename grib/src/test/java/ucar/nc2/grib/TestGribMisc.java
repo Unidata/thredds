@@ -33,6 +33,7 @@
 package ucar.nc2.grib;
 
 import org.junit.Test;
+import ucar.ma2.Array;
 import ucar.nc2.*;
 import ucar.nc2.grib.grib2.Grib2Iosp;
 import ucar.nc2.util.Misc;
@@ -72,6 +73,23 @@ public class TestGribMisc {
     ncfile = NetcdfFile.open(filename, null);
     assert ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1") != null; // "Pressure_Surface") != null : ncfile.getLocation();
     assert ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_error_L1") != null; // "Pressure_error_Surface") != null;
+    ncfile.close();
+  }
+
+  @Test
+  public void thinGrid() throws Exception {
+    // this one has a analysis and forecast in same variable
+    String filename = TestDir.cdmUnitTestDir + "formats/grib2/thinGrid.grib2";
+    System.out.printf("%s%n", filename);
+    NetcdfFile ncfile = NetcdfFile.open(filename, null);
+    Variable v = ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L105");
+    assert v != null : ncfile.getLocation();
+
+    Array data = v.read();
+    int[] shape = data.getShape();
+    assert shape.length == 4;
+    assert shape[2] == 1024;
+    assert shape[3] == 2048;
     ncfile.close();
   }
 
