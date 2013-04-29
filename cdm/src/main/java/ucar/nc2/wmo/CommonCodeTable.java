@@ -139,12 +139,14 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
 
     public String getResourceName() {
       //return "/resources/wmo/CommonCodeTable_" + this.name() + "_02Nov11_en.xml"; // previous
-      return "/resources/wmo/Common_C" + this.num0 + "_20121107_en.xml"; // nov 2012
+      //return "/resources/wmo/Common_C" + this.num0 + "_20121107_en.xml"; // nov 2012
+      return "/resources/wmo/Common_C" + this.num0 + "_20130226_en.xml"; // nov 2012
     }
 
     public String getRootElemName() { // CommonCodeTable_C1_Nov11_en
       //return "Common_C11_20121107_en" + this.name() + "_Nov11_en"; // previous
-      return "Common_C" + this.num0 + "_20121107_en"; // nov 2012
+      // return "Common_C" + this.num0 + "_20121107_en"; // nov 2012
+      return "Common_C" + this.num0 + "_20130226_en"; // nov 2012
     }
 
     public int getTableNo() {

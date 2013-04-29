@@ -84,6 +84,9 @@ public class GdsHorizCoordSys {
       } else {
         throw new IllegalArgumentException("Quasi Grids nx,ny="+nx+","+ny);
       }
+    } else {
+      nx = nxRaw;
+      ny = nyRaw;
     }
   }
 

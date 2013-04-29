@@ -248,7 +248,7 @@ also a few random problems i see:
  DUPLICATE NAME 0.7.193 and 0.7.192 (Lifted Index)
 
 
-2) the desciption is sometimes level dependent. here that fails:
+2) the description is sometimes level dependent. here that fails:
 
  float Specific_humidity_sigma(time=1, sigma=50, y=1059, x=1799);
      :long_name = "Specific humidity @ Sigma level";
@@ -267,3 +267,138 @@ also a few random problems i see:
 The page for tables of WMO Table-Driven Code Forms (TDCF) has been moved to:
 http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html
 Please change your link to the page.  Thank you.
+
+4/29/2013
+
+from http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html
+
+download
+  http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/GRIB2_10_0_1.zip
+  http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/BUFRCREX_19_1_1.zip
+  http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/Common_20130226.zip
+
+  DIFFERENCES of GRIB2_10_0_1 with standard WMO table (8-0-0)
+  **0 0 6 (358)
+   this =Dewpoint temperature
+   wmo=Dew-point temperature
+  **0 0 7 (359)
+   this =Dewpoint depression (or deficit)
+   wmo=Dew-point depression (or deficit)
+  **0 0 14 (366)
+   this =Minimum dewpoint depression
+   wmo=Minimum dew-point depression
+  **0 1 39 (415)
+   this =Per cent frozen precipitation
+   wmo=Percent frozen precipitation
+  **0 1 85 (461)
+   this =Specific rainwater content
+   wmo=Specific rain water content
+  **0 2 0 (470)
+   this =Wind direction (from which blowing)
+   wmo=Wind direction (from which blowing) (degree true)
+   units this='degree.true' wmo='deg'
+   NEW 0 2 34 Normal wind component (m.s-1)
+   NEW 0 2 35 Tangential wind component (m.s-1)
+   NEW 0 3 26 Exner pressure ()
+  **0 5 5 (563)
+   this =Net long-wave radiation flux
+   wmo=Net long wave radiation flux
+  **0 6 28 (596)
+   this =Number of cloud droplets per unit mass of air
+   wmo=Number concentration of cloud droplets
+  **0 6 29 (597)
+   this =Number of cloud ice particles per unit mass of air
+   wmo=Number concentration of cloud ice
+  **0 6 31 (599)
+   this =Number density of cloud ice particles
+   wmo=Number density of cloud ice
+   NEW 0 6 34 Surface long-wave effective total cloudiness ()
+   NEW 0 6 35 Surface short-wave effective total cloudiness ()
+  **0 15 3 (639)
+   this =Vertically integrated liquid water (VIL)
+   wmo=Vertically-integrated liquid
+  **0 19 25 (705)
+   this =Weather
+   wmo=Weather Interpretation ww (WMO)
+   units this='(Code.table.4.225)' wmo=''
+   NEW 0 19 27 Icing scenario ((Code.table.4.227))
+  **0 20 101 (739)
+   this =Vertical visual range
+   wmo=Atmosphere optical thickness
+  **1 2 11 (789)
+   this =Attenuation coefficient of water with respect to solar radiation
+   wmo=Attenuation coefficient of water with respect to solar attenuation coefficient of water with respect to solar radiation
+  **2 0 29 (820)
+   this =Evergreen forest cover
+   wmo=Evergreen forest
+  **2 0 30 (821)
+   this =Deciduous forest cover
+   wmo=Deciduous forest
+   NEW 2 4 3 Fire burned area (%)
+  **10 0 4 (992)
+   this =Direction of wind waves
+   wmo=Direction of wind waves (degree true)
+   units this='degree.true' wmo='deg'
+  **10 0 7 (995)
+   this =Direction of swell waves
+   wmo=Direction of swell waves (degree true)
+   units this='degree.true' wmo='deg'
+  **10 0 10 (998)
+   this =Primary wave direction
+   wmo=Primary wave direction (degree true)
+   units this='degree.true' wmo='deg'
+  **10 0 12 (1000)
+   this =Secondary wave direction
+   wmo=Secondary wave direction (degree true)
+   units this='degree.true' wmo='deg'
+  **10 0 14 (1002)
+   this =Direction of combined wind waves and swell
+   wmo=Direction of combined wind waves and swell (degree true)
+   units this='degree.true' wmo='deg'
+  **10 0 19 (1007)
+   this =Normalized wave stress
+   wmo=Normalised wave stress
+  **10 0 26 (1014)
+   this =Inverse mean frequency of wind waves
+   wmo=Inverse mean frequency of the wind waves
+  **10 0 27 (1015)
+   this =Inverse mean frequency of total swell
+   wmo=Inverse mean frequency of the total swell
+  **10 0 29 (1017)
+   this =Mean zero-crossing period of wind waves
+   wmo=Mean zero-crossing period of the wind waves
+  **10 0 30 (1018)
+   this =Mean zero-crossing period of total swell
+   wmo=Mean zero-crossing period of the total swell
+  **10 0 32 (1020)
+   this =Directional width of wind waves
+   wmo=Directional width of the wind waves
+  **10 0 33 (1021)
+   this =Directional width of total swell
+   wmo=Directional width of the total swell
+  **10 0 35 (1023)
+   this =Peak period of wind waves
+   wmo=Peak period of the wind waves
+  **10 0 36 (1024)
+   this =Peak period of total swell
+   wmo=Peak period of the total swell
+  **10 0 40 (1028)
+   this =10-metre neutral wind speed over waves
+   wmo=10 metre neutral wind speed over waves
+  **10 0 41 (1029)
+   this =10-metre wind direction over waves
+   wmo=10 metre wind direction over waves
+  **10 0 43 (1031)
+   this =Kurtosis of the sea-surface elevation due to waves
+   wmo=Kurtosis of the sea surface elevation due to waves
+  **10 1 0 (1041)
+   this =Current direction
+   wmo=Current direction (degree true)
+   units this='degree.true' wmo='deg'
+  **10 2 2 (1050)
+   this =Direction of ice drift
+   wmo=Direction of ice drift (degree true)
+   units this='degree.true' wmo='deg'
+
+  Total=538 same=496 sameIgnoreCase=503 dif=35 unknown=0 new=7
+
