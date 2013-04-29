@@ -54,6 +54,11 @@ import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderResult;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -107,6 +112,7 @@ public class NOWRadheader {
             if (t == 0) {
                 throw new IOException("zero length file ");
             }
+             
         } catch (IOException e) {
             return (false);
         }
@@ -213,10 +219,19 @@ public class NOWRadheader {
 
         // image lines
         String head = new String(b);
-        byte[] bt   = new byte[] { (byte) 0xF0, (byte) 0x0A };
-        String t0   = new String(bt);
-        int    t1   = head.indexOf(t0);
-
+        //byte[] bt   = new byte[] { (byte) 0xF0, (byte) 0x0A };
+        int    t1 = 0  ;
+        int ii = 0;
+        for(int i = 0; i < readLen; i++ ){
+            if(convertunsignedByte2Short(b[i+hsize]) == 0xF0 &&
+                     convertunsignedByte2Short(b[i+1+hsize]) == 0x0A ){
+                t1 = i + hsize;
+                ii = i;
+                break;
+            }
+        }
+        if(t1 == 0)
+            return;
         // if(convertunsignedByte2Short(b[6+hsize]) != 0xF0 ||
         // convertunsignedByte2Short(b[7+hsize]) != 0x0A )
         // return;
@@ -227,10 +242,19 @@ public class NOWRadheader {
         String estr = trim(new String(b, t1 + 6, 5));
 
         numX = Integer.parseInt(estr);
-        bt   = new byte[] { (byte) 0xF0, (byte) 0x03 };
-        t0   = new String(bt);
-        t1   = head.indexOf(t0);
+        //bt   = new byte[] { (byte) 0xF0, (byte) 0x03 };
 
+        t1   = 0;
+        for(int i = ii; i < readLen; i++ ){
+            if(convertunsignedByte2Short(b[i+hsize]) == 0xF0 &&
+                    convertunsignedByte2Short(b[i+1+hsize]) == 0x03 ){
+                t1 = i + hsize;
+                ii = i;
+                break;
+            }
+        }
+        if(t1 == 0)
+            return;
         // if((lstr.length()+estr.length() < 8))
         // hsize = hsize -2;
 
@@ -272,10 +296,18 @@ public class NOWRadheader {
         Date   date = sdf.parse(year + "/" + month + "/" + dd + " " + hr + ":" + min);
         String ot   = new String(b, t1 + 40, 45);
 
-        bt = new byte[] { (byte) 0xF0, (byte) 0x0b };
-        t0 = new String(bt);
-        t1 = head.indexOf(t0);
+        //bt = new byte[] { (byte) 0xF0, (byte) 0x0b };
+        t1 = 0;
 
+        for(int i = ii; i < readLen; i++ ){
+            if(convertunsignedByte2Short(b[i+hsize]) == 0xF0 &&
+                    convertunsignedByte2Short(b[i+1+hsize]) == 0x0b ) {
+                t1 = i + hsize;
+                break;
+            }
+        }
+        if(t1 == 0)
+            return;
         // if( convertunsignedByte2Short(b[101 + hsize]) != 0xF0 ||
         // convertunsignedByte2Short(b[102 + hsize]) != 0x0b )
         // return;
