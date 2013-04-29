@@ -67,7 +67,7 @@ public class   Grib2SectionGridDefinition {
    */
   public Grib2SectionGridDefinition(byte[] rawData) {
     this.rawData = rawData;
-    this.templateNumber = GribNumbers.int2( getInt(13), getInt(14) );
+    this.templateNumber = GribNumbers.int2( getOctet(13), getOctet(14) );
     this.startingPosition = -1;
   }
 
@@ -110,7 +110,7 @@ public class   Grib2SectionGridDefinition {
    * @return source
    */
   public int getSource() {
-    return getInt(6);
+    return getOctet(6);
   }
 
   /**
@@ -120,7 +120,7 @@ public class   Grib2SectionGridDefinition {
    * @return numberPoints
    */
   public int getNumberPoints() {
-    return GribNumbers.int4(getInt(7), getInt(8), getInt(9), getInt(10));
+    return GribNumbers.int4(getOctet(7), getOctet(8), getOctet(9), getOctet(10));
   }
 
   /**
@@ -138,7 +138,7 @@ public class   Grib2SectionGridDefinition {
    * @param index in the raw array
    * @return byte[index-1] as int
    */
-  private int getInt(int index) {
+  private int getOctet(int index) {
     return rawData[index-1] & 0xff;
   }
 

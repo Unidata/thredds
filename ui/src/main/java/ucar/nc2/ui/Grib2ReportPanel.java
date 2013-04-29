@@ -441,7 +441,7 @@ public class Grib2ReportPanel extends JPanel {
     }
 
     for (GdsList gdsl : gdsSet.values()) {
-      f.format("%nGDS = %d x %d (%d) %n", gdsl.gds.ny, gdsl.gds.nx, gdsl.gds.template);
+      f.format("%nGDS = %d x %d (%d) %n", gdsl.gds.getNy(), gdsl.gds.getNx(), gdsl.gds.template);
       for (FileCount fc : gdsl.fileList)
         f.format("  %5d %s (%d)%n", fc.count, fc.f.getPath(), fc.countGds);
     }

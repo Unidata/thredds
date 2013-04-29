@@ -1,5 +1,6 @@
 package ucar.nc2.grib.grib2;
 
+import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -197,7 +198,12 @@ public class Grib2Record {
     byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
 
-    return reader.getData(raf, bitmap, gdrs);
+    float[] data = reader.getData(raf, bitmap, gdrs);
+
+    if (gds.isThin())
+      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw());
+
+    return data;
   }
 
   // debugging - do not use
@@ -237,7 +243,12 @@ public class Grib2Record {
     byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
 
-    return reader.getData(raf, bitmap, gdrs);
+    float[] data = reader.getData(raf, bitmap, gdrs);
+
+    if (gds.isThin())
+      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw());
+
+    return data;
   }
 
   //         float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
@@ -271,6 +282,14 @@ public class Grib2Record {
     Grib2Drs gdrs = drs.getDrs(raf);
 
     return reader.getData(raf, bitmap, gdrs);
+
+    //float[] data = reader.getData(raf, bitmap, gdrs);
+
+    // LOOK - dont have gds
+    // if (gds.isThin())
+    //  data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw());
+
+    //return data;
   }
 
 }

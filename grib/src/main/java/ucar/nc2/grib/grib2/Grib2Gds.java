@@ -32,10 +32,12 @@
 
 package ucar.nc2.grib.grib2;
 
+import ucar.jpeg.jj2000.j2k.NotImplementedError;
 import ucar.nc2.grib.GribNumbers;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -88,8 +90,12 @@ public abstract class Grib2Gds {
 
   public int template;
   public float earthRadius, majorAxis, minorAxis; // in meters
-  public int earthShape, nx, ny;
   public int scanMode;
+  public int earthShape;
+
+  protected int nx, ny;
+  protected int[] nptsInLine; // thin grids, else null
+  protected int lastOctet;
 
   public Grib2Gds(byte[] data, int template) {
     this.data = data;
@@ -104,8 +110,86 @@ public abstract class Grib2Gds {
     ny = getOctet4(35);
   }
 
+  // number of points along nx, adjusted for thin grid
+  public int getNx() {
+    if (nptsInLine == null || nx > 0) return nx;
+    return QuasiRegular.getMax(nptsInLine);
+  }
+
+  // number of points along ny, adjusted for thin grid
+  public int getNy() {
+    if (nptsInLine == null || ny > 0) return ny;
+    return QuasiRegular.getMax(nptsInLine);
+  }
+
+  public int getNxRaw() {
+    return nx;
+  }
+
+  public int getNyRaw() {
+    return ny;
+  }
+
+  public int[] getNptsInLine() {
+    return nptsInLine;
+  }
+
   public byte[] getRawBytes() {
     return data;
+  }
+
+  //////////////// thin grids
+  /**
+   11 Number of octets for optional list of numbers (see Note 2)
+   12 Interpretation of list of numbers (see Code table 3.11)
+
+   (Note 2) An optional list of numbers may be used to document a quasi-regular grid. In such a case, octet 11 is non zero and gives
+   the number of octets used per item on the list. For all other cases, such as regular grids, octets 11 and 12 are zero and
+   no list is appended to the grid definition template.
+
+   (2) For data on a quasi-regular grid, where all the rows or columns do not necessarily have the same number of grid points,
+   either Ni (octets 31–34) or Nj (octets 35–38) and the corresponding Di (octets 64–67) or
+   Dj (octets 68–71) shall be coded with all bits set to 1 (missing). The actual number of points along each parallel or
+   meridian shall be coded in the octets immediately following the grid definition template (octets [xx+1]–nn), as
+   described in the description of the grid definition section.
+
+   (3) A quasi-regular grid is only defined for appropriate grid scanning modes. Either rows or columns, but not both
+   simultaneously, may have variable numbers of points or variable spacing. The first point in each row (column) shall be
+   positioned at the meridian (parallel) indicated by octets 47–54. The grid points shall be evenly spaced in latitude
+   (longitude).
+   */
+
+  public final boolean isThin() {
+    boolean isThin = (getOctet(11) != 0);
+    assert !isThin || (nx <0 || ny < 0);
+    return isThin;
+  }
+
+  protected void readNptsInLine() {
+    int numOctetsPerNumber = getOctet(11);
+    int octet12 = getOctet(12);
+    if (octet12 != 1)
+      throw new NotImplementedError("Thin grid octed 12 =" + octet12);
+
+    int numPts = (nx > 0) ? nx : ny;
+    int[] parallels = new int[numPts];
+    int offset = lastOctet;
+    for (int i = 0; i < numPts; i++) {
+      switch (numOctetsPerNumber) {
+        case 1:
+          parallels[i] = getOctet(offset++);
+          break;
+        case 2:
+          parallels[i] = GribNumbers.int2(getOctet(offset++), getOctet(offset++));
+          break;
+        case 4:
+          parallels[i] = getOctet4(offset);
+          offset += 4;
+        default:
+          throw new IllegalArgumentException("Illegal numOctetsPerNumber in thin grid =" + numOctetsPerNumber);
+      }
+    }
+    nptsInLine = parallels;
   }
 
   protected int getOctet(int index) {
@@ -209,7 +293,7 @@ public abstract class Grib2Gds {
     }
   }
 
-  /*
+/*
 Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant cylindrical, or Plate Carre))
      1-4 (4): GDS length
      5-5 (1): Section
@@ -243,7 +327,6 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
     public float la1, lo1, la2, lo2, deltaLon, deltaLat;
     public int basicAngle, basicAngleSubdivisions;
     public int flags;
-    protected int lastOctet;
 
     LatLon(byte[] data) {
       super(data, 0);
@@ -282,6 +365,8 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       scanMode = getOctet(72);
 
       lastOctet = 73;
+
+      if (isThin()) readNptsInLine();
     }
 
     @Override

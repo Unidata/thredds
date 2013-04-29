@@ -1481,11 +1481,11 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public int getNx() {
-      return gds.nx;
+      return gds.getNx();
     }
 
     public int getNy() {
-      return gds.ny;
+      return gds.getNy();
     }
 
     public String getScanMode() {
