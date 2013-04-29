@@ -36,92 +36,112 @@ package ucar.nc2.util;
 import junit.framework.TestCase;
 import org.junit.Test;
 import ucar.nc2.NetcdfFile;
-import java.io.File;
+import ucar.unidata.test.Diff;
+
+import java.io.*;
 
 public class UnitTestCommon extends TestCase
 {
-  static public boolean debug = false;
+    static public boolean debug = false;
 
-  static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
+    static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 
-  // Look for these to verify we have found the thredds root
-  static final String[] SUBROOTS = new String[]{"cdm", "tds", "opendap"};
+    // Look for these to verify we have found the thredds root
+    static final String[] SUBROOTS = new String[]{"cdm", "tds", "opendap"};
 
-  static public final String threddsRoot = locateThreddsRoot();
+    static public final String threddsRoot = locateThreddsRoot();
 
-  // Walk around the directory structure to locate
-  // the path to a given directory.
+    // Walk around the directory structure to locate
+    // the path to a given directory.
 
-  static String locateThreddsRoot() {
-    // Walk up the user.dir path looking for a node that has
-    // all the directories in SUBROOTS.
+    static String locateThreddsRoot()
+    {
+        // Walk up the user.dir path looking for a node that has
+        // all the directories in SUBROOTS.
 
-    String path = System.getProperty("user.dir");
+        String path = System.getProperty("user.dir");
 
-    // clean up the path
-    path = path.replace('\\', '/'); // only use forward slash
-    assert (path != null);
-    if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
+        // clean up the path
+        path = path.replace('\\', '/'); // only use forward slash
+        assert (path != null);
+        if(path.endsWith("/")) path = path.substring(0, path.length() - 1);
 
-    while (path != null) {
-      boolean allfound = true;
-      for (String dirname : SUBROOTS) {
-        // look for dirname in current directory
-        String s = path + "/" + dirname;
-        File tmp = new File(s);
-        if (!tmp.exists()) {
-          allfound = false;
-          break;
+        while(path != null) {
+            boolean allfound = true;
+            for(String dirname : SUBROOTS) {
+                // look for dirname in current directory
+                String s = path + "/" + dirname;
+                File tmp = new File(s);
+                if(!tmp.exists()) {
+                    allfound = false;
+                    break;
+                }
+            }
+            if(allfound)
+                return path; // presumably the thredds root
+            int index = path.lastIndexOf('/');
+            path = path.substring(0, index);
         }
-      }
-      if (allfound)
-        return path; // presumably the thredds root
-      int index = path.lastIndexOf('/');
-      path = path.substring(0, index);
+        return null;
     }
-    return null;
-  }
 
-  public void
-  clearDir(File dir, boolean clearsubdirs)
-          throws Exception {
-    // wipe out the dir contents
-    if (!dir.exists()) return;
-    for (File f : dir.listFiles()) {
-      if (f.isDirectory()) {
-        if (clearsubdirs)
-          clearDir(f, true); // clear subdirs
-        else
-          throw new Exception("InnerClass directory encountered: " + f.getAbsolutePath());
-      }
-      f.delete();
+    public void
+    clearDir(File dir, boolean clearsubdirs)
+        throws Exception
+    {
+        // wipe out the dir contents
+        if(!dir.exists()) return;
+        for(File f : dir.listFiles()) {
+            if(f.isDirectory()) {
+                if(clearsubdirs)
+                    clearDir(f, true); // clear subdirs
+                else
+                    throw new Exception("InnerClass directory encountered: " + f.getAbsolutePath());
+            }
+            f.delete();
+        }
     }
-  }
 
-  //////////////////////////////////////////////////
-  // Instance data
+    //////////////////////////////////////////////////
+    // Instance data
 
-  String title = "Testing";
-  String name = "testcommon";
+    String title = "Testing";
+    String name = "testcommon";
 
-  public UnitTestCommon()
-  {
-      this("UnitTest");
-  }
+    public UnitTestCommon()
+    {
+        this("UnitTest");
+    }
 
-  public UnitTestCommon(String name)
-  {
-    super(name);
-    this.name = name;
-  }
+    public UnitTestCommon(String name)
+    {
+        super(name);
+        this.name = name;
+    }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
 
-  public String getTitle() {
-    return this.title;
-  }
+    public String getTitle()
+    {
+        return this.title;
+    }
 
+    public String compare(String tag, String baseline, String s)
+    {
+        try {
+            // Diff the two print results
+            Diff diff = new Diff(tag);
+            StringWriter sw = new StringWriter();
+            boolean pass = !diff.doDiff(baseline,s,sw);
+            return (pass?null:sw.toString());
+        } catch (Exception e) {
+            System.err.println("UnitTest: Diff failure: "+e);
+            return null;
+        }
+
+    }
 }
 

@@ -19,6 +19,7 @@ These are
 <i>HTTPMethod.java</i>,
 <i>HTTPMethodStream.java</i>,
 <i>HTTPException.java</i>,
+<i>HttpClientManager.java</i>,
 These classes are intended to wrap various Apache httpclient-3 library
 classes so that (1) it will simplify use,
 and (2) it will be possible to later switch to, say,
@@ -32,23 +33,18 @@ is only loosely tied to the HTTP notion of session.
 A session is encapsulated in an instance of the class <i>HTTPSession</i>.
 The encapsulation is with respect to a specific url.
 This means that once a session is specified, it is tied permanently
-to that url and <a href="#HTTPMethod.URL">"compatible"</a> urls.
+to that url and <a href="#URLManagement">"compatible"</a> urls.
 <p>
-As a special case for backward compatibility,
-an <i>HTTPSession</i> constructor with no arguments is provided.
+It is important to note that Session objects do NOT correspond
+with the HttpClient objects of the Apache httpclient library.
+Each Session does, however, encapsulate an instance of an Apache HttpClient.
+<p>
+It is possible to create a session with a null url, in which case,
+the session can be used generally.
+For this, an <i>HTTPSession</i> constructor with no arguments is provided.
 If used, then (1) the session is tied to no specific url,
 and (2) method creation must specify a url
 (see <a href="#HTTPMethod">HTTPMethod</a>).
-<p>
-It is important to note that Session objects do NOT
-correspond with the HttpClient objects of the Apache
-httpclient library. The Session described here encapulates an instance of
-an Apache HttpClient, but Sessions also wrap and control
-httpclient library methods such as GetMethod via the class
-<i><a href="#HTTPMethod">HTTPMethod</a></i>. This is so
-it can ensure that the Session - url correspondence
-is not violated
-(see <a href="#HTTPMethod.URL">here</a> for additional details).
 
 <h3><a name="HTTPMethod">HTTPMethod</a></h3>
 This class encapsulates the information
@@ -57,34 +53,163 @@ Its primary operation is <i>execute()</i>,
 which causes a request to be sent to a server
 and a response obtained.
 <p>
-The <i>HTTPMethod</i> operates as a factory for
-creating <i>HTTPMethod</i> instances.
-To create a method for doing an HTTP GET operation,
-for example, one would invoke this operation
+The <i>HTTPMethod</i> class also operates as a factory for
+creating <i>HTTPMethod</i> instances.  To create a method
+for doing an HTTP GET operation, for example, one would
+invoke this operation
 <pre>
 HTTPMethod m = HTTPMethod.Get(session);
 </pre>
 where "session" is a previously created session object.
 <p>
-Alternately, one can create a method
-and specify a url.
+Alternately, one can create a method and specify a url.
 <pre>
 HTTPMethod m = HTTPMethod.Get(session,url);
 </pre>
-See the section on <a href="#HTTPMethod.URL">specifying a url when creating an HTTPMethod instance</a> for more information.
+Note that any URL must be compatible
+(See the Section on <a href="#URLManagement">URL Management</a>).
 
 <h3><a name="HTTPMethodStream">HTTPMethodStream</a></h3>
-The purpose of this class is to allow
-other classes to access the data stream
-associated with a method response.
-It tracks the method and the session
-to allow them to be closed
-when the stream hits eof.
+The purpose of this class is to allow other classes to
+access the data stream associated with a method response.
+It tracks the method to allow it to be
+closed when the stream hits eof or is explicitly closed.
 
 <h3><a name="HTTPException">HTTPException</a></h3>
 This class is a subclass of <i>java.io.IOException</i>.
 It is the exception for reporting errors out of the
 classes listed above.
+
+<h3><a name="HttpClientManager">HttpClientManager</a></h3>
+This class is a utility class to perform some specialized
+actions. Its name begins with "Http" rather than
+"HTTP" for historical reasons.
+<p>
+This class contains only static methods and these methods
+perform the following utility operations.
+<dl>
+<dt>Return the contents of a URL as a String
+<dd>
+<pre>
+String getUrlContentsAsString(String urlencoded, int maxKbytes)
+</pre>
+Make a request on the specified url and return its response
+as a String of max length <i>maxKbytes</i>.
+<dt>Get the contents of URL and store in a file.
+<dd>
+<pre>
+void copyUrlContentsToFile(String urlencoded, File file) throws HTTPException
+</pre>
+Make a request on the specified url, obtain its contents
+and write to the specified file.
+<dt>Append the contents of a URL to the end of a File
+<dd>
+<pre>
+long appendUrlContentsToFile(String url, File file, long start, long end)
+</pre>
+Make a request on the specified url, obtain its contents
+and append to the specified file.
+<dt>Initialize the Client Manager class
+<dd>
+<pre>
+void init(CredentialsProvider provider, String userAgent)
+</pre>
+Initialize to use a specified credentials provider and user agent
+when making requests.
+</dl> 
+
+<h3><a name="URLManagement">URL Management</a></h3>
+It is possible to specify a url in several places.
+<ol>
+<li> It may be inherited from the URL specified when
+the session was created.
+<p>
+<li> It may be specified as part of the HTTPMethod
+constructor (via the factory). If none is specified,
+then the session URL is used.
+<p>
+<li> It may be specified as an argument to the
+execute() method. If none is specified, then
+the factory constructor URL is used (which might,
+in turn have come from the session).
+</ol>
+<p>
+Legal url arguments to the HTTPMethod factory call
+and execute() call are constrained by the URL
+specified in creating the HTTPSession instance, if any.
+If the session was constructed with a specified URL, then any
+url specified to HTTMethod (via the factory or via
+execute()) must be "compatible" with the session URL. The
+term "compatible" basically means that the session url, as a
+string, must be a prefix of the specified method url.  This
+maintains the semantics of the Session but allows
+flexibility in accessing data from the server.
+As an example, if a session was created and specifed the URL
+"http://motherlode.ucar.edu", then any URL specified, in say,
+HTTPMethod.execute() must begin with the session URL.
+So, specifiying "http://motherlode.ucar.edu/path/file.nc.dds"
+would be a compatible url.
+Note that if the session was created with no url then a
+URL must be specified to the HTTPMethod object.
+<p>
+There are some exceptions to the prefix rule for
+compatibility.  Let <i>surl</i> be the session url and
+<i>murl</i> be the url specified for the method.  The
+following rule holds.
+<ul>
+<li>If the <i>surl</i> does not
+have a principal, then the <i>murl</i> without its principal
+is tested for compatibility.
+In effect, a missing principal
+acts like a wildcard.
+<p>
+Similarly, missing ports or paths
+in the <i>surl</i> also act like wildcards.
+</ul>
+<p>
+Additionally, and for backward compatibility, if <i>surl</i>
+is null or is the empty string (""), then any other url is
+considered compatible.
+
+<h3><a name="SingleShot">Single Use Methods</a></h3>
+A reasonably common use case is when a client
+wants to create a method, execute it, get the response as a stream,
+and pass the stream up to some higher level for use.
+In this situation, it can be tricky to close the method
+and the session objects properly because they will have
+passed out of scope by the time the stream is read.
+<p>
+To support this use case, HTTPMethod supports what amounts
+to a one-shot use. The steps are as follows:
+<ol>
+<li> HTTPMethod method = HTTPMethod.Get().
+This  implicitly creates a session internal to the
+method instance.
+<p>
+<li> Set any session parameters or headers using method.getSession().setXXX
+<p>
+<li> Set any parameters and headers on method
+<p>
+<li> method.execute(<url string);
+<p>
+<li> Get any response method headers
+<p>
+<li> InputStream stream = method.getResponseBodyAsStream()
+<p>
+<li> return the stream to higher levels to process.
+</ol>
+The first thing to note is that closing the stream
+will automatically close the underlying method, so even though
+the method object has passed out of scope, it will still get closed
+when the stream is closed.
+<p>
+The second thing to note is that when the method object
+uses an implicitly created session, closing the method
+will automatically close the session.
+<p>
+The up shot is that closing the stream will cleanup the method
+and the (implicitly created) session even though they are out of
+scope.
 
 <h3><u>Examples</u></h3>
 
@@ -106,18 +231,14 @@ public class Main
 }
 </pre>
 
-<h4>Example 2: Quick Request/Response Cycle</h4>
+<h4>Example 2: Using HttpClientManager</h4>
 <pre>
 public class Main
 {
     public static void main(String[] argv)
     {
 	String url = argv[0[];
-	// The class HttpClientManager has a number of static
-        // methods that wrap HTTPSession and HTTPMethod.
-	// Specifyin null as the first argument forces HttpClientManager
-        // to create and destroy an internal HTTPSession instance.
-	string content = HttpClientManager.getUrlContentsAsString(null,url,1024);
+	string content = HttpClientManager.getUrlContentsAsString(url,1024);
     }
 }
 </pre>
@@ -170,54 +291,23 @@ public class Main
 }
 </pre>
 
-<h2><a name="HTTPMethod.URL"><u>Specifying a url when creating an HTTPMethod Instance</u></a></h2>
-It is possible to specify a  url when invoking, for example,
-<i>HTTPMethod.Get</i>.
-This is because the url argument to the <i>HTTPSession</i> constructor actually serves two purposes.
-First, if the method is created without specifying a url, then the session
-url is used to specify the data to be retrieved by the method invocation.
-<p>
-Second, if the method is created and specifies a url, for example,
+<h4>Example 1: Create/Use/Release Cycle</h4>
+
 <pre>
-HTTPMethod m = HTTPMethod.Get(session,url2);
+public class Main
+{
+    public static void main(String[] argv)
+    {
+	String url = argv[0];
+        HTTPSession session = new HTTPSession(url);
+        HTTPMethod method = HTTPMethod.Get(session);
+        int status = method.execute();
+        System.out.printf("Execute: status code = %d\n", status);
+	method.close();
+	session.close();
+    }
+}
 </pre>
-this second url is used to specify the data to be retrieved by the method invocation.
-<p>
-This might occur (and does) if, for example, the url given to <i>HTTPSession</i>
-represented some general url such as
-<i>http://motherlode.ucar.edu/path/file.nc</i>
-and the url given to <i>HTTPMethod.Get</i> was for something more specific
-such as <i>http://motherlode.ucar.edu/path/file.nc.dds</i>.
-<p>
-The important point is that this second url must be "compatible" with the session url.
-The term "compatible" basically means that
-the <i>HTTPSession</i> url, as a string, must be a prefix
-of the url given to <i>HTTPMethod.Get</i>.
-This maintains the semantics of the Session but allows flexibility in accessing
-data from the server.
-<p>
-There are some exceptions to the prefix rule for compatibility.
-Let
-<i>surl</i>
-be the session url and
-<i>murl</i>
-be the url specified for the method.
-The following rule holds.
-<ul>
-<li>If the <i>surl</i>
-does not have a principal,
-then the <i>murl</i> without its principal is tested
-for compatibility.
-In effect, a missing principal acts like a wildcard.
-<p>
-Similarly, missing ports or paths in the
-<i>surl</i>
-also act like wildcards.
-</ul>
-<p>
-Additionally, and for backward compatibility, if <i>surl</i>
-is null or is the empty string (""), then <i>murl</i> must
-be specified and any such url is considered compatible.
 
 <h2><a name="Credentials"><u>Authorization Credentials</u></a></h2>
 <i>HTTPSession</i>
@@ -248,11 +338,10 @@ the NTLM scheme is a Microsoft specific scheme. Support is provided,
 but has never been tested.
 <p>
 <b>SSL</b>:
-a scheme that uses a client-side key to authenticate
-the client to the server.
-The ssl scheme is usually part of an SSL connection
-where the server authenticates to the client and then the client
-authenticates to the server.
+a scheme that uses a client-side key to authenticate the
+client to the server.  The ssl scheme is usually part of an
+SSL connection where the server authenticates to the client
+and then the client authenticates to the server.
 <p>
 The credentials provider
 (see <a href="#HTTPSSLProvider.API">HTTPSSLProvider</a>)
@@ -487,7 +576,7 @@ static void setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds)
 <li>HTTPSession()
      <ul>
      <li> Creates a session object compatible
-          with any url.
+          without any url.
      </ul>
 </ul>
 Note that in both cases, selected command line parameters
@@ -532,7 +621,7 @@ method to establish client side key support.
 <ul>
 <li>synchronized void close()
      <ul>
-     <li> Close this session and also any active HTTPMethods
+     <li> Close this session and also any un-closed HTTPMethods
           associated with this session.
      </ul>
 </ul>
@@ -549,6 +638,22 @@ method to establish client side key support.
     <li> Create a method associated with the specified session, but using the specified
          "compatible" url.
     </ul>
+
+<li>static HTTPMethod {Get|Head|Put|Post|Options}(HTTPSession session,String url) throws HTTPException
+    <ul>
+    <li> Create a method associated with the specified session and specified url. The specified url must be compatible with any session url.
+    </ul>
+
+<li>static HTTPMethod {Get|Head|Put|Post|Options}(String uri) throws HTTPException
+    <ul>
+    <li> Create a method and implicitly create a hidden session using the specified url.
+    </ul>
+
+<li>static HTTPMethod {Get|Head|Put|Post|Options}() throws HTTPException
+    <ul>
+    <li> Create a method and implicitly create a hidden session.
+    </ul>
+
 <li>static void setGlobalMethodParameter(String name, Object value)
     <ul>
     <li> Set a parameter that is to be applied to all method instance <u>requests</u>.
@@ -556,20 +661,24 @@ method to establish client side key support.
 <li> static Enumeration getAllowedMethods()
 </ul>
 
-<h4>Constructor(s)</h4>
+<h4>Execute</h4>
 <ul>
-<li>HTTPMethod newMethod{Get|Head|Put|Post|Options}(String uri) throws HTTPException
+<li> int execute() throws HTTPException
      <ul>
-     <li> deprecated in favor of the e.g. HTTPMethod.Get factory methods.
+     <li> Find the relevant url from the method or the session,
+          send the request, and receive and check the response.
+     </ul>
+<p>
+<li> int execute(String url) throws HTTPException
+     <ul>
+     <li> Using the specified url, 
+          send the request, and receive and check the response.
      </ul>
 </ul>
 
-<h4>Execute</h4>
+<h4>Miscellaneous Get/Set</h4>
 <ul>
-<li> int execute()
-     <ul>
-     <li> throws HTTPException
-     </ul>
+<li> HTTPSession getSession()
 </ul>
 
 <h4>Responsebody</h4>
@@ -620,7 +729,6 @@ body in various forms.
 <li> void setMultipartRequest(Part[] parts) throws HTTPException
 </ul>
 </ul>
-
 
 <h3><u><a name="HTTPMethodStream.API">HTTPMethodStream API</a></u></h3>
 This class subclasses <i>java.io.InputStream</i>

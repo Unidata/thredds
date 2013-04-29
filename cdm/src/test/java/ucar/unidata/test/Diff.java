@@ -204,7 +204,7 @@ public class Diff {
      */
     fileInfo oldinfo, newinfo;
 
-    PrintStream printer = System.out;
+    PrintWriter printer = null;
 
     String identifier = "";
 
@@ -248,29 +248,29 @@ public class Diff {
    
     /* Do comparison against two Reader streams */
 
-    public boolean doDiff(Reader oldFile, Reader newFile, PrintStream out) throws Exception {
-        this.printer = out;
+    public boolean doDiff(Reader oldFile, Reader newFile, Writer out) throws Exception {
+        this.printer = new PrintWriter(out);
         oldinfo = new fileInfo(oldFile);
         newinfo = new fileInfo(newFile);
         return process();
     }
 
     public boolean doDiff(Reader oldFile, Reader newFile) throws Exception {
-        return doDiff(oldFile, newFile, System.out);
+        Writer w = new OutputStreamWriter(System.out);
+        return doDiff(oldFile, newFile, w);
     }
+
     /* Do comparison against two string streams */
 
-     public boolean doDiff(String data1, String data2, PrintStream out) throws Exception {
+     public boolean doDiff(String data1, String data2, Writer out) throws Exception {
         if(data1 == null || data2 == null) return false;
-        this.printer = out;
-        oldinfo = new fileInfo(new StringReader(data1));
-        newinfo = new fileInfo(new StringReader(data2));
-        return process();
+        return doDiff(new StringReader(data1), new StringReader(data2), out);
     }
 
     public boolean doDiff(String data1, String data2) throws Exception {
-        return doDiff(data1, data2, System.out);
+        return doDiff(data1, data2, new OutputStreamWriter(System.out));
     }
+
     boolean process() throws Exception {
         /* we don't process until we know both files really do exist. */
         inputscan(oldinfo);

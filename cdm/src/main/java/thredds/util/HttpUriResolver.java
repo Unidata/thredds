@@ -63,7 +63,6 @@ public class HttpUriResolver
   private boolean followRedirects;
 
   private HTTPMethod method = null;
-  private HTTPSession session = null;
   private Map<String,String> respHeaders;
 
   HttpUriResolver( URI uri, int connectionTimeout, int socketTimeout,
@@ -83,7 +82,6 @@ public class HttpUriResolver
     public void close()
     {
         if(method != null) method.close();
-        if(session != null) session.close();
     }
   public URI getUri() { return this.uri; }
   public long getConnectionTimeout() { return this.connectionTimeout; }
@@ -165,11 +163,9 @@ public class HttpUriResolver
   private HTTPMethod getHttpResponse( URI uri )
           throws IOException, HTTPException
   {
-    if(session == null)
-        session = new HTTPSession(uri.toString());
-    session.setConnectionTimeout( this.connectionTimeout );
-    session.setSoTimeout( this.socketTimeout );
-    HTTPMethod method = HTTPMethod.Get(session,uri.toString() );
+    HTTPMethod method = HTTPMethod.Get(uri.toString() );
+    method.getSession().setConnectionTimeout( this.connectionTimeout );
+    method.getSession().setSoTimeout( this.socketTimeout );
     method.setFollowRedirects( this.followRedirects );
     method.setRequestHeader( "Accept-Encoding", this.contentEncoding );
 
