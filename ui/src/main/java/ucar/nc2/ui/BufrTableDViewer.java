@@ -31,7 +31,6 @@
  */
 package ucar.nc2.ui;
 
-import ucar.nc2.ft.scan.FeatureScan;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;

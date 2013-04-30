@@ -51,18 +51,18 @@ import java.util.*;
 
 public class WmoCodeTable implements Comparable<WmoCodeTable> {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
-  static public final Version standard = Version.GRIB2_8_0_0;
+  static public final Version standard = Version.GRIB2_10_0_1;
 
   public enum Version {
-    GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0;
+    // GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0;
+    GRIB2_10_0_1, GRIB2_8_0_0;
 
     String getResourceName() {
-      if (this == GRIB2_8_0_0) return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
-      return "/sources/wmo/" + this.name() + "_CodeFlag_E.xml";
+      return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
     }
 
     String[] getElemNames() {
-      if (this == GRIB2_5_2_0) {
+      /* if (this == GRIB2_5_2_0) {
         return new String[]{"ForExport_CodeFlag_E", "TableTitle_E", "TableSubTitle_E", "Meaning_E", "AsciiUnit_x002F_Description_E"};
 
       } else if (this == GRIB2_6_0_1) {
@@ -71,14 +71,31 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       } else if (this == GRIB2_7_0_0) {
         return new String[]{"Exp_CodeFlag_E", "Title_E", "SubTitle_E", "MeaningParameterDescription_E", "UnitComments_E"};
 
-      } else if (this == GRIB2_8_0_0) {
+      } else */
+
+      if (this == GRIB2_8_0_0) {
         return new String[]{"GRIB2_8_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
+
+      } else if (this == GRIB2_10_0_1) {
+        return new String[]{"GRIB2_10_0_1_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
       }
+
       return null;
     }
   }
 
   /*
+
+  <GRIB2_10_0_1_CodeFlag_en>
+    <No>412</No>
+    <Title_en>Code table 4.2 - Parameter number by product discipline and parameter category</Title_en>
+    <SubTitle_en>Product discipline 0 - Meteorological products, parameter category 1: moisture</SubTitle_en>
+    <CodeFlag>36</CodeFlag>
+    <MeaningParameterDescription_en>Categorical snow</MeaningParameterDescription_en>
+    <UnitComments_en>(Code table 4.222)</UnitComments_en>
+    <Status>Operational</Status>
+  </GRIB2_10_0_1_CodeFlag_en>
+
   <GRIB2_8_0_0_CodeFlag_en>
     <No>899</No>
     <Title_en>Code table 4.2 - Parameter number by product discipline and parameter category</Title_en>
@@ -503,9 +520,11 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
             unit = unit.trim();
             unit = StringUtil2.replace(unit, ' ', ".");
           }
+          this.unit = unit;
 
+        } else {
+          this.unit = ""; // no null unit allowed
         }
-        this.unit = unit;
       }
     }
 

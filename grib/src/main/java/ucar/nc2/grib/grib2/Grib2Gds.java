@@ -45,6 +45,7 @@ import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.util.GaussianLatitudes;
 
+import java.util.Arrays;
 import java.util.Formatter;
 
 /**
@@ -57,29 +58,41 @@ public abstract class Grib2Gds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
 
   public static Grib2Gds factory(int template, byte[] data) {
+    Grib2Gds result;
     switch (template) {
       case 0:
-        return new LatLon(data);
+        result = new LatLon(data);
+        break;
       case 1:
-        return new RotatedLatLon(data);
+        result = new RotatedLatLon(data);
+        break;
       case 10:
-        return new Mercator(data);
+        result = new Mercator(data);
+        break;
       case 20:
-        return new PolarStereographic(data);
+        result = new PolarStereographic(data);
+        break;
       case 30:
-        return new LambertConformal(data);
+        result = new LambertConformal(data);
+        break;
       case 40:
-        return new GaussLatLon(data);
+        result = new GaussLatLon(data);
+        break;
       case 90:
-        return new SpaceViewPerspective(data);
+        result = new SpaceViewPerspective(data);
+        break;
 
       // LOOK NCEP specific
       case 204:
-        return new CurvilinearOrthogonal(data);
+        result = new CurvilinearOrthogonal(data);
+        break;
 
       default:
         throw new UnsupportedOperationException("Unsupported GDS type = " + template);
     }
+
+    result.finish(); // stuff that cant be done in the constructor
+    return result;
   }
 
   ///////////////////////////////////////////////////
@@ -93,11 +106,11 @@ public abstract class Grib2Gds {
   public int scanMode;
   public int earthShape;
 
-  protected int nx, ny;
+  private int nx, ny;         // raw
   protected int[] nptsInLine; // thin grids, else null
   protected int lastOctet;
 
-  public Grib2Gds(byte[] data, int template) {
+  protected Grib2Gds(byte[] data, int template) {
     this.data = data;
     this.template = template;
 
@@ -109,6 +122,15 @@ public abstract class Grib2Gds {
     nx = getOctet4(31);
     ny = getOctet4(35);
   }
+
+  protected void finish() {
+    if (isThin()) readNptsInLine();
+  }
+
+
+  public abstract GdsHorizCoordSys makeHorizCoordSys();
+
+  public abstract void testHorizCoordSys(Formatter f);
 
   // number of points along nx, adjusted for thin grid
   public int getNx() {
@@ -138,8 +160,47 @@ public abstract class Grib2Gds {
     return data;
   }
 
+
+  public boolean isLatLon() {
+    return false;
+  }
+
+  public String getNameShort() {
+    String className = getClass().getName();
+    int pos = className.lastIndexOf("$");
+    return className.substring(pos + 1);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Grib2Gds grib2Gds = (Grib2Gds) o;
+
+    if (nx != grib2Gds.nx) return false;
+    if (ny != grib2Gds.ny) return false;
+    if (template != grib2Gds.template) return false;
+    if (!Arrays.equals(nptsInLine, grib2Gds.nptsInLine)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = template;
+    result = 31 * result + nx;
+    result = 31 * result + ny;
+    if (nptsInLine != null)
+      result = 31 * result + Arrays.hashCode(nptsInLine);
+    return result;
+  }
+
+  protected int hashCode = 0;
+
   //////////////// thin grids
-  /**
+  /*
+
    11 Number of octets for optional list of numbers (see Note 2)
    12 Interpretation of list of numbers (see Code table 3.11)
 
@@ -159,7 +220,7 @@ public abstract class Grib2Gds {
    (longitude).
    */
 
-  public final boolean isThin() {
+  public boolean isThin() {
     boolean isThin = (getOctet(11) != 0);
     assert !isThin || (nx <0 || ny < 0);
     return isThin;
@@ -169,7 +230,7 @@ public abstract class Grib2Gds {
     int numOctetsPerNumber = getOctet(11);
     int octet12 = getOctet(12);
     if (octet12 != 1)
-      throw new NotImplementedError("Thin grid octed 12 =" + octet12);
+      throw new NotImplementedError("Thin grid octet 12 =" + octet12);
 
     int numPts = (nx > 0) ? nx : ny;
     int[] parallels = new int[numPts];
@@ -192,6 +253,8 @@ public abstract class Grib2Gds {
     nptsInLine = parallels;
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////
+
   protected int getOctet(int index) {
     return data[index - 1] & 0xff;
   }
@@ -212,43 +275,6 @@ public abstract class Grib2Gds {
     else
       return (float) scaleValue;
   }
-
-  public boolean isLatLon() {
-    return false;
-  }
-
-  public abstract GdsHorizCoordSys makeHorizCoordSys();
-
-  public abstract void testHorizCoordSys(Formatter f);
-
-  public String getNameShort() {
-    String className = getClass().getName();
-    int pos = className.lastIndexOf("$");
-    return className.substring(pos + 1);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    Grib2Gds grib2Gds = (Grib2Gds) o;
-    if (nx != grib2Gds.nx) return false;
-    if (ny != grib2Gds.ny) return false;
-    if (template != grib2Gds.template) return false;
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = template;
-    result = 31 * result + nx;
-    result = 31 * result + ny;
-    return result;
-  }
-
-  protected int hashCode = 0;
 
   /*
   Code Table Code table 3.2 - Shape of the Earth (3.2)
@@ -346,9 +372,17 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
         lo1 -= 360.0F;
       }
 
+      scanMode = getOctet(72);
+      lastOctet = 73;
+    }
+
+    protected void finish() {
+      super.finish();
+
       // GFS_Puerto_Rico_0p5deg seems to have deltaLat, deltaLon incorrectly encoded
+      float scale = getScale();
       deltaLon = getOctet4(64) * scale;
-      float calcDelta = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
+      float calcDelta = (lo2 - lo1) / (getNx() - 1); // more accurate - deltaLon may have roundoff
       if (!Misc.closeEnough(deltaLon, calcDelta)) {
         log.debug("deltaLon {} != calcDeltaLon {}", deltaLon, calcDelta);
         deltaLon = calcDelta;
@@ -356,17 +390,11 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
 
       deltaLat = getOctet4(68) * scale;
       if (la2 < la1) deltaLat = -deltaLat;
-      calcDelta = (la2 - la1) / (ny-1); // more accurate - deltaLat may have roundoff
+      calcDelta = (la2 - la1) / (getNy() - 1); // more accurate - deltaLat may have roundoff
       if (!Misc.closeEnough(deltaLat, calcDelta)) {
         log.debug("deltaLat {} != calcDeltaLat {}", deltaLat, calcDelta);
         deltaLat = calcDelta;
       }
-
-      scanMode = getOctet(72);
-
-      lastOctet = 73;
-
-      if (isThin()) readNptsInLine();
     }
 
     @Override
@@ -423,7 +451,8 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
       double startx = startP.getX();
       double starty = startP.getY();
-      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, startx, deltaLon, starty, deltaLat, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, startx, deltaLon, starty, deltaLat,
+              getNxRaw(), getNyRaw(), getNptsInLine());
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -441,8 +470,8 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       f.format("   should end at x= (%f,%f)%n", endx, endy);
     }
   }
@@ -504,7 +533,8 @@ Template 3.1 (Grid definition template 3.1 - rotated latitude/longitude (or equi
       // LatLonPoint startLL = proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
       //double startx = startLL.getLongitude();
       //double starty = startLL.getLatitude();
-      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, lo1, deltaLon, la1, deltaLat, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, lo1, deltaLon, la1, deltaLat,
+              getNxRaw(), getNyRaw(), getNptsInLine());
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -520,8 +550,8 @@ Template 3.1 (Grid definition template 3.1 - rotated latitude/longitude (or equi
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       f.format("   should end at x= (%f,%f)%n", endx, endy);
     }
 
@@ -623,7 +653,8 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
       double startx = startP.getX();
       double starty = startP.getY();
 
-      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, startx, dX, starty, dY, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, startx, dX, starty, dY,
+              getNxRaw(), getNyRaw(), getNptsInLine());
     }
 
 
@@ -642,8 +673,8 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       f.format("   should end at x= (%f,%f)%n", endx, endy);
     }
 
@@ -758,15 +789,16 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       }
 
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(la1, lo1));
-      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, start.getX(), dX, start.getY(), dY, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, start.getX(), dX, start.getY(), dY,
+              getNxRaw(), getNyRaw(), getNptsInLine());
     }
 
     public void testHorizCoordSys(Formatter f) {
       GdsHorizCoordSys cs = makeHorizCoordSys();
       f.format("%s testProjection %s%n", getClass().getName(), cs.proj.getClass().getName());
 
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
@@ -904,15 +936,16 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
-      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, start.getX(), dX, start.getY(), dY, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, start.getX(), dX, start.getY(), dY,
+              getNxRaw(), getNyRaw(), getNptsInLine());
     }
 
     public void testHorizCoordSys(Formatter f) {
       GdsHorizCoordSys cs = makeHorizCoordSys();
       f.format("%s testProjection %s%n", getClass().getName(), cs.proj.getClass().getName());
 
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
@@ -964,7 +997,11 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
       super(data);
       this.template = 40;
       Nparellels = getOctet4(68);
-      deltaLon = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
+    }
+
+    protected void finish() {
+      super.finish();
+      deltaLon = (lo2 - lo1) / (getNx()-1); // more accurate - deltaLon may have roundoff
     }
 
     @Override
@@ -992,7 +1029,7 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
 
     public GdsHorizCoordSys makeHorizCoordSys() {
 
-      int nlats = (int) (2 * Nparellels);
+      int nlats = 2 * Nparellels;
       GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
 
       int bestStartIndex = 0, bestEndIndex = 0;
@@ -1010,20 +1047,21 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
           bestEndIndex = i;
         }
       }
-      if (Math.abs(bestEndIndex - bestStartIndex + 1) != ny) {
+      int useNy = getNy();
+      if (Math.abs(bestEndIndex - bestStartIndex + 1) != useNy) {
         log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
-        nlats = ny;
+        nlats = useNy;
         gaussLats = new GaussianLatitudes(nlats);
         bestStartIndex = 0;
-        bestEndIndex = ny - 1;
+        bestEndIndex = useNy - 1;
       }
       boolean goesUp = bestEndIndex > bestStartIndex;
 
       // create the data
       int useIndex = bestStartIndex;
-      float[] data = new float[ny];
-      float[] gaussw = new float[ny];
-      for (int i = 0; i < ny; i++) {
+      float[] data = new float[useNy];
+      float[] gaussw = new float[useNy];
+      for (int i = 0; i < useNy; i++) {
         data[i] = (float) gaussLats.latd[useIndex];
         gaussw[i] = (float) gaussLats.gaussw[useIndex];
         if (goesUp) {
@@ -1033,9 +1071,10 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
         }
       }
 
-      GdsHorizCoordSys coordSys = new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, new LatLonProjection(), lo1, deltaLon, 0, 0, nx, ny);
-      coordSys.gaussLats = Array.factory(DataType.FLOAT, new int[]{ny}, data);
-      coordSys.gaussw = Array.factory(DataType.FLOAT, new int[]{ny}, gaussw);
+      GdsHorizCoordSys coordSys = new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, new LatLonProjection(), lo1, deltaLon, 0, 0,
+              getNxRaw(), getNyRaw(), getNptsInLine());
+      coordSys.gaussLats = Array.factory(DataType.FLOAT, new int[]{useNy}, data);
+      coordSys.gaussw = Array.factory(DataType.FLOAT, new int[]{useNy}, gaussw);
 
       return coordSys;
     }
@@ -1218,20 +1257,21 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
       double scale_x = scale_factor; // LOOK fake neg need scan value
       double scale_y = -scale_factor; // LOOK fake neg need scan value
       double startx = scale_factor * (1 - Xp) / cfac;
-      double starty = scale_factor * (Yp - ny) / lfac;
+      double starty = scale_factor * (Yp - getNy()) / lfac;
       double incrx = scale_factor / cfac;
       double incry = scale_factor / lfac;
 
       MSGnavigation proj = new MSGnavigation(LaP, LoP, majorAxis, minorAxis, Nr * majorAxis, scale_x, scale_y);
-      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, startx, incrx, starty, incry, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, startx, incrx, starty, incry,
+              getNxRaw(), getNyRaw(), getNptsInLine());
     }
 
     public void testHorizCoordSys(Formatter f) {
       f.format("%s testProjection%n", getClass().getName());
 
       GdsHorizCoordSys cs = makeHorizCoordSys();
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
@@ -1292,7 +1332,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
     public int hashCode() {
       if (hashCode == 0) {
         int result = super.hashCode();
-        result = 31 * result + (int) flags;
+        result = 31 * result + flags;
         hashCode = result;
       }
       return hashCode;
@@ -1300,7 +1340,8 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
 
     public GdsHorizCoordSys makeHorizCoordSys() {
       LatLonProjection proj = new LatLonProjection();
-      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, 0, 1, 0, 1, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, 0, 1, 0, 1,
+              getNxRaw(), getNyRaw(), getNptsInLine());
     }
 
     public void testHorizCoordSys(Formatter f) {

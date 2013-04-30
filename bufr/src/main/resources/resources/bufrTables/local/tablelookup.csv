@@ -24,7 +24,11 @@ WMO.13, 0,     0,        13,    0,    -1,   resource:/resources/bufrTables/cyphe
 WMO.14, 0,     0,        14,    0,    -1,   resource:/resources/bufrTables/wmo/BCTableB_BUFR14_2_0_CREX_6_2_0.xml, wmo_xml,resource:/resources/bufrTables/wmo/BTableD_BUFR14_2_0_CREX_6_2_0.xml, wmo_xml
 WMO.15, 0,     0,        15,    0,    -1,   resource:/resources/bufrTables/wmo/BUFR_15_1_1_TableB_E.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_15_1_1_TableD_E.xml, wmo_xml
 WMO.16, 0,     0,        16,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_16_0_0_TableB_E.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_16_0_0_TableD_E.xml, wmo_xml
-WMO.any, 0,     0,        -1,    0,    -1,   resource:/resources/bufrTables/cypher/B_d00v13.htm, cypher, resource:/resources/bufrTables/cypher/D_d00v13.htm, cypher
+WMO.17, 0,     0,        17,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_17_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_17_0_0_TableD_en.xml, wmo_xml
+WMO.18, 0,     0,        18,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_18_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_18_0_0_TableD_en.xml, wmo_xml
+WMO.19, 0,     0,        19,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_19_1_1_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_19_1_1_TableD_en.xml, wmo_xml
+WMO.any, 0,     0,       -1,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_19_1_1_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_19_1_1_TableD_en.xml, wmo_xml
+#WMO.any, 0,     0,        -1,    0,    -1,   resource:/resources/bufrTables/cypher/B_d00v13.htm, cypher, resource:/resources/bufrTables/cypher/D_d00v13.htm, cypher
 #
 # NCEP
 # see http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tablea.htm#1

@@ -26,7 +26,7 @@ import java.util.zip.CRC32;
  * @since 3/28/11
  */
 @Immutable
-public class   Grib2SectionGridDefinition {
+public class Grib2SectionGridDefinition {
   private final byte[] rawData;
   private final long startingPosition;
   private final int templateNumber;

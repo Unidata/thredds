@@ -464,7 +464,7 @@ public abstract class Grib1Gds {
       ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
       double startx = startP.getX();
       double starty = startP.getY();
-      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(), getNx(), getNy());
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(), getNx(), getNy(), null);
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -687,7 +687,7 @@ Grid definition –   polar stereographic
       }
 
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(la1, lo1));
-      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy());
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy(), null);
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -862,7 +862,7 @@ Grid definition –   polar stereographic
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
-      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy());
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy(), null);
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -976,7 +976,7 @@ Grid definition –   polar stereographic
       double startx = startP.getX();
       double starty = startP.getY();
 
-      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(), getNx(), getNy());
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(), getNx(), getNy(), null);
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -1062,7 +1062,7 @@ Grid definition –   polar stereographic
       // LatLonPoint startLL = proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
       //double startx = startLL.getLongitude();
       //double starty = startLL.getLatitude();
-      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, lo1, deltaLon, la1, deltaLat, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, lo1, deltaLon, la1, deltaLat, nx, ny, null);
     }
 
     public void testHorizCoordSys(Formatter f) {

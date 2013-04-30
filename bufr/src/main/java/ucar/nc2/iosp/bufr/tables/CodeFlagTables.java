@@ -48,13 +48,14 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 /**
- * Read Code / Flag tables.
+ * Read BUFR Code / Flag tables.
  *
  * @author caron
  * @since Jul 12, 2008
  */
 public class CodeFlagTables {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeFlagTables.class);
+  static private final String CodeFlagFilename = "wmo/BUFRCREX_19_1_1_CodeFlag_en.xml";
   static Map<Short, CodeFlagTables> tableMap;
 
   static public CodeFlagTables getTable(short id) {
@@ -94,18 +95,29 @@ public class CodeFlagTables {
     if (tableMap == null) init();
     return tableMap;
   }
+
   /*
   <Exp_CodeFlagTables_E>
-<No>837</No>
-<FXY>002119</FXY>
-<ElementName_E>Instrument operations</ElementName_E>
-<CodeFigure>0</CodeFigure>
-<EntryName_E>Intermediate frequency calibration mode (IF CAL)</EntryName_E>
-<Status>Operational</Status>
-</Exp_CodeFlagTables_E>
+    <No>837</No>
+    <FXY>002119</FXY>
+    <ElementName_E>Instrument operations</ElementName_E>
+    <CodeFigure>0</CodeFigure>
+    <EntryName_E>Intermediate frequency calibration mode (IF CAL)</EntryName_E>
+    <Status>Operational</Status>
+  </Exp_CodeFlagTables_E>
+
+<BUFRCREX_19_1_1_CodeFlag_en>
+  <No>2905</No>
+  <FXY>020042</FXY>
+  <ElementName_en>Airframe icing present</ElementName_en>
+  <CodeFigure>2</CodeFigure>
+  <EntryName_en>Reserved</EntryName_en>
+  <Status>Operational</Status>
+</BUFRCREX_19_1_1_CodeFlag_en>
+
    */
   static private void init(Map<Short, CodeFlagTables> table) {
-    String filename = BufrTables.RESOURCE_PATH + "wmo/BUFRCREX_16_0_0_CodeFlag_E.xml"; // Code-FlagTables.xml";
+    String filename = BufrTables.RESOURCE_PATH + CodeFlagFilename;
     InputStream is = CodeFlagTables.class.getResourceAsStream(filename);
 
     try {
@@ -113,10 +125,10 @@ public class CodeFlagTables {
       org.jdom2.Document tdoc = builder.build(is);
       org.jdom2.Element root = tdoc.getRootElement();
 
-      List<Element> elems = root.getChildren("Exp_CodeFlagTables_E");
+      List<Element> elems = root.getChildren();
       for (Element elem : elems) {
         String fxyS = elem.getChildText("FXY");
-        String desc = elem.getChildText("ElementName_E");
+        String desc = elem.getChildText("ElementName_en");
 
         short fxy = Descriptor.getFxy2(fxyS);
         CodeFlagTables ct = table.get(fxy);
@@ -128,7 +140,7 @@ public class CodeFlagTables {
 
         String line = elem.getChildText("No");
         String codeS = elem.getChildText("CodeFigure");
-        String value = elem.getChildText("EntryName_E");
+        String value = elem.getChildText("EntryName_en");
 
         if ((codeS == null) || (value == null)) continue;
         if (value.toLowerCase().startsWith("reserved"))  continue;
@@ -154,19 +166,6 @@ public class CodeFlagTables {
         if (is != null) is.close();
       } catch (IOException e) {
       }
-    }
-  }
-
-  static private short getFxy(String name) {
-    try {
-      String[] tok = name.split(" ");
-      int f = (tok.length > 0) ? Integer.parseInt(tok[0]) : 0;
-      int x = (tok.length > 1) ? Integer.parseInt(tok[1]) : 0;
-      int y = (tok.length > 2) ? Integer.parseInt(tok[2]) : 0;
-      return (short) ((f << 14) + (x << 8) + (y));
-    } catch (NumberFormatException e) {
-      log.warn("Illegal table name=" + name);
-      return 0;
     }
   }
 
