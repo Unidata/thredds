@@ -128,14 +128,13 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
 
     // subset
-    byte[] data;
+    Object data;
     Array outputData;
     byte[] vdata = null;
     NOWRadheader.Vinfo vinfo;
     ByteBuffer bos;
     List<Range> ranges = section.getRanges();
-    float[] levels = {Float.NaN, 7.5f, 12.5f, 17.5f, 22.5f, 27.5f, 32.5f, 37.5f,
-            42.5f, 47.5f, 52.5f, 57.5f, 62.5f, 67.5f, 72.5f, 75.0f};
+
     vinfo = (NOWRadheader.Vinfo) v2.getSPobject();
 
     try {
@@ -144,19 +143,8 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
     }
 
     bos = ByteBuffer.wrap(vdata);
-    data = (byte[])readOneScanData(bos, vinfo, v2.getShortName());
-
-    int npixel = vinfo.xt * vinfo.yt;
-    float[] fdata = new float[npixel];
-    for (int i = 0; i < npixel; i++) {
-      int ival = data[i];
-      if (ival > 0 && ival < 16)
-          fdata[i] = (float) levels[ival];
-      else
-          fdata[i] = Float.NaN;
-    }
-  
-    outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), fdata);
+    data = readOneScanData(bos, vinfo, v2.getShortName());
+    outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
     outputData = outputData.flip(1);
 
     // outputData = outputData.flip(2);
