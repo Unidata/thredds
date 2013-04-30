@@ -2416,6 +2416,7 @@ public class ToolsUI extends JPanel {
 
     void accept() {
       String command = (String) cb.getSelectedItem();
+      if (command == null) return;
       boolean err = false;
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
