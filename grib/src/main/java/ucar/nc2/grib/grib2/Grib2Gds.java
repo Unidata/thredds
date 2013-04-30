@@ -1029,7 +1029,7 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
 
     public GdsHorizCoordSys makeHorizCoordSys() {
 
-      int nlats = (int) (2 * Nparellels);
+      int nlats = 2 * Nparellels;
       GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
 
       int bestStartIndex = 0, bestEndIndex = 0;

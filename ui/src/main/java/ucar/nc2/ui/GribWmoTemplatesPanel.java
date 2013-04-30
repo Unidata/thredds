@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Describe
+ * GRIB WMO template UI.
  *
  * @author caron
  * @since Aug 27, 2010

@@ -520,9 +520,11 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
             unit = unit.trim();
             unit = StringUtil2.replace(unit, ' ', ".");
           }
+          this.unit = unit;
 
+        } else {
+          this.unit = ""; // no null unit allowed
         }
-        this.unit = unit;
       }
     }
 

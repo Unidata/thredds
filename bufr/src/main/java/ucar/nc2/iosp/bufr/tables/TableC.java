@@ -33,7 +33,7 @@
 package ucar.nc2.iosp.bufr.tables;
 
 /**
- *  BUFR Table C - Data operators
+ * BUFR Table C - Data operators
  * @author caron
  * @since Oct 25, 2008
  */
