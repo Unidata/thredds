@@ -462,11 +462,13 @@ public class NOWRadheader {
         String   coordinates = "time y x";
         Variable v           = new Variable(ncfile, null, null, cname);
 
-        v.setDataType(DataType.FLOAT);
+        v.setDataType(DataType.BYTE);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
         v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle));
         v.addAttribute(new Attribute(CDM.UNITS, cunit));
+        v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float((5.0f))));
+        v.addAttribute(new Attribute(CDM.MISSING_VALUE, 0));
         v.setSPobject(new Vinfo(numX, numY, hoff, false));
         v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
@@ -592,10 +594,12 @@ public class NOWRadheader {
         String   coordinates = "time lat lon";
         Variable v           = new Variable(ncfile, null, null, cname);
 
-        v.setDataType(DataType.FLOAT);
+        v.setDataType(DataType.BYTE);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
         v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle));
+        v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float((5.0f))));
+        v.addAttribute(new Attribute(CDM.MISSING_VALUE, 0));
         v.addAttribute(new Attribute(CDM.UNITS, cunit));
         v.setSPobject(new Vinfo(numX, numY, hoff, false));
         v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
