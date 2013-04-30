@@ -462,7 +462,7 @@ public class NOWRadheader {
         String   coordinates = "time y x";
         Variable v           = new Variable(ncfile, null, null, cname);
 
-        v.setDataType(DataType.BYTE);
+        v.setDataType(DataType.FLOAT);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
         v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle));
@@ -592,7 +592,7 @@ public class NOWRadheader {
         String   coordinates = "time lat lon";
         Variable v           = new Variable(ncfile, null, null, cname);
 
-        v.setDataType(DataType.BYTE);
+        v.setDataType(DataType.FLOAT);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
         v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle));
