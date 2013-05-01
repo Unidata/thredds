@@ -35,12 +35,15 @@ package thredds.servlet;
 
 import thredds.catalog.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.cache.FileFactory;
 
 import java.io.*;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Set;
@@ -271,6 +274,7 @@ public class DatasetHandler {
    * @throws IOException on read error
    */
   static public GridDataset openGridDataset( HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+	  
     return openGridDataset(req, res, reqPath, NetcdfDataset.getDefaultEnhanceMode());
   }
 

@@ -32,23 +32,36 @@
  */
 package ucar.nc2.dt.grid;
 
-import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.*;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import ucar.nc2.Attribute;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.dataset.NetcdfDatasetInfo;
+import ucar.nc2.dataset.StructureDS;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.geoloc.LatLonRect;
-
-import java.util.*;
-import java.io.IOException;
 
 /**
  * Make a NetcdfDataset into a collection of GeoGrids with Georeferencing coordinate systems.
@@ -125,7 +138,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   public GridDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
     this.ds = ds;
     // ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
-    ds.enhance(NetcdfDataset.getDefaultEnhanceMode());
+    Set<Enhance> enhance = ds.getEnhanceMode();
+    if(enhance == null || enhance.isEmpty()) enhance = NetcdfDataset.getDefaultEnhanceMode(); 
+    ds.enhance(enhance);
 
     // look for geoGrids
     if (parseInfo != null) parseInfo.format("GridDataset look for GeoGrids\n");
