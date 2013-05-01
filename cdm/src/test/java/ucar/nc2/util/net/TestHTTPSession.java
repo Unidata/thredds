@@ -65,7 +65,7 @@ public class TestHTTPSession extends UnitTestCommon
     String globalagent = "TestUserAgent123global";
     String sessionagent = "TestUserAgent123session";
     String url =
-            "http://motherlode.ucar.edu:8081/dts/test.01.dds";
+            "http://thredds-test.ucar.edu:8081/dts/test.01.dds";
 
     System.out.println("*** Testing: User Agent");
     System.out.println("*** URL: " + url);

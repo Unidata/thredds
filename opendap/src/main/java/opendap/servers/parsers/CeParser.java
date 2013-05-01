@@ -1436,8 +1436,6 @@ public class CeParser extends Ceparse
 
     public  void setURL(String url) {
         lexstate.url = url;
-        if(url != null && url.equals("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-07T00:00:00Z.html.dods"))
-            setDebugLevel(1);
     }
     public String getURL() {return lexstate.url;}
 
