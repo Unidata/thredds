@@ -450,17 +450,16 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       indexBuilder.setLocal(canonGc.getLocal());
 
       for (TimePartition.Partition p : tp.getPartitions()) {
-        indexBuilder.addPartitions(writePartitionProto(p.getName(), (TimePartition.Partition) p));
+        indexBuilder.addPartitions(writePartitionProto(p.getName(), p));
       }
 
       GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
-      f.format("GribCollectionTimePartitionedIndex= %d bytes%n", b.length);
+      f.format("GribCollectionTimePartitionedIndex= %d bytes file size =  %d bytes%n%n", b.length, raf.length());
 
     } finally {
-      f.format("file size =  %d bytes%n", raf.length());
       raf.close();
     }
 

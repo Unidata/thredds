@@ -431,10 +431,9 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
       byte[] b = index.toByteArray();
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
-      f.format("GribCollectionTimePartitionedIndex= %d bytes%n", b.length);
+      f.format("GribCollectionTimePartitionedIndex= %d bytes file size =  %d bytes%n%n", b.length, raf.length());
 
     } finally {
-      f.format("file size =  %d bytes%n", raf.length());
       raf.close();
     }
 
