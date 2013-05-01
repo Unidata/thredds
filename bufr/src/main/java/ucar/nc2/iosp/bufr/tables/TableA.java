@@ -49,19 +49,26 @@ import java.util.Map;
  */
 public class TableA {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableA.class);
-
+  static private final String TABLEA_FILENAME = "wmo/BUFR_19_1_1_TableA_en.xml";
   private static Map<Integer, String> tableA = null;
 
   /*
- <Exp_BUFRTableA_E>
-<No>4</No>
-<CodeFigure>3</CodeFigure>
-<Meaning_E>Vertical soundings (satellite)</Meaning_E>
-<Status>Operational</Status>
-</Exp_BUFRTableA_E>
+  <BUFR_19_1_1_TableA_en>
+    <No>27</No>
+    <CodeFigure>28</CodeFigure>
+    <Meaning_en>Precision orbit (satellite)</Meaning_en>
+    <Status>Operational</Status>
+  </BUFR_19_1_1_TableA_en>
+
+   <Exp_BUFRTableA_E>
+    <No>4</No>
+    <CodeFigure>3</CodeFigure>
+    <Meaning_E>Vertical soundings (satellite)</Meaning_E>
+    <Status>Operational</Status>
+  </Exp_BUFRTableA_E>
   */
   static private void init() {
-    String filename = BufrTables.RESOURCE_PATH + "wmo/BUFR_16_0_0_TableA_E.xml";
+    String filename = BufrTables.RESOURCE_PATH + TABLEA_FILENAME;
     InputStream is = CodeFlagTables.class.getResourceAsStream(filename);
 
     HashMap<Integer, String> map = new HashMap<Integer, String>(100);
@@ -70,11 +77,11 @@ public class TableA {
       org.jdom2.Document tdoc = builder.build(is);
       org.jdom2.Element root = tdoc.getRootElement();
 
-      List<Element> elems = root.getChildren("Exp_BUFRTableA_E");
+      List<Element> elems = root.getChildren();
       for (Element elem : elems) {
         String line = elem.getChildText("No");
         String codeS = elem.getChildText("CodeFigure");
-        String desc = elem.getChildText("Meaning_E");
+        String desc = elem.getChildText("Meaning_en");
 
         try {
           int code = Integer.parseInt(codeS);

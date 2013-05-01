@@ -39,15 +39,17 @@ message Grib2Record {
   required uint32 gdsIdx = 6;  // index into gdsList
   required bytes pds = 7;
 
-  // drs
+  // drs section
   required uint64 drsPos = 8;
   required uint32 drsTemplate = 9;
   required uint32 drsNpoints = 10;
 
+// bms section
   required uint64 bmsPos = 11;   // if original is 254, replace with previously defined (starting with version 6)
   required uint32 bmsIndicator = 12;
   optional bool bmsReplaced = 16 [default = false];
 
+  // data section
   required uint64 dataPos = 13;
   required uint32 dataLen = 14;
 }

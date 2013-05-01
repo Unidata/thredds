@@ -33,7 +33,6 @@ dl {margin: 10px 5px 5px 15px;)
   <p>which will give back the Java primitive array, without copying if possible. For example if you have a type double Array object:</p>
   <pre> double[] ja = (double []) ma.get1DJavaArray( double.class);</pre>
   <p>You then have to see if your chosen  package has a constructor that can wrap the Java array without copying it. You will also need the multidimensional shape information: <strong>int[] shape = ma.getShape().</strong></p>
-  <p>&nbsp;</p>
 </blockquote>
 <p><strong>Q: What are some easy ways to create an Array object?</strong></p>
 <blockquote>
@@ -52,9 +51,13 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
   <p>See <a href="Caching.html">Disk Caching</a>.</p>
 </blockquote>
 <h3><a name="IOSP" id="IOSP"></a>I/O Service Provider</h3>
+<p><strong>Q: What is an IOSP?</strong></p>
+<blockquote>
+  <p>An <strong>I/O Service Provider (IOSP</strong>) is a Java class that implements the<strong> ucar.nc2.iosp.IOServiceProvider</strong> interface, and knows how to read and understand the data in some specific scientific file format. An IOSP essentially implements the netCDF API for that file type. The interface is designed to minimize the amount of work an IOSP implementor has to do.</p>
+</blockquote>
 <p><strong>Q: I have lots of data in a proprietary format. How do I  read it into the CDM?</strong></p>
 <blockquote>
-  <p>You write a class that implements the IO Service Provider interface. See section 4 of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a>.</p>
+  <p>You write a class that implements the IO Service Provider interface, typically by subclassing <strong> ucar.nc2.iosp.AbstractIOServiceProvider</strong>. See section 4 of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a>.</p>
 </blockquote>
 <p><strong>Q: I want to create a NetcdfFile  from some other source than a file. But an IOSP is designed to get data from a RandomAccessFile. So what do I do?</strong></p>
 <blockquote>
@@ -72,7 +75,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 </blockquote>
 <p><strong>Q: What about the &quot;O&quot; in IOServiceProvider? How does that work?</strong></p>
 <blockquote>
-  <p>If you look at <strong>ucar.nc2.iosp.IOServiceProviderWriter</strong>, you can see the start of a possible standard mechanism for writing to different file formats. But it isnt used anywhere that would likely be useful to you. You probably just want to write your own class that takes a NetcdfFile object, and writes it to your file format, in whatever way suits you best. You might find the code at <strong>ucar.nc2.FileWriter </strong>useful to look at.</p>
+  <p>If you look at <strong>ucar.nc2.iosp.IOServiceProviderWriter</strong>, you can see the start of a possible standard mechanism for writing to different file formats. But it isnt used anywhere that would likely be useful to you. You probably just want to write your own class that takes a NetcdfFile object, and writes it to your file format, in whatever way suits you best. You might find the code at <strong>ucar.nc2.FileWriter2 </strong>useful to look at.</p>
 </blockquote>
 <h3><a name="Logging" id="Logging"></a>Logging</h3>
 <p><strong>Q: How do I  control  the error messages coming out of the library?</strong></p>
@@ -91,7 +94,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 <h3><a name="Multithreading" id="Multithreading"></a>Multithreading</h3>
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
 <blockquote>
-  <p> Underneath a <strong>Variable/NetcdfFile</strong> is (usually) a <strong>java.io.RandomAccessFile</strong> object, which is not thread-safe, because  it keeps the state of the file position. So even if all you want to do is read data in multiple threads, you need to synchronize, typically on the <strong>NetcdFile</strong> object. Better is toopen a new <strong>NetcdfFile</strong> for each thread. The THREDDS Data Server (TDS) uses a cache of open <strong>NetcdfFile</strong> files by using the <strong>NetcdfDataset.acquireFile() </strong>method, which allows stateless handling of data requests minimizing file opening and closing.</p>
+  <p> Underneath a <strong>Variable/NetcdfFile</strong> is (usually) a <strong>java.io.RandomAccessFile</strong> object, which is not thread-safe, because  it keeps the state of the file position. So even if all you want to do is read data in multiple threads, you need to synchronize, typically on the <strong>NetcdFile</strong> object. Better is to open a new <strong>NetcdfFile</strong> for each thread. The THREDDS Data Server (TDS) uses a cache of open <strong>NetcdfFile</strong> files by using the <strong>NetcdfDataset.acquireFile() </strong>method, which allows stateless handling of data requests minimizing file opening and closing.</p>
 </blockquote>
 <p><strong>Q: Do I need to synchronize if I use NetcdfDataset.acquireFile()?</strong></p>
 <blockquote>
@@ -194,21 +197,22 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 <h3><a name="Writing" id="Writing2"></a>Writing</h3>
 <p><strong>Q: Ok, so you read a lot of files, what about writing?</strong></p>
 <blockquote>
-  <p>Netcdf-Java library has very limited  support for writing files.. The only supported <em>output</em> format is the netCDF-3 &quot;classic&quot; file format using the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2">classic data model</a>. This means that you cannot write Groups, Structures, 64-bit integers, and other new data types with the netcCDF-Java library. See the <strong>ucar.nc2.NetcdfFileWriteable</strong> javadoc.</p>
+  <p>Netcdf-Java library supports  writing netCDF-3 file format using the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2">classic data model</a>. As of version 4.3, writing  to the netCDF-4 <strong><a name="netcdf4" id="netcdf4"></a></strong> file format is supported as BETA software, using a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html">netCDF C library.</a> This allows you to write the full <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/">CDM data model</a>. </p>
+  <p>See the <strong>ucar.nc2.NetcdfFileWriter</strong> javadoc.</p>
   <ul>
-    <li><strong>ucar.nc2.FileWriter </strong>writes CDM files to netCDF-3 format. However, currently it does not try very hard to capture new features in this limited format. </li>
-    <li><strong>ucar.nc2.dataset.NetcdfDataset</strong>.<strong>main</strong>() is a cover for <strong>FileWriter</strong>, but you can also open NcML, OPeNDAP, and other datasets accessible with NetcdfDataset.openFile(). See <a href="Cookbook.html#writeClasssic">here</a> for details.</li>
+    <li><strong>ucar.nc2.FileWriter2 </strong>writes CDM files to netCDF-3 or netCDF-4 format. </li>
+    <li><strong>ucar.nc2.dataset.NetcdfDataset</strong>.<strong>main</strong>() is a cover for <strong>FileWriter2</strong>, but you can also open NcML, OPeNDAP, and other datasets accessible with NetcdfDataset.openFile(). See <a href="Cookbook.html#writeClasssic">here</a> for details.</li>
     </ul>
 </blockquote>
-<p><strong>Q: What about writing NetCDF-4<a name="netcdf4" id="netcdf4"></a> format?</strong></p>
+<p><strong>Q: What is the relationship of NetCDF with HDF5?</strong></p>
 <blockquote>
-  <p>NetCDF-4 format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. It adds shared dimensions, so it is unfortunately not a strict subset of HDF5. HDF5 is a very complicated format, and at this time we do not have resources to write a 100% Java version for writing (we do have a 100% Java version for reading). We are considering a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the NetCDF-4 C library, but there is no current timeline for that. So for now, you can only use the <a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF-4 C library</a> to write NetCDF-4 format files.</p>
-  <p>You might want to have a look at <a href="http://www.ral.ucar.edu/~steves/nujan.html">Nujan</a>.</p>
+  <p>The netCDF-4 file format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. NetCDF adds shared dimensions, so it is unfortunately not a strict subset of HDF5. Gory details are here:  <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">Part 1,</a> <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2">Part 2</a>, <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3">Part 3</a>.</p>
+  <p>HDF5 is a very complicated format, and we do not plan to  write a pure Java version for writing netCDF4 files (we do have a pure Java version for reading both HDF5 and netCDF-4). You might also want to have a look at <a href="http://www.ral.ucar.edu/~steves/nujan.html">Nujan</a>.</p>
 </blockquote>
 <p><strong>Q: Can I stream a NetcdfFile object to a client?</strong></p>
 <blockquote>
-  <p>NetCDF is a random access format, so streaming is not always possible. The standard way to do this is to write to a disk file  (so that you have random access), using <strong>ucar.nc2.FileWriter</strong>, then copy the file to the client. Note  that you must stay within the &quot;classic model&quot; to write  a netCDF-3 file.</p>
-  <p>We are working on an experimental streaming format for NetCDF, called <a href="../stream/NcStream.html">ncstream</a>, and a remote access protocol called <a href="../stream/CdmRemote.html">CdmRemote</a>. These are fully functional as of CDM version 4.2, but are still evolving and should only be used if you can tolerate them changing.</p>
+  <p>NetCDF is a random access format, so streaming is not  possible in general. The standard way to do this is to write to a disk file  (so that you havea random access file), using <strong>ucar.nc2.FileWriter2</strong>, then copy the file to the client. </p>
+  <p>We are working on an experimental streaming format for NetCDF, called <a href="../stream/NcStream.html">ncstream</a>, and a remote access protocol called <a href="../stream/CdmRemote.html">CdmRemote</a>. These are fully functional as of CDM version 4.2, but are still evolving and should only be used if you can tolerate  non-stable APIs and formats.</p>
 </blockquote>
 <p><strong>Q: <a name="writeGuide" id="writeGuide"></a>What kind of information should I put into my netCDF file to help others read it? </strong></p>
 <blockquote>
@@ -216,12 +220,11 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
   <ul>
     <li> General Guildelines:<a href="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html"> http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html</a></li>
     <li>Recommended Conventions: <a href="http://cf-pcmdi.llnl.gov/">CF Conventions  </a></li>
-    <li>Proposed <a href="http://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions">Conventions for Point Observations </a></li>
   </ul>
 </blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 2012
+<img src="../nc.gif" alt="" width="64" height="64" /> This document  was last updated April 2013
 </address>
 </body>
 </html>

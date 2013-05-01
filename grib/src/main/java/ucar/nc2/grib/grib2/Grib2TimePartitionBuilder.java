@@ -207,17 +207,19 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     logger.debug(" Using canonical partition {}", canon.getDcm().getCollectionName());
 
     // check consistency across vert and ens coords
-    Formatter f= new Formatter();
-    if (!checkPartitions(canon, f)) {
+    // also replace variables  in canonGc with partitoned variables
+    Formatter f = new Formatter();
+    GribCollection canonGc = checkPartitions(canon, f);
+    if (canonGc == null) {
       logger.error(" Partition check failed, index not written on {} message = {}", tp.getName(), f.toString());
       return false;
     }
 
     // make the time coordinates, place results into canon
-    createPartitionedTimeCoordinates(canon, f);
+    createPartitionedTimeCoordinates(canonGc, f);
 
     // ready to write the index file
-    writeIndex(canon, f);
+    writeIndex(canonGc, f);
 
     // close open gc's
     // tp.cleanup();
@@ -229,13 +231,14 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
   // consistency check on variables : compare each variable to corresponding one in proto
   // also set the groupno and partno for each partition
-  private boolean checkPartitions(TimePartition.Partition canon, Formatter f) throws IOException {
+  private GribCollection checkPartitions(TimePartition.Partition canon, Formatter f) throws IOException {
     List<TimePartition.Partition> partitions = tp.getPartitions();
     int npart = partitions.size();
     boolean ok = true;
 
     // for each group in canonical Partition
-    for (GribCollection.GroupHcs firstGroup : canon.makeGribCollection().getGroups()) {
+    GribCollection canonGc = canon.makeGribCollection();
+    for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
       String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
@@ -312,9 +315,12 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       } // loop over partition
     } // loop over group
 
-    if (ok)
+    if (ok) {
       f.format("  Partition check: vert, ens coords OK%n");
-    return ok;
+      return canonGc;
+    } else {
+      return null;
+    }
   }
 
   private class PartGroup {
@@ -327,12 +333,12 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     }
   }
 
-  private boolean createPartitionedTimeCoordinates(TimePartition.Partition canon, Formatter f) throws IOException {
+  private boolean createPartitionedTimeCoordinates(GribCollection canonGc, Formatter f) throws IOException {
     List<TimePartition.Partition> partitions = tp.getPartitions();
     boolean ok = true;
 
     // for each group in canonical Partition
-    for (GribCollection.GroupHcs firstGroup : canon.makeGribCollection().getGroups()) {
+    for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
       String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
@@ -417,7 +423,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   sizeIndex
   GribCollectionIndex (sizeIndex bytes)
   */
-  private boolean writeIndex(TimePartition.Partition canon, Formatter f) throws IOException {
+  private boolean writeIndex(GribCollection canonGc, Formatter f) throws IOException {
     File file = tp.getIndexFile();
     if (file.exists()) {
       if (!file.delete())
@@ -435,7 +441,6 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
       indexBuilder.setName(tp.getName());
 
-      GribCollection canonGc = canon.makeGribCollection();
       for (GribCollection.GroupHcs g : canonGc.getGroups())
         indexBuilder.addGroups(writeGroupProto(g));
 
@@ -445,17 +450,16 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       indexBuilder.setLocal(canonGc.getLocal());
 
       for (TimePartition.Partition p : tp.getPartitions()) {
-        indexBuilder.addPartitions(writePartitionProto(p.getName(), (TimePartition.Partition) p));
+        indexBuilder.addPartitions(writePartitionProto(p.getName(), p));
       }
 
       GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
-      f.format("GribCollectionTimePartitionedIndex= %d bytes%n", b.length);
+      f.format("GribCollectionTimePartitionedIndex= %d bytes file size =  %d bytes%n%n", b.length, raf.length());
 
     } finally {
-      f.format("file size =  %d bytes%n", raf.length());
       raf.close();
     }
 
@@ -468,8 +472,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     b.setGds(ByteString.copyFrom(g.rawGds));
     b.setGdsHash(g.gdsHash);
 
-    for (GribCollection.VariableIndex vb : g.varIndex)
+    for (GribCollection.VariableIndex vb : g.varIndex) {
       b.addVariables(writeVariableProto( (TimePartition.VariableIndexPartitioned) vb));
+    }
 
     for (int i = 0; i < g.timeCoordPartitions.size(); i++)
       b.addTimeCoordUnions(writeTimeCoordUnionProto(g.timeCoordPartitions.get(i), i));

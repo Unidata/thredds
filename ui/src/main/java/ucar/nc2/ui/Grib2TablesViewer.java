@@ -202,10 +202,13 @@ public class Grib2TablesViewer extends JPanel {
     for (Object t : entryTable.getBeans()) {
       Grib2Customizer.Parameter p = ((EntryBean) t).param;
       if (Grib2Customizer.isLocal(p)) continue;
+      if (p.getNumber() < 0) continue;
       WmoCodeTable.TableEntry wmo = WmoCodeTable.getParameterEntry(p.getDiscipline(), p.getCategory(), p.getNumber());
       if (wmo == null) {
         extra++;
         f.format(" NEW %s%n", p);
+        WmoCodeTable.TableEntry wmo3 = WmoCodeTable.getParameterEntry(p.getDiscipline(), p.getCategory(), p.getNumber());
+
       } else if (!p.getName().equals( wmo.getName()) || !p.getUnit().equals( wmo.getUnit())) {
         boolean nameDiffer = !p.getName().equals( wmo.getName());
         boolean caseDiffer = nameDiffer && p.getName().equalsIgnoreCase( wmo.getName());
@@ -217,7 +220,8 @@ public class Grib2TablesViewer extends JPanel {
         f.format(" wmo=%10s %40s %15s%n%n", wmo.getId(), wmo.getName(), wmo.getUnit());
       }
     }
-    f.format("%nWMO differences: nameDiffers=%d caseDiffers=%d, unitsDiffer=%d, extra=%d%n%n", nameDiffers, caseDiffers, unitsDiffer, extra);
+    f.format("%nWMO differences: nameDiffers=%d caseDiffers=%d, unitsDiffer=%d, extra=%d %n%n",
+            nameDiffers, caseDiffers, unitsDiffer, extra);
 
     infoTA.setText(f.toString());
     infoWindow.show();

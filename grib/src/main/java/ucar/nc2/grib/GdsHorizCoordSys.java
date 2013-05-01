@@ -52,12 +52,14 @@ public class GdsHorizCoordSys {
   public ucar.unidata.geoloc.ProjectionImpl proj;
   public double startx, dx; // km
   public double starty, dy; // km
-  public int nx, ny;
+  public int nx, ny;        // raw
+  public int nxRaw, nyRaw;        // raw
+  public int[] nptsInLine; // non-null idf thin grid
   public Array gaussLats;
   public Array gaussw;
 
   public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, ProjectionImpl proj,
-                          double startx, double dx, double starty, double dy, int nx, int ny) {
+                          double startx, double dx, double starty, double dy, int nxRaw, int nyRaw, int[] nptsInLine) {
     this.name = name;
     this.template = template;
     this.gdsNumberPoints = gdsNumberPoints; // only used by GRIB2
@@ -67,8 +69,25 @@ public class GdsHorizCoordSys {
     this.dx = dx;
     this.starty = starty;
     this.dy = dy;
-    this.nx = nx;
-    this.ny = ny;
+    this.nxRaw = nxRaw;
+    this.nyRaw = nyRaw;
+
+    // thin grids
+    if (nptsInLine != null) {
+      this.nptsInLine = nptsInLine;
+      if (nxRaw > 0) {
+        nx = nxRaw;
+        ny = QuasiRegular.getMax(nptsInLine);
+      } else if (nyRaw > 0) {
+        ny = nyRaw;
+        nx = QuasiRegular.getMax(nptsInLine);
+      } else {
+        throw new IllegalArgumentException("Quasi Grids nx,ny="+nx+","+ny);
+      }
+    } else {
+      nx = nxRaw;
+      ny = nyRaw;
+    }
   }
 
   public String getName() {

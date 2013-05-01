@@ -52,15 +52,15 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   public static final Version standard = Version.GRIB2_8_0_0;
 
   public enum Version {
-    GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0;
+    // GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0;
+    GRIB2_10_0_1, GRIB2_8_0_0;
 
     String getResourceName() {
-      if (this == GRIB2_8_0_0) return "/resources/grib2/wmo/" + this.name() + "_Template_en.xml";
-      return "/resources/grib2/wmo/" + this.name() + "_Template_E.xml";
+      return "/resources/grib2/wmo/" + this.name() + "_Template_en.xml";
     }
 
     String[] getElemNames() {
-      if (this == GRIB2_5_2_0) {
+      /* if (this == GRIB2_5_2_0) {
         return new String[]{"ForExport_Templates_E", "TemplateName_E", "Nindicator_E", "Contents_E"};
 
       } else if (this == GRIB2_6_0_1) {
@@ -69,9 +69,15 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
       } else if (this == GRIB2_7_0_0) {
         return new String[]{"Exp_Temp_E", "Title_E", "Note_E", "Contents_E"};
 
-      } else if (this == GRIB2_8_0_0) {
+      } else */
+
+      if (this == GRIB2_8_0_0) {
         return new String[]{"GRIB2_8_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
+
+      } else if (this == GRIB2_10_0_1) {
+        return new String[]{"GRIB2_10_0_1_Template_en", "Title_en", "Note_en", "Contents_en"};
       }
+
       return null;
     }
   }
@@ -87,6 +93,15 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   /*
+
+  <GRIB2_10_0_1_Template_en>
+    <No>817</No>
+    <Title_en>Product definition template 4.14 - derived forecasts based on a cluster of ensemble members over a circular area at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval</Title_en>
+    <OctetNo>11</OctetNo>
+    <Contents_en>Parameter number</Contents_en>
+    <Note_en>(see Code table 4.2)</Note_en>
+    <Status>Operational</Status>
+  </GRIB2_10_0_1_Template_en>
 
   <GRIB2_8_0_0_Template_en>
     <No>1065</No>

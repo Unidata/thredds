@@ -52,7 +52,7 @@ public class WmoXmlReader {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoXmlReader.class);
 
   public enum Version {
-    BUFR_14_1_0, BUFR_14_2_0, BUFR_15_1_1, BUFR_16_0_0;
+    BUFR_14_1_0, BUFR_14_2_0, BUFR_15_1_1, BUFR_16_0_0, BUFR_WMO;
 
     String getResourceName() {
       return "/resources/grib/wmo/" + this.name() + "_codeflag_E.xml";
@@ -71,6 +71,9 @@ public class WmoXmlReader {
       } else if (this == BUFR_16_0_0) {
         return new String[]{"Exp_BUFRCREXTableB_E", "ElementName_E"};
 
+      } else if (this == BUFR_WMO) {   // from now on this is the element name
+        return new String[]{null, "ElementName_en"};
+
       }
       return null;
     }
@@ -87,6 +90,9 @@ public class WmoXmlReader {
 
       } else if (this == BUFR_16_0_0) {
         return new String[]{"Exp_BUFRTableD_E", "ElementName_E"};
+
+      } else if (this == BUFR_WMO) {
+        return new String[]{null, "ElementName_en"};
 
       }
       return null;
@@ -164,6 +170,23 @@ public class WmoXmlReader {
   <CREX_DataWidth_Char>5</CREX_DataWidth_Char>
   <Status>Operational</Status>
 </Exp_BUFRCREXTableB_E>
+
+<BUFRCREX_17_0_0_TableB_en>
+<No>8</No>
+<ClassNo>00</ClassNo>
+<ClassName_en>BUFR/CREX table entries</ClassName_en>
+<FXY>000008</FXY>
+<ElementName_en>BUFR Local table version number</ElementName_en>
+<Note_en>(see Note 4)</Note_en>
+<BUFR_Unit>CCITT IA5</BUFR_Unit>
+<BUFR_Scale>0</BUFR_Scale>
+<BUFR_ReferenceValue>0</BUFR_ReferenceValue>
+<BUFR_DataWidth_Bits>16</BUFR_DataWidth_Bits>
+<CREX_Unit>Character</CREX_Unit>
+<CREX_Scale>0</CREX_Scale>
+<CREX_DataWidth_Char>2</CREX_DataWidth_Char>
+<Status>Operational</Status>
+</BUFRCREX_17_0_0_TableB_en>
    */
 
   static void readWmoXmlTableB(InputStream ios, TableB b) throws IOException {
@@ -187,13 +210,15 @@ public class WmoXmlReader {
       }
     }
 
+    // if not found using element name, assume its BUFR_WMO
     if (elems == null) {
-      logger.warn("Cant find WMO XML reader for " + b);
-      return;
+      elems = Version.BUFR_WMO.getElemNamesB();
     }
 
-    List<Element> featList = root.getChildren(elems[0]);
+    List<Element> featList = root.getChildren();
     for (Element elem : featList) {
+      Element ce = elem.getChild(elems[1]);
+      if (ce == null) continue;
 
       String name = Util.cleanName(elem.getChildTextNormalize(elems[1]));
       String units = cleanUnit(elem.getChildTextNormalize("BUFR_Unit"));
@@ -293,6 +318,17 @@ public class WmoXmlReader {
     <ExistingElementName_E>Pressure reduced to mean sea level</ExistingElementName_E>
     <Status>Operational</Status>
   </Exp_BUFRTableD_E>
+
+  <BUFR_19_1_1_TableD_en>
+  <No>4</No>
+  <Category>00</Category>
+  <CategoryOfSequences_en>BUFR table entries sequences</CategoryOfSequences_en>
+  <FXY1>300003</FXY1>
+  <Title_en>(F, X, Y of descriptor to be added or defined)</Title_en>
+  <FXY2>000011</FXY2>
+  <ElementName_en>X descriptor to be added or defined</ElementName_en>
+  <Status>Operational</Status>
+  </BUFR_19_1_1_TableD_en>
    */
   static void readWmoXmlTableD(InputStream ios, TableD tableD) throws IOException {
     org.jdom2.Document doc;
@@ -318,13 +354,13 @@ public class WmoXmlReader {
     }
 
     if (elems == null) {
-      logger.warn("Cant find WMO XML reader for " + tableD);
-      return;
+      elems = Version.BUFR_WMO.getElemNamesD();
     }
 
-
-    List<Element> featList = root.getChildren(elems[0]);
+    List<Element> featList = root.getChildren();
     for (Element elem : featList) {
+      Element ce = elem.getChild(elems[1]);
+      if (ce == null) continue;
 
       String seqs = elem.getChildTextNormalize("FXY1");
       int seq = Integer.parseInt(seqs);

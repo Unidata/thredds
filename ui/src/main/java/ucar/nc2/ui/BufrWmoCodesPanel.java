@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2013. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -32,7 +32,6 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.FileManager;
@@ -50,7 +49,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * BUFR codes
+ * BUFR code tables UI
  *
  * @author John
  * @since 8/12/11

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BUFR_19_1_1_TableA_en.xsd" generated="2013-03-21T15:54:53">
+<BUFR_19_1_1_TableA_en>
+<No>1</No>
+<CodeFigure>0</CodeFigure>
+<Meaning_en>Surface data - land</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>2</No>
+<CodeFigure>1</CodeFigure>
+<Meaning_en>Surface data - sea</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>3</No>
+<CodeFigure>2</CodeFigure>
+<Meaning_en>Vertical soundings (other than satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>4</No>
+<CodeFigure>3</CodeFigure>
+<Meaning_en>Vertical soundings (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>5</No>
+<CodeFigure>4</CodeFigure>
+<Meaning_en>Single level upper-air data (other than satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>6</No>
+<CodeFigure>5</CodeFigure>
+<Meaning_en>Single level upper-air data (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>7</No>
+<CodeFigure>6</CodeFigure>
+<Meaning_en>Radar data</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>8</No>
+<CodeFigure>7</CodeFigure>
+<Meaning_en>Synoptic features</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>9</No>
+<CodeFigure>8</CodeFigure>
+<Meaning_en>Physical/chemical constituents</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>10</No>
+<CodeFigure>9</CodeFigure>
+<Meaning_en>Dispersal and transport</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>11</No>
+<CodeFigure>10</CodeFigure>
+<Meaning_en>Radiological data</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>12</No>
+<CodeFigure>11</CodeFigure>
+<Meaning_en>BUFR tables, complete replacement or update</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>14</No>
+<CodeFigure>12</CodeFigure>
+<Meaning_en>Surface data (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>15</No>
+<CodeFigure>13</CodeFigure>
+<Meaning_en>Forecasts</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>16</No>
+<CodeFigure>14</CodeFigure>
+<Meaning_en>Warnings</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>17</No>
+<CodeFigure>15-19</CodeFigure>
+<Meaning_en>Reserved</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>19</No>
+<CodeFigure>20</CodeFigure>
+<Meaning_en>Status information</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>20</No>
+<CodeFigure>21</CodeFigure>
+<Meaning_en>Radiances (satellite measured)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>21</No>
+<CodeFigure>22</CodeFigure>
+<Meaning_en>Radar (satellite) but not altimeter and scatterometer</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>22</No>
+<CodeFigure>23</CodeFigure>
+<Meaning_en>Lidar (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>23</No>
+<CodeFigure>24</CodeFigure>
+<Meaning_en>Scatterometry (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>24</No>
+<CodeFigure>25</CodeFigure>
+<Meaning_en>Altimetry (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>25</No>
+<CodeFigure>26</CodeFigure>
+<Meaning_en>Spectrometry (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>26</No>
+<CodeFigure>27</CodeFigure>
+<Meaning_en>Gravity measurement (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>27</No>
+<CodeFigure>28</CodeFigure>
+<Meaning_en>Precision orbit (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>28</No>
+<CodeFigure>29</CodeFigure>
+<Meaning_en>Space environment (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>29</No>
+<CodeFigure>30</CodeFigure>
+<Meaning_en>Calibration datasets (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>30</No>
+<CodeFigure>31</CodeFigure>
+<Meaning_en>Oceanographic data</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>31</No>
+<CodeFigure>32-100</CodeFigure>
+<Meaning_en>Reserved</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>32</No>
+<CodeFigure>101</CodeFigure>
+<Meaning_en>Image data (satellite)</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>33</No>
+<CodeFigure>102-239</CodeFigure>
+<Meaning_en>Reserved</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>34</No>
+<CodeFigure>240-254</CodeFigure>
+<Meaning_en>For experimental use</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+<BUFR_19_1_1_TableA_en>
+<No>35</No>
+<CodeFigure>255</CodeFigure>
+<Meaning_en>Other category</Meaning_en>
+<Status>Operational</Status>
+</BUFR_19_1_1_TableA_en>
+</dataroot>

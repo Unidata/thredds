@@ -1,5 +1,6 @@
 package ucar.nc2.ui;
 
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.ui.widget.*;
@@ -323,7 +324,7 @@ public class GribWmoCodesPanel extends JPanel {
         if (sameIgnore && !showCase) continue;
 
         String state = same ? "  " : (sameIgnore ? "* " : "**");
-        f.format("%s%d %d %d (%d)%n this =%s%n wmo=%s%n", state, gt.discipline, gt.category, p.start, p.line, p.name, paramDesc);
+        f.format("%s%d %d %d (%d)%n this='%s'%n wmo='%s'%n", state, gt.discipline, gt.category, p.start, p.line, p.name, paramDesc);
         if (!sameUnits) f.format(" units this='%s' wmo='%s' %n", unitsWmo, unitsCurr);
       }
     }
@@ -364,11 +365,15 @@ public class GribWmoCodesPanel extends JPanel {
     int ndiff = 0;
     int unknownCount = 0;
 
-    String dirName = "F:/data/cdmUnitTest/tds/normal";
+    String dirName = "Q:/cdmUnitTest/tds/ncep";
 
     Formatter fm = new Formatter();
     fm.format("Check Current Models in directory %s%n", dirName);
     File allDir = new File(dirName);
+    if (!allDir.exists()) {
+      return;
+    }
+
     File[] allFiles = allDir.listFiles();
     List<File> flist = Arrays.asList(allFiles);
     Collections.sort(flist);
@@ -383,14 +388,15 @@ public class GribWmoCodesPanel extends JPanel {
       try {
         ncfile = GridDataset.open(name);
         for (GridDatatype dt : ncfile.getGrids()) {
-          String currName = dt.getFullName().toLowerCase();
-          Attribute att = dt.findAttributeIgnoreCase("Grib_Parameter");
+          String currName = dt.getShortName();
+          Attribute att = dt.findAttributeIgnoreCase("Grib2_Parameter");
           if (att != null && att.getLength() == 3) {
             int discipline = (Integer) att.getValue(0);
             int category = (Integer) att.getValue(1);
             int number = (Integer) att.getValue(2);
 
             if (number >= 192) continue;
+            total++;
 
             WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
             if (entry == null) {
@@ -398,30 +404,38 @@ public class GribWmoCodesPanel extends JPanel {
               continue;
             }
 
-            String wmoName = entry.name.toLowerCase();
+            String wmoName = GribUtils.makeNameFromDescription(entry.name);
             boolean same = currName.startsWith(wmoName);
-            if (same) nsame++;
-            else ndiff++;
-            total++;
+            if (same) {
+              nsame++;
+            } else {
+              currName = dt.getShortName().toLowerCase();
+              String wmoNameIgn = entry.name.toLowerCase();
+              boolean ignSame = currName.startsWith(wmoNameIgn);
+              if (ignSame) nsameIgn++;
+              else ndiff++;
+            }
 
             /* String unitsCurr = dt.findAttributeIgnoreCase(CDM.UNITS).getStringValue();
             String unitsWmo = entry.unit;
             boolean sameUnits = (unitsWmo == null) ? (unitsCurr == null) : unitsWmo.equals(unitsCurr);
             same = same && sameUnits; */
 
-            if (same && !showSame) continue;
-
-            fm.format("%d %d %d%n wmo =%s%n curr=%s%n", discipline, category, number, wmoName, currName);
+            if (!same)
+              fm.format("%d %d %d%n wmo =%s%n curr=%s%n", discipline, category, number, wmoName, dt.getShortName());
             //if (!sameUnits) fm.format(" units wmo='%s' curr='%s' %n", unitsWmo, unitsCurr);
           }
-
         }
+
+      } catch (Exception e) {
+        fm.format("Error on %s = %s%n", ncfile.getLocation(), e.getMessage());
+
       } finally {
         if (ncfile != null) ncfile.close();
       }
     }
 
-    fm.format("%nTotal=%d same=%d sameIgnoreCase=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknownCount);
+    fm.format("%nTotal=%d same=%d sameIgnoreCase=%d dif=%d%n", total, nsame, nsameIgn, ndiff);
     compareTA.setText(fm.toString());
     infoWindow.show();
   }

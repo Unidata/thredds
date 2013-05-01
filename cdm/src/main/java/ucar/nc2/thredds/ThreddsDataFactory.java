@@ -481,7 +481,12 @@ public class ThreddsDataFactory {
 
     // open DODS type
     if ((serviceType == ServiceType.OPENDAP) || (serviceType == ServiceType.DODS)) {
-      String curl =  (datasetLocation.startsWith("http:")) ? "dods:" + datasetLocation.substring(5) : datasetLocation;
+      String curl = datasetLocation;
+      if (curl.startsWith("http:")) {
+          curl = "dods:" + datasetLocation.substring(5);
+      } else if (curl.startsWith("https:")) {
+          curl =  "dods:" + curl.substring(6);
+      }
       ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 

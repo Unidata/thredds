@@ -1,6 +1,9 @@
 package thredds.server.ncSubset.controller;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +16,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ThreddsConfig;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dt.GridDataset;
 
 public class NcssInterceptor extends HandlerInterceptorAdapter {
@@ -88,7 +92,10 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 		}*/
 
 		try {
-			gds = DatasetHandler.openGridDataset(req, res, pathInfo);
+			
+			//Enhance mode for netcdf subset does not use Enhance.ScaleMissing so fill values are not replaced in the files 
+			Set<Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(Enhance.CoordSystems, Enhance.ConvertEnums));			 			
+			gds = DatasetHandler.openGridDataset(req, res, pathInfo, enhance);
 			if (null == gds) {
 				res.sendError(HttpServletResponse.SC_NOT_FOUND);
 			}

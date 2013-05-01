@@ -393,14 +393,13 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
       compareTA.setText(bos.toString());
       compareTA.gotoTop();
       infoWindow.setVisible(true);
-
     }
   }
 
   private void compare(TableB t2, boolean skipNames, boolean skipUnits, Formatter out) {
     Map<Short, DdsBean> mapBeans = new HashMap<Short, DdsBean>(3000);
 
-    out.format("Compare Current Table to %s %n", t2.getName());
+    out.format("Compare Current Table (%s) to %s %n", currTable.getName(), t2.getName());
     for (Object beano : ddsTable.getBeans()) {
       DdsBean bean = (DdsBean) beano;
       TableB.Descriptor d1 = bean.dds;
