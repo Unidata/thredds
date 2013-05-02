@@ -16,6 +16,7 @@
 <ul>
   <li><a href="#strange">I have a strange problem and I need help figuring out whats going on!</a></li>
   <li><a href="#restart">I made changes to my catalog and restarted tomcat but nothing changes!</a></li>
+  <li><a href="#repository">I'm building my own maven project and want to use your jar files.  Where is the Unidata Repository?</a></li>
 </ul>
 <h2>Catalogs</h2>
 <ul>
@@ -65,7 +66,7 @@
 
 <hr width="100%">
 <h2>General</h2>
-<p><strong>Q: <a name="strange"></a>I have a strange problem and I need help figuring out whats going on.</strong></p>
+<p><strong>Q: <a name="strange"></a>I have a strange problem and I need help figuring out whats going on!</strong></p>
 <p>A: Here is what we need from you in order to deal with hard problems:</p>
 <ol>
   <li>Run the latest stable release. Sorry, we dont have the resources to keep older versions running, so we need to deal with just the latest code.</li>
@@ -106,6 +107,28 @@
      </ol>
    </li>
 </ol>
+
+<hr width="50%" align="left">
+
+<p><strong>Q: <a name="repository"></a>I'm building my own maven project and want to use your jar files.  Where is the Unidata Repository?</strong></p>
+<p>A: In order to configure your maven project correctly, you need to edit your pom.xml file to reflect the location of Unidata's repository.  To do this, you need to add the following pom snippet to your pom.xml file:</p>
+
+&lt;distributionManagement&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;repository&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;id&gt;unidata-releases&lt;/id&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name>UNIDATA Releases&lt;/name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/&lt;/url&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/repository&gt;<br>
+&lt;/distributionManagement&gt;<br>
+
+<p>
+Alternatively, you can configure your settings.xml file to reflect the repository location.  Information on doing either is located here:<p>
+
+&nbsp;&nbsp;<a href="http://maven.apache.org/pom.html#Repositories">Maven Repository information</a><p>
+
+and here:<p>
+
+&nbsp;&nbsp;<a href="http://maven.apache.org/settings.html">Maven Settings information</a><p>
 
 <hr width="100%">
 
