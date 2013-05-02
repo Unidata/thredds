@@ -826,8 +826,7 @@ public class  Section {
       Range r = list.get(i);
       if (r == null) continue;
       if (r == Range.VLEN) continue;
-/*dmh:      if (shape[i] > 0 && r.last() >= shape[i])*/
-/*orig:*/      if (r.last() >= shape[i])
+      if (r.last() >= shape[i])
         return "Illegal Range for dimension " + i + ": last requested " + r.last() + " > max " + (shape[i] - 1);
     }
 
