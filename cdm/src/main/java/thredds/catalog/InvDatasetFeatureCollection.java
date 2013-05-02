@@ -170,7 +170,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final FeatureCollectionType fcType;
   protected final FeatureCollectionConfig config;
   protected final String topDirectory;
-  protected CollectionManager dcm; // defines the collection of datasets in this feature collection; actually final after subclass constructor is done.
+  protected CollectionManager dcm; // defines the collection of datasets in this feature collection
 
   @GuardedBy("lock")
   protected State state;

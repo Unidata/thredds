@@ -36,8 +36,8 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 /**
- * Concrete implementation of Array specialized for longs.
- * Data storage is with 1D java array of longs.
+ * Concrete implementation of Array specialized for ints.
+ * Data storage is with 1D java array of ints.
  * <p/>
  * issues: what should we do if a conversion loses accuracy? nothing ? Exception ?
  *
