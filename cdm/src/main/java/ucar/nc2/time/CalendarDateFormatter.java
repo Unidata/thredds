@@ -63,16 +63,21 @@ public class CalendarDateFormatter {
   private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
 
   static public String toDateTimeStringISO(CalendarDate cd) {
+	
+	 if(cd.getDateTime().getMillisOfSecond() == 0)
+		 return isof.print( cd.getDateTime() );
+	 else
+		 return isof_with_millis_of_second.print(cd.getDateTime());
 	 
-	return toDateTimeStringISO(  new Date(cd.getMillis()));
   }
 
   static public String toDateTimeStringISO(Date d) {
-	DateTime dt = new DateTime(d, DateTimeZone.UTC);
-	if( dt.getMillisOfSecond() == 0 )
-		return isof.print( dt);
-	else
-		return isof_with_millis_of_second.print(dt);
+	  return toDateTimeStringISO( CalendarDate.of(d) );
+//	DateTime dt = new DateTime(d, DateTimeZone.UTC);
+//	if( dt.getMillisOfSecond() == 0 )
+//		return isof.print( dt);
+//	else
+//		return isof_with_millis_of_second.print(dt);
   }
 
   static public String toDateTimeString(CalendarDate cd) {
