@@ -50,6 +50,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.net.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * NCEP local tables
@@ -70,23 +73,87 @@ public class NcepLocalTables extends Grib2Customizer {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
     return NcepLocalParams.getTablePath(discipline, category);
   }
-  
+
+  //public  File[] getResourceListing(Class clazz, String path) {
+  // URL dirURL = clazz.getClassLoader().getResource(path);
+  //  try {
+  //    File fileDir = new File(dirURL.toURI());
+  //    if (fileDir != null) return fileDir.listFiles();
+  //  } catch (URISyntaxException exception) {
+  //      return null;
+  //  }
+
+    //if (dirURL != null && dirURL.getProtocol().equals("file")) {
+     //   /* A file path: easy enough */
+      //  return new File(dirURL.toURI()).list();
+  //  return null;
+  //}
+
+  private String[] getResourceListing(Class clazz, String path) throws URISyntaxException, IOException {
+        URL dirURL = clazz.getClassLoader().getResource(path);
+        if (dirURL != null && dirURL.getProtocol().equals("file")) {
+            /* A file path: easy enough */
+            return new File(dirURL.toURI()).list();
+        }
+
+        if (dirURL == null) {
+            /*
+            * In case of a jar file, we can't actually find a directory.
+            * Have to assume the same jar as clazz.
+            */
+            String me = clazz.getName().replace(".", "/")+".class";
+            dirURL = clazz.getClassLoader().getResource(me);
+        }
+
+        if (dirURL.getProtocol().equals("jar")) {
+            /* A JAR path */
+            String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
+            JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+            Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+            Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
+            while(entries.hasMoreElements()) {
+                String name = entries.nextElement().getName();
+                if (name.startsWith(path)) { //filter according to the path
+                    String entry = name.substring(path.length());
+                    int checkSubdir = entry.indexOf("/");
+                    if (checkSubdir >= 0) {
+                        // if it is a subdirectory, we just return the directory name
+                        entry = entry.substring(0, checkSubdir);
+                    }
+                    result.add(entry);
+                }
+            }
+            return result.toArray(new String[result.size()]);
+        }
+
+        throw new UnsupportedOperationException("Cannot list files for URL "+dirURL);
+    }
+
   @Override
   public List getParameters() {
     List allParams = new ArrayList(3000);
-    File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep"); // LOOK
-    for (File f : dir.listFiles()) {
-      if (f.isDirectory()) continue;
-      if (!f.getName().contains("Table4.2.")) continue;
-      if (!f.getName().endsWith(".xml")) continue;
-      try {
-        NcepLocalParams params = NcepLocalParams.factory(f.getPath());
-        allParams.addAll(params.getParameters());
-      } catch (Exception e) {
-        System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
+    String path="resources/grib2/ncep/";
+    try {
+      String[] fileNames = getResourceListing(ucar.nc2.grib.GribNumbers.class, path);
+      for (String fileName : fileNames) {
+         File f = new File(fileName);
+         if (f.isDirectory()) continue;
+         if (!f.getName().contains("Table4.2.")) continue;
+         if (!f.getName().endsWith(".xml")) continue;
+         try {
+           NcepLocalParams params = NcepLocalParams.factory(path + f.getPath());
+           allParams.addAll(params.getParameters());
+         } catch (Exception e) {
+           System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
+         }
       }
+      return allParams;
+    } catch (URISyntaxException e) {
+        System.out.println(e);
+    } catch (IOException e) {
+        System.out.println(e);
     }
-    return allParams;
+    return null;
   }
 
   // temp for cfsr
