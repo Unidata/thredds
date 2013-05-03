@@ -621,7 +621,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
     //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
     result.addDataset(top);

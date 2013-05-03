@@ -161,6 +161,7 @@ public class FeatureCollectionConfig {
     public UpdateConfig(String startupS, String recheckAfter, String rescan, String triggerS, String deleteAfter) {
       this.rescan = rescan; // may be null
       if (recheckAfter != null) this.recheckAfter = recheckAfter; // in case it was set in collection element
+      if (rescan != null) this.recheckAfter = null;               // both not allowed
       this.deleteAfter = deleteAfter; // may be null
       if ((startupS != null) && startupS.equalsIgnoreCase("true"))
         this.startup = true;

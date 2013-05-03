@@ -129,7 +129,7 @@ public interface CollectionManager {
   /**
    * Scan the collection. Files may have been deleted or added since last time.
    * If the MFile already exists in the current list, leave it in the list.
-   * If anything changes, send TriggerEvent(rescan) and return true
+   * If anything changes, send TriggerEvent(TriggerType.update) and return true
    * Get the results from getFiles()
    *
    * @return true if anything actually changed.

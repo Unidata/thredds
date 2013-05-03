@@ -137,7 +137,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected class State {
     // catalog metadata
     protected ThreddsMetadata.Variables vars;
-    protected ThreddsMetadata.GeospatialCoverage gc;
+    protected ThreddsMetadata.GeospatialCoverage coverage;
     protected CalendarDateRange dateRange;
 
     protected List<InvDataset> datasets; // top datasets, ie immediately nested in this catalog
@@ -148,7 +148,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     protected State(State from) {
       if (from != null) {
         this.vars = from.vars;
-        this.gc = from.gc;
+        this.coverage = from.coverage;
         this.dateRange = from.dateRange;
         this.lastProtoChange = from.lastProtoChange;
 
@@ -233,7 +233,8 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       update(CollectionManager.Force.nocheck);
 
     else if (event.getType() == CollectionManager.TriggerType.update)
-      update(tdsUsingTdm ? CollectionManager.Force.nocheck : CollectionManager.Force.test);
+      //update(tdsUsingTdm ? CollectionManager.Force.nocheck : CollectionManager.Force.test); // this may be startup
+      update(CollectionManager.Force.always);
 
     else if (event.getType() == CollectionManager.TriggerType.proto)
       updateProto();
@@ -354,7 +355,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     // add Variables, GeospatialCoverage, TimeCoverage LOOK doesnt seem to work
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
     if (localState.vars != null) tmi.addVariables(localState.vars);
-    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
     if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
     mainCatalog.addDataset(top);
@@ -387,7 +388,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
     //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
     result.addDataset(top);
@@ -474,7 +475,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
      String fname = f.substring(topDirectory.length() + 1); */
 
-     MFile mfile = dcm.getLatestFile();
+     MFile mfile = dcm.getLatestFile();  // LOOK - assumes dcm is up to date
      String mpath = mfile.getPath();
      if (!mpath.startsWith(topDirectory))
       logger.warn("File {} doesnt start with topDir {}", mpath, topDirectory);

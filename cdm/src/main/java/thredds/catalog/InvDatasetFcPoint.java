@@ -4,12 +4,10 @@ import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.point.collection.UpdateableCollection;
 import ucar.nc2.thredds.MetadataExtractor;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -84,7 +82,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
       if (null != fd) {
         localState.vars = MetadataExtractor.extractVariables(fd);
-        localState.gc = MetadataExtractor.extractGeospatial(fd);
+        localState.coverage = MetadataExtractor.extractGeospatial(fd);
         localState.dateRange = MetadataExtractor.extractCalendarDateRange(fd);
       }
 

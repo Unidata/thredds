@@ -192,12 +192,12 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
 &lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;</pre>
 The XML Schema definition for the update element:
 <pre>
-   &lt;xsd:complexType name=&quot;updateType&quot;&gt;<br /> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:boolean&quot;/&gt;<br /> 2)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
+   &lt;xsd:complexType name=&quot;updateType&quot;&gt;<br /> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:token&quot;/&gt;<br /> 2)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
  3)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br /> 4)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br />&lt;/xsd:complexType&gt;<br /></pre>
 
 <p> where: </p>
 <ol>
-  <li><strong>startup</strong>:  If true,  the collection is rescanned on server startup.</li>
+  <li><strong>startup</strong>:  The collection is rescanned on server startup. If &quot;<em>nocheck</em>&quot;, the collection index is used if it exists. If &quot;<em>true</em>&quot; or &quot;<em>test</em>&quot;, the collection is scanned and a new index is built.</li>
   <li><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed), and so is called  <em>synchronous updating</em>. <em><strong>This option will be ignored if you are using  the rescan attribute</strong>.</em></li>
   <li><strong>rescan</strong>:  uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task. This is called  <em>asynchronous updating</em>.</li>
   <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated by an external program (or person using a browser) sending an explicit &quot;trigger&quot; URL to the server. 

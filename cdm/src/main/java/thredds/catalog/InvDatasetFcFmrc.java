@@ -103,7 +103,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         GridDataset gds = fmrc.getDataset2D(null);
         if (null != gds) {
           localState.vars = MetadataExtractor.extractVariables(this, gds);
-          localState.gc = MetadataExtractor.extractGeospatial(gds);
+          localState.coverage = MetadataExtractor.extractGeospatial(gds);
           localState.dateRange = MetadataExtractor.extractCalendarDateRange(gds);
         }
         localState.lastProtoChange = System.currentTimeMillis();
@@ -175,7 +175,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
     if (localState.vars != null) tmi.addVariables(localState.vars);
-    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
     //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
     runCatalog.addDataset(top);
@@ -204,7 +204,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
     if (localState.vars != null) tmi.addVariables(localState.vars);
-    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
     if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
     top.setName(OFFSET_TITLE);
@@ -234,7 +234,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
     if (localState.vars != null) tmi.addVariables(localState.vars);
-    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
     if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
     foreCatalog.addDataset(top);

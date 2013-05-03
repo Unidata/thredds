@@ -347,7 +347,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     Date lastCheckedDate = new Date(lastScanned);
     Date need = recheck.add(lastCheckedDate);
     if (now.before(need)) {
-      logger.debug("{}: scan not needed, last scanned={}, now={}", new Object[]{collectionName, lastCheckedDate, now});
+      logger.debug("{}: scan not needed, last scanned={}, now={}", collectionName, lastCheckedDate, now);
       return false;
     }
 
