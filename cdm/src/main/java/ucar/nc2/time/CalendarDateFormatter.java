@@ -56,20 +56,41 @@ import java.util.regex.Pattern;
 public class CalendarDateFormatter {
   // these are thread-safe (yeah!)
   private static DateTimeFormatter isof = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
+  private static DateTimeFormatter isof_with_millis_of_second = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC();
   private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss'Z'").withZoneUTC();
+  
+  private static DateTimeFormatter dtf_with_millis_of_second = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS'Z'").withZoneUTC();
   private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
 
   static public String toDateTimeStringISO(CalendarDate cd) {
-    return isof.print(cd.getDateTime());
+	
+	 if(cd.getDateTime().getMillisOfSecond() == 0)
+		 return isof.print( cd.getDateTime() );
+	 else
+		 return isof_with_millis_of_second.print(cd.getDateTime());
+	 
   }
 
   static public String toDateTimeStringISO(Date d) {
-    return isof.print( new DateTime(d, DateTimeZone.UTC));
+	  return toDateTimeStringISO( CalendarDate.of(d) );
+//	DateTime dt = new DateTime(d, DateTimeZone.UTC);
+//	if( dt.getMillisOfSecond() == 0 )
+//		return isof.print( dt);
+//	else
+//		return isof_with_millis_of_second.print(dt);
   }
 
   static public String toDateTimeString(CalendarDate cd) {
-    return dtf.print(cd.getDateTime());
+
+	  if(cd.getDateTime().getMillisOfSecond()==0)	  
+		  return dtf.print(cd.getDateTime());
+	  else
+		  return dtf_with_millis_of_second.print(cd.getDateTime());
   }
+  
+  static public String toDateTimeString(Date date) {
+	    return toDateTimeString(CalendarDate.of(date));
+  }  
 
   static public String toDateTimeStringPresent() {
     return dtf.print(new DateTime());
@@ -83,9 +104,7 @@ public class CalendarDateFormatter {
     return df.print(new DateTime());
   }
 
-  static public String toDateTimeString(Date date) {
-    return toDateTimeString(CalendarDate.of(date));
-  }
+
     
   /////////////////////////////////////////////////////////////////////////////
   // reading an ISO formatted date

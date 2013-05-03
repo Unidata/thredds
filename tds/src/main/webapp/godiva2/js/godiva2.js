@@ -1374,7 +1374,9 @@ function updateMap()
         ncwms.mergeNewParams(params);
     }
     
-    var imageURL = ncwms.getURL(new OpenLayers.Bounds(bbox[0], bbox[1], bbox[2], bbox[3]));
+    //var imageURL = ncwms.getURL(new OpenLayers.Bounds(bbox[0], bbox[1], bbox[2], bbox[3]));
+    //Gets the BBOX from the map, so it'll use the rigth projection
+    var imageURL = ncwms.getURL(map.getExtent());
     $('testImage').innerHTML = '<a target="_blank" href="' + imageURL + '">test image</a>';
     $('screenshot').style.visibility = 'visible'; // TODO: enable this when working properly
     setGEarthURL();
