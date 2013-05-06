@@ -159,7 +159,7 @@ public class CdmRemoteQueryBean {
       else if (accept.equalsIgnoreCase("ncstream")) resType = ResponseType.ncstream;
       else if (accept.equalsIgnoreCase("netcdf")) resType = ResponseType.netcdf;
       else if (accept.equalsIgnoreCase("xml")) resType = ResponseType.xml;
-      else resType = ResponseType.netcdf; // default
+      else resType = ResponseType.ncstream; // default
     }
 
     return resType;
