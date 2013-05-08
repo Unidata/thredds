@@ -100,7 +100,7 @@ message MFile {
 
 message GribCollectionIndex {
   required string name = 1;       // must be unique - index filename is name.ncx
-  repeated MFile files = 2;       // list of grib files LOOK: Time partition should have seperate ??
+  repeated string files = 2;      // list of grib files (replaced by mfiles)
   repeated Group groups = 3;      // separate groups for each GDS
   repeated Parameter params = 4;  // global attributes
   required int32 center = 5;      // these 4 fields are to get a GribTable object
@@ -112,7 +112,8 @@ message GribCollectionIndex {
   optional int32 backProcessId = 12;
 
   repeated Partition partitions = 13;  // for time partitions only
-  required string dirName = 14;     // filename reletive to this
+  required string dirName = 14;       // filename reletive to this
+  repeated MFile mfiles = 15;          // list of grib MFiles
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java

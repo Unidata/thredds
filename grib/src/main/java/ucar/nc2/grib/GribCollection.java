@@ -800,10 +800,14 @@ public abstract class GribCollection implements FileCacheable {
   public void showIndex(Formatter f) {
     f.format("%s%n%n", toString());
     f.format("Class (%s)%n", getClass().getName());
-    f.format("Files (%d)%n", files.size());
-    for (MFile file : files)
-      f.format("  %s%n", file);
-    f.format("%n");
+    if (files == null) {
+      f.format("Files empty%n");
+    } else {
+      f.format("Files (%d)%n", files.size());
+      for (MFile file : files)
+        f.format("  %s%n", file);
+      f.format("%n");
+    }
 
     for (GroupHcs g : groups) {
       f.format("Hcs = %s%n", g.hcs);

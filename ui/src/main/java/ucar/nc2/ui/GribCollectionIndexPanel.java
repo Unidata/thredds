@@ -357,6 +357,7 @@ public class GribCollectionIndexPanel extends JPanel {
 
   private void showFiles(Formatter f) {
     if (gc == null) return;
+    if (gc.getFiles() == null) return;
     int count = 0;
     List<MFile> fs = new ArrayList<MFile>(gc.getFiles());
     Map<MFile, Integer> map = new HashMap<MFile, Integer>(fs.size() * 2);

@@ -304,7 +304,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
     }
   }
 
-  // repartition a collection, based on time intervals
+  // a partition of a collection, based on time intervals
   private class TimePartitionCollectionManager extends CollectionManagerAbstract {
     String root;
     CalendarDate startPartition, endPartition;

@@ -450,6 +450,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       indexBuilder.setLocal(canonGc.getLocal());
       indexBuilder.setDirName(gc.getDirectory().getPath());
 
+      // dont need files - these are stored in the partition objects
+
       for (TimePartition.Partition p : tp.getPartitions()) {
         indexBuilder.addPartitions(writePartitionProto(p.getName(), p));
       }

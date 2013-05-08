@@ -55,10 +55,8 @@ import java.util.*;
  * @since 4/6/11
  */
 public class Grib1CollectionBuilder extends GribCollectionBuilder {
-  //static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
+  protected static final int minVersionSingle = 9; // if single file, this version and above is ok
   protected static final int version = 10;
-  //private static final boolean intvMergeDefault = true;
-
   public static final String MAGIC_START = "Grib1CollectionIndex";
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
@@ -138,10 +136,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     super(dcm, isSingleFile, logger);
   }
 
-  protected int getVersion() {
-    return version;
-  }
-
   // read or create index
   private void readOrCreateIndex(CollectionManager.Force ff) throws IOException {
 
@@ -202,9 +196,10 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         return false;
       }
 
-      int v = raf.readInt();
-      if (v != getVersion()) {
-        logger.warn("GribCollection {}: index found version={}, want version= {} on file {}",gc.getName(), v, version, raf.getLocation());
+      gc.version = raf.readInt();
+      boolean versionOk = isSingleFile ? gc.version >= minVersionSingle : gc.version == version;
+      if (!versionOk) {
+        logger.warn("Grib1Collection {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, version, raf.getLocation());
         return false;
       }
 
@@ -213,7 +208,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
       int size = NcStream.readVInt(raf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
-        logger.warn("GribCollection {}: invalid or empty index ", gc.getName());
+        logger.warn("Grib1Collection {}: invalid or empty index ", gc.getName());
         return false;
       }
 
@@ -234,40 +229,54 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         cust = Grib1Customizer.factory(gc.center, gc.subcenter, gc.local, null); // we need this in readVertCoord()
       }
 
-       // error condition on a GribCollection Index
-      if ((proto.getFilesCount() == 0) && !(this instanceof Grib1TimePartitionBuilder)) {
-        logger.warn("Grib1Collection {}: has no files, force recreate ", gc.getName());
-        return false;
-      }
-
       File dir = gc.getDirectory();
-      if (!dir.getPath().equals(proto.getDirName())) {
-        logger.warn("Grib1Collection {}: has different directory= {} than index= {}, force recreate ", gc.getName(), dir.getPath(), proto.getDirName());
+      String dirname = proto.getDirName();
+      if (dir != null && !dir.getPath().equals(dirname)) {
+        logger.warn("Grib1Collection {}: has different directory= {} than index= {}, force recreate ", gc.getName(), dir.getPath(), dirname);
         return false;
       }
 
-      List<MFile> files = new ArrayList<MFile>(proto.getFilesCount());
-      for (int i = 0; i < proto.getFilesCount(); i++) {
-        GribCollectionBuilder.GcMFile mfile = new GribCollectionBuilder.GcMFile(dir, proto.getFiles(i));
-        files.add(mfile);
+      // switch from files to mfiles in version 10
+      if (!(this instanceof Grib1TimePartitionBuilder)) {
+        if (gc.version < 10) {
+          int n = proto.getFilesCount();
+          if (n == 0) {
+            logger.warn("Grib1Collection {}: has no files, force recreate ", gc.getName());
+            return false;
+          } else {
+            List<MFile> files = new ArrayList<MFile>(proto.getFilesCount());
+            for (int i = 0; i < n; i++)
+              files.add(new GribCollectionBuilder.GcMFile(dir, proto.getFiles(i), -1));
+            gc.setFiles(files);
+            if (dcm != null) dcm.setFiles(files);
+          }
+
+        } else {
+          int n = proto.getMfilesCount();
+          if (n == 0) {
+            logger.warn("Grib1Collection {}: has no files, force recreate ", gc.getName());
+            return false;
+          } else {
+            List<MFile> files = new ArrayList<MFile>(proto.getFilesCount());
+            for (int i = 0; i < proto.getFilesCount(); i++)
+              files.add(new GribCollectionBuilder.GcMFile(dir, proto.getMfiles(i)));
+            gc.setFiles(files);
+            if (dcm != null) dcm.setFiles(files);
+          }
+        }
       }
-      gc.setFiles(files);
-      if (dcm != null) dcm.setFiles(files);
 
       gc.groups = new ArrayList<GribCollection.GroupHcs>(proto.getGroupsCount());
       for (int i = 0; i < proto.getGroupsCount(); i++)
         gc.groups.add(readGroup(proto.getGroups(i), gc.makeGroup(), gc.center));
       gc.groups = Collections.unmodifiableList(gc.groups);
-      //int count = 0;
-      //for (GribCollection.GroupHcs gh : gc.groups)
-      //  gh.setId("group"+(count++));
 
       gc.params = new ArrayList<Parameter>(proto.getParamsCount());
       for (int i = 0; i < proto.getParamsCount(); i++)
         gc.params.add(readParam(proto.getParams(i)));
 
       if (!readPartitions(proto)) {
-        logger.warn("TimePartition {}: has no partitions, force recreate ", gc.getName());
+        logger.warn("Time1Partition {}: has no partitions, force recreate ", gc.getName());
         return false;
       }
 
@@ -611,7 +620,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       indexBuilder.setDirName(gc.getDirectory().getPath());
       List<GribCollectionBuilder.GcMFile> gcmfiles = GribCollectionBuilder.makeFiles(gc.getDirectory(), files);
       for (GribCollectionBuilder.GcMFile gcmfile : gcmfiles) {
-        indexBuilder.addFiles(gcmfile.makeProto());
+        indexBuilder.addMfiles(gcmfile.makeProto());
       }
 
       for (Group g : groups)
