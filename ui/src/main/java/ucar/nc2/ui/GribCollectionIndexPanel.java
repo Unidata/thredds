@@ -32,11 +32,13 @@
 
 package ucar.nc2.ui;
 
+import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -356,11 +358,12 @@ public class GribCollectionIndexPanel extends JPanel {
   private void showFiles(Formatter f) {
     if (gc == null) return;
     int count = 0;
-    List<String> fs = new ArrayList<String>(gc.getFilenames());
-    Map<String, Integer> map = new HashMap<String, Integer>(fs.size() * 2);
+    List<MFile> fs = new ArrayList<MFile>(gc.getFiles());
+    Map<MFile, Integer> map = new HashMap<MFile, Integer>(fs.size() * 2);
+
     f.format("In order:%n");
-    for (String file : gc.getFilenames()) {
-      f.format("%5d %s%n", count, file);
+    for (MFile file : fs) {
+      f.format("%5d %60s lastModified=%s%n", count, file.getName(), CalendarDateFormatter.toDateTimeString( new Date(file.getLastModified())));
       map.put(file, count);
       count++;
     }
@@ -368,9 +371,9 @@ public class GribCollectionIndexPanel extends JPanel {
     f.format("%nsorted:%n");
     Collections.sort(fs);
     int last = -1;
-    for (String file : fs) {
+    for (MFile file : fs) {
       int num = map.get(file);
-      f.format("%s%5d %s%n", (num < last) ? "***" : "", num, file);
+      f.format("%s%5d %s%n", (num < last) ? "***" : "", num, file.getPath());
     }
 
     f.format("============%n%s%n", gc);
@@ -401,8 +404,9 @@ public class GribCollectionIndexPanel extends JPanel {
     }
 
     void showFilesUsed(Formatter f) {
-      for (int i: group.filenose) {
-        f.format(" %d:%s%n", i, gc.filenames.get(i));
+      List<MFile> files = group.getFiles();
+      for (MFile file : files) {
+        f.format(" %s%n", file.getName());
       }
     }
 

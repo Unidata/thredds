@@ -243,15 +243,15 @@ public abstract class TimePartition extends GribCollection {
     this.logger = logger;
   }
 
+  /**
+   * Use partition names as the filenames
+   */
   @Override
   public List<String> getFilenames() {
-    if (filenames == null || filenames.size() == 0) {
-      List<Partition> parts = getPartitions();
-      filenames = new ArrayList<String>(parts.size());
-      for (Partition p : parts) filenames.add(p.indexFilename);
-      filenames = Collections.unmodifiableList(filenames);
-    }
-    return filenames;
+    List<Partition> parts = getPartitions();
+    List<String> result = new ArrayList<String>(parts.size());
+    for (Partition p : parts) result.add(p.indexFilename);
+    return result;
   }
 
   public void addPartition(String name, String filename) {

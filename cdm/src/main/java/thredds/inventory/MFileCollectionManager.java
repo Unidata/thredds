@@ -383,7 +383,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   }
 
-
   @Override
   public boolean scan(boolean sendEvent) throws IOException {
     if (map == null) {
@@ -460,6 +459,19 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
 
     return changed;
+  }
+
+  @Override
+  public void setFiles(Iterable<MFile> files) {
+    Map<String, MFile> newMap = new HashMap<String, MFile>();
+    for (MFile file : files)
+      newMap.put(file.getPath(), file);
+
+    synchronized (this) {
+      map = newMap;
+      this.lastScanned = System.currentTimeMillis();
+      this.lastChanged.set(this.lastScanned);
+    }
   }
 
   @Override

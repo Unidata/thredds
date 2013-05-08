@@ -35,7 +35,7 @@ public boolean scan(boolean sendEvent) throws IOException;
 </pre>
  <h3>InvDatasetFeatureCollection</h3>
 <p>InvDatasetFeatureCollection subclass controls the dataset, and manages the updating.</p>
-<p>InvDatasetFeatureCollection owns a CollectionManager (dcm) and a GribCollection (GC).</p>
+<p>InvDatasetFeatureCollection owns a CollectionManager (dcm) and a GribCollection (GC). Its listens for TriggerEvents from the dcm, and calls GribCollection.factory() when needed</p>
 <h3>Updating</h3>
 <p>There are several way to update a feature collection when it changes, specified by attributes on the <strong>update</strong> element:</p>
 <ol>
@@ -78,8 +78,8 @@ public boolean scan(boolean sendEvent) throws IOException;
 <pre> static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger); </pre>
 where Force controls the use of the <strong>ncx</strong> Index:
 <pre> public enum Force {
-		always, // force new index
- 	test,   // test if new index is needed
+		always, // force writing new index
+ 	test,   // test if new index is needed by scanning directory
  	nocheck  // if index exists, use it 
 }</pre>
 <p>Relationship of CollectionManager and Index:</p>

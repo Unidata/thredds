@@ -365,6 +365,13 @@ public class TimePartitionCollection extends MFileCollectionManager {
     }
 
     @Override
+    public void setFiles(Iterable<MFile> files) {
+      List<MFile> result = new ArrayList<MFile>();
+      for (MFile f : files) result.add(f);
+      this.files = result;
+    }
+
+    @Override
     public CalendarDate extractRunDate(MFile mfile) {
       return dateExtractor.getCalendarDate(mfile);
     }

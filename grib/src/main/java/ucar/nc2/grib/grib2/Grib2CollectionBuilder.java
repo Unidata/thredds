@@ -54,10 +54,11 @@ import java.util.*;
  * @author caron
  * @since 4/6/11
  */
-public class Grib2CollectionBuilder {
+public class Grib2CollectionBuilder extends GribCollectionBuilder {
+
   //static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   public static final String MAGIC_START = "Grib2CollectionIndex";
-  protected static final int version = 11;
+  protected static final int version = 12;
   // private static final boolean intvMergeDefault = true;
   private static final boolean showFiles = false;
 
@@ -101,21 +102,17 @@ public class Grib2CollectionBuilder {
 
   ////////////////////////////////////////////////////////////////
 
-  private final List<CollectionManager> collections = new ArrayList<CollectionManager>(); // are there every more than one ?
   protected GribCollection gc;
   protected Grib2Customizer tables; // only gets created in makeAggGroups
-  protected boolean isSingleFile;
-  protected final org.slf4j.Logger logger;
 
   // single file
   private Grib2CollectionBuilder(MFile file, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
-    this.isSingleFile = true;
-    this.logger = logger;
+    super(new CollectionManagerSingleFile(file), true, logger);
+
     try {
       //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
       CollectionManager dcm = new CollectionManagerSingleFile(file);
       if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
-      this.collections.add(dcm);
       this.gc = new Grib2Collection(file.getName(), new File(dcm.getRoot()), config);
 
     } catch (Exception e) {
@@ -125,20 +122,18 @@ public class Grib2CollectionBuilder {
   }
 
   private Grib2CollectionBuilder(CollectionManager dcm, org.slf4j.Logger logger) {
-    this.logger = logger;
-    this.collections.add(dcm);
+    super(dcm, false, logger);
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.gc = new Grib2Collection(dcm.getCollectionName(), new File(dcm.getRoot()), config);
   }
 
   private Grib2CollectionBuilder(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
-    this.logger = logger;
+    super(null, false, logger);
     this.gc = new Grib2Collection(name, directory, config);
   }
 
-  protected Grib2CollectionBuilder(org.slf4j.Logger logger) {
-    this.logger = logger;
-    this.gc = null;
+  protected Grib2CollectionBuilder(CollectionManager dcm, boolean isSingleFile, org.slf4j.Logger logger) {
+    super(dcm, isSingleFile, logger);
   }
 
   protected int getVersion() {
@@ -167,16 +162,15 @@ public class Grib2CollectionBuilder {
   }
 
   public boolean needsUpdate() {
+    if (dcm == null) return false;
     File idx = gc.getIndexFile();
     return !idx.exists() || needsUpdate(idx.lastModified());
   }
 
   private boolean needsUpdate(long idxLastModified) {
     CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
-    for (CollectionManager dcm : collections) {
-      for (MFile mfile : dcm.getFiles()) {
-        if (cc.hasChangedSince(mfile, idxLastModified)) return true;
-      }
+    for (MFile mfile : dcm.getFiles()) {
+      if (cc.hasChangedSince(mfile, idxLastModified)) return true;
     }
     return false;
   }
@@ -206,7 +200,7 @@ public class Grib2CollectionBuilder {
 
       gc.version = raf.readInt();
       if (gc.version != getVersion()) {
-        logger.warn("GribCollection {}: index found version={}, want version= {} on file {}", new Object[]{gc.getName(), gc.version, version, raf.getLocation()});
+        logger.warn("GribCollection {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, version, raf.getLocation());
         return false;
       }
 
@@ -234,10 +228,19 @@ public class Grib2CollectionBuilder {
       gc.local = proto.getLocal();
       // gc.tables = Grib2Tables.factory(gc.center, gc.subcenter, gc.master, gc.local);
 
-      gc.filenames = new ArrayList<String>(proto.getFilesCount());
-      for (int i = 0; i < proto.getFilesCount(); i++)
-        gc.filenames.add(proto.getFiles(i));
-      gc.filenames = Collections.unmodifiableList(gc.filenames);
+      File dir = gc.getDirectory();
+      if (dir.getPath().equals(proto.getDirName())) {
+        logger.warn("Grib1Collection {}: has different directory= {} than index= {}, force recreate ", gc.getName(), dir.getPath(), proto.getDirName());
+        return false;
+      }
+
+      List<MFile> files = new ArrayList<MFile>(proto.getFilesCount());
+      for (int i = 0; i < proto.getFilesCount(); i++) {
+        GribCollectionBuilder.GcMFile mfile = new GribCollectionBuilder.GcMFile(dir, proto.getFiles(i));
+        files.add(mfile);
+      }
+      gc.setFiles(files);
+      if (dcm != null) dcm.setFiles(files);
 
       // error condition on a GribCollection Index
       if ((proto.getFilesCount() == 0) && !(this instanceof Grib2TimePartitionBuilder)) {
@@ -414,11 +417,16 @@ public class Grib2CollectionBuilder {
   // create the index
 
   private boolean createIndex(File indexFile) throws IOException {
+    if (dcm == null) {
+      logger.error("Grib2CollectionBuilder "+gc.getName()+" : cannot create new index ");
+      throw new IllegalStateException();
+    }
+
     long start = System.currentTimeMillis();
 
-    ArrayList<String> filenames = new ArrayList<String>();
-    List<Group> groups = makeAggregatedGroups(filenames);
-    createIndex(indexFile, groups, filenames);
+    ArrayList<MFile> files = new ArrayList<MFile>();
+    List<Group> groups = makeAggregatedGroups(files);
+    createIndex(indexFile, groups, files);
 
     long took = System.currentTimeMillis() - start;
     logger.debug("That took {} msecs", took);
@@ -429,7 +437,7 @@ public class Grib2CollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  public List<Group> makeAggregatedGroups(List<String> filenames) throws IOException {
+  public List<Group> makeAggregatedGroups(List<MFile> files) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<String, Boolean> pdsConvert = null;
 
@@ -440,60 +448,58 @@ public class Grib2CollectionBuilder {
     int fileno = 0;
     Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter(); // debugging
 
-    for (CollectionManager dcm : collections) {
-      logger.debug(" dcm={}", dcm);
-      FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-      Map<Integer, Integer> gdsConvert = (config != null) ?  config.gdsHash : null;
-      FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
-      if (config != null) pdsConvert = config.pdsHash;
-      //intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
-      //useGenType = (config == null) || (config.useGenType == null) ? false : config.useGenType;
+    logger.debug(" dcm={}", dcm);
+    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    Map<Integer, Integer> gdsConvert = (config != null) ?  config.gdsHash : null;
+    FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
+    if (config != null) pdsConvert = config.pdsHash;
+    //intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
+    //useGenType = (config == null) || (config.useGenType == null) ? false : config.useGenType;
 
-      for (MFile mfile : dcm.getFiles()) {
-        if (showFiles) logger.debug("{}: {}", fileno, mfile.getPath());
+    for (MFile mfile : dcm.getFiles()) {
+      if (showFiles) logger.debug("{}: {}", fileno, mfile.getPath());
 
-        Grib2Index index = null;
-        try {
-          index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, !isSingleFile, mfile, config, CollectionManager.Force.test, logger);
-          filenames.add(mfile.getPath());  // add on success
+      Grib2Index index = null;
+      try {
+        index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, !isSingleFile, mfile, config, CollectionManager.Force.test, logger);
+        files.add(mfile);  // add on success
 
-        } catch (IOException ioe) {
-          logger.error("Grib2CollectionBuilder "+gc.getName()+" : reading/Creating gbx9 index for file "+ mfile.getPath()+" failed", ioe);
-          continue;
-        }
-
-        for (Grib2Record gr : index.getRecords()) {
-          if (this.tables == null) {
-            Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
-            this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
-            if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt really work with multiple collections
-          }
-          if (intvMap != null && filterOut(gr, intvMap)) {
-            stats.filter++;
-            continue; // skip
-          }
-
-          gr.setFile(fileno); // each record tracks which file it belongs to
-          int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
-          if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
-            gdsHash = gdsConvert.get(gdsHash);             // and we need exact hash matching
-
-          Group g = gdsMap.get(gdsHash);
-          if (g == null) {
-            g = new Group(gr.getGDSsection(), gdsHash);
-            gdsMap.put(gdsHash, g);
-          }
-          g.records.add(gr);
-        }
-        fileno++;
-        stats.recordsTotal += index.getRecords().size();
+      } catch (IOException ioe) {
+        logger.error("Grib2CollectionBuilder "+gc.getName()+" : reading/Creating gbx9 index for file "+ mfile.getPath()+" failed", ioe);
+        continue;
       }
+
+      for (Grib2Record gr : index.getRecords()) {
+        if (this.tables == null) {
+          Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
+          this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+          if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt really work with multiple collections
+        }
+        if (intvMap != null && filterOut(gr, intvMap)) {
+          stats.filter++;
+          continue; // skip
+        }
+
+        gr.setFile(fileno); // each record tracks which file it belongs to
+        int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
+        if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
+          gdsHash = gdsConvert.get(gdsHash);             // and we need exact hash matching
+
+        Group g = gdsMap.get(gdsHash);
+        if (g == null) {
+          g = new Group(gr.getGDSsection(), gdsHash);
+          gdsMap.put(gdsHash, g);
+        }
+        g.records.add(gr);
+      }
+      fileno++;
+        stats.recordsTotal += index.getRecords().size();
     }
 
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
       g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, pdsConvert);
-      g.rect.make(stats, filenames);
+      g.rect.make(stats, files);
     }
 
     // debugging and validation
@@ -541,7 +547,7 @@ public class Grib2CollectionBuilder {
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  private void createIndex(File indexFile, List<Group> groups, ArrayList<String> filenames) throws IOException {
+  private void createIndex(File indexFile, List<Group> groups, List<MFile> files) throws IOException {
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
@@ -591,9 +597,14 @@ public class Grib2CollectionBuilder {
 
       GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
       indexBuilder.setName(gc.getName());
+      indexBuilder.setDirName(gc.getDirectory().getPath());
 
-      for (String fn : filenames)
-        indexBuilder.addFiles(fn);
+      // directory and mfile list
+      indexBuilder.setDirName(gc.getDirectory().getPath());
+      List<GribCollectionBuilder.GcMFile> gcmfiles = GribCollectionBuilder.makeFiles(gc.getDirectory(), files);
+      for (GribCollectionBuilder.GcMFile gcmfile : gcmfiles) {
+        indexBuilder.addFiles(gcmfile.makeProto());
+      }
 
       for (Group g : groups)
         indexBuilder.addGroups(writeGroupProto(g));

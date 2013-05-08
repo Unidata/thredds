@@ -111,7 +111,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private final Grib2TimePartition tp;  // build this object
 
   private Grib2TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc, org.slf4j.Logger logger) {
-    super(logger);
+    super(tpc, false, logger);
     FeatureCollectionConfig.GribConfig config = null;
     if (tpc != null) config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.tp = new Grib2TimePartition(name, directory, config, logger);
@@ -448,6 +448,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       indexBuilder.setSubcenter(canonGc.getSubcenter());
       indexBuilder.setMaster(canonGc.getMaster());
       indexBuilder.setLocal(canonGc.getLocal());
+      indexBuilder.setDirName(gc.getDirectory().getPath());
 
       for (TimePartition.Partition p : tp.getPartitions()) {
         indexBuilder.addPartitions(writePartitionProto(p.getName(), p));

@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
@@ -102,9 +103,9 @@ public class Grib2Rectilyser {
     return ensCoords;
   }
 
-  List<String> filenames = null; // temp debug
-  public void make(Counter counter, List<String> filenames) throws IOException {
-    this.filenames = filenames;
+  List<MFile> files = null; // temp debug
+  public void make(Counter counter, List<MFile> files) throws IOException {
+    this.files = files;
 
     // unique variables using Grib2Record.cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
@@ -475,8 +476,8 @@ public class Grib2Rectilyser {
           size = cust.getForecastTimeIntervalSizeInHours(gr); // LOOK using an Hour here, but will need to make this configurable
         } catch (Throwable t) {
           logger.error("bad", t);
-          if (filenames != null)
-            logger.error("Failed on file = "+filenames.get(gr.getFile()));
+          if (files != null)
+            logger.error("Failed on file = "+files.get(gr.getFile()));
         }
         result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - default not
       }

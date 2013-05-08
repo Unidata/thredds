@@ -91,6 +91,16 @@ public class CollectionManagerSingleFile extends CollectionManagerAbstract {
   }
 
   @Override
+  public void setFiles(Iterable<MFile> files) {
+    int count = 0;
+    for (MFile f : files) {
+      this.mfile = f;
+      count++;
+    }
+    assert count == 1;
+  }
+
+  @Override
   public CalendarDate extractRunDate(MFile mfile) {
     return null;
   }

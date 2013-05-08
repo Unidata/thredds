@@ -154,6 +154,11 @@ public interface CollectionManager {
   public Iterable<MFile> getFiles();
 
   /**
+   *   dcm must be updated when index is read in
+   */
+  public void setFiles(Iterable<MFile> files);
+
+  /**
    * Use the date extractor to extract the date from the filename.
    * Only call if hasDateExtractor() == true.
    *
