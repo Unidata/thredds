@@ -537,10 +537,10 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
   // reading ncx
 
   @Override
-  protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto) {
+  protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto, String directory) {
     for (int i = 0; i < proto.getPartitionsCount(); i++) {
       GribCollectionProto.Partition pp = proto.getPartitions(i);
-      tp.addPartition(pp.getName(), pp.getFilename());
+      tp.addPartition(pp.getName(), pp.getFilename(), directory);
     }
     return  proto.getPartitionsCount() > 0;
   }

@@ -73,10 +73,9 @@ public abstract class TimePartition extends GribCollection {
 
   static private final ucar.nc2.util.cache.FileFactory collectionFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      File f = new File(location);
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCollection.createFromIndex(p.isGrib1(), p.getName(), f.getParentFile(), raf, p.getConfig(), p.getLogger()); // LOOK not sure what the parent directory is for
+      return GribCollection.createFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger()); // LOOK not sure what the parent directory is for
     }
   };
 
@@ -99,13 +98,14 @@ public abstract class TimePartition extends GribCollection {
 
   // wrapper around a GribCollection
   public class Partition implements Comparable<Partition> {
-    //private GribCollection gribCollection;
-    private String name, indexFilename;
+    private final String name, directory;
+    private String indexFilename;
 
     // constructor from ncx
-    public Partition(String name, String indexFilename) {
+    public Partition(String name, String indexFilename, String directory) {
       this.name = name;
       this.indexFilename = indexFilename; // grib collection ncx
+      this.directory = directory; // grib collection directory
     }
 
     public String getName() {
@@ -114,6 +114,10 @@ public abstract class TimePartition extends GribCollection {
 
     public String getIndexFilename() {
       return indexFilename;
+    }
+
+    public String getDirectory() {
+      return directory;
     }
 
     public boolean isGrib1() {
@@ -166,6 +170,7 @@ public abstract class TimePartition extends GribCollection {
     public Partition(CollectionManager dcm) {
       this.dcm = dcm;
       this.name = dcm.getCollectionName();
+      this.directory = dcm.getRoot();
     }
 
     public GribCollection makeGribCollection() throws IOException {
@@ -254,9 +259,9 @@ public abstract class TimePartition extends GribCollection {
     return result;
   }
 
-  public void addPartition(String name, String filename) {
+  public void addPartition(String name, String filename, String directory) {
     if (partitionMap == null) partitionMap = new TreeMap<String, TimePartition.Partition>();
-    partitionMap.put(name, new Partition(name, filename));
+    partitionMap.put(name, new Partition(name, filename, directory));
   }
 
   public void addPartition(CollectionManager dcm) {

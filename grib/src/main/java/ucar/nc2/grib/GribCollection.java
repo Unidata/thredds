@@ -71,7 +71,7 @@ public abstract class GribCollection implements FileCacheable {
   //////////////////////////////////////////////////////////
   // object cache for data files - these are opened only as raf, not netcdfFile
   private static FileCache dataRafCache;
-  private static DiskCache2 diskCache = new DiskCache2();
+  private static DiskCache2 diskCache;
 
   static public void initDataRafCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     dataRafCache = new ucar.nc2.util.cache.FileCache("GribCollectionDataRafCache ", minElementsInMemory, maxElementsInMemory, -1, period);
@@ -93,7 +93,7 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public File getIndexFile(String path) {
-    return diskCache.getFile(path);
+    return getDiskCache2().getFile(path);
   }
 
   static public File getIndexFile(CollectionManager dcm) {
@@ -106,6 +106,9 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public DiskCache2 getDiskCache2() {
+    if (diskCache == null)
+      diskCache = new DiskCache2();
+
     return diskCache;
   }
 
@@ -255,7 +258,7 @@ public abstract class GribCollection implements FileCacheable {
     if (indexFile == null) {
       String nameNoBlanks = StringUtil2.replace(name, ' ', "_");
       File f = new File(directory, nameNoBlanks + NCX_IDX);
-      indexFile = diskCache.getFile(f.getPath()); // diskCcahe manages where the index file lives
+      indexFile = getDiskCache2().getFile(f.getPath()); // diskCcahe manages where the index file lives
     }
     return indexFile;
   }

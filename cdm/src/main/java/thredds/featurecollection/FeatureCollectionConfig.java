@@ -122,6 +122,8 @@ public class FeatureCollectionConfig {
       f.format("  olderThan =%s%n", olderThan);
     if (timePartition != null)
       f.format("  timePartition =%s%n", timePartition);
+    else
+      f.format("  NOT timePartition%n");
     if (updateConfig != null)
       f.format("  updateConfig =%s%n", updateConfig);
     if (tdmConfig != null)

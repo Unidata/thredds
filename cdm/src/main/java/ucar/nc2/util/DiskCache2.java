@@ -58,7 +58,7 @@ import java.net.URLDecoder;
  * @author jcaron
  */
 public class DiskCache2 {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiskCache2.class);
+  //static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiskCache2.class);
 
   public enum CachePathPolicy {
     OneDirectory,
@@ -233,7 +233,7 @@ public class DiskCache2 {
     if (cachePathPolicy == CachePathPolicy.NestedDirectory) {
       File dir = f.getParentFile();
       if (!dir.exists() && !dir.mkdirs())
-        log.warn("Cant create directories for file "+dir.getPath());
+        cacheLog.warn("Cant create directories for file "+dir.getPath());
     }
 
     return f;

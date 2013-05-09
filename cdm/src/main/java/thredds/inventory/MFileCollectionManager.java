@@ -439,7 +439,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
 
     boolean changed = (nnew > 0) || (ndelete > 0) || (nchange > 0);
-    logger.debug("{}: scan at {} nnew={}, nchange={}, ndelete={}", new Object[]{collectionName, new Date(), nnew, nchange, ndelete});
+    logger.debug("{}: scan at {} nnew={}, nchange={}, ndelete={}", collectionName, new Date(), nnew, nchange, ndelete);
 
     if (changed) {
       //if (logger.isInfoEnabled()) logger.info(collectionName+": rescan found changes new = "+nnew+" delete= "+ndelete);

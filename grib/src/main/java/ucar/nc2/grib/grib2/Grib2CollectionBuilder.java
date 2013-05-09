@@ -252,8 +252,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
             logger.warn("Grib2Collection {}: has no files, force recreate ", gc.getName());
             return false;
           } else {
-            List<MFile> files = new ArrayList<MFile>(proto.getFilesCount());
-            for (int i = 0; i < proto.getFilesCount(); i++)
+            List<MFile> files = new ArrayList<MFile>(n);
+            for (int i = 0; i < n; i++)
               files.add(new GribCollectionBuilder.GcMFile(dir, proto.getMfiles(i)));
             gc.setFiles(files);
             if (dcm != null) dcm.setFiles(files);
@@ -270,7 +270,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       for (int i = 0; i < proto.getParamsCount(); i++)
         gc.params.add(readParam(proto.getParams(i)));
 
-      if (!readPartitions(proto)) {
+      if (!readPartitions(proto, dirname)) {
         logger.warn("Time2Partition {}: has no partitions, force recreate ", gc.getName());
         return false;
       }
@@ -283,7 +283,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
-  protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto) {
+  protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto, String dirname) {
     return true;
   }
 
@@ -647,7 +647,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
             // remove it on failure
       if (deleteOnClose && !indexFile.delete())
-        logger.error(" cant delete index file {}", indexFile.getPath());
+        logger.error(" cant deleteOnClose index file {}", indexFile.getPath());
     }
   }
 

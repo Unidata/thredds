@@ -36,6 +36,9 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.ListenerManager;
+import ucar.nc2.util.log.LoggerFactory;
+import ucar.nc2.util.log.LoggerFactoryImpl;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.*;
@@ -47,6 +50,10 @@ import java.util.*;
  * @since Jan 19, 2010
  */
 public abstract class CollectionManagerAbstract implements CollectionManager {
+  static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
+  static public void setLoggerFactory( LoggerFactory fac) {
+    loggerFactory = fac;
+  }
 
   protected String collectionName;
   protected final org.slf4j.Logger logger;
@@ -59,8 +66,9 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
 
   protected CollectionManagerAbstract( String collectionName) {
-    this.collectionName = collectionName; // +"-" + Integer.toHexString(hashCode()); // make sure name is unique
-    this.logger = org.slf4j.LoggerFactory.getLogger("fc."+this.collectionName);
+    this.collectionName =  StringUtil2.replace(collectionName.trim(), ' ', "_");  // LOOK must be ok in URL - probably not sufficient here
+    // this.logger = logger != null ? logger : loggerFactory.getLogger("fc."+this.collectionName);
+    this.logger = loggerFactory.getLogger("fc."+this.collectionName); // seperate log file for each feature collection (!!)
   }
 
   public boolean isStatic() {

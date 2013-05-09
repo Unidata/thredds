@@ -31,7 +31,10 @@ public class GribCollectionBuilder {
   public static List<GribCollectionBuilder.GcMFile> makeFiles(File directory, List<thredds.inventory.MFile> files) {
     List<GribCollectionBuilder.GcMFile> result = new ArrayList<GcMFile>(files.size());
     for (MFile file : files) {
-      result.add( new GcMFile(directory, file.getName(), file.getLastModified()));
+      String dirPath = directory.getPath();
+      assert file.getPath().startsWith(dirPath);
+      String name = file.getPath().substring(dirPath.length());
+      result.add( new GcMFile(directory, name, file.getLastModified()));
     }
     return result;
   }

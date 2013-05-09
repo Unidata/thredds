@@ -20,12 +20,12 @@
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="diskCache" class="ucar.nc2.util.DiskCache2"  destroy-method="exit">
+  <!-- bean id="diskCache" class="ucar.nc2.util.DiskCache2"  destroy-method="exit">
     <constructor-arg value="cache/cdmr/"/>
     <constructor-arg value="false"/>
     <constructor-arg value="30"/>
     <constructor-arg value="60"/>
-  </bean>
+  </bean -->
 
   <!-- bean id="pointController" class="thredds.server.cdmremote.PointStreamController">
     <property name="tdsContext" ref="tdsContext"/>
