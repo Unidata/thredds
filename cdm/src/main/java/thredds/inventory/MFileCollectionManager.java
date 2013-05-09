@@ -110,7 +110,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   // simplified version called from DatasetCollectionManager.open()
   private MFileCollectionManager(String collectionSpec, String olderThan, Formatter errlog, Object fake) {
-    super(collectionSpec);
+    super(collectionSpec, null);
     CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
     this.recheck = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
@@ -126,8 +126,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   // this is the full featured constructor, using FeatureCollectionConfig for config.
-  public MFileCollectionManager(FeatureCollectionConfig config, Formatter errlog) {
-    super(config.name != null ? config.name : config.spec);
+  public MFileCollectionManager(FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
+    super(config.name != null ? config.name : config.spec, logger);
     this.config = config;
 
     CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);
@@ -179,8 +179,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   // for subclasses
-  protected MFileCollectionManager(String name) {
-    super(name);
+  protected MFileCollectionManager(String name, org.slf4j.Logger logger) {
+    super(name, logger);
     this.recheck = null;
     this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
@@ -189,8 +189,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   ////////////////////////////////////////////////////////////////////////////////
   // Time Partition - experimental
-  public MFileCollectionManager(String name, String spec, Formatter errlog) {
-    super(name);
+  public MFileCollectionManager(String name, String spec, Formatter errlog, org.slf4j.Logger logger) {
+    super(name, logger);
     CollectionSpecParser sp = new CollectionSpecParser(spec, errlog);
     this.rootDir = sp.getRootDir();
 
@@ -206,8 +206,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.olderThanInMsecs = -1;
   }
 
-  public MFileCollectionManager(String name, MCollection mc, CalendarDate startPartition) {
-    super(name);
+  public MFileCollectionManager(String name, MCollection mc, CalendarDate startPartition, org.slf4j.Logger logger) {
+    super(name, logger);
     this.startPartition = startPartition;
     this.scanList.add(mc);
 
@@ -233,7 +233,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
    * @param fake     fakearoo
    */
   private MFileCollectionManager(String recheckS, Object fake) {
-    super(null);
+    super(null, null);
     this.recheck = makeRecheck(recheckS);
     this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;

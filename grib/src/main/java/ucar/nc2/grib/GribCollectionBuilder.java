@@ -2,6 +2,7 @@ package ucar.nc2.grib;
 
 import thredds.inventory.*;
 import ucar.nc2.time.CalendarDate;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -143,7 +144,8 @@ public class GribCollectionBuilder {
 
     @Override
     public String getPath() {
-      return new File(directory, name).getPath();
+      String path =  new File(directory, name).getPath();
+      return StringUtil2.replace(path, '\\', "/");
     }
 
     @Override

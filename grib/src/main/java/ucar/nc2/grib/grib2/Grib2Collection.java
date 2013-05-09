@@ -108,7 +108,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
   static public void make(String name, String spec, org.slf4j.Logger logger) throws IOException {
     long start = System.currentTimeMillis();
     Formatter f = new Formatter();
-    CollectionManager dcm = new MFileCollectionManager(name, spec, f);
+    CollectionManager dcm = new MFileCollectionManager(name, spec, f, null);
     File idxFile = new File( dcm.getRoot(), name);
     boolean ok = Grib2CollectionBuilder.writeIndexFile(idxFile, dcm, logger);
     System.out.printf("GribCollectionBuilder.writeIndexFile ok = %s%n", ok);

@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import org.slf4j.Logger;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 

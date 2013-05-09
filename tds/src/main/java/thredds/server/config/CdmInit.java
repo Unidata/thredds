@@ -91,7 +91,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     // 4.3.17
     // feature collection logging
     InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(Level.INFO));
-    CollectionManagerAbstract.setLoggerFactory(new LoggerFactorySpecial(Level.INFO));
+    // CollectionManagerAbstract.setLoggerFactory(new LoggerFactorySpecial(Level.INFO));
 
     // 4.3.16
     String dir = ThreddsConfig.get("CdmRemote.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());

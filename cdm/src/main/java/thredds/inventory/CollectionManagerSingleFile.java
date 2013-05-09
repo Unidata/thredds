@@ -47,8 +47,8 @@ import java.util.List;
 public class CollectionManagerSingleFile extends CollectionManagerAbstract {
   private MFile mfile;
 
-  public CollectionManagerSingleFile(MFile file) {
-    super(file.getPath());
+  public CollectionManagerSingleFile(MFile file, org.slf4j.Logger logger) {
+    super(file.getPath(), logger);
     this.mfile = file;
   }
 

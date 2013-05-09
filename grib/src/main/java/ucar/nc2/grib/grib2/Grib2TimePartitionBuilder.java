@@ -427,7 +427,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     File file = tp.getIndexFile();
     if (file.exists()) {
       if (!file.delete())
-        logger.error("Cant delete "+file.getPath());
+        logger.error("gc2tp cant delete "+file.getPath());
     }
 
     RandomAccessFile raf = new RandomAccessFile(file.getPath(), "rw");

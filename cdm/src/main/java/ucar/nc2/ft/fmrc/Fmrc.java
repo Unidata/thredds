@@ -124,7 +124,7 @@ public class Fmrc {
   }
 
   private Fmrc(FeatureCollectionConfig config, Formatter errlog) {
-    this.manager = new MFileCollectionManager(config, errlog);
+    this.manager = new MFileCollectionManager(config, errlog, null);
     this.config = config;
   }
 

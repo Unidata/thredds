@@ -53,18 +53,18 @@ import java.util.*;
 public class TimePartitionCollection extends MFileCollectionManager {
   static private enum Type {setfromExistingIndices, directory, days}
 
-  static public TimePartitionCollection factory(FeatureCollectionConfig config, Formatter errlog) {
+  static public TimePartitionCollection factory(FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
     if (config.timePartition == null)
       throw new IllegalArgumentException("Must specify time partition spec = "+ config.spec);
 
-    return new TimePartitionCollection(config, false, errlog);
+    return new TimePartitionCollection(config, errlog, logger);
   }
 
-  static public TimePartitionCollection fromExistingIndices(FeatureCollectionConfig config, Formatter errlog) {
+  static public TimePartitionCollection fromExistingIndices(FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
     if (config.timePartition == null)
       throw new IllegalArgumentException("Must specify time partition spec = "+ config.spec);
 
-    return new TimePartitionCollection(config, true, errlog);
+    return new TimePartitionCollection(config, errlog, logger);
   }
 
   //////////////////////////////
@@ -73,8 +73,8 @@ public class TimePartitionCollection extends MFileCollectionManager {
   //private boolean setfromExistingIndices;
   private Type type;
 
-  private TimePartitionCollection(FeatureCollectionConfig config, boolean setfromExistingIndices, Formatter errlog) {
-    super(config, errlog);
+  private TimePartitionCollection(FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
+    super(config, errlog, logger);
     //this.setfromExistingIndices = setfromExistingIndices;
     if (dateExtractor == null)
       throw new IllegalArgumentException("Time partition must specify a date extractor");
@@ -195,7 +195,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
 
       // String name = collectionName+"-"+mfile.getName();
       String name = mfile.getName();
-      MFileCollectionManager dcm = new MFileCollectionManager(name, mcs, cdate);
+      MFileCollectionManager dcm = new MFileCollectionManager(name, mcs, cdate, this.logger);
       dcm.setDateExtractor(dateExtractor);
       if (config != null && config.gribConfig != null)
         dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
@@ -268,7 +268,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
       if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
         String name = collectionName + "-"+ cdf.toString(dmf.cdate);
         // String name = cdf.toString(dmf.cdate);
-        curr = new TimePartitionCollectionManager(name, dmf, getRoot(), this.auxInfo);
+        curr = new TimePartitionCollectionManager(name, dmf, getRoot(), this.auxInfo, this.logger);
         result.add(curr);
       }
       curr.add(dmf);
@@ -314,8 +314,8 @@ public class TimePartitionCollection extends MFileCollectionManager {
     CalendarPeriod period = CalendarPeriod.of(config.timePartition);
     List<MFile> files;
 
-    TimePartitionCollectionManager(String name, DatedMFile dmf, String root, Map<String, Object> auxInfo) {
-      super(name);
+    TimePartitionCollectionManager(String name, DatedMFile dmf, String root, Map<String, Object> auxInfo, org.slf4j.Logger logger) {
+      super(name, logger);
       this.startPartition = dmf.cdate;
       this.endPartition = dmf.cdate.add( period);
       this.files = new ArrayList<MFile>();
@@ -401,7 +401,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
   } */
 
    private static void doit(FeatureCollectionConfig config) throws IOException {
-    TimePartitionCollection tpc = TimePartitionCollection.factory(config, new Formatter(System.out));
+    TimePartitionCollection tpc = TimePartitionCollection.factory(config, new Formatter(System.out), null);
     System.out.printf("tpc = %s%n", tpc);
      if (tpc.makePartitions() == null) {
        System.out.printf("*** No partitions%n");

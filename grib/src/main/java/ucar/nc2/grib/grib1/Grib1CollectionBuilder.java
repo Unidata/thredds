@@ -108,7 +108,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
   // single file
   private Grib1CollectionBuilder(MFile file, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
-    super(new CollectionManagerSingleFile(file), true, logger);
+    super(new CollectionManagerSingleFile(file, logger), true, logger);
     try {
       if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
       this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()), config);
@@ -571,7 +571,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     if (indexFile.exists()) {
       if (!indexFile.delete())
-        logger.error(" cant delete index file {}", indexFile.getPath());
+        logger.error(" gc1 cant delete index file {}", indexFile.getPath());
     }
     logger.debug(" createIndex for {}", indexFile.getPath());
 
@@ -652,7 +652,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
       // remove it on failure
       if (deleteOnClose && !indexFile.delete())
-        logger.error(" cant deleteOnClose index file {}", indexFile.getPath());
+        logger.error(" gc1 cant deleteOnClose index file {}", indexFile.getPath());
     }
   }
 

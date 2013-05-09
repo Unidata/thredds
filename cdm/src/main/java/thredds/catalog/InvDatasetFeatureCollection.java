@@ -189,15 +189,18 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       this.latestFileName = config.gribConfig.latestNamer;
     }
 
+    String collectionName = CollectionManagerAbstract.cleanName(config.name != null ? config.name : name);
+    config.name =  collectionName;
+    this.logger = loggerFactory.getLogger("fc."+collectionName); // seperate log file for each feature collection (!!)
+
     Formatter errlog = new Formatter();
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
       dcm = new CatalogCollectionManager(config.spec);
     } else {
-      dcm = new MFileCollectionManager(config, errlog);
+      dcm = new MFileCollectionManager(config, errlog, this.logger);
     }
     topDirectory = dcm.getRoot();
 
-    this.logger = loggerFactory.getLogger("fc."+dcm.getCollectionName()); // seperate log file for each feature collection (!!)
     this.logger.info("FeatureCollection added = {}", getConfig());
     String errs = errlog.toString();
     if (errs.length()> 0) logger.warn("MFileCollectionManager parse error = {} ", errs);

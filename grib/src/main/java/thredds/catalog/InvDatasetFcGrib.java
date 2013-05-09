@@ -109,13 +109,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     this.gribConfig = config.gribConfig;
 
     Formatter errlog = new Formatter();
-    if (config.useIndexOnly)
-      this.dcm = TimePartitionCollection.fromExistingIndices(config, errlog); // not used
-    else if (config.timePartition != null) {
-      this.dcm = TimePartitionCollection.factory(config, errlog);
+    //if (config.useIndexOnly)
+    //  this.dcm = TimePartitionCollection.fromExistingIndices(config, errlog); // not used
+    // else
+    if (config.timePartition != null) {
+      this.dcm = TimePartitionCollection.factory(config, errlog, logger);
       this.dcm.setChangeChecker(GribIndex.getChangeChecker());
     } else {
-      this.dcm = new MFileCollectionManager(config, errlog);
+      this.dcm = new MFileCollectionManager(config, errlog, logger);
       this.dcm.setChangeChecker(GribIndex.getChangeChecker());
     }
 
