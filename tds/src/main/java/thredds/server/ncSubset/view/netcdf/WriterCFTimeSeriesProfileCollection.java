@@ -228,6 +228,9 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 
 	private void writeStations(List<Station> stations){
 
+
+		llbb = CFPointWriterUtils.getBoundingBox(stations); // gets written in super.finish();
+		
 		int nstns = stations.size();
 		ArrayObject.D1 namesArray = new ArrayObject.D1(String.class, stations.size());
 		ArrayObject.D1 descArray = new ArrayObject.D1(String.class, stations.size());
@@ -260,7 +263,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 	}
 
 	void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException{
-		trackBB(loc, obsDate);
+		trackBB(null, obsDate);
 		
 		try{
 			updateRecno(timeCoordValue);
@@ -292,7 +295,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 	}
 
 	void writeRecord(String profileName, double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata, int vIndex)  throws IOException{
-		trackBB(loc, obsDate);
+		trackBB(null, obsDate);
 
 		try{
 
@@ -327,7 +330,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 	}
 	
 	void writeRecord(String profileName, double timeCoordValue, double ensCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata, int vIndex)  throws IOException{
-		trackBB(loc, obsDate);
+		trackBB(null, obsDate);
 
 		try{
 
@@ -363,7 +366,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 	
 	
 	void writeRecord( double timeCoordValue, double ensCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata)  throws IOException{
-		trackBB(loc, obsDate);
+		trackBB(null, obsDate);
 
 		try{
 

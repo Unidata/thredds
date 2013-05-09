@@ -1,6 +1,8 @@
 package thredds.server.ncSubset.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -204,7 +206,8 @@ class PointDataController extends AbstractNcssDataRequestController{
 	
 	//Exception handling methods...
 	@ExceptionHandler(ParseException.class)
-	public ResponseEntity<String> handle(ParseException pe){
+	public ResponseEntity<String> handle(ParseException pe, HttpServletResponse response){		
+		response.reset();		
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN); 
 		return new ResponseEntity<String>("Parse exception handled: "+pe.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR );
@@ -212,26 +215,27 @@ class PointDataController extends AbstractNcssDataRequestController{
 	
 	
 	@ExceptionHandler(IOException.class)
-	public ResponseEntity<String> handle(IOException ioe){
+	public ResponseEntity<String> handle(IOException ioe, HttpServletResponse response){		
+		response.reset();		
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);		
 		return new ResponseEntity<String>("IO exception handled: "+ioe.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR );
 	}
 	
 	@ExceptionHandler(InvalidRangeException.class)
-	public ResponseEntity<String> handle(InvalidRangeException ire){
+	public ResponseEntity<String> handle(InvalidRangeException ire, HttpServletResponse response){
+		response.reset();
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);				
 		return new ResponseEntity<String>( "Invalid Range exception handled: "+ire.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 	}	
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ve){
+	public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ve, HttpServletResponse response){
+		response.reset();
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);		
 		return new ResponseEntity<String>( "Bad request: "+ve.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
 	}
-
 	
-
 }

@@ -25,6 +25,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
 
 /**
  * 
@@ -48,17 +49,18 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 
 	protected WriterPointCollectionNoTime(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts)
 			throws IOException {
-		super(fileOut, atts, version);
+		super(fileOut, atts, version, false);
 
 	}
 
 
-	public void writeHeader(List<VariableSimpleIF> vars, String altUnits) throws IOException {
+	public void writeHeader(List<Station> stns, List<VariableSimpleIF> vars, String altUnits) throws IOException {
 		this.altUnits = altUnits;
 
 		createCoordinates();
 		createDataVariables(vars);
-
+		llbb = CFPointWriterUtils.getBoundingBox(stns); // gets written in super.finish();
+		
 		writer.create(); // done with define mode
 		record = writer.addRecordStructure();
 	}
@@ -81,64 +83,15 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 		try {
 			//Cannot use record -> NetcdfFileWriter does not use 
 			//records if the format is netcdf4
-			//writer.write(record, origin, sArray);
-			
+			//writer.write(record, origin, sArray);			
 			for( Member m : sdata.getMembers() ){
 				
 				if( writer.findVariable(m.getName()) != null){
-					
-					
-					Array arr = CFPointWriterUtils.getArrayFromMember(writer.findVariable(m.getName()), m);
-
-//					DataType m_dt = writer.findVariable(m.getName()).getDataType();
-//					
-//					//Writes one single data 
-//					int[] shape = writer.findVariable(m.getName()).getShape();		
-//					
-//					for(int i=0; i< shape.length; i++ ){
-//						shape[i] = 1;
-//					}					
-//										
-//					Array arr = Array.factory(m_dt, shape );
-//					//Set the value (int, short, float, double...)
-//					if( m_dt  == DataType.SHORT){
-//						arr.setShort(0, m.getDataArray().getShort(0) );
-//					}
-//					int[] or = null;					
-//					//Set it right!!!
-//					if(shape.length > 0){
-//						or = new int[shape.length];
-//						for(int i=0; i< or.length; i++ ){
-//							or[i] = 0 ;
-//						}
-//					}else{
-//						or = new int[]{recno};
-//					}						 
+										
+					Array arr = CFPointWriterUtils.getArrayFromMember(writer.findVariable(m.getName()), m);						 
 					writer.write( writer.findVariable(m.getName()) , origin, arr );
 
-				}
-				
-//				if(m_dt == DataType.DOUBLE ){
-//					Double data = m.getDataArray().getDouble(0);
-//					ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);					
-//					tmpArray.setDouble(0, data);
-//					writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-//				}
-//
-//				if(m_dt == DataType.FLOAT){
-//					Float data = m.getDataArray().getFloat(0);
-//					ArrayFloat.D1 tmpArray = new ArrayFloat.D1(1);
-//					tmpArray.setFloat(0, data);
-//					writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-//				}
-//				
-//				if(m_dt == DataType.SHORT){
-//					short data = m.getDataArray().getShort(0);
-//					ArrayShort.D1 tmpArray = new ArrayShort.D1(1);
-//					tmpArray.setShort(0, data);
-//					writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
-//				}				
-
+				}								
 			}
 
 
@@ -147,7 +100,7 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 			if (altUnits != null)
 				writer.write(alt, origin, altArray);
 
-			trackBB(loc);
+			//trackBB(loc);
 
 		} catch (InvalidRangeException e) {
 			e.printStackTrace();
@@ -220,7 +173,7 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 
 	}
 
-	protected void trackBB(EarthLocation loc) {
+/*	protected void trackBB(EarthLocation loc) {
 		if (loc != null) {
 			if (llbb == null) {
 				llbb = new LatLonRect(loc.getLatLon(), .001, .001);
@@ -229,6 +182,6 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 			llbb.extend(loc.getLatLon());
 		}
 
-	}	
+	}*/	
 
 }
