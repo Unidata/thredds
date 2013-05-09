@@ -193,7 +193,9 @@ public class TimePartitionCollection extends MFileCollectionManager {
         return null;
       }
 
-      MFileCollectionManager dcm = new MFileCollectionManager(collectionName+"-"+mfile.getName(), mcs, cdate);
+      // String name = collectionName+"-"+mfile.getName();
+      String name = mfile.getName();
+      MFileCollectionManager dcm = new MFileCollectionManager(name, mcs, cdate);
       dcm.setDateExtractor(dateExtractor);
       if (config != null && config.gribConfig != null)
         dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
@@ -265,6 +267,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
     for (DatedMFile dmf : files) {
       if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
         String name = collectionName + "-"+ cdf.toString(dmf.cdate);
+        // String name = cdf.toString(dmf.cdate);
         curr = new TimePartitionCollectionManager(name, dmf, getRoot(), this.auxInfo);
         result.add(curr);
       }

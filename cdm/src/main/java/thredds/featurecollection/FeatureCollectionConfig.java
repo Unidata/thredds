@@ -34,6 +34,7 @@ package thredds.featurecollection;
 
 import org.jdom2.Element;
 import org.jdom2.Namespace;
+import thredds.inventory.CollectionManager;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
@@ -155,6 +156,7 @@ public class FeatureCollectionConfig {
     public String rescan;
     public boolean triggerOk;
     public boolean startup;
+    public CollectionManager.Force startupForce;
     public String deleteAfter = null;
 
     public UpdateConfig() { // defaults
@@ -165,8 +167,13 @@ public class FeatureCollectionConfig {
       if (recheckAfter != null) this.recheckAfter = recheckAfter; // in case it was set in collection element
       if (rescan != null) this.recheckAfter = null;               // both not allowed
       this.deleteAfter = deleteAfter; // may be null
-      if ((startupS != null) && startupS.equalsIgnoreCase("true"))
-        this.startup = true;
+      if (startupS != null) {
+        if (startupS.equalsIgnoreCase("true") || startupS.equalsIgnoreCase("test"))
+          this.startupForce = CollectionManager.Force.test;
+        else if (startupS.equalsIgnoreCase("nocheck"))
+          this.startupForce = CollectionManager.Force.nocheck;
+        startup = (this.startupForce != null);
+      }
       if (triggerS != null)
         this.triggerOk = triggerS.equalsIgnoreCase("allow");
     }

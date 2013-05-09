@@ -181,14 +181,14 @@ public enum CollectionUpdater {
     if (updateConfig.startup) {
       Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
       SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
-              .withIdentity(jobName, "startup")
+              .withIdentity(jobName, updateConfig.startupForce.toString())
               .startAt(runTime)
               .forJob(updateJob)
               .build();
 
       try {
         scheduler.scheduleJob(startupTrigger);
-        logger.info("Schedule startup scan for '{}' at {}", config.name, runTime);
+        logger.info("Schedule startup scan {} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
