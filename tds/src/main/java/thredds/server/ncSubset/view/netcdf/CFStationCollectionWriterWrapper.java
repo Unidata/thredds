@@ -54,6 +54,8 @@ import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.StationImpl;
 
 /**
  * @author mhermida
@@ -85,7 +87,7 @@ public final class CFStationCollectionWriterWrapper implements CFPointWriterWrap
 		boolean headerDone = false;
 		String stnName = "GridPoint";
 		String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
-		ucar.unidata.geoloc.Station s = new ucar.unidata.geoloc.StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
+		Station s = new StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
 		List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
 		stnList.add(s);
 

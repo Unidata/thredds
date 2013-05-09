@@ -7,6 +7,8 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import thredds.server.ncSubset.params.RequestParamsBean;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.TimeDuration;
 
@@ -160,6 +162,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 	  private Date isoString2Date(String isoString){
 		  
 		  if("present".equals(isoString)) return new Date();
-		  return CalendarDateFormatter.isoStringToDate(isoString);
+		  CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(Calendar.getDefault(), isoString);		  
+		  return new Date(cd.getMillis());
 	  }
 }

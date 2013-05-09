@@ -203,7 +203,8 @@ class XMLPointDataWriter implements PointDataWriter {
 						GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, targetLevel, point.getLatitude(),	point.getLongitude());
 
 						if (contVars == 0) {
-							writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+							//writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+							writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
 							attributes.put("name", "vertCoord");
 							attributes.put("units", zUnits);						
 							writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.z).toString());
@@ -282,7 +283,8 @@ class XMLPointDataWriter implements PointDataWriter {
 				if ( gap.hasVert(grid, targetLevel)) {
 					GridAsPointDataset.Point p = gap.readData(grid, null, targetLevel, point.getLatitude(),	point.getLongitude());
 					if (contVars == 0) {
-						writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+						//writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+						writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
 						attributes.put("name", "vertCoord");
 						attributes.put("units", zUnits);
 						writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.z).toString());
@@ -341,7 +343,8 @@ class XMLPointDataWriter implements PointDataWriter {
 
 				GridAsPointDataset.Point p = gap.readData(grid, null, point.getLatitude(),	point.getLongitude());
 				if (contVars == 0) {
-					writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+					//writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+					writeCoordinates(xmlStreamWriter, point.getLatitude(),	point.getLongitude());
 					attributes.clear();
 				}
 				attributes.put("name", varName);
@@ -403,7 +406,7 @@ class XMLPointDataWriter implements PointDataWriter {
 					if (gap.hasTime(grid, date) ) {
 						GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, -1, point.getLatitude(),	point.getLongitude());
 						if (contVars == 0) {
-							writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+							writeCoordinates(xmlStreamWriter, point.getLatitude(),	point.getLongitude());
 							attributes.clear();
 						}
 						attributes.put("name", varName);
