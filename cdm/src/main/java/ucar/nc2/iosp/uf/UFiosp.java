@@ -95,6 +95,8 @@ public class UFiosp extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", headerParser.getDataFormat()));
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
+    ncfile.addAttribute(null, new Attribute("Station", headerParser.getStationId()));
+    ncfile.addAttribute(null, new Attribute("StationName", headerParser.getStationId()));
     //Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     //ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
     ncfile.addAttribute(null, new Attribute("StationLatitude", new Double(headerParser.getStationLatitude())));
