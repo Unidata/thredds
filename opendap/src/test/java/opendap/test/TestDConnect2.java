@@ -32,7 +32,7 @@ public class TestDConnect2 extends TestSources {
   TestSet currentTestSet = null;
 
   TestSetEnum[] whichtests = {
-          TestSetEnum.Standard1, TestSetEnum.Constrained1, TestSetEnum.Motherlode1
+          TestSetEnum.Standard1, TestSetEnum.Constrained1, TestSetEnum.Remote2
           //TestSetEnum.Experimental
   };
 

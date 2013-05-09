@@ -43,7 +43,8 @@ import java.util.List;
 
 public class TestGroups extends UnitTestCommon
 {
-  static final String DFALTTESTSERVER = "motherlode.ucar.edu:8081";
+
+  static final String DFALTTESTSERVER = "thredds-test.ucar.edu";
   //static final String DFALTTESTSERVER = "localhost:8080";
 
 

@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Feature Collections</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;}
+</style>
+</head>
+
+<body>
+<h1>Feature Collection Internals</h1>
+<h3>CollectionUpdater</h3>
+<p>CollectionUpdater manages background tasks. </p>
+<pre>if (groupName.equals(&quot;nocheck&quot;)) {
+  dcm.updateNocheck(); 
+} else {
+  dcm.scan(true);
+}
+</pre>
+<h3>CollectionManager</h3>
+<p>CollectionManager handles the <strong>collection</strong> element. It throws an event to communicate with InvDatasetFeatureCollection.</p>
+<ul>
+  <li><strong>recheckEvery</strong> attribute is deprecated, use the same attribute on the <strong>update</strong> element.</li>
+</ul>
+ <pre>public void updateNocheck() throws IOException {
+  sendEvent(new TriggerEvent(this, TriggerType.updateNocheck));
+} 
+
+public boolean scan(boolean sendEvent) throws IOException;
+  boolean changed = checkIfListChanged();
+  if (changed) sendEvent(new TriggerEvent(this, TriggerType.update));<br />}
+</pre>
+ <h3>InvDatasetFeatureCollection</h3>
+<p>InvDatasetFeatureCollection subclass controls the dataset, and manages the updating.</p>
+<p>InvDatasetFeatureCollection owns a CollectionManager (dcm) and a GribCollection (GC). Its listens for TriggerEvents from the dcm, and calls GribCollection.factory() when needed</p>
+<h3>Updating</h3>
+<p>There are several way to update a feature collection when it changes, specified by attributes on the <strong>update</strong> element:</p>
+<ol>
+  <li><strong>recheckAfter</strong><strong> </strong>attribute<strong>: </strong> causes a directory scan whenever a request comes in and the specified time has elapsed since the last scan. The request  waits until the scan is finished and a new collection is built. This is called <em>synchronous updating</em>.</li>
+  <li><strong>rescan </strong>and<strong> startup </strong>attributes: uses a background thread to keep the collection updated, so that requests never wait. This is called <em>asynchronous updating</em>.</li>
+  <li><strong>trigger</strong> attribute: allows a trigger to be sent to the TDS to tell it to update the collection. This is called <em>user controlled updating</em>.</li>
+</ol>
+<h4>Implementation</h4>
+<ol>
+  <li><strong>recheckAfter</strong>
+    <ol>
+      <li>manager.scan() -&gt; factory(<strong>always</strong>) or nothing</li>
+    </ol>
+  </li>
+  <li><strong>rescan</strong>
+    <ol>
+      <li>manager.scan() -&gt; factory(<strong>always</strong>) or nothing</li>
+    </ol>
+  </li>
+  <li><strong> startup</strong>
+    <ol>
+      <li> <strong>nocheck</strong>: manager.updateNocheck() -&gt; factory(<strong>nocheck</strong>)</li>
+      <li> <strong>test</strong>: manager.scan() -&gt; factory(<strong>always</strong>). since dcm hasnt been populated, this will always recreate the index PROBLEM?</li>
+    </ol>
+  </li>
+  <li><strong>trigger</strong>
+    <ol>
+      <li>CollectionController calls CollectionUpdater.triggerUpdate(name, trigger)</li>
+      <li>CollectionUpdater starts background task, which runs and calls
+        <ol>
+          <li> <strong>nocheck</strong>: manager.updateNocheck() -&gt; factory(<strong>nocheck</strong>)</li>
+          <li> <strong>test</strong>: manager.scan() -&gt; factory(<strong>always</strong>) or nothing</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ol>
+<p>&nbsp;</p>
+<h3>GribCollection (GC)</h3>
+<pre> static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger); </pre>
+where Force controls the use of the <strong>ncx</strong> Index:
+<pre> public enum Force {
+		always, // force writing new index
+ 	test,   // test if new index is needed by scanning directory
+ 	nocheck  // if index exists, use it 
+}</pre>
+<p>Relationship of CollectionManager and Index:</p>
+<ol>
+  <li>collection is being monitored from outside; the index is correct, and you just want to rebuild the GC from it: <strong>force = nocheck.</strong>
+    <ol>
+      <li>TDM sends <strong>trigger=nocheck</strong></li>
+      <li>Very large datasets (NCDC) dont want to scan directories. startup=&quot;nocheck&quot; NEW</li>
+    </ol>
+  </li>
+  <li>CollectionManager knows that the collection has changed, and that the index needs to be updated: <strong>force = always.</strong>
+    <ol>
+      <li>rescan finds changes</li>
+    </ol>
+  </li>
+  <li>Figure it out yourself factory: <strong>force=test</strong>
+    <ol>
+      <li>CDM ?</li>
+    </ol>
+  </li>
+</ol>
+<p>Problems</p>
+<ol>
+  <li>if you rebuild with nocheck and dont read in the dcm, then you cant run a scan and see whats changed
+    <ol>
+      <li>so  populate dcm from index (or)</li>
+      <li>invalidate dcm and always rebuild on test</li>
+    </ol>
+  </li>
+  <li>checkState() is called that calls dcm.scanIfNeeded() which will scan if map is empty and !isStatic. isStatic apparently if theres no update element.</li>
+  <li>gribCollection.ncx has list of files, but not lastModified. Could go to MFiles and increment ncx version </li>
+</ol>
+<h4>GribXCollectionBuilder.readOrCreateIndex(Force)</h4>
+<ol>
+  <li>always</li>
+  <li>test </li>
+  <li>nocheck</li>
+</ol>
+<pre> // force new index or test for new index needed
+ boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test &amp;&amp; needsUpdate()));
+
+ // otherwise, we're good as long as the index file exists
+ File idx = gc.getIndexFile();
+ if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
+   // write out index
+   idx = gc.makeNewIndexFile(logger); // make sure we have a writeable index
+   logger.info(&quot;{}: createIndex {}&quot;, gc.getName(), idx.getPath());
+   createIndex(idx);
+   
+   // read back in index
+   RandomAccessFile indexRaf = new RandomAccessFile(idx.getPath(), &quot;r&quot;);
+   gc.setIndexRaf(indexRaf);
+   readIndex(indexRaf);
+ }
+</pre>
+if <strong>test</strong>, call 
+<em>needsUpdate</em>() which uses <em>dcm.getFiles() </em>and<em> CollectionManager.hasChangedSince() </em>:
+<pre> public boolean needsUpdate() {
+   File idx = gc.getIndexFile();
+   return !idx.exists() || needsUpdate(idx.lastModified());
+ }
+ private boolean needsUpdate(long idxLastModified) {
+   CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
+   for (CollectionManager dcm : collections) {
+     for (MFile mfile : dcm.getFiles()) {
+       if (cc.hasChangedSince(mfile, idxLastModified)) return true;
+     }
+   }
+   return false;
+ }</pre>
+<p><em>hasChangedSince()</em> looks to see if the <strong>gbx9</strong> file exists or needs updating:</p>
+<pre>public boolean hasChangedSince(MFile file, long when) {
+ File idxFile = GribCollection.getIndexFile(file.getPath() + GBX9_IDX);
+ if (!idxFile.exists()) return true;
+ long idxLastModified =  idxFile.lastModified();
+ if (idxLastModified &lt; file.getLastModified()) return true;
+ if (0 &lt; when &amp;&amp; when &lt; idxLastModified) return true;
+ return false;
+}
+</pre>
+<p>check createIndex() logic</p>
+</body>
+</html>

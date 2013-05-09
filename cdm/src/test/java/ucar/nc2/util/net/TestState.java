@@ -59,7 +59,7 @@ public class TestState extends UnitTestCommon
 {
     //////////////////////////////////////////////////
     // Constants
-    static final String SESSIONURL = "http://motherlode.ucar.edu:8081/dts";
+    static final String SESSIONURL = "http://thredds-test.ucar.edu:8081/dts";
     static final String TESTSOURCE1 = SESSIONURL + "/test.01.dds";
     static final String TESTSOURCE2 = SESSIONURL + "/test.02.dds";
 

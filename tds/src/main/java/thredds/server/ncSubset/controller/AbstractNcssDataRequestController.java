@@ -3,12 +3,15 @@ package thredds.server.ncSubset.controller;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
@@ -44,12 +47,18 @@ public abstract class AbstractNcssDataRequestController extends AbstractNcssCont
 	 * @param e
 	 * @return
 	 */
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR)
-	public @ResponseBody String handle(Exception e){
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<String> handle(Exception e, HttpServletResponse response){
+		
 		StringWriter errors = new StringWriter();
 		e.printStackTrace(new PrintWriter(errors));
 		log.error( errors.toString() );
-		return "Exception handled: "+e.getMessage();
+		
+		response.reset();
+		
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>( "Exception handled: "+e.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);		
+		
 	}	
 }

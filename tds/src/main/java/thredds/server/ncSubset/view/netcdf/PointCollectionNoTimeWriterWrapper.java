@@ -26,6 +26,8 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.StationImpl;
 
 class PointCollectionNoTimeWriterWrapper implements CFPointWriterWrapper {
 
@@ -58,10 +60,18 @@ class PointCollectionNoTimeWriterWrapper implements CFPointWriterWrapper {
 		if(zAxis != null){
 			zAxisUnitString = zAxis.getUnitsString();
 		}
+		
+		//Create the list of stations (only one)
+		String stnName="Grid Point";
+		String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
+		Station s = new StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
+		List<Station> stnList  = new ArrayList<Station>();
+		stnList.add(s);		
+		
 
 		try {
 			
-			writerPointCollectionNoTime.writeHeader(wantedVars, zAxisUnitString);			
+			writerPointCollectionNoTime.writeHeader(stnList, wantedVars, zAxisUnitString);			
 			headerDone = true;
 			
 		} catch (IOException ioe) {

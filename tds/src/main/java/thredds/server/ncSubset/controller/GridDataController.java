@@ -33,6 +33,7 @@ package thredds.server.ncSubset.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -68,7 +71,6 @@ import thredds.servlet.ThreddsConfig;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
@@ -116,7 +118,7 @@ class GridDataController extends AbstractNcssDataRequestController {
       checkRequestedVars(gridDataset, params);
 
       if (isSpatialSubset(params)) {
-        spatialSubset(params, response, version);
+        spatialSubset(params, version);
       } else {
         coordinatesSubset(params, response, version);
       }
@@ -131,7 +133,7 @@ class GridDataController extends AbstractNcssDataRequestController {
     }
   }
 
-  private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response, NetcdfFileWriter.Version version)
+  private void spatialSubset(GridDataRequestParamsBean params, NetcdfFileWriter.Version version)
           throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, TimeOutOfWindowException {
 
     LatLonRect maxBB = getGridDataset().getBoundingBox();
@@ -164,12 +166,12 @@ class GridDataController extends AbstractNcssDataRequestController {
         	estimatedSize /= ESTIMATED_C0MPRESION_RATE;
         }
         if (estimatedSize > maxFileDownloadSize) {
-          throw new RequestTooLargeException("NCSS request too large = " + estimatedSize + " max = " + maxFileDownloadSize);
+          throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
         }
       }
              
             
-      makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon(), version);
+      makeGridFile(new NetcdfCFWriter(), getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon(), version);
     //}
   }
 
@@ -219,7 +221,7 @@ class GridDataController extends AbstractNcssDataRequestController {
       	estimatedSize /= ESTIMATED_C0MPRESION_RATE;
       }      
       if (estimatedSize > maxFileDownloadSize) {
-        throw new RequestTooLargeException("NCSS request too large = " + estimatedSize + " max = " + maxFileDownloadSize);
+    	  throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
       }
     }
 
@@ -438,44 +440,32 @@ class GridDataController extends AbstractNcssDataRequestController {
   }
 
   //Exception handlers
-  @ExceptionHandler
-  @ResponseStatus(value = HttpStatus.FORBIDDEN)
-  public
-  @ResponseBody
-  String handle(RequestTooLargeException rtle) {
-    return "NetCDF Subset Service exception handled : " + rtle.getMessage();
+  @ExceptionHandler(RequestTooLargeException.class)
+  public ResponseEntity<String> handle(RequestTooLargeException rtle) {
+	HttpHeaders responseHeaders = new HttpHeaders();
+	responseHeaders.setContentType(MediaType.TEXT_PLAIN);	  	  
+    return new ResponseEntity<String>( "NetCDF Subset Service exception handled : " + rtle.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
   }
 
-  @ExceptionHandler
-  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-  public
-  @ResponseBody
-  String handle(NcssException ncsse) {
-    return "NetCDF Subset Service exception handled : " + ncsse.getMessage();
+  @ExceptionHandler(SocketException.class)
+  public ResponseEntity<String> handle(SocketException ioe) {
+	HttpHeaders responseHeaders = new HttpHeaders();
+	responseHeaders.setContentType(MediaType.TEXT_PLAIN);	  
+    return new ResponseEntity<String>( "SocketException handled : " + ioe.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler
-  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-  public
-  @ResponseBody
-  String handle(java.net.SocketException ioe) {
-    return "SocketException handled : " + ioe.getMessage();
+  @ExceptionHandler(IOException.class)
+  public ResponseEntity<String> handle(IOException ioe) {
+	HttpHeaders responseHeaders = new HttpHeaders();
+	responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+	return new ResponseEntity<String>("I/O Exception handled : " + ioe.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);   
   }
 
-  @ExceptionHandler
-  @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-  public
-  @ResponseBody
-  String handle(IOException ioe) {
-    return "I/O Exception handled : " + ioe.getMessage();
-  }
-
- @ExceptionHandler
-  @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-  public
-  @ResponseBody
-  String handle(InvalidRangeException ire) {
-    return "Invalid Range Exception handled (Invalid Lat/Lon or Time Range): " + ire.getMessage();
+  @ExceptionHandler(InvalidRangeException.class)
+  public ResponseEntity<String> handle(InvalidRangeException ire) {
+	HttpHeaders responseHeaders = new HttpHeaders();
+	responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+	return new ResponseEntity<String>("Invalid Range Exception handled (Invalid Lat/Lon or Time Range): " + ire.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);    
   }
 
 }

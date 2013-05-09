@@ -44,7 +44,7 @@ import java.util.List;
 
 public class TestMisc extends UnitTestCommon
 {
-  static final String DFALTTESTSERVER = "motherlode.ucar.edu:8081";
+  static final String DFALTTESTSERVER = "thredds-test.ucar.edu";
   //static final String DFALTTESTSERVER = "localhost:8080";
 
   // Collect testcases locally
@@ -65,7 +65,7 @@ public class TestMisc extends UnitTestCommon
 
   public TestMisc() {
     setTitle("DAP Misc tests");
-    // Check if we are running against motherlode or localhost, or what.
+    // Check if we are running against remote or localhost, or what.
     testserver = System.getProperty("testserver");
     if (testserver == null) testserver = DFALTTESTSERVER;
     definetestcases();

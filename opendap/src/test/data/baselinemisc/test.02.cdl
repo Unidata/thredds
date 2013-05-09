@@ -1,4 +1,4 @@
-netcdf dods://motherlode.ucar.edu:8081/dts/test.02 {
+netcdf dods://thredds-test.ucar.edu/dts/test.02 {
  variables:
    byte b(25);
      :_Unsigned = "true";

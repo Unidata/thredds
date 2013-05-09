@@ -6,6 +6,8 @@ import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A LoggerFactory that uses log4j to create and configure a special RollingFileAppender
@@ -26,13 +28,18 @@ public class LoggerFactorySpecial implements LoggerFactory {
     level = lev;
   }
 
+  private static Map<String,Logger> map = new HashMap<String,Logger>();
+
   @Override
   public Logger getLogger(String name) {
     name = StringUtil2.replace(name.trim(), ' ', "_");
-    String fileName =  dir + "/" + name + ".log";
-    startupLog.info("LoggerFactorySpecial try to add logger= {} file= {}", name, fileName);
+    Logger result = map.get(name);
+    if (result != null) return result;
+
 
     try {
+      String fileName =  dir + "/" + name + ".log";
+
       //create logger in log4j
       Layout layout = new PatternLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n");
 
@@ -47,10 +54,11 @@ public class LoggerFactorySpecial implements LoggerFactory {
       log4j.setLevel(level);
       log4j.setAdditivity(false); // otherwise, it also gets sent to root logger (threddsServlet.log)
 
-      startupLog.info("LoggerFactorySpecial added ok {}", name);
+      startupLog.info("LoggerFactorySpecial add logger= {} file= {}", name, fileName);
 
-      // get wrapper in slf4j
-      return org.slf4j.LoggerFactory.getLogger(name);
+      result = org.slf4j.LoggerFactory.getLogger(name); // get wrapper in slf4j
+      map.put(name, result);
+      return result;
 
     } catch (IOException ioe) {
       startupLog.error("LoggerFactorySpecial failed on "+name, ioe);

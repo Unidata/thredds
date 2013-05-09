@@ -67,14 +67,14 @@ message Group {
   optional int32 predefinedGds = 1;   // predefined GDS code, defined by center
   optional bytes gds = 2;             // all variables in the group use the same GDS
   repeated Variable variables = 3;    // list of variables
-  repeated Coord timeCoords = 4; // list of time coordinates
+  repeated Coord timeCoords = 4;      // list of time coordinates
   repeated Coord vertCoords = 5; // list of vert coordinates
   repeated Coord ensCoords = 6;  // list of ens coordinates
   repeated Parameter params = 7; // group attributes
-  repeated int32 fileno = 8;     // this is so we can show just the component files that are in this group
+  repeated int32 fileno = 8;     // the component files that are in this group, index into gc.files
 
   repeated TimeCoordUnion timeCoordUnions = 9; // for time partitions only
-  optional string name = 10;       // only when user overrides default name
+  optional string name = 10;                   // only when user overrides default name
   optional sint32 gdsHash = 11 [default = 0];
 }
 
@@ -93,9 +93,14 @@ message Partition {
   required string filename = 2;   // the gribCollection.ncx file
 }
 
+message MFile {
+  required string filename = 1;   // reletive to dirName
+  required uint64 lastModified = 2;
+}
+
 message GribCollectionIndex {
   required string name = 1;       // must be unique - index filename is name.ncx
-  repeated string files = 2;      // list of grib files (could be Mfiles??)
+  repeated string files = 2;      // list of grib files (replaced by mfiles)
   repeated Group groups = 3;      // separate groups for each GDS
   repeated Parameter params = 4;  // global attributes
   required int32 center = 5;      // these 4 fields are to get a GribTable object
@@ -107,6 +112,8 @@ message GribCollectionIndex {
   optional int32 backProcessId = 12;
 
   repeated Partition partitions = 13;  // for time partitions only
+  required string dirName = 14;       // filename reletive to this
+  repeated MFile mfiles = 15;          // list of grib MFiles
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java

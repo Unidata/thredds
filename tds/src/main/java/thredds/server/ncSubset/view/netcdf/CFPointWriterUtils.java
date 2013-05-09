@@ -3,10 +3,15 @@
  */
 package thredds.server.ncSubset.view.netcdf;
 
+import java.util.List;
+
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers.Member;
 import ucar.nc2.Variable;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
 
 /**
  * @author mhermida
@@ -16,7 +21,7 @@ final class CFPointWriterUtils {
 	
 	private CFPointWriterUtils(){}
 	
-	public static Array getArrayFromMember(Variable var, Member m){
+	static Array getArrayFromMember(Variable var, Member m){
 	
 		//DataType m_dt = writer.findVariable(m.getName()).getDataType();
 		DataType v_dt = var.getDataType();
@@ -59,4 +64,18 @@ final class CFPointWriterUtils {
 		
 	}
 
+	static LatLonRect getBoundingBox(List<Station> stnList) {
+		Station s =  stnList.get(0);
+		LatLonPointImpl llpt = new LatLonPointImpl();
+		llpt.set(s.getLatitude(), s.getLongitude());
+		LatLonRect rect = new LatLonRect(llpt, .001, .001);
+
+		for (int i = 1; i < stnList.size(); i++) {
+			s = (ucar.unidata.geoloc.Station) stnList.get(i);
+			llpt.set(s.getLatitude(), s.getLongitude());
+			rect.extend(llpt);
+		}
+
+		return rect;
+	}	
 }

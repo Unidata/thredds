@@ -43,7 +43,7 @@ import java.util.List;
 
 public class TestDuplicates extends UnitTestCommon
 {
-  static final String DFALTTESTSERVER = "motherlode.ucar.edu:8081";
+  static final String DFALTTESTSERVER = "thredds-test.ucar.edu";
 
   public TestDuplicates() {
     setTitle("DAP duplicate names tests");
@@ -65,7 +65,7 @@ public class TestDuplicates extends UnitTestCommon
   @Test
   public void
   testDuplicates() throws Exception {
-    // Check if we are running against motherlode or localhost, or what.
+    // Check if we are running against remote or localhost, or what.
     String testserver = System.getProperty("testserver");
     if (testserver == null) testserver = DFALTTESTSERVER;
 

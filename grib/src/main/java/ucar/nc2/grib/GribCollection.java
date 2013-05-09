@@ -35,6 +35,7 @@ package ucar.nc2.grib;
 import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
@@ -70,7 +71,7 @@ public abstract class GribCollection implements FileCacheable {
   //////////////////////////////////////////////////////////
   // object cache for data files - these are opened only as raf, not netcdfFile
   private static FileCache dataRafCache;
-  private static DiskCache2 diskCache = new DiskCache2();
+  private static DiskCache2 diskCache;
 
   static public void initDataRafCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     dataRafCache = new ucar.nc2.util.cache.FileCache("GribCollectionDataRafCache ", minElementsInMemory, maxElementsInMemory, -1, period);
@@ -92,7 +93,7 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public File getIndexFile(String path) {
-    return diskCache.getFile(path);
+    return getDiskCache2().getFile(path);
   }
 
   static public File getIndexFile(CollectionManager dcm) {
@@ -105,6 +106,9 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   static public DiskCache2 getDiskCache2() {
+    if (diskCache == null)
+      diskCache = new DiskCache2();
+
     return diskCache;
   }
 
@@ -189,21 +193,23 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   ////////////////////////////////////////////////////////////////
+  protected final String name;
+  protected final File directory;
+  protected final FeatureCollectionConfig.GribConfig gribConfig;
+  protected final boolean isGrib1;
 
-  protected String name;
-  protected File directory;
-  protected FeatureCollectionConfig.GribConfig gribConfig;
-  protected boolean isGrib1;
   protected FileCache objCache = null;  // optional object cache - used in the TDS
-
   public int version; // the ncx version
 
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
-  public List<String> filenames;  // must be kept in order
   public List<GroupHcs> groups; // must be kept in order
   public List<Parameter> params;  // used ??
+
+  private List<MFile> files;  // must be kept in order
+  private Map<String, MFile> fileMap;
+  private File indexFile;
 
   // synchronize any access to indexRaf
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file
@@ -212,19 +218,36 @@ public abstract class GribCollection implements FileCacheable {
     return name;
   }
 
-  public List<String> getFilenames() {
-    return filenames;
+  public List<MFile> getFiles() {
+    return files;
   }
 
-  //public RandomAccessFile getIndexRaf() {
-  //  return indexRaf;
-  //}
+  public List<String> getFilenames() {
+    List<String> result = new ArrayList<String>();
+    for (MFile file : files)
+      result.add(file.getPath());
+    Collections.sort(result);
+    return result;
+  }
+
+
+  public MFile findMFileByName(String filename) {
+    if (fileMap == null) {
+      fileMap = new HashMap<String, MFile>(files.size()*2);
+      for (MFile file : files)
+        fileMap.put(file.getName(), file);
+    }
+    return fileMap.get(filename);
+  }
+
+  public void setFiles(List<MFile> files) {
+    this.files = Collections.unmodifiableList(files);
+    this.fileMap = null;
+  }
 
   public void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
   }
-
-  private File indexFile;
 
   /**
    * get index file; may not exist
@@ -235,7 +258,7 @@ public abstract class GribCollection implements FileCacheable {
     if (indexFile == null) {
       String nameNoBlanks = StringUtil2.replace(name, ' ', "_");
       File f = new File(directory, nameNoBlanks + NCX_IDX);
-      indexFile = diskCache.getFile(f.getPath()); // diskCcahe manages where the index file lives
+      indexFile = getDiskCache2().getFile(f.getPath()); // diskCcahe manages where the index file lives
     }
     return indexFile;
   }
@@ -289,6 +312,10 @@ public abstract class GribCollection implements FileCacheable {
     return isGrib1;
   }
 
+  public File getDirectory() {
+    return directory;
+  }
+
   protected GribCollection(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
@@ -328,12 +355,13 @@ public abstract class GribCollection implements FileCacheable {
 
   public RandomAccessFile getDataRaf(int fileno) throws IOException {
     // absolute location
-    String filename = filenames.get(fileno);
+    MFile mfile = files.get(fileno);
+    String filename = mfile.getPath();
     File dataFile = new File(filename);
 
     // check reletive location - eg may be /upc/share instead of Q:
     if (!dataFile.exists()) {
-      if (filenames.size() == 1) {
+      if (files.size() == 1) {
         dataFile = new File(directory, name); // single file case
       } else {
         dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
@@ -424,13 +452,14 @@ public abstract class GribCollection implements FileCacheable {
         StringUtil2.replace(sb, ". :", "p--");
         return sb.toString();
       }
-      if (gribConfig != null && gribConfig.groupNamer != null) {
-        File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
+      /* if (gribConfig != null && gribConfig.groupNamer != null) { LOOK not implemented
+        MFile mfile = files.get(filenose[0]);
+        //File firstFile = new File(mfile.getPath());
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         StringBuilder sb = new StringBuilder(firstFile.getName().substring(15, 26) + "-" + centerPoint.toString());
         StringUtil2.replace(sb, ". :", "p--");
         return sb.toString();
-      }
+      } */
 
       // default id
       String base = hcs.makeId();
@@ -452,7 +481,8 @@ public abstract class GribCollection implements FileCacheable {
         result = gribConfig.gdsNamer.get(gdsHash);
       if (result != null) return result;
       if (gribConfig != null && gribConfig.groupNamer != null) {
-        File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
+        MFile mfile = files.get(filenose[0]);
+        File firstFile = new File(mfile.getPath()); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         return "First Run " + firstFile.getName().substring(15, 26) + ", Center " + centerPoint;
       }
@@ -483,10 +513,18 @@ public abstract class GribCollection implements FileCacheable {
       return getDescription().compareTo(o.getDescription());
     }
 
+    public List<MFile> getFiles() {
+      List<MFile> result = new ArrayList<MFile>();
+      for (int fileno : filenose)
+        result.add(files.get(fileno));
+      Collections.sort(result);
+      return result;
+    }
+
     public List<String> getFilenames() {
       List<String> result = new ArrayList<String>();
       for (int fileno : filenose)
-        result.add(filenames.get(fileno));
+        result.add(files.get(fileno).getPath());
       Collections.sort(result);
       return result;
     }
@@ -765,10 +803,14 @@ public abstract class GribCollection implements FileCacheable {
   public void showIndex(Formatter f) {
     f.format("%s%n%n", toString());
     f.format("Class (%s)%n", getClass().getName());
-    f.format("Files (%d)%n", filenames.size());
-    for (String file : filenames)
-      f.format("  %s%n", file);
-    f.format("%n");
+    if (files == null) {
+      f.format("Files empty%n");
+    } else {
+      f.format("Files (%d)%n", files.size());
+      for (MFile file : files)
+        f.format("  %s%n", file);
+      f.format("%n");
+    }
 
     for (GroupHcs g : groups) {
       f.format("Hcs = %s%n", g.hcs);

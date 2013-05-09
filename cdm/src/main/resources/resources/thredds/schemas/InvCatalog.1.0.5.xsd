@@ -348,7 +348,7 @@
     <xsd:sequence>
       <xsd:element ref="manage" minOccurs="0"/>
     </xsd:sequence>
-    <xsd:attribute name="startup" type="xsd:boolean"/>
+    <xsd:attribute name="startup" type="xsd:string"/>
     <xsd:attribute name="recheckAfter" type="xsd:string" />
     <xsd:attribute name="rescan" type="xsd:token"/>
     <xsd:attribute name="trigger" type="xsd:token"/>

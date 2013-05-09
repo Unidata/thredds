@@ -142,7 +142,7 @@ public class NcmlCollectionReader {
     String subdirs = scanElem.getAttributeValue("subdirs");
     String olderThan = scanElem.getAttributeValue("olderThan");
 
-    datasetManager = new MFileCollectionManager(recheck);
+    datasetManager = new MFileCollectionManager(recheck, null);
     datasetManager.addDirectoryScan(dirLocation, suffix, regexpPatternString, subdirs, olderThan, null);
 
     String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");

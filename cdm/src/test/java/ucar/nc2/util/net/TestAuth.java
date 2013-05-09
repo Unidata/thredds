@@ -49,8 +49,8 @@ import java.io.Serializable;
 
 public class TestAuth extends UnitTestCommon
 {
-    // Add a temporary control for motherlode versus localhost
-    static boolean motherlode = false;
+    // Add a temporary control for remote versus localhost
+    static boolean remote = false;
 
     // TODO: add proxy and digest tests
 
@@ -149,7 +149,7 @@ public class TestAuth extends UnitTestCommon
     testSSH() throws Exception
     {
         String[] sshurls = {
-                "https://motherlode.ucar.edu:8444/dts/b31.dds"
+                "https://thredds-test.ucar.edu:8444/dts/b31.dds"
         };
 
         System.out.println("*** Testing: Simple Https");
@@ -183,9 +183,9 @@ public class TestAuth extends UnitTestCommon
     }
 
     static AuthDataBasic[] basictests = {
-                new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
+                new AuthDataBasic("http://thredds-test.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
                         "tiggeUser", "tigge", MUSTPASS),
-                new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
+                new AuthDataBasic("http://thredds-test.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
                         "", "", MUSTFAIL)
         };
 
@@ -288,7 +288,7 @@ public class TestAuth extends UnitTestCommon
         }
     }
 
-    // This test is turned off until such time as motherlode is properly set up
+    // This test is turned off until such time as thredds-test is properly set up
     @Test
     public void
     testKeystore() throws Exception
@@ -298,8 +298,8 @@ public class TestAuth extends UnitTestCommon
 
             String server;
             String path;
-            if (motherlode) {
-                server = "motherlode.ucar.edu:8843";
+            if (remote) {
+                server = "thredds-test.ucar.edu:8843";
                 path = "/dts/b31.dds";
             } else {
                 server = "localhost:8843";

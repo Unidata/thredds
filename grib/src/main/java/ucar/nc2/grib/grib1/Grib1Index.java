@@ -34,6 +34,7 @@ package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
+import ucar.grib.grib1.Grib1WriteIndex;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
@@ -113,10 +114,9 @@ public class Grib1Index extends GribIndex {
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
     if (!idxFile.exists()) return false;
     long idxModified = idxFile.lastModified();
-    if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false;
-    // force new index if file was updated
+    if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
-    FileInputStream fin = new FileInputStream(idxFile); // LOOK need DiskCache for non-writeable directories
+    FileInputStream fin = new FileInputStream(idxFile);
 
     try {
       //// check header is ok
@@ -277,10 +277,39 @@ public class Grib1Index extends GribIndex {
     return b.build();
   }
 
-  static public void main(String args[]) throws IOException {
-    String filename = "G:/tigge/uv/z_tigge_c_kwbc_20110605120000_glob_prod_cf_HGHT_0000_000_10_uv.grib";
+    /**
+     * Dumps usage of the class.
+     *
+     * @param className Grib2WriteIndex
+     */
+    private static void usage(String className) {
+        System.out.println();
+        System.out.println("Usage of " + className + ":");
+        System.out.println("Parameters:");
+        System.out.println("<GribFileToRead> scans for index creation");
+        System.out.println(
+                "<IndexFile.idx> where to write index, default STDOUT");
+        System.out.println();
+        System.out.println("java " + className
+                + " <GribFileToRead> <IndexFile>");
+        System.exit(0);
+    }
+
+    static public void main(String args[]) throws IOException {
+
+      Grib1WriteIndex indexer = new Grib1WriteIndex();
+
+      if (args.length < 1) {
+          // Get class name as String
+          Class cl = indexer.getClass();
+          usage(cl.getName());
+          System.exit(0);
+      }
+
+      String gribName = args[0];
+    //String filename = "G:/tigge/uv/z_tigge_c_kwbc_20110605120000_glob_prod_cf_HGHT_0000_000_10_uv.grib";
     //String filename = "G:/mlode/ndfdProb/extract.Grib1";
-    new Grib1Index().makeIndex(filename, null);
+    new Grib1Index().makeIndex(gribName, null);
   }
 
 }

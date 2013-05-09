@@ -36,7 +36,7 @@ public class RequestBracketingLogMessageFilter implements javax.servlet.Filter {
     HttpServletRequest request = (HttpServletRequest) servletRequest;
     TdsServletResponseWrapper response = new TdsServletResponseWrapper((HttpServletResponse) servletResponse);
 
-    request.getServletPath();
+    //request.getServletPath();
 
     // Just checking
     if (response.isCommitted())

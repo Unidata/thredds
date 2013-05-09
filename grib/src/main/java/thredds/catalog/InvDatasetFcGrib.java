@@ -35,10 +35,7 @@ package thredds.catalog;
 import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionUpdater;
-import thredds.inventory.MFileCollectionManager;
-import thredds.inventory.TimePartitionCollection;
+import thredds.inventory.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
@@ -112,13 +109,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     this.gribConfig = config.gribConfig;
 
     Formatter errlog = new Formatter();
-    if (config.useIndexOnly)
-      this.dcm = TimePartitionCollection.fromExistingIndices(config, errlog); // not used
-    else if (config.timePartition != null) {
-      this.dcm = TimePartitionCollection.factory(config, errlog);
+    //if (config.useIndexOnly)
+    //  this.dcm = TimePartitionCollection.fromExistingIndices(config, errlog); // not used
+    // else
+    if (config.timePartition != null) {
+      this.dcm = TimePartitionCollection.factory(config, errlog, logger);
       this.dcm.setChangeChecker(GribIndex.getChangeChecker());
     } else {
-      this.dcm = new MFileCollectionManager(config, errlog);
+      this.dcm = new MFileCollectionManager(config, errlog, logger);
       this.dcm.setChangeChecker(GribIndex.getChangeChecker());
     }
 
@@ -621,7 +619,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
     //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
     result.addDataset(top);

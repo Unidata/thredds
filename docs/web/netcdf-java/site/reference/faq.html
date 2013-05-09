@@ -124,7 +124,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 <h3><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h3>
 <p><strong>Q: How do I work with unsigned integer types?</strong></p>
 <blockquote>
-  <p>Classic netCDF-3 format has only signed bytes. The CDM library often sees unsigned integers coming from other data formats, and we made the decision not to automatically widen unsigned types, in order to save memory. The data is delivered using Java integer types, which are signed, so its up to the application to check <em>Variable.isUnsigned()</em> and do the right thing when doing computations with the data. The library itself handles all conversions and computations correctly. See <a href="../CDM/DataType.html#integer">CDM Datatypes</a> for more details on how to work with unsigned data arrays.</p>
+  <p>Classic netCDF-3 format has only signed bytes. The CDM library often sees unsigned integers coming from other data formats, and we made the decision not to automatically widen unsigned types, in order to save memory. The data is delivered using Java integer types, which are signed, so its up to the application to check <em>Variable.isUnsigned()</em> or <em>Array.isUnsigned() </em>and do the right thing when doing computations with the data. The library itself handles all conversions and computations correctly, for example <em>Array.getDouble()</em>. See <a href="../CDM/DataType.html#integer">CDM Datatypes</a> for more details on how to work with unsigned data arrays.</p>
   <p>The correct way to widen is to use the equivilent of these static methods in <strong>ucar.ma2.DataType</strong>. The actual conversion code is on the right:</p>
   <table width="732" border="1">
     <tr>
@@ -224,7 +224,7 @@ Array.makeArray(DataType dtype, List&lt;String&gt; stringValues);</pre>
 </blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document  was last updated April 2013
+<img src="../nc.gif" alt="" width="64" height="64" /> This document  was last updated May 2013
 </address>
 </body>
 </html>

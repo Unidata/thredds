@@ -6778,7 +6778,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 8;</code>
      *
      * <pre>
-     * this is so we can show just the component files that are in this group
+     * the component files that are in this group, index into gc.files
      * </pre>
      */
     java.util.List<java.lang.Integer> getFilenoList();
@@ -6786,7 +6786,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 8;</code>
      *
      * <pre>
-     * this is so we can show just the component files that are in this group
+     * the component files that are in this group, index into gc.files
      * </pre>
      */
     int getFilenoCount();
@@ -6794,7 +6794,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 8;</code>
      *
      * <pre>
-     * this is so we can show just the component files that are in this group
+     * the component files that are in this group, index into gc.files
      * </pre>
      */
     int getFileno(int index);
@@ -7417,7 +7417,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 8;</code>
      *
      * <pre>
-     * this is so we can show just the component files that are in this group
+     * the component files that are in this group, index into gc.files
      * </pre>
      */
     public java.util.List<java.lang.Integer>
@@ -7428,7 +7428,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 8;</code>
      *
      * <pre>
-     * this is so we can show just the component files that are in this group
+     * the component files that are in this group, index into gc.files
      * </pre>
      */
     public int getFilenoCount() {
@@ -7438,7 +7438,7 @@ public final class GribCollectionProto {
      * <code>repeated int32 fileno = 8;</code>
      *
      * <pre>
-     * this is so we can show just the component files that are in this group
+     * the component files that are in this group, index into gc.files
      * </pre>
      */
     public int getFileno(int index) {
@@ -9927,7 +9927,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 8;</code>
        *
        * <pre>
-       * this is so we can show just the component files that are in this group
+       * the component files that are in this group, index into gc.files
        * </pre>
        */
       public java.util.List<java.lang.Integer>
@@ -9938,7 +9938,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 8;</code>
        *
        * <pre>
-       * this is so we can show just the component files that are in this group
+       * the component files that are in this group, index into gc.files
        * </pre>
        */
       public int getFilenoCount() {
@@ -9948,7 +9948,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 8;</code>
        *
        * <pre>
-       * this is so we can show just the component files that are in this group
+       * the component files that are in this group, index into gc.files
        * </pre>
        */
       public int getFileno(int index) {
@@ -9958,7 +9958,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 8;</code>
        *
        * <pre>
-       * this is so we can show just the component files that are in this group
+       * the component files that are in this group, index into gc.files
        * </pre>
        */
       public Builder setFileno(
@@ -9972,7 +9972,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 8;</code>
        *
        * <pre>
-       * this is so we can show just the component files that are in this group
+       * the component files that are in this group, index into gc.files
        * </pre>
        */
       public Builder addFileno(int value) {
@@ -9985,7 +9985,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 8;</code>
        *
        * <pre>
-       * this is so we can show just the component files that are in this group
+       * the component files that are in this group, index into gc.files
        * </pre>
        */
       public Builder addAllFileno(
@@ -9999,7 +9999,7 @@ public final class GribCollectionProto {
        * <code>repeated int32 fileno = 8;</code>
        *
        * <pre>
-       * this is so we can show just the component files that are in this group
+       * the component files that are in this group, index into gc.files
        * </pre>
        */
       public Builder clearFileno() {
@@ -12556,6 +12556,622 @@ public final class GribCollectionProto {
     // @@protoc_insertion_point(class_scope:gribCollectionIndex.Partition)
   }
 
+  public interface MFileOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string filename = 1;
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to dirName
+     * </pre>
+     */
+    boolean hasFilename();
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to dirName
+     * </pre>
+     */
+    java.lang.String getFilename();
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to dirName
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getFilenameBytes();
+
+    // required uint64 lastModified = 2;
+    /**
+     * <code>required uint64 lastModified = 2;</code>
+     */
+    boolean hasLastModified();
+    /**
+     * <code>required uint64 lastModified = 2;</code>
+     */
+    long getLastModified();
+  }
+  /**
+   * Protobuf type {@code gribCollectionIndex.MFile}
+   */
+  public static final class MFile extends
+      com.google.protobuf.GeneratedMessage
+      implements MFileOrBuilder {
+    // Use MFile.newBuilder() to construct.
+    private MFile(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private MFile(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final MFile defaultInstance;
+    public static MFile getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public MFile getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private MFile(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              filename_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              lastModified_ = input.readUInt64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.grib.GribCollectionProto.internal_static_gribCollectionIndex_MFile_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.grib.GribCollectionProto.internal_static_gribCollectionIndex_MFile_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.grib.GribCollectionProto.MFile.class, ucar.nc2.grib.GribCollectionProto.MFile.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<MFile> PARSER =
+        new com.google.protobuf.AbstractParser<MFile>() {
+      public MFile parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new MFile(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<MFile> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string filename = 1;
+    public static final int FILENAME_FIELD_NUMBER = 1;
+    private java.lang.Object filename_;
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to dirName
+     * </pre>
+     */
+    public boolean hasFilename() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to dirName
+     * </pre>
+     */
+    public java.lang.String getFilename() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          filename_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to dirName
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getFilenameBytes() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        filename_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required uint64 lastModified = 2;
+    public static final int LASTMODIFIED_FIELD_NUMBER = 2;
+    private long lastModified_;
+    /**
+     * <code>required uint64 lastModified = 2;</code>
+     */
+    public boolean hasLastModified() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required uint64 lastModified = 2;</code>
+     */
+    public long getLastModified() {
+      return lastModified_;
+    }
+
+    private void initFields() {
+      filename_ = "";
+      lastModified_ = 0L;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasFilename()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLastModified()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getFilenameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt64(2, lastModified_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getFilenameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(2, lastModified_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.GribCollectionProto.MFile parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.grib.GribCollectionProto.MFile prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code gribCollectionIndex.MFile}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.grib.GribCollectionProto.MFileOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.grib.GribCollectionProto.internal_static_gribCollectionIndex_MFile_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.grib.GribCollectionProto.internal_static_gribCollectionIndex_MFile_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.grib.GribCollectionProto.MFile.class, ucar.nc2.grib.GribCollectionProto.MFile.Builder.class);
+      }
+
+      // Construct using ucar.nc2.grib.GribCollectionProto.MFile.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        filename_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lastModified_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.grib.GribCollectionProto.internal_static_gribCollectionIndex_MFile_descriptor;
+      }
+
+      public ucar.nc2.grib.GribCollectionProto.MFile getDefaultInstanceForType() {
+        return ucar.nc2.grib.GribCollectionProto.MFile.getDefaultInstance();
+      }
+
+      public ucar.nc2.grib.GribCollectionProto.MFile build() {
+        ucar.nc2.grib.GribCollectionProto.MFile result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.grib.GribCollectionProto.MFile buildPartial() {
+        ucar.nc2.grib.GribCollectionProto.MFile result = new ucar.nc2.grib.GribCollectionProto.MFile(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.filename_ = filename_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.lastModified_ = lastModified_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.grib.GribCollectionProto.MFile) {
+          return mergeFrom((ucar.nc2.grib.GribCollectionProto.MFile)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.grib.GribCollectionProto.MFile other) {
+        if (other == ucar.nc2.grib.GribCollectionProto.MFile.getDefaultInstance()) return this;
+        if (other.hasFilename()) {
+          bitField0_ |= 0x00000001;
+          filename_ = other.filename_;
+          onChanged();
+        }
+        if (other.hasLastModified()) {
+          setLastModified(other.getLastModified());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasFilename()) {
+          
+          return false;
+        }
+        if (!hasLastModified()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.grib.GribCollectionProto.MFile parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.grib.GribCollectionProto.MFile) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string filename = 1;
+      private java.lang.Object filename_ = "";
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to dirName
+       * </pre>
+       */
+      public boolean hasFilename() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to dirName
+       * </pre>
+       */
+      public java.lang.String getFilename() {
+        java.lang.Object ref = filename_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          filename_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to dirName
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getFilenameBytes() {
+        java.lang.Object ref = filename_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          filename_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to dirName
+       * </pre>
+       */
+      public Builder setFilename(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        filename_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to dirName
+       * </pre>
+       */
+      public Builder clearFilename() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        filename_ = getDefaultInstance().getFilename();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to dirName
+       * </pre>
+       */
+      public Builder setFilenameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        filename_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required uint64 lastModified = 2;
+      private long lastModified_ ;
+      /**
+       * <code>required uint64 lastModified = 2;</code>
+       */
+      public boolean hasLastModified() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required uint64 lastModified = 2;</code>
+       */
+      public long getLastModified() {
+        return lastModified_;
+      }
+      /**
+       * <code>required uint64 lastModified = 2;</code>
+       */
+      public Builder setLastModified(long value) {
+        bitField0_ |= 0x00000002;
+        lastModified_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 lastModified = 2;</code>
+       */
+      public Builder clearLastModified() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        lastModified_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:gribCollectionIndex.MFile)
+    }
+
+    static {
+      defaultInstance = new MFile(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:gribCollectionIndex.MFile)
+  }
+
   public interface GribCollectionIndexOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -12591,7 +13207,7 @@ public final class GribCollectionProto {
      * <code>repeated string files = 2;</code>
      *
      * <pre>
-     * list of grib files (could be Mfiles??)
+     * list of grib files (replaced by mfiles)
      * </pre>
      */
     java.util.List<java.lang.String>
@@ -12600,7 +13216,7 @@ public final class GribCollectionProto {
      * <code>repeated string files = 2;</code>
      *
      * <pre>
-     * list of grib files (could be Mfiles??)
+     * list of grib files (replaced by mfiles)
      * </pre>
      */
     int getFilesCount();
@@ -12608,7 +13224,7 @@ public final class GribCollectionProto {
      * <code>repeated string files = 2;</code>
      *
      * <pre>
-     * list of grib files (could be Mfiles??)
+     * list of grib files (replaced by mfiles)
      * </pre>
      */
     java.lang.String getFiles(int index);
@@ -12616,7 +13232,7 @@ public final class GribCollectionProto {
      * <code>repeated string files = 2;</code>
      *
      * <pre>
-     * list of grib files (could be Mfiles??)
+     * list of grib files (replaced by mfiles)
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -12842,6 +13458,78 @@ public final class GribCollectionProto {
      */
     ucar.nc2.grib.GribCollectionProto.PartitionOrBuilder getPartitionsOrBuilder(
         int index);
+
+    // required string dirName = 14;
+    /**
+     * <code>required string dirName = 14;</code>
+     *
+     * <pre>
+     * filename reletive to this
+     * </pre>
+     */
+    boolean hasDirName();
+    /**
+     * <code>required string dirName = 14;</code>
+     *
+     * <pre>
+     * filename reletive to this
+     * </pre>
+     */
+    java.lang.String getDirName();
+    /**
+     * <code>required string dirName = 14;</code>
+     *
+     * <pre>
+     * filename reletive to this
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getDirNameBytes();
+
+    // repeated .gribCollectionIndex.MFile mfiles = 15;
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    java.util.List<ucar.nc2.grib.GribCollectionProto.MFile> 
+        getMfilesList();
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    ucar.nc2.grib.GribCollectionProto.MFile getMfiles(int index);
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    int getMfilesCount();
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    java.util.List<? extends ucar.nc2.grib.GribCollectionProto.MFileOrBuilder> 
+        getMfilesOrBuilderList();
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    ucar.nc2.grib.GribCollectionProto.MFileOrBuilder getMfilesOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code gribCollectionIndex.GribCollectionIndex}
@@ -12966,6 +13654,19 @@ public final class GribCollectionProto {
               partitions_.add(input.readMessage(ucar.nc2.grib.GribCollectionProto.Partition.PARSER, extensionRegistry));
               break;
             }
+            case 114: {
+              bitField0_ |= 0x00000100;
+              dirName_ = input.readBytes();
+              break;
+            }
+            case 122: {
+              if (!((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+                mfiles_ = new java.util.ArrayList<ucar.nc2.grib.GribCollectionProto.MFile>();
+                mutable_bitField0_ |= 0x00002000;
+              }
+              mfiles_.add(input.readMessage(ucar.nc2.grib.GribCollectionProto.MFile.PARSER, extensionRegistry));
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -12985,6 +13686,9 @@ public final class GribCollectionProto {
         }
         if (((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
           partitions_ = java.util.Collections.unmodifiableList(partitions_);
+        }
+        if (((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+          mfiles_ = java.util.Collections.unmodifiableList(mfiles_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -13080,7 +13784,7 @@ public final class GribCollectionProto {
      * <code>repeated string files = 2;</code>
      *
      * <pre>
-     * list of grib files (could be Mfiles??)
+     * list of grib files (replaced by mfiles)
      * </pre>
      */
     public java.util.List<java.lang.String>
@@ -13091,7 +13795,7 @@ public final class GribCollectionProto {
      * <code>repeated string files = 2;</code>
      *
      * <pre>
-     * list of grib files (could be Mfiles??)
+     * list of grib files (replaced by mfiles)
      * </pre>
      */
     public int getFilesCount() {
@@ -13101,7 +13805,7 @@ public final class GribCollectionProto {
      * <code>repeated string files = 2;</code>
      *
      * <pre>
-     * list of grib files (could be Mfiles??)
+     * list of grib files (replaced by mfiles)
      * </pre>
      */
     public java.lang.String getFiles(int index) {
@@ -13111,7 +13815,7 @@ public final class GribCollectionProto {
      * <code>repeated string files = 2;</code>
      *
      * <pre>
-     * list of grib files (could be Mfiles??)
+     * list of grib files (replaced by mfiles)
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -13415,6 +14119,117 @@ public final class GribCollectionProto {
       return partitions_.get(index);
     }
 
+    // required string dirName = 14;
+    public static final int DIRNAME_FIELD_NUMBER = 14;
+    private java.lang.Object dirName_;
+    /**
+     * <code>required string dirName = 14;</code>
+     *
+     * <pre>
+     * filename reletive to this
+     * </pre>
+     */
+    public boolean hasDirName() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>required string dirName = 14;</code>
+     *
+     * <pre>
+     * filename reletive to this
+     * </pre>
+     */
+    public java.lang.String getDirName() {
+      java.lang.Object ref = dirName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          dirName_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string dirName = 14;</code>
+     *
+     * <pre>
+     * filename reletive to this
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getDirNameBytes() {
+      java.lang.Object ref = dirName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        dirName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // repeated .gribCollectionIndex.MFile mfiles = 15;
+    public static final int MFILES_FIELD_NUMBER = 15;
+    private java.util.List<ucar.nc2.grib.GribCollectionProto.MFile> mfiles_;
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    public java.util.List<ucar.nc2.grib.GribCollectionProto.MFile> getMfilesList() {
+      return mfiles_;
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    public java.util.List<? extends ucar.nc2.grib.GribCollectionProto.MFileOrBuilder> 
+        getMfilesOrBuilderList() {
+      return mfiles_;
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    public int getMfilesCount() {
+      return mfiles_.size();
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    public ucar.nc2.grib.GribCollectionProto.MFile getMfiles(int index) {
+      return mfiles_.get(index);
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+     *
+     * <pre>
+     * list of grib MFiles
+     * </pre>
+     */
+    public ucar.nc2.grib.GribCollectionProto.MFileOrBuilder getMfilesOrBuilder(
+        int index) {
+      return mfiles_.get(index);
+    }
+
     private void initFields() {
       name_ = "";
       files_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -13428,6 +14243,8 @@ public final class GribCollectionProto {
       genProcessId_ = 0;
       backProcessId_ = 0;
       partitions_ = java.util.Collections.emptyList();
+      dirName_ = "";
+      mfiles_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -13454,6 +14271,10 @@ public final class GribCollectionProto {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasDirName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       for (int i = 0; i < getGroupsCount(); i++) {
         if (!getGroups(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -13468,6 +14289,12 @@ public final class GribCollectionProto {
       }
       for (int i = 0; i < getPartitionsCount(); i++) {
         if (!getPartitions(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getMfilesCount(); i++) {
+        if (!getMfiles(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -13514,6 +14341,12 @@ public final class GribCollectionProto {
       }
       for (int i = 0; i < partitions_.size(); i++) {
         output.writeMessage(13, partitions_.get(i));
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBytes(14, getDirNameBytes());
+      }
+      for (int i = 0; i < mfiles_.size(); i++) {
+        output.writeMessage(15, mfiles_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -13576,6 +14409,14 @@ public final class GribCollectionProto {
       for (int i = 0; i < partitions_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(13, partitions_.get(i));
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(14, getDirNameBytes());
+      }
+      for (int i = 0; i < mfiles_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(15, mfiles_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -13688,6 +14529,7 @@ public final class GribCollectionProto {
           getGroupsFieldBuilder();
           getParamsFieldBuilder();
           getPartitionsFieldBuilder();
+          getMfilesFieldBuilder();
         }
       }
       private static Builder create() {
@@ -13731,6 +14573,14 @@ public final class GribCollectionProto {
           bitField0_ = (bitField0_ & ~0x00000800);
         } else {
           partitionsBuilder_.clear();
+        }
+        dirName_ = "";
+        bitField0_ = (bitField0_ & ~0x00001000);
+        if (mfilesBuilder_ == null) {
+          mfiles_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00002000);
+        } else {
+          mfilesBuilder_.clear();
         }
         return this;
       }
@@ -13824,6 +14674,19 @@ public final class GribCollectionProto {
           result.partitions_ = partitions_;
         } else {
           result.partitions_ = partitionsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.dirName_ = dirName_;
+        if (mfilesBuilder_ == null) {
+          if (((bitField0_ & 0x00002000) == 0x00002000)) {
+            mfiles_ = java.util.Collections.unmodifiableList(mfiles_);
+            bitField0_ = (bitField0_ & ~0x00002000);
+          }
+          result.mfiles_ = mfiles_;
+        } else {
+          result.mfiles_ = mfilesBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -13955,6 +14818,37 @@ public final class GribCollectionProto {
             }
           }
         }
+        if (other.hasDirName()) {
+          bitField0_ |= 0x00001000;
+          dirName_ = other.dirName_;
+          onChanged();
+        }
+        if (mfilesBuilder_ == null) {
+          if (!other.mfiles_.isEmpty()) {
+            if (mfiles_.isEmpty()) {
+              mfiles_ = other.mfiles_;
+              bitField0_ = (bitField0_ & ~0x00002000);
+            } else {
+              ensureMfilesIsMutable();
+              mfiles_.addAll(other.mfiles_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.mfiles_.isEmpty()) {
+            if (mfilesBuilder_.isEmpty()) {
+              mfilesBuilder_.dispose();
+              mfilesBuilder_ = null;
+              mfiles_ = other.mfiles_;
+              bitField0_ = (bitField0_ & ~0x00002000);
+              mfilesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getMfilesFieldBuilder() : null;
+            } else {
+              mfilesBuilder_.addAllMessages(other.mfiles_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -13980,6 +14874,10 @@ public final class GribCollectionProto {
           
           return false;
         }
+        if (!hasDirName()) {
+          
+          return false;
+        }
         for (int i = 0; i < getGroupsCount(); i++) {
           if (!getGroups(i).isInitialized()) {
             
@@ -13994,6 +14892,12 @@ public final class GribCollectionProto {
         }
         for (int i = 0; i < getPartitionsCount(); i++) {
           if (!getPartitions(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getMfilesCount(); i++) {
+          if (!getMfiles(i).isInitialized()) {
             
             return false;
           }
@@ -14130,7 +15034,7 @@ public final class GribCollectionProto {
        * <code>repeated string files = 2;</code>
        *
        * <pre>
-       * list of grib files (could be Mfiles??)
+       * list of grib files (replaced by mfiles)
        * </pre>
        */
       public java.util.List<java.lang.String>
@@ -14141,7 +15045,7 @@ public final class GribCollectionProto {
        * <code>repeated string files = 2;</code>
        *
        * <pre>
-       * list of grib files (could be Mfiles??)
+       * list of grib files (replaced by mfiles)
        * </pre>
        */
       public int getFilesCount() {
@@ -14151,7 +15055,7 @@ public final class GribCollectionProto {
        * <code>repeated string files = 2;</code>
        *
        * <pre>
-       * list of grib files (could be Mfiles??)
+       * list of grib files (replaced by mfiles)
        * </pre>
        */
       public java.lang.String getFiles(int index) {
@@ -14161,7 +15065,7 @@ public final class GribCollectionProto {
        * <code>repeated string files = 2;</code>
        *
        * <pre>
-       * list of grib files (could be Mfiles??)
+       * list of grib files (replaced by mfiles)
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -14172,7 +15076,7 @@ public final class GribCollectionProto {
        * <code>repeated string files = 2;</code>
        *
        * <pre>
-       * list of grib files (could be Mfiles??)
+       * list of grib files (replaced by mfiles)
        * </pre>
        */
       public Builder setFiles(
@@ -14189,7 +15093,7 @@ public final class GribCollectionProto {
        * <code>repeated string files = 2;</code>
        *
        * <pre>
-       * list of grib files (could be Mfiles??)
+       * list of grib files (replaced by mfiles)
        * </pre>
        */
       public Builder addFiles(
@@ -14206,7 +15110,7 @@ public final class GribCollectionProto {
        * <code>repeated string files = 2;</code>
        *
        * <pre>
-       * list of grib files (could be Mfiles??)
+       * list of grib files (replaced by mfiles)
        * </pre>
        */
       public Builder addAllFiles(
@@ -14220,7 +15124,7 @@ public final class GribCollectionProto {
        * <code>repeated string files = 2;</code>
        *
        * <pre>
-       * list of grib files (could be Mfiles??)
+       * list of grib files (replaced by mfiles)
        * </pre>
        */
       public Builder clearFiles() {
@@ -14233,7 +15137,7 @@ public final class GribCollectionProto {
        * <code>repeated string files = 2;</code>
        *
        * <pre>
-       * list of grib files (could be Mfiles??)
+       * list of grib files (replaced by mfiles)
        * </pre>
        */
       public Builder addFilesBytes(
@@ -15446,6 +16350,416 @@ public final class GribCollectionProto {
         return partitionsBuilder_;
       }
 
+      // required string dirName = 14;
+      private java.lang.Object dirName_ = "";
+      /**
+       * <code>required string dirName = 14;</code>
+       *
+       * <pre>
+       * filename reletive to this
+       * </pre>
+       */
+      public boolean hasDirName() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      /**
+       * <code>required string dirName = 14;</code>
+       *
+       * <pre>
+       * filename reletive to this
+       * </pre>
+       */
+      public java.lang.String getDirName() {
+        java.lang.Object ref = dirName_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          dirName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string dirName = 14;</code>
+       *
+       * <pre>
+       * filename reletive to this
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getDirNameBytes() {
+        java.lang.Object ref = dirName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          dirName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string dirName = 14;</code>
+       *
+       * <pre>
+       * filename reletive to this
+       * </pre>
+       */
+      public Builder setDirName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
+        dirName_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string dirName = 14;</code>
+       *
+       * <pre>
+       * filename reletive to this
+       * </pre>
+       */
+      public Builder clearDirName() {
+        bitField0_ = (bitField0_ & ~0x00001000);
+        dirName_ = getDefaultInstance().getDirName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string dirName = 14;</code>
+       *
+       * <pre>
+       * filename reletive to this
+       * </pre>
+       */
+      public Builder setDirNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
+        dirName_ = value;
+        onChanged();
+        return this;
+      }
+
+      // repeated .gribCollectionIndex.MFile mfiles = 15;
+      private java.util.List<ucar.nc2.grib.GribCollectionProto.MFile> mfiles_ =
+        java.util.Collections.emptyList();
+      private void ensureMfilesIsMutable() {
+        if (!((bitField0_ & 0x00002000) == 0x00002000)) {
+          mfiles_ = new java.util.ArrayList<ucar.nc2.grib.GribCollectionProto.MFile>(mfiles_);
+          bitField0_ |= 0x00002000;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.GribCollectionProto.MFile, ucar.nc2.grib.GribCollectionProto.MFile.Builder, ucar.nc2.grib.GribCollectionProto.MFileOrBuilder> mfilesBuilder_;
+
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public java.util.List<ucar.nc2.grib.GribCollectionProto.MFile> getMfilesList() {
+        if (mfilesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(mfiles_);
+        } else {
+          return mfilesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public int getMfilesCount() {
+        if (mfilesBuilder_ == null) {
+          return mfiles_.size();
+        } else {
+          return mfilesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public ucar.nc2.grib.GribCollectionProto.MFile getMfiles(int index) {
+        if (mfilesBuilder_ == null) {
+          return mfiles_.get(index);
+        } else {
+          return mfilesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public Builder setMfiles(
+          int index, ucar.nc2.grib.GribCollectionProto.MFile value) {
+        if (mfilesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureMfilesIsMutable();
+          mfiles_.set(index, value);
+          onChanged();
+        } else {
+          mfilesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public Builder setMfiles(
+          int index, ucar.nc2.grib.GribCollectionProto.MFile.Builder builderForValue) {
+        if (mfilesBuilder_ == null) {
+          ensureMfilesIsMutable();
+          mfiles_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          mfilesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public Builder addMfiles(ucar.nc2.grib.GribCollectionProto.MFile value) {
+        if (mfilesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureMfilesIsMutable();
+          mfiles_.add(value);
+          onChanged();
+        } else {
+          mfilesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public Builder addMfiles(
+          int index, ucar.nc2.grib.GribCollectionProto.MFile value) {
+        if (mfilesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureMfilesIsMutable();
+          mfiles_.add(index, value);
+          onChanged();
+        } else {
+          mfilesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public Builder addMfiles(
+          ucar.nc2.grib.GribCollectionProto.MFile.Builder builderForValue) {
+        if (mfilesBuilder_ == null) {
+          ensureMfilesIsMutable();
+          mfiles_.add(builderForValue.build());
+          onChanged();
+        } else {
+          mfilesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public Builder addMfiles(
+          int index, ucar.nc2.grib.GribCollectionProto.MFile.Builder builderForValue) {
+        if (mfilesBuilder_ == null) {
+          ensureMfilesIsMutable();
+          mfiles_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          mfilesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public Builder addAllMfiles(
+          java.lang.Iterable<? extends ucar.nc2.grib.GribCollectionProto.MFile> values) {
+        if (mfilesBuilder_ == null) {
+          ensureMfilesIsMutable();
+          super.addAll(values, mfiles_);
+          onChanged();
+        } else {
+          mfilesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public Builder clearMfiles() {
+        if (mfilesBuilder_ == null) {
+          mfiles_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00002000);
+          onChanged();
+        } else {
+          mfilesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public Builder removeMfiles(int index) {
+        if (mfilesBuilder_ == null) {
+          ensureMfilesIsMutable();
+          mfiles_.remove(index);
+          onChanged();
+        } else {
+          mfilesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public ucar.nc2.grib.GribCollectionProto.MFile.Builder getMfilesBuilder(
+          int index) {
+        return getMfilesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public ucar.nc2.grib.GribCollectionProto.MFileOrBuilder getMfilesOrBuilder(
+          int index) {
+        if (mfilesBuilder_ == null) {
+          return mfiles_.get(index);  } else {
+          return mfilesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public java.util.List<? extends ucar.nc2.grib.GribCollectionProto.MFileOrBuilder> 
+           getMfilesOrBuilderList() {
+        if (mfilesBuilder_ != null) {
+          return mfilesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(mfiles_);
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public ucar.nc2.grib.GribCollectionProto.MFile.Builder addMfilesBuilder() {
+        return getMfilesFieldBuilder().addBuilder(
+            ucar.nc2.grib.GribCollectionProto.MFile.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public ucar.nc2.grib.GribCollectionProto.MFile.Builder addMfilesBuilder(
+          int index) {
+        return getMfilesFieldBuilder().addBuilder(
+            index, ucar.nc2.grib.GribCollectionProto.MFile.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.MFile mfiles = 15;</code>
+       *
+       * <pre>
+       * list of grib MFiles
+       * </pre>
+       */
+      public java.util.List<ucar.nc2.grib.GribCollectionProto.MFile.Builder> 
+           getMfilesBuilderList() {
+        return getMfilesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.GribCollectionProto.MFile, ucar.nc2.grib.GribCollectionProto.MFile.Builder, ucar.nc2.grib.GribCollectionProto.MFileOrBuilder> 
+          getMfilesFieldBuilder() {
+        if (mfilesBuilder_ == null) {
+          mfilesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              ucar.nc2.grib.GribCollectionProto.MFile, ucar.nc2.grib.GribCollectionProto.MFile.Builder, ucar.nc2.grib.GribCollectionProto.MFileOrBuilder>(
+                  mfiles_,
+                  ((bitField0_ & 0x00002000) == 0x00002000),
+                  getParentForChildren(),
+                  isClean());
+          mfiles_ = null;
+        }
+        return mfilesBuilder_;
+      }
+
       // @@protoc_insertion_point(builder_scope:gribCollectionIndex.GribCollectionIndex)
     }
 
@@ -15498,6 +16812,11 @@ public final class GribCollectionProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_gribCollectionIndex_Partition_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_gribCollectionIndex_MFile_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_gribCollectionIndex_MFile_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_gribCollectionIndex_GribCollectionIndex_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -15545,16 +16864,19 @@ public final class GribCollectionProto {
       "\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006values\030\003 \003(\002\022\r\n\005b" +
       "ound\030\004 \003(\002\022\021\n\tpartition\030\005 \003(\005\022\r\n\005index\030\006" +
       " \003(\005\"+\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020\n\010filen" +
-      "ame\030\002 \002(\t\"\311\002\n\023GribCollectionIndex\022\014\n\004nam" +
-      "e\030\001 \002(\t\022\r\n\005files\030\002 \003(\t\022*\n\006groups\030\003 \003(\0132\032" +
-      ".gribCollectionIndex.Group\022.\n\006params\030\004 \003" +
-      "(\0132\036.gribCollectionIndex.Parameter\022\016\n\006ce" +
-      "nter\030\005 \002(\005\022\021\n\tsubcenter\030\006 \002(\005\022\016\n\006master\030" +
-      "\007 \002(\005\022\r\n\005local\030\010 \002(\005\022\026\n\016genProcessType\030\n",
-      " \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProces" +
-      "sId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.gribColl" +
-      "ectionIndex.PartitionB$\n\rucar.nc2.gribB\023" +
-      "GribCollectionProto"
+      "ame\030\002 \002(\t\"/\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014" +
+      "lastModified\030\002 \002(\004\"\206\003\n\023GribCollectionInd" +
+      "ex\022\014\n\004name\030\001 \002(\t\022\r\n\005files\030\002 \003(\t\022*\n\006group" +
+      "s\030\003 \003(\0132\032.gribCollectionIndex.Group\022.\n\006p" +
+      "arams\030\004 \003(\0132\036.gribCollectionIndex.Parame" +
+      "ter\022\016\n\006center\030\005 \002(\005\022\021\n\tsubcenter\030\006 \002(\005\022\016",
+      "\n\006master\030\007 \002(\005\022\r\n\005local\030\010 \002(\005\022\026\n\016genProc" +
+      "essType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rb" +
+      "ackProcessId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036" +
+      ".gribCollectionIndex.Partition\022\017\n\007dirNam" +
+      "e\030\016 \002(\t\022*\n\006mfiles\030\017 \003(\0132\032.gribCollection" +
+      "Index.MFileB$\n\rucar.nc2.gribB\023GribCollec" +
+      "tionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -15609,12 +16931,18 @@ public final class GribCollectionProto {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Partition_descriptor,
               new java.lang.String[] { "Name", "Filename", });
-          internal_static_gribCollectionIndex_GribCollectionIndex_descriptor =
+          internal_static_gribCollectionIndex_MFile_descriptor =
             getDescriptor().getMessageTypes().get(8);
+          internal_static_gribCollectionIndex_MFile_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_gribCollectionIndex_MFile_descriptor,
+              new java.lang.String[] { "Filename", "LastModified", });
+          internal_static_gribCollectionIndex_GribCollectionIndex_descriptor =
+            getDescriptor().getMessageTypes().get(9);
           internal_static_gribCollectionIndex_GribCollectionIndex_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_GribCollectionIndex_descriptor,
-              new java.lang.String[] { "Name", "Files", "Groups", "Params", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Partitions", });
+              new java.lang.String[] { "Name", "Files", "Groups", "Params", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Partitions", "DirName", "Mfiles", });
           return null;
         }
       };

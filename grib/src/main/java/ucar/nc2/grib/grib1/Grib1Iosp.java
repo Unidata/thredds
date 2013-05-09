@@ -158,7 +158,7 @@ public class Grib1Iosp extends GribIosp {
       for (GribCollection.GroupHcs g : groups)
         addGroup(ncfile, g, useGroups);
 
-    } else { // the raf is a collection index (ncx)
+    } else { // the raf is a collection index (ncx) - only on client
 
       raf.seek(0);
       byte[] b = new byte[Grib1TimePartitionBuilder.MAGIC_START.length()];

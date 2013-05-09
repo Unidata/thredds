@@ -97,23 +97,22 @@ Here is an example
   <li>This NcML wraps each dataset in the collection. This attribute overrides any existing one in the datasets; it tells the CDM  to parse the station information using the CF Conventions.</li>
 </ol>
 <h3>collection element<a name="collection" id="collection"></a></h3>
-<p>A <strong>collection</strong> element defines the collection of datasets. </p>
-<pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$&quot;
+<p>A <strong>collection</strong> element defines the collection of datasets. Example:</p>
+<pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_.*gini$&quot;
+            dateFormatMark=&quot;#WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm&quot;
             <strong>name</strong>=&quot;WEST-CONUS_4km&quot; <strong></strong><strong></strong><strong>olderThan</strong>=&quot;15 min&quot; /&gt;
 </pre>
 
 The XML Schema:
 <pre>
-  &lt;xsd:complexType name=&quot;collectionType&quot;&gt;<br />1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;<br />3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;<br />4)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;<br />5)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;
-6)  &lt;xsd:attribute name=&quot;useIndexOnly&quot; type=&quot;xsd:boolean&quot;/&gt;<br />  &lt;/xsd:complexType&gt;<br /></pre>
+  &lt;xsd:complexType name=&quot;collectionType&quot;&gt;<br />1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;<br />3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;<br />4)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;<br />5)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;<br />  &lt;/xsd:complexType&gt;<br /></pre>
 <p>where</p>
 <ol>
-  <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this example, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the regular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. Each dataset is assigned a nominal time  by matching <em>yyyyMMdd_HHmm</em> to the portion of the filename following &quot;WEST-CONUS_4km_3.9_&quot;.</li>
-  <li><strong>name</strong>: the collection name, which <em><strong>must be unique for all collections served by your TDS</strong></em>. This is used for external triggers, and for logging and debugging messages. If missing, the <em>name</em> attribute on the <em>&lt;featureCollection&gt;</em> element is used.</li>
-  <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included. This excludes files that are in the process of being written. However, it only applies to newly found files, that is, once a file is in the collection it is not removed because it was updated.</li>
-  <li><strong>dateFormatMark</strong> (optional): the collection specification string can only extract dates from the file name, as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract the date from the full path. <em>Use this OR a date extrator in the specification string, but not both.</em></li>
-  <li><strong>timePartition</strong> (optional): experimental, not complete yet.</li>
-  <li><strong>useIndexOnly</strong> (optional): experimental, not complete yet</li>
+  <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this example, the collection contains all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the regular expression <em>&quot;WEST-CONUS_4km_3.9_.*gini$&quot;</em> (where <em>&quot;.*&quot;</em> means &quot;match any number of characters&quot; and  <em>&quot;gini$&quot;</em> means &quot;ends with the characters <strong>gini&quot;</strong>. If you wanted to match <strong>&quot;.gini&quot;</strong>, you would need to escape the &quot;.&quot;, ie <em>&quot;\.gini$&quot;</em>). </li>
+  <li><strong>name</strong>: the collection name, which <em><strong>must be unique for all collections served by your TDS</strong></em>. This is used for external triggers, for the CDM collection index files, and for logging and debugging messages. If missing, the <em>name</em> attribute on the <em>&lt;featureCollection&gt;</em> element is used. However, we recommend that you create a unique, immutable name for the dataset collection, and put it in this <strong>name</strong> attribute of the <strong>collection</strong> element.</li>
+  <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included. This is used to exclude files that are in the process of being written. However, it only applies to newly found files; that is, once a file is in the collection it is not removed because it was updated.</li>
+  <li><strong>dateFormatMark</strong> (optional): This defines a <em><a href="#dateExtractor">DateExtractor</a></em>, which is applied to each file in the collection to assign it a date, which is used for sorting, getting the latest file, and possibly for time partitioning. In this example, the string <strong>WEST-CONUS_4km_3.9_</strong> is located in each file path, then the <a href="SimpleDateFormat.html">SimpleDateFormat</a> template  <strong>yyyyMMdd_HHmm</strong> is applied to the next characters of the filename to create a date.  A DateExtractor can also be defined in the <a href="CollectionSpecification.html">collection specification</a> string, but in that case the date must be contained just in the file name, as opposed to the complete file path which includes all of the  parent directory names. <em>Use this OR a date extractor in the specification string, but not both.</em></li>
+  <li><strong>timePartition</strong> (optional): This defines the time intervals from which the collection is partitioned. This is used for very large datasets. Use this with caution, as it has far reaching effects on how your data is presented.</li>
 </ol>
 <h3>Date Extractor<a name="dateExtractor" id="dateExtractor"></a></h3>
 <p>Feature Collections  need to know how to sort the collection of files, so it is strongly recommended that you have a date in the filename, and to specify a date extractor in the specification string or include a dateFormatMark attribute. Otherwise, files will be sorted by filename.</p>
@@ -192,12 +191,12 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
 &lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;</pre>
 The XML Schema definition for the update element:
 <pre>
-   &lt;xsd:complexType name=&quot;updateType&quot;&gt;<br /> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:boolean&quot;/&gt;<br /> 2)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
- 3)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br /> 4)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br /> 5)  &lt;xsd:attribute name=&quot;deleteAfter&quot; type=&quot;xsd:string&quot;/&gt;<br />&lt;/xsd:complexType&gt;<br /></pre>
+   &lt;xsd:complexType name=&quot;updateType&quot;&gt;<br /> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:token&quot;/&gt;<br /> 2)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
+ 3)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br /> 4)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br />&lt;/xsd:complexType&gt;<br /></pre>
 
 <p> where: </p>
 <ol>
-  <li><strong>startup</strong>:  If true,  the collection is rescanned on server startup.</li>
+  <li><strong>startup</strong>:  The collection is rescanned on server startup. If &quot;<em>nocheck</em>&quot;, the collection index is used if it exists. If &quot;<em>true</em>&quot; or &quot;<em>test</em>&quot;, the collection is scanned and a new index is built.</li>
   <li><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed), and so is called  <em>synchronous updating</em>. <em><strong>This option will be ignored if you are using  the rescan attribute</strong>.</em></li>
   <li><strong>rescan</strong>:  uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task. This is called  <em>asynchronous updating</em>.</li>
   <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated by an external program (or person using a browser) sending an explicit &quot;trigger&quot; URL to the server. 
@@ -209,7 +208,6 @@ The XML Schema definition for the update element:
       <li>The TDM uses the trigger  <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;&amp;nocheck</strong> . This does not rescan the directory, it simply recreates the dataset using the current index.</li>
     </ol>
   </li>
-  <li><strong>deleteAfter</strong>: ONLY FOR TDM. Delete any files that are older than this.</li>
 </ol>
 <h3>manage element (ONLY FOR TDM)</h3>
 <p>This instructs the TDM to manage your collection by deleting files that are older than a certain time.</p>
@@ -224,27 +222,49 @@ The XML Schema definition for the update element:
 </blockquote>
 <hr />
 <h2><a name="changing" id="changing"></a>Static vs. changing datasets</h2>
-<p>There are two way to update a feature collection when it changes:</p>
+<p>There are several way to update a feature collection when it changes, specified by attributes on the <strong>update</strong> element:</p>
 <ol>
-  <li><strong>recheckAfter</strong><strong> </strong>attribute on the <strong>collection</strong> element<strong>: </strong> causes a directory scan whenever a request comes in and the specified time has elapsed since the last scan. The request  waits until the scan is finished and a new collection is built. This is called <em>synchronous updating</em>.</li>
-  <li><strong>update</strong> element : uses a background thread to keep the collection updated, so that requests never wait. This is called <em>asynchronous updating</em>.</li>
+  <li><strong>recheckAfter</strong><strong> </strong>attribute<strong>: </strong> causes a directory scan whenever a request comes in and the specified time has elapsed since the last scan. The request  waits until the scan is finished and a new collection is built. This is called <em>synchronous updating</em>.</li>
+  <li><strong>rescan </strong>and<strong> startup </strong>attributes: uses a background thread to keep the collection updated, so that requests never wait. This is called <em>asynchronous updating</em>.</li>
+  <li><strong>trigger</strong> attribute: allows a trigger to be sent to the TDS to tell it to update the collection. This is called <em>user controlled updating</em>.</li>
 </ol>
-<h3>Static Datasets</h3>
-<p>If you have a collection that doesnt change, do not use the<strong> recheckAfter</strong> on the <strong>collection</strong> element or include an <strong>update</strong> element. This tells the TDS that the collection does not change, and the TDS will attempt to minimize the amount of processing (like directory scanning) that is done.</p>
-
-<p>If you want the collection to be tested at startup to see if it has changed since  the last time the TDS was run, use:</p>
+<h3>Static Datasets - Small or Rarely Used</h3>
+<p>If you have a collection that doesnt change, do not include an <strong>update</strong> element. The first time that the dataset is accessed, it will be read in and then never changed.</p>
+<h3><strong>Static Datasets - Fast response</strong></h3>
+<p>If you have a collection that doesnt change, but you want to have it ready for requests, then use:</p>
 <blockquote>
   <pre>&lt;update startup =&quot;true&quot; /&gt;</pre>
 </blockquote>
-<p>Otherwise the collection will be checked for changes and created when the first request for it comes in. </p>
-<h3>Changing Collection - Small or rarely used</h3>
-<p>For collections that change but are rarely used, use the <strong>recheckAfter</strong><strong> </strong>attribute on the <strong>collection</strong> element<strong>.</strong> This minimizes unneeded processing for lightly used collections. This is also a good strategy for small collections which don't take very long to build.</p>
+<p>The dataset will be scanned at startup time and then never changed.</p>
+<h3><strong>Very Large  Datasets </strong></h3>
+<p>You have a very large collection, which takes a long time to scan. You must carefully control when/if it will be scanned. </p>
+<blockquote>
+  <pre>&lt;update startup =&quot;nocheck&quot; /&gt;</pre>
+</blockquote>
+<p>The dataset will be read in at startup time by using the existing indexes, and never changed.</p>
+<p>If it occasionally changes, then you want to manually tell it when to rescan:</p>
+<blockquote>
+  <pre>&lt;update startup =&quot;nocheck&quot; trigger=&quot;allow&quot; /&gt;</pre>
+</blockquote>
+<p>The dataset will be read in at startup time by using the existing indexes, and you manually tell it when to rebuild the index.</p>
+<h3>Changing Collection - Small or Rarely Used</h3>
+<p>For collections that change but are rarely used, use the <strong>recheckAfter</strong><strong> </strong>attribute on the <strong>update</strong> element<strong>.</strong> This minimizes unneeded processing for lightly used collections. This is also a good strategy for small collections which don't take very long to build.</p>
+<blockquote>
+  <pre>&lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;</pre>
+</blockquote>
+<p>Do not include both a <strong>recheckAfter</strong> and a <strong>rescan</strong> attribute. The <strong>recheckAfter</strong> will be ignored.</p>
 <h3><strong>Changing Collection - Fast response</strong></h3>
-<p>When you want to ensure that requests are answered as quick as possible, update the collection in the background using the <strong>scan</strong> attribute of the <strong>update</strong> element.</p>
+<p>When you want to ensure that requests are answered as quickly as possible, read it at startup  and also update the collection in the background using  <strong>rescan</strong>:</p>
+<blockquote>
+  <pre>&lt;update startup=&quot;true&quot; rescan=&quot;0 20 * * * ? *&quot; /&gt;</pre>
+  </blockquote>
+<p>This <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expressio</a>n says to rescan the collection files every hour at 20 past the hour, and rebuild the dataset if needed.</p>
 <h3><strong>Sporadically changing Collection</strong></h3>
 <p>To externally control when a collection is updated, use:</p>
-<pre><strong>&lt;update trigger =&quot;allow&quot; /&gt;</strong></pre>
-<p>You must <a href="../RemoteManagement.html">enable remote management</a>. When the dataset changes, <a href="#trigger">send a message to a special URL</a> in the TDS.</p>
+<blockquote>
+  <pre><strong>&lt;update trigger=&quot;allow&quot; /&gt;</strong></pre>
+</blockquote>
+<p>You must enable remote triggers, and when the dataset changes, send a message to a special URL in the TDS (<a href="#trigger">details</a>)</p>
 <hr />
 <h2>NcML Modifications<a name="ncml" id="ncml"></a> </h2>
 <p>NcML is no longer used to define the collection, but it may still be used to modify the feature collection dataset. </p>
@@ -306,7 +326,7 @@ The XML Schema definition for the update element:
 <p></p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" width="76" height="67" /> This document was last updated  October 2012.
+<img src="../../../images/thread.png" width="76" height="67" /> This document was last updated  May 2013.
 </address>
 </body>
 </html>

@@ -55,7 +55,7 @@ public class NoTestAuth2 extends TestCase
       public Data(String u,CredentialsProvider p) {this.url=u; this.provider=p;}
   }
     static private Data[] cases = new Data[] {
-      new Data("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
+      new Data("http://thredds-test.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
                new CredentialsProvider() {
                    public Credentials getCredentials(AuthScheme sch, String h, int p, boolean pr)
                            throws CredentialsNotAvailableException {
@@ -66,7 +66,7 @@ public class NoTestAuth2 extends TestCase
                      return creds;
                    }
                }),
-      new Data("https://motherlode.ucar.edu:8443/dts/b31.dds",null),
+      new Data("https://thredds-test.ucar.edu:8443/dts/b31.dds",null),
     };
 
 
