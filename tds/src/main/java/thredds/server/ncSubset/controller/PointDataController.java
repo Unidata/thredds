@@ -13,7 +13,10 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -35,7 +38,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -200,31 +202,34 @@ class PointDataController extends AbstractNcssDataRequestController{
 
 
 	
-	
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR)
-	public @ResponseBody String handle(ParseException pe){
-		return "Parse exception handled: "+pe.getMessage();
+	//Exception handling methods...
+	@ExceptionHandler(ParseException.class)
+	public ResponseEntity<String> handle(ParseException pe){
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN); 
+		return new ResponseEntity<String>("Parse exception handled: "+pe.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR );
 	}
 	
 	
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR)
-	public @ResponseBody String handle(IOException ioe){
-		return "IO exception handled: "+ioe.getMessage();
+	@ExceptionHandler(IOException.class)
+	public ResponseEntity<String> handle(IOException ioe){
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);		
+		return new ResponseEntity<String>("IO exception handled: "+ioe.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR );
 	}
 	
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR)
-	public @ResponseBody String handle(InvalidRangeException ire){
-		
-		return "Invalid Range exception handled: "+ire.getMessage();
+	@ExceptionHandler(InvalidRangeException.class)
+	public ResponseEntity<String> handle(InvalidRangeException ire){
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);				
+		return new ResponseEntity<String>( "Invalid Range exception handled: "+ire.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 	}	
 	
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
-	public @ResponseBody String handleValidationException(MethodArgumentNotValidException ve){
-		return "Bad request: "+ve.getMessage();
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ve){
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);		
+		return new ResponseEntity<String>( "Bad request: "+ve.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
 	}
 
 	

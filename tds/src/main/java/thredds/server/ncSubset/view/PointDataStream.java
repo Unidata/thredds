@@ -2,6 +2,7 @@ package thredds.server.ncSubset.view;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -45,9 +46,9 @@ public final class PointDataStream {
 		}				
 				
 		//Assuming all variables have same time dimension!!!			
-		GridDatatype gridForTimeUnits= gds.findGridDatatype(vars.get(0));
+		//GridDatatype gridForTimeUnits= gds.findGridDatatype(vars.get(0));
 		
-		if(pointDataWriter.header(groupedVars, gds, wDates, getDateUnit(gridForTimeUnits) , point, vertCoord)){ 
+		if(pointDataWriter.header(groupedVars, gds, wDates, getDateUnit(gds) , point, vertCoord)){ 
 			
 			boolean allPointsRead = false;
 			allPointsRead = pointDataWriter.write(groupedVars, gds, wDates, point, vertCoord);
@@ -57,14 +58,22 @@ public final class PointDataStream {
 	}
 	
 	
-	private DateUnit getDateUnit(GridDatatype grid) throws DateUnitException{
+	private DateUnit getDateUnit(GridDataset gds) throws DateUnitException{
 
 		//If the grid does not have time axis, return null
-		if(grid.getCoordinateSystem().getTimeAxis() == null)
-			return null;
+		//if(grid.getCoordinateSystem().getTimeAxis() == null)
+		//	return null;
+		CoordinateAxis1DTime tAxis = null;
+		List<Gridset> ggss = gds.getGridsets();
+		
+		Iterator<Gridset> it = ggss.iterator();
+		while( tAxis == null && it.hasNext() ){
+			Gridset gs = it.next();
+			tAxis = gs.getGeoCoordSystem().getTimeAxis1D();
+		}
+		
+		if(tAxis == null) return null;
 
-		// Asuming all vars have the same time axis and it is 1D...
-		CoordinateAxis1DTime tAxis =(CoordinateAxis1DTime) grid.getCoordinateSystem().getTimeAxis();
 		String timeUnitString = tAxis.getUnitsString();
 		if( tAxis.getDataType() == DataType.STRING && tAxis.getUnitsString().equals("") ){ //Time axis contains String dates (ISO ??)
 			
