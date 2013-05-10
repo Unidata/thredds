@@ -55,6 +55,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
@@ -350,6 +351,10 @@ public class NetcdfCFWriter {
 			// make subset if needed
 			Range timeRange = makeTimeRange(dateRange, timeAxis, stride_time);
 
+			if( gcsOrg.getXHorizAxis().getRank() >1 ||  gcsOrg.getYHorizAxis().getRank() > 1){
+				throw new IllegalArgumentException("Coordinate systems with 2D horizontal axis are not supported");
+			}		
+			
 			CoordinateAxis1D xAxis = (CoordinateAxis1D) gcsOrg.getXHorizAxis();
 			double[] xCoords = xAxis.getCoordValues();
 

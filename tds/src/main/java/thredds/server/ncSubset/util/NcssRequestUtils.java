@@ -2,7 +2,9 @@ package thredds.server.ncSubset.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -129,9 +131,36 @@ public final class NcssRequestUtils implements ApplicationContextAware{
 		return varList;
 	}
 	
+	
+	public static GridDatatype getTimeGrid(Map<String, List<String>> groupedVars, GridDataset gridDataset){
+
+		////
+		List<String> keys = new ArrayList<String>(groupedVars.keySet());
+		GridDatatype timeGrid = null;
+		List<String> allVars = new ArrayList<String>();
+		for(String key : keys){
+			allVars.addAll(groupedVars.get(key));
+		}
+		
+		Iterator<String> it = allVars.iterator();
+		
+		while( timeGrid == null && it.hasNext() ){
+			String var = it.next();
+			if(gridDataset.findGridDatatype(var).getCoordinateSystem().hasTimeAxis()  ){
+				timeGrid = gridDataset.findGridDatatype(var);
+			}
+		}
+		///
+		return timeGrid;
+	}
+	
 	public static Double getTimeCoordValue(GridDatatype grid, CalendarDate date, CalendarDate origin){
 		
 		CoordinateAxis1DTime tAxis = grid.getCoordinateSystem().getTimeAxis1D();
+		
+		if(tAxis == null)
+			return -1.0;
+		
     	Integer wIndex = tAxis.findTimeIndexFromCalendarDate( date );
     	Double coordVal = 0.;
     	

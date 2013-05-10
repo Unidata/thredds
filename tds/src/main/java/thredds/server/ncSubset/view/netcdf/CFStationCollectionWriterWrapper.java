@@ -113,9 +113,13 @@ public final class CFStationCollectionWriterWrapper implements CFPointWriterWrap
 		boolean allDone = false;	
 
 		List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);
-		StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars, true);		
-
-		Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date, timeOrigin);
+		StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars, true);
+		GridDatatype timeGrid = NcssRequestUtils.getTimeGrid(groupedVars, gridDataset);
+		if(timeGrid == null){			
+			throw new IllegalArgumentException("Variables do not have time dimension");
+		}
+					
+		Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(timeGrid, date, timeOrigin);
 		sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
 
 		//Ensemble...
