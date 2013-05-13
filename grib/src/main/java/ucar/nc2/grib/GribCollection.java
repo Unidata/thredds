@@ -64,7 +64,7 @@ import java.util.*;
  * @since 4/6/11
  */
 @ThreadSafe
-public abstract class GribCollection implements FileCacheable {
+public abstract class GribCollection { // implements FileCacheable {
   public static final String NCX_IDX = ".ncx";
   public static final long MISSING_RECORD = -1;
 
@@ -87,7 +87,7 @@ public abstract class GribCollection implements FileCacheable {
     }
   };
 
-  static public void disableNetcdfFileCache() {
+  static public void disableDataRafCache() {
     if (null != dataRafCache) dataRafCache.disable();
     dataRafCache = null;
   }
@@ -245,6 +245,10 @@ public abstract class GribCollection implements FileCacheable {
     this.fileMap = null;
   }
 
+  /**
+   * public by accident, do not use
+   * @param indexRaf the open raf of the index file
+   */
   public void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
   }
@@ -388,6 +392,16 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   public void close() throws java.io.IOException {
+    if (indexRaf != null) {
+          indexRaf.close();
+          indexRaf = null;
+        }
+      }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /* stuff for FileCacheable
+
+  public void close() throws java.io.IOException {
     if (objCache != null) {
       objCache.release(this);
     } else if (indexRaf != null) {
@@ -395,10 +409,6 @@ public abstract class GribCollection implements FileCacheable {
       indexRaf = null;
     }
   }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // stuff for FileCacheable
-
   @Override
   public String getLocation() {
     if (indexRaf != null) return indexRaf.getLocation();
@@ -416,7 +426,7 @@ public abstract class GribCollection implements FileCacheable {
   @Override
   public void setFileCache(FileCache fileCache) {
     this.objCache = fileCache;
-  }
+  }  */
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 

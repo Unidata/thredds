@@ -75,7 +75,7 @@ public abstract class TimePartition extends GribCollection {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCollection.createFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger()); // LOOK not sure what the parent directory is for
+      return GribCollection.createFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger());
     }
   };
 
@@ -125,7 +125,7 @@ public abstract class TimePartition extends GribCollection {
     }
 
     public FeatureCollectionConfig.GribConfig getConfig() {
-      return gribConfig;
+      return gribConfig;   // in GribCollection
     }
 
     public org.slf4j.Logger getLogger() {
@@ -134,7 +134,7 @@ public abstract class TimePartition extends GribCollection {
 
     // null if it came from the index
     public CollectionManager getDcm() {
-      return dcm;
+      return dcm;            // in GribCollection
     }
 
     // acquire or construct GribCollection - caller must call gc.close() when done

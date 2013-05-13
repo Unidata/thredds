@@ -179,7 +179,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return readIndex( new RandomAccessFile(filename, "r") );
   }
 
-  public boolean readIndex(RandomAccessFile raf) {
+  protected boolean readIndex(RandomAccessFile raf) {
     gc.setIndexRaf(raf); // LOOK leaving the raf open in the GribCollection
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -559,7 +559,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     if (indexFile.exists()) {
       if (!indexFile.delete()) {
-        logger.error("gc2 cant delete {}", indexFile.getPath());
+        logger.error("gc2 cant delete index file {}", indexFile.getPath());
       }
     }
     logger.debug(" createIndex for {}", indexFile.getPath());

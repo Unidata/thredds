@@ -74,6 +74,34 @@ public boolean scan(boolean sendEvent) throws IOException;
   </li>
 </ol>
 <p>&nbsp;</p>
+<h3>InvDatasetGribFc</h3>
+<p>Keeps and manages a GribCollection or a TimePartition object. All threads share this object</p>
+<ul>
+  <li><strong>GribCollection</strong> : keeps the indexRaf open, so as to not have to read all Records into memory. all accesses to it are synchronized</li>
+  <li><strong>TimePartition</strong> manages a FileCache of Partition/GribCollection. perhaps make Partition implement FileCacheable?</li>
+</ul>
+<p>Problems</p>
+<ul>
+  <li>when index file needs to be rewritten
+    by TDS
+  </li>
+</ul>
+<ol>
+  <ol>
+    <li>new GC object is created</li>
+    <li>index file rewritten</li>
+    <li>old GC object is closed, which closes indexRaf</li>
+  </ol>
+</ol>
+<p>the idea was to allow the old CG to be used while the new was being rewritten. but its getting clobberred in place.</p>
+<ul>
+  <li>when TDM is doing it
+    <ol>
+      <li> it clobbers the index file and then sends a message to the TDS</li>
+      <li>TDS then reads new GC, closes old one</li>
+    </ol>
+  </li>
+</ul>
 <h3>GribCollection (GC)</h3>
 <pre> static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger); </pre>
 where Force controls the use of the <strong>ncx</strong> Index:

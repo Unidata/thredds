@@ -83,7 +83,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     if (collection.startsWith(CATALOG))
       return new CatalogCollectionManager(collection);
     else
-      return new MFileCollectionManager(collection, olderThan, errlog, null);
+      return new MFileCollectionManager(collection, olderThan, errlog);
   }
 
   // retrofit to Aggregation
@@ -109,7 +109,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
 
   // simplified version called from DatasetCollectionManager.open()
-  private MFileCollectionManager(String collectionSpec, String olderThan, Formatter errlog, Object fake) {
+  private MFileCollectionManager(String collectionSpec, String olderThan, Formatter errlog) {
     super(collectionSpec, null);
     CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
     this.recheck = null;
@@ -495,13 +495,20 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   private class DateSorter implements Comparator<MFile> {
     public int compare(MFile m1, MFile m2) {
-      return extractRunDate(m1).compareTo(extractRunDate(m2));
+      return extractRunDateWithError(m1).compareTo(extractRunDateWithError(m2));
     }
   }
 
   @Override
   public CalendarDate extractRunDate(MFile mfile) {
     return (dateExtractor == null) ? null : dateExtractor.getCalendarDate(mfile);
+  }
+
+  private CalendarDate extractRunDateWithError(MFile mfile) {
+    CalendarDate result = extractRunDate(mfile);
+    if (result == null)
+      logger.error("Failed to extract date from file {} with Extractor {}", mfile.getPath(), dateExtractor);
+    return result;
   }
 
   @Override

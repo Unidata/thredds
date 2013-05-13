@@ -66,21 +66,21 @@ public class DebugCommands {
     DebugHandler debugHandler = DebugHandler.get("Caches");
     DebugHandler.Action act;
 
-    act = new DebugHandler.Action("showCaches", "Show File Object Caches") {
+    act = new DebugHandler.Action("showCaches", "Show All File Object Caches") {
       public void doAction(DebugHandler.Event e) {
         Formatter f = new Formatter(e.pw);
 
         FileCache fc = NetcdfDataset.getNetcdfFileCache();
-        if (fc == null) f.format("NetcdfFileCache : turned off\n");
+        if (fc == null) f.format("NetcdfDatasetFileCache : turned off\n");
         else {
-          f.format("\nNetcdfFileCache contents\n");
+          f.format("\nNetcdfDatasetFileCache contents\n");
           fc.showCache(f);
         }
 
         fc = GribCollection.getDataRafCache();
-        if (fc == null) f.format("\nGribCollectionDataCache : turned off\n");
+        if (fc == null) f.format("\nGribCollectionDataRafCache : turned off\n");
         else {
-          f.format("\nGribCollectionDataCache contents\n");
+          f.format("\nGribCollectionDataRafCache contents\n");
           fc.showCache(f);
         }
 
@@ -103,17 +103,18 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("clearCaches", "Clear File Object Caches") {
+    act = new DebugHandler.Action("clearCaches", "Clear All File Object Caches") {
        public void doAction(DebugHandler.Event e) {
          NetcdfDataset.getNetcdfFileCache().clearCache(false);
          GribCollection.getDataRafCache().clearCache(false);
+         TimePartition.getDataRafCache().clearCache(false);
          ServletUtil.getFileCache().clearCache(false);
          e.pw.println("  ClearCache ok");
        }
      };
      debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("disableNetcdfCache", "Disable NetcdfFile Cache") {
+    act = new DebugHandler.Action("disableNetcdfCache", "Disable NetcdfDatasetFile Cache") {
        public void doAction(DebugHandler.Event e) {
          NetcdfDataset.disableNetcdfFileCache();
          e.pw.println("  Disable NetcdfFile Cache ok");
@@ -121,7 +122,7 @@ public class DebugCommands {
      };
      debugHandler.addAction(act);
 
-     act = new DebugHandler.Action("forceNCCache", "Force clear NetcdfFile Cache") {
+     act = new DebugHandler.Action("forceNCCache", "Force clear NetcdfDatasetFile Cache") {
       public void doAction(DebugHandler.Event e) {
         NetcdfDataset.getNetcdfFileCache().clearCache(true);
         e.pw.println("  NetcdfFileCache force clearCache done");
@@ -129,18 +130,18 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("disableGribCollectionCache", "Disable GribCollection Cache") {
+    act = new DebugHandler.Action("disableGribCollectionCache", "Disable GribCollectionDataRaf Cache") {
        public void doAction(DebugHandler.Event e) {
-         GribCollection.disableNetcdfFileCache();
-         e.pw.println("  Disable GribCollection Cache ok");
+         GribCollection.disableDataRafCache();
+         e.pw.println("  Disable GribCollectionDataRaf Cache ok");
        }
      };
      debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("forceGCCache", "Force clear GribCollection Cache") {
+    act = new DebugHandler.Action("forceGCCache", "Force clear GribCollectionDataRaf Cache") {
       public void doAction(DebugHandler.Event e) {
         GribCollection.getDataRafCache().clearCache(true);
-        e.pw.println("  GribCollection force clearCache done");
+        e.pw.println("  GribCollectionDataRaf force clearCache done");
       }
     };
     debugHandler.addAction(act);
