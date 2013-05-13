@@ -64,7 +64,7 @@ import java.util.*;
  * @since 4/6/11
  */
 @ThreadSafe
-public abstract class GribCollection { // implements FileCacheable {
+public abstract class GribCollection implements FileCacheable {
   public static final String NCX_IDX = ".ncx";
   public static final long MISSING_RECORD = -1;
 
@@ -391,15 +391,15 @@ public abstract class GribCollection { // implements FileCacheable {
     }
   }
 
-  public void close() throws java.io.IOException {
+  /* public void close() throws java.io.IOException {
     if (indexRaf != null) {
           indexRaf.close();
           indexRaf = null;
         }
-      }
+      }  */
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /* stuff for FileCacheable
+  // stuff for FileCacheable
 
   public void close() throws java.io.IOException {
     if (objCache != null) {
@@ -426,7 +426,7 @@ public abstract class GribCollection { // implements FileCacheable {
   @Override
   public void setFileCache(FileCache fileCache) {
     this.objCache = fileCache;
-  }  */
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 

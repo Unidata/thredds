@@ -35,7 +35,6 @@ package ucar.nc2.ui.grid;
 import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -43,12 +42,12 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 
 import ucar.unidata.util.Format;
-import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -511,7 +510,7 @@ public class GridRenderer {
    dataVolumeChanged = true;
  } */
 
-  private Array makeHSlice(GridDatatype useG, int level, int time, int ensemble, int runtime) {
+  private Array makeHSlice(GridDatatype useG, int level, int time, int ensemble, int runtime) throws IOException {
 
     // make sure x, y exists
     GridCoordSystem gcs = useG.getCoordinateSystem();
@@ -528,13 +527,7 @@ public class GridRenderer {
       return dataH; // nothing changed
 
     // get the data slice
-    try {
-      dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
-      // imaH = dataH.getIndex();
-    } catch (java.io.IOException e) {
-      System.out.println("GridRender.makeHSlice Error reading netcdf file= " + e);
-      return null;
-    }
+    dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
 
     lastGrid = useG;
     lastTime = time;
@@ -616,7 +609,7 @@ public class GridRenderer {
    */
 
   // set colorscale limits, missing data
-  private void setColorScaleParams() {
+  private void setColorScaleParams() throws IOException {
        if (dataMinMaxType == ColorScale.MinMaxType.hold && !isNewField)
       return;
     isNewField = false;
@@ -723,7 +716,7 @@ public class GridRenderer {
    * @param g      Graphics2D object: has clipRect and AffineTransform set.
    * @param dFromN transforms "Normalized Device" to Device coordinates
    */
-  public void renderPlanView(java.awt.Graphics2D g, AffineTransform dFromN) {
+  public void renderPlanView(java.awt.Graphics2D g, AffineTransform dFromN) throws IOException {
     if ((stridedGrid == null) || (cs == null) || (drawProjection == null))
       return;
 

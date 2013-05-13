@@ -64,7 +64,7 @@ public abstract class TimePartition extends GribCollection {
   private static FileCache partitionCache;
 
   static public void initPartitionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    partitionCache = new ucar.nc2.util.cache.FileCache("GribCollectionPartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
+    partitionCache = new ucar.nc2.util.cache.FileCache("TimePartitionCache", minElementsInMemory, maxElementsInMemory, -1, period);
   }
 
   static public FileCache getPartitionCache() {
