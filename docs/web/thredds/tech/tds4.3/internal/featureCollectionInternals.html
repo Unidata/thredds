@@ -145,16 +145,18 @@ where Force controls the use of the <strong>ncx</strong> Index:
 </ul>
 <h3>TimePartition (TC)</h3>
 <ul>
-  <li>the overall TimePartition (subclass GribCollection) object is kept in InvFcGrib object, with an open indexRaf.</li>
+  <li>the overall TimePartition (subclass GribCollection) object is kept in InvFcGrib object, with an open indexRaf. This has same pattern as the GC</li>
   <li>the TimePartition contains a collection of Partition objects, which wrap GribCollections, each has an indexRaf once opened.</li>
-  <li>a cache of GribCollection is kept in TimePartitionCache, so they dont have to be reopened each time.</li>
-  <li>need to invalidate the cache when the index changes TODO</li>
+  <li>a cache of Partition/GribCollection is kept in TimePartitionCache, so they dont have to be reopened each time.</li>
+  <li>TODO need to invalidate the cache when the index changes </li>
 </ul>
 <p><strong>Problem 2</strong></p>
 <ul>
   <li>could close the raf each time, and let OS manage cache, which it probably does. put a read lock on it, and a write lock when you need to rewrite. AutoCloseable</li>
   <li>Wont solve the TDM problem.</li>
+  <li>possible solution write ncx.seqno.</li>
 </ul>
+<p>does any of this affect NCDC?</p>
 <h4>GribXCollectionBuilder.readOrCreateIndex(Force)</h4>
 <ol>
   <li>always</li>

@@ -800,7 +800,13 @@ public class GridController {
 
       // draw grid
     startTime = System.currentTimeMillis();
-    renderGrid.renderPlanView(gNP, atI);
+    try {
+      renderGrid.renderPlanView(gNP, atI);
+    } catch (IOException ioe) {
+      log.error("Error rendering Grid", ioe);
+      JOptionPane.showMessageDialog(null, "Error rendering Grid " + ioe.getMessage());
+      return;
+    }
     if (Debug.isSet("timing/GridDraw")) {
       tookTime = System.currentTimeMillis() - startTime;
       System.out.println("timing.GridDraw: " + tookTime*.001 + " seconds");

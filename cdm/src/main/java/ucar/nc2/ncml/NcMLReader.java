@@ -1245,19 +1245,19 @@ public class NcMLReader {
     String recheck = aggElem.getAttributeValue("recheckEvery");
 
     Aggregation agg;
-    if (type.equals("joinExisting")) {
+    if (type.equalsIgnoreCase("joinExisting")) {
       agg = new AggregationExisting(newds, dimName, recheck);
 
-    } else if (type.equals("joinNew")) {
+    } else if (type.equalsIgnoreCase("joinNew")) {
       agg = new AggregationNew(newds, dimName, recheck);
 
-    } else if (type.equals("tiled")) {
+    } else if (type.equalsIgnoreCase("tiled")) {
       agg = new AggregationTiled(newds, dimName, recheck);
 
-    } else if (type.equals("union")) {
+    } else if (type.equalsIgnoreCase("union")) {
       agg = new AggregationUnion(newds, dimName, recheck);
 
-    } else if (type.equals("forecastModelRunCollection") || type.equals("forecastModelRunSingleCollection")) {
+    } else if (type.equalsIgnoreCase("forecastModelRunCollection") || type.equalsIgnoreCase("forecastModelRunSingleCollection")) {
       AggregationFmrc aggc = new AggregationFmrc(newds, dimName, recheck);
       agg = aggc;
 
