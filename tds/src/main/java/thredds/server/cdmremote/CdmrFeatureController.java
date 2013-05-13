@@ -73,6 +73,7 @@ import ucar.unidata.util.StringUtil2;
  *
  * @author caron
  * @since May 28, 2009
+ *  
  */
 public class CdmrFeatureController extends AbstractCommandController { // implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrFeatureController.class);
@@ -85,7 +86,8 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     diskCache = _diskCache;
   }
 
-  public static void setAllow(boolean _allow) {
+  //public static void setAllow(boolean _allow) {
+  public void setAllow(boolean _allow) {
     allow = _allow;
   }
 
@@ -269,7 +271,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
   }
 
   private ModelAndView processPointData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
-    long start = 0;
+    /*long start = 0;
     if (showTime) {
       start = System.currentTimeMillis();
       ucar.unidata.io.RandomAccessFile.setDebugAccess(true);  // LOOK !!
@@ -317,13 +319,13 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
                 ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
         ucar.unidata.io.RandomAccessFile.setDebugAccess(false);  // LOOK !!
       }
-    }
+    }*/
 
     return null;
   }
 
   private ModelAndView processStationData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
-    long start = 0;
+  /*  long start = 0;
     if (showTime) {
       start = System.currentTimeMillis();
       ucar.unidata.io.RandomAccessFile.setDebugAccess(true);  // LOOK !!
@@ -371,9 +373,9 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
               ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
       ucar.unidata.io.RandomAccessFile.setDebugAccess(false);  // LOOK !!
-    }
+    }*/
 
-    return null;
+    return null; 
   }
 
   private ModelAndView processStations(HttpServletResponse res, FeatureDatasetPoint fdp, CdmRemoteQueryBean query) throws IOException {

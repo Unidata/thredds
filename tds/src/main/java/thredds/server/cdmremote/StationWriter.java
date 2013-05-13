@@ -32,37 +32,47 @@
 
 package thredds.server.cdmremote;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import thredds.server.cdmremote.params.CdmrfQueryBean;
+import ucar.ma2.Array;
+import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.remote.PointStream;
+import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.remote.PointStreamProto;
-import ucar.nc2.ft.point.remote.PointStream;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.ma2.StructureData;
-import ucar.ma2.Array;
+import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
-
-import java.util.*;
-import java.io.*;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * CdmrFeature subsetting for station data.
@@ -78,15 +88,16 @@ public class StationWriter {
 
   private final FeatureDatasetPoint fd;
   private final StationTimeSeriesFeatureCollection sfc;
-  private final CdmRemoteQueryBean qb;
-
+  //private final CdmRemoteQueryBean qb;
+  private final CdmrfQueryBean qb;
+  
   private final Date start, end;
 
   private List<VariableSimpleIF> wantVars;
   private DateRange wantRange;
   private ucar.nc2.util.DiskCache2 diskCache;
 
-  public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, CdmRemoteQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
+  public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, CdmrfQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
     this.fd = fd;
     this.sfc = sfc;
     this.qb = qb;
@@ -96,10 +107,10 @@ public class StationWriter {
     end = fd.getEndDate();
   }
 
-  boolean validate(HttpServletResponse res) throws IOException {
+  public boolean validate(HttpServletResponse res) throws IOException {
 
     // verify TemporalSelection intersects
-    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.range) {
+    if (qb.getTemporalSelection() == CdmrfQueryBean.TemporalSelection.range) {
       wantRange = qb.getDateRange();
       DateRange haveRange = fd.getDateRange();
       if ((haveRange != null) && !haveRange.intersects(wantRange)) {
@@ -124,7 +135,7 @@ public class StationWriter {
     }
 
     // verify SpatialSelection has some stations
-    if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.bb) {
+    if (qb.getSpatialSelection() == CdmrfQueryBean.SpatialSelection.bb) {
       LatLonRect bb = sfc.getBoundingBox();
       if ((bb != null) && (bb.intersect(qb.getLatLonRect()) == null)) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
@@ -133,7 +144,7 @@ public class StationWriter {
       //System.out.printf("sfc.flatten0 wantRange= %s on %s %n", wantRange, fd.getLocation());
       // pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
 
-    } else if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.stns) {
+    } else if (qb.getSpatialSelection() == CdmrfQueryBean.SpatialSelection.stns) {
       if (!contains(sfc, qb.getStnNames())) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
         return false;
@@ -172,15 +183,15 @@ public class StationWriter {
     //counter.limit = 150;
 
     // which writer, based on desired response
-    CdmRemoteQueryBean.ResponseType resType = qb.getResponseType();
+    CdmrfQueryBean.ResponseType resType = qb.getResponseType();
     Writer w;
-    if (resType == CdmRemoteQueryBean.ResponseType.xml) {
+    if (resType == CdmrfQueryBean.ResponseType.xml) {
       w = new WriterXML(res.getWriter());
-    } else if (resType == CdmRemoteQueryBean.ResponseType.csv) {
+    } else if (resType == CdmrfQueryBean.ResponseType.csv) {
       w = new WriterCSV(res.getWriter());
-    } else if (resType == CdmRemoteQueryBean.ResponseType.netcdf) {
+    } else if (resType == CdmrfQueryBean.ResponseType.netcdf) {
       w = new WriterNetcdf();
-    } else if (resType == CdmRemoteQueryBean.ResponseType.ncstream) {
+    } else if (resType == CdmrfQueryBean.ResponseType.ncstream) {
       w = new WriterNcstream(res.getOutputStream());
     } else {
       log.error("Unknown result type = " + resType);
@@ -188,7 +199,7 @@ public class StationWriter {
     }
 
     // for closet time, set wantRange to the time LOOK - do we need +- increment ??
-    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
+    if (qb.getTemporalSelection() == CdmrfQueryBean.TemporalSelection.point) {
       TimeUnit hour = null;
       try {
         hour = new TimeUnit(1, "hour");
@@ -236,7 +247,7 @@ public class StationWriter {
     Action act = w.getAction();
     w.header();
 
-    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.point) {
+    if (qb.getTemporalSelection() == CdmrfQueryBean.TemporalSelection.point) {
       scanForClosestTime(pfc, qb.getTimePoint(), null, act, counter);
 
     } else {
@@ -698,7 +709,7 @@ public class StationWriter {
     int matches; // how want matched
   }
 
-  abstract class Writer {
+  public abstract class Writer {
     abstract void header() throws IOException;
 
     abstract Action getAction();
@@ -728,10 +739,10 @@ public class StationWriter {
       cfWriter = new WriterCFStationCollection(null, netcdfResult.getAbsolutePath(), atts);
 
       // verify SpatialSelection has some stations
-      if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.bb) {
+      if (qb.getSpatialSelection() == CdmrfQueryBean.SpatialSelection.bb) {
         wantStations = sfc.getStations(qb.getLatLonRect());
 
-      } else if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.stns) {
+      } else if (qb.getSpatialSelection() == CdmrfQueryBean.SpatialSelection.stns) {
         List<String> stnNames = Arrays.asList(qb.getStnNames());
         wantStations = sfc.getStations(stnNames);
 
