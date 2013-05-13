@@ -347,10 +347,10 @@ public class Grib2Iosp extends GribIosp {
       String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName();
 
       if (isTimePartitioned) {
-        timePartition = Grib2TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf, logger);
+        timePartition = Grib2TimePartitionBuilder.createFromIndex(name, null, raf, logger);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf, gribConfig, logger);
+        gribCollection = Grib2CollectionBuilder.createFromIndex(name, null, raf, gribConfig, logger);
       }
 
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());

@@ -506,7 +506,7 @@ public class Group extends CDMNode {
     if (immutable) throw new IllegalStateException("Cant modify");
 
     if (findDimensionLocal(d.getShortName()) != null)
-      throw new IllegalArgumentException("Variable name (" + d.getShortName() + ") must be unique within Group " + getShortName());
+      throw new IllegalArgumentException("Dimension name (" + d.getShortName() + ") must be unique within Group " + getShortName());
 
     dimensions.add(d);
     d.setGroup(this);
@@ -532,7 +532,7 @@ public class Group extends CDMNode {
     if (immutable) throw new IllegalStateException("Cant modify");
 
     if (findGroup(g.getShortName()) != null)
-      throw new IllegalArgumentException("Variable name (" + g.getShortName() + ") must be unique within Group " + getShortName());
+      throw new IllegalArgumentException("Group name (" + g.getShortName() + ") must be unique within Group " + getShortName());
 
     groups.add(g);
     g.setParentGroup(this); // groups are a tree - only one parent
