@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2013. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -75,18 +75,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since 4/26/11
  */
 public class TdmRunner {
-  //static private final Logger logger = org.slf4j.LoggerFactory.getLogger(TdmRunner.class);
-
-
   private String user, pass;
   private boolean sendTriggers;
   private List<Server> servers;
 
   private java.util.concurrent.ExecutorService executor;
   private Resource catalog;
-  //private boolean indexOnly = false; // if true, just use existing .ncx
   private boolean showOnly = false; // if true, just show dirs and exit
-  private boolean seperateFiles = true;
+  // private boolean seperateFiles = true;
 
   private class Server {
     String name;
@@ -160,7 +156,8 @@ public class TdmRunner {
           logger.debug("**** running TimePartitionBuilder.factory {} thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
-            TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, logger); // "we know collection has changed, dont test again" ??? LOOK
+            // always = "we know collection has changed, dont test again"
+            TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, logger);
             tp.close();
             if (config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
               String path = "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
@@ -187,7 +184,7 @@ public class TdmRunner {
           } catch (Throwable e) {
             logger.error("GribCollectionBuilder.factory " + name, e);
           }
-          logger.debug("\n------------------------\n{}\n------------------------\n", f.toString());
+          logger.debug("------------------------\n{}\n------------------------\n", f.toString());
         }
 
       } finally {
@@ -268,8 +265,9 @@ public class TdmRunner {
     private Listener(InvDatasetFeatureCollection fc, CollectionManager dcm) {
       this.fc = fc;
       this.dcm = dcm;
+      this.logger = fc.getLogger();
 
-      if (seperateFiles) {
+      /* if (seperateFiles) {
         try {
           //create logger in log4j
           Layout layout = new PatternLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %c - %m%n");
@@ -287,7 +285,7 @@ public class TdmRunner {
 
       } else {
         logger = org.slf4j.LoggerFactory.getLogger(getClass());
-      }
+      } */
     }
 
     @Override
@@ -392,7 +390,8 @@ public class TdmRunner {
     TdmRunner driver = (TdmRunner) springContext.getBean("testDriver");
     //RandomAccessFile.setDebugLeaks(true);
     HTTPSession.setGlobalUserAgent("TDM v4.3");
-    GribCollection.getDiskCache2().setNeverUseCache(true);
+    // GribCollection.getDiskCache2().setNeverUseCache(true);
+    InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(Level.DEBUG));
 
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {

@@ -59,7 +59,7 @@ dl {margin: 10px 5px 5px 15px;}
 <ul>
   <li><strong>startup=&quot;true&quot;</strong> tells the TDM to index this dataset upon TDM startup. </li>
   <li><strong>rescan=&quot;0 0/15 * * * ? *&quot; </strong>rescan directories every 15 minutes.</li>
-  <li><strong>trigger=&quot;allow&quot;</strong> sends a message to TDS when the dataset index was recreated. When the TDS gets a trigger, it rereads the index for that dataset.</li>
+  <li><strong>trigger=&quot;allow&quot;</strong> enables the TDM to send a message to the TDS when the dataset index was recreated. When the TDS gets a trigger, it rereads the index for that dataset.</li>
   <li>To enable triggers, TDS needs this  in <strong>tomcat-users.xml:</strong>
     <pre>&lt;role rolename=&quot;tdsTrigger&quot; description=&quot;can trigger feature collections, eg from tdm&quot;/&gt;
 &lt;user username=&quot;tdm&quot; password=&quot;...&quot; roles=&quot;tdsTrigger&quot;/&gt;<br /></pre>

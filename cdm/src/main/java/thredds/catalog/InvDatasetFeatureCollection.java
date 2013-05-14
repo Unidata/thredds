@@ -34,6 +34,7 @@ package thredds.catalog;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
+import org.slf4j.Logger;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -285,14 +286,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return dcm;
   }
 
-  /* public InvDatasetScan getRawFileScan()  {
-     try {
-      checkState();
-    } catch (IOException e) {
-      logger.error("Error in checkState", e);
-    }
-    return state.scan;
-  } */
+  public Logger getLogger() {
+    return logger;
+  }
 
   @Override
   public java.util.List<InvDataset> getDatasets() {

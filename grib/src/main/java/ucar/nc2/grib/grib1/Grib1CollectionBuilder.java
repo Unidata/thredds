@@ -232,8 +232,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       File dir = gc.getDirectory();
       String dirname = proto.getDirName();
       if (dir != null && !dir.getPath().equals(dirname)) {
-        logger.warn("Grib1Collection {}: has different directory= {} than index= {}, force recreate ", gc.getName(), dir.getPath(), dirname);
-        return false;
+        logger.warn("Grib1Collection {}: has different directory= {} than index= {} ", gc.getName(), dir.getPath(), dirname);
+        //return false;
       }
 
       // switch from files to mfiles in version 10
