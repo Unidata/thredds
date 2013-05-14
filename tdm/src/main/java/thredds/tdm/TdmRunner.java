@@ -98,6 +98,10 @@ public class TdmRunner {
     this.showOnly = showOnly;
   }
 
+  public void setNThreads(int n) {
+    // TODO
+  }
+
   // spring beaned
   public void setExecutor(ExecutorService executor) {
     this.executor = executor;
@@ -108,6 +112,11 @@ public class TdmRunner {
   }
 
   public void setServerNames(String[] serverNames) throws HTTPException {
+    if (serverNames == null) {
+      servers = new ArrayList<Server>(); // empty list
+      return;
+    }
+
     servers = new ArrayList<Server>(serverNames.length);
     for (String name : serverNames) {
       HTTPSession session = new HTTPSession(name);
@@ -391,30 +400,55 @@ public class TdmRunner {
     //RandomAccessFile.setDebugLeaks(true);
     HTTPSession.setGlobalUserAgent("TDM v4.3");
     // GribCollection.getDiskCache2().setNeverUseCache(true);
-    InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(Level.DEBUG));
+    org.apache.log4j.Level logLevel = Level.INFO;
 
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
-        System.out.printf("usage: TdmRunner [-catalog <cat>] [-server <tdsServer>] [-cred <user:passwd>] [-showDirs] %n");
-        System.out.printf("example: TdmRunner -catalog classpath:/resources/indexNomads.xml -server http://localhost:8080/ -cred user:password %n");
+        System.out.printf("usage: <Java> <Java_OPTS> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-log level]%n");
         System.out.printf("example: /opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -catalog /tomcat/webapps/thredds/WEB-INF/altContent/idd/thredds/catalog.xml -cred user:passwd%n");
         System.exit(0);
       }
-      if (args[i].equalsIgnoreCase("-showDirs"))
+
+      if (args[i].equalsIgnoreCase("-showOnly"))
         driver.setShowOnly(true);
-      if (args[i].equalsIgnoreCase("-server"))
-        driver.setServerNames( new String[] {args[i + 1]});
-      if (args[i].equalsIgnoreCase("-cred")) {
+
+      else if (args[i].equalsIgnoreCase("-tds")) {
+        String tds = args[i + 1];
+        if (tds.equalsIgnoreCase("none")) {
+          driver.setServerNames(null);
+          driver.sendTriggers = false;
+
+        } else {
+          String[] tdss = tds.split(","); // comma separated
+          driver.setServerNames( tdss);
+        }
+      }
+
+      else if (args[i].equalsIgnoreCase("-cred")) {  // LOOK could be user:password@server, and we parse the user:password
         String cred = args[i + 1];
         String[] split = cred.split(":");
         driver.user = split[0];
         driver.pass = split[1];
         driver.sendTriggers = true;
       }
-      if (args[i].equalsIgnoreCase("-catalog")) {
+
+      else if (args[i].equalsIgnoreCase("-catalog")) {
         Resource cat = new FileSystemResource(args[i + 1]);
         driver.setCatalog(cat);
       }
+
+      else if (args[i].equalsIgnoreCase("-nthreads")) {
+        int n = Integer.parseInt(args[i + 1]);
+        driver.setNThreads(n);
+      }
+
+      else if (args[i].equalsIgnoreCase("-log")) {
+        String levelS = args[i + 1];
+        Level wantLevel = Level.toLevel(levelS);
+        if (wantLevel != null) logLevel = wantLevel;
+      }
+
+
     }
 
     /* if (sendTriggers) {
@@ -428,6 +462,7 @@ public class TdmRunner {
       session.setUserAgent("tdmRunner");
     }  */
 
+    InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(logLevel));
     CollectionUpdater.INSTANCE.setTdm(true);
 
     driver.start();

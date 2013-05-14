@@ -34,13 +34,12 @@ package ucar.nc2;
 
 import junit.framework.TestCase;
 
+import java.io.PrintWriter;
 import java.util.List;
 import java.io.IOException;
 
-import ucar.ma2.Array;
-import ucar.ma2.ArraySequence;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
+import org.junit.Test;
+import ucar.ma2.*;
 import ucar.unidata.test.util.TestDir;
 
 /**
@@ -49,71 +48,128 @@ import ucar.unidata.test.util.TestDir;
  * @author caron
  * @since Nov 10, 2009
  */
-public class TestSequence extends TestCase {
+public class TestSequence {
 
-  public TestSequence(String name) {
-    super(name);
-  }
-
-  NetcdfFile ncfile;
-
-  protected void setUp() throws Exception {
-    ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/point/200929100.ingest");
-  }
-
-  protected void tearDown() throws Exception {
-    ncfile.close();
-  }
-
+  @Test
   public void testRead() throws IOException {
+    NetcdfFile ncfile = null;
 
-    List vars = ncfile.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      System.out.println(" " + v.getShortName() + " == " + v.getFullName());
-    }
-
-    Variable v = ncfile.findVariable("record");
-    assert v != null;
-    assert v instanceof Sequence;
-    Sequence record = (Sequence) v;
-
-    vars = record.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable vv = (Variable) vars.get(i);
-      System.out.println(" " + vv.getShortName() + " == " + vv.getFullName());
-    }
-
-    Array data = v.read();
-    assert data != null;
-    assert data instanceof ArraySequence;
-
-    ArraySequence as = (ArraySequence) data;
-    as.getStructureDataCount();
-    System.out.printf(" count = %d%n", as.getStructureDataCount());
-
-    int count = 0;
-    StructureDataIterator iter = as.getStructureDataIterator();
     try {
-      while (iter.hasNext()) {
-        StructureData sdata = iter.next();
-        count++;
+      ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/point/200929100.ingest");
+
+      for (Variable v : ncfile.getVariables()) {
+        System.out.println(" " + v.getShortName() + " == " + v.getFullName());
       }
+
+      Variable v = ncfile.findVariable("record");
+      assert v != null;
+      assert v instanceof Sequence;
+      Sequence record = (Sequence) v;
+
+      for (Variable vv : record.getVariables()) {
+        System.out.println(" " + vv.getShortName() + " == " + vv.getFullName());
+      }
+
+      Array data = v.read();
+      assert data != null;
+      assert data instanceof ArraySequence;
+
+      ArraySequence as = (ArraySequence) data;
+      as.getStructureDataCount();
+      System.out.printf(" count = %d%n", as.getStructureDataCount());
+
+      int count = 0;
+      StructureDataIterator iter = as.getStructureDataIterator();
+      try {
+        while (iter.hasNext()) {
+          StructureData sdata = iter.next();
+          count++;
+        }
+      } finally {
+        iter.finish();
+      }
+      System.out.printf(" count = %d%n", count);
+
+      int count2 = 0;
+      StructureDataIterator iter2 = record.getStructureIterator();
+      while (iter2.hasNext()) {
+        StructureData sdata = iter2.next();
+        count2++;
+      }
+      System.out.printf(" count2 = %d%n", count2);
+
+      assert count2 == count;
+
     } finally {
-      iter.finish();
+      if (ncfile != null) ncfile.close();
     }
-    System.out.printf(" count = %d%n", count);
+  }
 
-    int count2 = 0;
-    StructureDataIterator iter2 = record.getStructureIterator();
-    while (iter2.hasNext()) {
-      StructureData sdata = iter2.next();
-      count2++;
+  @Test
+  public void testReadNestedSequence() throws IOException {
+    NetcdfFile ncfile = null;
+
+    try {
+      ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/bufr/userExamples/5900.20030601.rass");
+
+      Variable v = ncfile.findVariable("obs");
+      assert v != null;
+      assert v instanceof Sequence;
+      Sequence record = (Sequence) v;
+
+      System.out.printf("Sequence.getVariables%n");
+      for (Variable vv : record.getVariables()) {
+        System.out.printf(" %s == %s%n", vv.getShortName(), vv.getFullName());
+      }
+      System.out.printf("%n");
+
+      Array data = v.read();
+      assert data instanceof ArraySequence;
+      ArraySequence as = (ArraySequence) data;
+      System.out.printf(" ArraySequence.getStructureDataCount = %d%n", as.getStructureDataCount());
+      System.out.printf("%n");
+
+      showArraySequence(as);
+
+      PrintWriter pw = new PrintWriter(System.out);
+      int count = 0;
+      StructureDataIterator iter = as.getStructureDataIterator();
+      try {
+        while (iter.hasNext()) {
+          StructureData sdata = iter.next();
+          ArraySequence nested = sdata.getArraySequence("seq1");
+          if (count == 0) showArraySequence(nested);
+          count++;
+
+          StructureDataIterator nestedIter = nested.getStructureDataIterator();
+          try {
+            while (nestedIter.hasNext()) {
+              StructureData nestedData = nestedIter.next();
+              NCdumpW.printStructureData(pw, nestedData);
+              System.out.printf("%n");
+            }
+          } finally {
+            nestedIter.finish();
+          }
+        }
+
+      } finally {
+        iter.finish();
+      }
+      System.out.printf(" actual count = %d%n", count);
+      System.out.printf(" ArraySequence.getStructureDataCount = %d%n", as.getStructureDataCount());
+
+    } finally {
+      if (ncfile != null) ncfile.close();
     }
-    System.out.printf(" count2 = %d%n", count2);
+  }
 
-    assert count2 == count;
-
+  private void showArraySequence(ArraySequence as) {
+    System.out.printf("ArraySequence.getMembers%n");
+    for (StructureMembers.Member m : as.getMembers()) {
+      System.out.printf(" %s (%s)%n", m, m.getDataType());
+    }
+    System.out.printf("%n");
 
   }
 
