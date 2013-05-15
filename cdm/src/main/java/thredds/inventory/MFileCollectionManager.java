@@ -79,16 +79,16 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public MFileCollectionManager open(String collection, String olderThan, Formatter errlog) throws IOException {
-    if (collection.startsWith(CATALOG))
-      return new CatalogCollectionManager(collection);
+  static public MFileCollectionManager open(String collectionName, String olderThan, Formatter errlog) throws IOException {
+    if (collectionName.startsWith(CATALOG))
+      return new CatalogCollectionManager(collectionName);
     else
-      return new MFileCollectionManager(collection, olderThan, errlog, null);
+      return new MFileCollectionManager(collectionName, olderThan, errlog);
   }
 
   // retrofit to Aggregation
-  static public MFileCollectionManager openWithRecheck(String recheckS) {
-    return new MFileCollectionManager(recheckS, null);
+  static public MFileCollectionManager openWithRecheck(String collectionName, String recheckS) {
+    return new MFileCollectionManager(collectionName, recheckS);
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -109,8 +109,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
 
   // simplified version called from DatasetCollectionManager.open()
-  private MFileCollectionManager(String collectionSpec, String olderThan, Formatter errlog, Object fake) {
-    super(collectionSpec);
+  private MFileCollectionManager(String collectionSpec, String olderThan, Formatter errlog) {
+    super(collectionSpec, null);
     CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
     this.recheck = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
@@ -126,8 +126,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   // this is the full featured constructor, using FeatureCollectionConfig for config.
-  public MFileCollectionManager(FeatureCollectionConfig config, Formatter errlog) {
-    super(config.name != null ? config.name : config.spec);
+  public MFileCollectionManager(FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
+    super(config.name != null ? config.name : config.spec, logger);
     this.config = config;
 
     CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);
@@ -179,8 +179,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   // for subclasses
-  protected MFileCollectionManager(String name) {
-    super(name);
+  protected MFileCollectionManager(String name, org.slf4j.Logger logger) {
+    super(name, logger);
     this.recheck = null;
     this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
@@ -188,9 +188,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   ////////////////////////////////////////////////////////////////////////////////
-  // Time Partition - experimental
-  public MFileCollectionManager(String name, String spec, Formatter errlog) {
-    super(name);
+
+  public MFileCollectionManager(String name, String spec, Formatter errlog, org.slf4j.Logger logger) {
+    super(name, logger);
     CollectionSpecParser sp = new CollectionSpecParser(spec, errlog);
     this.rootDir = sp.getRootDir();
 
@@ -206,8 +206,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.olderThanInMsecs = -1;
   }
 
-  public MFileCollectionManager(String name, MCollection mc, CalendarDate startPartition) {
-    super(name);
+  public MFileCollectionManager(String name, MCollection mc, CalendarDate startPartition, org.slf4j.Logger logger) {
+    super(name, logger);
     this.startPartition = startPartition;
     this.scanList.add(mc);
 
@@ -230,10 +230,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
    * Must also call addDirectoryScan one or more times
    *
    * @param recheckS a undunit time unit, specifying how often to rscan
-   * @param fake     fakearoo
    */
-  private MFileCollectionManager(String recheckS, Object fake) {
-    super(null);
+  private MFileCollectionManager(String collectionName, String recheckS) {
+    super(collectionName, null);
     this.recheck = makeRecheck(recheckS);
     this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;
@@ -383,7 +382,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   }
 
-
   @Override
   public boolean scan(boolean sendEvent) throws IOException {
     if (map == null) {
@@ -440,10 +438,10 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
 
     boolean changed = (nnew > 0) || (ndelete > 0) || (nchange > 0);
-    logger.debug("{}: scan at {} nnew={}, nchange={}, ndelete={}", new Object[]{collectionName, new Date(), nnew, nchange, ndelete});
-
     if (changed) {
-      //if (logger.isInfoEnabled()) logger.info(collectionName+": rescan found changes new = "+nnew+" delete= "+ndelete);
+      if (logger.isInfoEnabled())
+        logger.info("{}: scan found changes {}: nnew={}, nchange={}, ndelete={}", collectionName, new Date(), nnew, nchange, ndelete);
+
       synchronized (this) {
         map = newMap;
         this.lastScanned = System.currentTimeMillis();
@@ -460,6 +458,19 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
 
     return changed;
+  }
+
+  @Override
+  public void setFiles(Iterable<MFile> files) {
+    Map<String, MFile> newMap = new HashMap<String, MFile>();
+    for (MFile file : files)
+      newMap.put(file.getPath(), file);
+
+    synchronized (this) {
+      map = newMap;
+      this.lastScanned = System.currentTimeMillis();
+      this.lastChanged.set(this.lastScanned);
+    }
   }
 
   @Override
@@ -483,13 +494,20 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   private class DateSorter implements Comparator<MFile> {
     public int compare(MFile m1, MFile m2) {
-      return extractRunDate(m1).compareTo(extractRunDate(m2));
+      return extractRunDateWithError(m1).compareTo(extractRunDateWithError(m2));
     }
   }
 
   @Override
   public CalendarDate extractRunDate(MFile mfile) {
     return (dateExtractor == null) ? null : dateExtractor.getCalendarDate(mfile);
+  }
+
+  private CalendarDate extractRunDateWithError(MFile mfile) {
+    CalendarDate result = extractRunDate(mfile);
+    if (result == null)
+      logger.error("Failed to extract date from file {} with Extractor {}", mfile.getPath(), dateExtractor);
+    return result;
   }
 
   @Override

@@ -47,8 +47,8 @@ import java.util.List;
 public class CollectionManagerSingleFile extends CollectionManagerAbstract {
   private MFile mfile;
 
-  public CollectionManagerSingleFile(MFile file) {
-    super(file.getPath());
+  public CollectionManagerSingleFile(MFile file, org.slf4j.Logger logger) {
+    super(file.getPath(), logger);
     this.mfile = file;
   }
 
@@ -88,6 +88,16 @@ public class CollectionManagerSingleFile extends CollectionManagerAbstract {
     List<MFile> list = new ArrayList<MFile>(1);
     list.add(mfile);
     return list;
+  }
+
+  @Override
+  public void setFiles(Iterable<MFile> files) {
+    int count = 0;
+    for (MFile f : files) {
+      this.mfile = f;
+      count++;
+    }
+    assert count == 1;
   }
 
   @Override

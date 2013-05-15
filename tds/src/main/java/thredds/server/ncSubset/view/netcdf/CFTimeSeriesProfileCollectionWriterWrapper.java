@@ -108,14 +108,21 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 					EarthLocation earthLocation=null;	
 
 					GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
-					Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date, timeOrigin);
+					GridDatatype timeGrid = NcssRequestUtils.getTimeGrid(groupedVars, gridDataset);
+					if(timeGrid == null){			
+						throw new IllegalArgumentException("Variables do not have time dimension");
+					}
+					
+					Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(timeGrid, date, timeOrigin);
 					if(zAxis == null){ //Variables without vertical levels
 
 						//Write no vert levels
 						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup,true );		
 						sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);				
 						//sdata.findMember("time").getDataArray().setObject(0, date.toString());
-						gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
+						
+						//gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
+						
 						Iterator<String> itVars = varsGroup.iterator();
 						int cont =0;
 						while (itVars.hasNext()) {

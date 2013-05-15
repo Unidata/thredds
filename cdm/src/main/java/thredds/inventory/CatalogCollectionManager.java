@@ -56,7 +56,7 @@ public class CatalogCollectionManager extends MFileCollectionManager implements 
   private boolean debug = false;
 
   public CatalogCollectionManager(String collection) {
-    super(collection);
+    super(collection, null);
 
     if (collection.startsWith(MFileCollectionManager.CATALOG))
       collection = collection.substring(MFileCollectionManager.CATALOG.length());

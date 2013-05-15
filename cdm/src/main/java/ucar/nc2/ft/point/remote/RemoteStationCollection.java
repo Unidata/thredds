@@ -24,6 +24,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
   /**
    * Constructor. defererred station list.
+   *
    * @param uri cdmremote endpoint
    */
   public RemoteStationCollection(String uri) {
@@ -38,7 +39,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   protected void initStationHelper() {
     // read in all the stations with the "stations" query
     stationHelper = new StationHelper();
-      InputStream in = null;
+    InputStream in = null;
     try {
       String query = "req=stations";
       in = CdmRemote.sendQuery(uri, query);
@@ -54,21 +55,25 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       PointStreamProto.StationList stationsp = PointStreamProto.StationList.parseFrom(b);
       for (ucar.nc2.ft.point.remote.PointStreamProto.Station sp : stationsp.getStationsList()) {
         Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
-        stationHelper.addStation( new RemoteStationFeatureImpl(s, null));
+        stationHelper.addStation(new RemoteStationFeatureImpl(s, null));
       }
 
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
 
     } finally {
-      if (in != null) try {in.close();  } catch(IOException ioe) {}
+      if (in != null) try {
+        in.close();
+      } catch (IOException ioe) {
+      }
     }
   }
 
   /**
    * Constructor for a subset. defererred station list.
+   *
    * @param uri cdmremote endpoint
-   * @param sh station Helper subset or null.
+   * @param sh  station Helper subset or null.
    */
   protected RemoteStationCollection(String uri, StationHelper sh) {
     super(uri);
@@ -197,18 +202,18 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       String query = PointDatasetRemote.makeQuery("stn=" + s.getName(), null, dateRange);
 
-        InputStream in = null;
+      InputStream in = null;
       try {
         in = CdmRemote.sendQuery(uri, query);
 
         PointStream.MessageType mtype = PointStream.readMagic(in);
         if (mtype == PointStream.MessageType.End) {  // no obs were found
-           in.close();
-           return new PointIteratorEmpty(); // return empty iterator
+          in.close();
+          return new PointIteratorEmpty(); // return empty iterator
         }
 
         if (mtype != PointStream.MessageType.PointFeatureCollection) {
-           throw new RuntimeException("Station Request: bad response = "+mtype);
+          throw new RuntimeException("Station Request: bad response = " + mtype);
         }
 
         int len = NcStream.readVInt(in);
@@ -216,14 +221,14 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
 
-        riter = new RemotePointFeatureIterator( in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        riter = new RemotePointFeatureIterator(in, new PointStream.ProtobufPointFeatureMaker(pfc));
         riter.setCalculateBounds(this);
         return riter;
 
       } catch (Throwable t) {
         if (in != null) in.close();
         throw new IOException(t.getMessage(), t);
-      } 
+      }
     }
   }
 

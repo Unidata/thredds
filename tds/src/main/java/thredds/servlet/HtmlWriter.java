@@ -575,7 +575,7 @@ public class HtmlWriter implements InitializingBean {
     StringBuilder sb = new StringBuilder(10000);
 
     String catname = StringUtil2.quoteHtmlContent(cat.getUriString());
-
+        
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
     sb.append("<head>\r\n");
@@ -592,7 +592,8 @@ public class HtmlWriter implements InitializingBean {
     sb.append("<h1>");
 
     // Logo
-    String logoUrl = this.htmlConfig.getInstallLogoUrl();
+    //String logoUrl = this.htmlConfig.getInstallLogoUrl();
+    String logoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallLogoUrl());
     if (logoUrl != null) {
       sb.append("<img src='").append(logoUrl);
       String logoAlt = this.htmlConfig.getInstallLogoAlt();

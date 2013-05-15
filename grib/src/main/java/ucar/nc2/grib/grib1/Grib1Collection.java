@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib1;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.MFile;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -72,19 +73,17 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
 
     } else {
 
-      for (String file : filenames) { // LOOK linear lookup
-        if (file.endsWith(filename)) {
-          Formatter f = new Formatter();
-          GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
+      MFile wantFile = findMFileByName(filename);
+      if (wantFile != null) {
+        GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
 
-          Grib1Iosp iosp = new Grib1Iosp(gc);
-          iosp.setLookupTablePath(gribConfig.lookupTablePath);
-          iosp.setParamTablePath(gribConfig.paramTablePath);
-          iosp.setParamTable(gribConfig.paramTable);
+        Grib1Iosp iosp = new Grib1Iosp(gc);
+        iosp.setLookupTablePath(gribConfig.lookupTablePath);
+        iosp.setParamTablePath(gribConfig.paramTablePath);
+        iosp.setParamTable(gribConfig.paramTable);
 
-          NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-          return new NetcdfDataset(ncfile);
-        }
+        NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+        return new NetcdfDataset(ncfile);
       }
       return null;
     }
@@ -105,19 +104,18 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
     } else {
-      for (String file : filenames) {  // LOOK linear lookup
-        if (file.endsWith(filename)) {
-          GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
+      MFile wantFile = findMFileByName(filename);
+      if (wantFile != null) {
+        GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
 
-          Grib1Iosp iosp = new Grib1Iosp(gc);
-          iosp.setLookupTablePath(gribConfig.lookupTablePath);
-          iosp.setParamTablePath(gribConfig.paramTablePath);
-          iosp.setParamTable(gribConfig.paramTable);
+        Grib1Iosp iosp = new Grib1Iosp(gc);
+        iosp.setLookupTablePath(gribConfig.lookupTablePath);
+        iosp.setParamTablePath(gribConfig.paramTablePath);
+        iosp.setParamTable(gribConfig.paramTable);
 
-          NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-          NetcdfDataset ncd = new NetcdfDataset(ncfile);
-          return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
-        }
+        NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+        NetcdfDataset ncd = new NetcdfDataset(ncfile);
+        return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
       }
       return null;
     }
@@ -128,7 +126,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
   static public void make(String name, String spec, org.slf4j.Logger logger) throws IOException {
     long start = System.currentTimeMillis();
     Formatter f = new Formatter();
-    CollectionManager dcm = new MFileCollectionManager(name, spec, f);
+    CollectionManager dcm = new MFileCollectionManager(name, spec, f, null);
     File idxFile = new File( dcm.getRoot(), name);
     boolean ok = Grib1CollectionBuilder.writeIndexFile(idxFile, dcm, logger);
     System.out.printf("GribCollectionBuilder.writeIndexFile ok = %s%n", ok);

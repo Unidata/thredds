@@ -35,10 +35,7 @@ package thredds.catalog;
 import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionUpdater;
-import thredds.inventory.MFileCollectionManager;
-import thredds.inventory.TimePartitionCollection;
+import thredds.inventory.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
@@ -112,13 +109,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     this.gribConfig = config.gribConfig;
 
     Formatter errlog = new Formatter();
-    if (config.useIndexOnly)
-      this.dcm = TimePartitionCollection.fromExistingIndices(config, errlog); // not used
-    else if (config.timePartition != null) {
-      this.dcm = TimePartitionCollection.factory(config, errlog);
+    //if (config.useIndexOnly)
+    //  this.dcm = TimePartitionCollection.fromExistingIndices(config, errlog); // not used
+    // else
+    if (config.timePartition != null) {
+      this.dcm = TimePartitionCollection.factory(config, errlog, logger);
       this.dcm.setChangeChecker(GribIndex.getChangeChecker());
     } else {
-      this.dcm = new MFileCollectionManager(config, errlog);
+      this.dcm = new MFileCollectionManager(config, errlog, logger);
       this.dcm.setChangeChecker(GribIndex.getChangeChecker());
     }
 
@@ -223,14 +221,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       TimePartition previous = localState.timePartition;
       localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, logger);
       localState.gribCollection = null;
-      if (previous != null) previous.close(); // LOOK thread safety
+      if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
       logger.debug("{}: TimePartition object was recreated", getName());
 
     } else {
       GribCollection previous = localState.gribCollection;
       localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, logger);
       localState.timePartition = null;
-      if (previous != null) previous.close(); // LOOK thread safety
+      if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
       logger.debug("{}: GribCollection object was recreated", getName());
     }
   }

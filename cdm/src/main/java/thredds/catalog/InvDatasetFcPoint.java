@@ -135,7 +135,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
        ds.setUrlPath(this.path + "/" + name);
        ds.setID(id + "/" + name);
        ThreddsMetadata tm = ds.getLocalMetadata();
-       tm.addDocumentation("summary", "Feature Collection. 'Nuff said");
+//       tm.addDocumentation("summary", "Feature Collection. 'Nuff said");
        ds.getLocalMetadataInheritable().setServiceName(collectionService.getName());
        ds.finish();
        datasets.add(ds);

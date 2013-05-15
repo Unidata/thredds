@@ -109,7 +109,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
   private final Grib1TimePartition tp;  // build this object
 
   private Grib1TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc, org.slf4j.Logger logger) {
-    super(logger);
+    super(tpc, false, logger);
     FeatureCollectionConfig.GribConfig config = (tpc == null) ? null :  (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.tp = new Grib1TimePartition(name, directory, config, logger);
     this.gc = tp;
@@ -401,7 +401,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     File file = tp.getIndexFile();
     if (file.exists()) {
       if (!file.delete())
-        logger.error("Cant delete "+file.getPath());
+        logger.error(" gc1tp cant delete "+file.getPath());
     }
 
     RandomAccessFile raf = new RandomAccessFile(file.getPath(), "rw");
@@ -422,9 +422,12 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
       indexBuilder.setSubcenter(canonGc.getSubcenter());
       indexBuilder.setMaster(canonGc.getMaster());
       indexBuilder.setLocal(canonGc.getLocal());
+      indexBuilder.setDirName(gc.getDirectory().getPath());
 
-      for (TimePartition.Partition p : tp.getPartitions()) {
-        indexBuilder.addPartitions(writePartitionProto(p.getName(), (TimePartition.Partition) p));
+      // dont need files - these are stored in the partition objects
+
+      for (TimePartition.Partition part : tp.getPartitions()) {
+        indexBuilder.addPartitions(writePartitionProto(part.getName(), part));
       }
 
       GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
@@ -534,10 +537,10 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
   // reading ncx
 
   @Override
-  protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto) {
+  protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto, String directory) {
     for (int i = 0; i < proto.getPartitionsCount(); i++) {
       GribCollectionProto.Partition pp = proto.getPartitions(i);
-      tp.addPartition(pp.getName(), pp.getFilename());
+      tp.addPartition(pp.getName(), pp.getFilename(), directory);
     }
     return  proto.getPartitionsCount() > 0;
   }

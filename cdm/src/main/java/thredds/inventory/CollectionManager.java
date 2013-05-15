@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import org.slf4j.Logger;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 
@@ -152,6 +153,11 @@ public interface CollectionManager {
    * @return current collection of MFile as an Iterable. May be empty, not null.
    */
   public Iterable<MFile> getFiles();
+
+  /**
+   *   dcm must be updated when index is read in
+   */
+  public void setFiles(Iterable<MFile> files);
 
   /**
    * Use the date extractor to extract the date from the filename.

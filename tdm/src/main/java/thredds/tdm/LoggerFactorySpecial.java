@@ -1,4 +1,4 @@
-package thredds.util;
+package thredds.tdm;
 
 import org.apache.log4j.*;
 import org.slf4j.Logger;
@@ -13,6 +13,7 @@ import java.util.Map;
  * A LoggerFactory that uses log4j to create and configure a special RollingFileAppender
  * specific to this name.
  * used by InvDatasetFeatureCollection to create a log for each feature collection.
+ * This duplicates thredds.util.LoggerFactorySpecial in tds module
  *
  * @author caron
  * @since 3/27/13
@@ -20,15 +21,16 @@ import java.util.Map;
 public class LoggerFactorySpecial implements LoggerFactory {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  private String dir = ".";
+  private String dir = "./";
   private Level level = Level.INFO;
 
   public LoggerFactorySpecial(Level lev) {
-    dir = System.getProperty("tds.log.dir");
+    String p = System.getProperty("tds.log.dir");
+    if (p != null) dir = p;
     level = lev;
   }
 
-  private static Map<String,Logger> map = new HashMap<String,Logger>();
+  private static Map<String, Logger> map = new HashMap<String, Logger>();
 
   @Override
   public Logger getLogger(String name) {
@@ -38,7 +40,7 @@ public class LoggerFactorySpecial implements LoggerFactory {
 
 
     try {
-      String fileName =  dir + "/" + name + ".log";
+      String fileName = dir + "/" + name + ".log";
 
       //create logger in log4j
       Layout layout = new PatternLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n");
@@ -61,10 +63,11 @@ public class LoggerFactorySpecial implements LoggerFactory {
       return result;
 
     } catch (IOException ioe) {
-      startupLog.error("LoggerFactorySpecial failed on "+name, ioe);
+      startupLog.error("LoggerFactorySpecial failed on " + name, ioe);
 
       // standard slf4j - rely on external configuration
       return org.slf4j.LoggerFactory.getLogger(name);
     }
   }
 }
+

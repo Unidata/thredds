@@ -59,11 +59,11 @@ public class TestCdmRemoteServer extends TestCase {
     super(name);
   }
 
-  public void testSingleDataset() throws IOException {
+  public void testCdmRemote() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);
 
-    InvDataset ds = cat.findDatasetByID("testDataset2");
-    assert (ds != null) : "cant find dataset 'testDataset2'";
+    InvDataset ds = cat.findDatasetByID("testClimatology");
+    assert (ds != null) : "cant find dataset 'testClimatology'";
     assert ds.getDataType() == FeatureType.GRID;
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
@@ -82,7 +82,7 @@ public class TestCdmRemoteServer extends TestCase {
     if (nc != null)  
       System.out.printf(" NetcdfFile location = %s%n", nc.getLocation());
 
-    GridDatatype grid = gds.findGridDatatype("Z_sfc");
+    GridDatatype grid = gds.findGridDatatype("sst");
     assert grid != null;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert gcs != null;
@@ -96,20 +96,8 @@ public class TestCdmRemoteServer extends TestCase {
     dataResult.featureDataset.close();
   }
 
-  private void doOne(InvDataset ds) throws IOException {
-    InvAccess access = ds.getAccess(ServiceType.CdmRemote);
-    if (access == null) {
-      System.out.printf("No cdmremote access for %s%n", ds);
-      return;
-    }
-
-    ThreddsDataFactory fac = new ThreddsDataFactory();
-    ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( access, null);
-    System.out.println("ThreddsDataFactory.Result= "+dataResult);
-  }
-
   public void testUrlReading() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open(null);
+    InvCatalogImpl cat = TestTdsLocal.open("/catalog/testCdmremote/netcdf3/catalog.xml");
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
 
       @Override
@@ -122,7 +110,8 @@ public class TestCdmRemoteServer extends TestCase {
       }
 
       @Override
-      public boolean getCatalogRef(InvCatalogRef dd, Object context) {
+      public boolean getCatalogRef(InvCatalogRef cat, Object context) {
+        System.out.format("***CatalogRef %s %n", cat.getCatalogUrl());
         return true;
       }
     });
@@ -135,6 +124,20 @@ public class TestCdmRemoteServer extends TestCase {
     }
   }
 
+  private void doOne(InvDataset ds) throws IOException {
+    InvAccess access = ds.getAccess(ServiceType.CdmRemote);
+    if (access == null) {
+      System.out.printf("No cdmremote access for %s%n", ds.getFullName());
+      return;
+    }
+
+    ThreddsDataFactory fac = new ThreddsDataFactory();
+    ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( access, null);
+    System.out.println("ThreddsDataFactory.Result= "+dataResult);
+  }
+
+  //////////////////////////////////////////////////
+
   public void testCompareWithFile() throws IOException {
     final String urlPrefix = CdmRemote.SCHEME+TestTdsLocal.top+"/cdmremote/opendapTest/";
     final String dirName = TestDir.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
@@ -143,12 +146,12 @@ public class TestCdmRemoteServer extends TestCase {
       public int doAct(String filename) throws IOException {
         filename = StringUtil2.replace(filename, '\\', "/");
         filename = StringUtil2.remove(filename, dirName);
-        String dodsUrl = urlPrefix+filename;
+        String cdmrUrl = urlPrefix+filename;
         String localPath = dirName+filename;
-        System.out.println("--Compare "+localPath+" to "+dodsUrl);
+        System.out.println("--Compare "+localPath+" to "+cdmrUrl);
 
         NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
-        NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);
+        NetcdfDataset dods_file = NetcdfDataset.openDataset(cdmrUrl);
         ucar.unidata.test.util.CompareNetcdf.compareFiles(org_ncfile, dods_file);
         return 1;
       }

@@ -28,3 +28,6 @@ notes for tables in local subdir
      252 |              Column integrated rain water |                kg/m2  |               INTRNW |
      253 |               Column integrated cloud ice |                kg/m2  |               INTCLI |
      254 |      Column integrated cloud liquid water |                kg/m2  |               INTCLW |
+
+5/13/2013
+  afwa.tab is coded for version 2. Now we have a file with table version 132.

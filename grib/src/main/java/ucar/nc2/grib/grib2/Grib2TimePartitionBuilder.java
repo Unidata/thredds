@@ -111,7 +111,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private final Grib2TimePartition tp;  // build this object
 
   private Grib2TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc, org.slf4j.Logger logger) {
-    super(logger);
+    super(tpc, false, logger);
     FeatureCollectionConfig.GribConfig config = null;
     if (tpc != null) config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.tp = new Grib2TimePartition(name, directory, config, logger);
@@ -427,7 +427,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     File file = tp.getIndexFile();
     if (file.exists()) {
       if (!file.delete())
-        logger.error("Cant delete "+file.getPath());
+        logger.error("gc2tp cant delete "+file.getPath());
     }
 
     RandomAccessFile raf = new RandomAccessFile(file.getPath(), "rw");
@@ -448,6 +448,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       indexBuilder.setSubcenter(canonGc.getSubcenter());
       indexBuilder.setMaster(canonGc.getMaster());
       indexBuilder.setLocal(canonGc.getLocal());
+      indexBuilder.setDirName(gc.getDirectory().getPath());
+
+      // dont need files - these are stored in the partition objects
 
       for (TimePartition.Partition p : tp.getPartitions()) {
         indexBuilder.addPartitions(writePartitionProto(p.getName(), p));
@@ -559,10 +562,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   // reading ncx
 
   @Override
-  protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto) {
+  protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto, String dirname) {
     for (int i = 0; i < proto.getPartitionsCount(); i++) {
       GribCollectionProto.Partition pp = proto.getPartitions(i);
-      tp.addPartition(pp.getName(), pp.getFilename());
+      tp.addPartition(pp.getName(), pp.getFilename(), dirname);
     }
     return  proto.getPartitionsCount() > 0;
   }

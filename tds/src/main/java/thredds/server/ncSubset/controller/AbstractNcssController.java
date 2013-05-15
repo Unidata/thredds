@@ -48,11 +48,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.LastModified;
 
 import thredds.server.ncSubset.exception.NcssException;
@@ -297,10 +297,11 @@ public abstract class AbstractNcssController implements LastModified{
 	
 	
 	//Exception handlers
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
-	public @ResponseBody String handle(NcssException ncsse ){
-		return "NetCDF Subset Service exception handled : "+ncsse.getMessage();
+	@ExceptionHandler(NcssException.class)
+	public ResponseEntity<String> handle(NcssException ncsse ){
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>( "NetCDF Subset Service exception handled : "+ncsse.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
 	}	
 	
 	

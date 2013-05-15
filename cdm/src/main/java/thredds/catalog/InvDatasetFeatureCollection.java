@@ -34,6 +34,7 @@ package thredds.catalog;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
+import org.slf4j.Logger;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -181,7 +182,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     super(parent, name, buildCatalogServiceHref( path) );
     this.path = path;
     this.fcType = fcType;
-    this.logger = loggerFactory.getLogger("fc."+getName()); // seperate log file for each feature collection (!!)
 
     this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
 
@@ -189,19 +189,22 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     if (config.gribConfig.latestNamer != null) {
       this.latestFileName = config.gribConfig.latestNamer;
     }
-    this.logger.info("FeatureCollection added = {}", getConfig());
 
+    String collectionName = CollectionManagerAbstract.cleanName(config.name != null ? config.name : name);
+    config.name =  collectionName;
+    this.logger = loggerFactory.getLogger("fc."+collectionName); // seperate log file for each feature collection (!!)
+
+    Formatter errlog = new Formatter();
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
       dcm = new CatalogCollectionManager(config.spec);
-
     } else {
-      Formatter errlog = new Formatter();
-      dcm = new MFileCollectionManager(config, errlog);
-      String errs = errlog.toString();
-      if (errs.length() > 0) logger.info("MFileCollectionManager parse error = {} ", errs);
+      dcm = new MFileCollectionManager(config, errlog, this.logger);
     }
-
     topDirectory = dcm.getRoot();
+
+    this.logger.info("FeatureCollection added = {}", getConfig());
+    String errs = errlog.toString();
+    if (errs.length()> 0) logger.warn("MFileCollectionManager parse error = {} ", errs);
   }
 
   // stuff that shouldnt be done in a constructor - eg dont let 'this' escape
@@ -283,14 +286,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return dcm;
   }
 
-  /* public InvDatasetScan getRawFileScan()  {
-     try {
-      checkState();
-    } catch (IOException e) {
-      logger.error("Error in checkState", e);
-    }
-    return state.scan;
-  } */
+  public Logger getLogger() {
+    return logger;
+  }
 
   @Override
   public java.util.List<InvDataset> getDatasets() {

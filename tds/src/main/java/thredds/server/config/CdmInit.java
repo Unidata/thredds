@@ -47,6 +47,7 @@ import org.springframework.stereotype.Component;
 
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
+import thredds.inventory.CollectionManagerAbstract;
 import thredds.inventory.CollectionUpdater;
 import thredds.server.cdmremote.CdmrFeatureController;
 import thredds.server.ncSubset.format.SupportedFormat;
@@ -83,19 +84,14 @@ public class CdmInit implements InitializingBean,  DisposableBean{
   @Autowired
   private TdsContext tdsContext;
 
-  
-  /* private String fmrcDefinitionDirectory;
-  public void setFmrcDefinitionDirectory(String dir) {
-    fmrcDefinitionDirectory = dir;
-  } */
-
-  //public void init(TdsContext tdsContext) {
   public void afterPropertiesSet(){
     // prefer cdmRemote when available
     ThreddsDataFactory.setPreferCdm(true);
 
     // 4.3.17
+    // feature collection logging
     InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(Level.INFO));
+    // CollectionManagerAbstract.setLoggerFactory(new LoggerFactorySpecial(Level.INFO));
 
     // 4.3.16
     String dir = ThreddsConfig.get("CdmRemote.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
