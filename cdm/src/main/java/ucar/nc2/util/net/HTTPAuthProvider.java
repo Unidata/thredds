@@ -188,5 +188,4 @@ private void readObject(java.io.ObjectInputStream istream)
 
     
 }//HTTPAuthProvider
-    
-    
+

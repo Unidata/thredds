@@ -214,9 +214,6 @@ public class DTSServlet extends AbstractServlet
   // Class variables
   static final String DEFAULTCONTEXTPATH = "/dts";
 
-
-  public String getDefaultContextPath() {return DEFAULTCONTEXTPATH;}
-
   //static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DODSServlet.class);
 
   private static FunctionLibrary functionLibrary =

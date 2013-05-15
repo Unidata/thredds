@@ -269,16 +269,18 @@ public class HTTPMethod
     //////////////////////////////////////////////////
     // Type declarations
 
-    // Define a Retry Handler that supports more retries and is verbose.
+    // Define a Retry Handler that supports specifiable retries
+    // and is optionally verbose.
     static public class RetryHandler
         extends org.apache.commons.httpclient.DefaultHttpMethodRetryHandler
     {
-        static final int MAXRETRIES = 5;
-        static final boolean verbose = false;
+        static final int DFALTRETRIES = 5;
+        static int retries = DFALTRETRIES;
+        static boolean verbose = false;
 
         public RetryHandler()
         {
-            super(MAXRETRIES, false);
+            super(retries, false);
         }
 
         public boolean retryMethod(final org.apache.commons.httpclient.HttpMethod method,
@@ -290,6 +292,15 @@ public class HTTPMethod
             }
             return super.retryMethod(method, exception, executionCount);
         }
+		
+	static public int getRetries() {return RetryHandler.retries;}
+	static public void setRetries(int retries)
+        {
+	    if(retries > 0)
+		RetryHandler.retries = retries;
+	}
+	static public boolean getVerbose() {return RetryHandler.verbose;}
+	static public void setVerbose(boolean tf) {RetryHandler.verbose = tf;}
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -305,6 +316,10 @@ public class HTTPMethod
     {
         globalparams.put(name, value);
     }
+
+    static public int getRetryCount() {return RetryHandler.getRetries();}
+    static public void setRetryCount(int count)
+	{RetryHandler.setRetries(count);}
 
     //////////////////////////////////////////////////
     // Instance fields

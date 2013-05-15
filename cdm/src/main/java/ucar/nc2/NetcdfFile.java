@@ -126,15 +126,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    // Do this before H5Iosp
-    if(System.getProperty("ucar.nc2.jni.netcdf.Nc4Iosp") != null) {
-      try {
-          NetcdfFile.registerIOProvider("ucar.nc2.jni.netcdf.Nc4Iosp");
-          ucar.nc2.jni.netcdf.Nc4Iosp.registered = true;
-      } catch (Throwable e) {
-          if (loadWarnings) log.info("Cant load class: " + e);
-      }
-    }
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
@@ -297,12 +288,40 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException     if class doesnt implement IOServiceProvider interface.
    */
-  static public void registerIOProvider(Class iospClass) throws IllegalAccessException, InstantiationException {
+  static public void registerIOProvider(Class iospClass)
+	throws IllegalAccessException, InstantiationException {
+    registerIOProvider(iospClass,false);
+  }
+
+  /**
+   * Register an IOServiceProvider. A new instance will be created when one of its files is opened.
+   *
+   * @param iospClass Class that implements IOServiceProvider.
+   * @param last true=>insert at the end of the list; otherwise front
+   * @throws IllegalAccessException if class is not accessible.
+   * @throws InstantiationException if class doesnt have a no-arg constructor.
+   * @throws ClassCastException     if class doesnt implement IOServiceProvider interface.
+   */
+  static public void registerIOProvider(Class iospClass, boolean last)
+	throws IllegalAccessException, InstantiationException {
     IOServiceProvider spi;
     spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
-
-    if (userLoads) registeredProviders.add(0, spi);  // put user stuff first
+    if (userLoads && !last)
+	registeredProviders.add(0, spi);  // put user stuff first
     else registeredProviders.add(spi);
+  }
+  
+  /**
+   * See if a specific IOServiceProvider is registered
+   *
+   * @param iospClass Class for which to search
+   */
+  static public boolean iospRegistered(Class iospClass)
+  {
+    for(IOServiceProvider spi: registeredProviders) {
+	if(spi.getClass() == iospClass) return true;
+    }
+    return false;
   }
 
   /**
@@ -385,7 +404,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    *                    <li>local netcdf-4 filename (with a file: prefix or no prefix)
    *                    <li>local hdf-5 filename (with a file: prefix or no prefix)
    *                    <li>local iosp filename (with a file: prefix or no prefix)
-   *                    </ol>
+   *                    </ol>  http://motherlode.ucar.edu:9080/thredds/fileServer/grib/NCEP/GFS/Alaska_191km/files/GFS_Alaska_191km_20130416_0600.grib1
    *                    If file ends with ".Z", ".zip", ".gzip", ".gz", or ".bz2", it will uncompress/unzip and write to new file without the suffix,
    *                    then use the uncompressed file. It will look for the uncompressed file before it does any of that. Generally it prefers to
    *                    place the uncompressed file in the same directory as the original file. If it does not have write permission on that directory,

@@ -474,7 +474,7 @@ public class ReqState {
 
         if(cxtpath == null) {
 	    // we are running as webapps/ROOT
-            cxtpath = myServlet.getDefaultContextPath();
+            cxtpath = "/";
 	}
         if(this.dataSetName == null) {
             if(servletpath != null) {

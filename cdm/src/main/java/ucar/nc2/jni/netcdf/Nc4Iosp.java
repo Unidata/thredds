@@ -80,7 +80,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
   static private String jnaPath;
   static private String libName = "netcdf";
-  static public boolean registered = false;
 
   static private int[] zerostride = new int[0];
 
@@ -193,7 +192,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     boolean match = false;
-    if(registered && raf.getLocation().endsWith(".nc")) {
+    if(raf.getLocation().endsWith(".nc")) {
         long savepos = raf.getFilePointer();
         raf.seek(1);
         byte[] hdr = new byte[3];

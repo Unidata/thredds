@@ -224,12 +224,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
   public abstract String getServerVersion();
 
   /**
-   * Each sever subclass must tell what its default context path should be.
-   */
-   public abstract String getDefaultContextPath();
-
-
-  /**
    * ************************************************************************
    * This method must be implemented locally for each OPeNDAP server. The
    * local implementation of this method is the key piece for connecting
@@ -1569,7 +1563,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
         probeRequest(System.out, rs);
       }
 
-      rs = getRequestState(request, rs.getResponse());
+      rs = getRequestState(request, response);
       if (rs != null) {
         String ds = rs.getDataSet();
         String suff = rs.getRequestSuffix();

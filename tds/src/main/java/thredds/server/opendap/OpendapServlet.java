@@ -83,10 +83,6 @@ public class OpendapServlet extends AbstractServlet {
 
   private boolean debugSession = false;
 
-  public String getDefaultContextPath() {
-    return DEFAULTCONTEXTPATH;
-  }
-
   public void init() throws javax.servlet.ServletException {
     super.init();
 
