@@ -79,16 +79,16 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public MFileCollectionManager open(String collection, String olderThan, Formatter errlog) throws IOException {
-    if (collection.startsWith(CATALOG))
-      return new CatalogCollectionManager(collection);
+  static public MFileCollectionManager open(String collectionName, String olderThan, Formatter errlog) throws IOException {
+    if (collectionName.startsWith(CATALOG))
+      return new CatalogCollectionManager(collectionName);
     else
-      return new MFileCollectionManager(collection, olderThan, errlog);
+      return new MFileCollectionManager(collectionName, olderThan, errlog);
   }
 
   // retrofit to Aggregation
-  static public MFileCollectionManager openWithRecheck(String recheckS) {
-    return new MFileCollectionManager(recheckS, null);
+  static public MFileCollectionManager openWithRecheck(String collectionName, String recheckS) {
+    return new MFileCollectionManager(collectionName, recheckS);
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   ////////////////////////////////////////////////////////////////////////////////
-  // Time Partition - experimental
+
   public MFileCollectionManager(String name, String spec, Formatter errlog, org.slf4j.Logger logger) {
     super(name, logger);
     CollectionSpecParser sp = new CollectionSpecParser(spec, errlog);
@@ -230,10 +230,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
    * Must also call addDirectoryScan one or more times
    *
    * @param recheckS a undunit time unit, specifying how often to rscan
-   * @param fake     fakearoo
    */
-  private MFileCollectionManager(String recheckS, Object fake) {
-    super(null, null);
+  private MFileCollectionManager(String collectionName, String recheckS) {
+    super(collectionName, null);
     this.recheck = makeRecheck(recheckS);
     this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;
