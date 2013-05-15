@@ -290,7 +290,7 @@ public class ThreddsDataset implements Dataset
 				layers = params.getString("LAYER");
 			if(layers==null)
 				layers= params.getString("LAYERNAME");
-						
+
 			List<String> requestedLayers = getLayerComponents(gridDataset, layers);					
 			tdsds = new ThreddsDataset(reqDataset.getPath(), gridDataset, requestedLayers, wmsConfig);
 		}          
@@ -348,7 +348,7 @@ public class ThreddsDataset implements Dataset
 
 		return layers;
 	}
-	
+
 	/**
 	 * Returns true if the layerName contains some of the standard components prefixes for CF-1.0 or 
 	 * Grib convention
@@ -362,18 +362,22 @@ public class ThreddsDataset implements Dataset
 		if( varAtt.contains("eastward_") ||  varAtt.contains("northward_") ){
 			//CF-Conventions
 			String[] tokens = layerName.split("_");
-			
+
 			StringBuilder sb = new StringBuilder();
 
-			sb.append(tokens[0]+"\\B");
-			for(int i = 1; i < tokens.length-1; i++ ){
-				sb.append(".*\\B"+tokens[i]+"\\B");
+			if(tokens.length ==1){
+				sb.append(tokens[0]+"\\b");
+			}else{ 
+
+				sb.append(tokens[0]+"\\B");
+				for(int i = 1; i < tokens.length-1; i++ ){
+					sb.append(".*\\B"+tokens[i]+"\\B");
+				}
+				sb.append(".*\\B"+tokens[ tokens.length -1 ]+"\\b");
 			}
-			sb.append(".*\\B"+tokens[ tokens.length -1 ]+"\\b");
-			
 			Pattern pattern = Pattern.compile(sb.toString());
 			Matcher matcher = pattern.matcher(varAtt);						
-			
+
 			return matcher.find();
 
 		}

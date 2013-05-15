@@ -1,1 +1,1 @@
-"C:/Program Files/Java/jdk1.6.0_22/bin/java" -Xmx2g -server -jar target/tdm-4.3.jar -catalog C:/dev/github/thredds/tds/content/thredds/enhancedCatalog.xml
+"C:/Program Files/Java/jdk1.7.0_17/bin/java" -Xmx2g -server -jar target/tdm-4.3.jar -catalog C:/dev/github/thredds/tds/content/thredds/catalog.xml

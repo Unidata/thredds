@@ -112,7 +112,7 @@ message GribCollectionIndex {
   optional int32 backProcessId = 12;
 
   repeated Partition partitions = 13;  // for time partitions only
-  required string dirName = 14;       // filename reletive to this
+  optional string dirName = 14;       // filename reletive to this
   repeated MFile mfiles = 15;          // list of grib MFiles
 }
 

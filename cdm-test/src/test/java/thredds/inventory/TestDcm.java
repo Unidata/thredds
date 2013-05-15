@@ -100,7 +100,7 @@ public class TestDcm {
 
     // count scanned files
     Formatter f = new Formatter(System.out);
-    MFileCollectionManager dcm = new MFileCollectionManager(config, f);
+    MFileCollectionManager dcm = new MFileCollectionManager(config, f, null);
     dcm.scan(true);
     List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFiles());
     assert fileList.size() ==  2 : dcm;

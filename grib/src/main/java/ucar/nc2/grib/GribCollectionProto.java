@@ -13459,9 +13459,9 @@ public final class GribCollectionProto {
     ucar.nc2.grib.GribCollectionProto.PartitionOrBuilder getPartitionsOrBuilder(
         int index);
 
-    // required string dirName = 14;
+    // optional string dirName = 14;
     /**
-     * <code>required string dirName = 14;</code>
+     * <code>optional string dirName = 14;</code>
      *
      * <pre>
      * filename reletive to this
@@ -13469,7 +13469,7 @@ public final class GribCollectionProto {
      */
     boolean hasDirName();
     /**
-     * <code>required string dirName = 14;</code>
+     * <code>optional string dirName = 14;</code>
      *
      * <pre>
      * filename reletive to this
@@ -13477,7 +13477,7 @@ public final class GribCollectionProto {
      */
     java.lang.String getDirName();
     /**
-     * <code>required string dirName = 14;</code>
+     * <code>optional string dirName = 14;</code>
      *
      * <pre>
      * filename reletive to this
@@ -14119,11 +14119,11 @@ public final class GribCollectionProto {
       return partitions_.get(index);
     }
 
-    // required string dirName = 14;
+    // optional string dirName = 14;
     public static final int DIRNAME_FIELD_NUMBER = 14;
     private java.lang.Object dirName_;
     /**
-     * <code>required string dirName = 14;</code>
+     * <code>optional string dirName = 14;</code>
      *
      * <pre>
      * filename reletive to this
@@ -14133,7 +14133,7 @@ public final class GribCollectionProto {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>required string dirName = 14;</code>
+     * <code>optional string dirName = 14;</code>
      *
      * <pre>
      * filename reletive to this
@@ -14154,7 +14154,7 @@ public final class GribCollectionProto {
       }
     }
     /**
-     * <code>required string dirName = 14;</code>
+     * <code>optional string dirName = 14;</code>
      *
      * <pre>
      * filename reletive to this
@@ -14268,10 +14268,6 @@ public final class GribCollectionProto {
         return false;
       }
       if (!hasLocal()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasDirName()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -14871,10 +14867,6 @@ public final class GribCollectionProto {
           return false;
         }
         if (!hasLocal()) {
-          
-          return false;
-        }
-        if (!hasDirName()) {
           
           return false;
         }
@@ -16350,10 +16342,10 @@ public final class GribCollectionProto {
         return partitionsBuilder_;
       }
 
-      // required string dirName = 14;
+      // optional string dirName = 14;
       private java.lang.Object dirName_ = "";
       /**
-       * <code>required string dirName = 14;</code>
+       * <code>optional string dirName = 14;</code>
        *
        * <pre>
        * filename reletive to this
@@ -16363,7 +16355,7 @@ public final class GribCollectionProto {
         return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
-       * <code>required string dirName = 14;</code>
+       * <code>optional string dirName = 14;</code>
        *
        * <pre>
        * filename reletive to this
@@ -16381,7 +16373,7 @@ public final class GribCollectionProto {
         }
       }
       /**
-       * <code>required string dirName = 14;</code>
+       * <code>optional string dirName = 14;</code>
        *
        * <pre>
        * filename reletive to this
@@ -16401,7 +16393,7 @@ public final class GribCollectionProto {
         }
       }
       /**
-       * <code>required string dirName = 14;</code>
+       * <code>optional string dirName = 14;</code>
        *
        * <pre>
        * filename reletive to this
@@ -16418,7 +16410,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required string dirName = 14;</code>
+       * <code>optional string dirName = 14;</code>
        *
        * <pre>
        * filename reletive to this
@@ -16431,7 +16423,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required string dirName = 14;</code>
+       * <code>optional string dirName = 14;</code>
        *
        * <pre>
        * filename reletive to this
@@ -16874,7 +16866,7 @@ public final class GribCollectionProto {
       "essType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rb" +
       "ackProcessId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036" +
       ".gribCollectionIndex.Partition\022\017\n\007dirNam" +
-      "e\030\016 \002(\t\022*\n\006mfiles\030\017 \003(\0132\032.gribCollection" +
+      "e\030\016 \001(\t\022*\n\006mfiles\030\017 \003(\0132\032.gribCollection" +
       "Index.MFileB$\n\rucar.nc2.gribB\023GribCollec" +
       "tionProto"
     };

@@ -206,5 +206,38 @@ if <strong>test</strong>, call
 }
 </pre>
 <p>check createIndex() logic</p>
+<hr />
+<hr width="100%" />
+<h2>motherlode instructions</h2>
+<h4>To restart the TDM:</h4>
+<ol>
+  <li>log in to motherlode</li>
+  <li>cd ~caron</li>
+  <li>sudo su ldm</li>
+  <li>clean up logs
+    <ol>
+        <li>rm saveX/*</li>
+      <li>mv *.log saveX</li>
+      <li>mv tdm.log* save</li>
+    </ol>
+  </li>
+  <li>sh ./runTdm.sh &amp;</li>
+</ol>
+<h4>TDM logs</h4>
+<ol>
+  <li>specific collections are in &lt;collectionName&gt;.log</li>
+  <li>running tdm output is in tdm.log; these roll over every day</li>
+</ol>
+<h4>TDM source code</h4>
+<ul>
+  <li>in github under tdm module</li>
+  <li>tdm-4.3 jar is built by maven</li>
+  <li>configuration file is <strong>tdm\src\main\resources\resources\application-config.xml</strong>
+      <ul>
+        <li>currently set to trigger 8081 and 9080</li>
+      </ul>
+  </li>
+</ul>
+<p>&nbsp;</p>
 </body>
 </html>
