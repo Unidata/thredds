@@ -51,7 +51,8 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   static private org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
   static public String cleanName(String name) {
-    //if (name == null) return null;
+    if (name == null)
+      System.out.println("HEY cleanName");
     return StringUtil2.replace(name.trim(), ' ', "_");  // LOOK must be ok in URL - probably not sufficient here
   }
 

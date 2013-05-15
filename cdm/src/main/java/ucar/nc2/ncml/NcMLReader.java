@@ -294,7 +294,7 @@ public class NcMLReader {
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
   static public NetcdfDataset readNcML(Reader r, CancelTask cancelTask) throws IOException {
-    return readNcML(r, null, cancelTask);
+    return readNcML(r, "NcMLReader", cancelTask);
   }
 
   /**
