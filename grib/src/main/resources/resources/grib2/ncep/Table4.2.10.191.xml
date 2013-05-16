@@ -11,7 +11,6 @@
   <parameter code="1">
     <shortName>MOSF</shortName>
     <description>Meridional Overturning Stream Function</description>
-    <units>m3s-1</units>
+    <units>m3 s-1</units>
   </parameter>
 </parameterMap>
-

@@ -76,7 +76,10 @@
     <description>Eta Level</description>
   </parameter>
   <parameter code="113">
-    <description>Logarithmic Hybrid Coordinate</description>
+    <description>Logarithmic Hybrid Level</description>
+  </parameter>
+  <parameter code="114">
+    <description>Snow Level</description>
   </parameter>
   <parameter code="117">
     <description>Mixed Layer Depth</description>
@@ -87,8 +90,8 @@
   <parameter code="119">
     <description>Hybrid Pressure Level</description>
   </parameter>
-  <parameter code="120">
-    <description>Pressure Thickness</description>
+  <parameter code="150">
+    <description>Generalized Vertical Height Coordinate (see Note 5)</description>
   </parameter>
   <parameter code="160">
     <description>Depth Below Sea Level</description>
@@ -110,18 +113,6 @@
   </parameter>
   <parameter code="166">
     <description>Maxing Layer</description>
-  </parameter>
-  <parameter code="170">
-    <description>Ionospheric D-region Level</description>
-  </parameter>
-  <parameter code="171">
-    <description>Ionospheric E-region Level</description>
-  </parameter>
-  <parameter code="172">
-    <description>Ionospheric F1-region Level</description>
-  </parameter>
-  <parameter code="173">
-    <description>Ionospheric F2-region Level</description>
   </parameter>
   <parameter code="200">
     <description>Entire atmosphere (considered as a single layer)</description>
@@ -244,4 +235,3 @@
     <description>Missing</description>
   </parameter>
 </codeTable>
-

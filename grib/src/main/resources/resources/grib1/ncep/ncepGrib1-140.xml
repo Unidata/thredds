@@ -24,12 +24,12 @@
   </parameter>
   <parameter code="172">
     <shortName>MECAT</shortName>
-    <description>Mean Cloud Air Turbulence Potential</description>
+    <description>Mean Clear Air Turbulence Potential</description>
     <units />
   </parameter>
   <parameter code="173">
     <shortName>MACAT</shortName>
-    <description>Maximum Cloud Air Turbulence Potential</description>
+    <description>Maximum Clear Air Turbulence Potential</description>
     <units />
   </parameter>
   <parameter code="174">
@@ -83,4 +83,3 @@
     <units />
   </parameter>
 </parameterMap>
-

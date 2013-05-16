@@ -9,24 +9,24 @@
     <units>s</units>
   </parameter>
   <parameter code="1">
-    <shortName>Validation</shortName>
+    <shortName>GEOLAT</shortName>
     <description>Geographical Latitude</description>
-    <units>deg N</units>
+    <units>N</units>
   </parameter>
   <parameter code="2">
-    <shortName>Validation</shortName>
+    <shortName>GEOLON</shortName>
     <description>Geographical Longitude</description>
-    <units>deg E</units>
+    <units>E</units>
   </parameter>
   <parameter code="192">
     <shortName>NLAT</shortName>
     <description>Latitude (-90 to 90)</description>
-    <units>deg</units>
+    <units />
   </parameter>
   <parameter code="193">
     <shortName>ELON</shortName>
     <description>East Longitude (0 to 360)</description>
-    <units>deg</units>
+    <units />
   </parameter>
   <parameter code="194">
     <shortName>TSEC</shortName>
@@ -41,12 +41,11 @@
   <parameter code="196">
     <shortName>NLATN</shortName>
     <description>Latitude (nearest neighbor) (-90 to 90)</description>
-    <units>deg</units>
+    <units />
   </parameter>
   <parameter code="197">
     <shortName>ELONN</shortName>
     <description>East Longitude (nearest neighbor) (0 to 360)</description>
-    <units>deg</units>
+    <units />
   </parameter>
 </parameterMap>
-

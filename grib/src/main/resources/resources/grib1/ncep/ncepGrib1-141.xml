@@ -174,112 +174,112 @@
   </parameter>
   <parameter code="200">
     <shortName>ASO4</shortName>
-    <description>Sulfate (SO4) Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Sulfate (SO4) Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="201">
     <shortName>ANH4</shortName>
-    <description>Ammonia (NH4) Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Ammonia (NH4) Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="202">
     <shortName>ANO3</shortName>
-    <description>Nitrate (NO3) Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Nitrate (NO3) Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="203">
     <shortName>AORGA</shortName>
-    <description>Organic Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Organic Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="204">
     <shortName>AORGPA</shortName>
-    <description>Primarily Organic Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Primarily Organic Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="205">
     <shortName>AORGB</shortName>
-    <description>Biogenically Originated Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Biogenically Originated Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="206">
     <shortName>AEC</shortName>
-    <description>Elemental Carbon Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Elemental Carbon Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="207">
     <shortName>A25</shortName>
-    <description>Unspecified Anthropogenic Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Unspecified Anthropogenic Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="208">
     <shortName>AH2O</shortName>
-    <description>Water Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Water Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="209">
     <shortName>ANA</shortName>
-    <description>Sodium Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Sodium Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="210">
     <shortName>ACL</shortName>
-    <description>Chloride Particulates  ? 2.5 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Chloride Particulates   2.5 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="216">
     <shortName>ASO4K</shortName>
-    <description>Sulfate (SO4) Particulates between 2.5 and 10 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Sulfate (SO4) Particulates between 2.5 and 10 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="217">
     <shortName>ANAK</shortName>
-    <description>Sodium (NA) Particulates between 2.5 and 10 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Sodium (NA) Particulates between 2.5 and 10 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="218">
     <shortName>ACLK</shortName>
-    <description>Chloride (CL) Particulates between 2.5 and 10 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Chloride (CL) Particulates between 2.5 and 10 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="219">
     <shortName>ASEAS</shortName>
-    <description>Sea Salt Originated Particulates between 2.5 and 10 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Sea Salt Originated Particulates between 2.5 and 10 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="220">
     <shortName>ASOIL</shortName>
-    <description>Crustal Material Originated Particulates between 2.5 and 10 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Crustal Material Originated Particulates between 2.5 and 10 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="221">
     <shortName>ACORS</shortName>
-    <description>Particulates between 2.5 and 10 ?m Diameter</description>
-    <units>?g/m3</units>
+    <description>Particulates between 2.5 and 10 m Diameter</description>
+    <units>g/m3</units>
   </parameter>
   <parameter code="222">
     <shortName>NUMATKN</shortName>
-    <description>Number Concentration Particulates between 2.5 and 0.1 ?m Diameter</description>
+    <description>Number Concentration Particulates between 2.5 and 0.1 m Diameter</description>
     <units>number/m3</units>
   </parameter>
   <parameter code="223">
     <shortName>NUMACC</shortName>
-    <description>Number Concentration Particulates between 2.5 and 2.5 ?m Diameter</description>
+    <description>Number Concentration Particulates between 2.5 and 2.5 m Diameter</description>
     <units>number/m3</units>
   </parameter>
   <parameter code="224">
     <shortName>NUMCOR</shortName>
-    <description>Number Concentration Particulates between 2.5 and 10 ?m Diameter</description>
+    <description>Number Concentration Particulates between 2.5 and 10 m Diameter</description>
     <units>number/m3</units>
   </parameter>
   <parameter code="228">
     <shortName>SRFATKN</shortName>
-    <description>Surface Area Contributed by Particulates  ? 0.1 ?m Diameter</description>
+    <description>Surface Area Contributed by Particulates   0.1 m Diameter</description>
     <units>m2/m3</units>
   </parameter>
   <parameter code="229">
     <shortName>SRFACC</shortName>
-    <description>Surface Area Contributed by Particulates between 0.1 and 2.5 ?m Diameter</description>
+    <description>Surface Area Contributed by Particulates between 0.1 and 2.5 m Diameter</description>
     <units>m2/m3</units>
   </parameter>
   <parameter code="232">
@@ -295,7 +295,7 @@
   <parameter code="234">
     <shortName>TSO4</shortName>
     <description>Total Sulfate Particulates (Fine and Coarse)</description>
-    <units>?g/m3</units>
+    <units>g/m3</units>
   </parameter>
   <parameter code="235">
     <shortName>DMS</shortName>
@@ -304,47 +304,47 @@
   </parameter>
   <parameter code="240">
     <shortName>DU1</shortName>
-    <description>Dust Particulates between 0.2 - 2.0 ?m Diameter</description>
+    <description>Dust Particulates between 0.2 - 2.0 m Diameter</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="241">
     <shortName>DU2</shortName>
-    <description>Dust Particulates between 2.0 - 3.6 ?m Diameter</description>
+    <description>Dust Particulates between 2.0 - 3.6 m Diameter</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="242">
     <shortName>DU3</shortName>
-    <description>Dust Particulates between 3.6 - 6.0 ?m Diameter</description>
+    <description>Dust Particulates between 3.6 - 6.0 m Diameter</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="243">
     <shortName>DU4</shortName>
-    <description>Dust Particulates between 6.0 - 12.0 ?m Diameter</description>
+    <description>Dust Particulates between 6.0 - 12.0 m Diameter</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="244">
     <shortName>DU5</shortName>
-    <description>Dust Particulates between 12.0 - 20.0 ?m Diameter</description>
+    <description>Dust Particulates between 12.0 - 20.0 m Diameter</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="245">
     <shortName>SS1</shortName>
-    <description>Sea Salt Particulates between 0.2 - 1.0 ?m Diameter</description>
+    <description>Sea Salt Particulates between 0.2 - 1.0 m Diameter</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="246">
     <shortName>SS2</shortName>
-    <description>Sea Salt Particulates between 1.0 - 3.0 ?m Diameter</description>
+    <description>Sea Salt Particulates between 1.0 - 3.0 m Diameter</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="247">
     <shortName>SS3</shortName>
-    <description>Sea Salt Particulates between 3.0 - 10.0 ?m Diameter</description>
+    <description>Sea Salt Particulates between 3.0 - 10.0 m Diameter</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="248">
     <shortName>SS4</shortName>
-    <description>Sea Salt Particulates between 10.0 - 20.0 ?m Diameter</description>
+    <description>Sea Salt Particulates between 10.0 - 20.0 m Diameter</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="249">
@@ -373,4 +373,3 @@
     <units />
   </parameter>
 </parameterMap>
-

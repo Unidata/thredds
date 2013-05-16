@@ -140,13 +140,12 @@
   </parameter>
   <parameter code="204">
     <shortName>DTRF</shortName>
-    <description>Downward Total radiation Flux</description>
+    <description>Downward Total Radiation Flux</description>
     <units>W m-2</units>
   </parameter>
   <parameter code="205">
     <shortName>UTRF</shortName>
-    <description>Upward Total radiation Flux</description>
+    <description>Upward Total Radiation Flux</description>
     <units>W m-2</units>
   </parameter>
 </parameterMap>
-

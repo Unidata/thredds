@@ -55,7 +55,8 @@ import java.util.List;
  * @since 1/7/12
  */
 public class NcepHtmlScraper  {
-  String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\temp\\";
+  //String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\temp\\";
+  String dirOut = "C:/tmp/ncep/";
 
   private boolean debugParam = false;
   private boolean debug = false;

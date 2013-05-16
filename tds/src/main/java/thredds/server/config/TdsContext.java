@@ -338,7 +338,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean {
     // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
     logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: ");
-    logServerStartup.info( "TdsContext.init()  intializating logging..." );
+    logServerStartup.info( "TdsContext.init()  intializating logging in " + logDir.getPath() );
     
 
     // read in persistent user-defined params from threddsConfig.xml

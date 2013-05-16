@@ -20,17 +20,17 @@
   </parameter>
   <parameter code="3">
     <shortName>AEMFLX</shortName>
-    <description>Atmosphere Emission Mass Flux</description>
+    <description>&gt;Atmosphere Emission Mass Flux</description>
     <units>kg m-2s-1</units>
   </parameter>
   <parameter code="4">
-    <shortName>APMFLX</shortName>
+    <shortName>ANPMFLX</shortName>
     <description>Atmosphere Net Production Mass Flux</description>
     <units>kg m-2s-1</units>
   </parameter>
   <parameter code="5">
-    <shortName>APEMFLX</shortName>
-    <description>Atmosphere Net Production And Emision Mass Flux</description>
+    <shortName>ANPEMFLX</shortName>
+    <description>&gt;Atmosphere Net Production And Emision Mass Flux</description>
     <units>kg m-2s-1</units>
   </parameter>
   <parameter code="6">
@@ -115,7 +115,7 @@
   </parameter>
   <parameter code="57">
     <shortName>TYABA</shortName>
-    <description>Total Yearly Average Burden of The Atmosphere</description>
+    <description>Total Yearly Average Burden of The Atmosphere&gt;</description>
     <units>mol</units>
   </parameter>
   <parameter code="58">
@@ -135,7 +135,7 @@
   </parameter>
   <parameter code="101">
     <shortName>ATMTK</shortName>
-    <description>Atmosphere Optical Thickness</description>
+    <description>Vertical Visual Range</description>
     <units>m</units>
   </parameter>
   <parameter code="102">
@@ -184,4 +184,3 @@
     <units>m-1</units>
   </parameter>
 </parameterMap>
-

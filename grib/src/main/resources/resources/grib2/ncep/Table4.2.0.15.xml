@@ -20,7 +20,7 @@
   </parameter>
   <parameter code="3">
     <shortName>VIL</shortName>
-    <description>Vertically Integrated Liquid</description>
+    <description>Vertically-Integrated Liquid Water</description>
     <units>kg m-2</units>
   </parameter>
   <parameter code="4">
@@ -49,34 +49,33 @@
     <units />
   </parameter>
   <parameter code="9">
-    <shortName>Validation</shortName>
+    <shortName>RFCD</shortName>
     <description>Reflectivity of Cloud Droplets</description>
     <units>dB</units>
   </parameter>
   <parameter code="10">
-    <shortName>Validation</shortName>
+    <shortName>RFCI</shortName>
     <description>Reflectivity of Cloud Ice</description>
     <units>dB</units>
   </parameter>
   <parameter code="11">
-    <shortName>Validation</shortName>
+    <shortName>RFSNOW</shortName>
     <description>Reflectivity of Snow</description>
     <units>dB</units>
   </parameter>
   <parameter code="12">
-    <shortName>Validation</shortName>
+    <shortName>RFRAIN</shortName>
     <description>Reflectivity of Rain</description>
     <units>dB</units>
   </parameter>
   <parameter code="13">
-    <shortName>Validation</shortName>
+    <shortName>RFGRPL</shortName>
     <description>Reflectivity of Graupel</description>
     <units>dB</units>
   </parameter>
   <parameter code="14">
-    <shortName>Validation</shortName>
+    <shortName>RFHAIL</shortName>
     <description>Reflectivity of Hail</description>
     <units>dB</units>
   </parameter>
 </parameterMap>
-

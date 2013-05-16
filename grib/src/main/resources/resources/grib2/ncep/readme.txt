@@ -499,7 +499,7 @@ NcepTable{title='Vegetation/Biomass', source='http://www.nco.ncep.noaa.gov/pmb/d
   p2= 4.2.2.0.0           Land cover (0 = sea, 1 = land)                             null
 
   p1=    2.0.14          Blackadar's Mixing Length Scale               m            BMIXL
-  p2=4.2.2.0.14          Blackadar’s mixing length scale               m             null
+  p2=4.2.2.0.14          Blackadarï¿½s mixing length scale               m             null
 
   p1=    2.0.19 Temperature parameter in canopy conductance      Proportion              RCT
   p2=4.2.2.0.19          Temperature parameter in canopy                             null
@@ -790,3 +790,26 @@ Conflicts=0 extra=3 udunits=0
      0-19-242 -> 0-1-242
      2-4-3    -> 2-4-2
 
+
+05/16/2013 NCDC fsanl-4 is using both 2-4-2 and 2-4-3, but ncep tables had them duplicated. rescrape the NCEP HTML GRIB2 pages
+
+     - screenscrape all tables from http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
+     - using  ucar.nc2.grib.grib2.table.NcepHtmlScraper
+     - put into directory grib\src\main\resources\resources\grib2\ncep
+
+ remove this crap in NcepLocalTables:
+
+    /* email from boi.vuong@noaa.gov 1/19/2012
+     "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
+      The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."  */
+    //if (makeHash(discipline, category, number) == makeHash(2,4,3))
+    //  return getParameter(2,4,2);
+
+    /* email from boi.vuong@noaa.gov 1/26/2012
+     The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
+     It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in June or July, 2012.
+     RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242  */
+   // if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
+   //   return getParameter(0, 1, 242);
+
+ but likely some older files will now be wrong. yeah for GRIB!

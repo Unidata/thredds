@@ -26,7 +26,7 @@
   <parameter code="4">
     <shortName>DIFIFLUX</shortName>
     <description>Heavy Ion Flux (Differential)</description>
-    <units>(m2 s sr eV/nuc)-1</units>
+    <units>(m2 s sr eV / nuc)-1</units>
   </parameter>
   <parameter code="5">
     <shortName>INTIFLUX</shortName>
@@ -39,4 +39,3 @@
     <units>h-1</units>
   </parameter>
 </parameterMap>
-

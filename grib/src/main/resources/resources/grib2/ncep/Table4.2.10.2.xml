@@ -44,14 +44,13 @@
     <units>s-1</units>
   </parameter>
   <parameter code="8">
-    <shortName>ICET</shortName>
+    <shortName>ICETMP</shortName>
     <description>Ice Temperature</description>
     <units>K</units>
   </parameter>
   <parameter code="9">
-    <shortName>ICEPRES</shortName>
+    <shortName>ICEPRS</shortName>
     <description>Ice Internal Pressure</description>
     <units>Pa m</units>
   </parameter>
 </parameterMap>
-

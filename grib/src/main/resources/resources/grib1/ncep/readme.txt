@@ -22,4 +22,9 @@
 01/14/2012 remove resources/grib1/ncep/*.tab (wgrib formatted tables)
  - regenerate with NcepHtmlScraper, however there are hand corrections to add units, etc
 
+05/16/2013 screen scrape http://www.nco.ncep.noaa.gov/pmb/docs/on388/
+  - use program ucar.nc2.grib.grib1.tables.NcepHtmlScraper
+  - table 3, table(s) 2 and table A
+
+
 

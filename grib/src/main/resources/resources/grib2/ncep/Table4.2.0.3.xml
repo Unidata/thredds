@@ -49,7 +49,7 @@
     <units>Pa</units>
   </parameter>
   <parameter code="9">
-    <shortName>GP A</shortName>
+    <shortName>GPA</shortName>
     <description>Geopotential Height Anomaly</description>
     <units>gpm</units>
   </parameter>
@@ -105,17 +105,17 @@
   </parameter>
   <parameter code="20">
     <shortName>SDSGSO</shortName>
-    <description>Standard Deviation Of Sub-Grid Scale Orography</description>
+    <description>Standard Deviation of Sub-Grid Scale Orography</description>
     <units>m</units>
   </parameter>
   <parameter code="21">
-    <shortName>ASGSO</shortName>
-    <description>Angle Of Sub-Grid Scale Orography</description>
-    <units>Rad</units>
+    <shortName>AOSGSO</shortName>
+    <description>Angle of Sub-Grid Scale Orography</description>
+    <units>rad</units>
   </parameter>
   <parameter code="22">
     <shortName>SSGSO</shortName>
-    <description>Slope Of Sub-Grid Scale Orography</description>
+    <description>Slope of Sub-Grid Scale Orography</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="23">
@@ -125,12 +125,17 @@
   </parameter>
   <parameter code="24">
     <shortName>ASGSO</shortName>
-    <description>Anisotropy Of Sub-Grid Scale Orography</description>
+    <description>Anisotropy of Sub-Grid Scale Orography</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="25">
     <shortName>NLPRES</shortName>
-    <description>Natural Logarithm Of Pressure in Pa</description>
+    <description>Natural Logarithm of Pressure in Pa</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>EXPRES</shortName>
+    <description>Exner Pressure</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="192">
@@ -206,7 +211,7 @@
   <parameter code="206">
     <shortName>NLGSP</shortName>
     <description>Natural Log of Surface Pressure</description>
-    <units>ln(kPa)</units>
+    <units>ln (kPa)</units>
   </parameter>
   <parameter code="207">
     <shortName>CNVUMF</shortName>
@@ -239,4 +244,3 @@
     <units>Pa</units>
   </parameter>
 </parameterMap>
-

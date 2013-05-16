@@ -14,8 +14,8 @@
     <units>m</units>
   </parameter>
   <parameter code="2">
-    <shortName>Validation (to deprecate)</shortName>
-    <description>Soil Temperature</description>
+    <shortName>TSOIL</shortName>
+    <description>Soil Temperature ***</description>
     <units>K</units>
   </parameter>
   <parameter code="3">
@@ -29,7 +29,7 @@
     <units>%</units>
   </parameter>
   <parameter code="5">
-    <shortName>WATRO</shortName>
+    <shortName>WATR</shortName>
     <description>Water Runoff</description>
     <units>kg m-2</units>
   </parameter>
@@ -114,13 +114,13 @@
     <units>Proportion</units>
   </parameter>
   <parameter code="22">
-    <shortName>Validation (to deprecate)</shortName>
-    <description>Soil Moisture</description>
+    <shortName>SOILM</shortName>
+    <description>Soil Moisture ***</description>
     <units>kg m-3</units>
   </parameter>
   <parameter code="23">
-    <shortName>Validation (to deprecate)</shortName>
-    <description>Column-Integrated Soil Water</description>
+    <shortName>CISOILW</shortName>
+    <description>Column-Integrated Soil Water ***</description>
     <units>kg m-2</units>
   </parameter>
   <parameter code="24">
@@ -131,7 +131,7 @@
   <parameter code="25">
     <shortName>VSOILM</shortName>
     <description>Volumetric Soil Moisture</description>
-    <units>m3m-3</units>
+    <units>m3 m-3</units>
   </parameter>
   <parameter code="26">
     <shortName>WILT</shortName>
@@ -141,30 +141,30 @@
   <parameter code="27">
     <shortName>VWILTP</shortName>
     <description>Volumetric Wilting Point</description>
-    <units>m3m-3</units>
+    <units>m3 m-3</units>
   </parameter>
   <parameter code="28">
-    <shortName>Validation</shortName>
+    <shortName>LEAINX</shortName>
     <description>Leaf Area Index</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="29">
-    <shortName>Validation</shortName>
+    <shortName>EVERF</shortName>
     <description>Evergreen Forest</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="30">
-    <shortName>Validation</shortName>
+    <shortName>DECF</shortName>
     <description>Deciduous Forest</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="31">
-    <shortName>Validation</shortName>
+    <shortName>NDVINX</shortName>
     <description>Normalized Differential Vegetation Index (NDVI)</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="32">
-    <shortName>Validation</shortName>
+    <shortName>RDVEG</shortName>
     <description>Root Depth of Vegetation</description>
     <units>m</units>
   </parameter>
@@ -326,12 +326,12 @@
   <parameter code="223">
     <shortName>WCCONV</shortName>
     <description>Water Condensate Flux Convergance (Vertical Int)</description>
-    <units>kg/m2</units>
+    <units>Kg m-2</units>
   </parameter>
   <parameter code="224">
     <shortName>WVUFLX</shortName>
     <description>Water Vapor Zonal Flux (Vertical Int)</description>
-    <units>kg/m2</units>
+    <units>Kg m-2</units>
   </parameter>
   <parameter code="225">
     <shortName>WVVFLX</shortName>
@@ -364,4 +364,3 @@
     <units>W m-2</units>
   </parameter>
 </parameterMap>
-

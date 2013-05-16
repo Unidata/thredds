@@ -11,7 +11,7 @@
   <parameter code="1">
     <shortName>IRRATE</shortName>
     <description>Instantaneous Rain Rate</description>
-    <units>kg m-2s-1</units>
+    <units>kg m-2 s-1</units>
   </parameter>
   <parameter code="2">
     <shortName>CTOPH</shortName>
@@ -86,12 +86,12 @@
   <parameter code="16">
     <shortName>CLDRAD</shortName>
     <description>Cloudy Radiance (with respect to wave number)</description>
-    <units>W m-1sr-1</units>
+    <units>W m-1 sr-1</units>
   </parameter>
   <parameter code="17">
     <shortName>CSKYRAD</shortName>
     <description>Clear Sky Radiance (with respect to wave number)</description>
-    <units>W m-1sr-1</units>
+    <units>W m-1 sr-1</units>
   </parameter>
   <parameter code="19">
     <shortName>WINDS</shortName>
@@ -129,4 +129,3 @@
     <units>m s-1</units>
   </parameter>
 </parameterMap>
-

@@ -87,8 +87,8 @@
   <parameter code="47">
     <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval for aerosol. (see Template 4.47)</description>
   </parameter>
-  <parameter code="50">
-    <description>Analysis or forecast of a multi component parameter or matrix element at error at a point in time. (see Template 4.50)     VALIDATION</description>
+  <parameter code="48">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for aerosol. (see Template 4.48)</description>
   </parameter>
   <parameter code="51">
     <description>Categorical forecast at a horizontal level or in a horizontal layer at a point in time. (see Template 4.51)</description>
@@ -118,4 +118,3 @@
     <description>Missing</description>
   </parameter>
 </codeTable>
-

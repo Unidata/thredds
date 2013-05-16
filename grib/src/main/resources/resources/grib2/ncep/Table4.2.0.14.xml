@@ -26,7 +26,7 @@
   <parameter code="193">
     <shortName>OZCON</shortName>
     <description>Ozone Concentration</description>
-    <units>PPB</units>
+    <units>ppb</units>
   </parameter>
   <parameter code="194">
     <shortName>OZCAT</shortName>
@@ -36,27 +36,27 @@
   <parameter code="195">
     <shortName>VDFOZ</shortName>
     <description>Ozone Vertical Diffusion</description>
-    <units>kg/kg/s</units>
+    <units>kg kg-1 s-1</units>
   </parameter>
   <parameter code="196">
     <shortName>POZ</shortName>
     <description>Ozone Production</description>
-    <units>kg/kg/s</units>
+    <units>kg kg-1 s-1</units>
   </parameter>
   <parameter code="197">
     <shortName>TOZ</shortName>
     <description>Ozone Tendency</description>
-    <units>kg/kg/s</units>
+    <units>kg kg-1 s-1</units>
   </parameter>
   <parameter code="198">
     <shortName>POZT</shortName>
     <description>Ozone Production from Temperature Term</description>
-    <units>kg/kg/s</units>
+    <units>kg kg-1 s-1</units>
   </parameter>
   <parameter code="199">
     <shortName>POZO</shortName>
     <description>Ozone Production from Column Ozone Term</description>
-    <units>kg/kg/s</units>
+    <units>kg kg-1 s-1</units>
   </parameter>
   <parameter code="200">
     <shortName>OZMAX1</shortName>
@@ -71,12 +71,11 @@
   <parameter code="202">
     <shortName>PDMAX1</shortName>
     <description>PM 2.5 Daily Max from 1-hour Average</description>
-    <units>?g/m3</units>
+    <units>g m-3</units>
   </parameter>
   <parameter code="203">
     <shortName>PDMAX24</shortName>
     <description>PM 2.5 Daily Max from 24-hour Average</description>
-    <units>?g/m3</units>
+    <units>g m-3</units>
   </parameter>
 </parameterMap>
-

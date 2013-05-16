@@ -244,6 +244,7 @@ public class TestMotherlodeLatest extends TimerTask {
    TestMotherlodeLatest test4 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", bestSuffix);
     timer.schedule(test4, 0, 1000 * 60 * 10); // 10 mins  */
 
+    // /thredds/catalog/grib/NCEP/RAP/CONUS_40km/files/latest.html
     TestMotherlodeLatest testAll = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", latestSuffix);
     testAll.doAll();
   }

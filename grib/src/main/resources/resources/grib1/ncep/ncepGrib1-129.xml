@@ -525,12 +525,12 @@
   <parameter code="233">
     <shortName>PDMAX1</shortName>
     <description>PM 2.5 Daily Max from 1-hour Average</description>
-    <units>?g/m3</units>
+    <units>g/m3</units>
   </parameter>
   <parameter code="234">
-    <shortName>PDMAX24</shortName>
+    <shortName>PDMX24</shortName>
     <description>PM 2.5 Daily Max from 24-hour Average</description>
-    <units>?g/m3</units>
+    <units>g/m3</units>
   </parameter>
   <parameter code="235">
     <shortName>MAXREF</shortName>
@@ -638,4 +638,3 @@
     <units />
   </parameter>
 </parameterMap>
-

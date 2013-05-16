@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parameterMap>
   <table>Table4.2.0.19</table>
-  <title>Physical atmospheric properties</title>
+  <title>Physical atmospheric Properties</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-19.shtml</source>
   <parameter code="0">
     <shortName>VIS</shortName>
@@ -120,23 +120,28 @@
   </parameter>
   <parameter code="23">
     <shortName>SLDP</shortName>
-    <description>Supercooled Large Droplet (SLD) Probabilitysee Note 2</description>
+    <description>Supercooled Large Droplet Probabilitysee Note 2</description>
     <units>%</units>
   </parameter>
   <parameter code="24">
-    <shortName>Validation</shortName>
+    <shortName>CONTKE</shortName>
     <description>Convective Turbulent Kinetic Energy</description>
     <units>J kg-1</units>
   </parameter>
   <parameter code="25">
-    <shortName>Validation</shortName>
-    <description>Weather Interpretation ww (WMO)</description>
-    <units />
+    <shortName>WIWW</shortName>
+    <description>Weather</description>
+    <units>See Table 4.225</units>
   </parameter>
   <parameter code="26">
     <shortName>CONVO</shortName>
     <description>Convective Outlook</description>
     <units>See Table 4.224</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>ICESC</shortName>
+    <description>Icing Scenario</description>
+    <units>See Table 4.227</units>
   </parameter>
   <parameter code="192">
     <shortName>MXSALB</shortName>
@@ -296,7 +301,7 @@
   <parameter code="232">
     <shortName>VAFTD</shortName>
     <description>Volcanic Ash Forecast Transport and Dispersion</description>
-    <units>log10(kg/m3)</units>
+    <units>log10 (kg m-3)</units>
   </parameter>
   <parameter code="233">
     <shortName>ICPRB</shortName>
@@ -309,4 +314,3 @@
     <units>non-dim</units>
   </parameter>
 </parameterMap>
-

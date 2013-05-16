@@ -73,12 +73,12 @@
     <units>K</units>
   </parameter>
   <parameter code="15">
-    <shortName>T MAX</shortName>
+    <shortName>TMAX</shortName>
     <description>Maximum temperature</description>
     <units>K</units>
   </parameter>
   <parameter code="16">
-    <shortName>T MIN</shortName>
+    <shortName>TMIN</shortName>
     <description>Minimum temperature</description>
     <units>K</units>
   </parameter>
@@ -123,7 +123,7 @@
     <units>K</units>
   </parameter>
   <parameter code="25">
-    <shortName>TMP A</shortName>
+    <shortName>TMPA</shortName>
     <description>Temperature anomaly</description>
     <units>K</units>
   </parameter>
@@ -133,7 +133,7 @@
     <units>Pa</units>
   </parameter>
   <parameter code="27">
-    <shortName>GP A</shortName>
+    <shortName>GPA</shortName>
     <description>Geopotential height anomaly</description>
     <units>gpm</units>
   </parameter>
@@ -163,12 +163,12 @@
     <units>m/s</units>
   </parameter>
   <parameter code="33">
-    <shortName>U GRD</shortName>
+    <shortName>UGRD</shortName>
     <description>u-component of wind</description>
     <units>m/s</units>
   </parameter>
   <parameter code="34">
-    <shortName>V GRD</shortName>
+    <shortName>VGRD</shortName>
     <description>v-component of wind</description>
     <units>m/s</units>
   </parameter>
@@ -178,7 +178,7 @@
     <units>m2/s</units>
   </parameter>
   <parameter code="36">
-    <shortName>V POT</shortName>
+    <shortName>VPOT</shortName>
     <description>Velocity potential</description>
     <units>m2/s</units>
   </parameter>
@@ -193,7 +193,7 @@
     <units>/s</units>
   </parameter>
   <parameter code="39">
-    <shortName>V VEL</shortName>
+    <shortName>VVEL</shortName>
     <description>Vertical velocity (pressure)</description>
     <units>Pa/s</units>
   </parameter>
@@ -203,22 +203,22 @@
     <units>m/s</units>
   </parameter>
   <parameter code="41">
-    <shortName>ABS V</shortName>
+    <shortName>ABSV</shortName>
     <description>Absolute vorticity</description>
     <units>/s</units>
   </parameter>
   <parameter code="42">
-    <shortName>ABS D</shortName>
+    <shortName>ABSD</shortName>
     <description>Absolute divergence</description>
     <units>/s</units>
   </parameter>
   <parameter code="43">
-    <shortName>REL V</shortName>
+    <shortName>RELV</shortName>
     <description>Relative vorticity</description>
     <units>/s</units>
   </parameter>
   <parameter code="44">
-    <shortName>REL D</shortName>
+    <shortName>RELD</shortName>
     <description>Relative divergence</description>
     <units>/s</units>
   </parameter>
@@ -233,12 +233,12 @@
     <units>/s</units>
   </parameter>
   <parameter code="47">
-    <shortName>DIR C</shortName>
+    <shortName>DIRC</shortName>
     <description>Direction of current</description>
     <units>Degree true</units>
   </parameter>
   <parameter code="48">
-    <shortName>SP C</shortName>
+    <shortName>SPC</shortName>
     <description>Speed of current</description>
     <units>m/s</units>
   </parameter>
@@ -253,12 +253,12 @@
     <units>m/s</units>
   </parameter>
   <parameter code="51">
-    <shortName>SPF H</shortName>
+    <shortName>SPFH</shortName>
     <description>Specific humidity</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="52">
-    <shortName>R H</shortName>
+    <shortName>RH</shortName>
     <description>Relative humidity</description>
     <units>%</units>
   </parameter>
@@ -268,7 +268,7 @@
     <units>kg/kg</units>
   </parameter>
   <parameter code="54">
-    <shortName>P WAT</shortName>
+    <shortName>PWAT</shortName>
     <description>Precipitable water</description>
     <units>kg/m2</units>
   </parameter>
@@ -278,7 +278,7 @@
     <units>Pa</units>
   </parameter>
   <parameter code="56">
-    <shortName>SAT D</shortName>
+    <shortName>SATD</shortName>
     <description>Saturation deficit</description>
     <units>Pa</units>
   </parameter>
@@ -288,7 +288,7 @@
     <units>kg/m2</units>
   </parameter>
   <parameter code="58">
-    <shortName>C ICE</shortName>
+    <shortName>CICE</shortName>
     <description>Cloud Ice</description>
     <units>kg/m2</units>
   </parameter>
@@ -303,7 +303,7 @@
     <units>%</units>
   </parameter>
   <parameter code="61">
-    <shortName>A PCP</shortName>
+    <shortName>APCP</shortName>
     <description>Total precipitation</description>
     <units>kg/m2</units>
   </parameter>
@@ -328,7 +328,7 @@
     <units>kg/m2</units>
   </parameter>
   <parameter code="66">
-    <shortName>SNO D</shortName>
+    <shortName>SNOD</shortName>
     <description>Snow depth</description>
     <units>m</units>
   </parameter>
@@ -348,12 +348,12 @@
     <units>m</units>
   </parameter>
   <parameter code="70">
-    <shortName>MTH A</shortName>
+    <shortName>MTHA</shortName>
     <description>Main thermocline anomaly</description>
     <units>m</units>
   </parameter>
   <parameter code="71">
-    <shortName>T CDC</shortName>
+    <shortName>TCDC</shortName>
     <description>Total cloud cover</description>
     <units>%</units>
   </parameter>
@@ -363,22 +363,22 @@
     <units>%</units>
   </parameter>
   <parameter code="73">
-    <shortName>L CDC</shortName>
+    <shortName>LCDC</shortName>
     <description>Low cloud cover</description>
     <units>%</units>
   </parameter>
   <parameter code="74">
-    <shortName>M CDC</shortName>
+    <shortName>MCDC</shortName>
     <description>Medium cloud cover</description>
     <units>%</units>
   </parameter>
   <parameter code="75">
-    <shortName>H CDC</shortName>
+    <shortName>HCDC</shortName>
     <description>High cloud cover</description>
     <units>%</units>
   </parameter>
   <parameter code="76">
-    <shortName>C WAT</shortName>
+    <shortName>CWAT</shortName>
     <description>Cloud water</description>
     <units>kg/m2</units>
   </parameter>
@@ -388,12 +388,12 @@
     <units>K</units>
   </parameter>
   <parameter code="78">
-    <shortName>SNO C</shortName>
+    <shortName>SNOC</shortName>
     <description>Convective snow</description>
     <units>kg/m2</units>
   </parameter>
   <parameter code="79">
-    <shortName>SNO L</shortName>
+    <shortName>SNOL</shortName>
     <description>Large scale snow</description>
     <units>kg/m2</units>
   </parameter>
@@ -408,12 +408,12 @@
     <units>proportion</units>
   </parameter>
   <parameter code="82">
-    <shortName>DSL M</shortName>
+    <shortName>DSLM</shortName>
     <description>Deviation of sea level from mean</description>
     <units>m</units>
   </parameter>
   <parameter code="83">
-    <shortName>SFC R</shortName>
+    <shortName>SFCR</shortName>
     <description>Surface roughness</description>
     <units>m</units>
   </parameter>
@@ -428,7 +428,7 @@
     <units>K</units>
   </parameter>
   <parameter code="86">
-    <shortName>SOIL M</shortName>
+    <shortName>SOILM</shortName>
     <description>Soil moisture content</description>
     <units>kg/m2</units>
   </parameter>
@@ -453,7 +453,7 @@
     <units>kg/m2</units>
   </parameter>
   <parameter code="91">
-    <shortName>ICE C</shortName>
+    <shortName>ICEC</shortName>
     <description>Ice cover (ice=1, no ice=0) (See Note)</description>
     <units>proportion</units>
   </parameter>
@@ -473,27 +473,27 @@
     <units>m/s</units>
   </parameter>
   <parameter code="95">
-    <shortName>U ICE</shortName>
+    <shortName>UICE</shortName>
     <description>u-component of ice drift</description>
     <units>m/s</units>
   </parameter>
   <parameter code="96">
-    <shortName>V ICE</shortName>
+    <shortName>VICE</shortName>
     <description>v-component of ice drift</description>
     <units>m/s</units>
   </parameter>
   <parameter code="97">
-    <shortName>ICE G</shortName>
+    <shortName>ICEG</shortName>
     <description>Ice growth rate</description>
     <units>m/s</units>
   </parameter>
   <parameter code="98">
-    <shortName>ICE D</shortName>
+    <shortName>ICED</shortName>
     <description>Ice divergence</description>
     <units>m/s</units>
   </parameter>
   <parameter code="99">
-    <shortName>SNO M</shortName>
+    <shortName>SNOM</shortName>
     <description>Snow melt</description>
     <units>kg/m2</units>
   </parameter>
@@ -583,7 +583,7 @@
     <units>W/m2</units>
   </parameter>
   <parameter code="117">
-    <shortName>G RAD</shortName>
+    <shortName>GRAD</shortName>
     <description>Global radiation flux</description>
     <units>W/m2</units>
   </parameter>
@@ -618,12 +618,12 @@
     <units>W/m2</units>
   </parameter>
   <parameter code="124">
-    <shortName>U FLX</shortName>
+    <shortName>UFLX</shortName>
     <description>Momentum flux, u component</description>
     <units>N/m2</units>
   </parameter>
   <parameter code="125">
-    <shortName>V FLX</shortName>
+    <shortName>VFLX</shortName>
     <description>Momentum flux, v component</description>
     <units>N/m2</units>
   </parameter>
@@ -633,7 +633,7 @@
     <units>J</units>
   </parameter>
   <parameter code="127">
-    <shortName>IMG D</shortName>
+    <shortName>IMGD</shortName>
     <description>Image data</description>
     <units />
   </parameter>
@@ -653,7 +653,7 @@
     <units>Pa</units>
   </parameter>
   <parameter code="131">
-    <shortName>LFT X</shortName>
+    <shortName>LFTX</shortName>
     <description>Surface lifted index</description>
     <units>K</units>
   </parameter>
@@ -663,12 +663,12 @@
     <units>K</units>
   </parameter>
   <parameter code="133">
-    <shortName>K X</shortName>
+    <shortName>KX</shortName>
     <description>K index</description>
     <units>K</units>
   </parameter>
   <parameter code="134">
-    <shortName>S X</shortName>
+    <shortName>SX</shortName>
     <description>Sweat index</description>
     <units>K</units>
   </parameter>
@@ -678,7 +678,7 @@
     <units>kg/kg/s</units>
   </parameter>
   <parameter code="136">
-    <shortName>VW SH</shortName>
+    <shortName>VWSH</shortName>
     <description>Vertical speed shear</description>
     <units>1/s</units>
   </parameter>
@@ -688,12 +688,12 @@
     <units>Pa/s</units>
   </parameter>
   <parameter code="138">
-    <shortName>BVF 2</shortName>
+    <shortName>BVF2</shortName>
     <description>Brunt-Vaisala frequency (squared)</description>
     <units>1/s2</units>
   </parameter>
   <parameter code="139">
-    <shortName>PV MW</shortName>
+    <shortName>PVMW</shortName>
     <description>Potential vorticity (density weighted)</description>
     <units>1/s/m</units>
   </parameter>
@@ -733,12 +733,12 @@
     <units>J/kg</units>
   </parameter>
   <parameter code="147">
-    <shortName>U-GWD</shortName>
+    <shortName>UGWD</shortName>
     <description>Zonal flux of gravity wave stress</description>
     <units>N/m2</units>
   </parameter>
   <parameter code="148">
-    <shortName>V-GWD</shortName>
+    <shortName>VGWD</shortName>
     <description>Meridional flux of gravity wave stress</description>
     <units>N/m2</units>
   </parameter>
@@ -764,7 +764,7 @@
   </parameter>
   <parameter code="153">
     <shortName>CLWMR</shortName>
-    <description>Cloud water</description>
+    <description>Cloud Mixing Ratio</description>
     <units>kg/kg</units>
   </parameter>
   <parameter code="154">
@@ -858,7 +858,7 @@
     <units>kg/kg</units>
   </parameter>
   <parameter code="172">
-    <shortName>M FLX</shortName>
+    <shortName>MFLX</shortName>
     <description>Momentum flux</description>
     <units>N/m2</units>
   </parameter>
@@ -903,22 +903,22 @@
     <units>m/s</units>
   </parameter>
   <parameter code="181">
-    <shortName>LPS X</shortName>
+    <shortName>LPSX</shortName>
     <description>x-gradient of log pressure</description>
     <units>1/m</units>
   </parameter>
   <parameter code="182">
-    <shortName>LPS Y</shortName>
+    <shortName>LPSY</shortName>
     <description>y-gradient of log pressure</description>
     <units>1/m</units>
   </parameter>
   <parameter code="183">
-    <shortName>HGT X</shortName>
+    <shortName>HGTX</shortName>
     <description>x-gradient of height</description>
     <units>m/m</units>
   </parameter>
   <parameter code="184">
-    <shortName>HGT Y</shortName>
+    <shortName>HGTY</shortName>
     <description>y-gradient of height</description>
     <units>m/m</units>
   </parameter>
@@ -1278,4 +1278,3 @@
     <units />
   </parameter>
 </parameterMap>
-

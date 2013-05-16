@@ -26,7 +26,7 @@
   <parameter code="4">
     <shortName>WVDIR</shortName>
     <description>Direction of Wind Waves</description>
-    <units />
+    <units>degree true</units>
   </parameter>
   <parameter code="5">
     <shortName>WVHGT</shortName>
@@ -41,7 +41,7 @@
   <parameter code="7">
     <shortName>SWDIR</shortName>
     <description>Direction of Swell Waves</description>
-    <units />
+    <units>degree true</units>
   </parameter>
   <parameter code="8">
     <shortName>SWELL</shortName>
@@ -56,7 +56,7 @@
   <parameter code="10">
     <shortName>DIRPW</shortName>
     <description>Primary Wave Direction</description>
-    <units />
+    <units>degree true</units>
   </parameter>
   <parameter code="11">
     <shortName>PERPW</shortName>
@@ -66,7 +66,7 @@
   <parameter code="12">
     <shortName>DIRSW</shortName>
     <description>Secondary Wave Direction</description>
-    <units />
+    <units>degree true</units>
   </parameter>
   <parameter code="13">
     <shortName>PERSW</shortName>
@@ -76,7 +76,7 @@
   <parameter code="14">
     <shortName>WWSDIR</shortName>
     <description>Direction of Combined Wind Waves and Swell</description>
-    <units />
+    <units>degree true</units>
   </parameter>
   <parameter code="15">
     <shortName>MWSPER</shortName>
@@ -84,174 +84,153 @@
     <units>s</units>
   </parameter>
   <parameter code="16">
-    <shortName>Validation</shortName>
-    <description>Coefficient Of Drag With Waves</description>
+    <shortName>CDWW</shortName>
+    <description>Coefficient of Drag With Waves</description>
     <units>-</units>
   </parameter>
   <parameter code="17">
-    <shortName>Validation</shortName>
+    <shortName>FRICV</shortName>
     <description>Friction Velocity</description>
     <units>m s-1</units>
   </parameter>
   <parameter code="18">
-    <shortName>Validation</shortName>
+    <shortName>WSTR</shortName>
     <description>Wave Stress</description>
     <units>N m-2</units>
   </parameter>
   <parameter code="19">
-    <shortName>Validation</shortName>
-    <description>Normalise Waves Stress</description>
+    <shortName>NWSTR</shortName>
+    <description>Normalised Waves Stress</description>
     <units>-</units>
   </parameter>
   <parameter code="20">
-    <shortName>Validation</shortName>
+    <shortName>MSSW</shortName>
     <description>Mean Square Slope of Waves</description>
     <units>-</units>
   </parameter>
   <parameter code="21">
-    <shortName>Validation</shortName>
+    <shortName>USSD</shortName>
     <description>U-component Surface Stokes Drift</description>
     <units>m s-1</units>
   </parameter>
   <parameter code="22">
-    <shortName>Validation</shortName>
+    <shortName>VSSD</shortName>
     <description>V-component Surface Stokes Drift</description>
     <units>m s-1</units>
   </parameter>
   <parameter code="23">
-    <shortName>Validation</shortName>
-    <description>Period Of Maximum Individual Wave Height</description>
+    <shortName>PMAXWH</shortName>
+    <description>Period of Maximum Individual Wave Height</description>
     <units>s</units>
   </parameter>
   <parameter code="24">
-    <shortName>Validation</shortName>
+    <shortName>MAXWH</shortName>
     <description>Maximum Individual Wave Height</description>
     <units>m</units>
   </parameter>
   <parameter code="25">
-    <shortName>Validation</shortName>
+    <shortName>IMWF</shortName>
     <description>Inverse Mean Wave Frequency</description>
     <units>s</units>
   </parameter>
   <parameter code="26">
-    <shortName>Validation</shortName>
-    <description>Inverse Mean Frequency Of The Wind Waves</description>
+    <shortName>IMFWW</shortName>
+    <description>Inverse Mean Frequency of The Wind Waves</description>
     <units>s</units>
   </parameter>
   <parameter code="27">
-    <shortName>Validation</shortName>
-    <description>Inverse Mean Frequency Of The Total Swell</description>
+    <shortName>IMFTSW</shortName>
+    <description>Inverse Mean Frequency of The Total Swell</description>
     <units>s</units>
   </parameter>
   <parameter code="28">
-    <shortName>Validation</shortName>
+    <shortName>MZWPER</shortName>
     <description>Mean Zero-Crossing Wave Period</description>
     <units>s</units>
   </parameter>
   <parameter code="29">
-    <shortName>Validation</shortName>
-    <description>Mean Zero-Crossing Period Of The Wind Waves</description>
+    <shortName>MZPWW</shortName>
+    <description>Mean Zero-Crossing Period of The Wind Waves</description>
     <units>s</units>
   </parameter>
   <parameter code="30">
-    <shortName>Validation</shortName>
-    <description>Mean Zero-Crossing Period Of The Total Swell</description>
+    <shortName>MZPTSW</shortName>
+    <description>Mean Zero-Crossing Period of The Total Swell</description>
     <units>s</units>
   </parameter>
   <parameter code="31">
-    <shortName>Validation</shortName>
+    <shortName>WDIRW</shortName>
     <description>Wave Directional Width</description>
     <units>-</units>
   </parameter>
   <parameter code="32">
-    <shortName>Validation</shortName>
-    <description>Directional Width Of The Wind Waves</description>
+    <shortName>DIRWWW</shortName>
+    <description>Directional Width of The Wind Waves</description>
     <units>-</units>
   </parameter>
   <parameter code="33">
-    <shortName>Validation</shortName>
-    <description>Directional Width Of The Total Swell</description>
+    <shortName>DIRWTS</shortName>
+    <description>Directional Width of The Total Swell</description>
     <units>-</units>
   </parameter>
   <parameter code="34">
-    <shortName>Validation</shortName>
+    <shortName>PWPER</shortName>
     <description>Peak Wave Period</description>
     <units>s</units>
   </parameter>
   <parameter code="35">
-    <shortName>Validation</shortName>
-    <description>Peak Period Of The Wind Waves</description>
+    <shortName>PPERWW</shortName>
+    <description>Peak Period of The Wind Waves</description>
     <units>s</units>
   </parameter>
   <parameter code="36">
-    <shortName>Validation</shortName>
-    <description>Peak Period Of The Total Swell</description>
+    <shortName>PPERTS</shortName>
+    <description>Peak Period of The Total Swell</description>
     <units>s</units>
   </parameter>
   <parameter code="37">
-    <shortName>Validation</shortName>
+    <shortName>ALTWH</shortName>
     <description>Altimeter Wave Height</description>
     <units>m</units>
   </parameter>
   <parameter code="38">
-    <shortName>Validation</shortName>
+    <shortName>ALCWH</shortName>
     <description>Altimeter Corrected Wave Height</description>
     <units>m</units>
   </parameter>
   <parameter code="39">
-    <shortName>Validation</shortName>
+    <shortName>ALRRC</shortName>
     <description>Altimeter Range Relative Correction</description>
     <units>-</units>
   </parameter>
   <parameter code="40">
-    <shortName>Validation</shortName>
-    <description>10 Meter Neutral Wind Speed Over Waves</description>
-    <units>ms-1</units>
+    <shortName>MNWSOW</shortName>
+    <description>10 Metre Neutral Wind Speed Over Waves</description>
+    <units>m s-1</units>
   </parameter>
   <parameter code="41">
-    <shortName>Validation</shortName>
-    <description>10 Meter Wind Direction Over Waves</description>
-    <units />
+    <shortName>MWDIRW</shortName>
+    <description>10 Metre Wind Direction Over Waves</description>
+    <units>degree true</units>
   </parameter>
   <parameter code="42">
-    <shortName>Validation</shortName>
+    <shortName>WESP</shortName>
     <description>Wave Engery Spectrum</description>
-    <units>m-2s rad-1</units>
+    <units>m-2 s rad-1</units>
   </parameter>
   <parameter code="43">
-    <shortName>Validation</shortName>
-    <description>Kurtosis Of The Sea Surface Elevation Due to Waves</description>
-    <units>-</units>
-  </parameter>
-  <parameter code="44">
-    <shortName>Validation</shortName>
-    <description>Benjamin-Feir Index</description>
+    <shortName>BENINX</shortName>
+    <description>Kurtosis of The Sea Surface Elevation Due to Waves</description>
     <units>-</units>
   </parameter>
   <parameter code="45">
-    <shortName>Validation</shortName>
+    <shortName>SPFTR</shortName>
     <description>Spectral Peakedness Factor</description>
     <units>s-1</units>
-  </parameter>
-  <parameter code="46">
-    <shortName>Validation</shortName>
-    <description>2-Dimension Spectral Energy Density E(f,?)</description>
-    <units>m s-2</units>
-  </parameter>
-  <parameter code="47">
-    <shortName>Validation</shortName>
-    <description>Frequency Spectral Energy Density E(f)=?E(f,?)d?</description>
-    <units>m s-2</units>
-  </parameter>
-  <parameter code="48">
-    <shortName>Validation</shortName>
-    <description>Directional Spectral Energy Density E(?)=?E(f,?)d?/m0</description>
-    <units>m s-2</units>
   </parameter>
   <parameter code="192">
     <shortName>WSTP</shortName>
     <description>Wave Steepness</description>
-    <units />
+    <units>proportion</units>
   </parameter>
 </parameterMap>
-

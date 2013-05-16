@@ -4,7 +4,7 @@
   <title>Temperature</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-4-0.shtml</source>
   <parameter code="0">
-    <shortName>TMP</shortName>
+    <shortName>TMPSWP</shortName>
     <description>Temperature</description>
     <units>K</units>
   </parameter>
@@ -34,4 +34,3 @@
     <units>K</units>
   </parameter>
 </parameterMap>
-

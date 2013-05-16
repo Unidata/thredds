@@ -29,7 +29,7 @@
     <units>K</units>
   </parameter>
   <parameter code="5">
-    <shortName>SWEATX</shortName>
+    <shortName>SX</shortName>
     <description>Sweat Index</description>
     <units>Numeric</units>
   </parameter>
@@ -69,14 +69,14 @@
     <units>Numeric</units>
   </parameter>
   <parameter code="13">
-    <shortName>Validation</shortName>
+    <shortName>SHWINX</shortName>
     <description>Showalter Index</description>
     <units>K</units>
   </parameter>
   <parameter code="15">
     <shortName>UPHL</shortName>
     <description>Updraft Helicity</description>
-    <units>m2s-2</units>
+    <units>m2 s-2</units>
   </parameter>
   <parameter code="192">
     <shortName>LFT X</shortName>
@@ -106,7 +106,7 @@
   <parameter code="197">
     <shortName>UPHL</shortName>
     <description>Updraft Helicity</description>
-    <units>m2s-2</units>
+    <units>m2 s-2</units>
   </parameter>
   <parameter code="198">
     <shortName>LAI</shortName>
@@ -116,7 +116,6 @@
   <parameter code="199">
     <shortName>MXUPHL</shortName>
     <description>Hourly Maximum of Updraft Helicity over Layer 2km to 5 km AGL</description>
-    <units>m2/s2</units>
+    <units>m2 s-2</units>
   </parameter>
 </parameterMap>
-

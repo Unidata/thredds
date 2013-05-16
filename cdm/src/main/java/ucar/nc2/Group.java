@@ -559,8 +559,10 @@ public class Group extends CDMNode {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (v == null) return;
 
-    if (findVariable(v.getShortName()) != null)
+    if (findVariable(v.getShortName()) != null) {
+      Variable other = findVariable(v.getShortName()); // debug
       throw new IllegalArgumentException("Variable name (" + v.getShortName() + ") must be unique within Group " + getShortName());
+    }
 
     variables.add(v);
     v.setParentGroup(this); // variable can only be in one group

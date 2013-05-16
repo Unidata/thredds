@@ -6,17 +6,17 @@
   <parameter code="0">
     <shortName>REFZR</shortName>
     <description>Equivalent radar reflectivity factor for rain</description>
-    <units>mm6m-3</units>
+    <units>m m6 m-3</units>
   </parameter>
   <parameter code="1">
     <shortName>REFZI</shortName>
     <description>Equivalent radar reflectivity factor for snow</description>
-    <units>mm6m-3</units>
+    <units>m m6 m-3</units>
   </parameter>
   <parameter code="2">
     <shortName>REFZC</shortName>
     <description>Equivalent radar reflectivity factor for parameterized convection</description>
-    <units>mm6m-3</units>
+    <units>m m6 m-3</units>
   </parameter>
   <parameter code="3">
     <shortName>RETOP</shortName>
@@ -36,17 +36,17 @@
   <parameter code="192">
     <shortName>REFZR</shortName>
     <description>Equivalent radar reflectivity factor for rain</description>
-    <units>mm6/m3</units>
+    <units>m m6 m-3</units>
   </parameter>
   <parameter code="193">
     <shortName>REFZI</shortName>
     <description>Equivalent radar reflectivity factor for snow</description>
-    <units>mm6/m3</units>
+    <units>m m6 m-3</units>
   </parameter>
   <parameter code="194">
     <shortName>REFZC</shortName>
     <description>Equivalent radar reflectivity factor for parameterized convection</description>
-    <units>mm6/m3</units>
+    <units>m m6 m-3</units>
   </parameter>
   <parameter code="195">
     <shortName>REFD</shortName>
@@ -69,4 +69,3 @@
     <units>dB</units>
   </parameter>
 </parameterMap>
-

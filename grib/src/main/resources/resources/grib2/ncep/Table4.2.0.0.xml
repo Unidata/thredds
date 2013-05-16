@@ -86,7 +86,7 @@
   <parameter code="16">
     <shortName>SNOHF</shortName>
     <description>Snow Phase Change Heat Flux</description>
-    <units>Wm-2</units>
+    <units>W m-2</units>
   </parameter>
   <parameter code="17">
     <shortName>SKINT</shortName>
@@ -94,17 +94,17 @@
     <units>K</units>
   </parameter>
   <parameter code="18">
-    <shortName>Validation</shortName>
+    <shortName>SNOT</shortName>
     <description>Snow Temperature (top of snow)</description>
     <units>K</units>
   </parameter>
   <parameter code="19">
-    <shortName>Validation</shortName>
+    <shortName>TTCHT</shortName>
     <description>Turbulent Transfer Coefficient for Heat</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="20">
-    <shortName>Validation</shortName>
+    <shortName>TDCHT</shortName>
     <description>Turbulent Diffusion Coefficient for Heat</description>
     <units>m2s-1</units>
   </parameter>
@@ -174,4 +174,3 @@
     <units>J/m2K</units>
   </parameter>
 </parameterMap>
-

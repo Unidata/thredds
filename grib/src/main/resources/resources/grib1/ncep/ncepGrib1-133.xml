@@ -34,12 +34,12 @@
   </parameter>
   <parameter code="168">
     <shortName>COVTVV</shortName>
-    <description>Covariance between temperature and vertical components of the wind. Defined as [?T]-[?][T], where "[]" indicates the mean over the indicated time span.</description>
+    <description>Covariance between temperature and vertical components of the wind. Defined as [T]-[][T], where "[]" indicates the mean over the indicated time span.</description>
     <units>K*Pa/s</units>
   </parameter>
   <parameter code="169">
     <shortName>COVQVV</shortName>
-    <description>Covariance between specific humidity and vertical components of the wind. Defined as [?q]-[?][q], where "[]" indicates the mean over the indicated time span.</description>
+    <description>Covariance between specific humidity and vertical components of the wind. Defined as [q]-[][q], where "[]" indicates the mean over the indicated time span.</description>
     <units>kg/kg*Pa/s</units>
   </parameter>
   <parameter code="173">
@@ -184,7 +184,7 @@
   </parameter>
   <parameter code="220">
     <shortName>COVVVVV</shortName>
-    <description>Covariance between vertical and vertical components of the wind. Defined as [??]-[?][?], where "[]" indicates the mean over the indicated time span.</description>
+    <description>Covariance between vertical and vertical components of the wind. Defined as []-[][], where "[]" indicates the mean over the indicated time span.</description>
     <units>Pa2/s2</units>
   </parameter>
   <parameter code="234">
@@ -208,4 +208,3 @@
     <units />
   </parameter>
 </parameterMap>
-

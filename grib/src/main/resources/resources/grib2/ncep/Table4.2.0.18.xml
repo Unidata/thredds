@@ -35,17 +35,17 @@
   </parameter>
   <parameter code="6">
     <shortName>TIACCP</shortName>
-    <description>Time Integrated Air Concentration of Cesium Pollutant*</description>
+    <description>Time Integrated Air Concentration of Cesium Pollutant See Note 1</description>
     <units>Bq s m-3</units>
   </parameter>
   <parameter code="7">
     <shortName>TIACIP</shortName>
-    <description>Time Integrated Air Concentration of Iodine Pollutant*</description>
+    <description>Time Integrated Air Concentration of Iodine Pollutant See Note 1</description>
     <units>Bq s m-3</units>
   </parameter>
   <parameter code="8">
     <shortName>TIACRP</shortName>
-    <description>Time Integrated Air Concentration of Radioactive Pollutant*</description>
+    <description>Time Integrated Air Concentration of Radioactive Pollutant See Note 1</description>
     <units>Bq s m-3</units>
   </parameter>
   <parameter code="10">
@@ -69,4 +69,3 @@
     <units>Bq m-2</units>
   </parameter>
 </parameterMap>
-

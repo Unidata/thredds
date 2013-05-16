@@ -26,17 +26,16 @@
   <parameter code="4">
     <shortName>SPECIRR</shortName>
     <description>Solar Spectral Irradiance</description>
-    <units>W m-2nm-1</units>
+    <units>W m-2 nm-1</units>
   </parameter>
   <parameter code="5">
     <shortName>F107</shortName>
     <description>F10.7</description>
-    <units>W m-2Hz-1</units>
+    <units>W m-2 Hz-1</units>
   </parameter>
   <parameter code="6">
     <shortName>SOLRF</shortName>
     <description>Solar Radio Emissions</description>
-    <units>W m-2Hz-1</units>
+    <units>W m-2 Hz-1</units>
   </parameter>
 </parameterMap>
-

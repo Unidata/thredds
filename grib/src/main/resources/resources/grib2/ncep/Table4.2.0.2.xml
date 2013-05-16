@@ -6,7 +6,7 @@
   <parameter code="0">
     <shortName>WDIR</shortName>
     <description>Wind Direction (from which blowing)</description>
-    <units />
+    <units>true</units>
   </parameter>
   <parameter code="1">
     <shortName>WIND</shortName>
@@ -36,7 +36,7 @@
   <parameter code="6">
     <shortName>MNTSF</shortName>
     <description>Montgomery Stream Function</description>
-    <units>m2 s-1</units>
+    <units>m2 s-2</units>
   </parameter>
   <parameter code="7">
     <shortName>SGCVV</shortName>
@@ -110,7 +110,7 @@
   </parameter>
   <parameter code="21">
     <shortName>MAXGUST</shortName>
-    <description>Maximum Wind Speed</description>
+    <description>Maximum Wind Speed *</description>
     <units>m s-1</units>
   </parameter>
   <parameter code="22">
@@ -159,9 +159,9 @@
     <units>m s-1</units>
   </parameter>
   <parameter code="31">
-    <shortName>Validation</shortName>
+    <shortName>TDCMOM</shortName>
     <description>Turbulent Diffusion Coefficient for Momentum</description>
-    <units>m2s-1</units>
+    <units>m2 s-1</units>
   </parameter>
   <parameter code="32">
     <shortName>ETACVV</shortName>
@@ -172,6 +172,16 @@
     <shortName>WINDF</shortName>
     <description>Wind Fetch</description>
     <units>m</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>NWIND</shortName>
+    <description>Normal Wind Component **</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>TWIND</shortName>
+    <description>Tangential Wind Component **</description>
+    <units>m s-1</units>
   </parameter>
   <parameter code="192">
     <shortName>VWSH</shortName>
@@ -286,7 +296,7 @@
   <parameter code="214">
     <shortName>WTEND</shortName>
     <description>Tendency of vertical velocity</description>
-    <units>m/s2</units>
+    <units>m s-2</units>
   </parameter>
   <parameter code="215">
     <shortName>OMGALF</shortName>
@@ -296,12 +306,12 @@
   <parameter code="216">
     <shortName>CNGWDU</shortName>
     <description>Convective Gravity wave drag zonal acceleration</description>
-    <units>m/s2</units>
+    <units>m s-2</units>
   </parameter>
   <parameter code="217">
     <shortName>CNGWDV</shortName>
     <description>Convective Gravity wave drag meridional acceleration</description>
-    <units>m/s2</units>
+    <units>m s-2</units>
   </parameter>
   <parameter code="218">
     <shortName>LMV</shortName>
@@ -316,27 +326,26 @@
   <parameter code="220">
     <shortName>MAXUVV</shortName>
     <description>Hourly Maximum of Upward Vertical Velocity in the lowest 400hPa</description>
-    <units>m/s</units>
+    <units>m s-1</units>
   </parameter>
   <parameter code="221">
     <shortName>MAXDVV</shortName>
     <description>Hourly Maximum of Downward Vertical Velocity in the lowest 400hPa</description>
-    <units>m/s</units>
+    <units>m s-1</units>
   </parameter>
   <parameter code="222">
     <shortName>MAXUW</shortName>
     <description>U Component of Hourly Maximum 10m Wind Speed</description>
-    <units>m/s</units>
+    <units>m s-1</units>
   </parameter>
   <parameter code="223">
     <shortName>MAXVW</shortName>
     <description>V Component of Hourly Maximum 10m Wind Speed</description>
-    <units>m/s</units>
+    <units>m s-1</units>
   </parameter>
   <parameter code="224">
     <shortName>VRATE</shortName>
     <description>Ventilation Rate</description>
-    <units>m2/s</units>
+    <units>m2 s-1</units>
   </parameter>
 </parameterMap>
-

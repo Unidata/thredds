@@ -56,12 +56,12 @@
   <parameter code="10">
     <shortName>LIQVSM</shortName>
     <description>Liquid Volumetric Soil Moisture (Non-Frozen)</description>
-    <units>m3m-3</units>
+    <units>m3 m-3</units>
   </parameter>
   <parameter code="11">
     <shortName>VOLTSO</shortName>
     <description>Volumetric Transpiration Stree-Onset(Soil Moisture)</description>
-    <units>m3m-3</units>
+    <units>m3 m-3</units>
   </parameter>
   <parameter code="12">
     <shortName>TRANSO</shortName>
@@ -71,7 +71,7 @@
   <parameter code="13">
     <shortName>VOLDEC</shortName>
     <description>Volumetric Direct Evaporation Cease(Soil Moisture)</description>
-    <units>m3m-3</units>
+    <units>m3 m-3</units>
   </parameter>
   <parameter code="14">
     <shortName>DIREC</shortName>
@@ -81,12 +81,12 @@
   <parameter code="15">
     <shortName>SOILP</shortName>
     <description>Soil Porosity</description>
-    <units>m3m-3</units>
+    <units>m3 m-3</units>
   </parameter>
   <parameter code="16">
     <shortName>VSOSM</shortName>
     <description>Volumetric Saturation Of Soil Moisture</description>
-    <units>m3m-3</units>
+    <units>m3 m-3</units>
   </parameter>
   <parameter code="17">
     <shortName>SATOSM</shortName>
@@ -94,27 +94,27 @@
     <units>kg m-3</units>
   </parameter>
   <parameter code="18">
-    <shortName>Validation</shortName>
+    <shortName>SOILTMP</shortName>
     <description>Soil Temperature</description>
     <units>K</units>
   </parameter>
   <parameter code="19">
-    <shortName>Validation</shortName>
+    <shortName>SOILMOI</shortName>
     <description>Soil Moisture</description>
     <units>kg m-3</units>
   </parameter>
   <parameter code="20">
-    <shortName>Validation</shortName>
+    <shortName>CISOILM</shortName>
     <description>Column-Integrated Soil Moisture</description>
     <units>kg m-2</units>
   </parameter>
   <parameter code="21">
-    <shortName>Validation</shortName>
+    <shortName>SOILICE</shortName>
     <description>Soil Ice</description>
     <units>kg m-3</units>
   </parameter>
   <parameter code="22">
-    <shortName>Validation</shortName>
+    <shortName>CISICE</shortName>
     <description>Column-Integrated Soil Ice</description>
     <units>kg m-2</units>
   </parameter>
@@ -150,7 +150,7 @@
   </parameter>
   <parameter code="198">
     <shortName>EVBS</shortName>
-    <description>Direct evaporation from bare soil</description>
+    <description>Direct Evaporation from Bare Soil</description>
     <units>W m-2</units>
   </parameter>
   <parameter code="199">
@@ -160,23 +160,22 @@
   </parameter>
   <parameter code="200">
     <shortName>BARET</shortName>
-    <description>Bare soil surface skin temperature</description>
+    <description>Bare Soil Surface Skin temperature</description>
     <units>K</units>
   </parameter>
   <parameter code="201">
     <shortName>AVSFT</shortName>
-    <description>Average surface skin temperature</description>
+    <description>Average Surface Skin Temperature</description>
     <units>K</units>
   </parameter>
   <parameter code="202">
     <shortName>RADT</shortName>
-    <description>Effective radiative skin temperature</description>
+    <description>Effective Radiative Skin Temperature</description>
     <units>K</units>
   </parameter>
   <parameter code="203">
     <shortName>FLDCP</shortName>
     <description>Field Capacity</description>
-    <units>fraction</units>
+    <units>Fraction</units>
   </parameter>
 </parameterMap>
-

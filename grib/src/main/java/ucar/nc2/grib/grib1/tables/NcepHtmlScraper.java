@@ -163,8 +163,9 @@ public class NcepHtmlScraper {
     String source = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html";
     String base = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/";
     File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\ON388.TableA.htm");
-    Document doc = Jsoup.parse(input, "UTF-8", base);
-    System.out.printf("%s%n", doc);
+    //Document doc = Jsoup.parse(input, "UTF-8", base);
+    //System.out.printf("%s%n", doc);
+    Document doc = Jsoup.parse(new URL(source), 10 * 1000);
 
     Element table = doc.select("table").first();
     List<Stuff> stuff = new ArrayList<Stuff>();
@@ -240,9 +241,10 @@ public class NcepHtmlScraper {
 
   void parseTable2() throws IOException {
     String source = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html";
-    File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\on388.2011-11-18.htm");
-    Document doc = Jsoup.parse(input, "UTF-8", "http://www.nco.ncep.noaa.gov/pmb/docs/on388/");
+    //File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\on388.2011-11-18.htm");
+    //Document doc = Jsoup.parse(input, "UTF-8", "http://www.nco.ncep.noaa.gov/pmb/docs/on388/");
     //System.out.printf("%s%n", doc);
+    Document doc = Jsoup.parse(new URL(source), 10*1000);
 
     int count = 0;
     for (Element e : doc.select("big"))
@@ -307,7 +309,8 @@ public class NcepHtmlScraper {
   }
 
   /////////////////////////////////////////////////////////
-  String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
+  // String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
+  String dirOut = "C:/tmp/ncep/grib1/";
 
   private void writeTable2Xml(String name, String source, String filename, List<Param> params) throws IOException {
     org.jdom2.Element rootElem = new org.jdom2.Element("parameterMap");
@@ -350,6 +353,8 @@ public class NcepHtmlScraper {
 
   public static void main(String[] args) throws IOException {
     NcepHtmlScraper scraper = new NcepHtmlScraper();
-    //scraper.writeWmoTable3();
+    //scraper.parseTable2();
+    //scraper.parseTableA();
+    scraper.parseTable3();
   }
 }

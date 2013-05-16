@@ -26,6 +26,12 @@
   <parameter code="12">
     <description>Probabilistic Storm Surge</description>
   </parameter>
+  <parameter code="13">
+    <description>Hurricane Multi-Grid Wave Model</description>
+  </parameter>
+  <parameter code="14">
+    <description>Extratropical Storm Surge Model</description>
+  </parameter>
   <parameter code="19">
     <description>Limited-area Fine Mesh (LFM) analysis</description>
   </parameter>
@@ -117,7 +123,7 @@
     <description>MESO NAM Model (currently 12 km)</description>
   </parameter>
   <parameter code="85">
-    <description>No longer used</description>
+    <description>Real Time Ocean Forecast System (RTOFS)</description>
   </parameter>
   <parameter code="86">
     <description>RUC Model, from Forecast Systems Lab (isentropic; scale: 60km at 40N)</description>
@@ -196,6 +202,9 @@
   </parameter>
   <parameter code="116">
     <description>WRF-EM model, generic resolution (Used in various runs) EM - Eulerian Mass-core (NCAR - aka Advanced Research WRF)</description>
+  </parameter>
+  <parameter code="117">
+    <description>NEMS GFS Aerosol Component</description>
   </parameter>
   <parameter code="120">
     <description>Ice Concentration Analysis</description>
@@ -315,4 +324,3 @@
     <description>Missing</description>
   </parameter>
 </tableA>
-

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.227</table>
+  <title>Icing Scenario (Weather/Cloud Classification)</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-227.shtml</source>
+  <parameter code="0">
+    <description>None</description>
+  </parameter>
+  <parameter code="1">
+    <description>General</description>
+  </parameter>
+  <parameter code="2">
+    <description>Convective</description>
+  </parameter>
+  <parameter code="3">
+    <description>Stratiform</description>
+  </parameter>
+  <parameter code="4">
+    <description>Freezing</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parameterMap>
   <table>Table4.2.10.4</table>
-  <title>Sub-surface properties</title>
+  <title>Sub-surface Properties</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-4.shtml</source>
   <parameter code="0">
     <shortName>MTHD</shortName>
@@ -26,20 +26,20 @@
   <parameter code="4">
     <shortName>OVHD</shortName>
     <description>Ocean Vertical Heat Diffusivity</description>
-    <units>m2s-1</units>
+    <units>m2 s-1</units>
   </parameter>
   <parameter code="5">
     <shortName>OVSD</shortName>
     <description>Ocean Vertical Salt Diffusivity</description>
-    <units>m2s-1</units>
+    <units>m2 s-1</units>
   </parameter>
   <parameter code="6">
     <shortName>OVMD</shortName>
     <description>Ocean Vertical Momentum Diffusivity</description>
-    <units>m2s-1</units>
+    <units>m2 s-1</units>
   </parameter>
   <parameter code="7">
-    <shortName>Validation</shortName>
+    <shortName>BATHY</shortName>
     <description>Bathymetry</description>
     <units>m</units>
   </parameter>
@@ -76,7 +76,7 @@
   <parameter code="193">
     <shortName>SALIN</shortName>
     <description>3-D Salinity</description>
-    <units />
+    <units>psu</units>
   </parameter>
   <parameter code="194">
     <shortName>BKENG</shortName>
@@ -99,4 +99,3 @@
     <units>J m-2</units>
   </parameter>
 </parameterMap>
-
