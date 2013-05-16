@@ -200,14 +200,19 @@ public class URLnaming {
     // non-file URLs
 
     //relativeUri = canonicalizeRead(relativeUri);
-    URI reletiveURI = URI.create(relativeUri);
-    if (reletiveURI.isAbsolute())
-      return relativeUri;
+    try {
+      URI reletiveURI = URI.create(relativeUri);
+      if (reletiveURI.isAbsolute())
+        return relativeUri;
 
-    //otherwise let the URI class resolve it
-    URI baseURI = URI.create(baseUri);
-    URI resolvedURI = baseURI.resolve(reletiveURI);
-    return resolvedURI.toASCIIString();
+      //otherwise let the URI class resolve it
+      URI baseURI = URI.create(baseUri);
+      URI resolvedURI = baseURI.resolve(reletiveURI);
+      return resolvedURI.toASCIIString();
+
+    } catch (IllegalArgumentException e) {
+      return  relativeUri;
+    }
   }
 
   /// try to figure out if we need to add file: to the location when reading

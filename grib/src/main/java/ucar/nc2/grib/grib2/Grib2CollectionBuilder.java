@@ -225,7 +225,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       File dir = gc.getDirectory();
       String dirname = proto.getDirName();
       if (dir != null && !dir.getPath().equals(dirname)) {
-        logger.warn("Grib2Collection {}: has different directory= {} than index= {} ", gc.getName(), dir.getPath(), dirname);
+        logger.debug("Grib2Collection {}: has different directory= {} than index= {} ", gc.getName(), dir.getPath(), dirname);
         //return false;
       }
 

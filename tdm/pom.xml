@@ -35,6 +35,11 @@
       <artifactId>grib</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>tdcommon</artifactId>
+    </dependency>
+
     <!-- HTTP client -->
     <dependency>
       <groupId>commons-httpclient</groupId>

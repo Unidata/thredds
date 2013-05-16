@@ -48,16 +48,21 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 
+import thredds.util.LoggerFactorySpecial;
+import thredds.util.ThreddsConfigReader;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.TimePartition;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;
+import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.net.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.ConnectException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -75,6 +80,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since 4/26/11
  */
 public class TdmRunner {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TdmRunner.class);
+
+  private File contentDir;
   private String user, pass;
   private boolean sendTriggers;
   private List<Server> servers;
@@ -82,7 +90,6 @@ public class TdmRunner {
   private java.util.concurrent.ExecutorService executor;
   private Resource catalog;
   private boolean showOnly = false; // if true, just show dirs and exit
-  // private boolean seperateFiles = true;
 
   private class Server {
     String name;
@@ -92,6 +99,11 @@ public class TdmRunner {
       this.name = name;
       this.session = session;
     }
+  }
+
+  public void setContentDir(String contentDir) {
+    this.contentDir = new File(contentDir);
+    this.catalog = new FileSystemResource(new File(contentDir, "catalog.xml"));
   }
 
   public void setShowOnly(boolean showOnly) {
@@ -129,6 +141,27 @@ public class TdmRunner {
       session.setUserAgent("tdmRunner");
       servers.add(new Server(name, session));
     }
+  }
+
+  boolean init() {
+    File configFile = new File(contentDir, "threddsConfig.xml");
+    if (!configFile.exists()) {
+      log.error("config file {} does not exist, set -contentDir <dir>", configFile.getPath());
+      return false;
+    }
+    ThreddsConfigReader reader = new ThreddsConfigReader(configFile.getPath(), log);
+
+    // LOOK factor out of tds
+    // new for 4.3.15: grib index file placement, using DiskCache2
+    String gribIndexDir = reader.get("GribIndex.dir", new File(contentDir, "/cache/grib/").getPath());
+    Boolean gribIndexAlwaysUse = reader.getBoolean("GribIndex.alwaysUse", false);
+    String gribIndexPolicy = reader.get("GribIndex.policy", null);
+    DiskCache2 gribCache = new DiskCache2(gribIndexDir, false, -1, -1);
+    gribCache.setPolicy(gribIndexPolicy);
+    gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
+    GribCollection.setDiskCache2(gribCache);
+
+    return true;
   }
 
   // Task causes a new index to be written - we know collection has changed, dont test again
@@ -219,10 +252,15 @@ public class TdmRunner {
           f.format(" trigger %s status = %d (%s)%n", url, status, statuss);
 
         } catch (HTTPException e) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          e.printStackTrace(new PrintStream(bos));
-          f.format("%s == %s", url, bos.toString());
-          e.printStackTrace();
+          Throwable cause = e.getCause();
+          if (cause instanceof ConnectException) {
+            logger.info("server {} not running", server.name);
+          } else {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            e.printStackTrace(new PrintStream(bos));
+            f.format("%s == %s", url, bos.toString());
+            e.printStackTrace();
+          }
 
         } finally {
           if (m != null) m.close();
@@ -401,16 +439,24 @@ public class TdmRunner {
     HTTPSession.setGlobalUserAgent("TDM v4.3");
     // GribCollection.getDiskCache2().setNeverUseCache(true);
     org.apache.log4j.Level logLevel = Level.INFO;
+    String contentDir;
 
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
-        System.out.printf("usage: <Java> <Java_OPTS> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-log level]%n");
+        System.out.printf("usage: <Java> <Java_OPTS> -contentDir <contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-log level]%n");
         System.out.printf("example: /opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -catalog /tomcat/webapps/thredds/WEB-INF/altContent/idd/thredds/catalog.xml -cred user:passwd%n");
         System.exit(0);
       }
 
-      if (args[i].equalsIgnoreCase("-showOnly"))
-        driver.setShowOnly(true);
+      if (args[i].equalsIgnoreCase("-contentDir")) {
+        driver.setContentDir(args[i+1]);
+        i++;
+      }
+
+      else if (args[i].equalsIgnoreCase("-catalog")) {
+        Resource cat = new FileSystemResource(args[i + 1]);
+        driver.setCatalog(cat);
+      }
 
       else if (args[i].equalsIgnoreCase("-tds")) {
         String tds = args[i + 1];
@@ -432,14 +478,13 @@ public class TdmRunner {
         driver.sendTriggers = true;
       }
 
-      else if (args[i].equalsIgnoreCase("-catalog")) {
-        Resource cat = new FileSystemResource(args[i + 1]);
-        driver.setCatalog(cat);
-      }
-
       else if (args[i].equalsIgnoreCase("-nthreads")) {
         int n = Integer.parseInt(args[i + 1]);
         driver.setNThreads(n);
+      }
+
+      else if (args[i].equalsIgnoreCase("-showOnly")) {
+        driver.setShowOnly(true);
       }
 
       else if (args[i].equalsIgnoreCase("-log")) {
@@ -447,25 +492,17 @@ public class TdmRunner {
         Level wantLevel = Level.toLevel(levelS);
         if (wantLevel != null) logLevel = wantLevel;
       }
-
-
     }
-
-    /* if (sendTriggers) {
-      session = new HTTPSession(serverName);
-      session.setCredentialsProvider(new CredentialsProvider() {
-        public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-          //System.out.printf("getCredentials called %s %s%n", user, pass);
-          return new UsernamePasswordCredentials(user, pass);
-        }
-      });
-      session.setUserAgent("tdmRunner");
-    }  */
 
     InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(logLevel));
     CollectionUpdater.INSTANCE.setTdm(true);
 
-    driver.start();
+    if (driver.init()) {
+      driver.start();
+    } else {
+      System.out.printf("EXIT DUE TO ERRORS%n");
+    }
+
   }
 
 

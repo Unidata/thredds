@@ -2,11 +2,11 @@
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
          xmlns:xlink="http://www.w3.org/1999/xlink"
          name="Unidata THREDDS Data Server"
-         version="1.0.4">
+         version="1.0.5">
+
   <service name="thisDODS" serviceType="OPENDAP" base="/thredds/dodsC/" />
   <datasetRoot path="restrict" location="content/" />
   <dataset name="Realtime data from IDD">
-    <!-- catalogRef xlink:href="idd/models.xml" xlink:title="NCEP Model Data" name="" / -->
     <catalogRef xlink:href="idd/modelsNcep.xml" xlink:title="NCEP Model Data" name="" />
     <catalogRef xlink:href="idd/modelsFnmoc.xml" xlink:title="FNMOC Model Data" name="" />
     <catalogRef xlink:href="idd/modelsOther.xml" xlink:title="Other Model Data" name="" />

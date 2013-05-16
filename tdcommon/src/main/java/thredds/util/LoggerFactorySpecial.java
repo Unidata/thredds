@@ -1,4 +1,4 @@
-package thredds.tdm;
+package thredds.util;
 
 import org.apache.log4j.*;
 import org.slf4j.Logger;

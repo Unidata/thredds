@@ -362,9 +362,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
             timePartition, useIndexOnly, innerNcml);
 
     Element tdmElem = dsElem.getChild( "tdm", defNS );
-    if (tdmElem != null) {
-      config.tdmConfig = readUpdateElement( tdmElem);              // the presence of tdm element
-    }
+    if (tdmElem != null)
+      config.tdmConfig = readUpdateElement( tdmElem);
     Element updateElem = dsElem.getChild( "update", defNS );
     if (updateElem != null)
       config.updateConfig = readUpdateElement( updateElem);

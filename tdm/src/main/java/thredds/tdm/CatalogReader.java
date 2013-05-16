@@ -42,7 +42,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Describe
+ * Taken from DataRootHandler for the TDM.
  *
  * @author caron
  * @since 4/26/11
@@ -53,7 +53,7 @@ public class CatalogReader {
   private final Set<String> staticCatalogHash = new HashSet<String>();
   private final List<InvDatasetFeatureCollection> fcList = new ArrayList<InvDatasetFeatureCollection>();
 
-  public CatalogReader(String contentDirectory, String threddsConfigXml) {
+  /* public CatalogReader(String contentDirectory, String threddsConfigXml) {
     File directory = new File(contentDirectory);
     ThreddsConfig config = new ThreddsConfig(new File(directory, threddsConfigXml));
 
@@ -76,7 +76,7 @@ public class CatalogReader {
         log.error("initCatalogs(): Error initializing catalog " + catName + "; " + e.getMessage(), e);
       }
     }
-  }
+  }  */
 
   public CatalogReader(Resource catR) {
     try {

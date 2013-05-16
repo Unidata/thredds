@@ -62,7 +62,7 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/NAVGEM/Global_0p5deg/FNMOC_NAVGEM_Global_0p5deg_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_NAVGEM_Global_0p5deg"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 0 * * * ? *" trigger="allow"/-->
+        <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest FNMOC NAVGEM Global 0.5 degree"/>
@@ -92,7 +92,7 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/WW3/Global_1p0deg/FNMOC_WW3_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_WW3_Global_1p0deg"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 1 * * * ? *" trigger="allow"/-->
+        <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest FNMOC WW3 Global 1.0 degree"/>
@@ -114,7 +114,7 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/WW3/Mediterranean/FNMOC_WW3_Mediterranean_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_WW3_Mediterranean"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 2 * * * ? *" trigger="allow"/-->
+        <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest FNMOC WW3 Mediterranean 0.2 degree"/>
@@ -144,7 +144,7 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/FAROP/Global_1p0deg/FNMOC_FAROP_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_FAROP_Global_1p0deg"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 3 * * * ? *" trigger="allow"/-->
+        <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest FNMOC FAROP Global 1.0 degree"/>
@@ -176,7 +176,7 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Western_Atlantic/FNMOC_COAMPS_Western_Atlantic_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_COAMPS_Western_Atlantic"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 4 * * * ? *" trigger="allow"/-->
+        <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest FNMOC COAMPS Western Atlantic 0.2 degree"/>
@@ -271,7 +271,7 @@
         <collection spec="/data/ldm/pub/native/grid/FNMOC/NCODA/Global_Ocean/FNMOC_NCODA_Global_Ocean_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_NCODA_Global_Ocean"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 8 * * * ? *" trigger="allow"/-->
+        <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 27 * * * ? *" trigger="allow"/>
         <gribConfig datasetTypes="Best LatestFile Files">
           <latestNamer name="Latest FNMOC NCODA Global 0.25 degree"/>

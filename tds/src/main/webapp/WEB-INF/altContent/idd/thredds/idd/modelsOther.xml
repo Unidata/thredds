@@ -57,8 +57,8 @@
         <collection spec="/data/ldm/pub/native/grid/NPVU/RFC/**/.*grib1$"
                     dateFormatMark="yyyyMMdd#.grib1#"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
-        <tdm startup="false" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
+        <update startup="nocheck" trigger="allow" />
+        <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
 
         <gribConfig>
           <gdsHash from="-752078894" to="1193085709"/>
@@ -103,14 +103,15 @@
         <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D1/**/.*grib1$"
                     dateFormatMark="yyyyMMdd_HHmm#.grib1#"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
-        <tdm startup="false" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>        
+        <update startup="nocheck" trigger="allow" />
+        <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="AMPS-D2" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D2">
         <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D2/**/.*grib1$"
                     dateFormatMark="yyyyMMdd_HHmm#.grib1#"
                     olderThan="5 min"/>
+        <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
@@ -118,24 +119,24 @@
         <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D3/**/.*grib1$"
                     dateFormatMark="yyyyMMdd_HHmm#.grib1#"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
-        <tdm startup="false" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
+        <update startup="nocheck" trigger="allow" />
+        <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="AMPS-D5" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D5">
         <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D5/**/.*grib1$"
                     dateFormatMark="yyyyMMdd_HHmm#.grib1#"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
-        <tdm startup="false" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
+        <update startup="nocheck" trigger="allow" />
+        <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="AMPS-D6" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D6">
         <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D6/**/.*grib1$"
                     dateFormatMark="yyyyMMdd_HHmm#.grib1#"
                     olderThan="5 min"/>
-        <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
-        <tdm startup="false" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
+        <update startup="nocheck" trigger="allow" />
+        <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
       </featureCollection>
 
     </dataset>
@@ -164,7 +165,8 @@
         <collection spec="/data/thredds/ncdc/cfsr/timeseries/**/.*grb2$"
                     timePartition="directory"
                     dateFormatMark="#timeseries/#yyyyMM"/>
-        <tdm trigger="allow"/>
+        <update startup="nocheck" trigger="allow" />
+        <tdm startup="true" trigger="allow"/>
         <gribConfig>
           <gdsHash from="1450218978" to="1450192070"/>
           <gdsName hash='1450192070' groupName='FLX GaussianT382'/>

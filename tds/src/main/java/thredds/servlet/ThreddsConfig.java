@@ -33,21 +33,11 @@
 
 package thredds.servlet;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 import java.util.Collections;
 
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.JDOMException;
-import org.jdom2.Element;
-import org.springframework.util.StringUtils;
-import ucar.nc2.units.TimeDuration;
-import ucar.nc2.util.xml.RuntimeConfigParser;
+import thredds.util.ThreddsConfigReader;
 
 /**
  * Read and process the threddsConfig.xml file.
@@ -60,198 +50,70 @@ import ucar.nc2.util.xml.RuntimeConfigParser;
  */
 public final class ThreddsConfig {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
-  private static String _filename;
-  private static Element rootElem;
+  private static ThreddsConfigReader reader;
 
   private static List<String> catalogRoots;
   private static List<String> contentRootList;
 
   public static void init( String filename) {
-    _filename = filename;
+    reader = new ThreddsConfigReader(filename, log);
 
-    readConfig();
-  }
-
-  private static void readConfig() {
     catalogRoots = new ArrayList<String>();
     contentRootList = new ArrayList<String>();
 
-    File file = new File(_filename);
-    if (!file.exists()) return;
-    //System.out.println( "ThreddsConfig:INFO: reading xml file = " + _filename);
-    log.info( "ThreddsConfig.readConfig()  reading xml file = " + _filename);
-
-    org.jdom2.Document doc;
-    try {
-      InputStream is = new FileInputStream(_filename);
-      SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(is);
-    } catch (IOException e) {
-      //System.out.println( "ThreddsConfig:ERROR: incorrectly formed xml file [" + _filename + "]: " + e.getMessage());
-    	log.error( "ThreddsConfig: incorrectly formed xml file [" + _filename + "]: " + e.getMessage());
-      return;
-    } catch (JDOMException e) {
-      //System.out.println( "ThreddsConfig:ERROR: incorrectly formed xml file [" + _filename + "]: " + e.getMessage() );
-    	log.error( "ThreddsConfig: incorrectly formed xml file [" + _filename + "]: " + e.getMessage() );
-      return;
-    }
-    rootElem = doc.getRootElement();
-
-    List<Element> rootList = rootElem.getChildren("catalogRoot");
-    for (Element catrootElem : rootList) {
-      String location = StringUtils.cleanPath( catrootElem.getTextNormalize() );
-      if (location.length() > 0) {
-        catalogRoots.add( location );
-        //System.out.println( "ThreddsConfig:INFO: adding catalogRoot = " + location);
-        log.info( "ThreddsConfig: adding catalogRoot = " + location);
-      }
+    for (String location : reader.getRootList("catalogRoot"))  {
+      catalogRoots.add( location );
+      log.info( "ThreddsConfig: adding catalogRoot = " + location);
     }
 
-    Element contentRootsElem = rootElem.getChild( "contentRoots" );
-    if ( contentRootsElem != null )
-    {
-      List<Element> contentRootElemList = contentRootsElem.getChildren( "contentRoot" );
-      for ( Element curRoot : contentRootElemList )
-      {
-        String location = StringUtils.cleanPath( curRoot.getTextNormalize() );
-        if ( ! location.isEmpty() )
-        {
-          contentRootList.add( location );
-          //System.out.println( "ThreddsConfig:INFO: adding contentRoot [" + location + "]." );
-          log.info( "ThreddsConfig: adding contentRoot [" + location + "]." );
-        }
-      }
+    for (String location : reader.getElementList("contentRoots", "contentRoot"))  {
+      contentRootList.add( location );
+      log.info( "ThreddsConfig: adding contentRoot [" + location + "]." );
     }
 
     // viewer plug-in
-    List<Element> viewerList = rootElem.getChildren("Viewer");
-    for (Element elem : viewerList) {
-      String className = elem.getText().trim();
+    for (String className : reader.getRootList("Viewer"))  {
       ViewServlet.registerViewer(className);
     }
 
     // datasetSource plug-in
-    List<Element> sourceList = rootElem.getChildren("datasetSource");
-    for (Element elem : sourceList) {
-      String className = elem.getText().trim();
+    for (String className : reader.getRootList("datasetSource"))  {
       DatasetHandler.registerDatasetSource(className);
     }
-
-    // nj22 runtime loading
-    Element elem = rootElem.getChild("nj22Config");
-    if (elem != null) {
-      StringBuilder errlog = new StringBuilder();
-      RuntimeConfigParser.read( elem, errlog);
-      if (errlog.length() > 0)
-        //System.out.println( "ThreddsConfig:WARN: " + errlog.toString());
-    	  log.warn( "ThreddsConfig: " + errlog.toString());
-    }
   }
 
-  static void getCatalogRoots(List<String> extraList) {
-    extraList.addAll( catalogRoots);
+  static List<String> getCatalogRoots() {
+    return Collections.unmodifiableList( catalogRoots);
   }
 
-  public static List<String> getContentRootList()
-  {
+  public static List<String> getContentRootList() {
     return Collections.unmodifiableList( contentRootList);
   }
 
   static public String get(String paramName, String defValue) {
-    String s = getParam( paramName);
-    return (s == null) ? defValue : s;
+    return reader.get(paramName, defValue);
   }
 
   static public boolean hasElement(String paramName) {
-    Element elem = rootElem;
-    if (elem == null) return false;
-    StringTokenizer stoke = new StringTokenizer(paramName, ".");
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken();
-      elem = elem.getChild(toke);
-      if (null == elem)
-        return false;
-    }
-    return true;    
+    return reader.hasElement(paramName);
   }
 
   static public boolean getBoolean(String paramName, boolean defValue) {
-    String s = getParam( paramName);
-    if (s == null) return defValue;
-
-    try {
-      return Boolean.parseBoolean(s);
-    } catch (Exception e) {
-      log.error("ThreddsConfig: param "+paramName+" not a boolean: " + e.getMessage());
-    }
-    return defValue;
+    return reader.getBoolean(paramName, defValue);
   }
 
   static public long getBytes(String paramName, long defValue) {
-    String s = getParam(paramName);
-    if (s == null) return defValue;
-
-    String num = s;
-    try {
-      long factor = 1;
-      int pos = s.indexOf(' ');
-      if (pos > 0) {
-        num = s.substring(0, pos);
-        String units = s.substring(pos + 1).trim();
-
-        char c = Character.toUpperCase(units.charAt(0));
-        if (c == 'K') factor = 1000;
-        else if (c == 'M') factor = 1000 * 1000;
-        else if (c == 'G') factor = 1000 * 1000 * 1000;
-        else if (c == 'T') factor = ((long)1000) * 1000 * 1000 * 1000;
-        else if (c == 'P') factor = ((long)1000) * 1000 * 1000 * 1000 * 1000;
-      }
-
-      return factor * Long.parseLong(num);
-
-    } catch (Exception e) {
-      log.error("ThreddsConfig: param " + paramName + " not a byte count: " + s+" "+e.getMessage());
-    }
-    return defValue;
+    return reader.getBytes(paramName, defValue);
   }
 
   static public int getInt(String paramName, int defValue) {
-    String s = getParam( paramName);
-    if (s == null) return defValue;
-
-    try {
-      return Integer.parseInt(s);
-    } catch (Exception e) {
-      log.error("ThreddsConfig: param "+paramName+" not an integer " + e.getMessage());
-    }
-    return defValue;
+    return reader.getInt(paramName, defValue);
   }
 
   static public int getSeconds(String paramName, int defValue) {
-    String s = getParam( paramName);
-    if (s == null) return defValue;
-
-    try {
-      TimeDuration tu = new TimeDuration(s);
-      return (int) tu.getValueInSeconds();
-    } catch (Exception e) {
-      log.error("ThreddsConfig: param "+paramName+" not udunit time " + e.getMessage());
-    }
-    return defValue;
+    return reader.getSeconds(paramName, defValue);
   }
 
-  private static String getParam( String name) {
-    Element elem = rootElem;
-    if (elem == null) return null;
-    StringTokenizer stoke = new StringTokenizer(name, ".");
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken();
-      elem = elem.getChild(toke);
-      if (null == elem)
-        return null;
-    }
-    String text =  elem.getText();
-    return (text == null) ? null : text.trim();
-  }
+
 
 }

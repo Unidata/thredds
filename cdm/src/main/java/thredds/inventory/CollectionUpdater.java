@@ -256,7 +256,7 @@ public enum CollectionUpdater {
   // Called by TDS collectionController when trigger is received externally
   public void triggerUpdate(String collectionName, String triggerType) {
     Trigger trigger = TriggerBuilder.newTrigger()
-            .withIdentity(collectionName, triggerType)
+            .withIdentity(collectionName+"-trigger", triggerType)
             .forJob(collectionName, "UpdateCollection") // ??
             .startNow()
             .build();

@@ -32,11 +32,9 @@
  */
 package thredds.servlet;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -238,11 +236,9 @@ public final class DataRootHandler implements InitializingBean{
     
 	//Set the instance
 	DataRootHandler.setInstance(this);
-    
-    
   }
 
-  private void getExtraCatalogs(List<String> extraList) {
+ /*  private void getExtraCatalogs(List<String> extraList) {
     // if there are some roots in ThreddsConfig, then dont read extraCatalogs.txt
     ThreddsConfig.getCatalogRoots(extraList);
     if (extraList.size() > 0)
@@ -269,7 +265,7 @@ public final class DataRootHandler implements InitializingBean{
         logCatalogInit.error(ERROR+"getExtraCatalogs ", e);
       }
     }
-  }
+  } */
 
   public boolean registerConfigListener(ConfigListener cl) {
     if (cl == null) return false;
@@ -318,12 +314,10 @@ public final class DataRootHandler implements InitializingBean{
   void initCatalogs() {
     ArrayList<String> catList = new ArrayList<String>();
     catList.add("catalog.xml"); // always first
-    ThreddsConfig.getCatalogRoots(catList);
+    catList.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
 
     logCatalogInit.info("initCatalogs(): initializing " + catList.size() + " root catalogs.");
     this.initCatalogs(catList);
-    
-    
   }
 
   public synchronized void initCatalogs(List<String> configCatalogRoots) {
@@ -351,8 +345,6 @@ public final class DataRootHandler implements InitializingBean{
 
     for (ConfigListener cl : configListeners)
       cl.configEnd();
-       
-    
   }
 
 
@@ -399,8 +391,6 @@ public final class DataRootHandler implements InitializingBean{
       addRoot(p, true);
     }
 
-    
-    
     List<String> disallowedServices = AllowableService.checkCatalogServices(cat);    
     if(!disallowedServices.isEmpty()){
  		logCatalogInit.error(ERROR+"initCatalog(): declared services: "+ disallowedServices.toString() +" in catalog: "+ f.getPath() +" are disallowed in threddsConfig file" );
