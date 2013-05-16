@@ -30,15 +30,17 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.cdmremote;
+package thredds.server.cdmremote.params;
 
 import java.util.Formatter;
 
+import org.springframework.http.MediaType;
+
+import thredds.server.cdmremote.validation.CdmrfQueryConstraint;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**
@@ -48,7 +50,8 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author caron
  * @since May 11, 2009
  */
-public class CdmRemoteQueryBean {
+@CdmrfQueryConstraint
+public class CdmrfQueryBean {
 
   public enum RequestType {
     capabilities, cdl, data, dataForm, form, header, ncml, stations
@@ -120,7 +123,11 @@ public class CdmRemoteQueryBean {
     return (spatialSelection == SpatialSelection.bb) ? llbb : null;
   }
 
-  DateRange getDateRange() {
+  public void setDateRange(DateRange dateRange){
+	  this.dateRange = dateRange;
+  }
+  
+  public DateRange getDateRange() {
     return dateRange;
   }
 
@@ -147,7 +154,7 @@ public class CdmRemoteQueryBean {
     return reqType;
   }
 
-  ResponseType getResponseType() {
+  public ResponseType getResponseType() {
     if (resType == null) {
       RequestType req = getRequestType();
       if (req == RequestType.capabilities) resType = ResponseType.xml;
@@ -164,101 +171,45 @@ public class CdmRemoteQueryBean {
 
     return resType;
   }
+  
+  public MediaType getMediaType(){
+	  
+	  if(resType == ResponseType.xml || accept.equals("xml") || reqType == RequestType.capabilities)
+		  return MediaType.TEXT_XML;
+	  if(resType == ResponseType.html || reqType == RequestType.form)
+		  return MediaType.TEXT_HTML;	  
+	  if(resType == ResponseType.csv)
+		  return MediaType.TEXT_PLAIN;	  	  	  
+	  if(resType == ResponseType.netcdf )
+		  return new MediaType("application", "x-netcdf"  );	  
+	  if(resType == ResponseType.ncstream )//???
+		  return new MediaType("application", "x-netcdf"  );	  
+	  
+	  
+	  //Default...
+	  return MediaType.TEXT_HTML;
+  }
 
-  SpatialSelection getSpatialSelection() {
+  public SpatialSelection getSpatialSelection() {
     return spatialSelection;
   }
+  
+  public void setSpatialSelection(SpatialSelection spatialSelection){
+	  this.spatialSelection = spatialSelection;
+  }
 
 
-  TemporalSelection getTemporalSelection() {
+  public TemporalSelection getTemporalSelection() {
     return temporalSelection;
   }
-
-   boolean validate() {
-    RequestType reqType = getRequestType();
-    if (reqType == RequestType.dataForm) {
-      parseVariablesForm();
-      parseSpatialExtentForm();
-      parseTemporalExtentForm();
-
-    } else {
-      parseSpatialExtent();
-      parseTimeExtent();
-
-      if ((spatialSelection == null) && (stn != null))
-        spatialSelection = SpatialSelection.stns;
-    }
-    return !fatal;
+  
+  public void setTemporalSelection(TemporalSelection temporalSelecion){
+	  this.temporalSelection = temporalSelecion;
   }
 
-  private void parseVariablesForm() {  // from the form
-    if (variables == null) {
-      errs.format("form must have variables=(all|some)%n");
-      fatal = true;
-      return;
-    }
 
-    if (variables.equalsIgnoreCase("all")) {
-      setVar(null);
-    }
-  }
 
-  private void parseSpatialExtentForm() { // from the form
-    if (spatial == null) {
-      errs.format("form must have spatial=(all|bb|point|stns)%n");
-      fatal = true;
-      return;
-    }
-
-    if (spatial.equalsIgnoreCase("all")) spatialSelection = SpatialSelection.all;
-    else if (spatial.equalsIgnoreCase("bb")) spatialSelection = SpatialSelection.bb;
-    else if (spatial.equalsIgnoreCase("point")) spatialSelection = SpatialSelection.point;
-    else if (spatial.equalsIgnoreCase("stns")) spatialSelection = SpatialSelection.stns;
-
-    if (spatialSelection == SpatialSelection.bb) {
-      parseSpatialExtent();
-
-    } else if (spatialSelection == SpatialSelection.point) {
-      double lat = parseLat("latitude", latitude);
-      double lon = parseLon("longitude", longitude);
-      latlonPoint = new LatLonPointImpl(lat, lon);
-    }
-
-  }
-
-  private void parseSpatialExtent() {
-    if (bbox != null) {
-      String[] s = bbox.split(",");
-      if (s.length != 4) {
-        errs.format("bbox must have form 'bbox=west,east,south,north'; found 'bbox=%s'%n", bbox);
-        fatal = true;
-        return;
-      }
-      west = s[0];
-      east = s[1];
-      south = s[2];
-      north = s[3];
-    }
-
-    if ((west != null) || (east != null) || (south != null) || (north != null)) {
-      if ((west == null) || (east == null) || (south == null) || (north == null)) {
-        errs.format("All edges (west,east,south,north) must be specified; found west=%s east=%s south=%s north=%s %n", west, east, south, north);
-        fatal = true;
-        return;
-      }
-      double westd = parseLon("west", west);
-      double eastd = parseLon("east", east);
-      double southd = parseLat("south", south);
-      double northd = parseLat("north", north);
-
-      if (!fatal) {
-        llbb = new LatLonRect(new LatLonPointImpl(southd, westd), new LatLonPointImpl(northd, eastd));
-        spatialSelection = SpatialSelection.bb;
-      }
-    }
-  }
-
-  private double parseLat(String key, String value) {
+  public double parseLat(String key, String value) {
     double lat = parseDouble(key, value);
     if (!Double.isNaN(lat)) {
       if ((lat > 90.0) || (lat < -90.0)) {
@@ -270,7 +221,7 @@ public class CdmRemoteQueryBean {
     return lat;
   }
 
-  private double parseLon(String key, String value) {
+  public double parseLon(String key, String value) {
     return parseDouble(key, value);
   }
 
@@ -286,47 +237,6 @@ public class CdmRemoteQueryBean {
   }
 
   ////////////////////////////////////////
-
-  private void parseTemporalExtentForm() { // from the form
-    if (temporal == null) {
-      errs.format("form must have temporal=(all|range|point)%n");
-      fatal = true;
-      return;
-    }
-
-    if (temporal.equalsIgnoreCase("all")) temporalSelection = TemporalSelection.all;
-    else if (temporal.equalsIgnoreCase("range")) temporalSelection = TemporalSelection.range;
-    else if (temporal.equalsIgnoreCase("point")) temporalSelection = TemporalSelection.point;
-
-    if (temporal.equalsIgnoreCase("range")) {
-      try {
-        parseTimeExtent();
-      } catch (Throwable t) {
-        errs.format("badly specified time range");
-        fatal = true;
-        return;
-      }
-    } else if (temporal.equalsIgnoreCase("point")) {
-      timePoint = parseDate("time", time);
-    }
-  }
-
-  private void parseTimeExtent() {
-    DateType startDate = parseDate("time_start", time_start);
-    DateType endDate = parseDate("time_end", time_end);
-    TimeDuration duration = parseW3CDuration("time_duration", time_duration);
-
-    // no range
-    if ((startDate != null) && (endDate != null))
-      dateRange = new DateRange(startDate, endDate, null, null);
-    else if ((startDate != null) && (duration != null))
-      dateRange = new DateRange(startDate, null, duration, null);
-    else if ((endDate != null) && (duration != null))
-      dateRange = new DateRange(null, endDate, duration, null);
-
-    if (dateRange != null)
-      temporalSelection = TemporalSelection.range;
-  }
 
 
   public DateType parseDate(String key, String value) {
@@ -367,6 +277,10 @@ public class CdmRemoteQueryBean {
   public void setVariables(String variables) {
     this.variables = variables;
   }
+  
+  public String getVariables(){
+	  return variables;
+  }
 
   public void setVar(String var) {
     this.var = var;
@@ -385,6 +299,12 @@ public class CdmRemoteQueryBean {
   public void setSpatial(String spatial) {
     this.spatial = spatial;
   }
+  
+  public String getSpatial(){
+	  return spatial;
+  }
+  
+  
 
   public void setStn(String stn) {
     this.stn = stn;
@@ -402,51 +322,110 @@ public class CdmRemoteQueryBean {
   public void setBbox(String bbox) {
     this.bbox = bbox;
   }
+  
+  public String getBbox(){
+	  return bbox;
+  }
 
   public void setWest(String west) {
     this.west = west;
+  }
+  
+  public String getWest(){
+	  return west;
   }
 
   public void setEast(String east) {
     this.east = east;
   }
+  
+  public String getEast(){
+	  return east;
+  }
 
   public void setSouth(String south) {
     this.south = south;
   }
+  
+  public String getSouth(){
+	  return south;
+  } 
 
   public void setNorth(String north) {
     this.north = north;
+  }
+  
+  public String getNorth(){
+	  return north;
   }
 
   public void setLatitude(String latitude) {
     this.latitude = latitude;
   }
+  
+  public String getLatitude(){
+	  return latitude;
+  }
 
   public void setLongitude(String longitude) {
     this.longitude = longitude;
   }
+  
+  public String getLongitude(){
+	  return longitude;
+  }
 
   //////// temporal
-
   public void setTemporal(String temporal) {
     this.temporal = temporal;
+  }
+  
+  public String getTemporal(){
+	  return temporal;
   }
 
   public void setTime_start(String timeStart) {
     this.time_start = timeStart;
   }
+  
+  public String getTime_start(){
+	  return time_start;
+  }
 
   public void setTime_end(String timeEnd) {
     this.time_end = timeEnd;
+  }
+  
+  public String getTime_end(){
+	  return time_end;
   }
 
   public void setTime_duration(String timeDuration) {
     this.time_duration = timeDuration;
   }
 
+  public String getTime_duration(){
+	  return time_duration;
+  }
+  
   public void setTime(String time) {
     this.time = time;
+  }
+  
+  public String getTime(){
+	  return time;
+  }
+  
+  public void setTimepoint(DateType type){
+	  this.timePoint= type;
+  }
+  
+  public void setLLBB(LatLonRect llbb){
+	  this.llbb = llbb;
+  }
+  
+  public void setLatLonPoint(LatLonPoint point){
+	  this.latlonPoint = point;
   }
 
   @Override

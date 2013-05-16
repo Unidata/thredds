@@ -42,7 +42,7 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 		final MockServletConfig servletConfig = new MockServletConfig(servletContext);
 		
 		// Initialize the File Cache 
-		initFileCache();
+		//initFileCache();
 		
 		final XmlWebApplicationContext webApplicationContext = new XmlWebApplicationContext();
 
@@ -85,49 +85,19 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 		return null;
 	}
 
-	/**
-	 * 
-	 * This method performs same startup that in
-	 * thredds.server.config.TdsConfigContextListener in order to get a
-	 * initialized and ready to use TdsContext
-	 * 
-	 * @param webApplicationContext
-	 * @param servletContext
-	 */
-	/*private void initTdsContext(XmlWebApplicationContext webApplicationContext,
-			ServletContext servletContext) {
-						
-		TdsContext tdsContext = webApplicationContext.getBean(TdsContext.class);
-		
-		checkContentRootPath(webApplicationContext, tdsContext);
-		
-			
-		//webApplicationContext.getBean(CdmInit.class).init(tdsContext);
 
-		//DataRootHandler tdsDRH = webApplicationContext.getBean(DataRootHandler.class);
-		//tdsDRH.registerConfigListener(new RestrictedAccessConfigListener());
-		//tdsDRH.init();		
-		//DataRootHandler.setInstance(tdsDRH);
-		// YUCK! This is done so that not-yet-Spring-ified servlets can access
-		// the singleton HtmlWriter.
-		// LOOK! ToDo This should be removed once the catalog service
-		// controllers uses JSP.
-		HtmlWriter htmlWriter = webApplicationContext.getBean(HtmlWriter.class);
-		htmlWriter.setSingleton(htmlWriter);
-
-	}*/
-
-	private void initFileCache() {
-		// Mock file cache...needed for running init method in thredds.server.views.FileView
-		// CdmInit will set again the file cache through the its init method
-		int min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 10);
-		int max = ThreddsConfig.getInt("HTTPFileCache.maxFiles", 20);
-		int secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 17 * 60);
-		if (max > 0) {
-			ServletUtil.setFileCache(new FileCache("HTTP File Cache", min, max,	-1, secs));
-
-		}
-	}
+	//No longer needed?
+//	private void initFileCache() {
+//		// Mock file cache...needed for running init method in thredds.server.views.FileView
+//		// CdmInit will set again the file cache through the its init method
+//		int min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 10);
+//		int max = ThreddsConfig.getInt("HTTPFileCache.maxFiles", 20);
+//		int secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 17 * 60);
+//		if (max > 0) {
+//			ServletUtil.setFileCache(new FileCache("HTTP File Cache", min, max,	-1, secs));
+//
+//		}
+//	}
 	
 	/**
 	 * If the test is annotated with TdsContentPath, override the contentRootPath with the provided path  

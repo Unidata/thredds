@@ -32,30 +32,40 @@
 
 package thredds.server.cdmremote;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import thredds.server.cdmremote.params.CdmrfQueryBean;
+import ucar.ma2.Array;
+import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.point.remote.PointStream;
+import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.remote.PointStreamProto;
-import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.ma2.StructureData;
-import ucar.ma2.Array;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Format;
-
-import java.util.*;
-import java.io.*;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * CdmrFeature subsetting for point data.
@@ -70,7 +80,8 @@ public class PointWriter {
   private static final boolean debug = false, debugDetail = false;
 
   private final FeatureDatasetPoint fd;
-  private final CdmRemoteQueryBean qb;
+  //private final CdmRemoteQueryBean qb;
+  private final CdmrfQueryBean qb;
   private PointFeatureCollection pfc;
 
   private LatLonRect wantBB;
@@ -78,17 +89,18 @@ public class PointWriter {
   private List<VariableSimpleIF> wantVars;
   private ucar.nc2.util.DiskCache2 diskCache;
 
-  public PointWriter(FeatureDatasetPoint fd, PointFeatureCollection pfc, CdmRemoteQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
+  //public PointWriter(FeatureDatasetPoint fd, PointFeatureCollection pfc, CdmRemoteQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
+  public PointWriter(FeatureDatasetPoint fd, PointFeatureCollection pfc, CdmrfQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
     this.fd = fd;
     this.pfc = pfc;
     this.qb = qb;
     this.diskCache = diskCache;
   }
 
-  boolean validate(HttpServletResponse res) throws IOException {
+  public boolean validate(HttpServletResponse res) throws IOException {
 
     // verify TemporalSelection intersects
-    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.range) {
+    if (qb.getTemporalSelection() == CdmrfQueryBean.TemporalSelection.range) {
       wantRange = qb.getDateRange();
       DateRange haveRange = fd.getDateRange();
       if (!haveRange.intersects(wantRange)) {
@@ -117,7 +129,7 @@ public class PointWriter {
     }
 
     // verify SpatialSelection has some stations
-    if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.bb) {
+    if (qb.getSpatialSelection() == CdmrfQueryBean.SpatialSelection.bb) {
       wantBB = qb.getLatLonRect();
       LatLonRect haveBB = pfc.getBoundingBox();
       if ((wantBB != null) && (haveBB != null) && (wantBB.intersect(haveBB) == null)) {
@@ -148,15 +160,15 @@ public class PointWriter {
     //counter.limit = 150;
 
     // which writer, based on desired response
-    CdmRemoteQueryBean.ResponseType resType = qb.getResponseType();
+    CdmrfQueryBean.ResponseType resType = qb.getResponseType();
     Writer w;
-    if (resType == CdmRemoteQueryBean.ResponseType.xml) {
+    if (resType == CdmrfQueryBean.ResponseType.xml) {
       w = new WriterXML(res.getWriter());
-    } else if (resType == CdmRemoteQueryBean.ResponseType.csv) {
+    } else if (resType == CdmrfQueryBean.ResponseType.csv) {
       w = new WriterCSV(res.getWriter());
-    } else if (resType == CdmRemoteQueryBean.ResponseType.netcdf) {
+    } else if (resType == CdmrfQueryBean.ResponseType.netcdf) {
       w = new WriterNetcdf();
-    } else if (resType == CdmRemoteQueryBean.ResponseType.ncstream) {
+    } else if (resType == CdmrfQueryBean.ResponseType.ncstream) {
       w = new WriterNcstream(res.getOutputStream());
     } else {
       log.error("Unknown result type = " + resType);
@@ -263,7 +275,7 @@ public class PointWriter {
     int matches; // how want matched
   }
 
-  abstract class Writer {
+  public abstract class Writer {
     abstract void header();
 
     abstract Action getAction();

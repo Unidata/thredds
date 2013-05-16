@@ -40,7 +40,7 @@
         <hr/>
 
         <form method="GET" action="{capabilities/attribute::location}">
-          <input type="hidden" name="req" value="dataForm"/>
+          <input type="hidden" name="req" value="data"/>
           <table border="0" cellpadding="4" cellspacing="2">
             <tr valign="top">
               <td>

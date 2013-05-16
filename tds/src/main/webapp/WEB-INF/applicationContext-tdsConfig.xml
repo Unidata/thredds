@@ -29,6 +29,8 @@
   <!-- enabling component-scan in Spring for annotated wirings --> 
   <context:component-scan base-package="thredds"/>
 
+  <import resource="cdmrFeature-servlet.xml"/>	
+
   <!-- tell spring that tds.properties gets read in first and overrides anything else -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
@@ -39,36 +41,7 @@
     </property>
   </bean>
 
-  <!-- 
-  <bean id="tdsContext" class="thredds.server.config.TdsContext">
-    <property name="webappVersion" value="${tds.version}"/>
-    <property name="webappVersionBrief" value="${tds.version.brief}"/>
-    <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
 
-    <property name="contentRootPath" value="${tds.content.root.path}"/>
-    
-    <property name="contentPath" value="${tds.content.path}"/>
-    <property name="startupContentPath" value="${tds.content.startup.path}"/>
-    <property name="iddContentPath" value="${tds.content.idd.path}"/>
-    <property name="motherlodeContentPath" value="${tds.content.motherlode.path}"/>
-
-    <property name="tdsConfigFileName" value="${tds.config.file}"/>
-
-    <property name="serverInfo" ref="serverInfo"/>
-    <property name="htmlConfig" ref="htmlConfig"/>
-    <property name="wmsConfig" ref="wmsConfig"/>
-  </bean>
-   -->
-
-  <!-- bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
-    <constructor-arg ref="tdsContext"/>
-    <property name="dataRootLocationAliasExpanders">
-      <map>
-        <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
-        <entry key="share" value="${tds.dir.share}"/>
-      </map>
-    </property>
-  </bean-->
 
  <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
         <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>

@@ -132,10 +132,7 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>MetarSubsetService</servlet-name>
   </filter-mapping-->
-  <!-- filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>ncss</servlet-name>
-  </filter-mapping -->
+
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>dqc</servlet-name>
@@ -388,12 +385,6 @@
     <load-on-startup>3</load-on-startup>
   </servlet>
 
-  <!-- ncss -->
-  <!-- servlet>
-    <servlet-name>ncss</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-  </servlet-->
-
   <!-- Radar Server -->
   <servlet>
     <servlet-name>radarServer</servlet-name>
@@ -420,11 +411,11 @@
     <load-on-startup>4</load-on-startup>
   </servlet>
 
-  <servlet>
+  <!-- servlet>
     <servlet-name>cdmrFeature</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
-  </servlet>
+  </servlet-->
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
   <servlet>
@@ -590,21 +581,6 @@
   </servlet-mapping>
 
   <!-- data services -->
-  <!-- servlet-mapping>
-    <servlet-name>MetarSubsetService</servlet-name>
-    <url-pattern>/ncss/metars</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>MetarSubsetService</servlet-name>
-    <url-pattern>/ncss/metars/*</url-pattern>
-  </servlet-mapping -->
-
-  <!-- servlet-mapping>
-    <servlet-name>ncss</servlet-name>
-    <url-pattern>/ncss/grid/*</url-pattern>
-  </servlet-mapping-->
-
   <servlet-mapping>
     <servlet-name>radarServer</servlet-name>
     <url-pattern>/radarServer/*</url-pattern>
@@ -630,10 +606,10 @@
     <url-pattern>/cdmremote/*</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>cdmrFeature</servlet-name>
     <url-pattern>/cdmrfeature/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping-->
 
   <servlet-mapping>
     <servlet-name>RestrictedDataset</servlet-name>

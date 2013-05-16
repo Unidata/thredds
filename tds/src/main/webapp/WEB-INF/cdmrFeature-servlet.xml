@@ -6,6 +6,7 @@
 		xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
+ 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
@@ -14,11 +15,14 @@
     </property>
   </bean>
 
+
+ 
   <bean id="cdmrFeatureController" class="thredds.server.cdmremote.CdmrFeatureController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="allow" value="true"/>
     <property name="supportedMethods" value="GET"/>
   </bean>
+
 
   <!-- bean id="diskCache" class="ucar.nc2.util.DiskCache2"  destroy-method="exit">
     <constructor-arg value="cache/cdmr/"/>
