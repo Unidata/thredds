@@ -453,7 +453,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       }
     }
 
-    if (changed && sendEvent) {
+    if (changed && sendEvent) {  // event is processed on this thread
       sendEvent(new TriggerEvent(this, TriggerType.update));  // watch out for infinite loop
     }
 

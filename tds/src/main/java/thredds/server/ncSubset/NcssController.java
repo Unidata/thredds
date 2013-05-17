@@ -68,6 +68,7 @@ import java.util.Random;
  *
  * @author caron
  * @since 3/8/12
+ * @deprecated use thredds.server.ncSubset.view.*
  */
 public class NcssController extends AbstractController implements LastModified {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcssController.class);

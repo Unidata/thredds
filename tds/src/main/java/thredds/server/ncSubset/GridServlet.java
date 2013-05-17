@@ -65,6 +65,7 @@ import org.jdom2.transform.XSLTransformer;
  * Netcdf Subset Service for Grids.
  *
  * @author caron
+ * @deprecated use thredds.server.ncSubset.view.*
  */
 public class GridServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 diskCache = null;

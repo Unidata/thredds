@@ -7,6 +7,7 @@ import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -167,6 +168,17 @@ public class GribCollectionBuilder {
     @Override
     public void setAuxInfo(Object info) {
       //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("GcMFile");
+      sb.append("{directory=").append(directory);
+      sb.append(", name='").append(name).append('\'');
+      sb.append(", lastModified=").append( new Date(lastModified));
+      sb.append('}');
+      return sb.toString();
     }
   }
 }

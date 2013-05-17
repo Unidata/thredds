@@ -43,6 +43,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import thredds.catalog.InvDatasetFeatureCollection;
@@ -73,7 +74,7 @@ import ucar.nc2.util.cache.FileCache;
  * @since Feb 20, 2009
  */
 
-@Component
+@Component ("CdmInit")
 public class CdmInit implements InitializingBean,  DisposableBean{
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 

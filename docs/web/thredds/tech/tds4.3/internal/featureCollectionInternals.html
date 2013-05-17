@@ -150,7 +150,24 @@ where Force controls the use of the <strong>ncx</strong> Index:
   <li>a cache of Partition/GribCollection is kept in TimePartitionCache, so they dont have to be reopened each time.</li>
   <li>TODO need to invalidate the cache when the index changes </li>
 </ul>
-<p><strong>Problem 2</strong></p>
+<h4>Problem1</h4>
+<ul>
+  <li>scan sees a change on TimePartition, sends update event to InvFc</li>
+  <li>InvFc create a new TP(force=always)</li>
+  <li>TP is trying to check if it needs to recreate the individual partitions, but its only checking existing index date against new collection files. So deletions wont be noticed.
+    <ol>
+      <li>could check new file collection against index file collection</li>
+      <li>could have option to only check latest.</li>
+      <li>Always create all partitions SOLUTION FOR NOW</li>
+    </ol>
+  </li>
+  <li>TDM creates new TPs, sends trigger to TDS.
+    <ul>
+      <li>should read in new indexes, not create</li>
+    </ul>
+  </li>
+</ul>
+<h4><strong>Problem 2</strong></h4>
 <ul>
   <li>could close the raf each time, and let OS manage cache, which it probably does. put a read lock on it, and a write lock when you need to rewrite. AutoCloseable</li>
   <li>Wont solve the TDM problem.</li>

@@ -295,11 +295,29 @@ public class Grib2RecordScanner {
   }
 
   public static void main(String[] args) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile("Q:/cdmUnitTest/formats/grib2/sfc_d01_20080430_1200_f00000.grb2", "r");
-    Grib2RecordScanner scan = new Grib2RecordScanner(raf);
-    while (scan.hasNext())
-      scan.next();
-    raf.close();
+    String filename = (args.length > 0 && args[0] != null) ? args[0] : "G:/work/carp/MSG1-SEVI-MSGCLTH-0100-0100-20050411004500.000000000Z-1058136.grb";
+    System.out.printf("Scan %s%n", filename);
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    try {
+      raf.seek(0);
+      while (!raf.isAtEndOfFile()) {
+        boolean found = raf.searchForward(matcher, -1);
+        if (found) {
+          raf.skipBytes(7); // will be positioned on byte 0 of indicator section
+          int edition = raf.read(); // read at byte 8
+          System.out.printf(" GRIB edition %d found at pos %d%n", edition, raf.getFilePointer());
+          break;
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+
+    } finally {
+      if (raf != null) {
+        System.out.printf(" Scanned until %d length = %d%n", raf.getFilePointer(), raf.length());
+        raf.close();
+      }
+    }
   }
 
 }

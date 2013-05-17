@@ -344,6 +344,35 @@ public class FileCache {
   }
 
   /**
+   * Remove all instances of object from the cache
+   * @param hashKey
+   */
+  public void remove(Object hashKey) {
+     if (disabled.get()) return;
+
+     // see if its in the cache
+     CacheElement wantCacheElem = cache.get(hashKey);
+     if (wantCacheElem == null) return;
+
+     synchronized (wantCacheElem) { // synch in order to traverse the list
+       for (CacheElement.CacheFile want : wantCacheElem.list) {
+          want.remove();
+          files.remove(want.ncfile);
+          want.ncfile.setFileCache(null);
+          try {
+            want.ncfile.close();
+            log.debug("close "+want.ncfile.getLocation());
+          } catch (IOException e) {
+            log.error("close failed on "+want.ncfile.getLocation(), e);
+          }
+          want.ncfile = null;
+       }
+     }
+    cache.remove(hashKey);
+
+   }
+
+  /**
    * Release the file. This unlocks it, updates its lastAccessed date.
    * Normally applications need not call this, just close the file as usual.
    *

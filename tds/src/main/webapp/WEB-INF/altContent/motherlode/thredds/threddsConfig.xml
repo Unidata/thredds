@@ -2,9 +2,9 @@
 <threddsConfig>
   
   <serverInformation>
-    <name>Motherlode TDS</name>
+    <name>THREDDS Data Server</name>
     <logoUrl>/thredds/unidataLogo.jpg</logoUrl>
-    <logoAltText>Motherlode TDS</logoAltText>
+    <logoAltText>TDS</logoAltText>
 
     <abstract>Scientific Data</abstract>
     <keywords>meteorology, atmosphere, climate, ocean, earth science</keywords>
@@ -33,6 +33,7 @@
   </DataRoots>
 
   <catalogRoot>topcatalog.xml</catalogRoot>
+  <catalogRoot>testCatalog.xml</catalogRoot>
 
   <catalogRoot>casestudies/catalog.xml</catalogRoot>
   <catalogRoot>casestudies/vgeeCatalog.xml</catalogRoot>
@@ -58,20 +59,8 @@
     <standardCssUrl>tds.css</standardCssUrl>
     <catalogCssUrl>tdsCat.css</catalogCssUrl>
     <openDapCssUrl>tdsDap.css</openDapCssUrl>
-
-    <!--
-     * The URLs (relative to "/thredds/") and alternate text for both
-     * folder and dataset icons used in HTML catalog views.
-     * -->
-    <folderIconUrl>folder.gif</folderIconUrl>
-    <folderIconAlt>Folder</folderIconAlt>
-    <datasetIconUrl>dataset.gif</datasetIconUrl>
-    <datasetIconAlt>Dataset</datasetIconAlt>
   </htmlSetup>
 
-  <!--
-   The <CatalogServices> element:
-   -->
   <CatalogServices>
     <allowRemote>true</allowRemote>
   </CatalogServices>
@@ -81,6 +70,16 @@
     <maxFiles>100</maxFiles>
     <scour>5 min</scour>
   </NetcdfFileCache>
+  <GribCollection>
+    <minFiles>5</minFiles>
+    <maxFiles>10</maxFiles>
+    <scour>5 min</scour>
+  </GribCollection>
+  <TimePartition>
+    <minFiles>5</minFiles>
+    <maxFiles>10</maxFiles>
+    <scour>5 min</scour>
+  </TimePartition>
 
   <HTTPFileCache>
     <minFiles>5</minFiles>
@@ -92,6 +91,7 @@
     <allow>true</allow>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
+    <!--maxFileDownloadSize>52428800</maxFileDownloadSize-->
   </NetcdfSubsetService>
 
   <WCS>
@@ -134,7 +134,11 @@
     <allow>true</allow>
   </DqcService>
 
-  <!-- Viewer>my.package.MyViewer</Viewer -->
+  <!-- added 11/13/2012 jcaron -->
+  <Netcdf4Clibrary>
+    <libraryPath> /opt/netcdf/netcdf-4.2.1.1/usr/lib</libraryPath>
+    <libraryName>netcdf</libraryName>
+  </Netcdf4Clibrary>
 
   <!-- nj22Config
     <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>

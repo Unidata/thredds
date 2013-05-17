@@ -147,7 +147,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
-      createPartitionedIndex();   // write out index
+      createPartitionedIndex();  // LOOK at this point we are going to remake the whole thing
       readIndex(idx.getPath()); // read back in index
       return true;
     }
@@ -182,19 +182,19 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     }
 
     List<TimePartition.Partition> bad = new ArrayList<TimePartition.Partition>();
-    for (TimePartition.Partition dc : tp.getPartitions()) {
+    for (TimePartition.Partition tpp : tp.getPartitions()) {
       try {
-        dc.makeGribCollection();         // ensure collection has been read successfully
-        if (trace) logger.debug(" Open partition {}", dc.getDcm().getCollectionName());
+        tpp.gc = tpp.makeGribCollection(CollectionManager.Force.always);    // force all partitions to be recreated
+        if (trace) logger.debug(" Open partition {}", tpp.getDcm().getCollectionName());
       } catch (Throwable t) {
-        logger.error(" Failed to open partition " + dc.getName(), t);
-        bad.add(dc);
+        logger.error(" Failed to open partition " + tpp.getName(), t);
+        bad.add(tpp);
       }
     }
 
     // remove ones that failed
-    for (TimePartition.Partition p : bad)
-      tp.removePartition(p);
+    for (TimePartition.Partition tpp : bad)
+      tp.removePartition(tpp);
 
     // choose the "canonical" partition, aka prototype
     int n = tp.getPartitions().size();
@@ -222,7 +222,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     writeIndex(canonGc, f);
 
     // close open gc's
-    // tp.cleanup();
+    for (TimePartition.Partition tpp : tp.getPartitions()) {
+      tpp.gc.close();
+    }
+    canonGc.close();
 
     long took = System.currentTimeMillis() - start;
     f.format(" CreatePartitionedIndex took %d msecs%n", took);
@@ -237,7 +240,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     boolean ok = true;
 
     // for each group in canonical Partition
-    GribCollection canonGc = canon.makeGribCollection();
+    GribCollection canonGc = canon.gc;
     for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
       String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
@@ -260,7 +263,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
         if (trace) f.format(" Check Partition %s%n",  tpp.getName());
 
         // get corresponding group
-        GribCollection gc = tpp.makeGribCollection();
+        GribCollection gc = tpp.gc;
         int groupIdx = gc.findGroupIdxById(firstGroup.getId());
         if (groupIdx < 0) {
           f.format(" Cant find group %s in partition %s%n", gname, tpp.getName());
@@ -344,12 +347,12 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
       // get list of corresponding groups from all the time partition, so we dont have to keep looking it up
       List<PartGroup> pgList = new ArrayList<PartGroup>(partitions.size());
-      for (TimePartition.Partition dc : partitions) {
-        GribCollection.GroupHcs gg = dc.makeGribCollection().findGroupById(gname);
+      for (TimePartition.Partition tpp : partitions) {
+        GribCollection.GroupHcs gg = tpp.gc.findGroupById(gname);
         if (gg == null)
-          logger.error(" Cant find group {} in partition {}", gname, dc.getName());
+          logger.error(" Cant find group {} in partition {}", gname, tpp.getName());
         else
-          pgList.add(new PartGroup(gg, dc));
+          pgList.add(new PartGroup(gg, tpp));
       }
 
       // unique time coordinate unions

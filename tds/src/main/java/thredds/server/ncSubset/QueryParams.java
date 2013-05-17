@@ -56,6 +56,7 @@ import ucar.nc2.units.DateType;
  * Query parameter parsing for Netcdf Subset Service
  *
  * @author caron
+ * @deprecated use thredds.server.ncSubset.view.*
  */
 public class QueryParams {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( QueryParams.class );

@@ -609,12 +609,12 @@ public class Grib2CollectionPanel extends JPanel {
 
   public void showGDSuse(Formatter f) {
 
-    Map<Long, Gds2Bean> gdsMap = new HashMap<Long, Gds2Bean>();
-    Map<Long, Set<Integer>> fileMap = new HashMap<Long, Set<Integer>>();
+    Map<Integer, Gds2Bean> gdsMap = new HashMap<Integer, Gds2Bean>();
+    Map<Integer, Set<Integer>> fileMap = new HashMap<Integer, Set<Integer>>();
     List<Gds2Bean> beans = gds2Table.getBeans();
     for (Gds2Bean gdsBean : beans) {
-      fileMap.put(gdsBean.gdss.calcCRC(), new TreeSet<Integer>());
-      gdsMap.put(gdsBean.gdss.calcCRC(), gdsBean);
+      fileMap.put(gdsBean.getGDShash(), new TreeSet<Integer>());
+      gdsMap.put(gdsBean.getGDShash(), gdsBean);
     }
 
     for (Object o : param2BeanTable.getBeans()) {
@@ -624,14 +624,14 @@ public class Grib2CollectionPanel extends JPanel {
         files.add(r.gr.getFile());
     }
 
-    for (Long key : fileMap.keySet()) {
+    for (Integer key : fileMap.keySet()) {
       Gds2Bean gds = gdsMap.get(key);
       Set<Integer> files = fileMap.get(key);
       Iterator<Integer> iter = files.iterator();
       f.format("%nGDS %d == %s%n", key, gds);
       while (iter.hasNext()) {
         int fileno = iter.next();
-        f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
+        f.format(" %3d = %s%n", fileno, fileList.get(fileno).getPath());
       }
     }
 

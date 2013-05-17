@@ -100,6 +100,7 @@ public abstract class TimePartition extends GribCollection {
   public class Partition implements Comparable<Partition> {
     private final String name, directory;
     private String indexFilename;
+    public GribCollection gc;  // temporary storage while building - do not use
 
     // constructor from ncx
     public Partition(String name, String indexFilename, String directory) {
@@ -173,8 +174,8 @@ public abstract class TimePartition extends GribCollection {
       this.directory = dcm.getRoot();
     }
 
-    public GribCollection makeGribCollection() throws IOException {
-      GribCollection result = GribCollection.factory(isGrib1, dcm, CollectionManager.Force.test, logger);  // LOOK why test ??
+    public GribCollection makeGribCollection( CollectionManager.Force force) throws IOException {
+      GribCollection result = GribCollection.factory(isGrib1, dcm, force, logger); // LOOK caller must close
       indexFilename = result.getIndexFile().getPath();
       return result;
     }
@@ -380,11 +381,19 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public void close() throws java.io.IOException {
-    if (objCache != null) {
-      objCache.release(this);
-    } else {
-      super.close();
+    assert (objCache == null);
+    super.close();
+  }
+
+  // no longer will be used
+  public void delete() throws java.io.IOException {
+    // remove any partitions from the cache
+    if (partitionCache != null) {
+      for (Partition tp : partitions) {
+        partitionCache.remove(tp.indexFilename);
+      }
     }
+    close();
   }
 
 }

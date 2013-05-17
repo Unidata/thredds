@@ -221,7 +221,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       TimePartition previous = localState.timePartition;
       localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, logger);
       localState.gribCollection = null;
-      if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
+
+      if (previous != null) previous.delete(); // LOOK may be another thread using - other thread will fail
       logger.debug("{}: TimePartition object was recreated", getName());
 
     } else {
@@ -368,6 +369,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       logger.error("Error in checkState", e);
       return null;
     }
+
+    if (localState == null) return null; // not ready yet I think
 
     try {
       // top catalog : uses state.top previously made in checkState()

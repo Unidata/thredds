@@ -57,6 +57,9 @@ import ucar.nc2.util.DiskCache2;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * @deprecated use thredds.server.ncSubset.view.*
+ */
 public class GridPointWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridPointWriter.class);
 
