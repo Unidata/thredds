@@ -140,7 +140,6 @@ public class ReqState {
         this.myServletContext = sv.getServletContext();
         this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));
         if(this.rootpath == null) {
-            AbstractServlet.log.error("ReqState: cannot locate dts root path");
             this.rootpath = "";
         }
         AbstractServlet.log.debug("RootPath: "+this.rootpath);
