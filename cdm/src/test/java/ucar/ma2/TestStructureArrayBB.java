@@ -37,7 +37,7 @@ import ucar.unidata.test.ma2.TestStructureArray;
 
 import java.io.IOException;
 
-public class TestStructureArrayMA {
+public class TestStructureArrayBB {
 
   /* <pre>
    Structure {
@@ -57,25 +57,9 @@ public class TestStructureArrayMA {
      } nested1(9);
    } s(4);
    </pre>
-
-   <ul>
-   <li>For f1, you need an ArrayFloat of shape {4}
-   <li>For f2, you need an ArrayShort of shape {4, 3} .
-   <li>For nested1, you need an ArrayStructure of shape {4, 9}.
-   Use an ArrayStructureMA that has 3 members:
-   <ul><li>For g1, you need an ArrayInt of shape (4, 9}
-   <li>For g2, you need an ArrayDouble of shape {4, 9, 2}.
-   <li>For g3, you need an ArrayDouble of shape {4, 9, 3, 4}.
-   </ul>
-   <li>For nested2, you need an ArrayStructure of shape {4, 9, 7}.
-   Use an ArrayStructureMA that has 2 members:
-   <ul><li>For h1, you need an ArrayInt of shape (4, 9, 7}
-   <li>For h2, you need an ArrayDouble of shape {4, 9, 7, 2}.
-   </ul>
-   </ul>
   */
   @Test
-  public void testMA() throws IOException, InvalidRangeException {
+  public void testBB() throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers("s");
 
     StructureMembers.Member m = members.addMember("f1", "desc", "units", DataType.FLOAT, new int[]{1});
@@ -92,20 +76,20 @@ public class TestStructureArrayMA {
     data = makeNested1(m);
     m.setDataArray(data);
 
-    ArrayStructureMA as = new ArrayStructureMA(members, new int[]{4});
+    ArrayStructureBB bb = new ArrayStructureBB(members, new int[]{4});
     //System.out.println( NCdumpW.printArray(as, "", null));
-    new TestStructureArray().testArrayStructure(as);
+    new TestStructureArray().testArrayStructure(bb);
 
     // get f2 out of the 3nd "s"
-    StructureMembers.Member f2 = as.getStructureMembers().findMember("f2");
-    short[] f2data = as.getJavaArrayShort(2, f2);
+    StructureMembers.Member f2 = bb.getStructureMembers().findMember("f2");
+    short[] f2data = bb.getJavaArrayShort(2, f2);
     assert f2data[0] == 20;
     assert f2data[1] == 21;
     assert f2data[2] == 22;
 
     // get nested1 out of the 3nd "s"
-    StructureMembers.Member nested1 = as.getStructureMembers().findMember("nested1");
-    ArrayStructure nested1Data = as.getArrayStructure(2, nested1);
+    StructureMembers.Member nested1 = bb.getStructureMembers().findMember("nested1");
+    ArrayStructure nested1Data = bb.getArrayStructure(2, nested1);
 
     // get g1 out of the 7th "nested1"
     StructureMembers.Member g1 = nested1Data.getStructureMembers().findMember("g1");
@@ -123,7 +107,7 @@ public class TestStructureArrayMA {
   }
 
 
-  private ArrayStructure makeNested1(StructureMembers.Member parent) throws IOException, InvalidRangeException {
+  public ArrayStructure makeNested1(StructureMembers.Member parent) throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers(parent.getName());
     parent.setStructureMembers(members);
 
@@ -146,10 +130,10 @@ public class TestStructureArrayMA {
     data = makeNested2(m);
     m.setDataArray(data);
 
-    return new ArrayStructureMA(members, new int[]{4, 9});
+    return new ArrayStructureBB(members, new int[]{4, 9});
   }
 
-  private ArrayStructure makeNested2(StructureMembers.Member parent) throws IOException, InvalidRangeException {
+  public ArrayStructure makeNested2(StructureMembers.Member parent) throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers(parent.getName());
     parent.setStructureMembers(members);
 
@@ -163,7 +147,7 @@ public class TestStructureArrayMA {
     m.setDataArray(data);
     fill(data);
 
-    return new ArrayStructureMA(members, new int[]{4, 9, 7});
+    return new ArrayStructureBB(members, new int[]{4, 9, 7});
   }
 
   private void fill(Array a) {

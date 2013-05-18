@@ -615,7 +615,9 @@ public class Grib2CollectionPanel extends JPanel {
     for (Gds2Bean gdsBean : beans) {
       fileMap.put(gdsBean.getGDShash(), new TreeSet<Integer>());
       gdsMap.put(gdsBean.getGDShash(), gdsBean);
+      f.format("<gdsName hash='%d' groupName='%s'/>%n", gdsBean.getGDShash(), gdsBean.getGroupName());
     }
+    f.format("%n");
 
     for (Object o : param2BeanTable.getBeans()) {
       Grib2ParameterBean p = (Grib2ParameterBean) o;
@@ -624,6 +626,19 @@ public class Grib2CollectionPanel extends JPanel {
         files.add(r.gr.getFile());
     }
 
+    for (Integer key : fileMap.keySet()) {
+      Gds2Bean gds = gdsMap.get(key);
+      Set<Integer> files = fileMap.get(key);
+      Iterator<Integer> iter = files.iterator();
+      f.format("%nGDS %d == %s%n", key, gds);
+      while (iter.hasNext()) {
+        int fileno = iter.next();
+        f.format(" %3d = %s%n", fileno, fileList.get(fileno).getPath());
+      }
+    }
+
+
+    f.format("%n%n");
     for (Integer key : fileMap.keySet()) {
       Gds2Bean gds = gdsMap.get(key);
       Set<Integer> files = fileMap.get(key);

@@ -202,7 +202,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (data instanceof Array)
       return (Array) data;
     else if (dataType == DataType.STRUCTURE)
-      return convertStructure((Structure) v2, layout, wantSection.getShape(), (byte[]) data);
+      return convertStructure((Structure) v2, layout, wantSection.getShape(), (byte[]) data);  // LOOK
     else
       return Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape(), data);
   }
@@ -284,7 +284,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       }
 
       // place data into an ArrayStructureBB
-      return convertStructure((Structure) v, layout, shape, byteArray);
+      return convertStructure((Structure) v, layout, shape, byteArray); // LOOK
     }
 
     // normal case
@@ -305,11 +305,10 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   private ArrayStructure convertStructure(Structure s, Layout layout, int[] shape, byte[] byteArray) throws IOException, InvalidRangeException {
-    boolean hasHeap = false;
-
     // create StructureMembers - must set offsets
     StructureMembers sm = s.makeStructureMembers();
-    for (StructureMembers.Member m : sm.getMembers()) {
+    boolean hasHeap = convertStructure(s, sm, 0);
+    /* for (StructureMembers.Member m : sm.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
       H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
       if (vm.typeInfo.endian >= 0) // apparently each member may have seperate byte order (!!!??)
@@ -317,7 +316,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       m.setDataParam((int) (vm.dataPos)); // offset since start of Structure
       if (v2.getDataType() == DataType.STRING || v2.isVariableLength())
         hasHeap = true;
-    }
+    } */
     int recsize = layout.getElemSize();
     sm.setStructureSize(recsize); // gotta calculate this ourself
 
@@ -334,6 +333,36 @@ public class H5iosp extends AbstractIOServiceProvider {
       }
     }
     return asbb;
+  }
+
+  // recursive
+  private boolean convertStructure(Structure s, StructureMembers sm, long offset ) {
+    boolean hasHeap = false;
+    for (StructureMembers.Member m : sm.getMembers()) {
+      Variable v2 = s.findVariable(m.getName());
+      assert v2 != null;
+      H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
+
+      // apparently each member may have seperate byte order (!!!??)
+      if (vm.typeInfo.endian >= 0)
+        m.setDataObject(vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+
+      // offset since start of Structure
+      m.setDataParam((int) (offset + vm.dataPos));
+
+      // track if there is a heap
+      if (v2.getDataType() == DataType.STRING || v2.isVariableLength())
+        hasHeap = true;
+
+      // recurse
+      if (v2 instanceof Structure) {
+        Structure nested = (Structure) v2;
+        StructureMembers nestSm = nested.makeStructureMembers();
+        m.setStructureMembers(nestSm);
+        hasHeap |= convertStructure(nested, nestSm, vm.dataPos);
+      }
+    }
+    return hasHeap;
   }
 
   void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws java.io.IOException, InvalidRangeException {

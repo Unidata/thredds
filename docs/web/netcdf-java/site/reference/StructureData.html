@@ -162,7 +162,7 @@ The following will return any compatible type as a double or float, but will hav
     }
 </pre>
 <p>ArrayStructureBB calculates member offsets on demand. By default it assumes that each record is the same size. <strong>ucar.ma2.ArrayStructureBBpos</strong> relaxes this assumption by allowing you to pass in the starting positions in the ByteBuffer of each record. </p>
-<p>Member offsets must be the same for each record. However, more complex objects can be stored as an index into a <em>object heap list. </em>For example, this is used to store Strings, which are variable length arrays of UTF-16 charactors. The index of the String in the list is stored (as a 4-byte integer) in the ByteBuffer instead of the String. The String itself is added using  <strong>ArrayStructureBB.addObjectToHeap()</strong>, as in the following code:</p>
+<p>Member offsets must be the same for each record. However, more complex objects can be stored as an index into a <em>object heap list. </em>For example, the object heap is used to store Strings, which are variable length arrays of UTF-16 charactors. The index of the String in the list is stored (as a 4-byte integer) in the ByteBuffer instead of the String. The String itself is added using  <strong>ArrayStructureBB.addObjectToHeap()</strong>, as in the following code:</p>
 <pre>
   int heapIndex = arrayStructureBB.addObjectToHeap(stringData);   // add object into the Heap
   arrayStructureBB.setInt(bbPos, heapIndex); 	                 // store the index<br></pre>
@@ -172,7 +172,7 @@ The following will return any compatible type as a double or float, but will hav
 <pre>
   arrayStructureBB.addObjectToHeap(recnum, member, stringData);   // add object for this recnum and member into the Heap
 </pre>
-<p>When storing data in an ArrayStructureBB, the heap must be used for both Strings and Sequences. The Object that is added to the heap in the <em>ArrayStructureBB.addObjectToHeap() </em>call:</p>
+<p>When storing data in an ArrayStructureBB, the heap must be used for both Strings and Sequences. Here is the Object type that must be used when  adding to the heap in the <em>ArrayStructureBB.addObjectToHeap() </em>call:</p>
 <ul>
   <li>scalar String: <strong>String</strong></li>
   <li>array of Strings: <strong>String[]</strong></li>
