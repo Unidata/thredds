@@ -207,9 +207,10 @@ public class Grib1Iosp extends GribIosp {
   }
 
   private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {
+    gHcs.assignVertNames(cust);
     GdsHorizCoordSys hcs = gHcs.hcs;
-    VertCoord.assignVertNames(gHcs.vertCoords, cust);
     String grid_mapping = hcs.getName() + "_Projection";
+
     Group g;
     if (useGroups) {
       g = new Group(ncfile, null, gHcs.getId());

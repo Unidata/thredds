@@ -479,7 +479,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         if (this.tables == null) {
           Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
           this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
-          if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt really work with multiple collections
+          if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter());
         }
         if (intvMap != null && filterOut(gr, intvMap)) {
           stats.filter++;

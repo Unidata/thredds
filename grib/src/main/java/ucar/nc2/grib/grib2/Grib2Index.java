@@ -259,7 +259,7 @@ public class Grib2Index extends GribIndex {
       byte[] b = index.toByteArray();
       NcStream.writeVInt(fout, b.length); // message size
       fout.write(b);  // message  - all in one gulp
-      logger.debug("  made gbx9 index for %s size=%d%n", filename, b.length);
+      logger.debug("  made gbx9 index for {} size={}%n", filename, b.length);
       return true;
 
     } finally {

@@ -388,9 +388,9 @@ public class Grib2Iosp extends GribIosp {
   }
 
   private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {
+    gHcs.assignVertNames( cust);  // LOOK thread safety vc.setName()
     GdsHorizCoordSys hcs = gHcs.hcs;
     String grid_mapping = hcs.getName()+"_Projection";
-    VertCoord.assignVertNames(gHcs.vertCoords, cust);
 
     Group g;
     if (useGroups) {

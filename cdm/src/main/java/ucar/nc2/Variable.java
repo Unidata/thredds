@@ -354,8 +354,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @return the attribute, or null if not found
    */
   public Attribute findAttributeIgnoreCase(String name) {
-    if (attributes == null)
-      System.out.println("HEY");
     for (Attribute a : attributes) {
       if (name.equalsIgnoreCase(a.getShortName()))
         return a;

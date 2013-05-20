@@ -204,7 +204,7 @@ public abstract class GribCollection implements FileCacheable {
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
-  public List<GroupHcs> groups; // must be kept in order
+  public List<GroupHcs> groups; // must be kept in order unmodifiableList
   public List<Parameter> params;  // used ??
 
   private List<MFile> files;  // must be kept in order
@@ -433,6 +433,7 @@ public abstract class GribCollection implements FileCacheable {
   // these objects are created from the ncx index.
   private Set<String> groupNames = new HashSet<String>(5);
 
+  // this class needs to be immutable
   public class GroupHcs implements Comparable<GroupHcs> {
     public GdsHorizCoordSys hcs;
     public byte[] rawGds;
@@ -517,6 +518,15 @@ public abstract class GribCollection implements FileCacheable {
 
       return description;
     }
+
+    // must have thread safety for vc.setName()
+    private boolean vertNamesAssigned = false;
+    synchronized public void assignVertNames( GribTables cust) {
+      if (vertNamesAssigned) return;
+      VertCoord.assignVertNames(vertCoords, cust);
+      vertNamesAssigned = true;
+    }
+
 
     @Override
     public int compareTo(GroupHcs o) {

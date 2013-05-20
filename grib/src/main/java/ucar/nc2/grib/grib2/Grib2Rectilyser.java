@@ -125,9 +125,6 @@ public class Grib2Rectilyser {
     // create and assign time coordinate
     // uniform or not X isInterval or not
     for (VariableBag vb : gribvars) {
-      if (vb.cdmHash == -1931372723)
-        System.out.println("HEY");
-
       setTimeUnit(vb);
       TimeCoord use = null;
       if (vb.first.getPDS().isTimeInterval()) {
@@ -353,8 +350,6 @@ public class Grib2Rectilyser {
     int timeIntvCode = 999; // just for documentation in the time coord attribute
     Map<Integer, TimeCoord.TinvDate> times = new HashMap<Integer, TimeCoord.TinvDate>();
     for (Record r : vb.atomList) {
-      if (r.gr.getDataSection().getStartingPosition() == 18848284)
-        System.out.println("HEY");
       Grib2Pds pds = r.gr.getPDS();
       if (timeIntvCode == 999) timeIntvCode = pds.getStatisticalProcessType();
       TimeCoord.TinvDate mine = cust.getForecastTimeInterval(r.gr);

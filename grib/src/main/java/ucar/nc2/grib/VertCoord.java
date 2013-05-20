@@ -46,6 +46,7 @@ import java.util.*;
 @Immutable
 public class VertCoord { // implements Comparable<VertCoord> {
 
+  // we need a
   static public void assignVertNames(List<VertCoord> vertCoords, GribTables tables) {
     List<VertCoord> temp = new ArrayList<VertCoord>(vertCoords); // dont change order of original !!!!!
 

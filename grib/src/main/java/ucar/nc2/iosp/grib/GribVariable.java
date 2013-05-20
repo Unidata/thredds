@@ -148,7 +148,7 @@ public class GribVariable extends GridVariable {
       }
       recno = ens * (ntimes * nlevels) + (time * nlevels) + level;  // order is ens, time, level
       if (recno < 0) {
-        System.out.println("HEY");
+        System.out.println("HEY bad recno");
         ecsb.getIndex(ggr);
       }
     }

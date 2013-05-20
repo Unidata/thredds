@@ -492,7 +492,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         if (cust == null)
           cust = Grib1Customizer.factory(gr, null);
         if (config != null)
-          cust.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt work with multiple collections
+          cust.setTimeUnitConverter(config.getTimeUnitConverter());
         if (intvMap != null && filterOut(gr, intvMap)) {
           stats.filter++;
           continue; // skip
