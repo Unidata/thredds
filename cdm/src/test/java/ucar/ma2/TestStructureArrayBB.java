@@ -33,9 +33,11 @@
 package ucar.ma2;
 
 import org.junit.Test;
+import ucar.nc2.util.Indent;
 import ucar.unidata.test.ma2.TestStructureArray;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 public class TestStructureArrayBB {
 
@@ -61,22 +63,30 @@ public class TestStructureArrayBB {
   @Test
   public void testBB() throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers("s");
+    members.addMember("f1", "desc", "units", DataType.FLOAT, new int[]{1});
+    members.addMember("f2", "desc", "units", DataType.SHORT, new int[]{3});
+    StructureMembers.Member nested1 = members.addMember("nested1", "desc", "units", DataType.STRUCTURE, new int[]{9});
 
-    StructureMembers.Member m = members.addMember("f1", "desc", "units", DataType.FLOAT, new int[]{1});
-    Array data = Array.factory(DataType.FLOAT, new int[]{4});
-    m.setDataArray(data);
-    fill(data);
+    StructureMembers nested1_members = new StructureMembers("nested1");
+    nested1_members.addMember("g1", "desc", "units", DataType.INT, new int[]{1});
+    nested1_members.addMember("g2", "desc", "units", DataType.DOUBLE, new int[]{2});
+    nested1_members.addMember("g3", "desc", "units", DataType.DOUBLE, new int[]{3,4});
+    StructureMembers.Member nested2 = nested1_members.addMember("nested2", "desc", "units", DataType.STRUCTURE, new int[]{7});
+    nested1.setStructureMembers(nested1_members);
 
-    m = members.addMember("f2", "desc", "units", DataType.SHORT, new int[]{3});
-    data = Array.factory(DataType.SHORT, new int[]{4, 3});
-    m.setDataArray(data);
-    fill(data);
+    StructureMembers nested2_members = new StructureMembers("nested2");
+    nested2_members.addMember("h1", "desc", "units", DataType.INT, new int[]{1});
+    nested2_members.addMember("h2", "desc", "units", DataType.DOUBLE, new int[]{2});
+    nested2.setStructureMembers(nested2_members);
 
-    m = members.addMember("nested1", "desc", "units", DataType.STRUCTURE, new int[]{9});
-    data = makeNested1(m);
-    m.setDataArray(data);
+    ArrayStructureBB.setOffsets(members);
+    Formatter f = new Formatter(System.out);
+    Indent indent = new Indent(2);
+    ArrayStructureBB.showOffsets(members, indent, f);
 
-    ArrayStructureBB bb = new ArrayStructureBB(members, new int[]{4});
+    /* ArrayStructureBB bb = new ArrayStructureBB(members, new int[]{4});
+
+
     //System.out.println( NCdumpW.printArray(as, "", null));
     new TestStructureArray().testArrayStructure(bb);
 
@@ -103,7 +113,7 @@ public class TestStructureArrayBB {
     // get h1 out of the 4th "nested2"
     StructureMembers.Member h1 = nested2Data.getStructureMembers().findMember("h1");
     int val = nested2Data.getScalarInt(4, h1);
-    assert (val == 264);
+    assert (val == 264);  */
   }
 
 

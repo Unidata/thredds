@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.util.Indent;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Formatter;
@@ -80,6 +82,22 @@ public class ArrayStructureBB extends ArrayStructure {
         setOffsets(m.getStructureMembers());
     }
     members.setStructureSize(offset);
+    return offset;
+  }
+
+  public static int showOffsets(StructureMembers members, Indent indent, Formatter f) {
+    int offset = 0;
+    for (StructureMembers.Member m : members.getMembers()) {
+      f.format("%s%s offset=%d (%d %s = %d bytes)%n", indent, m.getName(), m.getDataParam(), m.getSize(), m.getDataType(), m.getSizeBytes());
+
+      if (m.getStructureMembers() != null) {
+        indent.incr();
+        StructureMembers nested = m.getStructureMembers();
+        f.format("%n%s%s == %d bytes%n", indent, nested.getName(), nested.getStructureSize());
+        showOffsets(nested, indent, f);
+        indent.decr();
+      }
+    }
     return offset;
   }
 
