@@ -287,4 +287,5 @@ public class TestH5ReadStructure2 extends TestCase {
     ncfile.close();
     System.out.println("*** testReadManyAtATime ok");
   }
+
 }

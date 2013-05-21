@@ -33,10 +33,8 @@
 package ucar.nc2.iosp.hdf5;
 
 import junit.framework.*;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.ma2.Array;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.Misc;
@@ -194,6 +192,42 @@ public class TestN4 extends TestCase {
 
 
     ncfile.close();
+  }
+
+  /*
+  netcdf Q:/cdmUnitTest/formats/netcdf4/testNestedStructure.nc {
+    variables:
+      Structure {
+        Structure {
+          int x;
+          int y;
+        } field1;
+        Structure {
+          int x;
+          int y;
+        } field2;
+      } x;
+  }
+   */
+  public void testNestedStructure() throws java.io.IOException, InvalidRangeException {
+    String filename = testDir+"testNestedStructure.nc";
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+
+    Variable dset = ncfile.findVariable("x");
+    assert (null != ncfile.findVariable("x"));
+    assert (dset.getDataType() == DataType.STRUCTURE);
+    assert (dset.getRank() == 0);
+    assert (dset.getSize() == 1);
+
+    ArrayStructure data = (ArrayStructure) dset.read();
+    StructureMembers.Member m = data.getStructureMembers().findMember("field2");
+    assert m != null;
+    assert (m.getDataType() == DataType.STRUCTURE);
+
+    System.out.println( NCdumpW.printArray(data, "", null));
+
+    ncfile.close();
+    System.out.println("*** testNestedStructure ok");
   }
 
   // LOOK this ones failing

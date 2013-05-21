@@ -255,5 +255,5 @@ public class TestH5ReadStructure extends TestCase {
     } catch (IOException e) { assert false; }
 
     ncfile.close();
-  } // */
+  }
 }

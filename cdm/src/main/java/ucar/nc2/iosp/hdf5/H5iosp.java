@@ -36,6 +36,7 @@ import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
@@ -307,18 +308,19 @@ public class H5iosp extends AbstractIOServiceProvider {
   private ArrayStructure convertStructure(Structure s, Layout layout, int[] shape, byte[] byteArray) throws IOException, InvalidRangeException {
     // create StructureMembers - must set offsets
     StructureMembers sm = s.makeStructureMembers();
-    boolean hasHeap = convertStructure(s, sm, 0);
-    /* for (StructureMembers.Member m : sm.getMembers()) {
-      Variable v2 = s.findVariable(m.getName());
-      H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
-      if (vm.typeInfo.endian >= 0) // apparently each member may have seperate byte order (!!!??)
-        m.setDataObject(vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-      m.setDataParam((int) (vm.dataPos)); // offset since start of Structure
-      if (v2.getDataType() == DataType.STRING || v2.isVariableLength())
-        hasHeap = true;
-    } */
-    int recsize = layout.getElemSize();
-    sm.setStructureSize(recsize); // gotta calculate this ourself
+    int calcSize = ArrayStructureBB.setOffsets(sm); // standard
+    //ArrayStructureBB.showOffsets(sm, new Indent(2), new Formatter(System.out));
+
+    // special offset setting
+    boolean hasHeap = convertStructure(s, sm);
+    //ArrayStructureBB.showOffsets(sm, new Indent(2), new Formatter(System.out));
+
+    int recSize = layout.getElemSize();
+    if (calcSize < recSize) {
+      log.error("calcSize = %d actualSize = %d%n", calcSize, recSize);
+      throw new IOException("H5iosp illegal structure size " + s.getFullName());
+    }
+    sm.setStructureSize(recSize);
 
     // place data into an ArrayStructureBB
     ByteBuffer bb = ByteBuffer.wrap(byteArray);
@@ -336,7 +338,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   // recursive
-  private boolean convertStructure(Structure s, StructureMembers sm, long offset ) {
+  private boolean convertStructure(Structure s, StructureMembers sm ) {
     boolean hasHeap = false;
     for (StructureMembers.Member m : sm.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
@@ -347,8 +349,8 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (vm.typeInfo.endian >= 0)
         m.setDataObject(vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 
-      // offset since start of Structure
-      m.setDataParam((int) (offset + vm.dataPos));
+      // vm.dataPos : offset since start of Structure
+      m.setDataParam((int) vm.dataPos);
 
       // track if there is a heap
       if (v2.getDataType() == DataType.STRING || v2.isVariableLength())
@@ -359,11 +361,27 @@ public class H5iosp extends AbstractIOServiceProvider {
         Structure nested = (Structure) v2;
         StructureMembers nestSm = nested.makeStructureMembers();
         m.setStructureMembers(nestSm);
-        hasHeap |= convertStructure(nested, nestSm, vm.dataPos);
+        hasHeap |= convertStructure(nested, nestSm);
       }
     }
     return hasHeap;
   }
+
+  /*
+    public static int setOffsets(StructureMembers members) {
+    int offset = 0;
+    for (StructureMembers.Member m : members.getMembers()) {
+      m.setDataParam(offset);
+      offset += m.getSizeBytes();
+
+      // set inner offsets (starts again at 0)
+      if (m.getStructureMembers() != null)
+        setOffsets(m.getStructureMembers());
+    }
+    members.setStructureSize(offset);
+    return offset;
+  }
+   */
 
   void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws java.io.IOException, InvalidRangeException {
     ByteBuffer bb = asbb.getByteBuffer();
