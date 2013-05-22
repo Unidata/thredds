@@ -86,8 +86,8 @@ public class TestH5ReadStructure2 extends TestCase {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("complex/compound_complex.h5");
 
-    Variable dset = null;
-    assert (null != (dset = ncfile.findVariable("CompoundComplex")));
+    Variable dset = ncfile.findVariable("CompoundComplex");
+    assert (null != dset);
     assert (dset.getDataType() == DataType.STRUCTURE);
     assert (dset.getRank() == 1);
     assert (dset.getSize() == 6);
@@ -133,8 +133,8 @@ public class TestH5ReadStructure2 extends TestCase {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfDataset ncfile = NetcdfDataset.openDataset(TestH5.testDir + "complex/compound_complex.h5");
 
-    Variable dset = null;
-    assert (null != (dset = ncfile.findVariable("CompoundComplex")));
+    Variable dset = ncfile.findVariable("CompoundComplex");
+    assert (null != dset);
     assert (dset.getDataType() == DataType.STRUCTURE);
     assert (dset.getRank() == 1);
     assert (dset.getSize() == 6);
@@ -190,8 +190,8 @@ public class TestH5ReadStructure2 extends TestCase {
   public void testReadH5StructureArrayMembers() throws java.io.IOException {
     NetcdfFile ncfile = TestH5.openH5("complex/compound_native.h5");
 
-    Variable dset = null;
-    assert (null != (dset = ncfile.findVariable("CompoundNative")));
+    Variable dset = ncfile.findVariable("CompoundNative");
+    assert (null != dset);
     assert (dset.getDataType() == DataType.STRUCTURE);
     assert (dset.getRank() == 1);
     assert (dset.getSize() == 15);
@@ -204,7 +204,7 @@ public class TestH5ReadStructure2 extends TestCase {
     // read all with the iterator
     StructureDataIterator iter = s.getStructureIterator();
     while (iter.hasNext()) {
-      StructureData sd = (StructureData) iter.next();
+      StructureData sd = iter.next();
 
       Iterator viter = sd.getMembers().iterator();
       while (viter.hasNext()) {
@@ -228,8 +228,8 @@ public class TestH5ReadStructure2 extends TestCase {
   public void testReadOneAtATime() throws java.io.IOException, InvalidRangeException {
     NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5");
 
-    Variable dset = null;
-    assert (null != (dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_LAT_ARRAY")));
+    Variable dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_LAT_ARRAY");
+    assert (null != dset);
     assert (dset.getDataType() == DataType.STRUCTURE);
     assert (dset.getRank() == 1);
     assert (dset.getSize() == 3600);
@@ -265,8 +265,8 @@ public class TestH5ReadStructure2 extends TestCase {
   public void testReadManyAtATime() throws java.io.IOException, InvalidRangeException {
     NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5");
 
-    Variable dset = null;
-    assert (null != (dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/TIME_DESCR")));
+    Variable dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/TIME_DESCR");
+    assert (null != dset);
     assert (dset.getDataType() == DataType.STRUCTURE);
     assert (dset.getRank() == 1);
     assert (dset.getSize() == 60);
