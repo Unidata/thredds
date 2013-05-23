@@ -27,6 +27,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
+
 import com.eclipsesource.restfuse.Destination;
 import com.eclipsesource.restfuse.HttpJUnitRunner;
 import com.eclipsesource.restfuse.Method;
@@ -61,6 +72,21 @@ public class ConsistentDatesTest {
 
   private final List<DateTime> expectedDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
   //private final List<DateTime> expectedWMSDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
+  
+  //Dates for noleap calendar
+  private final CalendarDate[] expectedCalendarDates={
+		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T03:00:00Z"),
+		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T06:00:00Z"),
+		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T09:00:00Z"),
+		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T12:00:00Z"),
+		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T15:00:00Z"),
+		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T18:00:00Z"),
+		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T21:00:00Z"),
+		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-29T00:00:00Z"),
+		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-29T03:00:00Z")
+  };
+  
+  private final List<CalendarDate> expectedDatesAsCalendarDate = Collections.unmodifiableList(Arrays.asList(expectedCalendarDates));  
 
   @Before
   public void setUp() {
@@ -154,5 +180,52 @@ public class ConsistentDatesTest {
     assertTrue(timePositionDateTime.equals(expectedDatesAsDateTime));
 
   }
+  
+  @HttpTest(method = Method.GET, path = "thredds/ncss/grid/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=netcdf")
+  public void checkNCSSDatesInNetcdf() throws JDOMException, IOException {
+
+    assertOk(response);
+    assertTrue(response.hasBody());
+	NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getBody(byte[].class) );			
+	NetcdfDataset ds =new NetcdfDataset(nf);
+	
+	CoordinateAxis1D tAxis = (CoordinateAxis1D) ds.findCoordinateAxis("time");
+	Attribute calendarAtt = tAxis.findAttribute(CF.CALENDAR);
+	Calendar calendar;
+	if(calendarAtt == null){
+		calendar = Calendar.getDefault();
+	}else{
+		calendar = Calendar.get(calendarAtt.getStringValue()); 
+	} 
+	Attribute units = tAxis.findAttribute(CDM.UNITS);
+	double[] values = tAxis.getCoordValues();
+	
+	List<DateTime> ccdd = new ArrayList<DateTime>();
+	CalendarDateUnit dateUnit = CalendarDateUnit.withCalendar(calendar, units.getStringValue() );
+	for(int i =0; i<values.length; i++){
+		CalendarDate cd = dateUnit.makeCalendarDate(values[i]);
+		ccdd.add(new DateTime(cd.getMillis()) );
+	}
+	
+	assertTrue(ccdd.equals(expectedDatesAsDateTime));
+	
+	//FAIL!!! ???
+	//CoordinateAxis1DTime tAxis2 = CoordinateAxis1DTime.factory(ds, ds.findCoordinateAxis("time") , null);	
+	//assertTrue(tAxis2.getCalendarDates().equals(expectedDatesAsDateTime));
+  }
+  
+  
+  @HttpTest(method = Method.GET, path = "thredds/ncss/grid/ncssTest/pr_HRM3_2038-2070.CO.nc?var=pr&latitude=40.019&longitude=-105.293&time_start=2038-01-01T03%3A00%3A00Z&time_end=2038-01-02T03%3A00%3A00Z&accept=netcdf4")
+  public void checkNCSSDatesInNetcdfWithCalendars() throws JDOMException, IOException {
+
+    assertOk(response);
+    assertTrue(response.hasBody());
+	NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getBody(byte[].class) );			
+	NetcdfDataset ds =new NetcdfDataset(nf);
+	
+	CoordinateAxis1DTime tAxis = CoordinateAxis1DTime.factory(ds, ds.findCoordinateAxis("time") , null);
+	
+	assertTrue(tAxis.getCalendarDates().equals(expectedDatesAsCalendarDate));
+  }  
 
 }

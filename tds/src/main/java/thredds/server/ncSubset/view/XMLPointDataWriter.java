@@ -21,6 +21,7 @@ import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -50,8 +51,8 @@ class XMLPointDataWriter implements PointDataWriter {
 		return new XMLPointDataWriter(os);
 	}
 
-	public boolean header(Map<String, List<String>> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
-
+	//public boolean header(Map<String, List<String>> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
+	public boolean header(Map<String, List<String>> vars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts,LatLonPoint point, Double vertCoord) {
 		allVars = vars; 
 		for(String key : vars.keySet() ){
 			gridAsPointDatasets.put(key, NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(key)	)  );

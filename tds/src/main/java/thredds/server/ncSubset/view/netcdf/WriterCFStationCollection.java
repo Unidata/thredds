@@ -120,13 +120,13 @@ class WriterCFStationCollection  extends CFPointWriter {
 		writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
 	}
 
-	void writeHeader(List<Station> stns, List<VariableSimpleIF> vars, GridDataset gds, DateUnit timeUnit, String altUnits) throws IOException {
+	void writeHeader(List<Station> stns, List<VariableSimpleIF> vars, GridDataset gds, List<Attribute> timeDimAtts, String altUnits) throws IOException {
 
 		this.gds =gds;  
 		this.altUnits = altUnits;
 
 		createStations(stns);
-		createObsVariables(timeUnit);
+		createObsVariables(timeDimAtts);
 		createDataVariables(vars);
 
 		writer.create(); // done with define mode
@@ -196,12 +196,17 @@ class WriterCFStationCollection  extends CFPointWriter {
 		}
 	}
 
-	private void createObsVariables(DateUnit timeUnit) throws IOException {
+	private void createObsVariables(List<Attribute> timeDimAtts) throws IOException {
 		// time variable
 
 		time = writer.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
-		writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
-		writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));
+		
+		for(Attribute att : timeDimAtts){
+			writer.addVariableAttribute(time, att);
+		}
+		
+		//writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
+		//writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));
 
 		stationIndex = writer.addVariable(null, stationIndexName, DataType.INT, recordDimName);
 		writer.addVariableAttribute(stationIndex, new Attribute(CDM.LONG_NAME, "station index for this observation record"));

@@ -46,6 +46,7 @@ import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
@@ -80,11 +81,22 @@ public final class CFStationCollectionWriterWrapper implements CFPointWriterWrap
 	}
 
 	@Override
-	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, Double vertCoord) {
+	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord) {
 
-		timeOrigin = dateUnit.makeCalendarDate(0);
-		
+		//timeOrigin = dateUnit.makeCalendarDate(0); 
 		boolean headerDone = false;
+		Attribute unitsAtt = CFPointWriterUtils.findCDMAtt(timeDimAtts, CDM.UNITS);
+		
+		DateUnit dateUnit;
+		try {
+			dateUnit = new DateUnit(unitsAtt.getStringValue());
+			timeOrigin = dateUnit.makeCalendarDate(0);
+		} catch (Exception e) {
+			log.error("Error creating time units for: "+unitsAtt.getStringValue());
+			return headerDone;
+		}
+		
+		
 		String stnName = "GridPoint";
 		String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
 		Station s = new StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
@@ -97,7 +109,7 @@ public final class CFStationCollectionWriterWrapper implements CFPointWriterWrap
 
 		List<VariableSimpleIF> wantedVars = NcssRequestUtils.wantedVars2VariableSimple( vars , gridDataset, ncfile);
 		try {
-			writerCFStationCollection.writeHeader(stnList, wantedVars, gridDataset, dateUnit, "");
+			writerCFStationCollection.writeHeader(stnList, wantedVars, gridDataset, timeDimAtts, "");
 			headerDone= true;
 		} catch (IOException ioe) {
 			log.error("Error writing header", ioe);

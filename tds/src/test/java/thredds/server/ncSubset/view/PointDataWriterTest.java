@@ -49,7 +49,7 @@ public class PointDataWriterTest {
 	private CalendarDate date; 
 	private List<CalendarDate> wDates;
 	private CoordinateAxis1DTime tAxis;
-	private DateUnit dateUnit;
+	//private DateUnit dateUnit;
 	
 	@Parameters
 	public static List<Object[]> getTestParameters(){
@@ -103,7 +103,7 @@ public class PointDataWriterTest {
 		date = dates.get(randInt);
 		//zAxis = gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
 		tAxis = gridDataset.findGridDatatype(vars.get(keys.get(0)).get(0)).getCoordinateSystem().getTimeAxis1D();
-		dateUnit = new DateUnit(tAxis.getUnitsString());
+		//dateUnit = new DateUnit(tAxis.getUnitsString());
 	}
 	
 	
@@ -111,8 +111,9 @@ public class PointDataWriterTest {
 	
 	@Test
 	public void shouldWriteResponse() throws InvalidRangeException{
-		assertTrue( pointDataWriter.header(vars, gridDataset, wDates, dateUnit, point, null));
+		assertTrue( pointDataWriter.header(vars, gridDataset, wDates, tAxis.getAttributes(), point, null));
 		assertTrue( pointDataWriter.write(vars, gridDataset, wDates, point, null ));
+		assertTrue( pointDataWriter.trailer() );
 	}
 	
 	@After

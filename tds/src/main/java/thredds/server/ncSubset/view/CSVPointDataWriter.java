@@ -18,6 +18,7 @@ import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
@@ -53,10 +54,11 @@ class CSVPointDataWriter implements PointDataWriter  {
 		return new CSVPointDataWriter(os);
 	}
 
-	//@Override
-	//public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, CoordinateAxis1D zAxis) {
-	public boolean header(Map<String,List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
-
+	//@Override	
+	//public boolean header(Map<String,List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
+	  public boolean header(Map<String,List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord) {
+				
+		
 		allVars = groupedVars; 
 		for(String key : groupedVars.keySet() ){
 			gridAsPointDatasets.put(key, NcssRequestUtils.buildGridAsPointDataset(gridDataset, groupedVars.get(key)	)  );

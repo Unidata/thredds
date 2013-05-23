@@ -102,7 +102,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 	}
 
 	void writeHeader(List<Station> stns, Map<String, List<String>> groupedVars,
-			GridDataset gds, DateUnit timeUnit, int timeDimLength, Double vertCoord) throws IOException{
+			GridDataset gds, List<Attribute> timeDimAtts, int timeDimLength, Double vertCoord) throws IOException{
 
 		//--> Create dimensions and variables:
 		//
@@ -217,8 +217,13 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 
 		//TIME
 		Variable time = writer.addVariable(null, timeName, DataType.DOUBLE, timeDims);
-		writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
-		writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));	    
+		
+		for(Attribute att : timeDimAtts){
+			writer.addVariableAttribute(time, att);
+		}
+		
+		//writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
+		//writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));	    
 
 		writer.create();
 

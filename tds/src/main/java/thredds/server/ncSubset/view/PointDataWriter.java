@@ -6,18 +6,17 @@ import java.util.Map;
 import org.springframework.http.HttpHeaders;
 
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 
 interface PointDataWriter {
 
 	void setHTTPHeaders(GridDataset gds, String pathInfo);
 	
-	boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, Double vertCoord);
+	//boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, Double vertCoord);
+	boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord);
 	
 	boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord) throws InvalidRangeException;
 

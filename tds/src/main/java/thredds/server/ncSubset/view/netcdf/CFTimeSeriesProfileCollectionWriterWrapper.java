@@ -47,13 +47,21 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 	}
 
 	@Override
-	public boolean header(Map<String, List<String>> groupedVars,
-			GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit,
-			LatLonPoint point, Double vertCoord) {
-
+	public boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord){
+	
 		boolean headerDone = false;
 		
-		timeOrigin = dateUnit.makeCalendarDate(0);
+		//timeOrigin = dateUnit.makeCalendarDate(0);		
+		Attribute unitsAtt = CFPointWriterUtils.findCDMAtt(timeDimAtts, CDM.UNITS);
+		
+		DateUnit dateUnit;
+		try {
+			dateUnit = new DateUnit(unitsAtt.getStringValue());
+			timeOrigin = dateUnit.makeCalendarDate(0);
+		} catch (Exception e) {
+			log.error("Error creating time units for: "+unitsAtt.getStringValue());
+			return headerDone;
+		}		
 		
 		List<Attribute> atts = new ArrayList<Attribute>();
 		atts.add(new Attribute( CDM.TITLE,  "Extract time series profiles data from Grid file "+ gds.getLocationURI()) );   		    		    	
@@ -66,7 +74,7 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 		stnList.add(s);		
 
 		try {
-			writerCFTimeSeriesProfileCollection.writeHeader(stnList, groupedVars, gds, dateUnit, wDates.size(), vertCoord );
+			writerCFTimeSeriesProfileCollection.writeHeader(stnList, groupedVars, gds, timeDimAtts, wDates.size(), vertCoord );
 			headerDone = true;
 		} catch (IOException ioe) {
 			log.error("Error writing header", ioe);

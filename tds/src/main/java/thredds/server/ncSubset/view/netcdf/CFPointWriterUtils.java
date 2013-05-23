@@ -3,12 +3,15 @@
  */
 package thredds.server.ncSubset.view.netcdf;
 
+import java.util.Iterator;
 import java.util.List;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers.Member;
+import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
@@ -77,5 +80,20 @@ final class CFPointWriterUtils {
 		}
 
 		return rect;
-	}	
+	}
+	
+	static Attribute findCDMAtt(List<Attribute> atts, String attName){
+		
+		Iterator<Attribute> it = atts.iterator();
+	
+		Attribute target = null;
+		while( it.hasNext() && target == null ){
+			Attribute att = it.next();
+			if( att.getFullName().equals(attName) ||  att.getShortName().equals(attName)){
+					target = att;				
+			}
+		}
+		
+		return target;
+	}
 }
