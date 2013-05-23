@@ -204,7 +204,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     }
     int idx = tpc.getProtoIndex(n);
     TimePartition.Partition canon = tp.getPartitions().get(idx);
-    logger.debug(" Using canonical partition {}", canon.getDcm().getCollectionName());
+    logger.info(" Using canonical partition {}", canon.getDcm().getCollectionName());
 
     // check consistency across vert and ens coords
     // also replace variables  in canonGc with partitoned variables

@@ -1430,6 +1430,7 @@ public class Grib2CollectionPanel extends JPanel {
 
       f.format("  Time Unit=%s ;Stat=%s%n", Grib2Utils.getCalendarPeriod( pds.getTimeUnit()), intvName);
       f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
+      // f.format("  IntervalTimeEnd=%s%n", cust.getIntervalTimeEnd(gr));
       f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
       TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
       if (intv != null) f.format("  TimeInterval=%s%n", intv);

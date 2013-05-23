@@ -265,7 +265,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
     List<CollectionManager> result = new ArrayList<CollectionManager>();
     TimePartitionCollectionManager curr = null;
     for (DatedMFile dmf : files) {
-      if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
+      if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {  // LOOK should be on year boundaries
         String name = collectionName + "-"+ cdf.toString(dmf.cdate);
         // String name = cdf.toString(dmf.cdate);
         curr = new TimePartitionCollectionManager(name, dmf, getRoot(), this.auxInfo, this.logger);
