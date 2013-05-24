@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jfree.util.Log;
 import org.slf4j.Logger;
@@ -15,25 +16,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import thredds.server.ncSubset.util.NcssRequestUtils;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 class CSVPointDataWriter implements PointDataWriter  {
 
 	static private Logger log = LoggerFactory.getLogger(CSVPointDataWriter.class);
-	
+
 	private PrintWriter printWriter;
 
 	private Map<String,List<String>> allVars;
@@ -54,14 +51,12 @@ class CSVPointDataWriter implements PointDataWriter  {
 		return new CSVPointDataWriter(os);
 	}
 
-	//@Override	
-	//public boolean header(Map<String,List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
-	  public boolean header(Map<String,List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord) {
-				
-		
+
+	public boolean header(Map<String,List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord) {		
+
 		allVars = groupedVars; 
-		for(String key : groupedVars.keySet() ){
-			gridAsPointDatasets.put(key, NcssRequestUtils.buildGridAsPointDataset(gridDataset, groupedVars.get(key)	)  );
+		for(Entry<String, List<String>> entry : groupedVars.entrySet()){
+			gridAsPointDatasets.put( entry.getKey() , NcssRequestUtils.buildGridAsPointDataset(gridDataset, entry.getValue()));
 		}
 
 		return true;
@@ -102,10 +97,10 @@ class CSVPointDataWriter implements PointDataWriter  {
 					pointRead = write(key, gds, date, point, vertCoord);
 				}
 			}
-			
+
 			if( contKeys != keys.size() )
 				printWriter.println();
-			
+
 			contKeys++;
 		}
 
@@ -176,7 +171,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 				allDone = allDone && write(varsGroup, gridDataset, gap, date, point, ensCoord);
 			}else{
 
-			
+
 				//read and write [ensCoord], time, verCoord for each variable in group			
 				if(targetLevel != null){
 					Double vertCoord = NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, targetLevel);
@@ -193,7 +188,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 				}				
 			}
 		}
-		
+
 		return allDone;
 	}	
 
@@ -213,7 +208,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 
 		if(zAxis != null)
 			sb.append("vertCoord[unit=\""+zAxis.getUnitsString() +"\"],");
-		
+
 		VerticalTransform vt = coordSystem.getVerticalTransform();
 		if(vt != null){
 			sb.append("vertCoord[unit=\""+vt.getUnitString() +"\"],");
@@ -283,7 +278,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 		try{
 			while (itVars.hasNext()) {
 				GridDatatype grid = gridDataset.findGridDatatype(itVars.next());
-				
+
 				double actualLevel = NcssRequestUtils.getActualVertLevel(grid, date, point, targetLevel);
 
 				if ( gap.hasTime(grid, date) && gap.hasVert(grid, targetLevel) ) {

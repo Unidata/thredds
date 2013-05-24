@@ -18,6 +18,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDataset.Gridset;
@@ -60,42 +61,6 @@ public final class PointDataStream {
 	}
 	
 	
-	/*private DateUnit getDateUnit(GridDataset gds) throws DateUnitException{
-
-		//If the grid does not have time axis, return null
-		//if(grid.getCoordinateSystem().getTimeAxis() == null)
-		//	return null;
-		CoordinateAxis1DTime tAxis = null;
-		List<Gridset> ggss = gds.getGridsets();
-		
-		Iterator<Gridset> it = ggss.iterator();
-		while( tAxis == null && it.hasNext() ){
-			Gridset gs = it.next();
-			tAxis = gs.getGeoCoordSystem().getTimeAxis1D();
-		}
-		
-		if(tAxis == null) return null;
-
-		String timeUnitString = tAxis.getUnitsString();
-		if( tAxis.getDataType() == DataType.STRING && tAxis.getUnitsString().equals("") ){ //Time axis contains String dates (ISO ??)
-			
-			CalendarDate startDate = tAxis.getCalendarDate(0);
-			timeUnitString = "seconds since "+ startDate.toString(); //Units will be seconds since the origin of the time axis 
-						
-		}
-							
-		DateUnit du =null;
-		
-		try{
-			du =new DateUnit(timeUnitString);
-		}catch(Exception e){
-			throw new DateUnitException("Error creating DateUnits for station", e);
-		}
-		
-		return du;
-		
-	}*/
-	
 	private List<Attribute> getTimeDimAtts(GridDataset gds){
 		
 		//If the grid does not have time axis, return null
@@ -112,29 +77,34 @@ public final class PointDataStream {
 		
 		if(tAxis == null) return null;
 
-		Map<String, Attribute> tmpAtts = new HashMap<String, Attribute>();
-		
-		List<Attribute> orgTimeAtts = tAxis.getAttributes();
-		for(Attribute att : orgTimeAtts){
-			tmpAtts.put(att.getFullName(), att);
-		}
+		List<Attribute> timeAtts = new ArrayList<Attribute>();
 		
 		String timeUnitString = tAxis.getUnitsString();
 		if( tAxis.getDataType() == DataType.STRING && tAxis.getUnitsString().equals("") ){ //Time axis contains String dates (ISO ??)			
 			CalendarDate startDate = tAxis.getCalendarDate(0);
 			timeUnitString = "seconds since "+ startDate.toString(); //Units will be seconds since the origin of the time axis
-			tmpAtts.put( CDM.UNITS, new Attribute( CDM.UNITS, timeUnitString ));
+			timeAtts.add(new Attribute( CDM.UNITS, timeUnitString ));
+		}else{
+			Attribute tUnits = tAxis.findAttribute(CDM.UNITS);
+			if(tUnits != null )
+				timeAtts.add( tUnits );
 		}
-							
-		/*DateUnit du =null;
+		//Check calendar
+		Attribute tCal = tAxis.findAttribute( CF.CALENDAR );
+		if(tCal != null){
+			timeAtts.add(tCal);
+		}
+		//Chek names..
+		Attribute tStdName = tAxis.findAttribute( CF.STANDARD_NAME );
+		if(tStdName != null){
+			timeAtts.add(tStdName);
+		}		
+		Attribute tLongName = tAxis.findAttribute( CDM.LONG_NAME );
+		if(tLongName != null){
+			timeAtts.add(tLongName);
+		}		
 		
-		try{
-			du =new DateUnit(timeUnitString);
-		}catch(Exception e){
-			throw new DateUnitException("Error creating DateUnits for station", e);
-		}*/
-		
-		return new ArrayList<Attribute>(tmpAtts.values());		
+		return timeAtts;		
 		
 	}
 	

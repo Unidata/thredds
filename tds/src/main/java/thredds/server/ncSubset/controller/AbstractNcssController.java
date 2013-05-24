@@ -150,7 +150,7 @@ public abstract class AbstractNcssController implements LastModified{
 						closestToPresent.add(start);					
 						return closestToPresent;
 					}else{
-						throw new TimeOutOfWindowException("There is not time within the provided time window");
+						throw new TimeOutOfWindowException("There is no time within the provided time window");
 					}	
 				}
 				if( now.isAfter(end) ){
@@ -159,7 +159,7 @@ public abstract class AbstractNcssController implements LastModified{
 						closestToPresent.add(end);
 						return closestToPresent;
 					}else{
-						throw new TimeOutOfWindowException("There is not time within the provided time window");
+						throw new TimeOutOfWindowException("There is no time within the provided time window");
 					}	
 				}
 								

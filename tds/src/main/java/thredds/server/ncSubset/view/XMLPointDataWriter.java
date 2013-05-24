@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -52,10 +53,10 @@ class XMLPointDataWriter implements PointDataWriter {
 	}
 
 	//public boolean header(Map<String, List<String>> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
-	public boolean header(Map<String, List<String>> vars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts,LatLonPoint point, Double vertCoord) {
-		allVars = vars; 
-		for(String key : vars.keySet() ){
-			gridAsPointDatasets.put(key, NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(key)	)  );
+	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts,LatLonPoint point, Double vertCoord) {
+		allVars = groupedVars; 
+		for(Entry<String, List<String>> entry : groupedVars.entrySet() ){
+			gridAsPointDatasets.put( entry.getKey(), NcssRequestUtils.buildGridAsPointDataset(gridDataset, entry.getValue()	)  );
 		}		
 
 		boolean headerWritten = false;
