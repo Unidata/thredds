@@ -156,6 +156,28 @@
     <dependency>
       <groupId>uk.ac.rdg.resc</groupId>
       <artifactId>ncwms</artifactId>
+      <exclusions>
+      	<exclusion>
+      		<groupId>edu.ucar</groupId>
+      		<artifactId>netcdf</artifactId>
+      	</exclusion>      	
+      	<exclusion>
+      		<groupId>org.springframework</groupId>
+      		<artifactId>spring-webmvc</artifactId>      	
+      	</exclusion>
+      	<exclusion>
+      		<groupId>org.slf4j</groupId>
+      		<artifactId>slf4j-api</artifactId>      	
+      	</exclusion>
+      	<exclusion>
+      		<groupId>org.slf4j</groupId>
+      		<artifactId>slf4j-log4j12</artifactId>      	
+      	</exclusion>
+      	<exclusion>
+      		<groupId>joda-time</groupId>
+      		<artifactId>joda-time</artifactId>      	
+      	</exclusion>      	
+      </exclusions>
     </dependency>
     
     <dependency>

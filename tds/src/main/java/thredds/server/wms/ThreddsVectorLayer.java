@@ -28,14 +28,21 @@
 
 package thredds.server.wms;
 
+import java.io.IOException;
 import java.util.List;
+
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.opengis.metadata.extent.GeographicBoundingBox;
+import org.opengis.referencing.operation.TransformException;
+import org.opengis.util.FactoryException;
+
 import thredds.server.wms.config.LayerSettings;
 import uk.ac.rdg.resc.edal.coverage.grid.HorizontalGrid;
-import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
+import uk.ac.rdg.resc.edal.coverage.grid.RegularGrid;
 import uk.ac.rdg.resc.edal.util.Range;
+import uk.ac.rdg.resc.ncwms.exceptions.InvalidDimensionValueException;
+import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
 import uk.ac.rdg.resc.ncwms.wms.ScalarLayer;
 import uk.ac.rdg.resc.ncwms.wms.VectorLayer;
 
@@ -47,141 +54,150 @@ import uk.ac.rdg.resc.ncwms.wms.VectorLayer;
  * document) - are always the same.
  * @author Jon
  */
-class ThreddsVectorLayer implements VectorLayer, ThreddsLayer {
+class ThreddsVectorLayer implements VectorLayer, ThreddsLayer{
 
-    private final VectorLayer wrappedLayer;
 
-    // Will be set in ThreddsWmsController.ThreddsLayerFactory
-    private LayerSettings layerSettings;
+	private final VectorLayer wrappedLayer;
 
-    public ThreddsVectorLayer(VectorLayer wrappedLayer) {
-        this.wrappedLayer = wrappedLayer;
-    }
+	// Will be set in ThreddsWmsController.ThreddsLayerFactory
+	private LayerSettings layerSettings;
 
-    /** The layer's name is also its id in THREDDS */
-    public String getName() {
-        return this.getId();
-    }
+	public ThreddsVectorLayer(VectorLayer wrappedLayer) {
+		this.wrappedLayer = wrappedLayer;
+	}
 
-    /**
-     * Returns the standard name of this vector layer.  Vector layers are detected
-     * based on the standard names of the underlying scalar layers, and the
-     * id is set to the standard name upon creation.
-     * @todo logic is somewhat brittle and dependent upon ncWMS behaviour, but
-     * this problem will hopefully be solved when we move to a unified underlying
-     * library that provides access to standard names.
-     */
-    public String getStandardName() {
-        return this.getId();
-    }
+	/** The layer's name is also its id in THREDDS */
+	public String getName() {
+		return this.getId();
+	}
 
-    public ScalarLayer getEastwardComponent() {
-        return this.wrappedLayer.getEastwardComponent();
-    }
+	/**
+	 * Returns the standard name of this vector layer.  Vector layers are detected
+	 * based on the standard names of the underlying scalar layers, and the
+	 * id is set to the standard name upon creation.
+	 * @todo logic is somewhat brittle and dependent upon ncWMS behaviour, but
+	 * this problem will hopefully be solved when we move to a unified underlying
+	 * library that provides access to standard names.
+	 */
+	public String getStandardName() {
+		return this.getId();
+	}
 
-    public ScalarLayer getNorthwardComponent() {
-        return this.wrappedLayer.getNorthwardComponent();
-    }
+	//public ScalarLayer getEastwardComponent() {
+	public ScalarLayer getXComponent() { 
+		return this.wrappedLayer.getXComponent();
+	}
 
-    public ThreddsDataset getDataset() {
-        return (ThreddsDataset)this.wrappedLayer.getDataset();
-    }
+	public ScalarLayer getYComponent() {
+		return this.wrappedLayer.getYComponent();
+	}
 
-    public String getId() {
-        return this.wrappedLayer.getId();
-    }
 
-    public String getTitle() {
-        return this.wrappedLayer.getTitle();
-    }
+	public List<Float>[] readXYComponents(DateTime dateTime, double elevation, RegularGrid grid) throws InvalidDimensionValueException, IOException, FactoryException, TransformException{
 
-    public String getLayerAbstract() {
-        return this.wrappedLayer.getLayerAbstract();
-    }
+		return this.wrappedLayer.readXYComponents(dateTime, elevation, grid);
+	}    
 
-    public String getUnits() {
-        return this.wrappedLayer.getUnits();
-    }
 
-    public GeographicBoundingBox getGeographicBoundingBox() {
-        return this.wrappedLayer.getGeographicBoundingBox();
-    }
+	public ThreddsDataset getDataset() {
+		return (ThreddsDataset)this.wrappedLayer.getDataset();
+	}
 
-    public HorizontalGrid getHorizontalGrid() {
-        return this.wrappedLayer.getHorizontalGrid();
-    }
+	public String getId() {
+		return this.wrappedLayer.getId();
+	}
 
-    public Chronology getChronology() {
-        return this.wrappedLayer.getChronology();
-    }
+	public String getTitle() {
+		return this.wrappedLayer.getTitle();
+	}
 
-    public List<DateTime> getTimeValues() {
-        return this.wrappedLayer.getTimeValues();
-    }
+	public String getLayerAbstract() {
+		return this.wrappedLayer.getLayerAbstract();
+	}
 
-    public DateTime getCurrentTimeValue() {
-        return this.wrappedLayer.getCurrentTimeValue();
-    }
+	public String getUnits() {
+		return this.wrappedLayer.getUnits();
+	}
 
-    public DateTime getDefaultTimeValue() {
-        return this.wrappedLayer.getDefaultTimeValue();
-    }
+	public GeographicBoundingBox getGeographicBoundingBox() {
+		return this.wrappedLayer.getGeographicBoundingBox();
+	}
 
-    public List<Double> getElevationValues() {
-        return this.wrappedLayer.getElevationValues();
-    }
+	public HorizontalGrid getHorizontalGrid() {
+		return this.wrappedLayer.getHorizontalGrid();
+	}
 
-    public double getDefaultElevationValue() {
-        return this.wrappedLayer.getDefaultElevationValue();
-    }
+	public Chronology getChronology() {
+		return this.wrappedLayer.getChronology();
+	}
 
-    public String getElevationUnits() {
-        return this.wrappedLayer.getElevationUnits();
-    }
+	public List<DateTime> getTimeValues() {
+		return this.wrappedLayer.getTimeValues();
+	}
 
-    public boolean isElevationPositive() {
-        return this.wrappedLayer.isElevationPositive();
-    }
-    
-    public boolean isElevationPressure() { 
-        return this.wrappedLayer.isElevationPressure(); 
-    }   
-    
-    public void setLayerSettings(LayerSettings layerSettings) {
-        this.layerSettings = layerSettings;
-    }
+	public DateTime getCurrentTimeValue() {
+		return this.wrappedLayer.getCurrentTimeValue();
+	}
 
-    /// The properties below are taken from the LayerSettings
+	public DateTime getDefaultTimeValue() {
+		return this.wrappedLayer.getDefaultTimeValue();
+	}
 
-    @Override
-    public boolean isQueryable() {
-        return this.layerSettings.isAllowFeatureInfo();
-    }
+	public List<Double> getElevationValues() {
+		return this.wrappedLayer.getElevationValues();
+	}
 
-  @Override
-  public boolean isIntervalTime()
-  {
-    return this.layerSettings.isIntervalTime();
-  }
+	public double getDefaultElevationValue() {
+		return this.wrappedLayer.getDefaultElevationValue();
+	}
 
-  @Override
-    public Range<Float> getApproxValueRange() {
-        return this.layerSettings.getDefaultColorScaleRange();
-    }
+	public String getElevationUnits() {
+		return this.wrappedLayer.getElevationUnits();
+	}
 
-    @Override
-    public boolean isLogScaling() {
-        return this.layerSettings.isLogScaling();
-    }
+	public boolean isElevationPositive() {
+		return this.wrappedLayer.isElevationPositive();
+	}
 
-    @Override
-    public ColorPalette getDefaultColorPalette() {
-        return ColorPalette.get(this.layerSettings.getDefaultPaletteName());
-    }
+	public boolean isElevationPressure() { 
+		return this.wrappedLayer.isElevationPressure(); 
+	}   
 
-    @Override
-    public int getDefaultNumColorBands() {
-        return this.layerSettings.getDefaultNumColorBands();
-    }
+	public void setLayerSettings(LayerSettings layerSettings) {
+		this.layerSettings = layerSettings;
+	}
+
+	/// The properties below are taken from the LayerSettings
+
+	@Override
+	public boolean isQueryable() {
+		return this.layerSettings.isAllowFeatureInfo();
+	}
+
+	@Override
+	public boolean isIntervalTime()
+	{
+		return this.layerSettings.isIntervalTime();
+	}
+
+	@Override
+	public Range<Float> getApproxValueRange() {
+		return this.layerSettings.getDefaultColorScaleRange();
+	}
+
+	@Override
+	public boolean isLogScaling() {
+		return this.layerSettings.isLogScaling();
+	}
+
+	@Override
+	public ColorPalette getDefaultColorPalette() {
+		return ColorPalette.get(this.layerSettings.getDefaultPaletteName());
+	}
+
+	@Override
+	public int getDefaultNumColorBands() {
+		return this.layerSettings.getDefaultNumColorBands();
+	}
 
 }
