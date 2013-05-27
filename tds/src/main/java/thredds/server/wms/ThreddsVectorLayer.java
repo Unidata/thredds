@@ -83,7 +83,6 @@ class ThreddsVectorLayer implements VectorLayer, ThreddsLayer{
 		return this.getId();
 	}
 
-	//public ScalarLayer getEastwardComponent() {
 	public ScalarLayer getXComponent() { 
 		return this.wrappedLayer.getXComponent();
 	}

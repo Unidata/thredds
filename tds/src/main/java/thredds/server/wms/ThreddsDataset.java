@@ -104,6 +104,7 @@ public class ThreddsDataset implements Dataset
 			//PixelMap pxm = new PixelMap(cm.getHorizontalGrid(), null);
 			//DataReadingStrategy drStrategy = CdmUtils.getOptimumDataReadingStrategy( pxm, ncDataset );
 			GridDatatype gdt = gridDataset.findGridDatatype(cm.getId());
+			//GridDatatype gdt = gridDataset.findGridByShortName(cm.getId());
 			ThreddsScalarLayer tsl = ThreddsScalarLayer.getNewLayer(cm, gdt, drStrategy, this, wmsConfig);
 			this.scalarLayers.put( tsl.getName()  , tsl);
 		}
@@ -135,8 +136,9 @@ public class ThreddsDataset implements Dataset
 		DataReadingStrategy drStrategy =CdmUtils.getOptimumDataReadingStrategy(ncDataset);
 
 		for(String layer : layers){
-			CoverageMetadata cm = CdmUtils.readCoverageMetadata(gd.findGridByShortName(layer));	  
-			GridDatatype gdt = gd.findGridDatatype(cm.getId());	  
+			//GridDatatype gdt = gd.findGridByShortName(layer);
+			GridDatatype gdt = gd.findGridDatatype(layer);
+			CoverageMetadata cm = CdmUtils.readCoverageMetadata(gdt);			
 			ThreddsScalarLayer tsl = ThreddsScalarLayer.getNewLayer(cm, gdt, drStrategy, this, wmsConfig);		  
 			this.scalarLayers.put( tsl.getName()  , tsl);
 		}
@@ -309,11 +311,12 @@ public class ThreddsDataset implements Dataset
 
 		List<String> layers = new ArrayList<String>();
 
-
-		GridDatatype grid = gd.findGridByShortName(layer);
+		
+		//Layer name is grid.getFullName()  --> vs.getFullName()
+		GridDatatype grid = gd.findGridDatatype(layer); //Actually searches by vs.getFullName()
+			
 
 		if(grid ==null){
-
 			List<GridDatatype> grids = gd.getGrids();
 			Iterator<GridDatatype> gridsIt = grids.iterator();
 
@@ -335,12 +338,11 @@ public class ThreddsDataset implements Dataset
 
 					}else{//full name
 						if( isComponent(layer, var.getFullName()) )
-							layers.add(var.getFullName());
+							layers.add(var.getFullName() );
 					}
 				}				
 
 			}
-
 
 		}else{
 			layers.add(layer);
