@@ -439,7 +439,7 @@ located on the toolbar:</p>
     each file, to create date coordinate values out of the filename. It consists of a section of text, a '#' marking
     character, then a <a href="AnnotatedSchema.html#SimpleDateFormat"><strong>java.text.SimpleDateFormat</strong></a>
     string. The number of characters before the # is skipped in the filename, then the next part of the filename must
-    match the SimpleDataFormat string, then it ignores any trailing text. For example: </p>
+    match the SimpleDateFormat string, then it ignores any trailing text. For example: </p>
 <pre>      Filename: CG2006158_120000h_usfc.nc 
 DateFormatMark: CG#yyyyDDD_HHmmss</pre>
 <p>The net effect is to add a coordinate variable, whose values are ISO 8601 formatted date/time Strings, with a

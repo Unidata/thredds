@@ -28,7 +28,7 @@ dl {margin: 10px 5px 5px 15px;)
   <p>where:</p>
   <ol>
     <li> <strong>regularize</strong>: If true, then the runs for a given  hour (from 0Z) are assumed to have the same forecast time coordinates. For example, if you have 4 model runs per day (eg 0, 6, 12, 18Z) and many days of model runs, then all the 6Z runs for all days will have the same time coordiantes, etc. This &quot;regularizes&quot;  time coordinates, and is useful when there may be missing forecast times, which may result in creating a new time coordinate. This obviates the need for the FMRC definition files which previously were used on motherlode  for models in the IDD feed. </li>
-    <li><a name="datasetTypes" id="datasetTypes"></a>: list the dataset types that are  exposed in the TDS catalog. The possible values are:
+    <li><strong>datasetTypes</strong>: list the dataset types that are  exposed in the TDS catalog. The possible values are:
       <ul>
           <li><em>TwoD</em>: dataset with two time dimensions (run time and forecast time), which contains all the data in the collection.</li>
         <li><em>Best</em>: dataset using the latest model data available for each possible forecast hour.</li>

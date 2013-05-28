@@ -81,7 +81,7 @@ dl {margin: 10px 5px 5px 15px;}
 <ol>
   <li>The CDM can read GRIB parameter tables in several formats:
     <ul>
-      <li><strong>A file ending in .xml:</strong> an ad-hoc <a href="DefineGrib1Params">XML format</a> we made up.an ad-hoc <a href="DefineGrib1Params">XML format</a> we made up.</li>
+      <li><strong>A file ending in .xml:</strong> an ad-hoc <a href="#DefineGrib1Params">XML format</a> we made up.an ad-hoc <a href="DefineGrib1Params">XML format</a> we made up.</li>
       <li><strong>A file ending in .tab:</strong> the <a href="ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/usertables.txt">format</a> that <a href="http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html">wgrib</a> uses.</li>
       <li><strong>A file starting with &quot;table_2_&quot; or &quot;local_table_2_&quot;</strong> : the format the <a href="http://www.ecmwf.int/products/data/software/grib.html">ECMWF software</a> uses. </li>
     </ul>
@@ -129,7 +129,7 @@ dl {margin: 10px 5px 5px 15px;}
 
  &lt;/gribConfig&gt;
 &lt;/featureCollection&gt;</pre>
-  <h4>Reference a table in  in featureCollection element of the TDS configuration catalog</h4>
+  <h4>Reference a table in featureCollection element of the TDS configuration catalog</h4>
   <p>You can add a table in a featureCollection element of type GRIB  in a TDS configuration catalog:</p>
   <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
   &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
@@ -137,7 +137,7 @@ dl {margin: 10px 5px 5px 15px;}
     <strong>&lt;gribParameterTable&gt;/data/NCEP/grib1/version123.tab&lt;/gribParameterTable&gt;</strong>
   &lt;/gribConfig&gt;
 &lt;/featureCollection&gt;</pre>
-  <h4>Reference a table map in  in featureCollection element of the TDS configuration catalog:</h4>
+  <h4>Reference a table map  in featureCollection element of the TDS configuration catalog:</h4>
   <p>You can add a table lookup in a featureCollection element of type GRIB  in a TDS configuration catalog:</p>
   <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
   &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
