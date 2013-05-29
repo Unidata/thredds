@@ -3,8 +3,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Collection Specification String</title>
-</head>
+<title>Collection Specification String</title></head>
 <style type="text/css">
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
@@ -63,6 +62,9 @@ Make sure that the name ends with &quot;grib1&quot;:
 </ul>
 
   <li>The <strong>date extractor</strong> can only be used on the filename in a collection specification string. If the date is part of  a directory name, use the more general <strong>dateFormatMark</strong> on the <strong><a href="FeatureCollections.html#collection">collection</a></strong> element.</li>
+  <li>The <strong>date extractor</strong> element cannot be used after the regular expression. So <strong>GFS_Alaska_191km_#yyyyMMdd_HHmm#.*grib</strong>$ is ok but <strong>GFS.*km#yyyyMMdd_HHmm#grib$</strong>. This is because the . Use the more general <strong>dateFormatMark</strong>:
+    <pre>&lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/<strong>GFS.*km.*grib$&quot;</strong> dateFormatMark=&quot;<strong>yyyyMMdd_HHmm#.grib#$</strong>&quot; /&gt;</pre>
+  </li>
 </ol>
 <h3>Resources for Regular Expressions:</h3>
 <ul>

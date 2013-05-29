@@ -44,22 +44,30 @@
 </ul>
 <h2>Caching</h2>
 <ul>
-  <li><a href="#compressed">We use compressed netcdf files and the very first access to them are quite slow...</a></li>
+  <li><a href="#compressed">We use compressed netcdf files and the very first access to them are quite slow.</a></li>
 </ul>
 <h2>TDS Install Errors</h2>
 <ul>
   <li><a href="#contentCreate">ERROR - TdsContext.init(): Content directory does not exist and could not be created</a></li>
   <li><a href="#rh5SymLinksAndContent">Why does the TDS fail to deploy in the Tomcat provided with RedHat 5 or 6?</a></li>
-  <li><a href="#listenerStart">SEVERE: Error listenerStart</a></li>
-  <li><a href="#log4jAppender">What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot;?</a></li>
+  <li>What does this error mean:  
+    <ul>
+      <li><a href="#listenerStart">SEVERE: Error listenerStart</a>
+      </li>
+    </ul>
+  </li>
+  <ul>
+    <li><a href="#log4jAppender">log4j:ERROR Attempted to append to closed appender named [foobar]</a></li>
+    <li><a href="#log4jAppender">Couldn't flush system prefs: java.util.prefs.BackingStoreException: /etc/.java/.systemPrefs/org create failed</a></li>
+  </ul>
 </ul>
 <h2>Tomcat</h2>
 <ul>
   <li><a href="#permGenOutOfMemoryError">I'm getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></li>
   <li><a href="#shutdownUnstoppedThreads">During shutdown I'm getting messages about threads (ThreadLocal) having to be shut down to prevent memory leaks. Whats up?</a></li>
   <li><a href="#whoIsAccessing">Who is accessing my server?</a></li>
-  <li><a href="#controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></li>
   <li><a href="#preventAccess">How can I prevent someone from accessing my server?</a></li>
+  <li><a href="#controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></li>
   <li><a href="#removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></li>
   <li><a href="#howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></li>
 </ul>
@@ -74,7 +82,7 @@
     <ol>
       <li>Stop the tomcat server. </li>
       <li>Install the latest release if needed.</li>
-      <li>Remove/copy all files from <em>{tomcat}/logs </em>and<em> {tomcat}/content/thredds/logs</em></li>
+      <li>Remove all files from <em>{tomcat}/logs </em>and<em> {tomcat}/content/thredds/logs</em></li>
       <li>Restart the server</li>
       <li>Make the problem happen</li>
       <li>Zip up everything in  <em>{tomcat}/logs</em> and      <em>{tomcat}/content/thredds/logs</em>.</li>
@@ -164,9 +172,9 @@ and here:<p>
 
 <blockquote>
   <p>There is currently no per-client resource throttle, unfortunately, but we are aware
-    of the eventual need for that. Any given request is single-threaded, so cant hog too
+    of the  need for that. Any given request is single-threaded, so can't hog too
     many resources. One can limit the size of opendap responses, which tends to be the
-    main problem on our server anyway. See the
+    main problem on some servers. See the
     <a href="./reference/ThreddsConfigXMLFile.html#opendap">OPeNDAP section</a>
     of the threddsConfig.xml page for details.  </p>
 </blockquote>
@@ -176,7 +184,7 @@ and here:<p>
 <h4><a name="tooManyFilesOpen"></a>
   Q: Can aggregations of many files cause "too many files open" problems?</h4>
 <blockquote>
-  <p>Aggregations only open one file at a time, and then close it., so this wont cause
+  <p>Aggregations only open one file at a time, and then close it, so this can't cause
     "too many file" problems.</p>
   <p>If you have "too many open files" errors, then either theres a file leak (which we
     would like to know about), or you have your file cache limit set too high relative
@@ -242,7 +250,7 @@ mkdir javaUtilPrefs/.systemPrefs
       ("Preferences storage placed unavailable to non-root users")</li>
     <li>"<a href="http://allaboutbalance.com/articles/disableprefs/">Disabling Sun's Java 1.4.x Preferences Subsystem</a>"</li>
   </ul>
-  <p>We have this TDS issue in our bug tracking system and plan to address it in TDS 4.3.</p>
+  <p>We have this TDS issue in our bug tracking system and plan to address it.</p>
 </blockquote>
 
 <hr width="50%" align="left">
@@ -267,7 +275,7 @@ mkdir javaUtilPrefs/.systemPrefs
 <h4><a name="JoinExisting"></a>Q: I have modified my configuration of a JoinExisting Aggregation dataset, but nothing has changed.</h4>
 <blockquote>
   <p>The files and coordinates in a JoinExisting Aggregations are cached, and   in some circumstances
-    wont get updated. The default location for the   cache is <strong>${tomcat_home}/content/thredds/cacheAged/</strong>
+    won't get updated. The default location for the   cache is <strong>${tomcat_home}/content/thredds/cache/agg/</strong>
     unless you change it in the <a href="reference/ThreddsConfigXMLFile.html#AggregationCache">threddsConfig.xml</a>
     file. Go to that directory, there will be files with the name of the cached dataset(s). Delete
     the file for the dataset that needs updating and restart Tomcat.  </p>
@@ -302,7 +310,7 @@ mkdir javaUtilPrefs/.systemPrefs
   read the configuration catalogs? What gets cached? Does it have a way to know a referenced
   catalog is unchanged? When do referenced catalogs get scanned?</strong></p>
 <blockquote>
-  <p> The TDS reads in all the config catalogs at startup. It caches   all of them, and uses the "expires" attribute on the catalog to decide   if/when it needs to reread a catalog.&nbsp; It must read all catalogs,   including catalogRefs, because it has to know what the possible dataset   URLs are, and there is no contract that a client has to read a catalog   first. </p>
+  <p> The TDS reads in all the config catalogs at startup. It caches   all of them, and uses the "expires" attribute on the catalog to decide   if/when it needs to re-read a catalog.&nbsp; It must read all catalogs,   including catalogRefs, because it has to know what the possible dataset   URLs are, and there is no contract that a client has to read a catalog   before accessing the dataset. </p>
 </blockquote>
 
 <hr width="50%" align="left">
@@ -322,8 +330,8 @@ mkdir javaUtilPrefs/.systemPrefs
   <p>You can find the <code>catalina-ant.jar</code> file in the <code>lib/</code> directory of a
     Tomcat distribution.</p>
   <p>For TDS 4.2.6 and above, you should not see this problem as the <code>build.xml</code> file
-    directly references a copy of the <code>catalina-ant.jar</code> file.
-  </p>
+    directly references a copy of the <code>catalina-ant.jar</code> file.  </p>
+  <p>For TDS 4.3 and above, building with ant  is no longer supported. <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/SourceCodeBuild.html">Build with maven</a> instead.</p>
 </blockquote>
 
 <hr width="100%">
@@ -539,7 +547,7 @@ deny="18\.83\.0\.150,128\.100\.34\.99,128\.117\.140\..*"
   <h4>Q: <a name="removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></h4>
   <blockquote>
     <p>Its
-recommendded to remove autodetection of changes while Tomcat is
+recommended to remove autodetection of changes while Tomcat is
 running, for performance reasons. In a production environment, its
 better to explicitly redeploy the application: </p>
     <pre>   &lt;Host name="localhost" appBase="webapps" unpackWARs="true" <strong>autoDeploy="false"</strong>
@@ -568,7 +576,7 @@ better to explicitly redeploy the application: </p>
 <hr>
 <address>
 <img src="../images/thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated May 2011.
+  This document is maintained by Unidata and was last updated May 2013.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body>

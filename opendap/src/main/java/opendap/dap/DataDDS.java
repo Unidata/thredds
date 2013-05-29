@@ -126,8 +126,11 @@ public class DataDDS extends DDS {
         for (Enumeration e = getVariables(); e.hasMoreElements();) {
             if (statusUI != null && statusUI.userCancelled()) throw new DataReadException("User cancelled");
             ClientIO bt = (ClientIO) e.nextElement();
-          
-            //LogStream.out.printf("Deserializing: %s (%s) start = %s %n", ((BaseType)bt).getTypeName(), ((BaseType)bt).getName(), counter);
+
+          /* if (true) {
+            BaseType btt = (BaseType) bt;
+            System.out.printf("Deserializing: %s (%s) %n", btt.getEncodedName(), ((BaseType) bt).getTypeName());
+          } */
             bt.deserialize(dataIS, ver, statusUI);
         }
         //LogStream.out.printf("Deserializing: total size = %s %n", counter);

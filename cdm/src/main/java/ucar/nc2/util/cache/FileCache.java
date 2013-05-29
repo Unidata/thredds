@@ -356,20 +356,19 @@ public class FileCache {
 
      synchronized (wantCacheElem) { // synch in order to traverse the list
        for (CacheElement.CacheFile want : wantCacheElem.list) {
-          want.remove();
           files.remove(want.ncfile);
-          want.ncfile.setFileCache(null);
+          want.ncfile.setFileCache(null); // unhook the caching
           try {
-            want.ncfile.close();
+            want.ncfile.close();  // really close the file
             log.debug("close "+want.ncfile.getLocation());
           } catch (IOException e) {
             log.error("close failed on "+want.ncfile.getLocation(), e);
           }
           want.ncfile = null;
        }
+       wantCacheElem.list.clear();
      }
     cache.remove(hashKey);
-
    }
 
   /**
@@ -648,7 +647,7 @@ public class FileCache {
   // not private for testing
   class CacheElement {
     @GuardedBy("this")
-    List<CacheFile> list = new LinkedList<CacheFile>(); // may have multiple copies of the same file opened
+    final List<CacheFile> list = new LinkedList<CacheFile>(); // may have multiple copies of the same file opened
     final Object hashKey;
 
     CacheElement(FileCacheable ncfile, Object hashKey) {

@@ -33,22 +33,19 @@
 
 package ucar.nc2.ui;
 
+import thredds.inventory.DateExtractorFromName;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.Misc;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -183,12 +180,52 @@ public class FeatureCollectionTable  extends JPanel {
   }
 
   public boolean setCollection(String spec) throws Exception {
+    spec = spec.trim();
     Formatter f = new Formatter();
-    f.format("spec='%s'%n", spec);
-    dcm = scanCollection(spec, f) ;
+
+    if (spec.startsWith("<collection ")) {
+      dcm = setCollectionElement(spec, f);
+    } else {
+      f.format("spec='%s'%n", spec);
+      dcm = scanCollection(spec, f) ;
+    }
     showCollection(f);
     dumpTA.setText(f.toString());
     return dcm != null;
+  }
+
+  private final String SPEC = "spec='";
+  private final String DFM = "dateFormatMark='";
+  private MFileCollectionManager setCollectionElement(String elem, Formatter f) throws Exception {
+    String spec = null;
+    int pos1 = elem.indexOf(SPEC);
+    if (pos1 > 0) {
+      int pos2 = elem.indexOf("'", pos1+SPEC.length());
+      if (pos2 > 0) {
+        spec = elem.substring(pos1+SPEC.length(), pos2);
+      }
+    }
+    if (spec == null) {
+      f.format("want <collection spec='spec' [dateFormatMark='dfm'] ... %n");
+      return null;
+    }
+    f.format("spec='%s' %n", spec);
+
+    String dfm = null;
+    pos1 = elem.indexOf(DFM);
+    if (pos1 > 0) {
+      int pos2 = elem.indexOf("'", pos1+DFM.length());
+      if (pos2 > 0) {
+        dfm = elem.substring(pos1+DFM.length(), pos2);
+      }
+    }
+
+    dcm = scanCollection(spec, f);
+    if (dfm != null) {
+      dcm.setDateExtractor(new DateExtractorFromName(dfm, false));
+      f.format("dateFormatMark='%s' %n", dfm);
+    }
+    return dcm;
   }
 
   public void showCollection(Formatter f) throws Exception {

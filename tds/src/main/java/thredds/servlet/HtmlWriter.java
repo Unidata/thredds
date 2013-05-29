@@ -341,8 +341,6 @@ public class HtmlWriter implements InitializingBean {
 
     sb.append( this.tdsContext.getWebappName() )
             .append( " [Version " ).append( this.tdsContext.getWebappVersion() );
-    if ( this.tdsContext.getWebappVersionBuildDate() != null )
-      sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
     sb.append( "] <a href='" )
             .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
             .append( "'> Documentation</a>" );
@@ -354,7 +352,7 @@ public class HtmlWriter implements InitializingBean {
   {
     sb.append( "<h3>" )
             .append( this.tdsContext.getWebappName() )
-            .append( " [Version " ).append( this.tdsContext.getWebappVersion() );
+            .append( " [Version " ).append( this.tdsContext.getVersionInfo() );
     if ( this.tdsContext.getWebappVersionBuildDate() != null )
       sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
     sb.append( "] <a href='" )

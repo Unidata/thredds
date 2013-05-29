@@ -337,16 +337,13 @@ public final class TdsContext implements ServletContextAware, InitializingBean {
     // LOOK Remove log4j init JC 6/13/2012
     // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
-    logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: ");
-    logServerStartup.info( "TdsContext.init()  intializating logging in " + logDir.getPath() );
-    
+    logServerStartup.info( "TdsConfigContextListener.contextInitialized(): version= "+getVersionInfo());
+    logServerStartup.info( "TdsContext.init() intialized logging in " + logDir.getPath() );
 
     // read in persistent user-defined params from threddsConfig.xml
     File tdsConfigFile = this.contentDirSource.getFile( this.getTdsConfigFileName() );
     String tdsConfigFilename = tdsConfigFile != null ? tdsConfigFile.getPath() : "";
     ThreddsConfig.init( tdsConfigFilename );
-
-
 
     this.publicContentDirectory = new File( this.contentDirectory, "public");
     if ( ! publicContentDirectory.exists())
@@ -455,7 +452,17 @@ public final class TdsContext implements ServletContextAware, InitializingBean {
   {
     return this.webappVersionBuildDate;
   }
-  
+
+  public String getVersionInfo() {
+    StringBuilder sb = new StringBuilder();
+    sb.append( getWebappVersion());
+    if (getWebappVersionBuildDate() != null) {
+      sb.append( " - ");
+      sb.append( getWebappVersionBuildDate());
+    }
+    return sb.toString();
+  }
+
   /**
    * Return the web apps root directory (i.e., getRealPath( "/")).
    *

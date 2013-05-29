@@ -81,15 +81,14 @@
   </appender>
 
   <!-- special log for old grib processing -->
-  <appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
+  <!-- appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${tds.log.dir}/models.log"/>
-    <!-- param name="File" value="logs/thredds/models.log"/-->
     <param name="MaxFileSize" value="5MB"/>
     <param name="MaxBackupIndex" value="5"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
     </layout>
-  </appender>
+  </appender -->
 
   <!-- Separate log for LogStream -->
   <appender name="logcdm" class="org.apache.log4j.DailyRollingFileAppender">
@@ -156,7 +155,7 @@
   </logger>
 
   <!-- old grib debugging -->
-  <logger name="ucar.nc2.iosp.grid" additivity="false">
+  <!-- logger name="ucar.nc2.iosp.grid" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="modelLog"/>
   </logger>
@@ -174,7 +173,7 @@
   <logger name="ucar.grid" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="modelLog"/>
-  </logger>
+  </logger -->
 
   <!-- featureCollection debugging -->
   <logger name="thredds.inventory.MFileCollectionManager" additivity="false">
