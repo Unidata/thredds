@@ -377,7 +377,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
         map.put(mfile.getPath(), mfile);
         count++;
       }
-      logger.info("{} : was scanned nfiles= {} ", collectionName, count);
+      logger.debug("{} : was scanned nfiles= {} ", collectionName, count);
     }
 
   }
@@ -568,7 +568,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
         map.put(mfile.getPath(), mfile);
         count++;
       }
-      logger.info("{} : was scanned nfiles= {} ", collectionName, count);
+      logger.debug("{} : was scanned nfiles= {} ", collectionName, count);
     }
 
   }

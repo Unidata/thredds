@@ -127,6 +127,11 @@ public class CalendarPeriod {
     this.field = field;
   }
 
+  /**
+   * Multiply the period by an integer
+   * @param value multiply by this
+   * @return new period
+   */
   public CalendarPeriod multiply(int value) {
     return new CalendarPeriod(this.value * value, this.field);
   }
@@ -139,6 +144,13 @@ public class CalendarPeriod {
     return field;
   }
 
+  /**
+   * Subtract two dates, return difference in units of this period.
+   * If not even, will round down and log a warning
+   * @param start start date
+   * @param end   end date
+   * @return  difference in units of this period
+   */
   public int subtract(CalendarDate start, CalendarDate end) {
     long diff = end.getDifferenceInMsecs(start);
     int thislen = millisecs();

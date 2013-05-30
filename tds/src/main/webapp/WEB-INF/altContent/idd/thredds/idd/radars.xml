@@ -39,6 +39,7 @@
 
     <datasetScan name="NEXRAD Level III Radar" collectionType="TimeSeries" harvest="true" ID="NWS/NEXRAD3"
                  path="nexrad/level3" location="/data/ldm/pub/native/radar/level3/">
+
       <documentation type="summary">The Level III data feed provides roughly 20 radar products sent every 5-10 minutes
         from 154 sites over NOAAPORT broadcast. These "derived" products include base reflectivity and velocity,
         composite reflectivity, precipitation estimates, echo tops and VAD winds
@@ -405,59 +406,6 @@
         <serviceName>grids</serviceName>
       </metadata>
 
-      <datasetScan name="NWS NEXRAD Composite VIP 10 km" collectionType="TimeSeries" harvest="true"
-                   ID="NWS/NEXRAD/NationalComposite-10km" path="nexrad/composite/nws"
-                   location="/data/ldm/pub/native/radar/10km_mosaic/">
-        <variables vocabulary="DIF"/>
-        <metadata inherited="true">
-          <dataFormat>GRIB-1</dataFormat>
-          <documentation type="summary">10 km mosaic of NEXRAD Radar VIP. Contours of echo reflectivity,
-            also known as "VIP levels" (for Video Integrator and Processor). Generated every 30 minutes
-            by NWS, covers continental US.
-          </documentation>
-          <creator>
-            <name vocabulary="DIF">DOC/NOAA/NWS</name>
-            <contact url="http://www.roc.noaa.gov/" email="http://www.roc.noaa.gov/Feedback/"/>
-          </creator>
-          <geospatialCoverage>
-            <northsouth>
-              <start>23.0132</start>
-              <size>24.29315</size>
-              <units>degrees_north</units>
-            </northsouth>
-            <eastwest>
-              <start>-120.02283</start>
-              <size>56.51233</size>
-              <units>degrees_east</units>
-            </eastwest>
-            <updown>
-              <start>0.0</start>
-              <size>0.0</size>
-              <units>km</units>
-            </updown>
-          </geospatialCoverage>
-          <timeCoverage>
-            <end>present</end>
-            <duration>7 days</duration>
-          </timeCoverage>
-          <variables vocabulary="GRIB-1">
-            <variable name="Radar_spectra_1" vocabulary_name="21" units="non-dim">Radar spectra 1 @ surface</variable>
-          </variables>
-        </metadata>
-        <filter>
-          <include wildcard="RADAR*.grib1" atomic="true" collection="false"/>
-          <exclude wildcard=".*" atomic="false" collection="true"/>
-        </filter>
-        <addID/>
-        <sort>
-          <lexigraphicByName increasing="false"/>
-        </sort>
-        <addDatasetSize/>
-        <addTimeCoverage
-            datasetNameMatchPattern="RADAR_10km_mosaic_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib1"
-            startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="30 minutes"/>
-      </datasetScan>
-
       <datasetScan name="Unidata NEXRAD Composites (GINI)" collectionType="TimeSeries" harvest="true"
                    ID="Unidata/NEXRAD/NationalComposite/GINI" path="nexrad/composite/gini"
                    location="/data/ldm/pub/native/radar/composite/gini/">
@@ -519,7 +467,42 @@
                          startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="5 minutes"/>
       </datasetScan>
 
-      <dataset name="Unidata NEXRAD Composite Reflectivity (GRIB2)" harvest="true" ID="Unidata/NEXRAD/NationalComposite/GRIB2">
+      <featureCollection name="NWS NEXRAD Composite VIP 10 km" featureType="GRIB" harvest="true"
+                         path="grib/nexrad/composite/nws">
+
+        <metadata inherited="true">
+          <dataFormat>GRIB-1</dataFormat>
+          <documentation type="summary">10 km mosaic of NEXRAD Radar VIP. Contours of echo reflectivity,
+            also known as "VIP levels" (for Video Integrator and Processor). Generated every 30 minutes
+            by NWS, covers continental US.
+          </documentation>
+          <creator>
+            <name vocabulary="DIF">DOC/NOAA/NWS</name>
+            <contact url="http://www.roc.noaa.gov/" email="http://www.roc.noaa.gov/Feedback/"/>
+          </creator>
+        </metadata>
+
+        <collection name="NEXRAD_NWS_Reflectivity"
+                    spec="/data/ldm/pub/native/radar/10km_mosaic/**/.*grib1$"
+                    dateFormatMark="#RADAR_10km_mosaic_#yyyyMMdd_HHmm"
+                    timePartition="1 day"
+                    olderThan="5 min"/>
+
+        <update startup="nocheck" trigger="allow"/>
+        <tdm startup="true" rescan="0 10,25,40,55 * * * ? *" trigger="allow"/>
+
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <filesSort>
+            <lexigraphicByName increasing="false"/>
+          </filesSort>
+        </gribConfig>
+
+      </featureCollection>
+
+
+      <featureCollection name="Unidata NEXRAD Composite Reflectivity" featureType="GRIB" harvest="true"
+                         path="grib/nexrad/composite/unidata">
+
         <metadata inherited="true">
           <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">NEXRAD Radar National Composites of Level 3 Base Reflectivity. 1 km resolution.
@@ -531,30 +514,22 @@
           </creator>
         </metadata>
 
-        <featureCollection name="NEXRAD_UNIDATA_Reflectivity" featureType="GRIB" harvest="true"
-                           path="grib/nexrad/composite/unidata">
-          <collection spec="/data/ldm/pub/native/radar/composite/grib2/N0R/**/.*grib2$"
-                      dateFormatMark="#/N0R/#yyyyMMdd"
-                      timePartition="directory"
-                      olderThan="5 min"/>
-          <!-- tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/-->
-          <tdm startup="false" rescan="0 10,25,40,55 * * * ? *" trigger="allow"/>
+        <collection name="NEXRAD_Unidata_Reflectivity"
+                    spec="/data/ldm/pub/native/radar/composite/grib2/N0R/**/.*grib2$"
+                    dateFormatMark="#Level3_Composite_N0R_#yyyyMMdd_HHmm"
+                    timePartition="1 day"
+                    olderThan="5 min"/>
 
-        </featureCollection>
+        <update startup="nocheck" trigger="allow"/>
+        <tdm startup="true" rescan="0 10,25,40,55 * * * ? *" trigger="allow"/>
 
-        <datasetScan name="Access to individual files " ID="NWS/NEXRAD/NationalComposite/Unidata/1km/files"
-                     path="nexrad/composite/1km/files" location="/data/ldm/pub/native/radar/composite/grib2/">
-          <filter>
-            <include wildcard="Level3*.grib2" atomic="true" collection="false"/>
-            <exclude wildcard=".*" atomic="false" collection="true"/>
-          </filter>
-          <addID/>
-          <sort>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <filesSort>
             <lexigraphicByName increasing="false"/>
-          </sort>
-          <addDatasetSize/>
-        </datasetScan>
-      </dataset>
+          </filesSort>
+        </gribConfig>
+
+      </featureCollection>
 
     </dataset>
 

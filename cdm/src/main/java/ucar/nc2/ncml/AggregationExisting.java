@@ -256,8 +256,8 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     FileChannel channel = null;
     try {
-      if (!cacheFile.exists()) {
-        File dir = cacheFile.getParentFile();
+      File dir = cacheFile.getParentFile();
+      if (!dir.exists()) {
         if (!dir.mkdirs())
           logger.error("Cant make cache directory= "+cacheFile);
       }

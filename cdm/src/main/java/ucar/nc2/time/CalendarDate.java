@@ -296,6 +296,28 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   /**
+   * truncate the CalendarDate, by zeroing all the fields that are less than the field.
+   * So 2013-03-01T19:30 becomes 2013-03-01T00:00 if the field is "day"
+   * @param fld set to 0 all fields less than this one
+   * @return truncated result
+   */
+  public CalendarDate truncate(CalendarPeriod.Field fld) {
+    switch (fld) {
+      case Minute:
+        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), dateTime.getHourOfDay(), dateTime.getMinuteOfHour(), 0);
+      case Hour:
+        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), dateTime.getHourOfDay(), 0, 0);
+      case Day:
+        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), 0, 0, 0);
+      case Month:
+        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), 0, 0, 0, 0);
+      case Year:
+        return CalendarDate.of(cal, dateTime.getYear(), 0, 0, 0, 0, 0);
+    }
+    return this;
+  }
+
+  /**
    * Get the equivilent java.util.Date
    * @return the equivalent Date
    * @deprecated does not handle non-standard Calendars

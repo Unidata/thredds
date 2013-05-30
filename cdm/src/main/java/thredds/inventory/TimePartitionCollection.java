@@ -51,7 +51,7 @@ import java.util.*;
  * @since 4/16/11
  */
 public class TimePartitionCollection extends MFileCollectionManager {
-  static private enum Type {setfromExistingIndices, directory, days}
+  static private enum Type {setfromExistingIndices, directory, timePeriod}
 
   static public TimePartitionCollection factory(FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
     if (config.timePartition == null)
@@ -89,7 +89,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
     if (config.timePartition.equalsIgnoreCase("directory"))
       result = makePartitionsFromSubdirs();
     else
-      result = makePartitionsByDays();
+      result = makePartitionsByPeriod();
     //npartitions = result.size();
     return result;
   }
@@ -158,6 +158,7 @@ public class TimePartitionCollection extends MFileCollectionManager {
     return result;
   } */
 
+  // LOOK : not working - something about date Extractor - must work on directory name ??
   private List<CollectionManager> makePartitionsFromSubdirs() throws IOException {
     this.type = Type.directory;
     MController controller = MFileCollectionManager.getController(); // make sure loaded
@@ -248,8 +249,8 @@ public class TimePartitionCollection extends MFileCollectionManager {
     return result;
   } */
 
-  private List<CollectionManager> makePartitionsByDays() throws IOException {
-    this.type = Type.days;
+  private List<CollectionManager> makePartitionsByPeriod() throws IOException {
+    this.type = Type.timePeriod;
 
     List<DatedMFile> files = new ArrayList<DatedMFile>();
     for (MFile mfile : getFiles()) {
@@ -265,10 +266,14 @@ public class TimePartitionCollection extends MFileCollectionManager {
     List<CollectionManager> result = new ArrayList<CollectionManager>();
     TimePartitionCollectionManager curr = null;
     for (DatedMFile dmf : files) {
-      if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {  // LOOK should be on year boundaries
+      if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
+        CalendarPeriod period = CalendarPeriod.of(config.timePartition);
+        CalendarDate start = dmf.cdate.truncate(period.getField()); // start on a boundary
+        CalendarDate end = start.add( period);
         String name = collectionName + "-"+ cdf.toString(dmf.cdate);
-        // String name = cdf.toString(dmf.cdate);
-        curr = new TimePartitionCollectionManager(name, dmf, getRoot(), this.auxInfo, this.logger);
+
+        curr = new TimePartitionCollectionManager(name, start, end, getRoot(), this.auxInfo, this.logger);
+
         result.add(curr);
       }
       curr.add(dmf);
@@ -309,15 +314,15 @@ public class TimePartitionCollection extends MFileCollectionManager {
 
   // a partition of a collection, based on time intervals
   private class TimePartitionCollectionManager extends CollectionManagerAbstract {
-    String root;
-    CalendarDate startPartition, endPartition;
-    CalendarPeriod period = CalendarPeriod.of(config.timePartition);
+    final String root;
+    final CalendarDate startPartition, endPartition;
     List<MFile> files;
 
-    TimePartitionCollectionManager(String name, DatedMFile dmf, String root, Map<String, Object> auxInfo, org.slf4j.Logger logger) {
+    TimePartitionCollectionManager(String name, CalendarDate start, CalendarDate end, String root, Map<String, Object> auxInfo, org.slf4j.Logger logger) {
       super(name, logger);
-      this.startPartition = dmf.cdate;
-      this.endPartition = dmf.cdate.add( period);
+
+      this.startPartition = start;
+      this.endPartition = end;
       this.files = new ArrayList<MFile>();
       this.root = root;
       this.auxInfo = auxInfo;
