@@ -98,24 +98,35 @@ where:
    dateFormatMark=&quot;#DGEX_Alaska_12km_#yyyyMMdd_HHmm&quot;
    olderThan=&quot;5 min&quot;/&gt;
   <strong>&lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;</strong>
-  <strong>&lt;update startup=&quot;nocheck&quot; /&gt;</strong>
+  <strong>&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot; /&gt;</strong>
 &lt;/featureCollection&gt;</pre>
 
 <ul>
-  <li><strong>startup=&quot;true&quot;</strong> tells the TDM to index this dataset upon TDM startup. </li>
-  <li><strong>rescan=&quot;0 0/15 * * * ? *&quot; </strong>rescan directories every 15 minutes.</li>
-  <li><strong>trigger=&quot;allow&quot;</strong> enables the TDM to send a message to the TDS when the dataset index was recreated. When the TDS gets a trigger, it rereads the index for that dataset.</li>
-  <li>To enable triggers, TDS needs this  in <strong>tomcat-users.xml:</strong>
-    <pre>&lt;role rolename=&quot;tdsTrigger&quot; description=&quot;can trigger feature collections, eg from tdm&quot;/&gt;
-&lt;user username=&quot;tdm&quot; password=&quot;...&quot; roles=&quot;tdsTrigger&quot;/&gt;<br /></pre>
-  </li>
-  <li>set username and password on tdm command line with <strong>-cred:username:password</strong>
-    (username must match 
-      tomcat-users.xml)
-      <pre>/opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -catalog &lt;cat&gt; <strong>-cred tdm:password<strong>
+  <li><strong>&lt;tdm&gt; </strong>element for the TDM
+
+    <ul>
+      <li><strong>startup=&quot;true&quot;</strong> tells the TDM to index this dataset upon TDM startup. </li>
+      <li><strong>rescan=&quot;0 0/15 * * * ? *&quot; </strong>rescan directories every 15 minutes.</li>
+      <li><strong>trigger=&quot;allow&quot;</strong> enables the TDM to send a message to the TDS when the dataset index was recreated. When the TDS gets a trigger, it rereads the index for that dataset.</li>
+      <li>To enable triggers, TDS needs this  in <strong>tomcat-users.xml:</strong>
+        <pre>&lt;role rolename=&quot;tdsTrigger&quot; description=&quot;can trigger feature collections, eg from tdm&quot;/&gt;
+&lt;user username=&quot;tdm&quot; password=&quot;...&quot; roles=&quot;tdsTrigger&quot;/&gt;<br />
+      </pre>
+      </li>
+      <li>set username and password on tdm command line with <strong>-cred:username:password</strong>
+        (username must match 
+        tomcat-users.xml)
+        <pre>/opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -catalog &lt;cat&gt; <strong>-cred tdm:password<strong>
 </strong></strong></pre>
+      </li>
+    </ul>
   </li>
-  <li><strong>&lt;update startup=&quot;nocheck&quot;/&gt;</strong> tells the TDS to read in the featureCollection  when starting up, without checking or scanning the files.</li>
+  <li><strong>&lt;update&gt; </strong>element for the TDS
+    <ul>
+      <li><strong>startup=&quot;nocheck&quot;</strong> tells the TDS to read in the featureCollection  when starting up, without checking or scanning the files.</li>
+      <li><strong> trigger=&quot;allow&quot;</strong> enables the TDS to recieve messages from the TDM as to when the dataset has changed</li>
+    </ul>
+  </li>
 </ul>
 <p>&nbsp;</p>
 <hr width="100%" />

@@ -310,9 +310,9 @@ public class CalendarDate implements Comparable<CalendarDate> {
       case Day:
         return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), 0, 0, 0);
       case Month:
-        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), 0, 0, 0, 0);
+        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), 1, 0, 0, 0);
       case Year:
-        return CalendarDate.of(cal, dateTime.getYear(), 0, 0, 0, 0, 0);
+        return CalendarDate.of(cal, dateTime.getYear(), 1, 1, 0, 0, 0);
     }
     return this;
   }

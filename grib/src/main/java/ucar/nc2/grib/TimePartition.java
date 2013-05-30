@@ -335,6 +335,10 @@ public abstract class TimePartition extends GribCollection {
 
   public List<Partition> getPartitions() {
     if (partitions == null) {
+      if (partitionMap == null) {
+        logger.warn("No partitions found for {}", name);
+        return new ArrayList<Partition>();
+      }
       List<Partition> c = new ArrayList<Partition>(partitionMap.values());
       Collections.sort(c);
       partitions = c;

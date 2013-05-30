@@ -489,6 +489,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     } else {
       Collections.sort(result);
     }
+
     return result;
   }
 
@@ -571,6 +572,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       logger.debug("{} : was scanned nfiles= {} ", collectionName, count);
     }
 
+    if (map.size() == 0) {
+      logger.warn("MFileCollectionManager: No files found for {}", collectionName);
+    }
   }
 
   @Override
