@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<unidataUrlMap oldTds="4.2.20120515.2217" newTds="4.3.15-SNAPSHOT-20121211.1718">
+<unidataUrlMap oldTds="4.2.20120515.2217" newTds="4.3.17-SNAPSHOT-20130530.1816">
     <urlMap type="files">
-        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Alaska_191km/files/" newUrlPath="grib/NCEP/GFS/Alaska_191km/files/" />
-        <urlPath  oldUrlPath="model/NCEP/GFS/Alaska_191km/" newUrlPath="grib/NCEP/GFS/Alaska_191km/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/CONUS_80km/files/" newUrlPath="grib/NCEP/GFS/CONUS_80km/files/" />
         <urlPath  oldUrlPath="model/NCEP/GFS/CONUS_80km/" newUrlPath="grib/NCEP/GFS/CONUS_80km/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/CONUS_95km/files/" newUrlPath="grib/NCEP/GFS/CONUS_95km/files/" />
         <urlPath  oldUrlPath="model/NCEP/GFS/CONUS_95km/" newUrlPath="grib/NCEP/GFS/CONUS_95km/files/" />
-        <urlPath  oldUrlPath="fmrc/NCEP/GFS/CONUS_191km/files/" newUrlPath="grib/NCEP/GFS/CONUS_191km/files/" />
-        <urlPath  oldUrlPath="model/NCEP/GFS/CONUS_191km/" newUrlPath="grib/NCEP/GFS/CONUS_191km/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Global_0p5deg/files/" newUrlPath="grib/NCEP/GFS/Global_0p5deg/files/" />
         <urlPath  oldUrlPath="model/NCEP/GFS/Global_0p5deg/" newUrlPath="grib/NCEP/GFS/Global_0p5deg/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Global_onedeg/files/" newUrlPath="grib/NCEP/GFS/Global_onedeg/files/" />
         <urlPath  oldUrlPath="model/NCEP/GFS/Global_onedeg/" newUrlPath="grib/NCEP/GFS/Global_onedeg/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Global_2p5deg/files/" newUrlPath="grib/NCEP/GFS/Global_2p5deg/files/" />
         <urlPath  oldUrlPath="model/NCEP/GFS/Global_2p5deg/" newUrlPath="grib/NCEP/GFS/Global_2p5deg/files/" />
-        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Hawaii_160km/files/" newUrlPath="grib/NCEP/GFS/Hawaii_160km/files/" />
-        <urlPath  oldUrlPath="model/NCEP/GFS/Hawaii_160km/" newUrlPath="grib/NCEP/GFS/Hawaii_160km/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/N_Hemisphere_381km/files/" newUrlPath="grib/NCEP/GFS/N_Hemisphere_381km/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Pacific_40km/files/" newUrlPath="grib/NCEP/GFS/Pacific_40km/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Puerto_Rico_0p5deg/files/" newUrlPath="grib/NCEP/GFS/Puerto_Rico_0p5deg/files/" />
-        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Puerto_Rico_191km/files/" newUrlPath="grib/NCEP/GFS/Puerto_Rico_191km/files/" />
-        <urlPath  oldUrlPath="model/NCEP/GFS/Puerto_Rico_191km/" newUrlPath="grib/NCEP/GFS/Puerto_Rico_191km/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/NAM/Alaska_11km/files/" newUrlPath="grib/NCEP/NAM/Alaska_11km/files/" />
         <urlPath  oldUrlPath="model/NCEP/NAM/Alaska_11km/" newUrlPath="grib/NCEP/NAM/Alaska_11km/files/" />
         <urlPath  oldUrlPath="fmrc/NCEP/NAM/Alaska_22km/files/" newUrlPath="grib/NCEP/NAM/Alaska_22km/files/" />
@@ -88,20 +80,33 @@
         <urlPath  oldUrlPath="fmrc/FNMOC/COAMPS/Europe/files/" newUrlPath="grib/FNMOC/COAMPS/Europe/files/" />
         <urlPath  oldUrlPath="NCEP/NDFD/conduit/CONUS_5km/" newUrlPath="grib/NCEP/NDFD/CONUS_5km_conduit/files/" />
         <urlPath  oldUrlPath="NCEP/GEFS/Global_1p0deg_Ensemble/member/" newUrlPath="grib/NCEP/GEFS/Global_1p0deg_Ensemble/members/files/" />
+        <urlPath  oldUrlPath="nexrad/composite/1km/files/N0R/" newUrlPath="grib/nexrad/composite/unidata/files/" />
+        <urlPath  oldUrlPath="nexrad/composite/nws/" newUrlPath="grib/nexrad/composite/nws/files/" />
+        <!-- Datasets that have been removed -->
+        <!-- GFS Alaska 191 removed - see NWS TIN Technical Implementation Notice 13-08 -->
+        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Alaska_191km/files/" newUrlPath="null" />
+        <urlPath  oldUrlPath="model/NCEP/GFS/Alaska_191km/" newUrlPath="null" />
+        <!-- GFS CONUS 191 removed - see NWS TIN Technical Implementation Notice 13-08 -->
+        <urlPath  oldUrlPath="fmrc/NCEP/GFS/CONUS_191km/files/" newUrlPath="null" />
+        <urlPath  oldUrlPath="model/NCEP/GFS/CONUS_191km/" newUrlPath="null" />
+        <!-- GFS Hawaii 160  removed - see NWS TIN Technical Implementation Notice 13-08 -->
+        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Hawaii_160km/files/" newUrlPath="null/" />
+        <urlPath  oldUrlPath="model/NCEP/GFS/Hawaii_160km/" newUrlPath="null" />
+        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Hawaii_160km/files/" newUrlPath="null" />
+        <urlPath  oldUrlPath="model/NCEP/GFS/Hawaii_160km/" newUrlPath="null" />
+        <!-- GFS Puerto Rico 191  removed - see NWS TIN Technical Implementation Notice 13-08 -->
+        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Puerto_Rico_191km/files/" newUrlPath="null"/>
+        <urlPath  oldUrlPath="model/NCEP/GFS/Puerto_Rico_191km/" newUrlPath="null" />
     </urlMap>
     <urlMap type="best">
-        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Alaska_191km/NCEP-GFS-Alaska_191km_best.ncd" newUrlPath="grib/NCEP/GFS/Alaska_191km/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/CONUS_80km/NCEP-GFS-CONUS_80km_best.ncd" newUrlPath="grib/NCEP/GFS/CONUS_80km/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/CONUS_95km/NCEP-GFS-CONUS_95km_best.ncd" newUrlPath="grib/NCEP/GFS/CONUS_95km/best" />
-        <urlPath  oldUrlPath="fmrc/NCEP/GFS/CONUS_191km/NCEP-GFS-CONUS_191km_best.ncd" newUrlPath="grib/NCEP/GFS/CONUS_191km/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd" newUrlPath="grib/NCEP/GFS/Global_0p5deg/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd" newUrlPath="grib/NCEP/GFS/Global_onedeg/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Global_2p5deg/NCEP-GFS-Global_2p5deg_best.ncd" newUrlPath="grib/NCEP/GFS/Global_2p5deg/best" />
-        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Hawaii_160km/NCEP-GFS-Hawaii_160km_best.ncd" newUrlPath="grib/NCEP/GFS/Hawaii_160km/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/N_Hemisphere_381km/NCEP-GFS-N_Hemisphere_381km_best.ncd" newUrlPath="grib/NCEP/GFS/N_Hemisphere_381km/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Pacific_40km/NCEP-GFS-Pacific_40km_best.ncd" newUrlPath="grib/NCEP/GFS/Pacific_40km/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/GFS/Puerto_Rico_0p5deg/NCEP-GFS-Puerto_Rico_0p5deg_best.ncd" newUrlPath="grib/NCEP/GFS/Puerto_Rico_0p5deg/best" />
-        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Puerto_Rico_191km/NCEP-GFS-Puerto_Rico_191km_best.ncd" newUrlPath="grib/NCEP/GFS/Puerto_Rico_191km/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/NAM/Alaska_11km/NCEP-NAM-Alaska_11km_best.ncd" newUrlPath="grib/NCEP/NAM/Alaska_11km/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/NAM/Alaska_22km/NCEP-NAM-Alaska_22km_best.ncd" newUrlPath="grib/NCEP/NAM/Alaska_22km/best" />
         <urlPath  oldUrlPath="fmrc/NCEP/NAM/Alaska_45km/conduit/NCEP-NAM-Alaska_45km-conduit_best.ncd" newUrlPath="grib/NCEP/NAM/Alaska_45km/conduit/best" />
@@ -144,5 +149,14 @@
         <urlPath  oldUrlPath="fmrc/FNMOC/COAMPS/Central_America/FNMOC-COAMPS-Central_America_best.ncd" newUrlPath="grib/FNMOC/COAMPS/Central_America/best" />
         <urlPath  oldUrlPath="fmrc/FNMOC/COAMPS/Eastern_Pacific/FNMOC-COAMPS-Eastern_Pacific_best.ncd" newUrlPath="grib/FNMOC/COAMPS/Eastern_Pacific/best" />
         <urlPath  oldUrlPath="fmrc/FNMOC/COAMPS/Europe/FNMOC-COAMPS-Europe_best.ncd" newUrlPath="grib/FNMOC/COAMPS/Europe/best" />
+        <!-- Datasets that have been removed -->
+        <!-- GFS Alaska 191 removed - see NWS TIN Technical Implementation Notice 13-08 -->
+        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Alaska_191km/NCEP-GFS-Alaska_191km_best.ncd" newUrlPath="null" />
+        <!-- GFS CONUS 191 removed - see NWS TIN Technical Implementation Notice 13-08 -->
+        <urlPath  oldUrlPath="fmrc/NCEP/GFS/CONUS_191km/NCEP-GFS-CONUS_191km_best.ncd" newUrlPath="null" />
+        <!-- GFS Hawaii 160  removed - see NWS TIN Technical Implementation Notice 13-08 -->
+        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Hawaii_160km/NCEP-GFS-Hawaii_160km_best.ncd" newUrlPath="null" />
+        <!-- GFS Puerto Rico 191  removed - see NWS TIN Technical Implementation Notice 13-08 -->
+        <urlPath  oldUrlPath="fmrc/NCEP/GFS/Puerto_Rico_191km/NCEP-GFS-Puerto_Rico_191km_best.ncd" newUrlPath="null" />
     </urlMap>
 </unidataUrlMap>
