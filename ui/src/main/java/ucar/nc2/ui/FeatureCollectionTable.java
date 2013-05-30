@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.DateExtractorFromName;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileCollectionManager;
@@ -186,7 +187,8 @@ public class FeatureCollectionTable  extends JPanel {
     if (spec.startsWith("<collection ")) {
       dcm = setCollectionElement(spec, f);
     } else {
-      f.format("spec='%s'%n", spec);
+      CollectionSpecParser sp = new CollectionSpecParser(spec, f);
+      f.format("spec='%s'%n", sp);
       dcm = scanCollection(spec, f) ;
     }
     showCollection(f);

@@ -200,7 +200,7 @@ public class DateFromString {
       // We have to cut off the dateString, so that it doesnt grab extra characters.
       // ie  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
       String s;
-      if (startIndex + dateFormatString.length() < dateString.length())
+      if (startIndex + dateFormatString.length() <= dateString.length())
         s = dateString.substring( startIndex, startIndex + dateFormatString.length());
       else
         s = dateString;

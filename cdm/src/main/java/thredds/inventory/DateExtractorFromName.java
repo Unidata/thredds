@@ -93,14 +93,15 @@ public class DateExtractorFromName implements DateExtractor {
   }
 
 
-  static public void doit(String name, String dateFormatMark) {
-    DateExtractorFromName de = new DateExtractorFromName(dateFormatMark, false);
+  static public void doit(String name, String dateFormatMark, boolean useName) {
+    DateExtractorFromName de = new DateExtractorFromName(dateFormatMark, useName);
     CalendarDate d = de.getDate(name);
     System.out.printf("%s == %s%n", name , d);
   }
 
   static public void main(String args[]) {
-    doit("/san4/work/jcaron/cfsrr/198507", "#cfsrr/#yyyyMM");
-    doit("/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20111226/Run_1200.grib1", "#Alaska_191km/#yyyyMMdd'/Run_'HHmm");
+    doit("/san4/work/jcaron/cfsrr/198507", "#cfsrr/#yyyyMM",false);
+    doit("/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20111226/Run_1200.grib1", "#Alaska_191km/#yyyyMMdd'/Run_'HHmm",false);
+    doit("pgb.ft06.198407", "pgb.ft06.#yyyyMM", true);   // yyyyMM fails on pgb.ft06.198407 ParseException:Unparseable date: "pgb.ft06.198407"
   }
 }
