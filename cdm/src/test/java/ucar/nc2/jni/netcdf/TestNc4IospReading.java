@@ -58,16 +58,15 @@ public class TestNc4IospReading {
     return v.read(section) ;
   }
 
-  // @Test
-  public void problem() throws IOException {
-    doCompare("Q:\\cdmUnitTest\\formats\\hdf5\\grid_1_3d_xyz_aug.h5", true, false, true);
+  @Test
+  public void testNestedStructure() throws IOException {
+    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/testNestedStructure.nc", true, false, true);
   }
 
-  @Test
+  // @Test
   public void timeRead() throws IOException {
-    //String location = "Q:/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";
-	  String location = "/share/testdata/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";
-    
+    String location = "Q:/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";
+
     NetcdfFile jni = openJni(location);
     Variable v = jni.findVariable("time");
 

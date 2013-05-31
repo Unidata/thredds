@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -81,10 +81,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private String jnaPath;
   static private String libName = "netcdf";
 
-  static private int[] zerostride = new int[0];
-
   static private boolean warn = true;
-  static private final boolean debug = false, debugCompoundAtt = false, debugUserTypes = false, debugWrite = false;
+  static private final boolean debug = true, debugCompoundAtt = false, debugUserTypes = true, debugWrite = false;
 
   // suppress warning messages
   static public void setWarnOff() {
@@ -168,7 +166,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private NetcdfFileWriter.Version version = null;
+  private NetcdfFileWriter.Version version = null;  // can use c library to create these different version files
   private NetcdfFile ncfile = null;
   private int ncid = -1;    // file id
   private int format = 0;       // nc4 or nc3
@@ -267,17 +265,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       IntByReference numgrps = new IntByReference();
       ret = nc4.nc_inq_grps(grpid, numgrps, Pointer.NULL);
       if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-      int[] grids = new int[numgrps.getValue()];
-      ret = nc4.nc_inq_grps(grpid, numgrps, grids);
+      int[] group_ids = new int[numgrps.getValue()];
+      ret = nc4.nc_inq_grps(grpid, numgrps, group_ids);
       if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-      for (int i = 0; i < grids.length; i++) {
+      for (int group_id : group_ids) {
         byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
-        ret = nc4.nc_inq_grpname(grids[i], name);
+        ret = nc4.nc_inq_grpname(group_id, name);
         if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         Group child = new Group(ncfile, g4.g, makeString(name));
         g4.g.addGroup(child);
-        makeGroup(grids[i], new Group4(child, g4));
+        makeGroup(group_id, new Group4(child, g4));
       }
     }
 
@@ -884,7 +882,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       // figure out the datatype
       int typeid = xtypep.getValue();
-      DataType dtype = convertDataType(typeid).dt;
+      //DataType dtype = convertDataType(typeid).dt;
 
       String vname = makeString(name);
       Vinfo vinfo = new Vinfo(grpid, varno, typeid);
@@ -894,12 +892,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       UserType utype = userTypes.get(typeid);
       if (utype != null) {
         vinfo.utype = utype;
-        if (utype.typeClass == Nc4prototypes.NC_VLEN)
+        if (utype.typeClass == Nc4prototypes.NC_VLEN)  // LOOK ??
           dimList = dimList + " *";
       }
 
-      Variable v;
-      if (dtype != DataType.STRUCTURE) {
+      Variable v = makeVariable( g, null, vname, typeid, dimList);
+      /* if (dtype != DataType.STRUCTURE) {
         v = new Variable(ncfile, g, null, vname, dtype, dimList);
 
       } else if (utype != null) {
@@ -914,15 +912,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
       } else {
         throw new IllegalStateException("Dunno what to with " + dtype);
-      }
+      } */
 
       // create the Variable
       ncfile.addVariable(g, v);
       v.setSPobject(vinfo);
-      if (dtype.isEnum()) {
-        EnumTypedef enumTypedef = g.findEnumeration(utype.name);
-        v.setEnumTypedef(enumTypedef);
-      }
 
       if (isUnsigned(typeid))
         v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
@@ -933,8 +927,43 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         v.addAttribute(att);
       }
 
-      if (debug) System.out.printf(" add Variable %s %n", v);
+      if (debug) System.out.printf(" added Variable %s %n", v);
     }
+  }
+
+  private Variable makeVariable(Group g, Structure parent, String vname, int typeid, String dimList) throws IOException {
+    DataType dtype = convertDataType(typeid).dt;
+    UserType utype = userTypes.get(typeid);
+
+    Variable v;
+    if (dtype != DataType.STRUCTURE) {
+      v = new Variable(ncfile, g, parent, vname, dtype, dimList);
+
+    } else if (utype != null) {
+      Structure s = new Structure(ncfile, g, parent, vname);
+      s.setDimensions(dimList);
+      v = s;
+
+      if (utype.flds == null)
+        utype.readFields();
+
+      for (Field f : utype.flds) {
+        s.addMemberVariable( f.makeMemberVariable(g, s));
+      }
+
+    } else {
+      throw new IllegalStateException("Dunno what to with " + dtype);
+    }
+
+    if (isUnsigned(typeid))
+      v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+
+    if (dtype.isEnum()) {
+       EnumTypedef enumTypedef = g.findEnumeration(utype.name);
+       v.setEnumTypedef(enumTypedef);
+     }
+
+    return v;
   }
 
   private String makeDimList(int grpid, int ndimsp, int[] dims) throws IOException {
@@ -1077,9 +1106,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
+  // encapsolate the fields in a compound type
   private class Field {
     int grpid;
-    int typeid;
+    int typeid; // containing structure
     int fldidx;
     String name;
     int offset;
@@ -1092,7 +1122,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     Array data;
 
     // grpid, varid, fldidx, fldname, offsetp, field_typeidp, ndimsp, dim_sizesp
-    Field(int grpid, int typeid, int fldidx, String name, int offset, int fldtypeid, int ndims, int[] dims) {
+    Field(int grpid, int typeid, int fldidx, String name, int offset, int fldtypeid, int ndims, int[] dimz) {
       this.grpid = grpid;
       this.typeid = typeid;
       this.fldidx = fldidx;
@@ -1101,17 +1131,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       this.fldtypeid = fldtypeid;
       this.ndims = ndims;
       this.dims = new int[ndims];
-      System.arraycopy(dims, 0, this.dims, 0, ndims);
+      System.arraycopy(dimz, 0, this.dims, 0, ndims);
 
       ctype = convertDataType(fldtypeid);
-      Section s = new Section(dims);
+      Section s = new Section(dimz);
       //total_size = (int) s.computeSize() * ctype.dt.getSize();
 
       if (isVlen(fldtypeid)) {
-        int[] edims = new int[dims.length + 1];
-        System.arraycopy(edims, 0, dims, 0, dims.length);
-        edims[dims.length] = -1;
-        dims = edims;
+        int[] edims = new int[dimz.length + 1];
+        System.arraycopy(edims, 0, dimz, 0, dimz.length);
+        edims[dimz.length] = -1;
+        this.dims = edims;
       }
     }
 
@@ -1139,7 +1169,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       return sb.toString();
     }
 
-    Variable makeMemberVariable(Group g, Structure parent) {
+    /* Variable makeMemberVariable(Group g, Structure parent) {
       Variable v = new Variable(ncfile, g, parent, name);
       v.setDataType(convertDataType(fldtypeid).dt);
       if (isUnsigned(fldtypeid))
@@ -1156,9 +1186,24 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
       }
       return v;
+    } */
+
+   Variable makeMemberVariable(Group g, Structure parent) throws IOException {
+     Variable v = makeVariable(g, parent, name, fldtypeid, "");
+
+      if (ctype.isVen) {
+        v.setDimensions("*");
+      } else {
+        try {
+          v.setDimensionsAnonymous(dims); // LOOK no shared dimensions ?
+        } catch (InvalidRangeException e) {
+          e.printStackTrace();
+        }
+      }
+      return v;
     }
 
-  }
+   }
 
   private void makeUserTypes(int grpid, Group g) throws IOException {
     // find user types in this group
@@ -1530,22 +1575,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bbuff);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-    StructureMembers sm = new StructureMembers(userType.name);
-    for (Field fld : userType.flds) {
-      StructureMembers.Member m = sm.addMember(fld.name, null, null, fld.ctype.dt, fld.dims);
-      m.setDataParam(fld.offset);
-      if (fld.ctype.isVen)
-        m.setShape(new int[]{-1});
-    }
-    sm.setStructureSize(userType.size);
-
-    /*
-        decodeCompoundData(len, userType, bbuff);
-    ArrayStructureMA asma = new ArrayStructureMA(sm, new int[] {len});
-    for (Field fld : userType.flds) {
-      asma.setMemberArray( fld.name, fld.data);
-    }  */
-
+    StructureMembers sm = createStructureMembers(userType);
     ArrayStructureBB asbb = new ArrayStructureBB(sm, section.getShape(), bbuff, 0);
 
     // find and convert Strings and vlens, put on asbb heap
@@ -1558,6 +1588,26 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return asbb;
   }
 
+  private StructureMembers createStructureMembers(UserType userType) {
+    StructureMembers sm = new StructureMembers(userType.name);
+    for (Field fld : userType.flds) {
+      StructureMembers.Member m = sm.addMember(fld.name, null, null, fld.ctype.dt, fld.dims);
+      m.setDataParam(fld.offset);
+      if (fld.ctype.isVen) {
+        m.setShape(new int[]{-1});
+      }
+
+      if (fld.ctype.dt == DataType.STRUCTURE) {
+        UserType nested_utype = userTypes.get(fld.fldtypeid);
+        StructureMembers nested_sm = createStructureMembers(nested_utype);
+        m.setStructureMembers(nested_sm);
+      }
+    }
+    sm.setStructureSize(userType.size);
+    return sm;
+  }
+
+  // LOOK: handling nested ??
   private void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws java.io.IOException {
     ByteBuffer bb = asbb.getByteBuffer();
     for (StructureMembers.Member m : sm.getMembers()) {
@@ -2397,8 +2447,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public static void main(String args[]) throws Exception {
     Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
 
-    String loc4 = "Q:/cdmUnitTest/formats/netcdf4/files/xma022032.nc";
-    String loc3 = "Q:/cdmUnitTest/formats/netcdf3/example1.nc";
+    String loc4 = "Q:/cdmUnitTest/formats/netcdf4/testNestedStructure.nc";
     NetcdfFile ncfile = iosp.open(loc4);
     System.out.println("" + ncfile);
   }

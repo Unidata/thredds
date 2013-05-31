@@ -383,7 +383,7 @@ public class TestProjections extends TestCase {
       double late = endL.getLatitude();
       double lone = endL.getLongitude();
       assert (Misc.closeEnough(lat, late, 1.0e-4)) : proj.getClass().getName() + " lat failed start= " + startL + " end = " + endL + " diff = " + Misc.howClose(lat, late);
-      assert (Misc.closeEnough(lon, lone, .004)) : proj.getClass().getName() + " lon failed start= " + startL + " end = " + endL + " diff = " + Misc.howClose(lon, lone);
+      assert (Misc.closeEnough(lon, lone, .02)) : proj.getClass().getName() + " lon failed start= " + startL + " end = " + endL + " diff = " + Misc.howClose(lon, lone);
     }
 
     /* ProjectionPointImpl startP = new ProjectionPointImpl();
