@@ -26,7 +26,13 @@ for more information.
     <datasetPath pathSpec="grib/NCEP/*">
       <variables>
         <variable id="Absolute_vorticity_pressure">                            <!-- units: 1/s -->
-          <defaultColorScaleRange>-0.0002 0.0002</defaultColorScaleRange>
+            <defaultColorScaleRange>-0.0002 0.0002</defaultColorScaleRange>
+        </variable>
+        <variable id="Absolute_vorticity_isobaric">                            <!-- units: 1/s -->
+            <defaultColorScaleRange>0.00002 0.00030</defaultColorScaleRange>
+        </variable>
+        <variable id="Albedo_surface_Mixed_intervals_average">                 <!-- units: % -->
+            <defaultColorScaleRange>0.0 100.0</defaultColorScaleRange>
         </variable>
         <variable id="Best_4_layer_Lifted_Index_pressure_difference_layer">    <!-- units: K -->
           <defaultColorScaleRange>-10 40</defaultColorScaleRange>
@@ -67,7 +73,25 @@ for more information.
         <variable id="Pressure_surface">                                       <!-- units: Pa -->
           <defaultColorScaleRange>52000 105000</defaultColorScaleRange>
         </variable>
+        <variable id="Pressure_tropopause">                                       <!-- units: Pa -->
+          <defaultColorScaleRange>20000 40000</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_entire_atmosphere">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_height_above_ground">             <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_highest_tropospheric_freezing">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
         <variable id="Relative_humidity_height_above_ground">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_isobaric">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_sigma">                  <!-- units: % -->
           <defaultColorScaleRange>0 100</defaultColorScaleRange>
         </variable>
         <variable id="Relative_humidity_pressure">                             <!-- units: % -->
@@ -87,6 +111,30 @@ for more information.
         </variable>
         <variable id="Temperature_surface">                                    <!-- units: K -->
           <defaultColorScaleRange>200 310</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_tropopause">                                    <!-- units: K -->
+          <defaultColorScaleRange>170 240</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_boundary_layer_cloud_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_convective_cloud">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_entire_atmosphere_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_high_cloud_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_low_cloud_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_cloud_cover_middle_cloud_Mixed_intervals_Average">           <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Total_ozone_entire_atmosphere">                   <!-- units: DU -->
+          <defaultColorScaleRange>200 500</defaultColorScaleRange>
         </variable>
         <variable id="u-component_of_wind_height_above_ground">                <!-- units: m/s -->
           <defaultColorScaleRange>-75 75</defaultColorScaleRange>
