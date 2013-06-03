@@ -568,9 +568,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto, String dirname) {
     for (int i = 0; i < proto.getPartitionsCount(); i++) {
       GribCollectionProto.Partition pp = proto.getPartitions(i);
-      tp.addPartition(pp.getName(), pp.getFilename(), dirname);
+      tp.addPartition(pp.getName(), pp.getFilename(), pp.getLastModified(), dirname);
     }
-    return  proto.getPartitionsCount() > 0;
+    return proto.getPartitionsCount() > 0;
   }
 
   @Override

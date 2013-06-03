@@ -251,6 +251,15 @@ public abstract class GribCollection implements FileCacheable {
    */
   public void setIndexRaf(RandomAccessFile indexRaf) {
     this.indexRaf = indexRaf;
+    if (indexRaf != null) {
+      if (indexFile == null) {
+        indexFile = new File(indexRaf.getLocation());
+      } /* else if (debug) {
+        File f = new File(indexRaf.getLocation());
+        if (!f.getCanonicalPath().equals().indexFile.getCanonicalPath())
+          logger.warn("indexRaf {} not equal indexFile {}", f.getCanonicalPath(), indexFile.getCanonicalPath());
+      }  */
+    }
   }
 
   /**

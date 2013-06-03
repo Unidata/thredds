@@ -100,6 +100,13 @@ public interface CollectionManager {
   public String getRoot();
 
   /**
+   * static means doesnt need to be monitored for changes; can be externally triggered, or read in at startup.
+   * true if no recheckAfter and no update.rescan
+   * @return if static
+   */
+  public boolean isStatic();
+
+  /**
    * Get the last time scanned
    *
    * @return msecs since 1970

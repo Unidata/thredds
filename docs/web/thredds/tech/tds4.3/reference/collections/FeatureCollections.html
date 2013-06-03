@@ -226,17 +226,17 @@ The XML Schema definition for the update element:
 <ol>
   <li><strong>recheckAfter</strong><strong> </strong>attribute<strong>: </strong> causes a directory scan whenever a request comes in and the specified time has elapsed since the last scan. The request  waits until the scan is finished and a new collection is built. This is called <em>synchronous updating</em>.</li>
   <li><strong>rescan </strong>and<strong> startup </strong>attributes: uses a background thread to keep the collection updated, so that requests never wait. This is called <em>asynchronous updating</em>.</li>
-  <li><strong>trigger</strong> attribute: allows a trigger to be sent to the TDS to tell it to update the collection. This is called <em>user controlled updating</em>.</li>
+  <li><strong>trigger</strong> attribute: allows a trigger to be sent to the TDS to tell it to update the collection. This is called <em>external controlled updating</em>.</li>
 </ol>
 <h3>Static Datasets - Small or Rarely Used</h3>
-<p>If you have a collection that doesnt change, do not include an <strong>update</strong> element. The first time that the dataset is accessed, it will be read in and then never changed.</p>
+<p>If you have a collection that doesn't change, do not include an <strong>update</strong> element. The first time that the dataset is accessed, it will be read in and then never changed.</p>
 <h3><strong>Static Datasets - Fast response</strong></h3>
 <p>If you have a collection that doesnt change, but you want to have it ready for requests, then use:</p>
 <blockquote>
   <pre>&lt;update startup =&quot;true&quot; /&gt;</pre>
 </blockquote>
 <p>The dataset will be scanned at startup time and then never changed.</p>
-<h3><strong>Very Large  Datasets </strong></h3>
+<h3><strong>Very Large  Static Datasets </strong></h3>
 <p>You have a very large collection, which takes a long time to scan. You must carefully control when/if it will be scanned. </p>
 <blockquote>
   <pre>&lt;update startup =&quot;nocheck&quot; /&gt;</pre>

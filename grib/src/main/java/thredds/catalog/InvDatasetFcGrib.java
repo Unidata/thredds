@@ -200,7 +200,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       // if this is the TDS, and its using the TDM, then you are not allowed to update
       // if there is no update config, assume static, and try to skip checking for changes. got that?
       boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
-      CollectionManager.Force ff = (tdsUsingTdm || config.updateConfig.isStatic()) ? CollectionManager.Force.nocheck : CollectionManager.Force.test;
+      CollectionManager.Force ff = (tdsUsingTdm || dcm.isStatic()) ? CollectionManager.Force.nocheck : CollectionManager.Force.test;
 
       // update local copy of state, then switch all at once
       StateGrib localState = new StateGrib((StateGrib) state);
@@ -744,7 +744,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (dp.partition != null) {   // specific time partition
         GribCollection gc =  dp.partition.getGribCollection();
         GridDataset gd = gc.getGridDataset(dp.group, dp.filename, gribConfig, logger);
-        gc.close();
+        gc.close(); // LOOK WTF ??
         return gd;
 
       } else {  // entire collection

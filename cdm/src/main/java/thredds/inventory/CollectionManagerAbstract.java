@@ -72,6 +72,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
     // this.logger = loggerFactory.getLogger("fc."+this.collectionName); // seperate log file for each feature collection (!!)
   }
 
+  @Override
   public boolean isStatic() {
     return isStatic;
   }

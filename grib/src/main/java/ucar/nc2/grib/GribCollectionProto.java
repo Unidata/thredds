@@ -11873,6 +11873,16 @@ public final class GribCollectionProto {
      */
     com.google.protobuf.ByteString
         getFilenameBytes();
+
+    // optional uint64 lastModified = 3;
+    /**
+     * <code>optional uint64 lastModified = 3;</code>
+     */
+    boolean hasLastModified();
+    /**
+     * <code>optional uint64 lastModified = 3;</code>
+     */
+    long getLastModified();
   }
   /**
    * Protobuf type {@code gribCollectionIndex.Partition}
@@ -11933,6 +11943,11 @@ public final class GribCollectionProto {
             case 18: {
               bitField0_ |= 0x00000002;
               filename_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              lastModified_ = input.readUInt64();
               break;
             }
           }
@@ -12085,9 +12100,26 @@ public final class GribCollectionProto {
       }
     }
 
+    // optional uint64 lastModified = 3;
+    public static final int LASTMODIFIED_FIELD_NUMBER = 3;
+    private long lastModified_;
+    /**
+     * <code>optional uint64 lastModified = 3;</code>
+     */
+    public boolean hasLastModified() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional uint64 lastModified = 3;</code>
+     */
+    public long getLastModified() {
+      return lastModified_;
+    }
+
     private void initFields() {
       name_ = "";
       filename_ = "";
+      lastModified_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -12115,6 +12147,9 @@ public final class GribCollectionProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getFilenameBytes());
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt64(3, lastModified_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -12131,6 +12166,10 @@ public final class GribCollectionProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, getFilenameBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(3, lastModified_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -12252,6 +12291,8 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000001);
         filename_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        lastModified_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -12288,6 +12329,10 @@ public final class GribCollectionProto {
           to_bitField0_ |= 0x00000002;
         }
         result.filename_ = filename_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.lastModified_ = lastModified_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -12313,6 +12358,9 @@ public final class GribCollectionProto {
           bitField0_ |= 0x00000002;
           filename_ = other.filename_;
           onChanged();
+        }
+        if (other.hasLastModified()) {
+          setLastModified(other.getLastModified());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -12541,6 +12589,39 @@ public final class GribCollectionProto {
   }
   bitField0_ |= 0x00000002;
         filename_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional uint64 lastModified = 3;
+      private long lastModified_ ;
+      /**
+       * <code>optional uint64 lastModified = 3;</code>
+       */
+      public boolean hasLastModified() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional uint64 lastModified = 3;</code>
+       */
+      public long getLastModified() {
+        return lastModified_;
+      }
+      /**
+       * <code>optional uint64 lastModified = 3;</code>
+       */
+      public Builder setLastModified(long value) {
+        bitField0_ |= 0x00000004;
+        lastModified_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint64 lastModified = 3;</code>
+       */
+      public Builder clearLastModified() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        lastModified_ = 0L;
         onChanged();
         return this;
       }
@@ -16855,20 +16936,20 @@ public final class GribCollectionProto {
       "Hash\030\013 \001(\021:\0010\"m\n\016TimeCoordUnion\022\014\n\004code\030" +
       "\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006values\030\003 \003(\002\022\r\n\005b" +
       "ound\030\004 \003(\002\022\021\n\tpartition\030\005 \003(\005\022\r\n\005index\030\006" +
-      " \003(\005\"+\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020\n\010filen" +
-      "ame\030\002 \002(\t\"/\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014" +
-      "lastModified\030\002 \002(\004\"\206\003\n\023GribCollectionInd" +
-      "ex\022\014\n\004name\030\001 \002(\t\022\r\n\005files\030\002 \003(\t\022*\n\006group" +
-      "s\030\003 \003(\0132\032.gribCollectionIndex.Group\022.\n\006p" +
-      "arams\030\004 \003(\0132\036.gribCollectionIndex.Parame" +
-      "ter\022\016\n\006center\030\005 \002(\005\022\021\n\tsubcenter\030\006 \002(\005\022\016",
-      "\n\006master\030\007 \002(\005\022\r\n\005local\030\010 \002(\005\022\026\n\016genProc" +
-      "essType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rb" +
-      "ackProcessId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036" +
-      ".gribCollectionIndex.Partition\022\017\n\007dirNam" +
-      "e\030\016 \001(\t\022*\n\006mfiles\030\017 \003(\0132\032.gribCollection" +
-      "Index.MFileB$\n\rucar.nc2.gribB\023GribCollec" +
-      "tionProto"
+      " \003(\005\"A\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020\n\010filen" +
+      "ame\030\002 \002(\t\022\024\n\014lastModified\030\003 \001(\004\"/\n\005MFile" +
+      "\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastModified\030\002 \002(\004" +
+      "\"\206\003\n\023GribCollectionIndex\022\014\n\004name\030\001 \002(\t\022\r" +
+      "\n\005files\030\002 \003(\t\022*\n\006groups\030\003 \003(\0132\032.gribColl" +
+      "ectionIndex.Group\022.\n\006params\030\004 \003(\0132\036.grib" +
+      "CollectionIndex.Parameter\022\016\n\006center\030\005 \002(",
+      "\005\022\021\n\tsubcenter\030\006 \002(\005\022\016\n\006master\030\007 \002(\005\022\r\n\005" +
+      "local\030\010 \002(\005\022\026\n\016genProcessType\030\n \001(\005\022\024\n\014g" +
+      "enProcessId\030\013 \001(\005\022\025\n\rbackProcessId\030\014 \001(\005" +
+      "\0222\n\npartitions\030\r \003(\0132\036.gribCollectionInd" +
+      "ex.Partition\022\017\n\007dirName\030\016 \001(\t\022*\n\006mfiles\030" +
+      "\017 \003(\0132\032.gribCollectionIndex.MFileB$\n\ruca" +
+      "r.nc2.gribB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -16922,7 +17003,7 @@ public final class GribCollectionProto {
           internal_static_gribCollectionIndex_Partition_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Partition_descriptor,
-              new java.lang.String[] { "Name", "Filename", });
+              new java.lang.String[] { "Name", "Filename", "LastModified", });
           internal_static_gribCollectionIndex_MFile_descriptor =
             getDescriptor().getMessageTypes().get(8);
           internal_static_gribCollectionIndex_MFile_fieldAccessorTable = new

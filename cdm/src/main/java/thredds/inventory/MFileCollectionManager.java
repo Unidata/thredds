@@ -150,7 +150,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.recheck = makeRecheck(config.updateConfig.recheckAfter);
     protoChoice = config.protoConfig.choice;
 
-    if (config.updateConfig.isStatic()) // no update - assume its static
+    // static means never rescan on checkState; let it be externally triggered.
+    if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null) &&  (config.updateConfig.deleteAfter == null))
       setStatic(true);
   }
 
@@ -320,8 +321,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   /**
-   * Compute if scan is needed.
-   *
+   * Compute if synchronous scan is needed.
+   * True if recheck is true and enough time has elapsed.
    * @return true if rescan is needed
    */
   @Override

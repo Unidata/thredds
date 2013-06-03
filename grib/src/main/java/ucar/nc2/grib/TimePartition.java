@@ -100,13 +100,15 @@ public abstract class TimePartition extends GribCollection {
   public class Partition implements Comparable<Partition> {
     private final String name, directory;
     private String indexFilename;
+    private long lastModified;
     public GribCollection gc;  // temporary storage while building - do not use
 
     // constructor from ncx
-    public Partition(String name, String indexFilename, String directory) {
+    public Partition(String name, String indexFilename, long lastModified, String directory) {
       this.name = name;
       this.indexFilename = indexFilename; // grib collection ncx
       this.directory = directory; // grib collection directory
+      this.lastModified = lastModified;
     }
 
     public String getName() {
@@ -119,6 +121,10 @@ public abstract class TimePartition extends GribCollection {
 
     public String getDirectory() {
       return directory;
+    }
+
+    public long getLastModified() {
+      return lastModified;
     }
 
     public boolean isGrib1() {
@@ -260,9 +266,9 @@ public abstract class TimePartition extends GribCollection {
     return result;
   }
 
-  public void addPartition(String name, String filename, String directory) {
+  public void addPartition(String name, String filename, long lastModified, String directory) {
     if (partitionMap == null) partitionMap = new TreeMap<String, TimePartition.Partition>();
-    partitionMap.put(name, new Partition(name, filename, directory));
+    partitionMap.put(name, new Partition(name, filename, lastModified, directory));
   }
 
   public void addPartition(CollectionManager dcm) {

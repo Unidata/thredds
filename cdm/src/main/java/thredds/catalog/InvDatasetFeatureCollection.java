@@ -142,7 +142,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     protected CalendarDateRange dateRange;
 
     protected List<InvDataset> datasets; // top datasets, ie immediately nested in this catalog
-    // protected InvDatasetScan scan;       // optionally used for FILES
     protected long lastInvChange;        // last time dataset inventory was changed
     protected long lastProtoChange;      // last time proto dataset was changed
 
@@ -153,7 +152,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
         this.dateRange = from.dateRange;
         this.lastProtoChange = from.lastProtoChange;
 
-        // this.scan = from.scan;
         this.datasets = from.datasets;
         this.lastInvChange = from.lastInvChange;
       }
