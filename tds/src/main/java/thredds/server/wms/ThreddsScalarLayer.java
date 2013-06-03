@@ -38,12 +38,17 @@
 package thredds.server.wms;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import thredds.server.wms.config.LayerSettings;
 import thredds.server.wms.config.WmsDetailedConfig;
@@ -61,7 +66,6 @@ import uk.ac.rdg.resc.edal.util.Range;
 import uk.ac.rdg.resc.ncwms.exceptions.InvalidDimensionValueException;
 import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
 import uk.ac.rdg.resc.ncwms.wms.AbstractScalarLayer;
-import uk.ac.rdg.resc.ncwms.wms.ScalarLayer;
 
 /**
  * Wraps a GridDatatype as a ScalarLayer object
@@ -71,6 +75,9 @@ import uk.ac.rdg.resc.ncwms.wms.ScalarLayer;
 class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
 
 {
+
+  private static Logger log = LoggerFactory.getLogger(ThreddsScalarLayer.class);	
+	
   private GridDatatype grid;
   private ThreddsDataset dataset;
   private List<DateTime> times;
@@ -174,7 +181,15 @@ class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
         Domain<HorizontalPosition> targetDomain = points;
         HorizontalGrid hg = CdmUtils.createHorizontalGrid(grid.getCoordinateSystem());
         PixelMap pixelMap = new PixelMap(hg, targetDomain);
-        return CdmUtils.readHorizontalPoints(null, grid,  tIndex, zIndex, pixelMap, this.dataReadingStrategy, (int)targetDomain.size());
+        List<Float> horizontalPoints = null;
+        try{ 
+        	horizontalPoints = CdmUtils.readHorizontalPoints(null, grid,  tIndex, zIndex, pixelMap, this.dataReadingStrategy, (int)targetDomain.size());
+        }catch(Exception e){
+        	//Catching and wrapping any exception reading data into a new IOException
+        	throw new IOException(e);
+        }
+        return horizontalPoints;
+	
     }
     
 

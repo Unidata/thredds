@@ -151,6 +151,14 @@
     	<groupId>org.jdom</groupId>
     	<artifactId>jdom-legacy</artifactId>
     </dependency>
+    <dependency>
+		<groupId>net.sf.saxon</groupId>
+		<artifactId>saxon</artifactId>
+	</dependency>
+    <dependency>
+		<groupId>net.sf.saxon</groupId>
+		<artifactId>saxon-dom</artifactId>
+	</dependency>    
 
     <!-- wms -->
     <dependency>
@@ -184,11 +192,6 @@
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
     </dependency>
-    
-    <!-- dependency>
-      <groupId>org.geotoolkit</groupId>
-      <artifactId>geotk-referencing</artifactId>
-    </dependency-->
     
     <dependency>
       <groupId>jaxen</groupId>
