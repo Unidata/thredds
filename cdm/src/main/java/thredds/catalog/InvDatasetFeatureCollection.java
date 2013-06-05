@@ -79,6 +79,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static protected String context = "/thredds";
   static private String cdmrFeatureServiceUrlPath = "/cdmrFeature";
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
+  static private org.slf4j.Logger classLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
 
   static public void setContext( String c ) {
     context = c;
@@ -118,7 +119,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
         result = (InvDatasetFeatureCollection) ctor.newInstance(parent, name, path, fcType, config);
 
       } catch (Throwable e) {
-        //logger.error("Failed to open "+name+ " path= "+path, e);
+        classLogger.error("Failed to open "+name+" path="+path, e);
         return null;
       }
 

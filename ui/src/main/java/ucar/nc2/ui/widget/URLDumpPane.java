@@ -363,6 +363,7 @@ public class URLDumpPane extends TextHistoryPane {
   }
 
   private void printHeaders(String title, Header[] heads) {
+    if (heads == null) return;
     appendLine(title);
     for (int i = 0; i < heads.length; i++) {
       Header head = heads[i];
