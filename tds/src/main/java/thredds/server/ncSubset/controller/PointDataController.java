@@ -109,7 +109,8 @@ class PointDataController extends AbstractNcssDataRequestController{
 	//Check not only all vars are contained in the grid, also they have the same vertical coords
 	Iterator<String> it = params.getVar().iterator();
 	String varName = it.next();
-	GridDatatype grid = gds.findGridByShortName(varName);
+	//GridDatatype grid = gds.findGridByShortName(varName);
+	GridDatatype grid = gds.findGridDatatype(varName);
 	if(grid == null) 
 		throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
 	
@@ -119,7 +120,8 @@ class PointDataController extends AbstractNcssDataRequestController{
 	
 	while(sameVertCoord && it.hasNext()){
 		varName = it.next();
-		grid = gds.findGridByShortName(varName);
+		//grid = gds.findGridByShortName(varName);
+		grid = gds.findGridDatatype(varName);
 		if(grid == null) 
 			throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
 		

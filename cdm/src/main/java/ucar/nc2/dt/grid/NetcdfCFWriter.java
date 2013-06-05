@@ -479,17 +479,35 @@ public class NetcdfCFWriter {
 		writer.flush();
 		
 		//should we add them if they are not present??
-		if(writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MIN)!=null)		
-			writer.updateAttribute(null, new Attribute(CDM.LAT_MIN, llRect.getLatMin() ));
+		if(writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MIN)!=null){
+			Attribute from = writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MIN);			
+			updateAttribute(writer, from, CDM.LAT_MIN, llRect.getLatMin());
+		}	
 		
-		if(writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MAX)!=null)
-			writer.updateAttribute(null, new Attribute(CDM.LAT_MAX, llRect.getLatMax() ));
+		if(writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MAX)!=null){
+			Attribute from = writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MAX);
+			updateAttribute(writer, from, CDM.LAT_MAX, llRect.getLatMax());
+		}	
 
-		if(writer.getNetcdfFile().findAttribute("@"+CDM.LON_MIN)!=null)
-			writer.updateAttribute(null, new Attribute(CDM.LON_MIN, llRect.getLonMin() ));		
+		if(writer.getNetcdfFile().findAttribute("@"+CDM.LON_MIN)!=null){
+			Attribute from = writer.getNetcdfFile().findAttribute("@"+CDM.LON_MIN);
+			updateAttribute(writer, from, CDM.LON_MIN, llRect.getLonMin());
+		}
 		
-		if(writer.getNetcdfFile().findAttribute("@"+CDM.LON_MAX )!=null)
-			writer.updateAttribute(null, new Attribute(CDM.LON_MAX, llRect.getLonMax() ));		
+		if(writer.getNetcdfFile().findAttribute("@"+CDM.LON_MAX )!=null){
+			Attribute from = writer.getNetcdfFile().findAttribute("@"+CDM.LON_MAX);
+			updateAttribute(writer, from, CDM.LON_MAX, llRect.getLonMax());
+		}	
+	}
+	
+	
+	private void updateAttribute(NetcdfFileWriter writer, Attribute from, String attName, double value) throws IOException{
+
+		if( from.getDataType() == DataType.FLOAT )
+			writer.updateAttribute(null, new Attribute( attName, (float) value));
+		else
+			writer.updateAttribute(null, new Attribute( attName, value));		
+		
 	}
 
 	private void convertProjectionCTV(NetcdfDataset ds, Variable ctv) {
