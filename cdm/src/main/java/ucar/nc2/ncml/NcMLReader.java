@@ -1229,11 +1229,9 @@ public class NcMLReader {
 
     } else {
       // or a list of values
-      List<String> valList = new ArrayList<String>();
-      StringTokenizer tokn = new StringTokenizer(values, sep);
-      while (tokn.hasMoreTokens())
-        valList.add(tokn.nextToken());
-      v.setValues(valList);
+        String[] tokens = values.split("\\s+");
+        List<String> valList = Arrays.asList(tokens);
+        v.setValues(valList);
     }
   }
 
