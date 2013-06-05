@@ -23,8 +23,9 @@
     <property name="catalog" value="classpath:/resources/indexNomads.xml"/>
     <property name="serverNames">
       <list>
-          <value>http://motherlode.ucar.edu:8081/</value>
-          <value>http://motherlode.ucar.edu:9080/</value>
+        <value>http://motherlode.ucar.edu:8080/</value>
+        <value>http://motherlode.ucar.edu:8081/</value>
+        <value>http://motherlode.ucar.edu:9080/</value>
       </list>
     </property>
   </bean>

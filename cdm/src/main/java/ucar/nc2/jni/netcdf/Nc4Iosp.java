@@ -82,7 +82,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private String libName = "netcdf";
 
   static private boolean warn = true;
-  static private final boolean debug = true, debugCompoundAtt = false, debugUserTypes = true, debugWrite = false;
+  static private final boolean debug = false, debugCompoundAtt = false, debugUserTypes = false, debugWrite = false;
 
   // suppress warning messages
   static public void setWarnOff() {

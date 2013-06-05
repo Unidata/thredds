@@ -557,6 +557,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
     b.setFilename(p.getIndexFilename());
     b.setName(name);
+    if (p.getLastModified() > 0)
+      b.setLastModified(p.getLastModified());
 
     return b.build();
   }
