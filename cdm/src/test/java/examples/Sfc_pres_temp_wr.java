@@ -32,24 +32,40 @@
  */
 package examples;
 
-import ucar.nc2.NetcdfFileWriteable;
+/* This is part of the netCDF package.
+ Copyright 2006 University Corporation for Atmospheric Research/Unidata.
+ See COPYRIGHT file for conditions of use.
+
+ This example writes some surface pressure and temperatures. It is
+ intended to illustrate the use of the netCDF Java API. The companion
+ program sfc_pres_temp_rd.java shows how to read the netCDF data file
+ created by this program.
+
+ This example demonstrates the netCDF Java API.
+
+ Full documentation of the netCDF Java API can be found at:
+ http://www.unidata.ucar.edu/software/netcdf-java/
+ */
+
+/*
+ Example contributed by Peter Jansen
+ */
+
+import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Variable;
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.ArrayFloat;
+import ucar.ma2.Index2D;
 import ucar.ma2.InvalidRangeException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.io.IOException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: yuanho
- * Date: Nov 16, 2006
- * Time: 12:11:51 PM
- * To change this template use File | Settings | File Templates.
- */
-public class Sfc_pres_temp_wr {
-
+public class Sfc_pres_temp_wr
+{
 
     public static void main(String args[]) throws Exception
     {
@@ -60,104 +76,113 @@ public class Sfc_pres_temp_wr {
         final float START_LAT = 25.0f;
         final float START_LON = -125.0f;
 
-
         // Create the file.
         String filename = "sfc_pres_temp.nc";
-        NetcdfFileWriteable dataFile = null;
+        NetcdfFileWriter dataFile = null;
 
-        try {
-            //Create new netcdf-3 file with the given filename
-            dataFile = NetcdfFileWriteable.createNew(filename, false);
+        try
+        {
+            // Create new netcdf-3 file with the given filename
+            dataFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
 
             // In addition to the latitude and longitude dimensions, we will
             // also create latitude and longitude netCDF variables which will
             // hold the actual latitudes and longitudes. Since they hold data
             // about the coordinate system, the netCDF term for these is:
             // "coordinate variables."
-            Dimension latDim = dataFile.addDimension("latitude", NLAT );
-            Dimension lonDim = dataFile.addDimension("longitude", NLON );
-            ArrayList dims =  null;
+            Dimension latDim = dataFile.addDimension(null, "latitude", NLAT);
+            Dimension lonDim = dataFile.addDimension(null, "longitude", NLON);
+            List<Dimension> dims = new ArrayList<Dimension>();
+            dims.add(latDim);
+            dims.add(lonDim);
 
+            Variable vlat = dataFile.addVariable(null, "latitude", DataType.FLOAT, "latitude");
+            Variable vlon = dataFile.addVariable(null, "longitude", DataType.FLOAT, "longitude");
 
-            dataFile.addVariable("latitude", DataType.FLOAT, new Dimension[] {latDim});
-            dataFile.addVariable("longitude", DataType.FLOAT, new Dimension[] {lonDim});
+            Variable vPres = dataFile.addVariable(null, "pressure", DataType.FLOAT, dims);
+            Variable vTemp = dataFile.addVariable(null, "temperature", DataType.FLOAT, dims);
 
             // Define units attributes for coordinate vars. This attaches a
             // text attribute to each of the coordinate variables, containing
             // the units.
 
-            dataFile.addVariableAttribute("longitude", "units", "degrees_east");
-            dataFile.addVariableAttribute("latitude", "units", "degrees_north");
-
-            // Define the netCDF data variables.
-            dims =  new ArrayList();
-            dims.add(latDim);
-            dims.add(lonDim);
-            dataFile.addVariable("pressure", DataType.FLOAT, dims);
-            dataFile.addVariable("temperature", DataType.FLOAT, dims);
+            vlat.addAttribute(new Attribute("units", "degrees_east"));
+            vlon.addAttribute(new Attribute("units", "degrees_north"));
 
             // Define units attributes for variables.
-            dataFile.addVariableAttribute("pressure", "units", "hPa");
-            dataFile.addVariableAttribute("temperature", "units", "celsius");
+            vPres.addAttribute(new Attribute("units", "hPa"));
+            vTemp.addAttribute(new Attribute("units", "celsius"));
 
             // Write the coordinate variable data. This will put the latitudes
             // and longitudes of our data grid into the netCDF file.
             dataFile.create();
 
-
-            ArrayFloat.D1 dataLat = new ArrayFloat.D1(latDim.getLength());
-            ArrayFloat.D1 dataLon = new ArrayFloat.D1(lonDim.getLength());
+            Array dataLat = Array.factory(DataType.FLOAT, new int[] { NLAT });
+            Array dataLon = Array.factory(DataType.FLOAT, new int[] { NLON });
 
             // Create some pretend data. If this wasn't an example program, we
             // would have some real data to write, for example, model
             // output.
-            int i,j;
+            int i, j;
 
-
-            for (i=0; i<latDim.getLength(); i++) {
-                dataLat.set(i,  START_LAT + 5.f * i );
+            for (i = 0; i < latDim.getLength(); i++)
+            {
+                dataLat.setFloat(i, START_LAT + 5.f * i);
             }
 
-            for (j=0; j<lonDim.getLength(); j++) {
-               dataLon.set(j,  START_LON + 5.f * j );
+            for (j = 0; j < lonDim.getLength(); j++)
+            {
+                dataLon.setFloat(j, START_LON + 5.f * j);
             }
 
-
-            dataFile.write("latitude", dataLat);
-            dataFile.write("longitude", dataLon);
+            dataFile.write(vlat, dataLat);
+            dataFile.write(vlon, dataLon);
 
             // Create the pretend data. This will write our surface pressure and
             // surface temperature data.
 
-            ArrayFloat.D2 dataTemp = new ArrayFloat.D2(latDim.getLength(), lonDim.getLength());
-            ArrayFloat.D2 dataPres = new ArrayFloat.D2(latDim.getLength(), lonDim.getLength());
+            int[] iDim = new int[] { latDim.getLength(), lonDim.getLength() };
+            Array dataTemp = Array.factory(DataType.FLOAT, iDim);
+            Array dataPres = Array.factory(DataType.FLOAT, iDim);
 
-            for (i=0; i<latDim.getLength(); i++) {
-                for (j=0; j<lonDim.getLength(); j++) {
-                   dataTemp.set(i,j,  SAMPLE_TEMP + .25f * (j * NLAT + i));
-                   dataPres.set(i,j,  SAMPLE_PRESSURE + (j * NLAT + i));
+            Index2D idx = new Index2D(iDim);
+
+            for (i = 0; i < latDim.getLength(); i++)
+            {
+                for (j = 0; j < lonDim.getLength(); j++)
+                {
+                    idx.set(i, j);
+                    dataTemp.setFloat(idx, SAMPLE_TEMP + .25f * (j * NLAT + i));
+                    dataPres.setFloat(idx, SAMPLE_PRESSURE + (j * NLAT + i));
                 }
             }
 
-            int[] origin = new int[2];
-
-            dataFile.write("pressure", origin, dataPres);
-            dataFile.write("temperature", origin, dataTemp);
-
-
-        } catch (IOException e) {
-              e.printStackTrace();
-        } catch (InvalidRangeException e) {
-              e.printStackTrace();
-        } finally {
+            dataFile.write(vPres, dataPres);
+            dataFile.write(vTemp, dataTemp);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (InvalidRangeException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
             if (null != dataFile)
-            try {
-                dataFile.close();
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
+            {
+                try
+                {
+                    dataFile.close();
+                }
+                catch (IOException ioe)
+                {
+                    ioe.printStackTrace();
+                }
             }
-       }
-       System.out.println( "*** SUCCESS writing example file sfc_pres_temp.nc!" );
+        }
+        System.out.println("*** SUCCESS writing example file sfc_pres_temp.nc!");
     }
 }
 
