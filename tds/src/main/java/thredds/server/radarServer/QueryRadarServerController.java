@@ -143,7 +143,7 @@ public class QueryRadarServerController extends AbstractController  {
       // Gather diagnostics for logging request.
       // catch rogue invalid request here
       if ( request.getQueryString() == null ) {
-        log.info( "Invalid dataset url reference "+ request.getPathInfo() );
+        log.debug( "Invalid dataset url reference "+ request.getPathInfo() );
         throw new RadarServerException( "Invalid dataset url reference "+ request.getPathInfo() );
       }
       // Query results in model

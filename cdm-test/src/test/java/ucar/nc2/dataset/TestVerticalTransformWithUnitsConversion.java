@@ -96,7 +96,7 @@ public class TestVerticalTransformWithUnitsConversion {
 	
 	@Test
 	public void shouldGetSameVerticalProfile() throws IOException, InvalidRangeException{
-		
+		System.out.printf("Open %s%n", sameUnitsFile);
 		NetcdfDataset dsGood = NetcdfDataset.acquireDataset(sameUnitsFile, null);
 		GridDataset gdsGood = new GridDataset(dsGood);
 

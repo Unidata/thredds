@@ -1229,7 +1229,7 @@ public class NcMLReader {
 
     } else {
       // or a list of values
-        String[] tokens = values.split("\\s+");
+        String[] tokens = StringUtil2.splitString(values);
         List<String> valList = Arrays.asList(tokens);
         v.setValues(valList);
     }

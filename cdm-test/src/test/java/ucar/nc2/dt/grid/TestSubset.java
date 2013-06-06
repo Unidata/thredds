@@ -32,7 +32,7 @@
  */
 package ucar.nc2.dt.grid;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -54,12 +54,9 @@ import ucar.unidata.test.util.TestDir;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class TestSubset extends TestCase {
+public class TestSubset {
 
-  public TestSubset(String name) {
-    super(name);
-  }
-
+  @Test
   public void testRegular() throws Exception {
     ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc");
 
@@ -95,6 +92,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void testGrib() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib1/AVN.wmo");
 
@@ -115,6 +113,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void testWRF() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
 
@@ -153,6 +152,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void testMSG() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);
@@ -189,8 +189,9 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void testDODS() throws Exception {
-    String ds = "http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
+    String ds = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
     //String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
     ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset("thredds:resolve:" + ds, null);
     System.out.println("result errlog= " + result.errLog);
@@ -251,6 +252,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void test2D() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc");
 
@@ -308,10 +310,11 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void test3D() throws Exception {
     // GridDataset dataset = GridDataset.open("thredds:resolve:http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml");
     // GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/NCEP-NAM-CONUS_12km_best.ncd");
-    GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:9080/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
+    GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
 
     GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
     assert null != grid;
@@ -367,6 +370,7 @@ public class TestSubset extends TestCase {
   }
 
 
+  @Test
   public void testLatLonSubset() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc");
     //GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_20060305_1200.grib2");
@@ -392,6 +396,7 @@ public class TestSubset extends TestCase {
   }
 
   // longitude subsetting (CoordAxis1D regular)
+  @Test
   public void testLatLonSubset2() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2");
     GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib2Iosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1"); // "Pressure_Surface");
@@ -426,6 +431,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void testGiniSubsetStride() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/WEST-CONUS_4km_IR_20070216_1500.gini");
     GeoGrid grid = dataset.findGridByName("IR");
@@ -470,9 +476,10 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
-  public void testBBSubset() throws Exception {
-    GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/GFS/CONUS_80km/NCEP-GFS-CONUS_80km_best.ncd");
-    GeoGrid grid = dataset.findGridByName("Pressure");
+  @Test
+  public void testBBSubset() throws Exception {   // http://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best.html
+    GridDataset dataset = GridDataset.open(         "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best");
+    GeoGrid grid = dataset.findGridByName("Pressure_surface");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
@@ -500,7 +507,7 @@ public class TestSubset extends TestCase {
 
   // NCEP-NAM-CONUS_40km-conduit messed up right now
   public void utestBBSubset2() throws Exception {
-    GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_40km/conduit/NCEP-NAM-CONUS_40km-conduit_best.ncd");
+    GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_40km/conduit/NCEP-NAM-CONUS_40km-conduit_best.ncd");
     GeoGrid grid = dataset.findGridByName("Pressure");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -544,6 +551,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void testVerticalAxis() throws Exception {
     //String url="dods://www.gri.msstate.edu/rsearch_data/nopp/bora_feb.nc";
     //String varName = "temp";
@@ -578,6 +586,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void testBBSubsetVP() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);
@@ -607,6 +616,7 @@ public class TestSubset extends TestCase {
   }
 
   // x,y in meters
+  @Test
   public void testBBSubsetUnits() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "ncml/testBBSubsetUnits.ncml");
     System.out.println("file= " + dataset.getLocation());
@@ -640,6 +650,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  @Test
   public void testAggByteGiniSubsetStride() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/giniAggByte.ncml"); // R:\testdata2\satellite\gini
     System.out.printf("Test %s%n", dataset.getLocation());
@@ -751,10 +762,11 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
-  public void testProblem() throws Exception {
-    String filename = "dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/Alaska_11km/NCEP-NAM-Alaska_11km_best.ncd";
+  @Test
+  public void testFindVerticalCoordinate() throws Exception {
+    String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
     GridDataset dataset = GridDataset.open(filename);
-    GeoGrid grid = dataset.findGridByName("Geopotential_height");
+    GeoGrid grid = dataset.findGridByName("Geopotential_height_isobaric");
     assert null != grid;
 
     GridCoordSystem gcs = grid.getCoordinateSystem();
