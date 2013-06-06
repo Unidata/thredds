@@ -111,7 +111,7 @@ public class RequestQueryFilter
       if ( badQuery )
       {
         String msg = "Invalid query string [" + query + "].";
-        log.error( "doFilter(): " + msg );
+        log.debug( "doFilter(): " + msg );
         response.sendError( HttpServletResponse.SC_NOT_FOUND, msg );
         return;
       }

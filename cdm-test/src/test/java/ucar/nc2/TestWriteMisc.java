@@ -7,15 +7,17 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
- * Describe
+ * Misc netcdf3 NetcdfFileWriter tests
  *
  * @author caron
  * @since 4/26/12
  */
 public class TestWriteMisc {
 
+  // test writing big format
   @Test
   public void testBig() throws IOException, InvalidRangeException {
 
@@ -31,29 +33,31 @@ public class TestWriteMisc {
     System.out.println("File size  (B)  = " + (long) timeSize * latSize * lonSize * 4);
     System.out.println("File size~ (MB) = " + Math.round((long) timeSize * latSize * lonSize * 4 / Math.pow(2, 20)));
 
-    NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew(TestLocal.temporaryDataDir + "bigFile2.nc");
-    ncFile.setFill(false);
-    ncFile.setLargeFile(true);
+    NetcdfFileWriter fileWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, TestLocal.temporaryDataDir + "bigFile2.nc");
+    fileWriter.setFill(false);
+    fileWriter.setLargeFile(true);
 
     long approxSize = (long) timeSize * latSize * lonSize * 4 + 4000;
-    ncFile.setLength(approxSize);
+    fileWriter.setLength(approxSize);
 
     String timeUnits = "hours since 2008-06-06 12:00:0.0";
     String coordUnits = "degrees";
 
     Dimension[] dim = new Dimension[3];
 
-    dim[0] = setDimension(ncFile, "time", timeUnits, timeSize);
-    dim[1] = setDimension(ncFile, "lat", coordUnits, latSize);
-    dim[2] = setDimension(ncFile, "lon", coordUnits, lonSize);
+    dim[0] = setDimension(fileWriter, "time", timeUnits, timeSize);
+    dim[1] = setDimension(fileWriter, "lat", coordUnits, latSize);
+    dim[2] = setDimension(fileWriter, "lon", coordUnits, lonSize);
 
-    ncFile.addVariable(varName, DataType.FLOAT, dim);
+    Variable v = fileWriter.addVariable(null, varName, DataType.FLOAT, Arrays.asList(dim));
 
-    ncFile.addVariableAttribute(varName, "_FillValue", -9999);
-    ncFile.addVariableAttribute(varName, CDM.MISSING_VALUE, -9999);
+    fileWriter.addVariableAttribute(v, new Attribute("_FillValue", -9999));
+    fileWriter.addVariableAttribute(v, new Attribute(CDM.MISSING_VALUE, -9999));
 
     System.out.println("Creating netcdf <=");
-    ncFile.create();
+    fileWriter.create();
+
+    /////////////////////////////////////
     long stop = System.nanoTime();
     double took = (stop - start) * .001 * .001 * .001;
     System.out.println("That took " + took + " secs");
@@ -67,11 +71,11 @@ public class TestWriteMisc {
     for (int t = 0; t < timeSize; t++) {
       for (int i = 0; i < latSize; i++) {
         int[] origin = new int[]{t, i, 0};
-        ncFile.write(varName, origin, floatArray);
+        fileWriter.write(v, origin, floatArray);
       }
     }
 
-    ncFile.close();
+    fileWriter.close();
 
     System.out.println("Done <=");
     stop = System.nanoTime();
@@ -80,11 +84,11 @@ public class TestWriteMisc {
     start = stop;
   }
 
-  private static Dimension setDimension(NetcdfFileWriteable ncFile, String name, String units, int length) {
+  private static Dimension setDimension(NetcdfFileWriter ncFile, String name, String units, int length) {
 
-    Dimension dimension = ncFile.addDimension(name, length);
-    ncFile.addVariable(name, DataType.FLOAT, new Dimension[]{dimension});
-    ncFile.addVariableAttribute(name, "units", units);
+    Dimension dimension = ncFile.addDimension(null, name, length);
+    Variable v = ncFile.addVariable(null, name, DataType.FLOAT, name);
+    ncFile.addVariableAttribute(v, new Attribute("units", units));
 
     return dimension;
   }

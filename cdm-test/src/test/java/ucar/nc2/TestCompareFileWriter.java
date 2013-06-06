@@ -32,7 +32,7 @@
  */
 package ucar.nc2;
 
-import junit.framework.*;
+import org.junit.Test;
 import java.io.*;
 import java.util.*;
 
@@ -40,15 +40,19 @@ import ucar.unidata.test.util.TestDir;
 
 /** test FileWriting, then reading back and comparing to original. */
 
-public class TestCompareFileWriter extends TestCase {
-
-  public TestCompareFileWriter( String name) {
-    super(name);
-  }
+public class TestCompareFileWriter {
 
   public ArrayList files;
+
+  @Test
   public void testCompare() throws IOException {
-    doOne(TestDir.cdmUnitTestDir +"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", TestDir.temporaryLocalDataDir +"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    doOne( new File(TestDir.cdmUnitTestDir, "formats/dmsp/F14200307192230.n.OIS"));
+    doOne( new File(TestDir.cdmUnitTestDir, "formats/gempak/grid/dgex_le.gem"));
+    doOne( new File(TestDir.cdmUnitTestDir, "formats/gempak/surface/19580807_sao.gem"));
+    doOne( new File(TestDir.cdmUnitTestDir, "formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini"));
+    doOne( new File(TestDir.cdmUnitTestDir, "formats/grib1/radar_national.grib"));
+    doOne( new File(TestDir.cdmUnitTestDir, "formats/grib2/200508041200.ngrid_gfs")); // */
+    //doOne( new File(TestDir.cdmUnitTestDir, "formats/hdf4/17766010.hdf"));
   }
 
   public void utestCompareAll() throws IOException {
@@ -63,9 +67,7 @@ public class TestCompareFileWriter extends TestCase {
     for (int i = 0; i < allFiles.length; i++) {
       File f = allFiles[i];
       if (f.isDirectory()) continue;
-
-      String path = f.getAbsolutePath();
-      doOne(path, TestDir.temporaryLocalDataDir +"/"+f.getName());
+      doOne(f);
     }
 
     for (int i = 0; i < allFiles.length; i++) {
@@ -76,19 +78,18 @@ public class TestCompareFileWriter extends TestCase {
 
   }
 
-  private void doOne(String datasetIn, String filenameOut) throws IOException {
-    File fin = new File(datasetIn);
-    File fout = new File(filenameOut);
+  private void doOne(File fin) throws IOException {
+    File fout = new File(TestDir.temporaryLocalDataDir+fin.getName()+".nc");
     System.out.printf("Write %s %n   to %s (%s %s)%n", fin.getAbsolutePath(), fout.getAbsolutePath(), fout.exists(), fout.getParentFile().exists());
-    File tempDir = new File(TestDir.temporaryLocalDataDir);
-    System.out.printf("Temp dir %s (%s)%n", tempDir.getAbsolutePath(), tempDir.exists());
 
-    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
-    NetcdfFile ncfileOut = FileWriter.writeToFile( ncfileIn, filenameOut);
+    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(fin.getPath(), null);
+    FileWriter2 fileWriter = new FileWriter2(ncfileIn, fout.getPath(), NetcdfFileWriter.Version.netcdf3, null);
+    NetcdfFile ncfileOut = fileWriter.write();
     ucar.unidata.test.util.CompareNetcdf.compareFiles(ncfileIn, ncfileOut);
 
     ncfileIn.close();
     ncfileOut.close();
+    System.out.printf("%n");
   }
 
 }

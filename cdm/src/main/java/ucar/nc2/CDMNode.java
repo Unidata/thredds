@@ -218,9 +218,8 @@ public class CDMNode {
    * @return full name with backslash escapes
    */
   public String getFullName() {
-    if (this.fullName != null)
-      return this.fullName;
-    this.fullName = NetcdfFile.makeFullName(this);
+    if (this.fullName == null)
+      this.fullName = NetcdfFile.makeFullName(this);
     return this.fullName;
   }
 

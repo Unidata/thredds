@@ -78,7 +78,6 @@ public class FileWriter2 {
   private final NetcdfFile fileIn;
   private final NetcdfFileWriter writer;
   private final NetcdfFileWriter.Version version;
-  //private List<FileWriterProgressListener> progressListeners;
 
   private final Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();  // oldVar, newVar
   private final List<Variable> varList = new ArrayList<Variable>();        // old Vars
@@ -92,6 +91,7 @@ public class FileWriter2 {
    * @param fileIn      copy this file
    * @param fileOutName to this output file
    * @param version     output file version
+   * @param chunker     chunking strategy (netcdf4 only)
    * @throws IOException on read/write error
    */
   public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker) throws IOException {
@@ -100,10 +100,12 @@ public class FileWriter2 {
     this.version = version;
   }
 
-  /* public void addProgressListener(FileWriterProgressListener listener) {
-    if (progressListeners == null) progressListeners = new ArrayList<FileWriterProgressListener>();
-    progressListeners.add(listener);
-  } */
+  public enum N3StructureStrategy {flatten, exclude}
+
+  private N3StructureStrategy n3StructureStrategy;
+  public void setN3StructureStrategy(N3StructureStrategy n3StructureStrategy) {
+    this.n3StructureStrategy = n3StructureStrategy;
+  }
 
   public NetcdfFileWriter getNetcdfFileWriter() {
     return writer;
@@ -197,14 +199,6 @@ public class FileWriter2 {
     if (debug)
       System.out.printf("File Out= %n%s%n", writer.getNetcdfFile());
 
-    /* see if it has a record dimension we can use
-    if (!isNetcdf4 && fileIn.hasUnlimitedDimension()) {
-      fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-      writer.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    }
-    boolean useRecordDimension = hasRecordStructure(fileIn) && hasRecordStructure(writer.getNetcdfFile());
-    Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;  */
-
     if (cancel != null && cancel.isCancel()) return null;
     double total = copyVarData(varList, null, cancel);
     if (cancel != null && cancel.isCancel()) return null;
@@ -212,7 +206,6 @@ public class FileWriter2 {
     writer.flush();
     if (debug) System.out.println("FileWriter done total bytes = " + total);
 
-    // fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE); // major crapola
     return writer.getNetcdfFile();
   }
 
@@ -240,6 +233,8 @@ public class FileWriter2 {
     // Variables
     int anonCount = 0;
     for (Variable oldVar : fileIn.getVariables()) {
+      if (oldVar instanceof Structure) continue; // ignore for the moment
+
       List<Dimension> dims = new ArrayList<Dimension>();
       for (Dimension oldD : oldVar.getDimensions()) {
         if (!oldD.isShared()) { // netcdf3 dimensions must be shared
@@ -461,14 +456,6 @@ public class FileWriter2 {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
     long byteWriteTotal = 0;
 
-    /* FileWriterProgressEvent writeProgressEvent = new FileWriterProgressEvent();
-    writeProgressEvent.setStatus("Variable: " + oldVar.getShortName());
-    if (progressListeners != null) {
-      for (FileWriterProgressListener listener : progressListeners) {
-        listener.writeStatus(writeProgressEvent);
-      }
-    } */
-
     ChunkingIndex index = new ChunkingIndex(oldVar.getShape());
     while (index.currentElement() < index.getSize()) {
       try {
@@ -490,27 +477,12 @@ public class FileWriter2 {
 
         if (data.getSize() > 0) {// zero when record dimension = 0
           if (cancel != null) cancel.setProgress("Writing chunk "+new Section(chunkOrigin, chunkShape)+" from variable: " + oldVar.getShortName(), -1);
-          /* writeProgressEvent.setWriteStatus("Writing chunk of variable: " + oldVar.getShortName());
-          writeProgressEvent.setBytesToWrite(data.getSize());
-          if (progressListeners != null) {
-            for (FileWriterProgressListener listener : progressListeners) {
-              listener.writeProgress(writeProgressEvent);
-            }
-          } */
 
           writer.write(newVar, chunkOrigin, data);
           if (debugWrite)
             System.out.println(" write " + data.getSize() + " bytes at " + new Section(chunkOrigin, chunkShape));
 
           byteWriteTotal += data.getSize();
-
-          /* writeProgressEvent.setBytesWritten(byteWriteTotal);
-          writeProgressEvent.setProgressPercent(100.0 * byteWriteTotal / oldVar.getSize());
-          if (progressListeners != null) {
-            for (FileWriterProgressListener listener : progressListeners) {
-              listener.writeProgress(writeProgressEvent);
-            }
-          } */
         }
 
         index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
@@ -576,65 +548,6 @@ public class FileWriter2 {
       return chunkShape;
     }
   }
-
-  /*
-   * Track the progress of file writing.
-   * use FileWriter2.addProgressListener()
-   *
-  public static class FileWriterProgressEvent {
-    private double progressPercent;
-    private long bytesWritten;
-    private long bytesToWrite;
-    private String status;
-    private String writeStatus;
-
-    public void setProgressPercent(double progressPercent) {
-      this.progressPercent = progressPercent;
-    }
-
-    public double getProgressPercent() {
-      return progressPercent;
-    }
-
-    public void setBytesWritten(long bytesWritten) {
-      this.bytesWritten = bytesWritten;
-    }
-
-    public long getBytesWritten() {
-      return bytesWritten;
-    }
-
-    public void setBytesToWrite(long bytesToWrite) {
-      this.bytesToWrite = bytesToWrite;
-    }
-
-    public long getBytesToWrite() {
-      return bytesToWrite;
-    }
-
-    public void setStatus(String status) {
-      this.status = status;
-    }
-
-    public String getStatus() {
-      return status;
-    }
-
-    public void setWriteStatus(String writeStatus) {
-      this.writeStatus = writeStatus;
-    }
-
-    public String getWriteStatus() {
-      return writeStatus;
-    }
-
-  }
-
-  public interface FileWriterProgressListener {
-    void writeProgress(FileWriterProgressEvent event);
-
-    void writeStatus(FileWriterProgressEvent event);
-  }  */
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
