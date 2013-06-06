@@ -32,14 +32,12 @@
  */
 package thredds.server.cdmremote;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -55,16 +53,14 @@ import thredds.server.cdmremote.stream.CdmrfStreamFactory;
 import thredds.server.cdmremote.view.CdmrfTextViewFactory;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.ThreddsConfig;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.util.DiskCache2;
 
 /**
  * @author mhermida
  *
  */
 @Controller
-@RequestMapping("/cdmrfeature/")
+@RequestMapping("/cdmrfeature")
 public class CdmrfController {
 
 	
@@ -78,16 +74,11 @@ public class CdmrfController {
 	@Autowired
 	private FeatureDatasetPointService fdps;
 	
-
-
 	/*
 	 * Has to be set through a configuration option
 	 */
 	private boolean allow = true;
 	
-	
-
-
 	@RequestMapping(value={"/**"}, params={"req!=data", "req!=dataForm","req!=header" }, method={RequestMethod.GET})
 	public ResponseEntity<String> metadataRequestHandler(HttpServletRequest req, HttpServletResponse res, @Valid CdmrfQueryBean query, BindingResult validationResult) throws IOException{
 

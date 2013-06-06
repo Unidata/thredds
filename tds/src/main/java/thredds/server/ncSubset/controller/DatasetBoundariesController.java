@@ -39,13 +39,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.ParamsBean;
-import ucar.nc2.dt.grid.GridDatasetInfo;
 import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
 
 
@@ -55,6 +55,7 @@ import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
  *
  */
 @Controller
+@Scope("request")
 @RequestMapping(value="/ncss/grid/**")
 public class DatasetBoundariesController extends AbstractNcssController{ 
 

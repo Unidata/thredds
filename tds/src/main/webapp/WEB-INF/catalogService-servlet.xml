@@ -26,6 +26,7 @@
     <property name="supportedMethods" value="GET,HEAD"/>
   </bean>
 
+  <!-- 
   <bean id="catalogXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="htmlWriter" ref="htmlWriter"/>
@@ -43,7 +44,8 @@
 
     <property name="supportedMethods" value="GET,HEAD"/>
   </bean>
-
+  -->
+ 
   <bean id="remoteCatalogController" class="thredds.server.catalogservice.RemoteCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="htmlWriter" ref="htmlWriter"/>

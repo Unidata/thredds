@@ -218,25 +218,25 @@ public final class ThreddsWmsController extends AbstractWmsController
       return modelAndView;
     }
     catch ( LayerNotDefinedException e ) {
-      log.debug( "dispatchWmsRequest(): LayerNotDefinedException: " + e.getMessage());
+      log.error( "dispatchWmsRequest(): LayerNotDefinedException: " + e.getMessage());
       throw e;
     }
     catch ( WmsException e ) {
-      log.debug( "dispatchWmsRequest(): WmsException: "  + e.getMessage() );
+      log.error( "dispatchWmsRequest(): WmsException: "  , e );
       throw e;
     }
     catch ( thredds.server.dataset.DatasetException e ) {
-      log.debug( "dispatchWmsRequest(): DatasetException: " + e.getMessage() );
+      log.error( "dispatchWmsRequest(): DatasetException: " + e.getMessage() );
       throw new WmsException( e.getMessage() );
     }
     catch ( java.net.SocketException e ) {
-      log.debug( "dispatchWmsRequest(): SocketException: " + e.getMessage());
+      log.error( "dispatchWmsRequest(): SocketException: " + e.getMessage());
       httpServletResponse.setStatus(ServletUtil.STATUS_CLIENT_ABORT);
       return null;
     }
     catch ( IOException e ) {
       if ( e.getClass().getName().equals( "org.apache.catalina.connector.ClientAbortException")) {
-        log.debug( "dispatchWmsRequest(): ClientAbortException: " + e.getMessage() );
+        log.error( "dispatchWmsRequest(): ClientAbortException: " + e.getMessage() );
         return null;
       }
       log.error( "dispatchWmsRequest(): IOException: ", e );

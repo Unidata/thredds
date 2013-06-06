@@ -38,20 +38,29 @@
 
 package thredds.server.radarServer;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-import thredds.catalog.*;
-import thredds.server.config.TdsContext;
-import thredds.servlet.HtmlWriter;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.LatLonRect;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+import thredds.catalog.InvCatalogFactory;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvDatasetImpl;
+import thredds.catalog.InvDatasetScan;
+import thredds.catalog.ThreddsMetadata;
+import thredds.servlet.HtmlWriter;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * Returns catalogs/datasets for the RadarServer data
@@ -59,8 +68,8 @@ import java.util.*;
 public class CatalogRadarServerController extends AbstractController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  private TdsContext tdsContext;
-  private HtmlWriter htmlWriter;
+  //private TdsContext tdsContext;
+  //private HtmlWriter htmlWriter;
 
   private boolean htmlView;
 
@@ -83,13 +92,13 @@ public class CatalogRadarServerController extends AbstractController {
   public  CatalogRadarServerController() {}
   
 
-  public void setTdsContext( TdsContext tdsContext ) {
-    this.tdsContext = tdsContext;
-  }
+  //public void setTdsContext( TdsContext tdsContext ) {
+  //  this.tdsContext = tdsContext;
+  //}
 
-  public void setHtmlWriter( HtmlWriter htmlWriter ) {
-    this.htmlWriter = htmlWriter;
-  }
+  //public void setHtmlWriter( HtmlWriter htmlWriter ) {
+  //  this.htmlWriter = htmlWriter;
+  //}
 
   public boolean isHtmlView()
   {
