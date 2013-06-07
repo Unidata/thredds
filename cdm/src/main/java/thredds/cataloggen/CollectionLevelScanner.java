@@ -639,6 +639,8 @@ public class CollectionLevelScanner
 
     // Find actual dataset in the list of atomic dataset InvCrawlablePairs.
     InvCrawlablePair actualDsInfo = pdh.getActualDataset( atomicDsInfo );
+    if ( actualDsInfo == null )
+      return catalog; // TODO Test this case in TestDataRootHandler.
     InvDatasetImpl actualInvDs = (InvDatasetImpl) actualDsInfo.getInvDataset();
 
     actualInvDs.setName( pdh.getActualDatasetName( actualDsInfo, topDs.getName() ) );
