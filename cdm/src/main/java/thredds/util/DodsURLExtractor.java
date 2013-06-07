@@ -59,15 +59,19 @@ public class DodsURLExtractor {
   private boolean wantText = false;
   private boolean debug = false;
 
-  /** Constructor */
+  /**
+   * Constructor
+   */
   public DodsURLExtractor() {
     ParserGetter kit = new ParserGetter();
     parser = kit.getParser();
   }
 
-  /** Extract all A-HREF contained URLS from the given URL and return in List */
+  /**
+   * Extract all A-HREF contained URLS from the given URL and return in List
+   */
   public ArrayList extract(String url) throws IOException {
-    if (debug) System.out.println(" URLextract="+url);
+    if (debug) System.out.println(" URLextract=" + url);
 
     baseURL = new URL(url);
     InputStream in = baseURL.openStream();
@@ -82,9 +86,11 @@ public class DodsURLExtractor {
     return urlList;
   }
 
-  /** Extract text content from the given URL and return in String */
+  /**
+   * Extract text content from the given URL and return in String
+   */
   public String getTextContent(String url) throws IOException {
-    if (debug) System.out.println(" URL.getTextContent="+url);
+    if (debug) System.out.println(" URL.getTextContent=" + url);
 
     baseURL = new URL(url);
     InputStream in = baseURL.openStream();
@@ -100,42 +106,41 @@ public class DodsURLExtractor {
   }
 
 
-
-    // workaround for HTMLEditorKit.Parser, cant deal with "content-encoding"
+  // workaround for HTMLEditorKit.Parser, cant deal with "content-encoding"
   private InputStream filterTag(InputStream in) throws IOException {
     BufferedReader buffIn = new BufferedReader(new InputStreamReader(in));
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
 
     String line = buffIn.readLine();
-    while ( line != null ) {
+    while (line != null) {
       String lline = line.toLowerCase();
-      if ( 0 <= lline.indexOf( "<meta " ) )  // skip meta tags
+      if (0 <= lline.indexOf("<meta "))  // skip meta tags
         continue;
       //System.out.println("--"+line);
-      bos.write( line.getBytes() );
+      bos.write(line.getBytes());
       line = buffIn.readLine();
     }
     buffIn.close();
 
-    return new ByteArrayInputStream( bos.toByteArray());
+    return new ByteArrayInputStream(bos.toByteArray());
   }
 
 
   private class CallerBacker extends HTMLEditorKit.ParserCallback {
 
-    private boolean wantTag( HTML.Tag tag) {
+    private boolean wantTag(HTML.Tag tag) {
       return (tag == HTML.Tag.H1 || tag == HTML.Tag.H2
-       || tag == HTML.Tag.H3 || tag == HTML.Tag.H4
-       || tag == HTML.Tag.H5 || tag == HTML.Tag.H6);
+              || tag == HTML.Tag.H3 || tag == HTML.Tag.H4
+              || tag == HTML.Tag.H5 || tag == HTML.Tag.H6);
     }
 
     public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes,
-int position) {
+                               int position) {
       isTitle = (tag == HTML.Tag.TITLE);
 
       //System.out.println(" "+tag);
       if (wantURLS && tag == HTML.Tag.A)
-        extractHREF( attributes);
+        extractHREF(attributes);
     }
 
     public void handleEndTag(HTML.Tag tag, int position) {
@@ -143,12 +148,12 @@ int position) {
     }
 
     public void handleSimpleTag(HTML.Tag tag, MutableAttributeSet attributes,
-int position) {
+                                int position) {
       isTitle = false; // (tag == HTML.Tag.TITLE); // ??
 
       //System.out.println(" "+tag);
       if (wantURLS && tag == HTML.Tag.A)
-        extractHREF( attributes);
+        extractHREF(attributes);
     }
 
     private void extractHREF(AttributeSet attributes) {
@@ -159,34 +164,32 @@ int position) {
         //System.out.println(" name= <"+name+ ">"+" value= <"+value+ ">");
         try {
           if (name == HTML.Attribute.HREF) {
-            URL u = baseURL.toURI().resolve( value ).toURL();
+            URL u = baseURL.toURI().resolve(value).toURL();
             String urlName = u.toString();
             if (urlList != null)
-              urlList.add( u.toString());
-            if (debug) System.out.println(" extracted URL= <"+urlName+ ">");
+              urlList.add(u.toString());
+            if (debug) System.out.println(" extracted URL= <" + urlName + ">");
           }
         } catch (MalformedURLException ex) {
           System.err.println(ex);
           System.err.println(baseURL);
           System.err.println(value);
           ex.printStackTrace();
-        }
-        catch( URISyntaxException ex)
-        {
-          System.err.println( ex );
-          System.err.println( baseURL );
-          System.err.println( value );
+        } catch (URISyntaxException ex) {
+          System.err.println(ex);
+          System.err.println(baseURL);
+          System.err.println(value);
           ex.printStackTrace();
         }
       } // while
     } // extractHREF
 
     public void handleText(char[] text, int position) {
-      if (isTitle) title = new String( text);
+      if (isTitle) title = new String(text);
 
       if (wantText) {
-        textBuffer.append( text);
-        textBuffer.append( ' ');
+        textBuffer.append(text);
+        textBuffer.append(' ');
       }
     }
 
@@ -194,7 +197,7 @@ int position) {
 
   private class ParserGetter extends HTMLEditorKit {
     // purely to make this method public
-    public HTMLEditorKit.Parser getParser(){
+    public HTMLEditorKit.Parser getParser() {
       return super.getParser();
     }
   }

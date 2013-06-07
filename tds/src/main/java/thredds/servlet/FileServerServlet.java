@@ -72,6 +72,7 @@ public class FileServerServlet extends HttpServlet {
 
   private File getFile(HttpServletRequest req) {
     String reqPath = req.getPathInfo();
+    if (reqPath == null) return null;
     if (reqPath.length() > 0) {
       if (reqPath.startsWith("/"))
         reqPath = reqPath.substring(1);

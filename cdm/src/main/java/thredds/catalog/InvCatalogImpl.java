@@ -38,10 +38,6 @@ import ucar.nc2.units.DateType;
 import java.util.*;
 import java.net.*;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import javax.swing.event.EventListenerList;
-
 /**
  * Concrete implementation of a Thredds catalog object. Use this when you are constructing or modifying.
  *
@@ -531,13 +527,13 @@ public class InvCatalogImpl extends InvCatalog {
     return buff.toString();
   }
 
-  /**
+  /*
    * Add a PropertyChangeEvent Listener. THIS IS EXPERIMENTAL DO NOT RELY ON.
    * Throws a PropertyChangeEvent:
    * <ul><li>propertyName = "InvCatalogRefInit", getNewValue() = InvCatalogRef that was just initialized
    * </ul>
    * @param l the listener
-   */
+   *
   public void addPropertyChangeListener(PropertyChangeListener l) {
     if (listenerList == null) listenerList = new EventListenerList();
     listenerList.add(PropertyChangeListener.class, l);
@@ -546,7 +542,7 @@ public class InvCatalogImpl extends InvCatalog {
   /**
    * Remove a PropertyChangeEvent Listener.
    * @param l the listener
-   */
+   *
   public void removePropertyChangeListener(PropertyChangeListener l) {
     listenerList.remove(PropertyChangeListener.class, l);
   }
@@ -565,7 +561,7 @@ public class InvCatalogImpl extends InvCatalog {
         ((PropertyChangeListener) listeners[i + 1]).propertyChange(event);
       }
     }
-  }
+  } */
 
   /**
    * This finds the topmost catalog, even when its a InvCatalogRef.

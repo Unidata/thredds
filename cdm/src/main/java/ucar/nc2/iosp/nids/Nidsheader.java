@@ -3201,8 +3201,8 @@ class Nidsheader{
 
         buf.get(b2, 0, 2);
         pcode = (short)getInt(b2, 2);
-        ncfile.addAttribute(null, new Attribute("ProductStation", stationId));
-        ncfile.addAttribute(null, new Attribute("ProductStationName", stationName));
+        if (stationId != null) ncfile.addAttribute(null, new Attribute("ProductStation", stationId));
+        if (stationName != null) ncfile.addAttribute(null, new Attribute("ProductStationName", stationName));
         buf.get(b2, 0, 2);
         opmode = (short)getInt(b2, 2);
         ncfile.addAttribute(null, new Attribute("OperationalMode", new Short(opmode)));

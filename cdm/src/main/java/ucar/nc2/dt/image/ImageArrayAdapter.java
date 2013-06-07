@@ -36,11 +36,6 @@ import ucar.ma2.*;
 import java.awt.image.*;
 import java.awt.*;
 import java.awt.color.*;
-import java.awt.event.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.Ellipse2D;
-import javax.swing.*;
 
 /**
  * Makes a 2D Array into a java.awt.image.BufferedImage
@@ -143,7 +138,7 @@ public class ImageArrayAdapter {
     // if (Debug.isSet("ADDE/AddeImage/createTiming")) System.out.println("ADDE/AddeImage/createTiming AddeImage = "+ .001*(timeEnd - timeStart)+" sec");
 
 
-  private static JLabel test() {
+  /* private static JLabel test() {
     byte[] tmp2 = new byte[900*641];
     for (int i = 0; i < tmp2.length; i++) {
       int row = i / 640;
@@ -231,7 +226,7 @@ public class ImageArrayAdapter {
     frame.pack();
     frame.setLocation(300, 300);
     frame.setVisible(true);
-  }
+  }   */
 
 }
 

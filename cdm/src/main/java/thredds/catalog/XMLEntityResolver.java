@@ -256,9 +256,6 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
                 "/resources/thredds/schemas/CatalogGenConfig.0.5.dtd",
                 "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd"); */
 
-    String javaVersion = System.getProperty("java.version").substring(2,3);  // ie 1.5_02
-    int v = Integer.parseInt(javaVersion);
-    hasXerces = (v >= 5);
   }
 
   static private boolean hasXerces = true;
