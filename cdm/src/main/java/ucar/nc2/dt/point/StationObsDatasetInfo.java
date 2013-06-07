@@ -315,18 +315,12 @@ public class StationObsDatasetInfo {
    * debug
    */
   public static void main(String args[]) throws IOException {
-    // String url = "C:/data/test2.nc";
-
     String url = "C:/data/metars/Surface_METAR_20060326_0000.nc";
-
-    // String url = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NDFD/CONUS_5km/NDFD-CONUS_5km_best.ncd";
 
     StationObsDataset ncd = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuilder());
     StationObsDatasetInfo info = new StationObsDatasetInfo(ncd, null);
     FileOutputStream fos2 = new FileOutputStream("C:/TEMP/stationCollection.xml");
     GZIPOutputStream zout =  new GZIPOutputStream( fos2);
-    //info.writeXML(fos2);
-    //fos2.close();
 
     info.writeStationObsDatasetXML(System.out);
     info.writeStationCollectionXML(zout);

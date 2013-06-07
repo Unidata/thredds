@@ -3,6 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+  <!-- not currently used -->
+
   <bean id="datasetCollection" class="thredds.server.radarServer.RadarDatasetCollection">
     <property name="daysToRead" value="14" />
   </bean>

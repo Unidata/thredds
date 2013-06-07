@@ -43,7 +43,7 @@ import java.util.*;
 /** Test remote netcdf over HTTP in the JUnit framework. */
 
 public class TestHTTP extends TestCase {
-  String testDir= "http://motherlode.ucar.edu:8080/thredds/";
+  String testDir= "http://thredds.ucar.edu/thredds/";
 
   public TestHTTP( String name) {
     super(name);

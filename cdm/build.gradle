@@ -1,3 +1,5 @@
+apply plugin: 'fatjar'
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'cdm'
@@ -16,20 +18,21 @@ sourceSets {
 dependencies {
   compile project(':udunits')
   compile 'commons-httpclient:commons-httpclient:3.1'
-  compile 'com.google.protobuf:protobuf-java:2.4.1'
+  compile 'com.google.protobuf:protobuf-java:2.5.0'
   compile 'com.sun.jna:jna:3.0.9'
   compile 'com.sleepycat:je:4.0.92'
   compile 'joda-time:joda-time:2.0'
   compile 'net.jcip:jcip-annotations:1.0'
-  compile 'net.sf.ehcache:ehcache:1.6.0'
-  compile 'org.jdom:jdom:1.1'
+  compile 'net.sf.ehcache:ehcache:1.6.2'
+  compile 'org.jdom:jdom2:2.0.4'
   compile ('org.quartz-scheduler:quartz:2.1.5') {   // eliminate c3p0
     transitive = false
   }
-  compile 'org.slf4j:slf4j-api:1.6.4'
+  compile 'org.slf4j:slf4j-api:1.7.5'
   testCompile group: 'junit', name: 'junit', version: '4.8.2'
-  testCompile 'org.slf4j:slf4j-jdk14:1.6.4'
-  runtime 'org.slf4j:jcl-over-slf4j:1.6.4'
+  testCompile 'org.slf4j:slf4j-jdk14:1.7.5'
+  runtime 'org.slf4j:jcl-over-slf4j:1.7.5'
+  runtime 'org.slf4j:slf4j-jdk14:1.7.5'
 }
 
 javadoc {
@@ -63,4 +66,26 @@ task releaseDocs(dependsOn: javadoc) << {
     from("build/docs/javadoc")
     into releaseDir
   }
+}
+
+/////////
+
+ext {
+  cdmJar = 'cdm-'+version+'.jar'
+}
+
+
+fatJar {  // does not inherit from parent jar
+  archiveName = cdmJar
+  manifest {
+    attributes 'Implementation-Title': cdmJar,
+     'Implementation-Version': version,
+     'Implementation-Vendor': 'UCAR/Unidata',
+     'Implementation-Vendor-Id': 'edu.ucar',
+     'Built-On': new Date(),
+     'Main-Class': 'ucar.nc2.NCdumpW'
+  }
+  exclude 'com/sleepycat/**'
+  exclude 'com/sun/jna/**'
+  exclude 'org/quartz/**'
 }

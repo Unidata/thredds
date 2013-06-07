@@ -450,10 +450,7 @@ public class ADNWriter {
    /** testing */
   public static void main (String[] args) throws Exception {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-
-    // doOne(catFactory, "file:///C:/dev/thredds/catalog/test/data/TestHarvest.xml");
-    doOne(catFactory, "http://thredds.ucar.edu:9080/thredds/idd/models.xml");
-    //doOne(catFactory, "http://motherlode.ucar.edu:8088/thredds/configCatGenModels.xml");
+    doOne(catFactory, "http://thredds.ucar.edu/thredds/idd/models.xml");
   }
 
 }
