@@ -289,6 +289,9 @@ class Giniheader {
     DateFormat dformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     dformat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
     Calendar cal = Calendar.getInstance();
+    
+    cal.set( Calendar.MILLISECOND, 0);
+    
     cal.set(gyear, gmonth-1, gday, ghour, gminute, gsecond);
     cal.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
     String dstring = dformat.format(cal.getTime());

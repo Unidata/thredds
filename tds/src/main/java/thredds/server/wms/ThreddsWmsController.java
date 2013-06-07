@@ -218,11 +218,11 @@ public final class ThreddsWmsController extends AbstractWmsController
       return modelAndView;
     }
     catch ( LayerNotDefinedException e ) {
-      log.error( "dispatchWmsRequest(): LayerNotDefinedException: " + e.getMessage());
+      log.debug( "dispatchWmsRequest(): LayerNotDefinedException: " + e.getMessage());
       throw e;
     }
     catch ( WmsException e ) {
-      log.error( "dispatchWmsRequest(): WmsException: "  , e );
+      log.debug( "dispatchWmsRequest(): WmsException: "  , e );
       throw e;
     }
     catch ( thredds.server.dataset.DatasetException e ) {
@@ -230,7 +230,7 @@ public final class ThreddsWmsController extends AbstractWmsController
       throw new WmsException( e.getMessage() );
     }
     catch ( java.net.SocketException e ) {
-      log.error( "dispatchWmsRequest(): SocketException: " + e.getMessage());
+      log.debug( "dispatchWmsRequest(): SocketException: " + e.getMessage());
       httpServletResponse.setStatus(ServletUtil.STATUS_CLIENT_ABORT);
       return null;
     }
