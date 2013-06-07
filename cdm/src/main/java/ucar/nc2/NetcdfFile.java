@@ -2144,9 +2144,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
 
     long total = 0;
+    long totalCached = 0;
     f.format("%n%-" + maxNameLen + "s isCaching  size     cachedSize (bytes) %n", "Variable");
     for (Variable v : getVariables()) {
-      f.format(" %-" + maxNameLen + "s %5s %8d ", v.getShortName(), v.isCaching(), v.getSize() * v.getElementSize());
+      long vtotal = v.getSize() * v.getElementSize();
+      total += vtotal;
+      f.format(" %-" + maxNameLen + "s %5s %8d ", v.getShortName(), v.isCaching(), vtotal);
       if (v.hasCachedData()) {
         Array data = null;
         try {
@@ -2156,12 +2159,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
         }
         long size = data.getSizeBytes();
         f.format(" %8d", size);
-        total += size;
+        totalCached += size;
       }
       f.format("%n");
     }
     f.format(" %" + maxNameLen + "s                  --------%n", " ");
-    f.format(" %" + maxNameLen + "s                 %8d Kb total cached%n", " ", total / 1000);
+    f.format(" %" + maxNameLen + "s total %8d Mb cached= %8d Kb%n", " ", total / 1000 / 1000, totalCached / 1000);
   }
 
   protected void showProxies(Formatter f) {

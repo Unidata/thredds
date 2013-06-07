@@ -183,14 +183,14 @@ public class TestAuth extends UnitTestCommon
     }
 
     static AuthDataBasic[] basictests = {
-                new AuthDataBasic("https://thredds-test.ucar.edu/thredds/dodsC/restrict/testdata/testData.nc.html",
+                new AuthDataBasic("http://motherlode.ucar.edu:8081/thredds/dodsC/restrict/testData.nc.html",
                         "tiggeUser", "tigge", MUSTPASS),
-                new AuthDataBasic("http://thredds-test.ucar.edu/thredds/dodsC/restrict/testdata/testData.nc.html",
+                new AuthDataBasic("http://motherlode.ucar.edu:8081/thredds/dodsC/restrict/testData.nc.html",
                         "", "", MUSTFAIL)
         };
 
 
-    // @Test
+    @Test
     public void
     testBasic() throws Exception
     {
@@ -239,7 +239,7 @@ public class TestAuth extends UnitTestCommon
         }
     }
 
-    // @Test
+    @Test
     public void
     testBasic2() throws Exception
     {

@@ -53,8 +53,6 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
 import org.jdom2.Element;
 
-import javax.swing.plaf.metal.MetalTheme;
-
 /**
  * Metadata for "enhanced catalogs", type THREDDS.
  *
