@@ -37,7 +37,7 @@ import junit.framework.*;
 /** Count geogrid objects - sanity check when anything changes. */
 
 public class TestReadAndCountDods extends TestCase {
-  static String base = "thredds:resolve:http://motherlode.ucar.edu:9080/thredds/";
+  static String base = "thredds:resolve:http://thredds.ucar.edu/thredds/";
 
   public TestReadAndCountDods( String name) {
     super(name);
@@ -86,8 +86,8 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 74, 15, 17, 11);
   }
 
-  public void utestProblem() throws Exception {
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_20km/files/latest.xml", 74, 15, 17, 11);
+  public void testProblem() throws Exception {
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 15, 17, 13);
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
