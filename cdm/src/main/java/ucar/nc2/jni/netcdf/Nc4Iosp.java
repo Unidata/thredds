@@ -1704,7 +1704,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     byte[] entire = bb.array();
 
-    ArrayObject values = new ArrayObject(ByteBuffer.class, new int[]{len});
+    // fix: this is ignoring the rank of section.
+    // was: ArrayObject values = new ArrayObject(ByteBuffer.class, new int[]{len});
+    int[] intshape = new int[shape.length];
+    for(int i=0;i<intshape.length;i++) {intshape[i] = (int)shape[i];}
+    ArrayObject values = new ArrayObject(ByteBuffer.class, intshape);
+
     int count = 0;
     IndexIterator ii = values.getIndexIterator();
     while (ii.hasNext()) {

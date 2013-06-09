@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dataset;
 
+import ucar.ma2.Array;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.EscapeStrings;
@@ -52,7 +53,7 @@ import ucar.nc2.ncml.NcMLGWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
 
 import java.io.*;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
 
@@ -1040,24 +1041,37 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         throws IOException
   {
     Constructor con = null;
-    Class c = null;
+    Method openmethod = null;
+    Class factoryclass = null;
     NetcdfFile file = null;
     try {
-      c = NetcdfDataset.class.getClassLoader().loadClass("opuls.client.DapNetcdfFile");
-      con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
-    } catch (ClassNotFoundException e) {
-      log.info("DapNetcdfFile is not on class path or is incorrect version");
-      throw new IOException("DapNetcdfFile is not on classpath or is incorrect version");
-    } catch (Throwable e) {
-      log.error("Error openDap4ByReflection: ", e);
-      throw new IOException("DapNetcdfFile is not on classpath or is incorrect version");
-    }
-    try {
-      file = (NetcdfFile) con.newInstance(location, cancelTask);
+      factoryclass = NetcdfDataset.class.getClassLoader().loadClass("opuls.client.DapNetcdfFileFactory");
+      openmethod = factoryclass.getMethod("open",
+                                          String.class,
+                                          ucar.nc2.util.CancelTask.class);
+      file = (NetcdfFile) openmethod.invoke(null,location,cancelTask);
       return file;
-    } catch (Exception e) {
-      log.error("Error openDap4ByReflection: ", e.getCause());
-      throw new IOException(e.getCause());
+    } catch (ClassNotFoundException e) {
+        String msg = "DapNetcdfFileFactory is not on class path or is incorrect version";
+        log.error(msg);
+        throw new IOException(msg);
+    } catch (NoSuchMethodException e) {
+        String msg = "DapNetcdfFileFactory.open is not defined";
+        log.error(msg);
+        throw new IOException(msg);
+    } catch (IllegalAccessException iace) {
+        String msg = "DapNetcdfFileFactory.open cannot be invoked";
+        log.error(msg);
+        throw new IOException(msg,iace);
+    } catch (IllegalArgumentException iare) {
+        String msg = "DapNetcdfFileFactory.open: illegal argument";
+        log.error(msg);
+        throw new IOException(msg,iare);
+    } catch (InvocationTargetException  ite) {
+        String msg = "DapNetcdfFileFactory.open failed: "
+                     + ite.getCause().getMessage();
+        log.error(msg);
+        throw new IOException(msg,ite);
     }
 
   }
