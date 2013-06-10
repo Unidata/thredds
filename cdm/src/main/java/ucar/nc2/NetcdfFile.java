@@ -60,7 +60,6 @@ import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
-import javax.imageio.spi.ServiceRegistry;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
@@ -448,7 +447,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (N3header.isValidFile(raf)) {
       return true;
     } else {
-      Iterator<IOServiceProvider> iterator = ServiceRegistry.lookupProviders(ucar.nc2.iosp.IOServiceProvider.class);
+      Iterator<IOServiceProvider> iterator = ServiceLoader.load(IOServiceProvider.class).iterator();
       while(iterator.hasNext()) {
           if (iterator.next().isValidFile(raf)) {
               return true;
@@ -764,7 +763,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } else {
 
       // look for dynamically loaded IOSPs
-      Iterator<IOServiceProvider> iterator = ServiceRegistry.lookupProviders(IOServiceProvider.class);
+      Iterator<IOServiceProvider> iterator = ServiceLoader.load(ucar.nc2.iosp.IOServiceProvider.class).iterator();
       while(iterator.hasNext()) {
           IOServiceProvider currentSpi = iterator.next();
           if (currentSpi.isValidFile(raf)) {
