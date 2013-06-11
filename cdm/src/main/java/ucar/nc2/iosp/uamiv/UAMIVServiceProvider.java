@@ -353,43 +353,36 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      * 1) needs earth radius
      * 2) needs better error checking
     */
-
-    if ((iproj == 0) && (tlat1 == 0) && (tlat2 == 0) && (plon == 0) && (plat == 0)) {
-      /* Defaults are based on Continental US */
-      Integer gdtyp = 2;
-      Double p_alp = 20.;
-      Double p_bet = 60.;
-      Double p_gam = 0.;
-      Double xcent = -95.;
-      Double ycent = 25.;
-    } else {
-      Integer gdtyp = 0.;
-      Double p_alp = 0.;
-      Double p_bet = 0.;
-      Double p_gam = 0.;
-      Double xcent = plon;
-      Double ycent = plat;
+    Integer gdtyp = 2;
+    Double p_alp = 20.;
+    Double p_bet = 60.;
+    Double p_gam = 0.;
+    Double xcent = -95.;
+    Double ycent = 25.;
+    if (!((iproj == 0) && (tlat1 == 0) && (tlat2 == 0) && (plon == 0) && (plat == 0))) {
+      xcent = new Double(plon);
+      ycent = new Double(plat);
       if (iproj == 0) {
         // Lat-Lon (iproj=0) has no additional information
         gdtyp = 1;
       } else if (iproj == 1){
         // UTM uses only iutm 
         gdtyp = 5;
-        p_alp = iutm;
+        p_alp = new Double(iutm);
       } else if (iproj == 2){
         gdtyp = 2;
-        p_alp = tlat1;
-        p_bet = tlat2;
-        p_gam = plon;
+        p_alp = new Double(tlat1);
+        p_bet = new Double(tlat2);
+        p_gam = new Double(plon);
       } else if (iproj == 3){
         gdtyp = 6;
         if (plat == 90){
           p_alp = 1.;
-        } elif (plat == -90){
+        } else if (plat == -90) {
           p_alp = -1.;
         }
-        p_bet = tlat1;
-        p_gam = plon;
+        p_bet = new Double(tlat1);
+        p_gam = new Double(plon);
       } else {
         gdtyp = 2;
         p_alp = 20.;
