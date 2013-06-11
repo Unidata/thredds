@@ -2540,7 +2540,7 @@ public class ToolsUI extends JPanel {
 
     Grib2CollectionPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib2CollectionPanel(prefs);
+      gribTable = new ucar.nc2.ui.Grib2CollectionPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {

@@ -62,6 +62,7 @@ import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -85,10 +86,22 @@ public class Grib2CollectionPanel extends JPanel {
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private FileManager fileChooser;
 
-  public Grib2CollectionPanel(PreferencesExt prefs) {
+  public Grib2CollectionPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     PopupMenu varPopup;
+
+    AbstractButton xmlButt = BAMutil.makeButtcon("Information", "generate gds xml", false);
+    xmlButt.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        generateGdsXml(f);
+        infoPopup2.setText(f.toString());
+        infoPopup2.gotoTop();
+        infoWindow2.show();
+      }
+    });
+    buttPanel.add(xmlButt);
 
     ////////////////
     param2BeanTable = new BeanTableSorted(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
@@ -381,45 +394,27 @@ public class Grib2CollectionPanel extends JPanel {
   private Grib2Customizer cust;
   private Grib2Rectilyser rect2;
 
-  /* public void setCollection(String filename) throws IOException {
-    if (filename.endsWith(GribCollection.IDX_EXT)) {
-      openIndex(filename);
-    } else {
-      openCollection(filename);
+  public void generateGdsXml(Formatter f) {
+    f.format("<gribConfig>%n");
+    List<Object> gdss = new ArrayList<Object>(gds2Table.getBeans());
+    Collections.sort(gdss, new Comparator<Object>() {
+      public int compare(Object o1, Object o2) {
+        int h1 = ((Gds2Bean) o1).gds.hashCode();
+        int h2 =  ((Gds2Bean) o2).gds.hashCode();
+        if (h1 < h2) return -1;
+        else if (h1 == h2) return 0;
+        else return 1;
+      }
+    });
+
+    for (Object bean : gdss) {
+      Gds2Bean gbean = (Gds2Bean)bean;
+      gbean.gds.hashCode();
+      f.format("  <gdsName hash='%d' groupName='%s'/>%n", gbean.gds.hashCode(), gbean.getGroupName());
     }
+    f.format("</gribConfig>%n");
   }
 
-  private void openIndex(String filename) throws IOException {
-    GribCollection gribCollection = new GribCollection(null);
-    if (!gribCollection.readIndex(filename))
-      throw new FileNotFoundException();
-
-    this.cust = GribTables.factory(gribCollection.center, gribCollection.subcenter, gribCollection.master, gribCollection.local);
-
-    java.util.List<Grib2ParameterBean> params = new ArrayList<Grib2ParameterBean>();
-    java.util.List<Gds2Bean> gdsList = new ArrayList<Gds2Bean>();
-
-    for (GribCollection.GroupHcs gHcs : gribCollection.getGroups()) {
-      for (GribCollection.VariableIndex vi : gHcs.varIndex) {
-        for (vi.records)
-      }
-    }
-      addGroup(ncfile, g, useGroups);
-
-
-    int fileno = 0;
-    fileList = dcm.getFiles();
-    for (MFile mfile : fileList) {
-      f.format("%n %s%n", mfile.getPath());
-      processGribFile(mfile.getPath(), fileno++, pdsSet, gdsSet, params);
-    }
-    param2BeanTable.setBeans(params);
-
-    for (Grib2SectionGridDefinition gds : gdsSet.values()) {
-      gdsList.add(new Gds2Bean( gds));
-    }
-    gds2Table.setBeans(gdsList);
-  }  */
 
   public void setCollection(String spec) throws IOException {
     this.spec = spec;

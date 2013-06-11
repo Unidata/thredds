@@ -32,7 +32,6 @@
  */
 package ucar.nc2.iosp.gini;
 
-
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.units.DateFormatter;
@@ -80,8 +79,6 @@ class Giniheader {
     byte DEF_WBITS = 15;
     private long actualSize, calcSize;
     protected int Z_type = 0;
-
-
 
     public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf)
     {
