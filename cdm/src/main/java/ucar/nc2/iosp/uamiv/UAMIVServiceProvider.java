@@ -418,7 +418,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     if (paramFile.exists()) {
       BufferedReader br = new BufferedReader(new FileReader(paramFile));
       while ((thisLine = br.readLine()) != null) {
-        if (thisLine.substring(0, 1) != "#") {
+        if ((thisLine.substring(0, 1) != "#") && (thisLine != "")) {
           key_value = thisLine.split("=");
           if (key_value[0].equals("GDTYP")) {
             gdtyp = Integer.parseInt(key_value[1]);
