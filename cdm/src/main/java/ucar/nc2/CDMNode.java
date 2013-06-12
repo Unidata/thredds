@@ -45,6 +45,9 @@ package ucar.nc2;
  */
 
 public class CDMNode {
+
+  static boolean OBJECTHASH = false;
+
   CDMSort sort = null;
   Group group = null;
   Structure parentstruct = null;
