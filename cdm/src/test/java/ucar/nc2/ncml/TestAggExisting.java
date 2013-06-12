@@ -32,8 +32,7 @@
  */
 package ucar.nc2.ncml;
 
-import junit.framework.*;
-
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -42,12 +41,9 @@ import java.io.IOException;
 
 /** Test TestNcml - AggExisting  in the JUnit framework. */
 
-public class TestAggExisting extends TestCase {
+public class TestAggExisting {
 
-  public TestAggExisting( String name) {
-    super(name);
-  }
-
+  @Test
   public void testNcmlDirect() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
 
@@ -63,6 +59,7 @@ public class TestAggExisting extends TestCase {
   }
 
 
+  @Test
   public void testNcmlDataset() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
 
@@ -77,6 +74,7 @@ public class TestAggExisting extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testNcmlDatasetWcoords() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingWcoords.xml";
 
@@ -92,6 +90,7 @@ public class TestAggExisting extends TestCase {
     System.out.println(" testNcmlDatasetWcoords.closed ");
   }
 
+  @Test
   public void testNoCoords() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingNoCoords.xml";
     NetcdfDataset ncd = null;
@@ -108,6 +107,7 @@ public class TestAggExisting extends TestCase {
     assert false;
   }
 
+  @Test
   public void testNoCoordsDir() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingNoCoordsDir.xml";
 
@@ -120,7 +120,7 @@ public class TestAggExisting extends TestCase {
     assert false;
   }
 
-
+  @Test
   public void testCoordsAdded() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingAddCoord.ncml";
     NetcdfDataset ncd = null;
