@@ -174,12 +174,17 @@ public class EnumTypedef extends CDMNode {
     return true;
   }
 
+  /**
+   * DMH: this is a really bad idea
+   */
   @Override
   public int hashCode() {
+if(true) return super.hashCode(); else {
     String name = getShortName();
     int result = name != null ? name.hashCode() : 0;
     result = 31 * result + (map != null ? map.hashCode() : 0);
     return result;
+}
   }
 
   @Override

@@ -139,9 +139,13 @@ public class Dimension extends CDMNode implements Comparable {
            (isShared() == other.isShared());
   }
 
-  /** Override Object.hashCode() to implement equals. */
+  /**
+   * Override Object.hashCode() to implement equals.
+   * DMH: this is a really bad idea.
+   */
   @Override
   public int hashCode() {
+if(true) return super.hashCode(); else {
     if (hashCode == 0) {
       int result = 17;
       Group g = getGroup();
@@ -154,6 +158,7 @@ public class Dimension extends CDMNode implements Comparable {
       hashCode = result;
     }
     return hashCode;
+}
   }
   private int hashCode = 0;
 

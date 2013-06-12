@@ -1080,8 +1080,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
 
   /**
    * Override Object.hashCode() to implement equals.
+   * DMH: this is a really bad idea.
    */
   public int hashCode() {
+if(true) return super.hashCode(); else {
     if (hashCode == 0) {
       int result = 17;
       result = 37 * result + getShortName().hashCode();
@@ -1095,6 +1097,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
       hashCode = result;
     }
     return hashCode;
+}
   }
 
   protected int hashCode = 0;
