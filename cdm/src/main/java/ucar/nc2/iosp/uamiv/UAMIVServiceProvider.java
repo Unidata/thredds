@@ -11,6 +11,8 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
 import java.io.File;
+import java.util.HashSet;
+import java.util.Arrays;
 
 /**
  * Class for reading CAMx flavored uamiv files.
@@ -275,6 +277,9 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     * simply the species name.  units is heuristically
     * determined from the name
     */
+    HashSet<String> AeroSpcs = new HashSet<String>(Arrays.asList( "PSO4", "PNO3", "PNH4", "PH2O", "SOPA", "SOPB",  "NA", "PCL", "POA", "PEC", "FPRM", "FCRS", "CPRM", "CCRS"));
+    HashSet<String> LULC = new HashSet<String>(Arrays.asList("WATER", "ICE", "LAKE", "ENEEDL", "EBROAD", "DNEEDL", "DBROAD", "TBROAD", "DDECID", "ESHRUB", "DSHRUB", "TSHRUB", "SGRASS", "LGRASS", "CROPS", "RICE", "SUGAR", "MAIZE", "COTTON", "ICROPS", "URBAN", "TUNDRA", "SWAMP", "DESERT", "MWOOD", "TFOREST"));
+    
     while (count < nspec) {
       String spc = spc_names[count++];
       Variable temp = ncfile.addVariable(null, spc, DataType.FLOAT, "TSTEP LAY ROW COL");
@@ -291,26 +296,41 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
         temp.addAttribute(new Attribute(CDM.UNITS, "m"));
       } else if (spc.equals(CLDWATER) || spc.equals(PRECIP) || spc.equals(RAIN)) {
         temp.addAttribute(new Attribute(CDM.UNITS, "g/m**3"));
-      } else if (spc.equals(CLDOD)) {
+      } else if (spc.equals(CLDOD) || spc.equals("CLOUDOD")) {
         temp.addAttribute(new Attribute(CDM.UNITS, "none"));
-      } else if (spc.startsWith("SOA") ||
-              spc.equals("PSO4") ||
-              spc.equals("PNO3") ||
-              spc.equals("PNH4") ||
-              spc.equals("PH2O") ||
-              spc.equals("SOPA") ||
-              spc.equals("SOPB") ||
-              spc.equals("NA") ||
-              spc.equals("PCL") ||
-              spc.equals("POA") ||
-              spc.equals("PEC") ||
-              spc.equals("FPRM") ||
-              spc.equals("FCRS") ||
-              spc.equals("CPRM") ||
-              spc.equals("CCRS")) {
-        temp.addAttribute(new Attribute(CDM.UNITS, "ug/m**3"));
+      } else if (spc.equals("SNOWCOVER")) {
+        temp.addAttribute(new Attribute(CDM.UNITS, "yes/no"));        
+      } else if (spc.startsWith("SOA") || AeroSpcs.contains(spc)) {
+        if (name.equals(EMISSIONS)) {
+          temp.addAttribute(new Attribute(CDM.UNITS, "g/time"));
+        } else {
+          temp.addAttribute(new Attribute(CDM.UNITS, "ug/m**3"));
+        }
+      } else if (LULC.contains(spc)) {
+          temp.addAttribute(new Attribute(CDM.UNITS, "fraction"));
+      } else if (spc.lastIndexOf("_") > -1) {
+        String tmpunit = spc.substring(spc.lastIndexOf("_") + 1);
+        tmpunit = tmpunit.trim();
+        if (tmpunit.equals("M2pS")) {
+          tmpunit = "m**2/s";
+        } else if (tmpunit.equals("MpS")) {
+          tmpunit = "m/s";
+        } else if (tmpunit.equals("PPM")) {
+          tmpunit = "ppm";
+        } else if (tmpunit.equals("MB")) {
+          tmpunit = "millibar";
+        } else if (tmpunit.equals("GpM3")) {
+          tmpunit = "g/m**3";
+        } else if (tmpunit.equals("M")) {
+          tmpunit = "m";
+        }
+        temp.addAttribute(new Attribute(CDM.UNITS, tmpunit));
       } else {
-        temp.addAttribute(new Attribute(CDM.UNITS, "ppm"));
+        if (name.equals(EMISSIONS)) {
+          temp.addAttribute(new Attribute(CDM.UNITS, "mol/time"));
+        } else {
+          temp.addAttribute(new Attribute(CDM.UNITS, "ppm"));
+        }
       }
       ;
       temp.addAttribute(new Attribute(CDM.LONG_NAME, spc));
