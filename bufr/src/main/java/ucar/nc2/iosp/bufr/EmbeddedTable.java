@@ -46,7 +46,7 @@ import java.util.List;
 
 /**
  * BUFR allows you to encode a BUFR table in BUFR.
- * LOOK: may be NCEP specific ?
+ * LOOK: may be NCEP specific ? if table is embedded, all entries must be from it
  *
  * @author John
  * @since 8/11/11

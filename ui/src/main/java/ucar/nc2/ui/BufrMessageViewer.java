@@ -691,6 +691,10 @@ public class BufrMessageViewer extends JPanel {
       return dds.getRefVal();
     }
 
+    public String getSource() {
+      return dds.getSource();
+    }
+
     public int getSeq() {
       return seq;
     }

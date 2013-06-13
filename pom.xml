@@ -484,6 +484,12 @@
         <version>${visad.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.lexicalscope.jewelcli</groupId>
+        <artifactId>jewelcli</artifactId>
+        <version>0.8.5</version>
+      </dependency>
+
       <!-- UI -->
       <dependency>
         <groupId>org.jfree</groupId>

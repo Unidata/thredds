@@ -227,6 +227,10 @@ public class CalendarDate implements Comparable<CalendarDate> {
     return dateTime.getHourOfDay();
   }
 
+  public int getDayOfMonth() {
+    return dateTime.getDayOfMonth();
+  }
+
   // old style udunits compatible.
   /* day = 86400.0 seconds
     week = 7 days = 604800.0 seconds

@@ -56,7 +56,7 @@ public class DataDescriptor {
   // from the TableB.Descriptor
   short fxy;
   int f, x, y;
-  String name, units, desc;
+  String name, units, desc, source;
   boolean bad;  // no descriptor found
   boolean localOverride;
 
@@ -112,6 +112,7 @@ public class DataDescriptor {
     this.scale = d.getScale();
     this.bitWidth = d.getDataWidth();
     this.localOverride = d.getLocalOverride();
+    this.source = d.getSource();
 
     if (units.equalsIgnoreCase("CCITT IA5") || units.equalsIgnoreCase("CCITT_IA5")) {
       this.type = 1; // String
@@ -193,6 +194,10 @@ public class DataDescriptor {
 
   public String getName() {
     return name;
+  }
+
+  public String getSource() {
+    return source;
   }
 
   public int getType() {
