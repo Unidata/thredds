@@ -257,9 +257,11 @@ public class Attribute extends CDMNode {
 
   /**
    * Override Object.hashCode() to implement equals.
+   * DMH: this is a really bad idea.
    */
   @Override
   public int hashCode() {
+if(CDMNode.OBJECTHASH) return super.hashCode(); else {
     if (hashCode == 0) {
       int result = 17;
       result = 37 * result + getShortName().hashCode();
@@ -276,6 +278,7 @@ public class Attribute extends CDMNode {
       hashCode = result;
     }
     return hashCode;
+}
   }
 
   private int hashCode = 0;
