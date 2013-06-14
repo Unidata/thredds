@@ -70,7 +70,7 @@ task releaseDocs(dependsOn: javadoc) << {
 /////////
 
 ext {
-  cdmJar = 'cdm-'+version+'.jar'
+  cdmJar = 'cdmFat-'+version+'.jar'
 }
 
 

@@ -46,8 +46,8 @@ import javax.swing.event.ChangeEvent;
 
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.ui.widget.BAMutil;
-import thredds.logs.LogReader;
-import thredds.logs.ServletLogParser;
+import thredds.logs.logs.LogReader;
+import thredds.logs.logs.ServletLogParser;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
