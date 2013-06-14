@@ -1,4 +1,4 @@
-package ucar.nc2.jni.netcdf;
+package ucar.nc2.write;
 
 import ucar.nc2.Variable;
 

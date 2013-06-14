@@ -55,7 +55,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
@@ -63,8 +62,8 @@ import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.jni.netcdf.Nc4Chunking;
-import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyGrib;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategyGrib;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -471,7 +470,7 @@ public class NetcdfCFWriter {
 	 * to the values in the new axes. 
 	 * 
 	 * @param writer
-	 * @param axisList
+	 * @param llRect
 	 * @throws IOException 
 	 */
 	private void  updateGeospatialRanges(NetcdfFileWriter writer, LatLonRect llRect) throws IOException{

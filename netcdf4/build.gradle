@@ -1,0 +1,10 @@
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'netcdf4'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+  compile 'com.sun.jna:jna:3.0.9'
+}

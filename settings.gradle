@@ -1,1 +1,1 @@
-include 'udunits', 'cdm', 'bufr', 'grib', 'opendap', 'visad', 'ui', 'ncIdv'
+include 'udunits', 'cdm', 'bufr', 'grib', 'opendap', 'netcdf4', 'visad', 'ui', 'ncIdv'

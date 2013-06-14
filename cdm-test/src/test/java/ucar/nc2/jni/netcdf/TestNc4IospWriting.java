@@ -6,7 +6,6 @@ import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;

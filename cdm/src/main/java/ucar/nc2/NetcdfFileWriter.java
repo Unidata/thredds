@@ -39,11 +39,12 @@ import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.N3raf;
-import ucar.nc2.jni.netcdf.Nc4Chunking;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.write.Nc4Chunking;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -111,9 +112,9 @@ public class NetcdfFileWriter {
   /**
    * Create a new Netcdf file, with fill mode true.
    *
-   * @param version netcdf-3 or 4
+   * @param version  netcdf-3 or 4
    * @param location name of new file to open; if it exists, will overwrite it.
-   * @param chunker used only for netcdf4, or null for default
+   * @param chunker  used only for netcdf4, or null for default
    * @return new NetcdfFileWriter
    * @throws IOException on I/O error
    */
@@ -140,8 +141,8 @@ public class NetcdfFileWriter {
   /**
    * Open or create a new Netcdf file, put it into define mode to allow writing.
    *
-   * @param version which kind of file to write, if null, use netcdf3
-   * @param location open a new file at this location
+   * @param version    which kind of file to write, if null, use netcdf3
+   * @param location   open a new file at this location
    * @param isExisting true if file already exists
    * @throws IOException on I/O error
    */
@@ -154,16 +155,16 @@ public class NetcdfFileWriter {
    * writing, using the provided IOSP and RAF.
    * This allows specialized writers.
    *
-   * @param version which kind of file to write, if null, use netcdf3
-   * @param iospw IO service provider to use, if null use standard defined by version
-   * @param raf Random access file to use, may be null if iospw is, otherwise must be opened read/write
-   * @param location open a new file at this location
+   * @param version    which kind of file to write, if null, use netcdf3
+   * @param iospw      IO service provider to use, if null use standard defined by version
+   * @param raf        Random access file to use, may be null if iospw is, otherwise must be opened read/write
+   * @param location   open a new file at this location
    * @param isExisting true if file already exists
-   * @param chunker used only for netcdf4, or null for default
+   * @param chunker    used only for netcdf4, or null for default
    * @throws IOException on I/O error
    */
   protected NetcdfFileWriter(Version version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
-          String location, boolean isExisting, Nc4Chunking chunker) throws IOException {
+                             String location, boolean isExisting, Nc4Chunking chunker) throws IOException {
 
     if (version == null) version = Version.netcdf3;
     this.version = version;
@@ -175,12 +176,12 @@ public class NetcdfFileWriter {
 
       if (H5header.isValidFile(raf)) {
         if (!version.isNetdf4format())
-          throw new IllegalArgumentException(location+" must be netcdf-4 file");
+          throw new IllegalArgumentException(location + " must be netcdf-4 file");
       } else if (N3header.isValidFile(raf)) {
         if (version.isNetdf4format())
-          throw new IllegalArgumentException(location+" must be netcdf-3 file");
+          throw new IllegalArgumentException(location + " must be netcdf-3 file");
       } else {
-        throw new IllegalArgumentException(location+" must be netcdf-3 or netcdf-4 file");
+        throw new IllegalArgumentException(location + " must be netcdf-3 or netcdf-4 file");
       }
 
     } else {
@@ -189,9 +190,20 @@ public class NetcdfFileWriter {
 
     if (iospw == null) {
       if (version.useJniIosp()) {
-        Nc4Iosp nc4iosp = new Nc4Iosp(version);
-        nc4iosp.setChunker(chunker);
-        spiw = nc4iosp;
+        IOServiceProviderWriter spi = null;
+        try {
+          //  Nc4Iosp.setLibraryAndPath(path, name);
+          Class iospClass = this.getClass().getClassLoader().loadClass("ucar.nc2.jni.netcdf.Nc4Iosp");
+          Constructor ctor = iospClass.getConstructor(Version.class);
+          spi = (IOServiceProviderWriter) ctor.newInstance(version);
+
+          Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
+          method.invoke(spi, chunker);
+
+        } catch (Throwable e) {
+          throw new IllegalArgumentException("ucar.nc2.jni.netcdf.Nc4Iosp is not on classpath, cannont use version " + version);
+        }
+        spiw = spi;
       } else {
         spiw = new N3raf();
       }
@@ -218,13 +230,14 @@ public class NetcdfFileWriter {
    */
   public void setFill(boolean fill) {
     this.fill = fill;
-    spiw.setFill( fill);
+    spiw.setFill(fill);
   }
 
   /**
    * Preallocate the file size, for efficiency. Only used by netcdf-3.
    * Must be in define mode
    * Must call before create() to have any affect.
+   *
    * @param size if set to > 0, set length of file to this upon creation - this (usually) pre-allocates contiguous storage.
    */
   public void setLength(long size) {
@@ -235,6 +248,7 @@ public class NetcdfFileWriter {
   /**
    * Set if this should be a "large file" (64-bit offset) format. Only used by netcdf-3.
    * Must be in define mode
+   *
    * @param isLargeFile true if large file
    */
   public void setLargeFile(boolean isLargeFile) {
@@ -246,6 +260,7 @@ public class NetcdfFileWriter {
    * Set extra bytes to reserve in the header. Only used by netcdf-3.
    * This can prevent rewriting the entire file on redefine.
    * Must be in define mode
+   *
    * @param extraHeaderBytes # bytes extra for the header
    */
   public void setExtraHeaderBytes(int extraHeaderBytes) {
@@ -255,12 +270,20 @@ public class NetcdfFileWriter {
 
   /**
    * Is the file in define mode, which allows objects to be added and changed?
+   *
    * @return true if the file in define mode
    */
-  public boolean isDefineMode() { return defineMode; }
+  public boolean isDefineMode() {
+    return defineMode;
+  }
 
-  public NetcdfFile getNetcdfFile() { return ncfile; }
-  public Version getVersion() { return version; }
+  public NetcdfFile getNetcdfFile() {
+    return ncfile;
+  }
+
+  public Version getVersion() {
+    return version;
+  }
 
   public Variable findVariable(String fullNameEscaped) {
     return ncfile.findVariable(fullNameEscaped);
@@ -281,10 +304,10 @@ public class NetcdfFileWriter {
   }
 
   public Dimension addUnlimitedDimension(String dimName) {
-     return addDimension(null, dimName, 0, true, true, false);
-   }
+    return addDimension(null, dimName, 0, true, true, false);
+  }
 
-   /**
+  /**
    * Add a Dimension to the file. Must be in define mode.
    *
    * @param dimName          name of dimension
@@ -297,7 +320,7 @@ public class NetcdfFileWriter {
   public Dimension addDimension(Group g, String dimName, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
     if (!isValidObjectName(dimName))
-      throw new IllegalArgumentException("illegal dimension name "+dimName);
+      throw new IllegalArgumentException("illegal dimension name " + dimName);
 
     Dimension dim = new Dimension(dimName, length, isShared, isUnlimited, isVariableLength);
     ncfile.addDimension(g, dim);
@@ -327,13 +350,14 @@ public class NetcdfFileWriter {
 
   /**
    * Rename a Dimension. Must be in define mode.
+   *
    * @param oldName existing dimension has this name
    * @param newName rename to this
    * @return renamed dimension, or null if not found
    */
   public Dimension renameDimension(Group g, String oldName, String newName) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    if (!isValidObjectName(newName)) throw new IllegalArgumentException("illegal dimension name "+newName);
+    if (!isValidObjectName(newName)) throw new IllegalArgumentException("illegal dimension name " + newName);
 
     if (g == null) g = ncfile.getRootGroup();
     Dimension dim = g.findDimension(oldName);
@@ -342,27 +366,28 @@ public class NetcdfFileWriter {
   }
 
   /**
-    * Add a Group to the file. Must be in define mode.
-    * If pass in null as the parent then the root group is returned and the name is ignored. 
-    * This is how you get the root group. Note this is different from other uses of parent group.  
-    * 
-    * @param parent the parent of this group, if null then returns the root group.
-    * @param name the name of this group, unique within parent
-    * @return the created group
-    */
-   public Group addGroup(Group parent, String name) {
-     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-     if (parent == null) return ncfile.getRootGroup();
+   * Add a Group to the file. Must be in define mode.
+   * If pass in null as the parent then the root group is returned and the name is ignored.
+   * This is how you get the root group. Note this is different from other uses of parent group.
+   *
+   * @param parent the parent of this group, if null then returns the root group.
+   * @param name   the name of this group, unique within parent
+   * @return the created group
+   */
+  public Group addGroup(Group parent, String name) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    if (parent == null) return ncfile.getRootGroup();
 
-     Group result = new Group(ncfile, parent, name);
-     parent.addGroup(result);
-     return result;
-   }
+    Group result = new Group(ncfile, parent, name);
+    parent.addGroup(result);
+    return result;
+  }
 
 
   /**
    * Add a Global attribute to the file. Must be in define mode.
-   * @param g the group to add to. if null, use root group
+   *
+   * @param g   the group to add to. if null, use root group
    * @param att the attribute.
    * @return the created attribute
    */
@@ -371,7 +396,7 @@ public class NetcdfFileWriter {
 
     if (!isValidObjectName(att.getShortName())) {
       String attName = createValidObjectName(att.getShortName());
-      log.warn("illegal attribute name= "+att.getShortName() + " change to "+ attName);
+      log.warn("illegal attribute name= " + att.getShortName() + " change to " + attName);
       att = new Attribute(attName, att.getValues());
     }
 
@@ -380,7 +405,8 @@ public class NetcdfFileWriter {
 
   /**
    * Add a EnumTypedef to the file. Must be in define mode.
-   * @param g the group to add to. if null, use root group
+   *
+   * @param g  the group to add to. if null, use root group
    * @param td the EnumTypedef.
    * @return the created attribute
    */
@@ -392,7 +418,8 @@ public class NetcdfFileWriter {
 
   /**
    * Delete a group Attribute. Must be in define mode.
-   * @param g the group to add to. if null, use root group
+   *
+   * @param g       the group to add to. if null, use root group
    * @param attName existing Attribute has this name
    * @return deleted Attribute, or null if not found
    */
@@ -407,7 +434,8 @@ public class NetcdfFileWriter {
 
   /**
    * Rename a group Attribute. Must be in define mode.
-   * @param g the group to add to. if null, use root group
+   *
+   * @param g       the group to add to. if null, use root group
    * @param oldName existing Attribute has this name
    * @param newName rename to this
    * @return renamed Attribute, or null if not found
@@ -417,7 +445,7 @@ public class NetcdfFileWriter {
 
     if (!isValidObjectName(newName)) {
       String newnewName = createValidObjectName(newName);
-      log.warn("illegal attribute name= "+newName + " change to "+ newnewName);
+      log.warn("illegal attribute name= " + newName + " change to " + newnewName);
       newName = newnewName;
     }
 
@@ -426,19 +454,19 @@ public class NetcdfFileWriter {
     if (null == att) return null;
 
     g.remove(att);
-    att = new Attribute( newName, att.getValues());
-    g.addAttribute( att);
+    att = new Attribute(newName, att.getValues());
+    g.addAttribute(att);
     return att;
   }
 
   /**
    * Add a variable to the file. Must be in define mode.
    *
-   * @param g the group to add to. if null, use root group
-   * @param shortName  name of Variable, must be unique with the file.
-   * @param dataType type of underlying element
-   * @param dims     names of Dimensions for the variable, blank seperated.
-   *                 Must already have been added. Use an empty string for a scalar variable.
+   * @param g         the group to add to. if null, use root group
+   * @param shortName name of Variable, must be unique with the file.
+   * @param dataType  type of underlying element
+   * @param dims      names of Dimensions for the variable, blank seperated.
+   *                  Must already have been added. Use an empty string for a scalar variable.
    * @return the Variable that has been added
    */
   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
@@ -463,10 +491,10 @@ public class NetcdfFileWriter {
    * Add a variable to the file. Must be in define mode.
    *
    * @param g         add to this group in the new file
-   * @param shortName  name of Variable, must be unique with the file.
-   * @param dataType type of underlying element
-   * @param dims     list of Dimensions for the variable in the new file, must already have been added.
-   *                 Use a list of length 0 for a scalar variable.
+   * @param shortName name of Variable, must be unique with the file.
+   * @param dataType  type of underlying element
+   * @param dims      list of Dimensions for the variable in the new file, must already have been added.
+   *                  Use a list of length 0 for a scalar variable.
    * @return the Variable that has been added
    */
   public Variable addVariable(Group g, String shortName, DataType dataType, List<Dimension> dims) {
@@ -475,14 +503,14 @@ public class NetcdfFileWriter {
 
     shortName = makeValidObjectName(shortName);
     if (!isValidDataType(dataType))
-      throw new IllegalArgumentException("illegal dataType: "+dataType+" not supported in netcdf-3");
+      throw new IllegalArgumentException("illegal dataType: " + dataType + " not supported in netcdf-3");
 
     // check unlimited if netcdf-3
     if (!version.isNetdf4format()) {
-      for (int i=0; i<dims.size(); i++) {
+      for (int i = 0; i < dims.size(); i++) {
         Dimension d = dims.get(i);
         if (d.isUnlimited() && (i != 0))
-          throw new IllegalArgumentException("Unlimited dimension "+d.getShortName()+" must be first (outermost) in netcdf-3 ");
+          throw new IllegalArgumentException("Unlimited dimension " + d.getShortName() + " must be first (outermost) in netcdf-3 ");
       }
     }
 
@@ -498,59 +526,59 @@ public class NetcdfFileWriter {
 
     long size = v.getSize() * v.getElementSize();
     if (!version.isNetdf4format() && size > N3iosp.MAX_VARSIZE)
-      throw new IllegalArgumentException("Variable size in bytes "+size+" may not exceed "+ N3iosp.MAX_VARSIZE);
+      throw new IllegalArgumentException("Variable size in bytes " + size + " may not exceed " + N3iosp.MAX_VARSIZE);
 
     ncfile.addVariable(g, v);
     return v;
   }
-    /**
-     * Add a variable with DataType = String to a netCDF-3 file. Must be in define mode.
-     * The variable will be stored in the file as a CHAR variable.
-     * A new dimension with name "stringVar.getShortName()_strlen" is automatically
-     * added, with length max_strlen, as determined from the data contained in the
-     * stringVar.
-     *
-     * @param g         add to this group in the new file
-     * @param stringVar  string variable.
-     * @param dims     list of Dimensions for the string variable.
-     *
-     * @return the CHAR variable generated from stringVar
-     */
-    public Variable addStringVariable(Group g, Variable stringVar, List<Dimension> dims) {
-        if (!defineMode)
-            throw new UnsupportedOperationException("not in define mode");
 
-        if (!N3iosp.isValidNetcdfObjectName(stringVar.getShortName()))
-            throw new IllegalArgumentException("illegal netCDF-3 variable name: "+stringVar.getShortName());
+  /**
+   * Add a variable with DataType = String to a netCDF-3 file. Must be in define mode.
+   * The variable will be stored in the file as a CHAR variable.
+   * A new dimension with name "stringVar.getShortName()_strlen" is automatically
+   * added, with length max_strlen, as determined from the data contained in the
+   * stringVar.
+   *
+   * @param g         add to this group in the new file
+   * @param stringVar string variable.
+   * @param dims      list of Dimensions for the string variable.
+   * @return the CHAR variable generated from stringVar
+   */
+  public Variable addStringVariable(Group g, Variable stringVar, List<Dimension> dims) {
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
 
-        // convert STRING to CHAR
-        int max_strlen = 0;
-        Array data = null;
+    if (!N3iosp.isValidNetcdfObjectName(stringVar.getShortName()))
+      throw new IllegalArgumentException("illegal netCDF-3 variable name: " + stringVar.getShortName());
 
-        try {
-            data = stringVar.read();
-            IndexIterator ii = data.getIndexIterator();
-            while (ii.hasNext()) {
-                String s = (String) ii.getObjectNext();
-                max_strlen = Math.max(max_strlen, s.length());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            String err = "No data found for Variable " + stringVar.getShortName() +
-                    ". Cannot determine the lentgh of the new CHAR variable.";
-            log.error(err);
-            System.out.println(err);
-        }
+    // convert STRING to CHAR
+    int max_strlen = 0;
+    Array data = null;
 
-        return addStringVariable(g, stringVar.getShortName(), dims, max_strlen);
+    try {
+      data = stringVar.read();
+      IndexIterator ii = data.getIndexIterator();
+      while (ii.hasNext()) {
+        String s = (String) ii.getObjectNext();
+        max_strlen = Math.max(max_strlen, s.length());
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      String err = "No data found for Variable " + stringVar.getShortName() +
+              ". Cannot determine the lentgh of the new CHAR variable.";
+      log.error(err);
+      System.out.println(err);
     }
+
+    return addStringVariable(g, stringVar.getShortName(), dims, max_strlen);
+  }
 
   /**
    * Add a variable with DataType = String to the file. Must be in define mode.
    * The variable will be stored in the file as a CHAR variable.
    * A new dimension with name "varName_strlen" is automatically added, with length max_strlen.
    *
-   * @param shortName    name of Variable, must be unique within the file.
+   * @param shortName  name of Variable, must be unique within the file.
    * @param dims       list of Dimensions for the variable, must already have been added. Use a list of length 0
    *                   for a scalar variable. Do not include the string length dimension.
    * @param max_strlen maximum string length.
@@ -575,6 +603,7 @@ public class NetcdfFileWriter {
 
   /**
    * Rename a Variable. Must be in define mode.
+   *
    * @param oldName existing Variable has this name
    * @param newName rename to this
    * @return renamed Variable, or null if not found
@@ -589,9 +618,9 @@ public class NetcdfFileWriter {
   /**
    * Add an attribute to the named Variable. Must be in define mode.
    *
-   * @param v       Variable to add attribute to
-   * @param att     Attribute to add.
-   * @return  true if attribute was added, false if not allowed by CDM.
+   * @param v   Variable to add attribute to
+   * @param att Attribute to add.
+   * @return true if attribute was added, false if not allowed by CDM.
    */
   public boolean addVariableAttribute(Variable v, Attribute att) {
     if (!defineMode)
@@ -599,7 +628,7 @@ public class NetcdfFileWriter {
 
     if (!isValidObjectName(att.getShortName())) {
       String attName = createValidObjectName(att.getShortName());
-      log.warn("illegal netCDF-3 attribute name= "+att.getShortName() + " change to "+ attName);
+      log.warn("illegal netCDF-3 attribute name= " + att.getShortName() + " change to " + attName);
       att = new Attribute(attName, att.getValues());
     }
 
@@ -613,6 +642,7 @@ public class NetcdfFileWriter {
 
   /**
    * Delete a variable Attribute. Must be in define mode.
+   *
    * @param v       Variable to delete attribute to
    * @param attName existing Attribute has this name
    * @return deleted Attribute, or null if not found
@@ -630,6 +660,7 @@ public class NetcdfFileWriter {
 
   /**
    * Rename a variable Attribute. Must be in define mode.
+   *
    * @param v       Variable to modify attribute
    * @param attName existing Attribute has this name
    * @param newName rename to this
@@ -642,7 +673,7 @@ public class NetcdfFileWriter {
     if (null == att) return null;
 
     v.remove(att);
-    att = new Attribute( newName, att.getValues());
+    att = new Attribute(newName, att.getValues());
     v.addAttribute(att);
     return att;
   }
@@ -665,8 +696,9 @@ public class NetcdfFileWriter {
 
   /**
    * After you have added all of the Dimensions, Variables, and Attributes,
-   *   call create() to actually create the file. You must be in define mode.
+   * call create() to actually create the file. You must be in define mode.
    * After this call, you are no longer in define mode.
+   *
    * @throws java.io.IOException if I/O error
    */
   public void create() throws java.io.IOException {
@@ -674,7 +706,7 @@ public class NetcdfFileWriter {
       throw new UnsupportedOperationException("not in define mode");
 
     ncfile.finish(); // ??
-    spiw.setFill( fill); // ??
+    spiw.setFill(fill); // ??
     spiw.create(location, ncfile, extraHeader, preallocateSize, isLargeFile);
 
     defineMode = false;
@@ -687,6 +719,7 @@ public class NetcdfFileWriter {
    * Set the redefine mode.
    * Designed to emulate nc_redef (redefineMode = true) and
    * nc_enddef (redefineMode = false)
+   *
    * @param redefineMode start or end define mode
    * @return true if it had to rewrite the entire file, false if it wrote the header in place
    * @throws java.io.IOException on read/write error
@@ -700,7 +733,7 @@ public class NetcdfFileWriter {
       ncfile.finish();
 
       // try to rewrite header, if it fails, then we have to rewrite entire file
-      boolean ok = spiw.rewriteHeader( isLargeFile);  // LOOK seems like we should be using isNewFile
+      boolean ok = spiw.rewriteHeader(isLargeFile);  // LOOK seems like we should be using isNewFile
       if (!ok)
         rewrite();
       return !ok;
@@ -716,12 +749,12 @@ public class NetcdfFileWriter {
     spiw.close();
 
     File prevFile = new File(location);
-    File tmpFile = new File(location+".tmp");
+    File tmpFile = new File(location + ".tmp");
     if (tmpFile.exists()) tmpFile.delete();
     if (!prevFile.renameTo(tmpFile)) {
-      System.out.println(prevFile.getPath()+ " prevFile.exists "+prevFile.exists()+" canRead = "+ prevFile.canRead());
-      System.out.println(tmpFile.getPath()+" tmpFile.exists "+tmpFile.exists()+" canWrite "+ tmpFile.canWrite());
-      throw new RuntimeException("Cant rename "+prevFile.getAbsolutePath()+" to "+ tmpFile.getAbsolutePath());
+      System.out.println(prevFile.getPath() + " prevFile.exists " + prevFile.exists() + " canRead = " + prevFile.canRead());
+      System.out.println(tmpFile.getPath() + " tmpFile.exists " + tmpFile.exists() + " canWrite " + tmpFile.canWrite());
+      throw new RuntimeException("Cant rename " + prevFile.getAbsolutePath() + " to " + tmpFile.getAbsolutePath());
     }
 
     NetcdfFile oldFile = NetcdfFile.open(tmpFile.getPath());
@@ -740,7 +773,7 @@ public class NetcdfFileWriter {
 
     // create new file with current set of objects
     spiw.create(location, ncfile, extraHeader, preallocateSize, isLargeFile);
-    spiw.setFill( fill);
+    spiw.setFill(fill);
     //isClosed = false;
 
     // wait till header is written before adding the record variable to the file
@@ -764,7 +797,7 @@ public class NetcdfFileWriter {
     // delete old
     oldFile.close();
     if (!tmpFile.delete())
-      throw new RuntimeException("Cant delete "+location);
+      throw new RuntimeException("Cant delete " + location);
   }
 
   public Structure addRecordStructure() {
@@ -781,9 +814,9 @@ public class NetcdfFileWriter {
   /**
    * Write data to the named variable, origin assumed to be 0. Must not be in define mode.
    *
-   * @param v variable to write to
-   * @param values  write this array; must be same type and rank as Variable
-   * @throws IOException if I/O error
+   * @param v      variable to write to
+   * @param values write this array; must be same type and rank as Variable
+   * @throws IOException                    if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
   public void write(Variable v, Array values) throws java.io.IOException, InvalidRangeException {
@@ -793,10 +826,10 @@ public class NetcdfFileWriter {
   /**
    * Write data to the named variable. Must not be in define mode.
    *
-   * @param v variable to write to
-   * @param origin  offset within the variable to start writing.
-   * @param values  write this array; must be same type and rank as Variable
-   * @throws IOException if I/O error
+   * @param v      variable to write to
+   * @param origin offset within the variable to start writing.
+   * @param values write this array; must be same type and rank as Variable
+   * @throws IOException                    if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
   public void write(Variable v, int[] origin, Array values) throws java.io.IOException, InvalidRangeException {
@@ -810,9 +843,9 @@ public class NetcdfFileWriter {
   /**
    * Write String data to a CHAR variable, origin assumed to be 0. Must not be in define mode.
    *
-   * @param v variable to write to
-   * @param values  write this array; must be ArrayObject of String
-   * @throws IOException if I/O error
+   * @param v      variable to write to
+   * @param values write this array; must be ArrayObject of String
+   * @throws IOException                    if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
   public void writeStringData(Variable v, Array values) throws java.io.IOException, InvalidRangeException {
@@ -822,10 +855,10 @@ public class NetcdfFileWriter {
   /**
    * Write String data to a CHAR variable. Must not be in define mode.
    *
-   * @param v variable to write to
-   * @param origin  offset to start writing, ignore the strlen dimension.
-   * @param values  write this array; must be ArrayObject of String
-   * @throws IOException if I/O error
+   * @param v      variable to write to
+   * @param origin offset to start writing, ignore the strlen dimension.
+   * @param values write this array; must be ArrayObject of String
+   * @throws IOException                    if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
   public void writeStringData(Variable v, int[] origin, Array values) throws java.io.IOException, InvalidRangeException {
@@ -836,7 +869,7 @@ public class NetcdfFileWriter {
     if (v.getDataType() != DataType.CHAR)
       throw new IllegalArgumentException("variable " + v.getFullName() + " is not type CHAR");
     int rank = v.getRank();
-    int strlen = v.getShape(rank-1);
+    int strlen = v.getShape(rank - 1);
 
     // turn it into an ArrayChar
     ArrayChar cvalues = ArrayChar.makeFromStringArray((ArrayObject) values, strlen);
@@ -849,6 +882,7 @@ public class NetcdfFileWriter {
 
   /**
    * Flush anything written to disk.
+   *
    * @throws IOException if I/O error
    */
   public void flush() throws java.io.IOException {
@@ -857,6 +891,7 @@ public class NetcdfFileWriter {
 
   /**
    * close the file.
+   *
    * @throws IOException if I/O error
    */
   public synchronized void close() throws java.io.IOException {
