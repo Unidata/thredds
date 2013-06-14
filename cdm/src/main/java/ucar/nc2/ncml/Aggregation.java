@@ -173,7 +173,9 @@ public abstract class Aggregation {
     this.ncDataset = ncd;
     this.dimName = dimName;
     this.type = type;
-    datasetManager = MFileCollectionManager.openWithRecheck(ncd.getLocation(), recheckS);
+    String name = ncd.getLocation();
+    if (name == null) name = "Agg-"+Integer.toString(ncd.hashCode());
+    datasetManager = MFileCollectionManager.openWithRecheck(name, recheckS);
   }
 
   /**
