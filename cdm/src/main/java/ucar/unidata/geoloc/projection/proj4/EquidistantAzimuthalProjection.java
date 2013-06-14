@@ -84,7 +84,7 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
     }
 
     addParameter(CF.SEMI_MAJOR_AXIS, earth.getMajor());
-    addParameter(CF.INVERSE_FLATTENING, 1.0/earth.getFlattening());
+    addParameter(CF.INVERSE_FLATTENING, 1.0 / earth.getFlattening());
 
     initialize();
   }
@@ -148,21 +148,22 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
         case EQUATOR:
         case OBLIQUE:
           if (mode == EQUATOR)
-            xy.y = cosphi * coslam;
+            xy.setY(cosphi * coslam);
           else
-            xy.y = sinphi0 * sinphi + cosphi0 * cosphi * coslam;
+            xy.setY(sinphi0 * sinphi + cosphi0 * cosphi * coslam);
 
-          if (Math.abs(Math.abs(xy.y) - 1.) < TOL) {
-            if (xy.y < 0.)
+          if (Math.abs(Math.abs(xy.getY()) - 1.) < TOL) {
+            if (xy.getY() < 0.)
               throw new IllegalStateException();
             else
-              xy.x = xy.y = 0.;
+              xy.setLocation(0, 0);
 
           } else {
-            xy.y = Math.acos(xy.y);
-            xy.y /= Math.sin(xy.y);
-            xy.x = xy.y * cosphi * Math.sin(lam);
-            xy.y *= (mode == EQUATOR) ? sinphi : cosphi0 * sinphi - sinphi0 * cosphi * coslam;
+            double y = Math.acos(xy.getY());
+            y /= Math.sin(y);
+            double x = y * cosphi * Math.sin(lam);
+            y *= (mode == EQUATOR) ? sinphi : cosphi0 * sinphi - sinphi0 * cosphi * coslam;
+            xy.setLocation(x, y);
           }
           break;
 
@@ -173,8 +174,10 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
         case SOUTH_POLE:
           if (Math.abs(phi - MapMath.HALFPI) < MapMath.EPS10)
             throw new IllegalStateException();
-          xy.x = (xy.y = (MapMath.HALFPI + phi)) * Math.sin(lam);
-          xy.y *= coslam;
+          double y = (MapMath.HALFPI + phi);
+          double x = y * Math.sin(lam);
+          y *= coslam;
+          xy.setLocation(x, y);
           break;
       }
 
@@ -188,13 +191,14 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
         case NORTH_POLE:
           coslam = -coslam;
         case SOUTH_POLE:
-          xy.x = (rho = Math.abs(Mp - MapMath.mlfn(phi, sinphi, cosphi, en))) * Math.sin(lam);
-          xy.y = rho * coslam;
+          double x = (rho = Math.abs(Mp - MapMath.mlfn(phi, sinphi, cosphi, en))) * Math.sin(lam);
+          double y = rho * coslam;
+          xy.setLocation(x, y);
           break;
         case EQUATOR:
         case OBLIQUE:
           if (Math.abs(lam) < MapMath.EPS10 && Math.abs(phi - projectionLatitude) < MapMath.EPS10) {
-            xy.x = xy.y = 0.;
+            xy.setLocation(0, 0);
             break;
           }
           t = Math.atan2(one_es * sinphi + es * N1 * sinphi0 * Math.sqrt(1. - es * sinphi * sinphi), cosphi);
@@ -212,20 +216,19 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
                   s * (G * H * (1. - 2. * H2 * H2) / 8. +
                           s * ((H2 * (4. - 7. * H2) - 3. * G * G * (1. - 7. * H2)) /
                                   120. - s * G * H / 48.))));
-          xy.x = c * sA;
-          xy.y = c * cA;
+          xy.setLocation(c * sA, c * cA);
           break;
       }
     }
 
-    xy.setLocation(totalScale * xy.x + falseEasting, totalScale * xy.y + falseNorthing);
+    xy.setLocation(totalScale * xy.getX() + falseEasting, totalScale * xy.getY() + falseNorthing);
     return xy;
   }
 
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl lp) {
     double x = (ppt.getX() - falseEasting) / totalScale;  // assumes cartesion coords in km
-     double y = (ppt.getY() - falseNorthing) / totalScale;
+    double y = (ppt.getY() - falseNorthing) / totalScale;
 
     if (earth.isSpherical()) {
       double cosc, c_rh, sinc;
@@ -296,18 +299,18 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
       }
     }
 
-    lp.setLongitude( lp.getLongitude() + lon0);
+    lp.setLongitude(lp.getLongitude() + lon0);
     return lp;
   }
 
   @Override
   public String paramsToString() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null;
   }
 
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false;
   }
 
   @Override

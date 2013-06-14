@@ -50,6 +50,10 @@
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
+      <artifactId>clcommon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
       <artifactId>bufr</artifactId>
       <scope>runtime</scope>
     </dependency>
@@ -92,10 +96,7 @@
       <groupId>org.jdom</groupId>
       <artifactId>jdom2</artifactId>
     </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>

@@ -234,6 +234,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>clcommon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>grib</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -845,6 +850,7 @@
     <module>cdm-test</module>
     <module>it</module>
     <module>netcdf4</module>
+    <module>clcommon</module>
   </modules>
 
   <properties>

@@ -35,17 +35,16 @@ package ucar.unidata.geoloc;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.Format;
 
-import java.awt.geom.Point2D;
 import java.util.Formatter;
 
 /**
  * Our implementation of ProjectionPoint,
- * that subclasses java.awt.geom.Point2D to add serialization.
  *
  * @author John Caron
  * @see ProjectionPoint
  */
-public class ProjectionPointImpl extends Point2D.Double implements ProjectionPoint, java.io.Serializable {
+public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializable {
+  private double x, y;
 
   /**
    * Default constructor, initialized to 0,0
@@ -58,10 +57,10 @@ public class ProjectionPointImpl extends Point2D.Double implements ProjectionPoi
    * Constructor that copies Point2D values into this.
    *
    * @param pt point to copy
-   */
+   *
   public ProjectionPointImpl(Point2D pt) {
     super(pt.getX(), pt.getY());
-  }
+  } */
 
   /**
    * Constructor that copies ProjectionPoint values into this.
@@ -69,7 +68,8 @@ public class ProjectionPointImpl extends Point2D.Double implements ProjectionPoi
    * @param pt point to copy
    */
   public ProjectionPointImpl(ProjectionPoint pt) {
-    super(pt.getX(), pt.getY());
+    this.x = pt.getX();
+    this.y = pt.getY();
   }
 
   /**
@@ -79,7 +79,24 @@ public class ProjectionPointImpl extends Point2D.Double implements ProjectionPoi
    * @param y y coordinate
    */
   public ProjectionPointImpl(double x, double y) {
-    super(x, y);
+    this.x = x;
+    this.y = y;
+  }
+
+  public double getX() {
+    return x;
+  }
+
+  public double getY() {
+    return y;
+  }
+
+  public void setX(double x) {
+    this.x = x;
+  }
+
+  public void setY(double y) {
+    this.y = y;
   }
 
   /**
@@ -126,15 +143,20 @@ public class ProjectionPointImpl extends Point2D.Double implements ProjectionPoi
     setLocation(pt.getX(), pt.getY());
   }
 
+  public void setLocation(double x, double y) {
+       this.x = x;
+       this.y = y;
+   }
+
 
   /**
    * set x,y location from  pt
    *
    * @param pt point to use for values
-   */
+   *
   public void setLocation(Point2D pt) {
     setLocation(pt.getX(), pt.getY());
-  }
+  } */
 
   /**
    * See if either coordinate is +/- infinite. This happens sometimes

@@ -48,7 +48,6 @@ import java.util.*;
 import java.io.File;
 import java.io.IOException;
 
-import ucar.nc2.units.DateRange;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.geotiff.GeotiffWriter;
 

@@ -39,8 +39,6 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
 import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;

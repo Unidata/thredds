@@ -35,7 +35,6 @@ package thredds.wcs.v1_0_0_1;
 import thredds.wcs.Request;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 
 /**
  * _more_

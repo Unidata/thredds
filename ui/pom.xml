@@ -25,6 +25,10 @@
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
+      <artifactId>clcommon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
       <artifactId>bufr</artifactId>
     </dependency>
     <dependency>

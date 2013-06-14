@@ -33,7 +33,6 @@
 package thredds.server.wcs.v1_1_0;
 
 import thredds.servlet.ServletUtil;
-import thredds.wcs.v1_1_0.*;
 import thredds.util.Version;
 import thredds.server.wcs.VersionHandler;
 
@@ -76,7 +75,7 @@ public class WCS_1_1_0 implements VersionHandler
 
   public VersionHandler setDiskCache( DiskCache2 diskCache )
   {
-    GetCoverage.setDiskCache( diskCache );
+    thredds.wcs.v1_1_0.GetCoverage.setDiskCache(diskCache);
     return this;
   }
 
@@ -93,11 +92,11 @@ public class WCS_1_1_0 implements VersionHandler
     try
     {
       URI serverURI = new URI( req.getRequestURL().toString());
-      Request request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(), req, res);
-      if ( request.getOperation().equals( Request.Operation.GetCapabilities))
+      thredds.wcs.v1_1_0.Request request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(), req, res);
+      if ( request.getOperation().equals( thredds.wcs.v1_1_0.Request.Operation.GetCapabilities))
       {
-        GetCapabilities getCapabilities =
-                new GetCapabilities( serverURI, request.getSections(),
+        thredds.wcs.v1_1_0.GetCapabilities getCapabilities =
+                new thredds.wcs.v1_1_0.GetCapabilities( serverURI, request.getSections(),
                                      getServiceId(), getServiceProvider(),
                                      request.getDataset() );
         res.setContentType( "text/xml" );
@@ -107,10 +106,10 @@ public class WCS_1_1_0 implements VersionHandler
         getCapabilities.writeCapabilitiesReport( pw );
         pw.flush();
       }
-      else if ( request.getOperation().equals( Request.Operation.DescribeCoverage ) )
+      else if ( request.getOperation().equals( thredds.wcs.v1_1_0.Request.Operation.DescribeCoverage ) )
       {
-        DescribeCoverage descCoverage =
-                new DescribeCoverage( serverURI, request.getIdentifierList(),
+        thredds.wcs.v1_1_0.DescribeCoverage descCoverage =
+                new thredds.wcs.v1_1_0.DescribeCoverage( serverURI, request.getIdentifierList(),
                                       request.getDataset() );
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
@@ -119,11 +118,11 @@ public class WCS_1_1_0 implements VersionHandler
         descCoverage.writeDescribeCoverageDoc( pw );
         pw.flush();
       }
-      else if ( request.getOperation().equals( Request.Operation.GetCoverage ) )
+      else if ( request.getOperation().equals( thredds.wcs.v1_1_0.Request.Operation.GetCoverage ) )
       {
         // ToDo Handle multi-part MIME response
-        GetCoverage getCoverage =
-                new GetCoverage( serverURI, request.getIdentifier(),
+        thredds.wcs.v1_1_0.GetCoverage getCoverage =
+                new thredds.wcs.v1_1_0.GetCoverage( serverURI, request.getIdentifier(),
                                  request.getDatasetPath(),
                                  request.getDataset() );
         File covFile = getCoverage.writeCoverageDataToFile();
@@ -142,59 +141,59 @@ public class WCS_1_1_0 implements VersionHandler
         else
         {
           log.error( "handleKVP(): Failed to create coverage file" + (covFile == null ? "" : (": " + covFile.getAbsolutePath() )) );
-          throw new WcsException( "Problem creating requested coverage.");
+          throw new thredds.wcs.v1_1_0.WcsException( "Problem creating requested coverage.");
         }
       }
     }
-    catch ( WcsException e)
+    catch ( thredds.wcs.v1_1_0.WcsException e)
     {
       handleExceptionReport( res, e);
     }
     catch ( URISyntaxException e )
     {
-      handleExceptionReport( res, new WcsException( "Bad URI: " + e.getMessage()));
+      handleExceptionReport( res, new thredds.wcs.v1_1_0.WcsException( "Bad URI: " + e.getMessage()));
     }
     catch ( Throwable t)
     {
       log.error( "Unknown problem.", t);
-      handleExceptionReport( res, new WcsException( "Unknown problem", t));
+      handleExceptionReport( res, new thredds.wcs.v1_1_0.WcsException( "Unknown problem", t));
     }
   }
 
-  private GetCapabilities.ServiceId getServiceId()
+  private thredds.wcs.v1_1_0.GetCapabilities.ServiceId getServiceId()
   {
     // Todo Figure out how to configure serviceId info.
-    GetCapabilities.ServiceId sid;
-    sid = new GetCapabilities.ServiceId( "title", "abstract",
+    thredds.wcs.v1_1_0.GetCapabilities.ServiceId sid;
+    sid = new thredds.wcs.v1_1_0.GetCapabilities.ServiceId( "title", "abstract",
                                           Collections.singletonList( "keyword" ),
                                           "WCS", Collections.singletonList( "1.1.0" ),
                                           "", Collections.singletonList( "" ) );
 
     return sid;
   }
-  private GetCapabilities.ServiceProvider getServiceProvider()
+  private thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider getServiceProvider()
   {
     // Todo Figure out how to configure serviceProvider info.
-    GetCapabilities.ServiceProvider.OnlineResource resource =
-            new GetCapabilities.ServiceProvider.OnlineResource( null, "a link");
-    GetCapabilities.ServiceProvider.Address address = null; //new GetCapabilities.ServiceProvider.Address(...);
+    thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.OnlineResource resource =
+            new thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.OnlineResource( null, "a link");
+    thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.Address address = null; //new GetCapabilities.ServiceProvider.Address(...);
     List<String> phone = Collections.emptyList();
     List<String> fax = Collections.emptyList();
-    GetCapabilities.ServiceProvider.ContactInfo contactInfo =
-            new GetCapabilities.ServiceProvider.ContactInfo( phone, fax, address, null, "hours", "contact instructions");
-    GetCapabilities.ServiceProvider.ServiceContact contact =
-            new GetCapabilities.ServiceProvider.ServiceContact( "individual name", "position name", contactInfo, "role");
+    thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.ContactInfo contactInfo =
+            new thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.ContactInfo( phone, fax, address, null, "hours", "contact instructions");
+    thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.ServiceContact contact =
+            new thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.ServiceContact( "individual name", "position name", contactInfo, "role");
 
-    return new GetCapabilities.ServiceProvider( "sp name", resource, contact);
+    return new thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider( "sp name", resource, contact);
   }
 
-  public void handleExceptionReport( HttpServletResponse res, WcsException exception )
+  public void handleExceptionReport( HttpServletResponse res, thredds.wcs.v1_1_0.WcsException exception )
           throws IOException
   {
     res.setContentType( "text/xml" ); // 1.0.0 was ("application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
-    ExceptionReport exceptionReport = new ExceptionReport( exception );
+    thredds.wcs.v1_1_0.ExceptionReport exceptionReport = new thredds.wcs.v1_1_0.ExceptionReport( exception );
 
     PrintWriter pw = res.getWriter();
     exceptionReport.writeExceptionReport( pw );
@@ -204,16 +203,16 @@ public class WCS_1_1_0 implements VersionHandler
   public void handleExceptionReport( HttpServletResponse res, String code, String locator, String message )
           throws IOException
   {
-    WcsException.Code c;
-    WcsException exception;
+    thredds.wcs.v1_1_0.WcsException.Code c;
+    thredds.wcs.v1_1_0.WcsException exception;
     try
     {
-      c = WcsException.Code.valueOf( code);
-      exception = new WcsException( c, locator, message );
+      c = thredds.wcs.v1_1_0.WcsException.Code.valueOf( code);
+      exception = new thredds.wcs.v1_1_0.WcsException( c, locator, message );
     }
     catch ( IllegalArgumentException e )
     {
-      exception = new WcsException( message );
+      exception = new thredds.wcs.v1_1_0.WcsException( message );
       log.debug( "handleExceptionReport(): bad code given <" + code + ">.");
     }
 

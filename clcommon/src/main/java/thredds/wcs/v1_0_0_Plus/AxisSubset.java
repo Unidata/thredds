@@ -35,7 +35,6 @@ package thredds.wcs.v1_0_0_Plus;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis;
 
 /**
  * _more_

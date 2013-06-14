@@ -739,7 +739,7 @@ public class TestInvDatasetScan
     myService = new InvService( "myserver", ServiceType.COMPOUND.toString(), "", null, null );
     myService.addService( new InvService( "tdsDods", ServiceType.DODS.toString(), "/thredds/dodsC", null, null ) );
     myService.addService( new InvService( "tdsHttp", ServiceType.HTTPServer.toString(), "/thredds/fileServer", null, null ) );
-    myService.addService( new InvService( "tdsWcs", ServiceType.WCS.toString(), "/thredds/wcs", null, null ) );
+    myService.addService( new InvService( "tdsWcs", ServiceType.WCS.toString(), "/thredds/wcs/wcs", null, null ) );
 //    myService = new InvService( "myserver", ServiceType.OPENDAP.toString(), "", null, null );
 
     configCat.addService( myService );

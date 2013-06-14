@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.dt.image;
+package ucar.nc2.dt.image.image;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;

@@ -11,6 +11,7 @@ sourceSets {
 
 dependencies {
   compile project(':cdm')
+  compile project(':clcommon')
   compile project(':bufr')
   compile project(':grib')
   compile project(':netcdf4')
@@ -123,7 +124,9 @@ javadoc {
   title = 'All javadoc for netcdf-java version ' + version
   source = fileTree(dir: '../bufr/src/main/java', include: '**/*.java')
   source = source.plus(fileTree(dir: '../cdm/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../clcommon/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../grib/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../netcdf4/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../opendap/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../udunits/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../ui/src/main/java', include: '**/*.java'))

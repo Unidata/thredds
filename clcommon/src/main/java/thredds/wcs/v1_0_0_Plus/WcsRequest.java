@@ -34,7 +34,6 @@ package thredds.wcs.v1_0_0_Plus;
 
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import org.jdom2.Element;

@@ -293,7 +293,8 @@ class StationRenderer implements Renderer {
     }
 
     void calcPos( AffineTransform w2n) {
-      w2n.transform( worldPos, screenPos);  // work in normalized coordinate space
+      Point2D.Double p2d = new Point2D.Double(worldPos.getX(), worldPos.getY());
+      w2n.transform( p2d, screenPos);  // work in normalized coordinate space
       bbPos.setRect( screenPos.getX() + bb.getX(), screenPos.getY() + bb.getY(),
           bb.getWidth(), bb.getHeight());
     }

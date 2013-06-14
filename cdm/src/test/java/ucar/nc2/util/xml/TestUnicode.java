@@ -33,6 +33,7 @@
 
 package ucar.nc2.util.xml;
 
+import org.junit.Test;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
@@ -40,48 +41,20 @@ import ucar.ma2.InvalidRangeException;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Map;
-import java.awt.*;
-//import java.text.Normalizer;
-
-import junit.framework.TestCase;
 
 /**
  * Class Description.
  *
  * @author caron
  */
-public class TestUnicode extends TestCase {
-
-
-  static public void testCharsets() {
-    Map<String,Charset> map = Charset.availableCharsets();
-    for (String key : map.keySet()) {
-      Charset cs = map.get(key);
-      System.out.println(" "+cs);
-    }
-    System.out.println("default= "+Charset.defaultCharset());
-
-    System.out.println("\nFont names:");
-    GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    for (String s : env.getAvailableFontFamilyNames()) {
-      System.out.println(" "+s);
-    }
-
-    int c1 = 0x1f73;
-
-    System.out.println("\nFonts:");
-    for (Font f: env.getAllFonts()) {
-      f.canDisplay(c1);
-      System.out.println(f.canDisplay(c1)+" "+f.getFontName());
-    }
-  }
+public class TestUnicode {
 
   static int[] helloGreekCode = new int[] {0xce, 0x9a, 0xce, 0xb1, 0xce, 0xbb, 0xce, 0xb7, 0xce, 0xbc, 0xe1, 0xbd, 0xb3, 0xcf, 0x81, 0xce, 0xb1};
 
   static final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
   static final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
 
+  @Test
   public void testMagic() throws IOException {
     String s = new String(MAGIC_HEADER);
     write(s, null);
@@ -102,6 +75,7 @@ public class TestUnicode extends TestCase {
     return s;
   }
 
+  @Test
   public void testString() throws IOException {
     //int[] bi = new int[] {0xe2, 0x88, 0xae, 0x20, 0x45, 0xe2, 0x8b, 0x85, 0x64, 0x61, 0x20, 0x3d, 0x20, 0x51, 0x2c};
     //byte[] b = new byte[ helloGreek.length];

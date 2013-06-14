@@ -44,9 +44,6 @@ import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Parameter;
 
-import java.awt.geom.Rectangle2D;
-
-
 /**
  * McIDASAreaProjection is the ProjectionImpl for McIDAS Area navigation
  * modules.
@@ -377,11 +374,10 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
      * @return the projection bounds
      */
     public ProjectionRect getDefaultMapArea() {
-        return new ProjectionRect(new Rectangle2D.Float(0, 0, elements,
-                lines));
+        return new ProjectionRect(new ProjectionRect(0, 0, elements, lines));
     }
 
-    /**
+  /**
      *  This returns true when the line between pt1 and pt2 crosses the seam.
      *  When the cone is flattened, the "seam" is lon0 +- 180.
      *

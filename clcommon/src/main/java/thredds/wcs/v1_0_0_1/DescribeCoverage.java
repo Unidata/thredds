@@ -38,18 +38,16 @@ import org.jdom2.Attribute;
 import org.jdom2.output.XMLOutputter;
 
 import java.util.List;
-import java.util.Date;
 import java.io.PrintWriter;
 import java.io.IOException;
 
+import thredds.wcs.Request;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
-import thredds.wcs.Request;
 
 /**
  * _more_

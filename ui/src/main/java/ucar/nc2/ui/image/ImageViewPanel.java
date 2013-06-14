@@ -42,8 +42,8 @@ import java.util.Random;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import ucar.nc2.dt.image.ImageDatasetFactory;
-import ucar.nc2.dt.image.ImageFactoryRandom;
+import ucar.nc2.dt.image.image.ImageDatasetFactory;
+import ucar.nc2.dt.image.image.ImageFactoryRandom;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ui.widget.BAMutil;
 
