@@ -7,7 +7,7 @@ package ucar.nc2.ui.dialog;
 import java.awt.event.*;
 
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.jni.netcdf.Nc4Chunking;
+import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.util.ListenerManager;
 
 import java.awt.*;

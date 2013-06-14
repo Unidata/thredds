@@ -43,6 +43,8 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.*;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
 

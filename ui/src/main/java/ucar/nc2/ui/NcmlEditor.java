@@ -6,7 +6,7 @@ import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLEditorKit;
 import org.bounce.text.xml.XMLStyleConstants;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
+import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;

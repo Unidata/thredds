@@ -13,6 +13,7 @@ dependencies {
   compile project(':cdm')
   compile project(':bufr')
   compile project(':grib')
+  compile project(':netcdf4')
   compile (project(':opendap'))  { // eliminate servlet
       transitive = false
     }

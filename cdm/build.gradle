@@ -19,7 +19,6 @@ dependencies {
   compile project(':udunits')
   compile 'commons-httpclient:commons-httpclient:3.1'
   compile 'com.google.protobuf:protobuf-java:2.5.0'
-  compile 'com.sun.jna:jna:3.0.9'
   compile 'com.sleepycat:je:4.0.92'
   compile 'joda-time:joda-time:2.0'
   compile 'net.jcip:jcip-annotations:1.0'
@@ -86,6 +85,5 @@ fatJar {  // does not inherit from parent jar
      'Main-Class': 'ucar.nc2.NCdumpW'
   }
   exclude 'com/sleepycat/**'
-  exclude 'com/sun/jna/**'
   exclude 'org/quartz/**'
 }

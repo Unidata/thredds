@@ -36,7 +36,7 @@ package ucar.nc2.ui;
 import ucar.nc2.*;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
+import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
