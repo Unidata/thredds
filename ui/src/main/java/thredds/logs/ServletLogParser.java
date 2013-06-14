@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.logs.logs;
+package thredds.logs;
 
 import ucar.nc2.util.EscapeStrings;
 

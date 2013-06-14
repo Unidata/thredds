@@ -33,7 +33,7 @@
 
 package thredds.ui.monitor;
 
-import thredds.logs.logs.LogCategorizer;
+import thredds.logs.LogCategorizer;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.TimeDuration;
 import ucar.util.prefs.PreferencesExt;
@@ -48,8 +48,8 @@ import javax.swing.event.ChangeEvent;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.BAMutil;
-import thredds.logs.logs.AccessLogParser;
-import thredds.logs.logs.LogReader;
+import thredds.logs.AccessLogParser;
+import thredds.logs.LogReader;
 
 import java.util.*;
 import java.util.List;
