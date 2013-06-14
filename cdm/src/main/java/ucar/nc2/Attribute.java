@@ -257,7 +257,6 @@ public class Attribute extends CDMNode {
 
   /**
    * Override Object.hashCode() to implement equals.
-   * DMH: this is a really bad idea.
    */
   @Override
   public int hashCode() {

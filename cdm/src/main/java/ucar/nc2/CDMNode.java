@@ -46,7 +46,25 @@ package ucar.nc2;
 
 public class CDMNode {
 
-  static boolean OBJECTHASH = false;
+  /**
+   * DMH - 14/6/2013 It turns out that several classes, notably
+   * Variable, override Object.hashCode() to use the content of
+   * the object to construct the hash code -- as opposed to using
+   * its internal address, which is what Object.hashCode() does.
+   * This has an unfortunate consequence that if the object is
+   * being constructed piecemeal (as it may be, for example, in
+   * parsing), that its hash code will change over time.  If
+   * during that period, the object is being used as a key to a
+   * Map, then attempts to probe the map may return null because
+   * the Map code is looking in the wrong place.  I have modified
+   * the code to allow use of Object.hashCode() instead of the
+   * existing overridden hashCode() function.  It is not yet
+   * turned on until I can determine any negative consequences.
+   * John Caron says it is used in dataset caching to determine
+   * if two datasets are the same, but I am not sure where.
+   */
+
+  static boolean OBJECTHASH = false; // true=>use Object.hashCode()
 
   CDMSort sort = null;
   Group group = null;

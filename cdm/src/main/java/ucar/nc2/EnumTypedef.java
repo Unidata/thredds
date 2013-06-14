@@ -174,9 +174,6 @@ public class EnumTypedef extends CDMNode {
     return true;
   }
 
-  /**
-   * DMH: this is a really bad idea
-   */
   @Override
   public int hashCode() {
 if(CDMNode.OBJECTHASH) return super.hashCode(); else {
