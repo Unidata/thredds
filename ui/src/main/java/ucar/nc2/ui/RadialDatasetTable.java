@@ -39,7 +39,7 @@ import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.dt.image.ImageArrayAdapter;
+import ucar.nc2.dt.image.image.ImageArrayAdapter;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;

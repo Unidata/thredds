@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>netcdf4</artifactId>
+  <name>netCDF-4 IOSP JNI connection to C library</name>
 
   <dependencies>
 
@@ -28,11 +29,6 @@
      	<groupId>com.sun.jna</groupId>
      	<artifactId>jna</artifactId>
      </dependency>
-
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>

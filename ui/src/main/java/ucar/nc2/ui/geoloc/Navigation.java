@@ -37,7 +37,6 @@ import ucar.unidata.geoloc.*;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 /** Consider this a private inner class of NavigatedPanel.
     Handle display to world coordinate transformation, always linear.
@@ -179,7 +178,7 @@ public class Navigation  {
     return rect;
   }
 
-  public void setMapArea(Rectangle2D ma) {
+  public void setMapArea(ProjectionRect ma) {
     if (debugRecalc) System.out.println("navigation/setMapArea "+ ma);
 
     bb.setRect(ma);
@@ -230,8 +229,7 @@ public class Navigation  {
 
     worldToScreen( (ProjectionPointImpl) projRect.getMaxPoint(), p1);
     worldToScreen( (ProjectionPointImpl) projRect.getMinPoint(), p2);
-    ProjectionRect r = new ProjectionRect(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-    return r.getBounds();
+    return new java.awt.Rectangle((int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY());
   }
 
   /************* domain changing calls ****************************/

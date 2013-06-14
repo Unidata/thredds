@@ -44,7 +44,8 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
   private double falseEasting;
   private double falseNorthing;
   private Earth earth;
-  private double e, es, one_es;
+  private double e;
+  private double one_es;
   private double totalScale;
 
   private double qp;
@@ -67,7 +68,7 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
 
     this.earth = earth;
     this.e = earth.getEccentricity();
-    this.es = earth.getEccentricitySquared();
+    double es = earth.getEccentricitySquared();
     this.one_es = 1 - es;
     this.totalScale = earth.getMajor() * .001; // scale factor for cartesion coords in km.
 
@@ -105,21 +106,19 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
 
   @Override
   public String paramsToString() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null;
   }
 
   public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl xy) {
     double lam = Math.toRadians( latlon.getLongitude() - lon0);
     double phi = Math.toRadians( latlon.getLatitude());
     if (earth.isSpherical()) {
-      xy.x = scaleFactor * lam;
-      xy.y = Math.sin(phi) / scaleFactor;
+      xy.setLocation(scaleFactor * lam, Math.sin(phi) / scaleFactor);
     } else {
-      xy.x = scaleFactor * lam;
-      xy.y = .5 * MapMath.qsfn(Math.sin(phi), e, one_es) / scaleFactor;
+      xy.setLocation(scaleFactor * lam, .5 * MapMath.qsfn(Math.sin(phi), e, one_es) / scaleFactor);
     }
 
-    xy.setLocation(totalScale * xy.x + falseEasting, totalScale * xy.y + falseNorthing);
+    xy.setLocation(totalScale * xy.getX() + falseEasting, totalScale * xy.getY() + falseNorthing);
     return xy;
   }
 
@@ -150,7 +149,7 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
 
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false;
   }
 
   @Override

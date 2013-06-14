@@ -16,7 +16,9 @@ limitations under the License.
 
 package ucar.unidata.geoloc.projection.proj4;
 
-import java.awt.geom.*;
+import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.ProjectionRect;
 
 /**
  * Taken from com.jhlabs.map.proj
@@ -35,8 +37,8 @@ public class MapMath {
 	public final static double QUARTERPI = Math.PI/4.0;
 	public final static double TWOPI = Math.PI*2.0;
 
-	public final static Rectangle2D WORLD_BOUNDS_RAD = new Rectangle2D.Double(-Math.PI, -Math.PI/2, Math.PI*2, Math.PI);
-	public final static Rectangle2D WORLD_BOUNDS = new Rectangle2D.Double(-180, -90, 360, 180);
+	public final static ProjectionRect WORLD_BOUNDS_RAD = new ProjectionRect(-Math.PI, -Math.PI/2, Math.PI*2, Math.PI);
+	public final static ProjectionRect WORLD_BOUNDS = new ProjectionRect(-180, -90, 360, 180);
 
   public final static double EPS10 = 1e-10;
   public final static double RTD = 180.0 / Math.PI;
@@ -93,8 +95,8 @@ public class MapMath {
 		return Math.sqrt(dx*dx+dy*dy);
 	}
 
-	public static double distance(Point2D.Double a, Point2D.Double b) {
-		return distance(a.x-b.x, a.y-b.y);
+	public static double distance(ProjectionPoint a, ProjectionPoint b) {
+		return distance(a.getX()-b.getX(), a.getY()-b.getY());
 	}
 
 	public static double hypot(double x, double y) {
@@ -185,14 +187,14 @@ public class MapMath {
 	}
 
 /*
-	public static void latLongToXYZ(Point2D.Double ll, Point3D xyz) {
+	public static void latLongToXYZ(ProjectionPoint ll, Point3D xyz) {
 		double c = Math.cos(ll.y);
 		xyz.x = c * Math.cos(ll.x);
 		xyz.y = c * Math.sin(ll.x);
 		xyz.z = Math.sin(ll.y);
 	}
 
-	public static void xyzToLatLong(Point3D xyz, Point2D.Double ll) {
+	public static void xyzToLatLong(Point3D xyz, ProjectionPoint ll) {
 		ll.y = MapMath.asin(xyz.z);
 		ll.x = MapMath.atan2(xyz.y, xyz.x);
 	}
@@ -242,25 +244,25 @@ public class MapMath {
 	public final static int DO_INTERSECT = 1;
 	public final static int COLLINEAR = 2;
 
-	public static int intersectSegments(Point2D.Double aStart, Point2D.Double aEnd, Point2D.Double bStart, Point2D.Double bEnd, Point2D.Double p) {
+	public static int intersectSegments(ProjectionPoint aStart, ProjectionPoint aEnd, ProjectionPoint bStart, ProjectionPoint bEnd, ProjectionPointImpl p) {
 		double a1, a2, b1, b2, c1, c2;
 		double r1, r2, r3, r4;
 		double denom, offset, num;
 
-		a1 = aEnd.y-aStart.y;
-		b1 = aStart.x-aEnd.x;
-		c1 = aEnd.x*aStart.y - aStart.x*aEnd.y;
-		r3 = a1*bStart.x + b1*bStart.y + c1;
-		r4 = a1*bEnd.x + b1*bEnd.y + c1;
+		a1 = aEnd.getY()-aStart.getY();
+		b1 = aStart.getX()-aEnd.getX();
+		c1 = aEnd.getX()*aStart.getY() - aStart.getX()*aEnd.getY();
+		r3 = a1*bStart.getX() + b1*bStart.getY() + c1;
+		r4 = a1*bEnd.getX() + b1*bEnd.getY() + c1;
 
 		if (r3 != 0 && r4 != 0 && sameSigns(r3, r4))
 			return DONT_INTERSECT;
 
-		a2 = bEnd.y-bStart.y;
-		b2 = bStart.x-bEnd.x;
-		c2 = bEnd.x*bStart.y-bStart.x*bEnd.y;
-		r1 = a2*aStart.x + b2*aStart.y + c2;
-		r2 = a2*aEnd.x + b2*aEnd.y + c2;
+		a2 = bEnd.getY()-bStart.getY();
+		b2 = bStart.getX()-bEnd.getX();
+		c2 = bEnd.getX()*bStart.getY()-bStart.getX()*bEnd.getY();
+		r1 = a2*aStart.getX() + b2*aStart.getY() + c2;
+		r2 = a2*aEnd.getX() + b2*aEnd.getY() + c2;
 
 		if (r1 != 0 && r2 != 0 && sameSigns(r1, r2))
 			return DONT_INTERSECT;
@@ -272,51 +274,49 @@ public class MapMath {
 		offset = denom < 0 ? -denom/2 : denom/2;
 
 		num = b1*c2 - b2*c1;
-		p.x = (num < 0 ? num-offset : num+offset) / denom;
+		p.setX((num < 0 ? num-offset : num+offset) / denom);
 
 		num = a2*c1 - a1*c2;
-		p.y = (num < 0 ? num-offset : num+offset) / denom;
+		p.setY((num < 0 ? num-offset : num+offset) / denom);
 
 		return DO_INTERSECT;
 	}
 
-	public static double dot(Point2D.Double a, Point2D.Double b) {
-		return a.x*b.x + a.y*b.y;
+	public static double dot(ProjectionPoint a, ProjectionPoint b) {
+		return a.getX()*b.getX() + a.getY()*b.getY();
 	}
 
-	public static Point2D.Double perpendicular(Point2D.Double a) {
-		return new Point2D.Double(-a.y, a.x);
+	public static ProjectionPoint perpendicular(ProjectionPoint a) {
+		return new ProjectionPointImpl(-a.getY(), a.getX());
 	}
 
-	public static Point2D.Double add(Point2D.Double a, Point2D.Double b) {
-		return new Point2D.Double(a.x+b.x, a.y+b.y);
+	public static ProjectionPoint add(ProjectionPoint a, ProjectionPoint b) {
+		return new ProjectionPointImpl(a.getX()+b.getX(), a.getY()+b.getY());
 	}
 
-	public static Point2D.Double subtract(Point2D.Double a, Point2D.Double b) {
-		return new Point2D.Double(a.x-b.x, a.y-b.y);
+	public static ProjectionPoint subtract(ProjectionPoint a, ProjectionPoint b) {
+		return new ProjectionPointImpl(a.getX()-b.getX(), a.getY()-b.getY());
 	}
 
-	public static Point2D.Double multiply(Point2D.Double a, Point2D.Double b) {
-		return new Point2D.Double(a.x*b.x, a.y*b.y);
+	public static ProjectionPoint multiply(ProjectionPoint a, ProjectionPoint b) {
+		return new ProjectionPointImpl(a.getX()*b.getX(), a.getY()*b.getY());
 	}
 
-	public static double cross(Point2D.Double a, Point2D.Double b) {
-		return a.x*b.y - b.x*a.y;
+	public static double cross(ProjectionPoint a, ProjectionPoint b) {
+		return a.getX()*b.getY() - b.getX()*a.getY();
 	}
 
 	public static double cross(double x1, double y1, double x2, double y2) {
 		return x1*y2 - x2*y1;
 	}
 
-	public static void normalize(Point2D.Double a) {
-		double d = distance(a.x, a.y);
-		a.x /= d;
-		a.y /= d;
+	public static void normalize(ProjectionPointImpl a) {
+		double d = distance(a.getX(), a.getY());
+		a.setLocation( a.getX() / d, a.getY() / d);
 	}
 
-	public static void negate(Point2D.Double a) {
-		a.x = -a.x;
-		a.y = -a.y;
+	public static void negate(ProjectionPointImpl a) {
+    a.setLocation( -a.getX(), -a.getY());
 	}
 
 	public static double longitudeDistance(double l1, double l2) {

@@ -32,7 +32,6 @@
  */
 package thredds.server.wcs.v1_0_0_1;
 
-import thredds.wcs.v1_0_0_1.*;
 import thredds.wcs.Request;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DatasetHandler;
@@ -60,8 +59,8 @@ public class WcsRequestParser
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( WcsRequestParser.class );
 
-  public static WcsRequest parseRequest( String version, URI serverURI, HttpServletRequest req, HttpServletResponse res )
-          throws WcsException, IOException
+  public static thredds.wcs.v1_0_0_1.WcsRequest parseRequest( String version, URI serverURI, HttpServletRequest req, HttpServletResponse res )
+          throws thredds.wcs.v1_0_0_1.WcsException, IOException
   {
     GridDataset gridDataset = null;
     try
@@ -83,7 +82,7 @@ public class WcsRequestParser
       if ( datasetPath == null )
       {
         log.debug( "parseRequest(): Request did not specify dataset." );
-        throw new WcsException( WcsException.Code.CoverageNotDefined, "",
+        throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.CoverageNotDefined, "",
                                 "Request did not specify dataset. See \"" + req.getContextPath()
                                 + "/catalog.xml\" for available datasets." );
       }
@@ -93,9 +92,9 @@ public class WcsRequestParser
       if ( gridDataset == null )
       {
         log.debug( "parseRequest(): Failed to open dataset (???).");
-        throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to open dataset.");
+        throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.CoverageNotDefined, "", "Failed to open dataset.");
       }
-      WcsDataset wcsDataset = new WcsDataset( gridDataset, datasetPath);
+      thredds.wcs.v1_0_0_1.WcsDataset wcsDataset = new thredds.wcs.v1_0_0_1.WcsDataset( gridDataset, datasetPath);
 
       // Determine the request operation.
       String requestParam = ServletUtil.getParameterIgnoreCase( req, "Request" );
@@ -103,7 +102,7 @@ public class WcsRequestParser
       if ( operation == null )
       {
         log.debug( "parseRequest(): Unsupported operation request [" + requestParam + "].");
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request",
+        throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Request",
                                 "Unsupported operation request [" + requestParam + "]." );
       }
 
@@ -115,15 +114,15 @@ public class WcsRequestParser
 
         if ( sectionParam == null)
           sectionParam = "";
-        GetCapabilities.Section section = parseGetCapabilitiesSection( sectionParam );
+        thredds.wcs.v1_0_0_1.GetCapabilities.Section section = parseGetCapabilitiesSection( sectionParam );
         if ( section == null )
         {
           log.debug( "parseRequest(): Unsupported GetCapabilities section requested [" + sectionParam + "]." );
-          throw new WcsException( WcsException.Code.InvalidParameterValue, "Section",
+          throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Section",
                                   "Unsupported GetCapabilities section requested [" + sectionParam + "]." );
         }
 
-        return new GetCapabilities( operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
+        return new thredds.wcs.v1_0_0_1.GetCapabilities( operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
       }
       // Handle "DescribeCoverage" request.
       else if ( operation.equals( Request.Operation.DescribeCoverage ) )
@@ -137,11 +136,11 @@ public class WcsRequestParser
         else
         {
           coverageIdList = new ArrayList<String>();
-          for ( WcsCoverage curCov : wcsDataset.getAvailableCoverageCollection())
+          for ( thredds.wcs.v1_0_0_1.WcsCoverage curCov : wcsDataset.getAvailableCoverageCollection())
             coverageIdList.add( curCov.getName() );
         }
 
-        return new DescribeCoverage( operation, version, wcsDataset, coverageIdList );
+        return new thredds.wcs.v1_0_0_1.DescribeCoverage( operation, version, wcsDataset, coverageIdList );
       }
       // Handle "GetCoverage" request.
       else if ( operation.equals( Request.Operation.GetCoverage ) )
@@ -156,24 +155,24 @@ public class WcsRequestParser
         String formatString = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
 
         // Assign and validate PARAMETER ("Vertical") parameter.
-        WcsCoverage.VerticalRange verticalRange = parseRangeSetAxisValues( parameter );
+        thredds.wcs.v1_0_0_1.WcsCoverage.VerticalRange verticalRange = parseRangeSetAxisValues( parameter );
 
         // Assign and validate FORMAT parameter.
         if ( formatString == null )
         {
           log.debug( "parseRequest(): FORMAT parameter required." );
-          throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required." );
+          throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required." );
         }
         Request.Format format = parseFormat( formatString );
         if ( format == null )
         {
           String msg = "Unrecognized FORMAT parameter value [" + formatString + "].";
           log.debug( "parseRequest(): " + msg );
-          throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg );
+          throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "FORMAT", msg );
         }
 
         // Return GetCoverage request.
-        return new GetCoverage( operation, version, wcsDataset, coverageId,
+        return new thredds.wcs.v1_0_0_1.GetCoverage( operation, version, wcsDataset, coverageId,
                                 crs, responseCRS, parseBoundingBox( bbox),
                                 parseTime( time ),
                                 verticalRange,
@@ -183,10 +182,10 @@ public class WcsRequestParser
       {
         log.debug( "parseRequest(): Invalid request operation [" + requestParam + "].");
       }
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "Request",
+      throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Request",
                               "Invalid requested operation [" + requestParam + "]." );
     }
-    catch ( WcsException e ) {
+    catch ( thredds.wcs.v1_0_0_1.WcsException e ) {
       if ( gridDataset != null )
         gridDataset.close();
       throw e;
@@ -203,10 +202,10 @@ public class WcsRequestParser
     return null;
   }
 
-  private static GetCapabilities.Section parseGetCapabilitiesSection( String sectionString )
+  private static thredds.wcs.v1_0_0_1.GetCapabilities.Section parseGetCapabilitiesSection( String sectionString )
   {
-    GetCapabilities.Section[] sections = GetCapabilities.Section.values();
-    for ( GetCapabilities.Section curSection : sections )
+    thredds.wcs.v1_0_0_1.GetCapabilities.Section[] sections = thredds.wcs.v1_0_0_1.GetCapabilities.Section.values();
+    for ( thredds.wcs.v1_0_0_1.GetCapabilities.Section curSection : sections )
       if ( curSection.toString().equalsIgnoreCase( sectionString) )
         return curSection;
 
@@ -214,7 +213,7 @@ public class WcsRequestParser
   }
 
   private static Request.Format parseFormat( String formatString )
-          throws WcsException
+          throws thredds.wcs.v1_0_0_1.WcsException
   {
     Request.Format[] formats = Request.Format.values();
     for ( Request.Format curFormat : formats )
@@ -225,7 +224,7 @@ public class WcsRequestParser
   }
 
   private static Request.BoundingBox parseBoundingBox( String bboxString )
-          throws WcsException
+          throws thredds.wcs.v1_0_0_1.WcsException
   {
     if ( bboxString == null || bboxString.equals( "" ) )
       return null;
@@ -236,7 +235,7 @@ public class WcsRequestParser
       String msg = "BBOX [" + bboxString + "] has more values [" + bboxSplit.length
                    + "] than expected [4] (not limited to X and Y).";
       log.debug( "parseBoundingBox(): " + msg );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", msg );
+      throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "BBOX", msg );
     }
     double[] minP = new double[2];
     double[] maxP = new double[2];
@@ -256,21 +255,21 @@ public class WcsRequestParser
     {
       String msg = "BBOX [" + bboxString + "] contains an invalid number(s).";
       log.debug( "parseBoundingBox(): " + msg );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", msg );
+      throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "BBOX", msg );
     }
 
     if ( minP[0] > maxP[0] || minP[1] > maxP[1])
     {
       String msg = "BBOX [" + bboxString + "] minimum point larger than maximum point.";
       log.debug( "parseBoundingBox(): " + msg );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", msg );
+      throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "BBOX", msg );
     }
 
     return new Request.BoundingBox( minP, maxP);
   }
 
   private static CalendarDateRange parseTime( String time )
-          throws WcsException
+          throws thredds.wcs.v1_0_0_1.WcsException
   {
     if ( time == null || time.equals( "" ) )
       return null;
@@ -282,7 +281,7 @@ public class WcsRequestParser
       if ( time.indexOf( "," ) != -1 )
       {
         log.debug( "parseTime(): Unsupported time parameter (list) [" + time + "]." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
+        throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "TIME",
                                 "Not currently supporting time list." );
         //String[] timeList = time.split( "," );
         //dateRange = new DateRange( date, date, null, null );
@@ -293,7 +292,7 @@ public class WcsRequestParser
         if ( timeRange.length != 2 )
         {
           log.debug( "parseTime(): Unsupported time parameter (time range with resolution) [" + time + "]." );
-          throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
+          throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "TIME",
                                   "Not currently supporting time range with resolution." );
         }
         dateRange = CalendarDateRange.of(CalendarDate.parseISOformat(null, timeRange[0]), CalendarDate.parseISOformat(null, timeRange[1]));
@@ -315,18 +314,18 @@ public class WcsRequestParser
     return dateRange;
   }
 
-  private static WcsCoverage.VerticalRange parseRangeSetAxisValues( String rangeSetAxisSelectionString )
-          throws WcsException
+  private static thredds.wcs.v1_0_0_1.WcsCoverage.VerticalRange parseRangeSetAxisValues( String rangeSetAxisSelectionString )
+          throws thredds.wcs.v1_0_0_1.WcsException
   {
     if ( rangeSetAxisSelectionString == null || rangeSetAxisSelectionString.equals( "" ) )
       return null;
 
-    WcsCoverage.VerticalRange range;
+    thredds.wcs.v1_0_0_1.WcsCoverage.VerticalRange range;
 
     if ( rangeSetAxisSelectionString.indexOf( "," ) != -1 )
     {
       log.debug( "parseRangeSetAxisValues(): Vertical value list not supported [" + rangeSetAxisSelectionString + "]." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical",
+      throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Vertical",
                               "Not currently supporting list of Vertical values (just range, i.e., \"min/max\")." );
     }
     else if ( rangeSetAxisSelectionString.indexOf( "/" ) != -1 )
@@ -336,7 +335,7 @@ public class WcsRequestParser
       {
         log.debug( "parseRangeSetAxisValues(): Unsupported Vertical value (range with resolution) ["
                    + rangeSetAxisSelectionString + "]." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical",
+        throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Vertical",
                                 "Not currently supporting vertical range with resolution." );
       }
       double minValue = 0;
@@ -349,14 +348,14 @@ public class WcsRequestParser
       catch ( NumberFormatException e )
       {
         log.debug( "parseRangeSetAxisValues(): Failed to parse Vertical range min or max [" + rangeSetAxisSelectionString + "]: " + e.getMessage() );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Failed to parse Vertical range min or max." );
+        throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Vertical", "Failed to parse Vertical range min or max." );
       }
       if ( minValue > maxValue )
       {
         log.debug( "parseRangeSetAxisValues(): Vertical range must be \"min/max\" [" + rangeSetAxisSelectionString + "]." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Vertical range must be \"min/max\"." );
+        throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Vertical", "Vertical range must be \"min/max\"." );
       }
-      range = new WcsCoverage.VerticalRange( minValue, maxValue, 1 );
+      range = new thredds.wcs.v1_0_0_1.WcsCoverage.VerticalRange( minValue, maxValue, 1 );
     }
     else
     {
@@ -368,15 +367,15 @@ public class WcsRequestParser
       catch ( NumberFormatException e )
       {
         log.debug( "parseRangeSetAxisValues(): Failed to parse Vertical value [" + rangeSetAxisSelectionString + "]: " + e.getMessage() );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Failed to parse Vertical value." );
+        throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Vertical", "Failed to parse Vertical value." );
       }
-      range = new WcsCoverage.VerticalRange( value, 1 );
+      range = new thredds.wcs.v1_0_0_1.WcsCoverage.VerticalRange( value, 1 );
     }
 
     if ( range == null )
     {
       log.debug( "parseRangeSetAxisValues(): Invalid Vertical range requested [" + rangeSetAxisSelectionString + "]." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Invalid Vertical range requested." );
+      throw new thredds.wcs.v1_0_0_1.WcsException( thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Vertical", "Invalid Vertical range requested." );
     }
 
     return range;
@@ -395,7 +394,7 @@ public class WcsRequestParser
 
   private static GridDataset openDataset( HttpServletRequest req, HttpServletResponse res,
                                           String datasetPath, boolean isRemote )
-          throws WcsException
+          throws thredds.wcs.v1_0_0_1.WcsException
   {
     GridDataset dataset;
     try
@@ -405,12 +404,12 @@ public class WcsRequestParser
     catch ( IOException e )
     {
       log.debug( "openDataset(): Failed to open dataset [" + datasetPath + "]: " + e.getMessage() );
-      throw new WcsException( "Failed to open dataset, [" + datasetPath + "]." );
+      throw new thredds.wcs.v1_0_0_1.WcsException( "Failed to open dataset, [" + datasetPath + "]." );
     }
     if ( dataset == null )
     {
       log.debug( "openDataset(): Unknown dataset [" + datasetPath + "]." );
-      throw new WcsException( "Unknown dataset, [" + datasetPath + "]." );
+      throw new thredds.wcs.v1_0_0_1.WcsException( "Unknown dataset, [" + datasetPath + "]." );
     }
     return dataset;
   }

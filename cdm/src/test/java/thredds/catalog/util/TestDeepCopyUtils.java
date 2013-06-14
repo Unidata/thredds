@@ -351,7 +351,7 @@ public class TestDeepCopyUtils
     odapService.addDatasetRoot( new InvProperty( "aDsRoot", "aDsRootVal" ) );
     service.addService( odapService );
     service.addService( new InvService( "wms", ServiceType.WMS.toString(), "/thredds/wms/", null, null ) );
-    service.addService( new InvService( "wcs", ServiceType.WCS.toString(), "/thredds/wcs/", null, null ) );
+    service.addService( new InvService( "wcs", ServiceType.WCS.toString(), "/thredds/wcs/wcs/", null, null ) );
 
     List<InvService> availServices = new ArrayList<InvService>();
     availServices.add( service);
@@ -418,7 +418,7 @@ public class TestDeepCopyUtils
     odapService.addDatasetRoot( new InvProperty( "aDsRoot", "aDsRootVal") );
     service.addService( odapService );
     service.addService( new InvService( "wms", ServiceType.WMS.toString(), "/thredds/wms/", null, null) );
-    service.addService( new InvService( "wcs", ServiceType.WCS.toString(), "/thredds/wcs/", null, null) );
+    service.addService( new InvService( "wcs", ServiceType.WCS.toString(), "/thredds/wcs/wcs/", null, null) );
 
     InvService serviceCopy = DeepCopyUtils.copyService( service );
 
@@ -441,7 +441,7 @@ public class TestDeepCopyUtils
 
     assertEquals( "/thredds/dodsC/", copyOdapService.getBase());
     assertEquals( "/thredds/wms/", services.get(1).getBase());
-    assertEquals( "/thredds/wcs/", services.get(2).getBase());
+    assertEquals("/thredds/wcs/wcs/", services.get(2).getBase());
 
     List<InvProperty> properties = copyOdapService.getProperties();
     assertNotNull( properties);

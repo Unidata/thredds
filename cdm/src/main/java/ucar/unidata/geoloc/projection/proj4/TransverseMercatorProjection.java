@@ -19,7 +19,6 @@ limitations under the License.
  */
 package ucar.unidata.geoloc.projection.proj4;
 
-import java.awt.geom.*;
 import java.util.Formatter;
 
 import ucar.nc2.constants.CDM;
@@ -148,17 +147,19 @@ public class TransverseMercatorProjection extends ProjectionImpl {
     initialize();
   }
 
-  public Point2D.Double project(double lplam, double lpphi, Point2D.Double xy) {
+  public ProjectionPoint project(double lplam, double lpphi, ProjectionPointImpl xy) {
     if (spherical) {
       double cosphi = Math.cos(lpphi);
       double b = cosphi * Math.sin(lplam);
 
-      xy.x = ml0 * scaleFactor * Math.log((1. + b) / (1. - b));
+      double x = ml0 * scaleFactor * Math.log((1. + b) / (1. - b));
       double ty = cosphi * Math.cos(lplam) / Math.sqrt(1. - b * b);
       ty = MapMath.acos(ty);
       if (lpphi < 0.0)
         ty = -ty;
-      xy.y = esp * (ty - projectionLatitude);
+      double y = esp * (ty - projectionLatitude);
+      xy.setLocation(x, y);
+
     } else {
       double al, als, n, t;
       double sinphi = Math.sin(lpphi);
@@ -169,57 +170,63 @@ public class TransverseMercatorProjection extends ProjectionImpl {
       als = al * al;
       al /= Math.sqrt(1. - es * sinphi * sinphi);
       n = esp * cosphi * cosphi;
-      xy.x = scaleFactor * al * (FC1 +
+      double x = scaleFactor * al * (FC1 +
               FC3 * als * (1. - t + n +
                       FC5 * als * (5. + t * (t - 18.) + n * (14. - 58. * t)
                               + FC7 * als * (61. + t * (t * (179. - t) - 479.))
                       )));
-      xy.y = scaleFactor * (MapMath.mlfn(lpphi, sinphi, cosphi, en) - ml0 +
+      double y = scaleFactor * (MapMath.mlfn(lpphi, sinphi, cosphi, en) - ml0 +
               sinphi * al * lplam * FC2 * (1. +
                       FC4 * als * (5. - t + n * (9. + 4. * n) +
                               FC6 * als * (61. + t * (t - 58.) + n * (270. - 330 * t)
                                       + FC8 * als * (1385. + t * (t * (543. - t) - 3111.))
                               ))));
+      xy.setLocation(x, y);
     }
     return xy;
   }
 
-  public Point2D.Double projectInverse(double x, double y, Point2D.Double out) {
+  public ProjectionPoint projectInverse(double x, double y, ProjectionPointImpl out) {
     if (spherical) {
       double h = Math.exp(x / scaleFactor);
       double g = .5 * (h - 1. / h);
       h = Math.cos(projectionLatitude + y / scaleFactor);
-      out.y = MapMath.asin(Math.sqrt((1. - h * h) / (1. + g * g)));
+      double outy = MapMath.asin(Math.sqrt((1. - h * h) / (1. + g * g)));
       if (y < 0)
-        out.y = -out.y;
-      out.x = Math.atan2(g, h);
+        outy = -outy;
+      double outx = Math.atan2(g, h);
+      out.setLocation(outx, outy);
+
     } else {
       double n, con, cosphi, d, ds, sinphi, t;
 
-      out.y = MapMath.inv_mlfn(ml0 + y / scaleFactor, es, en);
+      double outx = 0;
+      double outy = MapMath.inv_mlfn(ml0 + y / scaleFactor, es, en);
       if (Math.abs(y) >= MapMath.HALFPI) {
-        out.y = y < 0. ? -MapMath.HALFPI : MapMath.HALFPI;
-        out.x = 0.;
+        outy = y < 0. ? -MapMath.HALFPI : MapMath.HALFPI;
+        out.setLocation(outx, outy);
+
       } else {
-        sinphi = Math.sin(out.y);
-        cosphi = Math.cos(out.y);
+        sinphi = Math.sin(outy);
+        cosphi = Math.cos(outy);
         t = Math.abs(cosphi) > 1e-10 ? sinphi / cosphi : 0.;
         n = esp * cosphi * cosphi;
         d = x * Math.sqrt(con = 1. - es * sinphi * sinphi) / scaleFactor;
         con *= t;
         t *= t;
         ds = d * d;
-        out.y -= (con * ds / (1. - es)) * FC2 * (1. -
+        outy -= (con * ds / (1. - es)) * FC2 * (1. -
                 ds * FC4 * (5. + t * (3. - 9. * n) + n * (1. - 4 * n) -
                         ds * FC6 * (61. + t * (90. - 252. * n +
                                 45. * t) + 46. * n
                                 - ds * FC8 * (1385. + t * (3633. + t * (4095. + 1574. * t)))
                         )));
-        out.x = d * (FC1 -
+        outx = d * (FC1 -
                 ds * FC3 * (1. + 2. * t + n -
                         ds * FC5 * (5. + t * (28. + 24. * t + 8. * n) + 6. * n
                                 - ds * FC7 * (61. + t * (662. + t * (1320. + 720. * t)))
                         ))) / cosphi;
+        out.setLocation(outx, outy);
       }
     }
     return out;
@@ -257,9 +264,9 @@ public class TransverseMercatorProjection extends ProjectionImpl {
       theta = MapMath.normalizeLongitude(theta - projectionLongitude);
     }
 
-    Point2D.Double res = project(theta, fromLat, new Point2D.Double());
+    ProjectionPoint res = project(theta, fromLat, new ProjectionPointImpl());
 
-    destPoint.setLocation(totalScale * res.x + falseEasting, totalScale * res.y + falseNorthing);
+    destPoint.setLocation(totalScale * res.getX() + falseEasting, totalScale * res.getY() + falseNorthing);
     return destPoint;
   }
 
@@ -269,16 +276,17 @@ public class TransverseMercatorProjection extends ProjectionImpl {
     double fromX = (world.getX() - falseEasting) / totalScale; // assumes cartesian coords in km
     double fromY = (world.getY() - falseNorthing) / totalScale;
 
-    Point2D.Double dst = projectInverse(fromX, fromY, new Point2D.Double());
-    if (dst.x < -Math.PI)
-      dst.x = -Math.PI;
-    else if (dst.x > Math.PI)
-      dst.x = Math.PI;
+    ProjectionPointImpl dst = new ProjectionPointImpl();
+    projectInverse(fromX, fromY, dst);
+    if (dst.getX() < -Math.PI)
+      dst.setX(-Math.PI);
+    else if (dst.getX() > Math.PI)
+      dst.setX(Math.PI);
     if (projectionLongitude != 0)
-      dst.x = MapMath.normalizeLongitude(dst.x + projectionLongitude);
+      dst.setX(MapMath.normalizeLongitude(dst.getX()) + projectionLongitude);
 
-    result.setLongitude(Math.toDegrees(dst.x));
-    result.setLatitude(Math.toDegrees(dst.y));
+    result.setLongitude(Math.toDegrees(dst.getX()));
+    result.setLatitude(Math.toDegrees(dst.getY()));
     return result;
   }
 
@@ -334,9 +342,9 @@ public class TransverseMercatorProjection extends ProjectionImpl {
     for (int i = 0; i < lat.length; ++i) {
       LatLonPoint lp = new LatLonPointImpl(lat[i], lon[i]);
       ProjectionPointImpl p = (ProjectionPointImpl) proj.latLonToProj(lp, new ProjectionPointImpl());
-      System.out.println(lp.getLatitude() + ", " + lp.getLongitude() + ": " + p.x + ", " + p.y);
-      x[i] = p.x;
-      y[i] = p.y;
+      System.out.println(lp.getLatitude() + ", " + lp.getLongitude() + ": " + p.getX() + ", " + p.getY());
+      x[i] = p.getX();
+      y[i] = p.getY();
     }
     for (int i = 0; i < lat.length; ++i) {
       ProjectionPointImpl p = new ProjectionPointImpl(x[i], y[i]);
@@ -350,7 +358,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
           System.err.print("ERROR:");
         }
       }
-      System.out.println("reverse:" + p.x + ", " + p.y + ": " + lp.getLatitude() + ", " + lp.getLongitude());
+      System.out.println("reverse:" + p.getX() + ", " + p.getY() + ": " + lp.getLatitude() + ", " + lp.getLongitude());
 
     }
 

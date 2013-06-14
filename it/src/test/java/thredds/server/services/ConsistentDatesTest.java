@@ -122,7 +122,7 @@ public class ConsistentDatesTest {
 
   }
 
-  @HttpTest(method = Method.GET, path = "/thredds/wcs/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WCS&version=1.0.0&request=DescribeCoverage&coverage=sst")
+  @HttpTest(method = Method.GET, path = "/thredds/wcs/wcs/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WCS&version=1.0.0&request=DescribeCoverage&coverage=sst")
   public void checkWCSDates() throws JDOMException, IOException {
     assertOk(response);
     assertTrue(response.hasBody());

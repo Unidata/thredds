@@ -1031,9 +1031,9 @@ onePixel = 0;  */
     ProjectionRect[] rect = projectll.latLonToProjRect(lat1, lon1, lat2, lon2);
     for (int i = 0; i < 2; i++)
       if (null != rect[i]) {
-        // if (Debug.isSet("drawRectLatLon") && rect[i].contains(0.0, 47.5)) System.out.println(rect[i]);
-        g.fill(rect[i]);
-        count++;
+        ProjectionRect r2 = rects[i];
+        Rectangle2D.Double r = new Rectangle2D.Double(r2.getX(), r2.getY(), r2.getWidth(), r2.getHeight());
+        g.fill(r);
       }
     return count;
   }

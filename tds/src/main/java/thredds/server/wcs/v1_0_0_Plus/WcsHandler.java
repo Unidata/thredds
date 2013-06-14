@@ -35,7 +35,6 @@ package thredds.server.wcs.v1_0_0_Plus;
 import thredds.servlet.ServletUtil;
 import thredds.server.wcs.VersionHandler;
 import thredds.util.Version;
-import thredds.wcs.v1_0_0_Plus.*;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -75,7 +74,7 @@ public class WcsHandler implements VersionHandler
 
   public VersionHandler setDiskCache( DiskCache2 diskCache )
   {
-    WcsCoverage.setDiskCache( diskCache);
+    thredds.wcs.v1_0_0_Plus.WcsCoverage.setDiskCache(diskCache);
     return this;
   }
 
@@ -92,29 +91,29 @@ public class WcsHandler implements VersionHandler
     try
     {
       URI serverURI = new URI( req.getRequestURL().toString());
-      WcsRequest request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(),
+      thredds.wcs.v1_0_0_Plus.WcsRequest request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(),
                                                           serverURI, req, res);
-      if ( request.getOperation().equals( WcsRequest.Operation.GetCapabilities))
+      if ( request.getOperation().equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.GetCapabilities))
       {
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();
-        ((GetCapabilities) request).writeCapabilitiesReport( pw );
+        ((thredds.wcs.v1_0_0_Plus.GetCapabilities) request).writeCapabilitiesReport( pw );
         pw.flush();
       }
-      else if ( request.getOperation().equals( WcsRequest.Operation.DescribeCoverage ) )
+      else if ( request.getOperation().equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.DescribeCoverage ) )
       {
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();
-        ((DescribeCoverage) request).writeDescribeCoverageDoc( pw );
+        ((thredds.wcs.v1_0_0_Plus.DescribeCoverage) request).writeDescribeCoverageDoc( pw );
         pw.flush();
       }
-      else if ( request.getOperation().equals( WcsRequest.Operation.GetCoverage ) )
+      else if ( request.getOperation().equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.GetCoverage ) )
       {
-        File covFile = ((GetCoverage) request).writeCoverageDataToFile();
+        File covFile = ((thredds.wcs.v1_0_0_Plus.GetCoverage) request).writeCoverageDataToFile();
         if ( covFile != null && covFile.exists())
         {
           int pos = covFile.getPath().lastIndexOf( "." );
@@ -124,49 +123,49 @@ public class WcsHandler implements VersionHandler
             resultFilename = resultFilename + suffix;
           res.setHeader( "Content-Disposition", "attachment; filename=\"" + resultFilename + "\"" );
 
-          ServletUtil.returnFile( servlet, "", covFile.getPath(), req, res, ((GetCoverage) request).getFormat().getMimeType() );
+          ServletUtil.returnFile( servlet, "", covFile.getPath(), req, res, ((thredds.wcs.v1_0_0_Plus.GetCoverage) request).getFormat().getMimeType() );
           if ( deleteImmediately ) covFile.delete();
         }
         else
         {
           log.error( "handleKVP(): Failed to create coverage file" + (covFile == null ? "" : (": " + covFile.getAbsolutePath() )) );
-          throw new WcsException( "Problem creating requested coverage.");
+          throw new thredds.wcs.v1_0_0_Plus.WcsException( "Problem creating requested coverage.");
         }
       }
     }
-    catch ( WcsException e)
+    catch ( thredds.wcs.v1_0_0_Plus.WcsException e)
     {
       handleExceptionReport( res, e);
     }
     catch ( URISyntaxException e )
     {
-      handleExceptionReport( res, new WcsException( "Bad URI: " + e.getMessage()));
+      handleExceptionReport( res, new thredds.wcs.v1_0_0_Plus.WcsException( "Bad URI: " + e.getMessage()));
     }
     catch ( Throwable t)
     {
       log.error( "Unknown problem.", t);
-      handleExceptionReport( res, new WcsException( "Unknown problem", t));
+      handleExceptionReport( res, new thredds.wcs.v1_0_0_Plus.WcsException( "Unknown problem", t));
     }
   }
 
-  public GetCapabilities.ServiceInfo getServiceInfo()
+  public thredds.wcs.v1_0_0_Plus.GetCapabilities.ServiceInfo getServiceInfo()
   {
     // Todo Figure out how to configure serviceId info.
-    GetCapabilities.ServiceInfo sid;
-    GetCapabilities.ResponsibleParty respParty;
-    GetCapabilities.ResponsibleParty.ContactInfo contactInfo;
-    contactInfo = new GetCapabilities.ResponsibleParty.ContactInfo(
+    thredds.wcs.v1_0_0_Plus.GetCapabilities.ServiceInfo sid;
+    thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty respParty;
+    thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty.ContactInfo contactInfo;
+    contactInfo = new thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty.ContactInfo(
             Collections.singletonList( "voice phone"),
             Collections.singletonList( "voice phone"),
-            new GetCapabilities.ResponsibleParty.Address(
+            new thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty.Address(
                     Collections.singletonList( "address"), "city", "admin area", "postal code", "country",
                     Collections.singletonList( "email")
             ),
-            new GetCapabilities.ResponsibleParty.OnlineResource(null, "title")
+            new thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty.OnlineResource(null, "title")
     );
-    respParty= new GetCapabilities.ResponsibleParty( "indiv name", "org name", "position",
+    respParty= new thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty( "indiv name", "org name", "position",
                                                      contactInfo );
-    sid = new GetCapabilities.ServiceInfo( "name", "label", "description",
+    sid = new thredds.wcs.v1_0_0_Plus.GetCapabilities.ServiceInfo( "name", "label", "description",
                                           Collections.singletonList( "keyword" ),
                                           respParty, "no fees",
                                           Collections.singletonList( "no access constraints" ) );
@@ -174,13 +173,13 @@ public class WcsHandler implements VersionHandler
     return sid;
   }
 
-  public void handleExceptionReport( HttpServletResponse res, WcsException exception )
+  public void handleExceptionReport( HttpServletResponse res, thredds.wcs.v1_0_0_Plus.WcsException exception )
           throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
-    ExceptionReport exceptionReport = new ExceptionReport( exception );
+    thredds.wcs.v1_0_0_Plus.ExceptionReport exceptionReport = new thredds.wcs.v1_0_0_Plus.ExceptionReport( exception );
 
     PrintWriter pw = res.getWriter();
     exceptionReport.writeExceptionReport( pw );
@@ -190,16 +189,16 @@ public class WcsHandler implements VersionHandler
   public void handleExceptionReport( HttpServletResponse res, String code, String locator, String message )
           throws IOException
   {
-    WcsException.Code c;
-    WcsException exception;
+    thredds.wcs.v1_0_0_Plus.WcsException.Code c;
+    thredds.wcs.v1_0_0_Plus.WcsException exception;
     try
     {
-      c = WcsException.Code.valueOf( code);
-      exception = new WcsException( c, locator, message );
+      c = thredds.wcs.v1_0_0_Plus.WcsException.Code.valueOf( code);
+      exception = new thredds.wcs.v1_0_0_Plus.WcsException( c, locator, message );
     }
     catch ( IllegalArgumentException e )
     {
-      exception = new WcsException( message );
+      exception = new thredds.wcs.v1_0_0_Plus.WcsException( message );
       log.debug( "handleExceptionReport(): bad code given <" + code + ">.");
     }
 

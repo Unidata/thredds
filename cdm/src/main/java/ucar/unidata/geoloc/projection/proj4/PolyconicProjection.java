@@ -40,7 +40,6 @@
  */
 package ucar.unidata.geoloc.projection.proj4;
 
-import java.awt.geom.Point2D;
 import java.util.Formatter;
 
 import ucar.nc2.constants.CDM;
@@ -114,35 +113,52 @@ public class PolyconicProjection extends ProjectionImpl {
     addParameter(CF.INVERSE_FLATTENING, 1.0 / ellipsoid.getFlattening());
   }
 
-  private Point2D.Double project(double lplam, double lpphi, Point2D.Double out) {
+  private ProjectionPoint project(double lplam, double lpphi, ProjectionPointImpl out) {
     if (spherical) {
       double cot, E;
 
       if (Math.abs(lpphi) <= TOL) {
-        out.x = lplam;
-        out.y = ml0;
+        out.setLocation(lplam, ml0);
       } else {
         cot = 1. / Math.tan(lpphi);
-        out.x = Math.sin(E = lplam * Math.sin(lpphi)) * cot;
-        out.y = lpphi - projectionLatitude + cot * (1. - Math.cos(E));
+        double x = Math.sin(E = lplam * Math.sin(lpphi)) * cot;
+        double y = lpphi - projectionLatitude + cot * (1. - Math.cos(E));
+        out.setLocation(x, y);
       }
     } else {
+
+      /*
+      FORWARD(e_forward); ellipsoid
+      	double  ms, sp, cp;
+
+      	if (fabs(lp.phi) <= TOL) {
+      	  xy.x = lp.lam; xy.y = -P->ml0; }
+      	else {
+      		sp = sin(lp.phi);
+      		ms = fabs(cp = cos(lp.phi)) > TOL ? pj_msfn(sp, cp, P->es) / sp : 0.;
+      		xy.x = ms * sin(lp.lam *= sp); // LOOK
+      		xy.y = (pj_mlfn(lp.phi, sp, cp, P->en) - P->ml0) + ms * (1. - cos(lp.lam));
+      	}
+      	return (xy);
+      }
+      */
       double ms, sp, cp;
 
       if (Math.abs(lpphi) <= TOL) {
-        out.x = lplam;
-        out.y = -ml0;
+        out.setLocation(lplam, -ml0);
       } else {
         sp = Math.sin(lpphi);
         ms = Math.abs(cp = Math.cos(lpphi)) > TOL ? MapMath.msfn(sp, cp, es) / sp : 0.;
-        out.x = ms * Math.sin(out.x *= sp);
-        out.y = (MapMath.mlfn(lpphi, sp, cp, en) - ml0) + ms * (1. - Math.cos(lplam));
+        lplam *= sp; // LOOK
+        double x = ms * Math.sin(lplam);
+        double y = (MapMath.mlfn(lpphi, sp, cp, en) - ml0) + ms * (1. - Math.cos(lplam));
+        out.setLocation(x, y);
       }
     }
     return out;
   }
 
-  private Point2D.Double projectInverse(double xyx, double xyy, Point2D.Double out) {
+  private ProjectionPoint projectInverse(double xyx, double xyy, ProjectionPointImpl out) {
     double lpphi;
 
     if (spherical) {
@@ -150,8 +166,8 @@ public class PolyconicProjection extends ProjectionImpl {
       int i;
 
       if (Math.abs(xyy = projectionLatitude + xyy) <= TOL) {
-        out.x = xyx;
-        out.y = 0.;
+        out.setLocation(xyx, 0);
+
       } else {
         lpphi = xyy;
         B = xyx * xyx + xyy * xyy;
@@ -163,17 +179,17 @@ public class PolyconicProjection extends ProjectionImpl {
                   / ((lpphi - xyy) / tp - 1.));
         } while (Math.abs(dphi) > CONV && --i > 0);
         if (i == 0) {
-          out.x = Double.NaN;
-          out.y = Double.NaN;
+          out.setLocation(Double.NaN, Double.NaN);
         }
-        out.x = Math.asin(xyx * Math.tan(lpphi)) / Math.sin(lpphi);
-        out.y = lpphi;
+        double x = Math.asin(xyx * Math.tan(lpphi)) / Math.sin(lpphi);
+        double y = lpphi;
+        out.setLocation(x, y);
       }
     } else {
       xyy += ml0;
       if (Math.abs(xyy) <= TOL) {
-        out.x = xyx;
-        out.y = 0.;
+        out.setLocation(xyx, 0);
+
       } else {
         double r, c, sp, cp, s2ph, ml, mlb, mlp, dPhi;
         int i;
@@ -197,12 +213,12 @@ public class PolyconicProjection extends ProjectionImpl {
           }
         }
         if (i == 0) {
-          out.x = Double.NaN;
-          out.y = Double.NaN;
+          out.setLocation(Double.NaN, Double.NaN);
         }
         c = Math.sin(lpphi);
-        out.x = Math.asin(xyx * Math.tan(lpphi) * Math.sqrt(1. - es * c * c)) / Math.sin(lpphi);
-        out.y = lpphi;
+        double x = Math.asin(xyx * Math.tan(lpphi) * Math.sqrt(1. - es * c * c)) / Math.sin(lpphi);
+        double y = lpphi;
+        out.setLocation(x, y);
       }
     }
     return out;
@@ -382,9 +398,9 @@ public class PolyconicProjection extends ProjectionImpl {
       theta = MapMath.normalizeLongitude(theta - projectionLongitude);
     }
 
-    Point2D.Double out = new Point2D.Double();
-    out = project(theta, fromLat, out);
-    result.setLocation(totalScale * out.x + falseEasting, totalScale * out.y + falseNorthing);
+    ProjectionPointImpl out = new ProjectionPointImpl();
+    project(theta, fromLat, out);
+    result.setLocation(totalScale * out.getX() + falseEasting, totalScale * out.getY() + falseNorthing);
     return result;
   }
 
@@ -401,18 +417,19 @@ public class PolyconicProjection extends ProjectionImpl {
     double fromX = (world.getX() - falseEasting) / totalScale; // assumes cartesian coords in km
     double fromY = (world.getY() - falseNorthing) / totalScale;
 
-    Point2D.Double dst = projectInverse(fromX, fromY, new Point2D.Double());
-    if (dst.x < -Math.PI) {
-      dst.x = -Math.PI;
-    } else if (dst.x > Math.PI) {
-      dst.x = Math.PI;
+    ProjectionPointImpl pp = new ProjectionPointImpl();
+    projectInverse(fromX, fromY, pp);
+    if (pp.getX() < -Math.PI) {
+      pp.setX(-Math.PI);
+    } else if (pp.getX() > Math.PI) {
+      pp.setX(Math.PI);
     }
-    if (projectionLongitude != 0 && !Double.isNaN(dst.x)) {
-      dst.x = MapMath.normalizeLongitude(dst.x + projectionLongitude);
+    if (projectionLongitude != 0 && !Double.isNaN(pp.getX())) {
+      pp.setX(MapMath.normalizeLongitude(pp.getX() + projectionLongitude));
     }
 
-    result.setLatitude(Math.toDegrees(dst.y));
-    result.setLongitude(Math.toDegrees(dst.x));
+    result.setLatitude( Math.toDegrees(pp.getY()));
+    result.setLongitude( Math.toDegrees(pp.getX()));
     return result;
   }
 

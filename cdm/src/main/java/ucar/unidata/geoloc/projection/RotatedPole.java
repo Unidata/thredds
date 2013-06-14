@@ -42,8 +42,6 @@
  */
 package ucar.unidata.geoloc.projection;
 
-import java.awt.geom.Point2D;
-
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
@@ -99,15 +97,15 @@ public class RotatedPole extends ProjectionImpl {
     double betaRad = 0.;
     double gammaRad = 0.;
 
-    if (northPole.y == 90.)
+    if (northPole.getY() == 90.)
     {
         betaRad  = 0.;
-        gammaRad = northPole.x * RAD_PER_DEG;
+        gammaRad = northPole.getX() * RAD_PER_DEG;
     }
     else
     {
-        betaRad  = -(90. - northPole.y) * RAD_PER_DEG;
-        gammaRad = (northPole.x + 180.) * RAD_PER_DEG;
+        betaRad  = -(90. - northPole.getY()) * RAD_PER_DEG;
+        gammaRad = (northPole.getX() + 180.) * RAD_PER_DEG;
     }
 
     double cosBeta = Math.cos(betaRad);
@@ -137,8 +135,8 @@ public class RotatedPole extends ProjectionImpl {
     rotZ[2][2] = 1.;
   }
 
-  public Point2D.Double getNorthPole() {
-    return (Point2D.Double) northPole.clone();
+  public ProjectionPointImpl getNorthPole() {
+    return new ProjectionPointImpl(northPole);
   }
 
   @Override

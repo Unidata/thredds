@@ -1,0 +1,9 @@
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'clcommon'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+}

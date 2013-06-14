@@ -35,7 +35,6 @@ package thredds.server.wcs.v1_0_0_1;
 import thredds.servlet.ServletUtil;
 import thredds.server.wcs.VersionHandler;
 import thredds.util.Version;
-import thredds.wcs.v1_0_0_1.*;
 import thredds.wcs.Request;
 
 import javax.servlet.http.HttpServlet;
@@ -77,7 +76,7 @@ public class WcsHandler implements VersionHandler
 
   public VersionHandler setDiskCache( DiskCache2 diskCache )
   {
-    WcsCoverage.setDiskCache( diskCache);
+    thredds.wcs.v1_0_0_1.WcsCoverage.setDiskCache(diskCache);
     return this;
   }
 
@@ -91,7 +90,7 @@ public class WcsHandler implements VersionHandler
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res )
           throws IOException //, ServletException
   {
-    WcsRequest request = null;
+    thredds.wcs.v1_0_0_1.WcsRequest request = null;
     try
     {
       URI serverURI = new URI( req.getRequestURL().toString());
@@ -103,7 +102,7 @@ public class WcsHandler implements VersionHandler
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();
-        ((GetCapabilities) request).writeCapabilitiesReport( pw );
+        ((thredds.wcs.v1_0_0_1.GetCapabilities) request).writeCapabilitiesReport( pw );
         pw.flush();
 
       }
@@ -113,13 +112,13 @@ public class WcsHandler implements VersionHandler
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();
-        ((DescribeCoverage) request).writeDescribeCoverageDoc( pw );
+        ((thredds.wcs.v1_0_0_1.DescribeCoverage) request).writeDescribeCoverageDoc( pw );
         pw.flush();
 
       }
       else if ( request.getOperation().equals( Request.Operation.GetCoverage ) )
       {
-        File covFile = ((GetCoverage) request).writeCoverageDataToFile();
+        File covFile = ((thredds.wcs.v1_0_0_1.GetCoverage) request).writeCoverageDataToFile();
         if ( covFile != null && covFile.exists())
         {
           int pos = covFile.getPath().lastIndexOf( "." );
@@ -129,28 +128,28 @@ public class WcsHandler implements VersionHandler
             resultFilename = resultFilename + suffix;
           res.setHeader( "Content-Disposition", "attachment; filename=\"" + resultFilename + "\"" );
 
-          ServletUtil.returnFile( servlet, "", covFile.getPath(), req, res, ((GetCoverage) request).getFormat().getMimeType() );
+          ServletUtil.returnFile( servlet, "", covFile.getPath(), req, res, ((thredds.wcs.v1_0_0_1.GetCoverage) request).getFormat().getMimeType() );
           if ( deleteImmediately ) covFile.delete();
         }
         else
         {
           log.error( "handleKVP(): Failed to create coverage file" + (covFile == null ? "" : (": " + covFile.getAbsolutePath() )) );
-          throw new WcsException( "Problem creating requested coverage.");
+          throw new thredds.wcs.v1_0_0_1.WcsException( "Problem creating requested coverage.");
         }
       }
     }
-    catch ( WcsException e)
+    catch ( thredds.wcs.v1_0_0_1.WcsException e)
     {
       handleExceptionReport( res, e);
     }
     catch ( URISyntaxException e )
     {
-      handleExceptionReport( res, new WcsException( "Bad URI: " + e.getMessage()));
+      handleExceptionReport( res, new thredds.wcs.v1_0_0_1.WcsException( "Bad URI: " + e.getMessage()));
     }
     catch ( Throwable t)
     {
       log.error( "Unknown problem.", t);
-      handleExceptionReport( res, new WcsException( "Unknown problem", t));
+      handleExceptionReport( res, new thredds.wcs.v1_0_0_1.WcsException( "Unknown problem", t));
     }
     finally
     {
@@ -161,24 +160,24 @@ public class WcsHandler implements VersionHandler
     }
   }
 
-  public GetCapabilities.ServiceInfo getServiceInfo()
+  public thredds.wcs.v1_0_0_1.GetCapabilities.ServiceInfo getServiceInfo()
   {
     // Todo Figure out how to configure serviceId info.
-    GetCapabilities.ServiceInfo sid;
-    GetCapabilities.ResponsibleParty respParty;
-    GetCapabilities.ResponsibleParty.ContactInfo contactInfo;
-    contactInfo = new GetCapabilities.ResponsibleParty.ContactInfo(
+    thredds.wcs.v1_0_0_1.GetCapabilities.ServiceInfo sid;
+    thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty respParty;
+    thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty.ContactInfo contactInfo;
+    contactInfo = new thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty.ContactInfo(
             Collections.singletonList( "voice phone"),
             Collections.singletonList( "voice phone"),
-            new GetCapabilities.ResponsibleParty.Address(
+            new thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty.Address(
                     Collections.singletonList( "address"), "city", "admin area", "postal code", "country",
                     Collections.singletonList( "email")
             ),
-            new GetCapabilities.ResponsibleParty.OnlineResource(null, "title")
+            new thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty.OnlineResource(null, "title")
     );
-    respParty= new GetCapabilities.ResponsibleParty( "indiv name", "org name", "position",
+    respParty= new thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty( "indiv name", "org name", "position",
                                                      contactInfo );
-    sid = new GetCapabilities.ServiceInfo( "name", "label", "description",
+    sid = new thredds.wcs.v1_0_0_1.GetCapabilities.ServiceInfo( "name", "label", "description",
                                           Collections.singletonList( "keyword" ),
                                           respParty, "no fees",
                                           Collections.singletonList( "no access constraints" ) );
@@ -186,13 +185,13 @@ public class WcsHandler implements VersionHandler
     return sid;
   }
 
-  public void handleExceptionReport( HttpServletResponse res, WcsException exception )
+  public void handleExceptionReport( HttpServletResponse res, thredds.wcs.v1_0_0_1.WcsException exception )
           throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
-    ExceptionReport exceptionReport = new ExceptionReport( exception );
+    thredds.wcs.v1_0_0_1.ExceptionReport exceptionReport = new thredds.wcs.v1_0_0_1.ExceptionReport( exception );
 
     PrintWriter pw = res.getWriter();
     exceptionReport.writeExceptionReport( pw );
@@ -202,16 +201,16 @@ public class WcsHandler implements VersionHandler
   public void handleExceptionReport( HttpServletResponse res, String code, String locator, String message )
           throws IOException
   {
-    WcsException.Code c;
-    WcsException exception;
+    thredds.wcs.v1_0_0_1.WcsException.Code c;
+    thredds.wcs.v1_0_0_1.WcsException exception;
     try
     {
-      c = WcsException.Code.valueOf( code);
-      exception = new WcsException( c, locator, message );
+      c = thredds.wcs.v1_0_0_1.WcsException.Code.valueOf( code);
+      exception = new thredds.wcs.v1_0_0_1.WcsException( c, locator, message );
     }
     catch ( IllegalArgumentException e )
     {
-      exception = new WcsException( message );
+      exception = new thredds.wcs.v1_0_0_1.WcsException( message );
       log.debug( "handleExceptionReport(): bad code given [" + code + "].");
     }
 
