@@ -22,12 +22,22 @@ public class LoggerFactorySpecial implements LoggerFactory {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private String dir = "./";
+  private long maxSize;
+  private int maxBackupIndex;
   private Level level = Level.INFO;
 
-  public LoggerFactorySpecial(Level lev) {
+  public LoggerFactorySpecial(long maxSize, int maxBackupIndex, String levels) {
     String p = System.getProperty("tds.log.dir");
     if (p != null) dir = p;
-    level = lev;
+
+    this.maxSize =  maxSize;
+    this.maxBackupIndex =  maxBackupIndex;
+    try {
+      Level tlevel = Level.toLevel(levels);
+      if (tlevel != null) level = tlevel;
+    } catch (Exception e) {
+      startupLog.error("Illegal Logger level="+levels);
+    }
   }
 
   private static Map<String, Logger> map = new HashMap<String, Logger>();
@@ -38,7 +48,6 @@ public class LoggerFactorySpecial implements LoggerFactory {
     Logger result = map.get(name);
     if (result != null) return result;
 
-
     try {
       String fileName = dir + "/" + name + ".log";
 
@@ -46,8 +55,8 @@ public class LoggerFactorySpecial implements LoggerFactory {
       Layout layout = new PatternLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n");
 
       RollingFileAppender app = new RollingFileAppender(layout, fileName);
-      app.setMaxBackupIndex(5);            // 5 rollovers
-      app.setMaximumFileSize(1000 * 1000); // 1 Mb
+      app.setMaxBackupIndex(maxBackupIndex);
+      app.setMaximumFileSize(maxSize);
       app.setFile(fileName);
       app.activateOptions();
 
