@@ -76,11 +76,8 @@ Ncss.initMapPreview = function(){
 		});	
 
 		map.addLayer(vector_layer);
-
 		Ncss.gridCrossesDateLine = ( vector_layer.getDataExtent().left <= 180 & vector_layer.getDataExtent().right >= 180);
-
-		console.log("layer data extent:"+ vector_layer.getDataExtent().left+", "+vector_layer.getDataExtent().bottom+", "+vector_layer.getDataExtent().right+", "+vector_layer.getDataExtent().top );
-
+		Ncss.log("layer data extent:"+ vector_layer.getDataExtent().left+", "+vector_layer.getDataExtent().bottom+", "+vector_layer.getDataExtent().right+", "+vector_layer.getDataExtent().top );
 		map.zoomToExtent( new OpenLayers.Bounds( vector_layer.getDataExtent().left, vector_layer.getDataExtent().bottom, vector_layer.getDataExtent().right, vector_layer.getDataExtent().top ) );
 
 	}else{
