@@ -156,7 +156,7 @@ public class CalendarDateFormatter {
        The date part uses a '-' delimiter instead of a fixed number of digits for each field
        The time part uses a ':' delimiter instead of a fixed number of digits for each field
    </pre>
-   * @return CalendarDate using default calendar
+   * @return CalendarDate using given calendar
    * @throws IllegalArgumentException if the String is not a valid ISO 8601 date
    * @see "http://www.w3.org/TR/NOTE-datetime"
    */

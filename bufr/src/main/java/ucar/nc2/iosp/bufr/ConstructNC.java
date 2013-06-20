@@ -74,17 +74,6 @@ class ConstructNC {
     // the category
     int cat = proto.ids.getCategory();
     int subcat = proto.ids.getSubCategory();
-    /* if ((cat == 0) || (cat == 12 && subcat == 0)) {
-      ftype = FeatureType.STATION;
-    } else if (cat == 2) {
-      ftype = FeatureType.STATION_PROFILE;
-    } else if (cat == 3) {
-      ftype = FeatureType.PROFILE;
-    } else if (cat == 4) {
-      ftype = FeatureType.TRAJECTORY;
-    } else {
-      // log.warn("unknown category=" + category);
-    }  */
 
     // global Attributes
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of BUFR data by CDM"));
@@ -107,13 +96,6 @@ class ConstructNC {
     if (header != null)
       ncfile.addAttribute(null, new Attribute("WMO Header", header));
     ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
-
-    // cant tell what the ttype is - defere to BufrCdm plugin
-    /* if (ftype != null) {
-      CF.FeatureType cf = CF.FeatureType.convert( ftype);
-      if (ftype != null)
-        ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, cf.toString()));
-    } */
 
     makeObsRecord();
     //makeReportIndexStructure();
@@ -148,6 +130,7 @@ class ConstructNC {
 
     DataDescriptor root = proto.getRootDataDescriptor();
     if (hasTime()) {
+      isTimeOk = true;
       Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, TIME_NAME, DataType.STRING, ""));
       timev.addAttribute(new Attribute(CDM.UNITS, dateUnit.toString()));
       timev.addAttribute(new Attribute("long_name", "time of observation"));
@@ -464,11 +447,15 @@ class ConstructNC {
 
   }
 
-  boolean hasTime;
+  boolean isTimeOk() {
+    return isTimeOk;
+  }
+
+  private boolean isTimeOk;
   private String yearName, monthName, dayName, hourName, minName, secName, doyName;
   private CalendarDateUnit dateUnit;
-  //private Calendar cal;
 
+  // determine if the fields exist to create time coordinate
   private boolean hasTime() throws IOException {
 
     DataDescriptor root = proto.getRootDataDescriptor();
@@ -492,7 +479,7 @@ class ConstructNC {
         secName = dkey.name;
     }
 
-    hasTime = (yearName != null) && (((monthName != null) && (dayName != null)) || (doyName != null)) && (hourName != null);
+    boolean hasTime = (yearName != null) && (((monthName != null) && (dayName != null)) || (doyName != null)) && (hourName != null);
 
     if (hasTime) {
       String u;
@@ -503,8 +490,8 @@ class ConstructNC {
       else
         u = "hours";
       try {
-        DateFormatter format = new DateFormatter();
-        dateUnit = CalendarDateUnit.of(null, u + " since " +proto.getReferenceTime());
+        // dateUnit = CalendarDateUnit.of(null, u + " since " +proto.getReferenceTime());
+        dateUnit = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");
       } catch (Exception e) {
         log.error("BufrIosp failed to create date unit", e);
         hasTime = false;
@@ -542,6 +529,11 @@ class ConstructNC {
     int hour = sdata.convertScalarInt(hourName);
     int min = (minName == null) ? 0 : sdata.convertScalarInt(minName);
     int sec = (secName == null) ? 0 : sdata.convertScalarInt(secName);
+    if (sec < 0)  {
+      System.out.println("HEY");
+      sdata.convertScalarInt(secName);
+      sec = 0;
+    }
 
     if (dayName != null) {
       int day = sdata.convertScalarInt(dayName);

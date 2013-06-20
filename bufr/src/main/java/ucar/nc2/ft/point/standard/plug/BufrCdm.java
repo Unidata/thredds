@@ -88,7 +88,6 @@ public class BufrCdm extends TableConfigurerImpl {
 
   protected TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
 
-    // the profile values are the inner sequence
     TableConfig obsTable = new TableConfig(Table.Type.Structure, BufrIosp.obsRecord);
     Structure obsStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
     obsTable.structName = obsStruct.getFullName();
@@ -146,7 +145,6 @@ public class BufrCdm extends TableConfigurerImpl {
   }
 
   protected TableConfig getProfileConfig(NetcdfDataset ds, Formatter errlog) {
-     // construct the station table by reading through the timeseries
      TableConfig profileTable = new TableConfig(Table.Type.Structure, "profile");
      profileTable.featureType = FeatureType.PROFILE;
      profileTable.structName = BufrIosp.obsRecord;
@@ -204,3 +202,26 @@ public class BufrCdm extends TableConfigurerImpl {
   }
 
 }
+
+/* from old IOSP
+
+    if ((cat == 0) || (cat == 12 && subcat == 0)) {
+      ftype = FeatureType.STATION;
+    } else if (cat == 2) {
+      ftype = FeatureType.STATION_PROFILE;
+    } else if (cat == 3) {
+      ftype = FeatureType.PROFILE;
+    } else if (cat == 4) {
+      ftype = FeatureType.TRAJECTORY;
+    } else {
+      // log.warn("unknown category=" + category);
+    }
+
+    // cant tell what the ttype is - defere to BufrCdm plugin
+    if (ftype != null) {
+      CF.FeatureType cf = CF.FeatureType.convert( ftype);
+      if (ftype != null)
+        ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, cf.toString()));
+    }
+
+ */
