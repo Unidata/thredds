@@ -18,15 +18,20 @@ Ncss.changeSpatialSubsetType = function(){
 		latlonSubset.addClass("hidden");		
 		coordinateSubset.removeClass("hidden");
 		
-		$('input[name=maxy]').removeAttr("disabled");
-		$('input[name=miny]').removeAttr("disabled");
-		$('input[name=minx]').removeAttr("disabled");
-		$('input[name=maxx]').removeAttr("disabled");
+		if(!$('#disableProjSubset').is(':checked')){
+
+			var inputs = $(':input[type=text]', coordinateSubset);
+			for(var i=0; i<inputs.length; i++ ){			
+				$(inputs[i]).removeAttr("disabled");
+			}					
+		}
 		
 		$('input[name=north]').attr("disabled","disabled");
 		$('input[name=south]').attr("disabled","disabled");
 		$('input[name=west]').attr("disabled","disabled");
-		$('input[name=east]').attr("disabled","disabled");		
+		$('input[name=east]').attr("disabled","disabled");
+			
+			
 			
 	}else{
 		
@@ -39,15 +44,18 @@ Ncss.changeSpatialSubsetType = function(){
 		latlonSubset.removeClass("hidden");		
 		coordinateSubset.addClass("hidden");		
 
-		$('input[name=north]').removeAttr("disabled");
-		$('input[name=south]').removeAttr("disabled");
-		$('input[name=west]').removeAttr("disabled");
-		$('input[name=east]').removeAttr("disabled");
-		
+		if(!$('#disableLLSubset').is(':checked')){
+			var inputs = $(':input[type=text]', latlonSubset);
+			for(var i=0; i<inputs.length; i++ ){			
+				$(inputs[i]).removeAttr("disabled");
+			}
+		}				
+			
 		$('input[name=maxy]').attr("disabled","disabled");
 		$('input[name=miny]').attr("disabled","disabled");
 		$('input[name=minx]').attr("disabled","disabled");
-		$('input[name=maxx]').attr("disabled","disabled");		
+		$('input[name=maxx]').attr("disabled","disabled");
+	
 				
 	}
 		
@@ -120,9 +128,6 @@ Ncss.verticalSubsetting = function(){
 };
 
 
-//$(document).ready( function(){
-//});	
-
 Ncss.initGridDataset = function(){
 	Ncss.initGridDatasetForm();
 	Ncss.initMapPreview();
@@ -134,6 +139,10 @@ Ncss.initGridDatasetForm = function(){
 	//Add events to spatial subset selectors
 	$('#inputLatLonSubset').click( Ncss.changeSpatialSubsetType);	
 	$('#inputCoordSubset' ).click( Ncss.changeSpatialSubsetType);
+	
+	$('#disableLLSubset').change(Ncss.toogleLLSubsetting);
+	$('#disableProjSubset').change(Ncss.toogleProjSubsetting);
+	
 	
 	Ncss.fullLatLonExt ={
 			north: $('input[name=dis_north]').val(),
@@ -184,10 +193,52 @@ Ncss.initGridDatasetForm = function(){
 	$('#inputSingleLevel').click(Ncss.verticalSubsetting);
 	$('#inputVerticalStride').click(Ncss.verticalSubsetting);
 	
+	//Filters unwanted stuff in the url
+	$('#form').on('submit', function(){
+		Ncss.log('submitting....');
+		$('#disableLLSubset').prop("disabled", "disabled");
+		$('#disableProjSubset').prop("disabled", "disabled");
+	});
+	
 	Ncss.log("initGridDatasetForm...(ends)");
 	    
-};	
+};
 
+Ncss.toogleLLSubsetting = function(){
+	Ncss.log("Will disable/enable spatial subsetting...");
+	if(this.checked){
+		Ncss.log("disabling bounding params...");
+		var inputs = $(':input[type=text]', $('#latlonSubset'));
+		for(var i=0; i<inputs.length; i++ ){
+			$(inputs[i]).attr("disabled","disabled");
+		}
+		
+	}else{
+		Ncss.log("enabling bounding params...");
+		var inputs = $(':input[type=text]', $('#latlonSubset'));
+		for(var i=0; i<inputs.length; i++ ){
+			$(inputs[i]).removeAttr("disabled");
+		}		
+	}
+};
+
+Ncss.toogleProjSubsetting = function(){
+	Ncss.log("Will disable/enable spatial subsetting...");
+	if(this.checked){
+		Ncss.log("disabling bounding params...");
+		var inputs = $(':input[type=text]', $('#coordinateSubset'));
+		for(var i=0; i<inputs.length; i++ ){
+			$(inputs[i]).attr("disabled","disabled");
+		}
+		
+	}else{
+		Ncss.log("enabling bounding params...");
+		var inputs = $(':input[type=text]', $('#coordinateSubset'));
+		for(var i=0; i<inputs.length; i++ ){
+			$(inputs[i]).removeAttr("disabled");
+		}		
+	}
+};
 
 
 
