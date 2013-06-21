@@ -33,14 +33,9 @@
 
 package ucar.nc2.dataset.conv;
 
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.CoordSysBuilder;
-import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.ma2.StructureData;
 
 import java.io.IOException;
 
@@ -60,7 +55,7 @@ public class BUFRConvention extends CoordSysBuilder {
    * create a NetcdfDataset out of this NetcdfFile, adding coordinates etc.
    */
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    if (null != ds.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
+    ds.sendIospMessage("AddTime");
   }
 
 

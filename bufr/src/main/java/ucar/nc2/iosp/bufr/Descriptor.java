@@ -81,7 +81,8 @@ public class Descriptor {
   static public boolean isBufrTable(short fxy) {
     int f = (fxy & 0xC000) >> 14;
     int x = (fxy & 0x3F00) >> 8;
-    return (f == 0) && (x == 0);
+    int y = (fxy & 0xFF);
+    return (f == 0) && (x == 0) && (y < 13);
   }
 
   static public short getFxy(short f, short x, short y) {
