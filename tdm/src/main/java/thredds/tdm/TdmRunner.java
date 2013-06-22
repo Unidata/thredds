@@ -438,7 +438,7 @@ public class TdmRunner {
     //RandomAccessFile.setDebugLeaks(true);
     HTTPSession.setGlobalUserAgent("TDM v4.3");
     // GribCollection.getDiskCache2().setNeverUseCache(true);
-    org.apache.log4j.Level logLevel = Level.INFO;
+    String logLevel = "INFO";
     String contentDir;
 
     for (int i = 0; i < args.length; i++) {
@@ -488,13 +488,11 @@ public class TdmRunner {
       }
 
       else if (args[i].equalsIgnoreCase("-log")) {
-        String levelS = args[i + 1];
-        Level wantLevel = Level.toLevel(levelS);
-        if (wantLevel != null) logLevel = wantLevel;
+        logLevel = args[i + 1];
       }
     }
 
-    InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(logLevel));
+    InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(1000 * 1000, 5, logLevel));
     CollectionUpdater.INSTANCE.setTdm(true);
 
     if (driver.init()) {
