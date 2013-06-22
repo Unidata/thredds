@@ -1048,7 +1048,15 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * String representation of Variable and its attributes.
    */
   public String toStringDebug() {
-    return ncfile.toStringDebug(this);
+    Formatter  f = new Formatter();
+    f.format("Variable %s", getFullName());
+    if (ncfile != null) {
+      f.format(" in file %s", ncfile.getLocation());
+      String extra = ncfile.toStringDebug(this);
+      if (extra != null)
+        f.format(" %s", extra);
+    }
+    return f.toString();
   }
 
   private static boolean showSize = false;
