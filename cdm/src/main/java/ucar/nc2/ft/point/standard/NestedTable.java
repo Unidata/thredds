@@ -49,7 +49,6 @@ import ucar.unidata.geoloc.StationImpl;
 
 import java.util.*;
 import java.io.IOException;
-import java.text.ParseException;
 
 /**
  * Implements "nested table" views of point feature datasets.
@@ -477,7 +476,7 @@ public class NestedTable {
         log.error("Cant parse date - not ISO formatted, = "+timeString);
         return 0.0;
       }
-      return date.getMillis(); // LOOK
+      return date.getMillis();
 
     } else {
       return cve.getCoordValue(tableData);

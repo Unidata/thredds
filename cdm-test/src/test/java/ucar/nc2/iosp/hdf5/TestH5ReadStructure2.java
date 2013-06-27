@@ -36,6 +36,7 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.CompareNetcdf;
 
 import java.io.*;
 import java.util.*;
@@ -287,5 +288,30 @@ public class TestH5ReadStructure2 extends TestCase {
     ncfile.close();
     System.out.println("*** testReadManyAtATime ok");
   }
+
+  public void utestMemberVariable() throws java.io.IOException, InvalidRangeException {
+    NetcdfFile ncfile = NetcdfFile.open("G:/work/garrett/20130212_CN021_P3_222k_B02_WD7195FBPAT10231Nat_Nat_Std_CHTNWD_OP3_14.mip222k.oschp");
+
+    Variable v = ncfile.findVariable("/Chromosomes/Summary.StartIndex");
+    System.out.printf("%s%n", v);
+
+    //Section section=new Section(new int[]{2}, new int[]{5});
+    Array a1 = v.read(); // section);
+    System.out.printf("size = %d%n", a1.getSize());
+    System.out.printf("%s%n", a1);
+
+    Array a2 = ncfile.readSection("/Chromosomes/Summary.StartIndex");
+    CompareNetcdf.compareData(a1, a2);
+    System.out.printf("size = %d%n", a2.getSize());
+    System.out.printf("%s%n", a2);
+
+    Array a3 = ncfile.readSection("/Chromosomes/Summary(12:20).StartIndex");
+    System.out.printf("size = %d%n", a3.getSize());
+    System.out.printf("%s%n", a3);
+
+    ncfile.close();
+  }
+
+
 
 }

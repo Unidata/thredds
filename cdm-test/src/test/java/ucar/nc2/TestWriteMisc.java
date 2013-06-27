@@ -7,7 +7,9 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Misc netcdf3 NetcdfFileWriter tests
@@ -16,6 +18,50 @@ import java.util.Arrays;
  * @since 4/26/12
  */
 public class TestWriteMisc {
+
+  @Test
+  public void testUnsignedAttribute() throws IOException, InvalidRangeException {
+     //String filename = TestLocal.temporaryDataDir + "testUnsignedAttribute.nc";
+     String filename = "C:/tmp/testUnsignedAttribute.nc";
+     NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
+     System.out.printf("%s%n", filename);
+
+     try {
+       Dimension timeDim = writer.addUnlimitedDimension("time");
+       //   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
+       Variable v = writer.addVariable(null, "time", DataType.BYTE, "time");
+       // writer.addVariableAttribute(v, new Attribute("_Unsigned", "true"));
+       writer.addVariableAttribute(v, new Attribute("scale_factor", 10.0));
+       List<Integer> a = new ArrayList<Integer>();
+       a.add(-10);
+       a.add(10);
+       writer.addVariableAttribute(v, new Attribute("valid_range", a));
+       writer.create();
+
+       Array timeData = Array.factory(DataType.BYTE, new int[]{1});
+       int[] time_origin = new int[]{0};
+
+       for (int time = 0; time < 255; time++) {
+         timeData.setInt(timeData.getIndex(), time);
+         time_origin[0] = time;
+         writer.write(v, time_origin, timeData);
+       }
+
+     } finally {
+       writer.close();
+     }
+
+     NetcdfFile ncFile = NetcdfFile.open(filename);
+     try {
+       Array result2 = ncFile.readSection("time");
+       System.out.println(result2);
+       //ucar.unidata.test.util.CompareNetcdf.compareData(result1, result2);
+     } finally {
+       ncFile.close();
+     }
+  }
+
+
 
   // test writing big format
   @Test
