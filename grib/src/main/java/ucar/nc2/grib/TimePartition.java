@@ -346,7 +346,11 @@ public abstract class TimePartition extends GribCollection {
         return new ArrayList<Partition>();
       }
       List<Partition> c = new ArrayList<Partition>(partitionMap.values());
-      Collections.sort(c);
+      if (this.gribConfig.filesSortIncreasing) {
+          Collections.sort(c);
+      } else {
+          Collections.reverse(c);
+      }
       partitions = c;
     }
     return partitions;
