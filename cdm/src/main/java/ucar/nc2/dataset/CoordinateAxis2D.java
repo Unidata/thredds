@@ -125,7 +125,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
   }
 
-  private static final double THRESH = 100.0;
+  private static final double THRESH = 100.0; // larger than you would ever expect
   private double connectLon( double connect, double val) {
     if (Double.isNaN(connect)) return val;
     if (Double.isNaN(val)) return val;
@@ -134,10 +134,9 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (Math.abs(diff) < THRESH) return val; // common case fast
     // we have to add or subtract 360
     double result = diff > 0 ? val + 360 : val - 360;
-    if ((Math.abs(connect - result) ) > THRESH)
-      System.out.println("HEY");
-    // assert ((Math.abs(connect - result) ) < THRESH) ;
-    return result;
+    if ((Math.abs(connect - result) ) < THRESH)
+      val = result;
+    return val;
   }
 
 
