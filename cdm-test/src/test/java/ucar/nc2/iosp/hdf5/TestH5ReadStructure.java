@@ -39,6 +39,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.nc2.NCdump;
 import ucar.unidata.test.util.CompareNetcdf;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.Arrays;
@@ -260,7 +261,9 @@ public class TestH5ReadStructure extends TestCase {
   }
 
     public void testMemberVariable() throws java.io.IOException, InvalidRangeException {
-        NetcdfFile ncfile = NetcdfFile.open("Z:/testdata/cdmUnitTest/formats/hdf5/20130212_CN021_P3_222k_B02_WD7195FBPAT10231Nat_Nat_Std_CHTNWD_OP3_14.mip222k.oschp");
+        String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
+
+        NetcdfFile ncfile = NetcdfFile.open(testDir+"20130212_CN021_P3_222k_B02_WD7195FBPAT10231Nat_Nat_Std_CHTNWD_OP3_14.mip222k.oschp");
 
         Variable v = ncfile.findVariable("/Chromosomes/Summary.StartIndex");
         System.out.printf("%s%n", v);

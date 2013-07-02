@@ -925,9 +925,8 @@ public class TestSubset {
     dataset.close();
   }
 
-  @Test
   public void testAaron() throws Exception{
-  //    GridDataset dataset = GridDataset.open( "/data/nssl2dMosaic/2013/20130619/v_020500/20130619_v_020500_l_0000000.nc" );
+  // different scale/offset in aggregation
        GridDataset dataset = GridDataset.open("G:/work/braekel/dataset.ncml" );
        GridDatatype grid = null;
        for( GridDatatype thisGrid : dataset.getGrids() ){

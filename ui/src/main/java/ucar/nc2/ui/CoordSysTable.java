@@ -189,31 +189,8 @@ public class CoordSysTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
         if (bean == null) return;
-        CoordinateAxis axis = bean.axis;
         infoTA.clear();
-        try {
-          infoTA.appendLine(NCdumpW.printVariableData(axis, null));
-          if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
-            CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
-            if (!axis1D.isInterval()) {
-              printArray("edges=", axis1D.getCoordEdges());
-            } else {
-              printArray("bound1=", axis1D.getBound1());
-              printArray("bound2=", axis1D.getBound2());
-
-              Formatter f= new Formatter();
-              double[] b1 = axis1D.getBound1();
-              double[] b2 = axis1D.getBound2();
-              for (int i=0; i<b1.length; i++) {
-                f.format("(%f,%f) = %f%n", b1[i], b2[i], b2[i] - b1[i]);
-              }
-              infoTA.appendLine(f.toString());
-            }
-          }
-        } catch (IOException e1) {
-          e1.printStackTrace();
-          infoTA.appendLine(e1.getMessage());
-        }
+        showValues(bean.axis);
         infoTA.gotoTop();
         infoWindow.show();
       }
@@ -377,6 +354,54 @@ public class CoordSysTable extends JPanel {
     attTable.setBeans(attlist);
     attWindow.show();
   }
+
+  private void showValues(CoordinateAxis axis) {
+
+    try {
+
+      if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
+        CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
+        printArray("midpoints=", axis1D.getCoordValues());
+
+        if (!axis1D.isInterval()) {
+          printArray("edges=", axis1D.getCoordEdges());
+        } else {
+          printArray("bound1=", axis1D.getBound1());
+          printArray("bound2=", axis1D.getBound2());
+
+          Formatter f= new Formatter();
+          double[] b1 = axis1D.getBound1();
+          double[] b2 = axis1D.getBound2();
+          for (int i=0; i<b1.length; i++) {
+            f.format("(%f,%f) = %f%n", b1[i], b2[i], b2[i] - b1[i]);
+          }
+          infoTA.appendLine(f.toString());
+        }
+
+      } else if (axis instanceof CoordinateAxis2D && axis.isNumeric()) {
+          CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
+          ArrayDouble.D2 mids = axis2D.getMidpoints();
+          int[] shape = mids.getShape();
+          Formatter f= new Formatter();
+          for (int j=0; j<shape[0]; j++) {
+            f.format("%d: ", j);
+            for (int i=0; i<shape[1]; i++)
+              f.format("%f, ", mids.get(j,i));
+            f.format("%n%n");
+          }
+          infoTA.appendLine(f.toString());
+
+      } else {
+        infoTA.appendLine(NCdumpW.printVariableData(axis, null));
+      }
+
+    } catch (IOException e1) {
+      e1.printStackTrace();
+      infoTA.appendLine(e1.getMessage());
+    }
+
+  }
+
 
   private void showDates2D(VariableEnhanced axis, String units) throws Exception {
     infoTA.appendLine(NCdumpW.printVariableData(axis, null));

@@ -1287,12 +1287,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   }
 
-  @Override
+  /* @Override
   public Object sendIospMessage(Object message) {
     if (orgFile != null)
-      orgFile.sendIospMessage(message);
-    return false;
-  }
+      return orgFile.sendIospMessage(message);
+    else
+      return false;
+  } */
 
   /*
    * Check if file has changed, and reread metadata if needed.

@@ -32,7 +32,6 @@
  */
 package ucar.nc2.util;
 
-import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
@@ -58,7 +57,6 @@ import java.net.URLDecoder;
  * @author jcaron
  */
 public class DiskCache2 {
-  //static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiskCache2.class);
 
   public enum CachePathPolicy {
     OneDirectory,
@@ -75,7 +73,7 @@ public class DiskCache2 {
   private String cachePathPolicyParam = null;
 
   private String root;
-  private int persistMinutes;
+  private int persistMinutes, scourEveryMinutes;
   private Timer timer;
   private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private boolean fail = false;
@@ -112,6 +110,7 @@ public class DiskCache2 {
    */
   public DiskCache2(String root, boolean reletiveToHome, int persistMinutes, int scourEveryMinutes) {
     this.persistMinutes = persistMinutes;
+    this.scourEveryMinutes = scourEveryMinutes;
 
     if (reletiveToHome) {
       String home = System.getProperty("nj22.cachePersistRoot");
@@ -455,6 +454,7 @@ public class DiskCache2 {
     sb.append(", alwaysUseCache=").append(alwaysUseCache);
     sb.append(", cachePathPolicyParam='").append(cachePathPolicyParam).append('\'');
     sb.append(", root='").append(root).append('\'');
+    sb.append(", scourEveryMinutes=").append(scourEveryMinutes);
     sb.append(", persistMinutes=").append(persistMinutes);
     sb.append(", fail=").append(fail);
     sb.append('}');

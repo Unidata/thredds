@@ -766,8 +766,8 @@ public class H5header {
         if (! h5iosp.includeOriginalAttributes) iter.remove();
     }
     boolean result =  facade.hasNetcdfDimensions || facade.dobj.mds.dimLength.length == 0;
-    if (!result)
-      System.out.println("HEY");
+    //if (!result)
+    //  System.out.println("HEY");
     return result;
 
   }

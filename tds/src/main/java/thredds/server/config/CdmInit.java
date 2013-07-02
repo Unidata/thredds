@@ -127,7 +127,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     CdmrFeatureController.setDiskCache(cdmrCache);
     startupLog.info("CdmInit:  CdmRemote= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
-    /* new for 4.3.15: grib index file placement, using DiskCache2  */
+    /* 4.3.15: grib index file placement, using DiskCache2  */
     String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = ThreddsConfig.getBoolean("GribIndex.alwaysUse", false);
     String gribIndexPolicy = ThreddsConfig.get("GribIndex.policy", null);

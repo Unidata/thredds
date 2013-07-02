@@ -134,7 +134,9 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (Math.abs(diff) < THRESH) return val; // common case fast
     // we have to add or subtract 360
     double result = diff > 0 ? val + 360 : val - 360;
-    assert ((Math.abs(connect - result) ) < THRESH) ;
+    if ((Math.abs(connect - result) ) > THRESH)
+      System.out.println("HEY");
+    // assert ((Math.abs(connect - result) ) < THRESH) ;
     return result;
   }
 
