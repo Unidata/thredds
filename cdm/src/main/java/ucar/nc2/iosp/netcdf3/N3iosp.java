@@ -874,9 +874,11 @@ public String NC_check_name(String name) {
   } */
 
   public void flush() throws java.io.IOException {
-    raf.flush();
-    header.writeNumrecs();
-    raf.flush();
+    if (raf != null) {
+      raf.flush();
+      header.writeNumrecs();
+      raf.flush();
+    }
   }
 
   public void close() throws java.io.IOException {

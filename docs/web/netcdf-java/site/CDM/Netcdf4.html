@@ -13,8 +13,9 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>Mapping between CDM and netCDF-4 Data Models </h1>
-<p><em>last modified: August 13, 2012</em></p>
-<p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models.</p>
+<p><em>last modified: July 2, 2013</em></p>
+<p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4 data model</a>. When reading netCDF-4 files, one is interested in the mapping from netCDF-4 to CDM. This mapping is reletively stable. As of version 4.3, the CDM can write to netCDF-4 files, and one is interested in the mapping from CDM to netCDF-4. This mapping is still being developed, eg to give users some control where needed.</p>
+<p>&nbsp;</p>
 <h2>DataTypes</h2>
 <h3>From netCDF-4 to CDM</h3>
 <ul>
@@ -68,8 +69,11 @@ dl {margin: 10px 5px 5px 15px;)
 </ul>
 <h3>Attributes</h3>
 <ul>
-  <li>When a variable is chunked, an integer array attribute named <em>_ChunkSize</em> is added to the variable, whose values are the chunck size for each dimension.</li>
-  <li></li>
+  <li>When a variable is chunked, an integer array attribute named <em>_ChunkSize</em> is added to the variable, whose values are the chunk size for each dimension.</li>
+</ul>
+<h3>Creation Order</h3>
+<ul>
+  <li>The C library preserves the creation order of the Dimensions, Variables, Groups and Attributes, while the Java library does not.</li>
 </ul>
 <hr />
 <h2>  Notes</h2>

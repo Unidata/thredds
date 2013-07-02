@@ -21,12 +21,12 @@ public class TestWriteMisc {
 
   @Test
   public void testUnsignedAttribute() throws IOException, InvalidRangeException {
-     //String filename = TestLocal.temporaryDataDir + "testUnsignedAttribute.nc";
-     String filename = "C:/tmp/testUnsignedAttribute.nc";
-     NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
+     String filename = TestLocal.temporaryDataDir + "testUnsignedAttribute.nc";
      System.out.printf("%s%n", filename);
 
+     NetcdfFileWriter writer = null;
      try {
+       writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
        Dimension timeDim = writer.addUnlimitedDimension("time");
        //   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
        Variable v = writer.addVariable(null, "time", DataType.BYTE, "time");
@@ -47,8 +47,12 @@ public class TestWriteMisc {
          writer.write(v, time_origin, timeData);
        }
 
+     } catch (IOException ioe) {
+       ioe.printStackTrace();
+       assert false;
+
      } finally {
-       writer.close();
+       if (writer != null) writer.close();
      }
 
      NetcdfFile ncFile = NetcdfFile.open(filename);
