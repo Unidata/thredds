@@ -617,7 +617,7 @@
         </gribConfig>
       </featureCollection>
 
-      <featureCollection name="NAM-CONUS_20km-surface" featureType="GRIB" harvest="true"
+      <!--featureCollection name="NAM-CONUS_20km-surface" featureType="GRIB" harvest="true"
                          path="grib/NCEP/NAM/CONUS_20km/surface">
         <metadata inherited="true">
           <documentation type="summary">
@@ -645,9 +645,9 @@
             <lexigraphicByName increasing="false"/>
           </filesSort>
         </gribConfig>
-      </featureCollection>
+      </featureCollection -->
 
-      <featureCollection name="NAM-CONUS_20km-selectsurface" featureType="GRIB" harvest="true"
+      <!--featureCollection name="NAM-CONUS_20km-selectsurface" featureType="GRIB" harvest="true"
                          path="grib/NCEP/NAM/CONUS_20km/selectsurface">
         <metadata inherited="true">
           <documentation type="summary">
@@ -676,7 +676,7 @@
             <lexigraphicByName increasing="false"/>
           </filesSort>
         </gribConfig>
-      </featureCollection>
+      </featureCollection-->
 
       <featureCollection name="NAM-CONUS_40km-conduit" featureType="GRIB" harvest="true"
                          path="grib/NCEP/NAM/CONUS_40km/conduit">
