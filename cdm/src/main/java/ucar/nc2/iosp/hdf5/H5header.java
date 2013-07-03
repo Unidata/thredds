@@ -405,8 +405,8 @@ public class H5header {
 
   /* 6/21/2013 new algorithm for dimensions.
     1. find all objects with all CLASS = "DIMENSION_SCALE", make into a dimension. use shape(0) as length. keep in order
-    2. if also a variable (NAME != "This is a ...") then first dim = itself, second matches length, if muiltiple match, use :_Netcdf4Coordinates = 0, 3 and order of dimensions.
-    3. use DIMENSION_LIST to assign dimensions to other variables.
+    2. if also a variable (NAME != "This is a ...") then first dim = itself, second matches length, if multiple match, use :_Netcdf4Coordinates = 0, 3 and order of dimensions.
+    3. use DIMENSION_LIST to assign dimensions to data variables.
   */
 
     //  1. find all objects with all CLASS = "DIMENSION_SCALE", make into a dimension. use shape(0) as length. keep in order
@@ -660,7 +660,7 @@ public class H5header {
         log.error("DIMENSION_LIST: dimension scale {} has second dimension {} but no match", facade.getName(), want_len);
         sbuff.append(Integer.toString(want_len));
       } else {
-        log.error("DIMENSION_LIST: dimension scale {} has second dimension {} but multiple matches", facade.getName(), want_len);
+        log.warn("DIMENSION_LIST: dimension scale {} has second dimension {} but multiple matches", facade.getName(), want_len);
         sbuff.append(Integer.toString(want_len));
       }
     }

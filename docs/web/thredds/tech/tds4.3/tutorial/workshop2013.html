@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>2013 Training Workshop Schedule : TDS Configuration and Administration</title>
+    <link rel="stylesheet" href="tutorial2.css" type="text/css" />
+    <script type="text/javascript" src="workshopNav.js"></script>
+</head>
+<body>
+<h1>2013 Training Workshop Schedule : TDS Configuration and Administration</h1>
+<div id="section">
+    <h2><a name="DayOne">25 July 2013 : TDS Install, Management, and Configuration</a></h2>
+    <h3>8:00 Coffee and continental breakfast</h3>
+    <h3>8:30 (Sean) Welcome and Logistics / TDS Overview I </h3>
+    <ul>
+        <li>Overview of the day</li>
+        <li>Introduction of Unidata staff</li>
+        <li><a href="http://www.unidata.ucar.edu/community/surveys/2012training/survey.html">Feedback/Evaluation Form</a>
+            (Repeated submissions encouraged)</li>
+        <li>Beginners view of TDS (<a href="TDSOverview-1.ppt">ppt</a>)</li>
+        <li>TDS Resources: <a href="/software/tds/">Web page</a>,
+            <a href="/projects/THREDDS/tech/tds4.3/reference/">Reference</a>,
+            <a href="/projects/THREDDS/tech/tds4.3/faq.html">FAQ</a></li>
+    </ul>
+
+    <h3>9:00 (Jenn) <a href="GettingStarted.html">Getting Started with the TDS - local test server setup</a></h3>
+  <p>This section covers basic installation and configuration of Tomcat, JDK and the TDS.</p>
+    <ul>
+        <li><a href="GettingStarted.html#install">Installing Java and Tomcat</a></li>
+        <li><a href="GettingStarted.html#tour">Tomcat Directory Structure: Quick Tour</a></li>
+        <li><a href="GettingStarted.html#running">Running Tomcat</a></li>
+        <li><a href="GettingStarted.html#deploying">Deploying the TDS</a></li>
+        <li><a href="GettingStarted.html#logs">Tomcat Log Files</a></li>
+        <li><a href="GettingStarted.html#files">Tomcat (Server-Level) Configuration Files</a></li>
+        <li><a href="GettingStarted.html#manager">Tomcat <code>manager</code> Application</a></li>
+        <li><a href="GettingStarted.html#next">Next Steps: Where To Go From Here</a></li>
+    </ul>
+
+    <h3>9:30  (Jenn) Production Server overview<a href="Security.html"></a></h3>
+
+    <p>Best practices and recommendations on securing a production TDS/Tomcat server.</p>
+    <ul>
+      <li><a a href="Security.html#why">Why Is This Important?</a> </li>
+      <li><a a href="Security.html#versions">Keeping Software Versions Up-To-Date</a> </li>
+      <li><a a href="Security.html#install">Tomcat Process User/Group and $CATALINA_HOME Permissions</a> </li>
+      <li><a a href="Security.html#unused">Removing Unused Web Applications</a> </li>
+      <li><a a href="Security.html#digested">Using Digested Passwords</a> </li>
+      <li><a a href="Security.html#ssl">Enabling SSL Encryption</a> </li>
+      <li><a a href="Security.html#ports">Blocking Non-Essential Port Access At The Firewall</a> </li>
+      <li><a a href="Security.html#access">Restricting Access To The TDS By Remote IP Address Or Host</a> </li>
+      <li><a a href="Security.html#manager">Securing the Tomcat <code>manager</code> Application</a> </li>
+      <li><a a href="Security.html#proxy">Reverse Proxy</a> </li>
+      <li><a a href="Security.html#jvm">Running Tomcat with a Security Manager</a> </li>
+      <li><a a href="Security.html#shutdown">Protecting the Tomcat <code>SHUTDOWN</code> Port</a> </li>
+      <li><a a href="Security.html#versioninfo">Remove Tomcat Version String From HTTP Error Messages</a> </li>
+    </ul>
+    <h3>10:00 (John) A basic checklist for TDS installation, upgrades and maintenance:</h3>
+    <ul>
+      <li><a href="Checklist.html">Installation Checklist for Production</a></li>
+  </ul>
+    <h3>10:15 Break</h3>
+  <h3>10:45 (John) Participant Introductions</h3>
+    <ul>
+        <li>Name, organization, how you use TDS (both data and clients), what is your role?</li>
+    </ul>
+
+    <h3>11:15 (Lansing) Basic TDS Configuration</h3>
+    <ul>
+      <li><a href="BasicClientCatalogs.html">TDS Client Catalog Overview</a></li>
+      <li><a href="BasicConfigCatalogs.html">Basic TDS Configuration Catalogs</a></li>
+      <li><a href="Basic-threddsConfig_xml.html">Basic threddsConfig.xml</a></li>
+    </ul>
+  <h3>11:45 Lunch</h3>
+
+  <h3>1:00 (Lansing) <a href="ConfigCatalogs.html">TDS Configuration Catalogs</a></h3>
+    <ul>
+      <li><a href="/projects/THREDDS/tech/tutorial/ConfigCatalogs.html#serviceElement">The <code>service</code> Element</a></li>
+      <li><a href="/projects/THREDDS/tech/tutorial/ConfigCatalogs.html#metadata">THREDDS Metadata</a></li>
+      <li><a href="/projects/THREDDS/tech/tutorial/ConfigCatalogs.html#requirements">TDS Requirements for the <code>service</code> Elements</a></li>
+      <li><a href="/projects/THREDDS/tech/tutorial/ConfigCatalogs.html#config">TDS Configuration Catalogs and Metadata</a></li>
+      <li><a href="/projects/THREDDS/tech/tutorial/ConfigCatalogs.html#DatasetScan">More <code>datasetScan</code> Element</a></li>
+    </ul>
+
+    <h3>1:45  (Ethan) Configuring with threddsConfig.xml</h3>
+    <ul>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/ServerInfo.html">Server Information</a>&nbsp;[default: enabled]</li>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/CatalogService.html">Catalog Services</a>&nbsp;[default: enabled for locally served catalogs; disabled for remote catalogs]</li>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/Services.html">Data Access Services</a>:
+        <ul>
+            <li>OPeNDAP [default: enabled]</li>
+          <li>NetCDF Grid Subset Service:&nbsp;<a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/NetcdfSubsetServiceConfigure.html">configure</a>,&nbsp;<a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/NetcdfSubsetServiceReference.html">reference&nbsp;</a>[default: disabled]</li>
+          <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/WCS.html">WCS 1.0 Service&nbsp;</a>[default: disabled]</li>
+          <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/WMS.html">WMS 1.3.0 Service</a>&nbsp;[default; disabled]</li>
+        </ul>
+      </li>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/ncISO.html">ncISO: Dataset Metadata Services</a>&nbsp;[default: disabled; non-standard configuration</li>
+      <li><a href="../reference/ThreddsConfigXMLFile.html">threddsConfig.xml</a> ??</li>
+    </ul>
+    <h3>2:30 Break</h3>
+    <h3>3:00 (John) Advanced TDS Configuration</h3>
+    <ul>
+      <li>catalog spec</li>
+      <li>catalog examples</li>
+      <li>caching</li>
+      <li><a href="../reference/ThreddsConfigXMLFile.html">threddsConfig.xml</a>
+        <ul>
+          <li>caching</li>
+        </ul>
+      </li>
+      
+      <li><a href="../reference/Viewers.html">Configure Viewers</a></li>
+      <li><a href="../reference/RestrictedAccess.html">Restricted Dataset</a></li>
+    </ul>
+
+    <h3>4:00 (Sean) TDS Configuration Summary</h3>
+    <h3>4:30 (Ethan) TDS Summary</h3>
+    <ul>
+      <li>More TDS Overview  (<a href="TDSOverview-2.ppt">ppt</a>) with asides</li>
+      <li>Contributing Development
+        <ul>
+          <li>CDM : IOSPs, CoordSysBuilder, FeatureType handlers</li>
+          <li>TDS: Authorization, DatasetSource, servic</li>
+        </ul>
+      </li>
+      <li>Open Source / Collaborative Development
+        <ul>
+            <li>CDM/TDS on gitHub (<a href="https://github.com/Unidata/thredds">link</a>)</li>
+          <li>CDM/TDS Issue Tracking (<a href="http://www.unidata.ucar.edu/jira/">link</a>)</li>
+          <li>CDM/TDS Nightly Build/Test System (Jenkins - not yet publicly available)</li>
+          <li><a href="http://www.unidata.ucar.edu/support/#mailinglists">Email Lists</a>: thredds@unidata.ucar.edu; netcdf-java@unidata.ucar.edu</li>
+          <li><a href="http://www.unidata.ucar.edu/support/index.html#archives">Support</a>: support-thredds@unidata.ucar.edu; support-netcdf-java@unidata.ucar.edu</li>
+          <li>Contributors: ncWMS, ncISO, other</li>
+        </ul>
+      </ul>
+  <h3>5:00 Day One Finish</h3>
+  <h3>6:00 Dinner TBD</h3>
+
+</div>  <!-- end section -->
+
+<div id="section">
+    <h2><a name="DayTwo">26 July2013 : Advanced Uses of TDS, Clients and Tools</a></h2>
+
+    <h3>8:00 Coffee and continental breakfast</h3>
+
+    <h3>8:30 (Jenn) <a href="TDSMonitoringAndDebugging.html">TDS Monitoring and Debugging</a></h3>
+  <p>This section covers different log files and common tools for monitoring and debugging problems in Tomcat, Java and the TDS.</p>
+    <ul>
+      <li><a href="TDSMonitoringAndDebugging.html#access">Tomcat Access Logs</a></li>
+      <li><a href="TDSMonitoringAndDebugging.html#tds">Log Files Generated by the TDS</a></li>
+      <li><a href="TDSMonitoringAndDebugging.html#tools">Monitoring and Debugging Tools</a></li>
+    </ul>
+
+    <h3>9:00 (John) Monitoring and Debugging (cont)</h3>
+  <p>This section covers in-house developed tools for monitoring and debugging problems in the TDS.</p>
+    <ul>
+      <li>Using Remote Management (aka <a href="http://localhost:8080/thredds/admin/debug">debug</a> page)</li>
+        <li><a href="tdsMonitor.html">Using the TdsMonitor tool</a>          </li>
+        <li>Cleaning up the logs</li>
+        <li><a href="TroubleShooting.html">Troubleshooting Configuration Catalogs</a></li>
+    </ul>
+
+    <h3>9:30 (Marcos) Data Discovery</h3>
+    <ul><li>Data discovery systems:
+      	(<a href="../reference/ncISO/metadata_ncISO.ppt">ppt</a>)
+   	  <ul>
+   		  <li>gi-cat</li>
+   		  <li>geoportal</li>      		
+      </ul>
+      </li>      
+      <li><a href="../reference/ncISO.html">ncIso</a></li>
+    </ul>
+  <h3>10:00 Break</h3>
+  <h3>10:30 (John) NcML modifications</h3>
+    <ul>
+      <li> <a href="/software/netcdf/ncml/v2.2/Tutorial.html">Basic NcML tutorial</a></li>
+      <li><a href="NcML.htm">Using NcML in the TDS</a></li>
+      <li>Example Problems</li>
+    </ul>
+  <h3>11:30 Lunch</h3>
+  <h3>12:45 (John) Feature Collections</h3>
+  <ul>
+    <li><a href="../reference/collections/FeatureCollections.html">Feature Collections</a></li>
+    <li><a href="../reference/collections/FmrcCollection.html">FMRC (Forecast Model Run Collections)</a></li>
+    <li><a href="FmrcFeatureCollectionsTutorial.html">FMRC Tutorial</a></li>
+  </ul>
+  <ul><li><a href="../reference/collections/GribCollections.html">GRIB Feature Collections</a></li>
+    <li><a href="../reference/collections/GribCollections.html#gribConfig">GRIB Feature Collection config</a> </li>
+    <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html">GRIB Collection Processing</a></li>
+    <li> <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html">GRIB Tables in CDM</a></li>
+  </ul>
+  <h3>2:00 (Sean) NcML aggregation</h3>
+  <ul><li><a href="/software/netcdf/ncml/v2.2/Aggregation.html">NcML Aggregation</a></li>
+      <li><a href="NcMLvsFeatureCollections.pptx">NcML Aggregations vs Feature Collections</a></li>
+      <li><a href="NcMLExamples.html">NcML Example Problems</a></li>
+  </ul>
+    <h3>2:45 Break</h3>
+    <h3>3:15 (Marcos) Feature Collections Subsetting (<a href="../reference/ncss/NCSS_4_3.ppt">ppt</a>)</h3>
+  <ul>
+      <li>Netcdf Subset Service <a href="../reference/NetcdfSubsetServiceConfigure.html">configure</a>, <a href="../reference/NetcdfSubsetServiceReference.html">reference</a></li>
+      <li>CdmFeature </li>
+  </ul>
+    <h3>3:45  (Sean) Rosetta</h3>
+    <h3>4:00 (Marcos) ncWMS</h3>
+    <ul>
+      <li><a href="AddingServices.html">Setting up WMS</a></li>
+      <li>Vector Style Example: <a href="http://oos.soest.hawaii.edu/pacioos/voyager/index.html">PacIOOS</a></li>
+      <li>References:
+        <ul>
+            <li><a href="../reference/ThreddsConfigXMLFile.html#WMS"> WMS in threddsConfig.xml</a></li>
+          <li><a href="../reference/WMS.html">Detailed WMS Configuration</a></li>
+        </ul>
+      </li>
+  </ul>
+  <h3>4:30 (Ethan) Open Discussion / Participant feedback</h3>
+    <ul>
+        <li>What features are needed?</li>
+        <li><a href="http://www.unidata.ucar.edu/community/surveys/2012training/survey.html">Feedback/Evaluation Form</a>
+            (Repeated submissions encouraged)</li>
+    </ul>
+    <h3>5:00 Day Two Finish</h3>
+</div>
+
+</body>
+</html>
