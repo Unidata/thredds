@@ -292,10 +292,16 @@
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <logger name="org.springframework" additivity="false">
-    <level value="INFO"/>
+  <logger name="org.springframework.beans.factory" additivity="false">
+    <level value="ERROR"/>
     <appender-ref ref="serverStartupAppender"/>
   </logger>
+  
+  <!-- logger name="org.springframework.web" additivity="false">
+    <level value="ERROR"/>
+    <appender-ref ref="consoleLogger"/>
+  </logger-->  
+  
 
   <!-- temp
   <logger name="thredds.filesystem.ControllerOS" additivity="false">

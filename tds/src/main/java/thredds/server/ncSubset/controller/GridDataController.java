@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -456,10 +457,13 @@ class GridDataController extends AbstractNcssDataRequestController {
   }
 
   @ExceptionHandler(IOException.class)
-  public ResponseEntity<String> handle(IOException ioe) {
-	HttpHeaders responseHeaders = new HttpHeaders();
-	responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-	return new ResponseEntity<String>("I/O Exception handled : " + ioe.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);   
+  public ResponseEntity<String> handle(IOException ioe,  HttpServletResponse response, HttpServletRequest request ) {
+	if( !response.isCommitted()){
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>("I/O Exception handled : " + ioe.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	return null;
   }
 
   @ExceptionHandler(InvalidRangeException.class)
