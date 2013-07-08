@@ -30,8 +30,8 @@ public class TestWriteMisc {
 
   @Test
   public void testUnsignedAttribute() throws IOException, InvalidRangeException {
-     // String filename = TestLocal.temporaryDataDir + "testUnsignedAttribute2.nc";
-     String filename = "C:/tmp/testUnsignedAttribute3.nc";
+     String filename = TestLocal.temporaryDataDir + "testUnsignedAttribute2.nc";
+     //String filename = "C:/tmp/testUnsignedAttribute3.nc";
      System.out.printf("%s%n", filename);
 
      NetcdfFileWriter writer = null;

@@ -84,7 +84,7 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 74, 15, 17, 11);
   }
 
-  public void testProblem() throws Exception {
+  public void utestProblem() throws Exception {
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/surface/files/latest.xml", 54, 16, 18, 12);
   }
 
