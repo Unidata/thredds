@@ -184,27 +184,33 @@ public class FileWriter2 {
    */
   public NetcdfFile write(CancelTask cancel) throws IOException {
 
-    if (version.isNetdf4format())
-      addGroup4(null, fileIn.getRootGroup());
-    else
-      addNetcdf3();
+    try {
+      if (version.isNetdf4format())
+        addGroup4(null, fileIn.getRootGroup());
+      else
+        addNetcdf3();
 
-    if (cancel != null && cancel.isCancel()) return null;
+      if (cancel != null && cancel.isCancel()) return null;
 
-    if (debugWrite)
-      System.out.printf("About to write = %n%s%n", writer.getNetcdfFile());
+      if (debugWrite)
+        System.out.printf("About to write = %n%s%n", writer.getNetcdfFile());
 
-    // create the file
-    writer.create();
-    if (debug)
-      System.out.printf("File Out= %n%s%n", writer.getNetcdfFile());
+      // create the file
+      writer.create();
+      if (debug)
+        System.out.printf("File Out= %n%s%n", writer.getNetcdfFile());
 
-    if (cancel != null && cancel.isCancel()) return null;
-    double total = copyVarData(varList, null, cancel);
-    if (cancel != null && cancel.isCancel()) return null;
+      if (cancel != null && cancel.isCancel()) return null;
+      double total = copyVarData(varList, null, cancel);
+      if (cancel != null && cancel.isCancel()) return null;
 
-    writer.flush();
-    if (debug) System.out.println("FileWriter done total bytes = " + total);
+      writer.flush();
+      if (debug) System.out.println("FileWriter done total bytes = " + total);
+
+    } catch (IOException ioe) {
+      writer.abort();  // clean up
+      throw ioe;
+    }
 
     return writer.getNetcdfFile();
   }
