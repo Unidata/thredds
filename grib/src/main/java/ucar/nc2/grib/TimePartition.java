@@ -281,7 +281,7 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public Partition getPartitionLast() {
-    int last = (this.gribConfig.filesSortIncreasing) ? 0 : partitions.size() - 1;
+    int last = (this.gribConfig.filesSortIncreasing) ? partitions.size() - 1 : 0;
     return partitions.get(last);
   }
 
