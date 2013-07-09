@@ -1,17 +1,30 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-  <title>Catalog Primer</title>
-  <link rel="stylesheet" href="tutorial.css" type="text/css">
+  <title>Client Catalog Primer</title>
+    <link rel="stylesheet" href="tutorial2.css" type="text/css" />
+    <script type="text/javascript" src="workshopNav.js"></script>
+    <style type="text/css">
+<!--
+.style1 {font-weight: bold}
+-->
+    </style>
 </head>
 
 <body>
-  <h1> <img src="../../images/THREDDSlogo.jpg" width="67"
- height="54"> THREDDS  Catalog Primer </h1>
-  <hr title="Separator for header">
-  <p>THREDDS Servers in general, and the TDS in particular, communicate to clients by sending them a <em><strong>THREDDS Catalog</strong></em> (aka <em>Inventory Dataset Catalog</em>) that describes what datasets the server has, and how they can be accessed. A catalog is an <a href="http://www.w3.org/TR/REC-xml/">XML</a> document that follows the THREDDS Catalog schema. </p>
-  <p>This primer will describe the  <em><strong>client view of the catalog</strong></em>. If you are maintaining a TDS <em>server</em>, you will also need to add other information to the catalog, which is used only by the server and not normally seen by the client.</p>
-  <h2>Introduction</h2>
+  <h1>  THREDDS  Client Catalog Primer </h1>
+<hr title="Separator for header">
+  <p>THREDDS Servers in general, and the TDS in particular, communicate to clients by sending them a <em><strong>THREDDS Catalog</strong></em> that describes what datasets the server has, and how they can be accessed. A catalog is an <a href="http://www.w3.org/TR/REC-xml/">XML</a> document that follows the THREDDS Catalog schema. </p>
+<p>This primer will describe the  <em><strong>client view of the catalog</strong></em>. If you are maintaining a TDS <em>server</em>, you will also need to add other information to the catalog, which is used only by the server and is not  seen by the client.</p>
+<p>The <a href="../../catalog/v1.0.2/InvCatalogSpec.html">annotated schema</a> is the best complete description of THREDDS catalogs.</p>
+<ul>
+  <li><a href="#Basics">Basics</a></li>
+  <li><a href="#Advanced">Advanced Topics</a></li>
+  <li><a href="#ToolsUI">Using ToolsUI to view  catalogs</a></li>
+</ul>
+<hr>
+<p>&nbsp;</p>
+<h2><a name="Basics"></a>Basics</h2>
 <p>Here's an example of a  simple catalog:</p>
 <pre> <strong>1)</strong> &lt;?xml version=&quot;1.0&quot; ?&gt;
  <strong>2)</strong> &lt;<strong>catalog</strong> <strong>xmlns</strong>=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; &gt;
@@ -27,9 +40,9 @@
     namespace</em> with the <em><strong>xmlns </strong></em>attribute exactly 
     as shown.</li>
   <li>This declares a <em><strong>service</strong></em> with name <em><strong>dodsServer</strong>. 
-    </em>It is a OpenDAP server whose dataset URLs all start with <em>/thredds/dodsC/</em>. This is what is called a <em><strong>reletive URL</strong></em>, and is <em><strong>resolved</strong></em> against the catalog URL. If the catalog URL is, for example, <em>http://motherlode.ucar.edu:9080/thredds/Sage/catalog.html,</em> then the service base will resolve to  <span class="style1">http://motherlode.ucar.edu:9080/thredds/dodsC/</span><em>.</em> </li>
+    </em>It is a OpenDAP service whose dataset URLs all start with <em>/thredds/dodsC/</em>. This is what is called a <em><strong>reletive URL</strong></em>, and is <em><strong>resolved</strong></em> against the catalog URL. If the catalog URL is, for example, <em>http://thredds.ucar.edu/thredds/Sage/catalog.html,</em> then the service base will resolve to  <span class="style1">http://thredds.ucar.edu/thredds/dodsC/</span><em>.</em> </li>
   <li>This declares a <strong><em>dataset</em></strong> whose name is <em>SAGE III Ozone Loss for Oct 31 2006</em>. It references the <em>dodsServer</em> service, and 
-    its access URL will be <em><span class="style1">http://motherlode.ucar.edu:9080/thredds/dodsC<strong>/sage/010312006.nc</strong></span></em>.</li>
+    its access URL will be <em><span class="style1">http://thredds.ucar.edu/thredds/dodsC<strong>/sage/010312006.nc</strong></span></em>.</li>
   <li>This closes the catalog element.</li>
 </ol>
 <h3>Nested datasets</h3>
@@ -47,7 +60,7 @@
 
  &lt;/catalog&gt;</pre>
 <ol>
-  <li>This now declares a <em><strong>collection dataset</strong></em> which just 
+  <li>This  declares a <em><strong>collection dataset</strong></em> which just 
     acts as a container for the other datasets. Note that is ends in a &gt; instead 
     of /&gt;, and does not have a urlPath element. </li>
   <li>These are the datasets that directly point to data, called <strong><em>direct 
@@ -89,8 +102,8 @@
   a globally unique identifier for a dataset. In the TDS, it is especially important to add ID attributes to your datasets. </p>
 <pre>&lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; <strong>collectionType=&quot;TimeSeries&quot;</strong>&gt;
   &lt;dataset name=&quot;January Averages&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/avg/jan.nc&quot; <strong>authority=&quot;unidata.ucar.edu&quot; ID=&quot;sage-20938483&quot;</strong>&gt;
-	 <strong>&lt;dataType&gt;Trajectory&lt;/dataType&gt;
-	 &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;</strong>
+ 	<strong>&lt;dataType&gt;Trajectory&lt;/dataType&gt;
+     &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;</strong>
   &lt;/dataset&gt;
 &lt;/dataset&gt;</pre>
 <p>The <strong>harvest</strong> attribute indicates that the dataset is at the 
@@ -131,8 +144,95 @@
   <li>This dataset uses the <em>serviceName, dataFormatType </em> and <em>authority</em> 
     values and overrides the <em>dataType</em>.</li>
 </ol>
+<h3>Catalog References </h3>
+<p>It is very useful to break up large catalogs into pieces and separately 
+  maintain each piece. One way to do this is to use build each piece as a separate 
+  and logically complete catalog, then create a master catalog using catalog references:</p>
+<pre>  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>  &lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; name=&quot;Top Catalog&quot;
+1)         <strong>xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;</strong>&gt;
+<br>2)  &lt;dataset name=&quot;Realtime data from IDD&quot;&gt;<br>3)    &lt;<strong>catalogRef</strong> <strong>xlink:href</strong>=&quot;idd/models.xml&quot; <strong>xlink:title</strong>=&quot;NCEP Model Data&quot; name=&quot;&quot; /&gt;<br>      &lt;<strong>catalogRef</strong> xlink:href=&quot;idd/radars.xml&quot; xlink:title=&quot;NEXRAD Radar&quot; name=&quot;&quot; /&gt;<br>      &lt;<strong>catalogRef</strong> xlink:href=&quot;idd/obsData.xml&quot; xlink:title=&quot;Station Data&quot; name=&quot;&quot; /&gt;<br>      &lt;<strong>catalogRef</strong> xlink:href=&quot;idd/satellite.xml&quot; xlink:title=&quot;Satellite Data&quot; name=&quot;&quot; /&gt;<br>    &lt;/dataset&gt;<br>  &lt;/catalog&gt;</pre>
+<ol>
+  <li>We  declare the <strong>xlink namespace</strong> in the catalog element.</li>
+  <li>The <em>collection</em> (or <em>container</em>) dataset logically contains the  catalogRefs, which are thought of as nested datasets whose contents are the contents of the external catalog. </li>
+  <li>Here are  several <em><strong>catalogRef</strong></em> elements, each with a link to an external catalog, using the <strong>xlink:href</strong> attribute. The <strong>xlink:title</strong> is used as the name of the dataset. We need a name attribute (in order to validate, for obscure reasons), but it is ignored. The <strong>xlink:href</strong> are reletive URLS and are resolved against the catalog URL. If the catalog URL is, for example,<strong> <em>http://thredds.ucar.edu/thredds/data/catalog.xml</em></strong><em>,</em> then the resolved URL of the first catalogRef will be <em><strong>http://thredds.ucar.edu/thredds/data/idd/models.xml</strong>.</em></li>
+</ol>
+<h3><a>Shared Service Name</a></h3>
+<pre>
+  &lt;?xml version='1.0' encoding='UTF-8'?&gt;
+  &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+           xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.2"&gt;
+    &lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
+    &lt;dataset name="TDS Tutorial: example 2"&gt;
+      &lt;metadata <b>inherited</b>="true"&gt;
+<b>1)</b>       &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
+      &lt;/metadata&gt;
+<b>2)</b>    &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
+<b>2)</b>    &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
+<b>2)</b>    &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
+      &lt;catalogRef xlink:title="My Other Catalog"
+                  xlink:href="myOtherCatalog.xml" /&gt;
+      &lt;catalogRef xlink:title="Far Away Univ catalog"
+                  xlink:href="http://www.farAwayU.edu/thredds/catalog.xml" /&gt;
+    &lt;/dataset&gt;
+  &lt;/catalog&gt;</pre>
+<ol>
+  <li>The serviceName element is <b>inherited</b> by each child dataset from 
+    the containing dataset (direct datasets, <b>NOT</b> the catalogRef's).</li>
+  <li>These three child datasets all inherit the <b>odap</b> serviceName element.</li>
+</ol>
+<h3>Constructing an access URL</h3>
+<p>Using the catalog directly above, and the dataset with<strong> urlPath="test/example3.nc"</strong>, here are the steps for client software to construct a dataset access URL:</p>
+<ol>
+  <li>Find the service element referenced by the dataset:
+    <pre style="margin-left: 40px;">&lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;</pre>
+  </li>
+  <li>Get the base URL of the service element:
+    <pre style="margin-left: 40px;">/thredds/dodsC/</pre>
+  </li>
+  <li>If it is a relative URL, resolve against the catalog's URL:
+    <pre style="margin-left: 40px;">http://my.server/thredds/catalog.xml      <var>// Catalog URL</var></pre>
+      <pre style="margin-left: 40px;">http://my.server/thredds/dodsC/           <var>// Service base URL</var></pre>
+  </li>
+  <li>Find the urlPath attribute for the accessible dataset:
+    <pre style="margin-left: 40px;">urlPath="test/example3.nc"</pre>
+  </li>
+  <li>Append the value of the urlPath attribute to the base
+    service URL:<br>
+    <pre style="margin-left: 40px;">http://my.server/thredds/dodsC/test/example3.nc</pre>
+  </li>
+</ol>
+<p>More information is available on <a href="InvCatalogSpec.html#constructingURLs">constructing
+  access URLs</a>.</p>
+<p>&nbsp;</p>
 <hr>
-<h2>More Advanced Topics</h2>
+<h2> <a name="Advanced"></a>Advanced Topics</h2>
+<h3>Compound <code>service</code> Elements - Serving Datasets with Multiple Methods</h3>
+<p>Datasets can be made available through more than one access
+  method by defining and then referencing a <strong>compound</strong> <code>service</code> element. The following:<br>
+</p>
+<pre style="margin-left: 40px;">&lt;service name="<strong>all</strong>" serviceType="Compound" base="" &gt;<br><strong> </strong>   &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>    &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;<br>&lt;/service&gt;<br>
+</pre>
+<p>defines a compound service named "all" which contains
+  two
+  nested services. Any dataset that reference the compound service will
+  have two access methods. For instance:<br>
+</p>
+<pre style="margin-left: 40px;">&lt;dataset name="cool data" urlPath="so/cool/data.nc" &gt;<br>    &lt;serviceName&gt;<strong>all</strong>&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br>
+</pre>
+<p>would result in these two access URLs, open for OpenDAP access and one for WCS access:<br>
+</p>
+<pre style="margin-left: 40px;"><code>/thredds/dodsC/so/cool/data.nc</code></pre>
+<pre style="margin-left: 40px;"><code>/thredds/wcs/so/cool/data.nc</code></pre>
+<p>Note: The contained services can still be referenced independently. For instance:</p>
+<pre style="margin-left: 40px;">&lt;dataset name="more cool data" urlPath="more/cool/data.nc" &gt;<br>    &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>&lt;/dataset&gt;</pre>
+<p>results in a single access URL:</p>
+<pre style="margin-left: 40px;"><code>/thredds/dodsC/more/cool/data.nc</code></pre>
+<p>Note:</p>
+<ul>
+  <li>The catalog specification provides a <a href="InvCatalogSpec.html#serviceTypes">list of recognized service types</a>.</li>
+  <li>The service names must  be unique in each catalog. </li>
+</ul>
+<p>&nbsp;</p>
 <h3>XML Namespaces and Validation</h3>
 <p>If you use elements from other namespaces, you must declare those namespaces 
   in the catalog element. Currently there are two other namespaces THREDDS libraries 
@@ -154,7 +254,7 @@
 </ol>
 <p>You can use a THREDDS validation service, such as <a href="http://motherlode.ucar.edu:8080/thredds/remoteCatalogValidation.html">this
   one</a> to check all three of these. </p>
-<p>You can check <em>well-formedness</em> using an XML tool like XMLSpy. If you  also want 
+<p>You can check <em>well-formedness</em> using online tools like <a href="http://www.xmlvalidation.com/">this</a>. If you  also want 
   to check <em>validity</em> in those tools, you will need to declare the catalog 
   schema location like this:</p>
 <pre>&lt;catalog name=&quot;MyName&quot;
@@ -173,24 +273,13 @@
   library, knows where the schemas are located, so you only need to add these 
   2 lines if you want to do your own validation.</p>
 <p>You will want to study the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec11.html">annotated schema</a>, and the <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">schema document </a>itself.</p>
-<h3>Catalog References </h3>
-<p>It can be useful to break up large catalogs into pieces in order to separately 
-  maintain each piece. One way to do this is to use build each piece as a separate 
-  and logically complete catalog, then create a master catalog using catalog references:</p>
-<pre>  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>  &lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; name=&quot;Top Catalog&quot;
-1)         <strong>xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;</strong>&gt;
-<br>2)  &lt;dataset name=&quot;Realtime data from IDD&quot;&gt;<br>3)    &lt;<strong>catalogRef</strong> <strong>xlink:href</strong>=&quot;idd/models.xml&quot; <strong>xlink:title</strong>=&quot;NCEP Model Data&quot; name=&quot;&quot; /&gt;<br>      &lt;<strong>catalogRef</strong> xlink:href=&quot;idd/radars.xml&quot; xlink:title=&quot;NEXRAD Radar&quot; name=&quot;&quot; /&gt;<br>      &lt;<strong>catalogRef</strong> xlink:href=&quot;idd/obsData.xml&quot; xlink:title=&quot;Station Data&quot; name=&quot;&quot; /&gt;<br>      &lt;<strong>catalogRef</strong> xlink:href=&quot;idd/satellite.xml&quot; xlink:title=&quot;Satellite Data&quot; name=&quot;&quot; /&gt;<br>    &lt;/dataset&gt;<br>  &lt;/catalog&gt;</pre>
-<ol>
-  <li>Note that we must declare the <strong>xlink namespace</strong> in the catalog element.</li>
-  <li>The <em>collection</em> (or <em>container</em>) dataset logically contains the  catalogRefs, which are thought of as nested datasets whose contents are the contents of the external catalog. </li>
-  <li>Here are  several <em><strong>catalogRef</strong></em> elements, each with a link to an external catalog, using the <strong>xlink:href</strong> attribute. The <strong>xlink:title</strong> is used as the name of the dataset. We need a name attribute (in order to validate, for obscure reasons), but it is ignored. The <strong>xlink:href</strong> are reletive URLS and are resolved against the catalog URL. If the catalog URL is, for example, <em>http://motherlode.ucar.edu:9080/thredds/data/catalog.html,</em> then the resolved URL of the first catalogRef will be <span class="style1">http://motherlode.ucar.edu:9080/thredds/data</span><em><strong>/idd/models.xml</strong>.</em> </li>
-</ol>
+<h3>&nbsp;</h3>
 <hr WIDTH="100%">
-<h2>Using ToolsUI to look at your catalogs</h2>
-<p>The NetCDF Tools User Interface (aka ToolsUI) can read and display THREDDS catalogs. You can start it from the command line, or <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">launch it from webstart</a>. Use the THREDDS Tab, and click on the <img src="../../images/fileIcon.jpg" width="31" height="29"> button to navigate to your local catalog file. The catalog will be displayed in a tree widget on the left, and the selected dataset will be shown on the right, for example: </p>
-<p><img src="../../images/TUIthreddsTab.jpg" width="987" height="503"> </p>
+<h2><a name="ToolsUI"></a>Using ToolsUI to view  catalogs</h2>
+<p>The NetCDF Tools User Interface (aka ToolsUI) can read and display THREDDS catalogs. You can start it from the command line, or <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart/netCDFtools.jnlp">launch it from webstart</a>. Use the THREDDS Tab, and click on the <img src="../../images/fileIcon.jpg" width="31" height="29"> button to navigate to a local catalog file, or enter in the URL of a remote catalog, as below <em>(note that this is an XML document, not an HTML page!</em>). The catalog will be displayed in a tree widget on the left, and the selected dataset will be shown on the right, for example: </p>
+<p><img src="images/TUIthreddsTab.png" width="1270" height="833"></p>
 <p>Once you get your catalog working in a TDS, you can enter the TDS URL directly, and view the datasets with the <strong>Open</strong> buttons. </p>
-<hr WIDTH="100%">
+<p>&nbsp;</p>
 <hr width="100%">
 <address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
     Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.

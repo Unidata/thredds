@@ -56,14 +56,48 @@
 <strong>-bash-3.2$</strong> ./startup.sh
 </pre>
   </li>
-  <li>Check the catalogInit.log&nbsp;-&nbsp;<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-  </li>
-  <li>Check the list of dataset roots -&nbsp;<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-  </li>
-  <li>Browse the catalogs to see how&nbsp;the metadata looks - <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
-  </li>
+  <li>Check the catalogInit.log&nbsp;-&nbsp;<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>  </li>
+  <li>Check the list of dataset roots -&nbsp;<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>  </li>
+  <li>Browse the catalogs to see how&nbsp;the metadata looks - <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>  </li>
 </ol>
 
+<h2>THREDDS Metadata</h2>
+<h3>Linking to&nbsp;Metadata</h3>
+<pre style="margin-left: 40px;">&lt;metadata xlink:title="some good metadata" xlink:href="http://my.server/md/data1.xml" /&gt;</pre>
+<h3>Linking to Human Readable Metadata</h3>
+<pre style="margin-left: 40px;">&lt;description xlink:title="My Data" xlink:href="http://my.server/md/data1.html" /&gt;</pre>
+<h3>More dataset information</h3>
+<p>There's a lot of other information that can be optionally added that helps 
+  applications and digital libraries know how to "do the right thing" 
+  with the dataset. The<strong> collectionType</strong> attribute is used on collection 
+  datasets. The <strong>dataType</strong> is a simple classification (eg <em>Image</em>, <em>Grid</em>, <em>Point</em> data, etc). The <strong>dataFormatType</strong> describes what format the data is stored in (eg <em>NetCDF</em>, <em>HDF5</em>, 
+  etc) used by a file transfer protocol like FTP. The combination of the naming <strong>authority</strong> and the <strong>ID</strong> attribute should form 
+  a globally unglue identifier for a dataset.</p>
+<pre>&lt;dataset name="SAGE III Ozone Loss Experiment" <strong>collectionType="TimeSeries"</strong>&gt;<br>  &lt;dataset name="January Averages" serviceName="aggServer" urlPath="sage/avg/jan.nc" <strong>authority="unidata.ucar.edu" ID="sage-20938483"</strong>&gt;<br>	 <strong>&lt;dataType&gt;Trajectory&lt;/dataType&gt;<br>	 &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;</strong>
+  &lt;/dataset&gt;
+&lt;/dataset&gt;</pre>
+<p>The <strong>harvest</strong> attribute indicates that the dataset is at the 
+  right level of granularity to be exported to search systems like Digital Libraries. 
+  Elements such as <strong>summary</strong>, <strong>rights</strong>, <strong>publisher </strong>are needed in order to create valid entries for these services. For 
+  more details, see <a href="DL.html">Exporting THREDDS Datasets to Digital Libraries.</a> Also see the <a href="InvCatalogSpec.html">Catalog Specification</a> as a complete reference.</p>
+<pre>&lt;dataset name="SAGE III Ozone Loss Experiment" <strong>harvest="true"</strong>&gt;<br>  &lt;<strong>contributor</strong> role="data manager"&gt;John Smith&lt;/contributor&gt;<br>  &lt;<strong>keyword</strong>&gt;Atmospheric Chemistry&lt;/keyword&gt;<br>  &lt;<strong>publisher</strong>&gt;<br>    &lt;name vocabulary="DIF"&gt;Community Data Portal, National Center for Atmospheric Research, University Corporation for Atmospheric Research&lt;/long_name&gt;<br>    &lt;contact url="http://dataportal.ucar.edu" email="cdp@ucar.edu"/&gt;<br>  &lt;/<strong>publisher</strong>&gt;<br>&lt;/dataset&gt;</pre>
+<h3>Factoring out information</h3>
+<p>Rather than declare the same information on each dataset, you can use the <em>metadata</em> element to factor out common information.:</p>
+<pre>&lt;dataset name="SAGE III Ozone Loss Experiment" &gt;<br><br>1<strong> &lt;metadata inherit="true"&gt;<br></strong>2   &lt;serviceName&gt;aggServer&lt;/serviceName&gt;<br>2   &lt;dataType&gt;Trajectory&lt;/dataType&gt;<br>2   &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;<br>2   &lt;authority&gt;unidata.ucar.edu&lt;/authority&gt;<br><strong>  &lt;/metadata&gt;</strong>
+
+3 &lt;dataset name="January Averages" urlPath="sage/avg/jan.nc" ID="sage-23487382"/&gt;
+3 &lt;dataset name="February Averages" urlPath="sage/avg/feb.nc" ID="sage-63656446"/&gt;
+4 &lt;dataset name="Global Averages" urlPath="sage/global.nc" ID="sage-7869700g" <strong>dataType="Grid"</strong>/&gt;<br><br>&lt;/dataset&gt;<br>
+</pre>
+<ol>
+  <li> The <em>metadata</em> element with<em> inherit=true </em>implies that all 
+    the information inside the metadata element applies to the current dataset 
+    and all nested datasets.</li>
+  <li>The <em>serviceName, dataType, dataFormatType </em> and <em>authority</em> are declared as elements.</li>
+  <li>These datasets now use the <em>serviceName, dataType, dataFormatType </em> and <em>authority</em> values declared in the parent dataset.</li>
+  <li>This dataset uses the <em>serviceName, dataFormatType </em> and <em>authority</em> values and overrides the <em>dataType</em>.</li>
+</ol>
+<p>&nbsp;</p>
 <hr width="100%">
 <address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
     Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
