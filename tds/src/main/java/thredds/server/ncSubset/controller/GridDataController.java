@@ -459,6 +459,7 @@ class GridDataController extends AbstractNcssDataRequestController {
   @ExceptionHandler(IOException.class)
   public ResponseEntity<String> handle(IOException ioe,  HttpServletResponse response, HttpServletRequest request ) {
 	if( !response.isCommitted()){
+		log.error("I/O Exception handled in GridDataController", ioe);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
 		return new ResponseEntity<String>("I/O Exception handled : " + ioe.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -470,7 +471,7 @@ class GridDataController extends AbstractNcssDataRequestController {
   public ResponseEntity<String> handle(InvalidRangeException ire) {
 	HttpHeaders responseHeaders = new HttpHeaders();
 	responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-	return new ResponseEntity<String>("Invalid Range Exception handled (Invalid Lat/Lon or Time Range): " + ire.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);    
+	return new ResponseEntity<String>("Invalid Range Exception handled (Invalid Lat/Lon or Time Range): " + ire.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST );    
   }
 
 }

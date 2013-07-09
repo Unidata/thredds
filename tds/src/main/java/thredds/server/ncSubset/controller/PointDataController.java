@@ -214,13 +214,14 @@ class PointDataController extends AbstractNcssDataRequestController{
 		response.reset();		
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN); 
-		return new ResponseEntity<String>("Parse exception handled: "+pe.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR );
+		return new ResponseEntity<String>("Parse exception handled: "+pe.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST );
 	}
 
 
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<String> handle(IOException ioe, HttpServletResponse response){
 		if(!response.isCommitted()){
+			log.error("I/O Exception handled in PointDataController", ioe);
 			response.reset();		
 			HttpHeaders responseHeaders = new HttpHeaders();
 			responseHeaders.setContentType(MediaType.TEXT_PLAIN);		
@@ -235,7 +236,7 @@ class PointDataController extends AbstractNcssDataRequestController{
 		response.reset();
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);				
-		return new ResponseEntity<String>( "Invalid Range exception handled: "+ire.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<String>( "Invalid Range exception handled: "+ire.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
 	}	
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
