@@ -241,13 +241,17 @@ public class ServletLogParser implements LogReader.LogParser {
 
 
   private int parse(String s) {
+    s = s.trim();
+    if (s.isEmpty()) return 0;
     if (s.equals("-")) return 0;
-    return Integer.parseInt(s.trim());
+    return Integer.parseInt(s);
   }
 
   private long parseLong(String s) {
+    s = s.trim();
+    if (s.isEmpty()) return 0;
     if (s.equals("-")) return 0;
-    return Long.parseLong(s.trim());
+    return Long.parseLong(s);
   }
 
   static class MyLogFilter implements LogReader.LogFilter {
