@@ -3,13 +3,13 @@ July 2013
 /c/dev/github/thredds/docs/web/thredds/tech/tds4.3/tutorial (target-4.3.18)
 
 marcos		AddingServices.html
-*			AdditionalSecurityConfiguration.html
+*caron		AdditionalSecurityConfiguration.html
 -lansing	BasicThreddsConfig_xml.html
 -lansing	BasicConfigCatalogs.html
 -jenn		BasicTomcatAndTDSSecurity.html
 -lansing 	CatalogPrimer.html	 // tutorial only
 -lansing 	CatalogPrimerW.html  // simplified version for the workshop
--john		Checklist.html
+-caron		Checklist.html
 -lansing	ConfigCatalogs.html
 caron		FmrcFeatureCollectionsTutorial.html
 caron		GRIB.pptx
@@ -29,9 +29,9 @@ caron		TroubleShooting.html
 caron		tdsMonitor.html
 jenn		tutorial.css
 jenn		tutorial2.css
-			workshop2012.html
-delete		workshop2013-python.html
-john		workshop2013.html
+X			workshop2012.html
+delete?		workshop2013-python.html
+caron		workshop2013.html
 jenn		workshopNav.js
 
 ethan		../reference/ServerInfo.html
@@ -53,9 +53,7 @@ caron		../reference/collections/GribCollections.html
 caron		../reference/RestrictedAccess.html
 caron		../reference/Viewers.html
 
-notes 
-1. combine
-
+==========================================================================================
 Oct 2012
 
 caron@ROBERTO /c/dev/github/thredds/docs/web/thredds/tech/tds4.3/reference (target-4.3.14)
