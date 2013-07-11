@@ -3,7 +3,7 @@ July 2013
 /c/dev/github/thredds/docs/web/thredds/tech/tds4.3/tutorial (target-4.3.18)
 
 marcos		AddingServices.html
-*caron		AdditionalSecurityConfiguration.html
+*caron		AdditionalSecurityConfiguration.html // consolidate in reference ??
 -lansing	BasicThreddsConfig_xml.html
 -lansing	BasicConfigCatalogs.html
 -jenn		BasicTomcatAndTDSSecurity.html
@@ -25,7 +25,7 @@ ethan		TDSOverview-2.ppt
 ?			TDS_Plans.ppt
 caron		TroubleShooting.html
 -caron		index.html
-?			pythonTDS.ppt
+sean		pythonTDS.ppt
 caron		tdsMonitor.html
 jenn		tutorial.css
 jenn		tutorial2.css
@@ -50,8 +50,8 @@ caron		/software/netcdf/ncml/v2.2/Aggregation.html
 caron		../reference/collections/FeatureCollections.html
 caron		../reference/collections/FmrcCollection.html
 caron		../reference/collections/GribCollections.html
-caron		../reference/RestrictedAccess.html
-caron		../reference/Viewers.html
+-caron		../reference/RestrictedAccess.html
+-caron		../reference/Viewers.html
 
 ==========================================================================================
 Oct 2012
