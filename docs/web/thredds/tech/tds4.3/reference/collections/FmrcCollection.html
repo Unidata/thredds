@@ -3,12 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>FMRC Collections</title>
-<style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
-code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;)
-.style1 {font-style: italic}
-</style>
+  <link href="../../../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
@@ -16,7 +11,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p> A <em><strong>Forecast Model Run Collection (FMRC) </strong></em>is a  <em><strong>collection of forecast model runs</strong></em><em><strong>, </strong></em>which can be uniquely identified by the start of the model run, called the model<em><strong> run time</strong></em>, also called the <em><strong>analysis time </strong></em>or<em><strong> generating time</strong></em>. Each model run has a series of forecast times. A collection of these runs therefore has two time coordinates, the run time and the forecast time. An FMRC creates a 2D time collection dataset, and then creates various 1D time subsets out of it.</p>
 <p>Previously this functionality was provided using <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">FMRC Aggregation</a> through NcML and the <strong>&lt;fmrcDataset&gt;</strong> element in the TDS configuration catalog. As of TDS 4.2, that implementation is now deprecated, at least on the server, and <strong>&lt;featureCollection&gt;</strong> elements are the correct way to provide this functionality. As of 4.3, <em> one should <strong>only</strong> serve GRIB files with featureCollection=GRIB.</em></p>
 <hr />
-<h3>fmrcConfig element</h3>
+<h3><a name="fmrcConfig" id="fmrcConfig"></a>fmrcConfig element</h3>
 <p>Defines options on feature collections with <strong> featureType</strong>=&quot;FMRC&quot;.</p>
 <pre>&lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs&quot; /&gt;
 </pre>

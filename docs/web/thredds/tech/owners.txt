@@ -47,9 +47,9 @@ marcos		../reference/ncISO.html
 caron		../reference/ThreddsConfigXMLFile.html
 caron		/software/netcdf/ncml/v2.2/Tutorial.html
 caron		/software/netcdf/ncml/v2.2/Aggregation.html
-caron		../reference/collections/FeatureCollections.html
-caron		../reference/collections/FmrcCollection.html
-caron		../reference/collections/GribCollections.html
+-caron		../reference/collections/FeatureCollections.html
+-caron		../reference/collections/FmrcCollection.html
+-caron		../reference/collections/GribCollections.html
 -caron		../reference/RestrictedAccess.html
 -caron		../reference/Viewers.html
 

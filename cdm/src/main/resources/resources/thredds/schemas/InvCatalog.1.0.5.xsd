@@ -355,20 +355,6 @@
     <xsd:attribute name="deleteAfter" type="xsd:string"/>
   </xsd:complexType>
 
-  <!-- Force Types -->
-  <xsd:simpleType name="forceEnumTypes">
-    <xsd:union memberTypes="xsd:token">
-      <xsd:simpleType>
-        <xsd:restriction base="xsd:token">
-          <xsd:enumeration value="always"/>
-          <xsd:enumeration value="test"/>
-          <xsd:enumeration value="nocheck"/>
-        </xsd:restriction>
-      </xsd:simpleType>
-    </xsd:union>
-  </xsd:simpleType>
-
-
   <xsd:element name="manage">
     <xsd:complexType>
       <xsd:attribute name="deleteAfter" type="xsd:string" use="required"/>

@@ -4,14 +4,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Server Catalog 1.0.5</title>
         <link rel="stylesheet" href="../../tds.css" type="text/css">
-
 </head>
 
 <body>
 <h1> <img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67" /> Server-side Catalog Specification, Version 1.0.5<br />
 </h1>
 <address>
-last update: 07/10/2013<br />
+last update: 07/11/2013<br />
 Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS
   mailgroup</a>
 </address>
@@ -37,7 +36,7 @@ Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS
 <h3>Related resources:<br />
 </h3>
 <ul>
-  <li><a href="../InvCatalogSpec.html">Client catalog specification</a></li>
+  <li><a href="../v1.0.2/InvCatalogSpec.html">Client catalog specification</a></li>
   <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd">XML Schema version 1.0.5</a><br />
   </li>
 </ul>
@@ -319,7 +318,7 @@ So, when cataloged, this dataset would end up as something like this:<br />
 </pre>
 <p> Like <em>datasetScan</em>, the <i>path</i> attribute is used to define the URL path that will map to to a given datasetFmrc. </p>
 <hr />
-The following set of elements are all used in a <em>featureCollection</em>
+<p>Much of the current development on the TDS is focused on FeatureCollections, and the details and meanings are described <a href="../../tds4.3/reference/collections/FeatureCollections.html">here</a>. This document focuses just on the syntax, ie what elements are allowed in the configuration catalog. The following set of elements are all used in a <em>featureCollection</em></p>
 <h3><a name="featureCollection" id="featureCollection"></a>The <em>featureCollection</em> Element</h3>
 <pre>
  &lt;xsd:element name=&quot;featureCollection&quot; substitutionGroup=&quot;dataset&quot;&gt;
@@ -342,21 +341,34 @@ The following set of elements are all used in a <em>featureCollection</em>
    &lt;/xsd:complexContent&gt;
   &lt;/xsd:complexType&gt;
  &lt;/xsd:element&gt;</pre>
- featureTypeChoice
+<p>A featureCollection is a <a href="../v1.0.2/InvCatalogSpec.html#dataset">dataset</a>, and so can contain all the elements and attributes of a dataset, in addition to the ones listed above.</p>
+<p>Example:</p>
+<pre> &lt;<strong>featureCollection</strong> name=&quot;Surface Synoptic Point Data&quot; harvest=&quot;true&quot; featureType=&quot;Point&quot; path=&quot;nws/synoptic/ncdecoded&quot;&gt;
+   &lt;collection spec=&quot;/data/ldm/pub/decoded/netcdf/surface/synoptic/Surface_Synoptic_#yyyyMMdd_HHmm#.nc$&quot; /&gt;
+   &lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+   &lt;protoDataset choice=&quot;Penultimate&quot; /&gt;
+   &lt;pointConfig datasetTypes=&quot;cdmrFeature Files&quot;/&gt;
+ &lt;/featureCollection&gt;</pre>
+<h4><strong>The <em>featureTypeChoice</em>
+  type</strong></h4>
 <pre> &lt;xsd:simpleType name=&quot;featureTypeChoice&quot;&gt;
   &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
    &lt;xsd:simpleType&gt;
     &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
-    &lt;xsd:enumeration value=&quot;FMRC&quot;/&gt;
-    &lt;xsd:enumeration value=&quot;GRIB&quot;/&gt;
-    &lt;xsd:enumeration value=&quot;Station&quot;/&gt;
-    &lt;xsd:enumeration value=&quot;Point&quot;/&gt;
-    &lt;xsd:enumeration value=&quot;Station_Profile&quot;/&gt;
-   &lt;/xsd:restriction&gt;
+     &lt;xsd:enumeration value=&quot;FMRC&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;GRIB&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Station&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Point&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Station_Profile&quot;/&gt;
+    &lt;/xsd:restriction&gt;
    &lt;/xsd:simpleType&gt;
   &lt;/xsd:union&gt;
  &lt;/xsd:simpleType&gt;</pre>
- collectionType
+ <p>This enumerates the possible values for the featureType attribute of the featureCollection, using  the verbose and irritating XML Schema notation. </p>
+ <p>Example:</p>
+ <pre> &lt;featureCollection name=&quot;GEFS-Global_1p0deg_Ensemble-members&quot; <strong>featureType</strong>=&quot;GRIB&quot; harvest=&quot;true&quot;
+ path=&quot;grib/NCEP/GEFS/Global_1p0deg_Ensemble/members&quot;&gt;</pre>
+ <h4><strong>The <em>collection</em> element </strong>  </h4>
 <pre> &lt;xsd:complexType name=&quot;collectionType&quot;&gt;
    &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
    &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;
@@ -365,7 +377,10 @@ The following set of elements are all used in a <em>featureCollection</em>
    &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;
    &lt;xsd:attribute name=&quot;useIndexOnly&quot; type=&quot;xsd:boolean&quot;/&gt;
  &lt;/xsd:complexType&gt;</pre>
- updateType
+<p>The <a href="../../tds4.3/reference/collections/FeatureCollections.html#collection">collection</a> element of the featureCollection describes the set of files/datasets in the collection. It is required.</p>
+<p>Example:</p>
+<pre>        &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/member/.*grib2$&quot;<br />                    dateFormatMark=&quot;#GEFS_Global_1p0deg_Ensemble_#yyyyMMdd_HHmm&quot;<br />                    timePartition=&quot;1 day&quot;<br />                    olderThan=&quot;5 min&quot;/&gt;</pre>
+<h4><strong>The <em>updateType</em> type</strong></h4>
 <pre> &lt;xsd:complexType name=&quot;updateType&quot;&gt;
    &lt;xsd:sequence&gt;
     &lt;xsd:element ref=&quot;manage&quot; minOccurs=&quot;0&quot;/&gt;
@@ -376,37 +391,22 @@ The following set of elements are all used in a <em>featureCollection</em>
    &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;
    &lt;xsd:attribute name=&quot;deleteAfter&quot; type=&quot;xsd:string&quot;/&gt;
  &lt;/xsd:complexType&gt;</pre>
- forceEnumTypes
-<pre>
- &lt;xsd:simpleType name=&quot;forceEnumTypes&quot;&gt;
-  &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
-   &lt;xsd:simpleType&gt;
-    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
-     &lt;xsd:enumeration value=&quot;always&quot;/&gt;
-     &lt;xsd:enumeration value=&quot;test&quot;/&gt;
-     &lt;xsd:enumeration value=&quot;nocheck&quot;/&gt;
-    &lt;/xsd:restriction&gt;
-   &lt;/xsd:simpleType&gt;
-  &lt;/xsd:union&gt;
- &lt;/xsd:simpleType&gt;
- </pre>
- manage
-<pre> &lt;xsd:element name=&quot;manage&quot;&gt;
-   &lt;xsd:complexType&gt;
-   &lt;xsd:attribute name=&quot;deleteAfter&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-   &lt;/xsd:complexType&gt;
- &lt;/xsd:element&gt;</pre>
- protoDatasetType
+<p>The updateType is used by both the update element and the tdm element.</p>
+<p>Example:</p>
+<pre> &lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot;/&gt;
+ &lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+</pre>
+<p>The value of the startup attribute should be &quot;true&quot;, &quot;false&quot; (default) or &quot;nocheck&quot;.</p>
+<h4><strong> The <em>protoDataset</em> element</strong></h4>
 <pre> &lt;xsd:complexType name=&quot;protoDatasetType&quot;&gt;
    &lt;xsd:sequence&gt;
-   &lt;xsd:element ref=&quot;ncml:netcdf&quot; minOccurs=&quot;0&quot;/&gt;
+     &lt;xsd:element ref=&quot;ncml:netcdf&quot; minOccurs=&quot;0&quot;/&gt;
    &lt;/xsd:sequence&gt;
    &lt;xsd:attribute name=&quot;choice&quot; type=&quot;protoChoices&quot;/&gt;
    &lt;xsd:attribute name=&quot;change&quot; type=&quot;xsd:string&quot;/&gt;
    &lt;xsd:attribute name=&quot;param&quot; type=&quot;xsd:string&quot;/&gt;
  &lt;/xsd:complexType&gt;</pre>
- protoChoices
-<pre> &lt;xsd:simpleType name=&quot;protoChoices&quot;&gt;
+ <pre> &lt;xsd:simpleType name=&quot;protoChoices&quot;&gt;
    &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
    &lt;xsd:simpleType&gt;
    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
@@ -419,12 +419,15 @@ The following set of elements are all used in a <em>featureCollection</em>
    &lt;/xsd:simpleType&gt;
    &lt;/xsd:union&gt;
  &lt;/xsd:simpleType&gt;</pre>
- protoChoices
-<pre> &lt;xsd:complexType name=&quot;protoChoices&quot;&gt;
+ <p>The <strong><em>protoDataset</em></strong> defines how to choose the prototype dataset of the collection</p>
+ <p>Example:</p>
+<pre> &lt;protoDataset choice=&quot;First&quot; /&gt;
+</pre>
+ <h4>The <em>fmrcConfig</em> element</h4>
+<pre> &lt;xsd:complexType name=&quot;fmrcConfigType&quot;&gt;
    &lt;xsd:attribute name=&quot;regularize&quot; type=&quot;xsd:boolean&quot;/&gt;
    &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;fmrcDatasetTypes&quot;/&gt;
  &lt;/xsd:complexType&gt;</pre>
- fmrcDatasetTypes
 <pre> &lt;xsd:simpleType name=&quot;fmrcDatasetTypes&quot;&gt;
    &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
    &lt;xsd:simpleType&gt;
@@ -439,12 +442,17 @@ The following set of elements are all used in a <em>featureCollection</em>
    &lt;/xsd:simpleType&gt;
    &lt;/xsd:union&gt;
  &lt;/xsd:simpleType&gt;</pre>
- pointConfigType
+ <p>The <strong><em>fmrcConfig</em></strong> is used only for featureType=&quot;FMRC&quot;. See <a href="../../tds4.3/reference/collections/FmrcCollection.html#fmrcConfig">here</a> for details.</p>
+ <p>Example:</p>
+ <pre> &lt;fmrcConfig datasetTypes=&quot;Best Files&quot; /&gt;</pre>
+ <h4>The <em>pointConfig</em> element</h4>
 <pre> &lt;xsd:complexType name=&quot;pointConfigType&quot;&gt;
    &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;
  &lt;/xsd:complexType&gt;</pre>
-<h3>gribConfigType 
-</h3>
+<p>The <strong><em>pointConfig</em></strong> is used only for featureType=&quot;Point&quot;.</p>
+<p>Example:</p>
+<pre> &lt;pointConfig datasetTypes=&quot;Files&quot; /&gt;</pre>
+<h4>The <em>gribConfig</em> element<a name="gribConfig" id="gribConfig"></a></h4>
 <pre> &lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;
   &lt;xsd:sequence&gt;</pre>
   <pre>   &lt;xsd:element name=&quot;gdsHash&quot; minOccurs=&quot;0&quot;&gt;
@@ -525,6 +533,16 @@ The following set of elements are all used in a <em>featureCollection</em>
     &lt;/xsd:simpleType&gt;
    &lt;/xsd:union&gt;
  &lt;/xsd:simpleType&gt;</pre>
+<p>The <strong><em>gribConfig</em></strong> element is used only for featureType=&quot;GRIB&quot;. See <a href="../../tds4.3/reference/collections/GribCollections.html#gribConfig">here</a> for details.</p>
+<p>Example:</p>
+<pre> &lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot;&gt;
+  &lt;latestNamer name=&quot;Latest NCEP GEFS 1.0 degree Ensemble&quot;/&gt;
+  &lt;bestNamer name=&quot;Best NCEP GEFS 1.0 degree Time Series&quot;/&gt;
+  &lt;filesSort&gt;
+   &lt;lexigraphicByName increasing=&quot;false&quot;/&gt;
+  &lt;/filesSort&gt;
+ &lt;/gribConfig&gt;
+ </pre>
 <hr />
 <h2>Index<a name="index" id="index"></a> </h2>
 <ul>
@@ -536,7 +554,9 @@ The following set of elements are all used in a <em>featureCollection</em>
   <li><a href="#addTimeCoverage_Element">addTimeCoverage</a>: an element<br />
   </li>
   <li><a href="#datasetScan_Element">datasetScan</a>: an element which creates nested catalogs by scanning directories.</li>
-  <li><a href="#datasetRoot_Element">datasetRoot</a>: an element which associates a local disk directory with a URL path<br />
+  <li><a href="#datasetRoot_Element">datasetRoot</a>: an element which associates a local disk directory with a URL path</li>
+  <li><a href="#featureCollection">featureCollection</a>: a dataset consisting of collection of Feature Types.</li>
+  <li><a href="#datasetRoot_Element">gribConfig</a>: an element in featureCollection for configuring how GRIB files are read<br />
   </li>
   <li><a href="#filter_Element">filter</a>: an element</li>
   <li><a href="#namer_Element">namer</a>: an element<br />
