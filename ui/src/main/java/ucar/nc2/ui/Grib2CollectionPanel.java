@@ -63,6 +63,10 @@ import ucar.nc2.ui.widget.BAMutil;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.beans.SimpleBeanInfo;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -282,18 +286,10 @@ public class Grib2CollectionPanel extends JPanel {
   void makeRecordTable(Grib2Pds pds) {
     if (record2BeanTable != null)  record2BeanTable.saveState(false);
 
-    Class beanClass = Grib2RecordBean.class;
-    if (pds instanceof Grib2Pds.PdsAerosol)
-      beanClass = Grib2RecordAerosol.class;
-    else if (pds instanceof Grib2Pds.PdsEnsemble)
-      beanClass = Grib2RecordEnsemble.class;
-    else if (pds instanceof Grib2Pds.PdsInterval)
-      beanClass = Grib2RecordInterval.class;
-    else if (pds instanceof Grib2Pds.PdsProbability)
-      beanClass = Grib2RecordProb.class;
+    BeanInfo info = new PdsBeanInfo(pds);
 
-    String prefsName = beanClass.getName();
-    record2BeanTable = new BeanTableSorted(beanClass, (PreferencesExt) prefs.node(prefsName), false, prefsName, "from Grib2Input.getRecords()");
+    String prefsName = pds.getClass().getName();
+    record2BeanTable = new BeanTableSorted(Grib2RecordBean.class, (PreferencesExt) prefs.node(prefsName), prefsName, "from Grib2Input.getRecords()", info);
     PopupMenu varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Compare GridRecord", new AbstractAction() {
@@ -996,6 +992,74 @@ public class Grib2CollectionPanel extends JPanel {
       f.format(" %d-%d", rb.getStartInterval(), rb.getEndInterval());
   }  */
 
+    /////////////////////////////////////////////////////////
+
+  public class Gds2Bean implements Comparable<Gds2Bean> {
+    Grib2SectionGridDefinition gdss;
+    Grib2Gds gds;
+
+    // no-arg constructor
+
+    public Gds2Bean() {
+    }
+
+    public Gds2Bean(Grib2SectionGridDefinition m) {
+      this.gdss = m;
+      gds = gdss.getGDS();
+    }
+
+    public int getGDShash() {
+      return gds.hashCode();
+    }
+
+    public int getTemplate() {
+      return gdss.getGDSTemplateNumber();
+    }
+
+    public String getGridName() {
+      return cust.getTableValue("3.1", gdss.getGDSTemplateNumber());
+    }
+
+    public String getGroupName() {
+      return getGridName() + "-" + getNy() + "X" + getNx();
+    }
+
+    public int getNPoints() {
+      return gdss.getNumberPoints();
+    }
+
+    public int getNx() {
+      return gds.getNx();
+    }
+
+    public int getNy() {
+      return gds.getNy();
+    }
+
+    public String getScanMode() {
+      return Long.toBinaryString(gds.scanMode);
+    }
+
+    @Override
+    public String toString() {
+      return getGridName() + " " + getTemplate() + " " + getNx() + " X " + getNy();
+    }
+
+    public void toRawGdsString(Formatter f) {
+      byte[] bytes = gds.getRawBytes();
+      int count = 1;
+      for (byte b : bytes) {
+        short s = DataType.unsignedByteToShort(b);
+        f.format(" %d : %d%n", count++, s);
+      }
+    }
+
+    @Override
+    public int compareTo(Gds2Bean o) {
+      return getGroupName().compareTo(o.getGroupName());
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////////
 
   public class Grib2ParameterBean {
@@ -1023,16 +1087,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     void addRecord(Grib2Record r) throws IOException {
-      if (pds instanceof Grib2Pds.PdsAerosol)
-        records.add(new Grib2RecordAerosol(r));
-      else if (pds instanceof Grib2Pds.PdsEnsemble)
-        records.add(new Grib2RecordEnsemble(r));
-      else if (pds instanceof Grib2Pds.PdsInterval)
-        records.add(new Grib2RecordInterval(r));
-       else if (pds instanceof Grib2Pds.PdsProbability)
-        records.add(new Grib2RecordProb(r));
-      else
-        records.add(new Grib2RecordBean(r));
+      records.add(new Grib2RecordBean(r));
     }
 
     List<Grib2RecordBean> getRecordBeans() {
@@ -1309,7 +1364,6 @@ public class Grib2CollectionPanel extends JPanel {
 
     public Grib2RecordBean(Grib2Record m) throws IOException {
       this.gr = m;
-      //long refTime = gr.getId().getReferenceDate().getMillis();
       this.pds = gr.getPDSsection().getPDS();
     }
 
@@ -1324,18 +1378,6 @@ public class Grib2CollectionPanel extends JPanel {
     public String getHeader() {
       return Grib2Utils.cleanupHeader(gr.getHeader());
     }
-
-    /* public final long getPDShash() {
-      return gr.getPDSsection().calcCRC();
-    }
-
-    public final long getPdsOffset() {
-      return gr.getPDSsection().getOffset();
-    }
-
-    public long getGDShash() {
-      return gr.getGDSsection().calcCRC();
-    } */
 
     public final String getTimeUnit() {
       int unit = pds.getTimeUnit();
@@ -1421,24 +1463,15 @@ public class Grib2CollectionPanel extends JPanel {
       }
     }
 
-  }
-
-  public class Grib2RecordInterval extends Grib2RecordBean {
-    Grib2Pds.PdsInterval pdsi;
-
-    public Grib2RecordInterval() {
-    }
-
-    public Grib2RecordInterval(Grib2Record m) throws IOException {
-      super(m);
-      pdsi = (Grib2Pds.PdsInterval) pds;
-    }
-
+    /////////////////////////////////////////////////////////////
+    /// time intervals
      /*
     TimeInterval: statProcessType= 0, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 744, timeIncrementUnit= 1, timeIncrement=24
     TimeInterval: statProcessType= 197, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 23, timeIncrementUnit= 1, timeIncrement=0
      */
     public String getTInv() {
+      Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
+
       Formatter f = new Formatter();
       int count = 0;
       for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals()) {
@@ -1465,73 +1498,48 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public long getIntvHash() {
+       Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
        return pdsi.getIntervalHash();
     }
-  }
 
-  public class Grib2RecordAerosol extends Grib2RecordBean {
-    Grib2Pds.PdsAerosol pdsi;
+    /////////////////////////////
+    // Aerosols
 
-    public Grib2RecordAerosol() {
-    }
+    public int getAerType() { return ((Grib2Pds.PdsAerosol) pds).getAerosolType(); }
+    public double getAerIntSizeType()  { return ((Grib2Pds.PdsAerosol) pds).getAerosolIntervalSizeType(); }
+    public double getAerSize1()  { return ((Grib2Pds.PdsAerosol) pds).getAerosolSize1() * 10e6; } // microns
+    public double getAerSize2()  { return ((Grib2Pds.PdsAerosol) pds).getAerosolSize2() * 10e6; } // microns
+    public double getAerIntWavelType()  { return ((Grib2Pds.PdsAerosol) pds).getAerosolIntervalWavelengthType(); }
+    public double getAerWavel1()   { return ((Grib2Pds.PdsAerosol) pds).getAerosolWavelength1(); }
+    public double getAerWavel2()  { return ((Grib2Pds.PdsAerosol) pds).getAerosolWavelength2(); }
 
-    public Grib2RecordAerosol(Grib2Record m) throws IOException {
-      super(m);
-      pdsi = (Grib2Pds.PdsAerosol) pds;
-    }
-
-    public int getAerType() { return pdsi.getAerosolType(); }
-    public double getAerIntSizeType()  { return pdsi.getAerosolIntervalSizeType(); }
-    public double getAerSize1()  { return pdsi.getAerosolSize1() * 10e6; } // microns
-    public double getAerSize2()  { return pdsi.getAerosolSize2() * 10e6; } // microns
-    public double getAerIntWavelType()  { return pdsi.getAerosolIntervalWavelengthType(); }
-    public double getAerWavel1()   { return pdsi.getAerosolWavelength1(); }
-    public double getAerWavel2()  { return pdsi.getAerosolWavelength2(); }
-
-  }
-
-  public class Grib2RecordEnsemble extends Grib2RecordBean{
-    Grib2Pds.PdsEnsemble pdsi;
-
-    public Grib2RecordEnsemble() {
-    }
-
-    public Grib2RecordEnsemble(Grib2Record m) throws IOException {
-      super(m);
-      pdsi = (Grib2Pds.PdsEnsemble) pds;
-    }
-
-   public final int getPertN() {
+  ///////////////////////////////
+    // Ensembles
+   public  int getPertN() {
+     Grib2Pds.PdsEnsemble pdsi = (Grib2Pds.PdsEnsemble) pds;
       int v = pdsi.getPerturbationNumber();
       if (v == GribNumbers.UNDEFINED) v = -1;
       return v;
     }
 
-    public final int getNForecastsInEns() {
+    public  int getNForecastsInEns() {
+      Grib2Pds.PdsEnsemble pdsi = (Grib2Pds.PdsEnsemble) pds;
       int v = pdsi.getNumberEnsembleForecasts();
       if (v == GribNumbers.UNDEFINED) v = -1;
       return v;
     }
 
-    public final int getPertType() {
+    public  int getPertType() {
+      Grib2Pds.PdsEnsemble pdsi = (Grib2Pds.PdsEnsemble) pds;
       int v = pdsi.getPerturbationType();
       return (v == GribNumbers.UNDEFINED) ? -1 : v;
     }
-  }
 
-  public class Grib2RecordProb extends Grib2RecordBean{
-    Grib2Pds.PdsProbability pdsi;
+    /////////////////////////////////
+    // Probability
 
-    public Grib2RecordProb() {
-    }
-
-    public Grib2RecordProb(Grib2Record m) throws IOException {
-      super(m);
-      pdsi = (Grib2Pds.PdsProbability) pds;
-    }
-
-
-    public final String getProbLimits() {
+    public  String getProbLimits() {
+      Grib2Pds.PdsProbability pdsi = (Grib2Pds.PdsProbability) pds;
       double v = pdsi.getProbabilityLowerLimit();
       if (v == GribNumbers.UNDEFINEDD) return "";
       else return pdsi.getProbabilityLowerLimit() + "-" + pdsi.getProbabilityUpperLimit();
@@ -1539,71 +1547,63 @@ public class Grib2CollectionPanel extends JPanel {
 
   }
 
-  /////////////////////////////////////////////////////////
+  class PdsBeanInfo extends SimpleBeanInfo {
+    PropertyDescriptor[] properties;
 
-  public class Gds2Bean implements Comparable<Gds2Bean> {
-    Grib2SectionGridDefinition gdss;
-    Grib2Gds gds;
+    PdsBeanInfo(Grib2Pds pds) {
+      ArrayList<PropertyDescriptor> props = new ArrayList<PropertyDescriptor>(40);
 
-    // no-arg constructor
+      Class cl = Grib2RecordBean.class;
+      try {
+        props.add(new PropertyDescriptor("dataPos", cl, "getDataPos", null));
+        props.add(new PropertyDescriptor("file", cl, "getFile", null));
+        props.add(new PropertyDescriptor("forecastDate", cl, "getForecastDate", null));
+        props.add(new PropertyDescriptor("forecastTime", cl, "getForecastTime", null));
+        props.add(new PropertyDescriptor("header", cl, "getHeader", null));
+        props.add(new PropertyDescriptor("level", cl, "getLevel", null));
+        props.add(new PropertyDescriptor("refDate", cl, "getRefDate", null));
+        props.add(new PropertyDescriptor("timeUnit", cl, "getTimeUnit", null));
 
-    public Gds2Bean() {
-    }
+        if (pds instanceof Grib2Pds.PdsAerosol) {
+          props.add(new PropertyDescriptor("aerIntSizeType", cl, "getAerIntSizeType", null));
+          props.add(new PropertyDescriptor("aerIntWavelType", cl, "getAerIntWavelType", null));
+          props.add(new PropertyDescriptor("aerSize1", cl, "getAerSize1", null));
+          props.add(new PropertyDescriptor("aerSize2", cl, "getAerSize2", null));
+          props.add(new PropertyDescriptor("aerType", cl, "getAerType", null));
+          props.add(new PropertyDescriptor("aerWavel1", cl, "getAerWavel1", null));
+          props.add(new PropertyDescriptor("aerWavel2", cl, "getAerWavel2", null));
+        }
 
-    public Gds2Bean(Grib2SectionGridDefinition m) {
-      this.gdss = m;
-      gds = gdss.getGDS();
-    }
+        if (pds instanceof Grib2Pds.PdsEnsemble) {
+          props.add(new PropertyDescriptor("pertN", cl, "getPertN", null));
+          props.add(new PropertyDescriptor("pertType", cl, "getPertType", null));
+          props.add(new PropertyDescriptor("nForecastsInEns", cl, "getNForecastsInEns", null));
+        }
 
-    public int getGDShash() {
-      return gds.hashCode();
-    }
+        if (pds instanceof Grib2Pds.PdsInterval) {
+          props.add(new PropertyDescriptor("intv", cl, "getIntv", null));
+          props.add(new PropertyDescriptor("intv2", cl, "getIntv2", null));
+          props.add(new PropertyDescriptor("intvHash", cl, "getIntvHash", null));
+        }
 
-    public int getTemplate() {
-      return gdss.getGDSTemplateNumber();
-    }
+        if (pds instanceof Grib2Pds.PdsProbability) {
+          props.add(new PropertyDescriptor("probLimits", cl, "getProbLimits", null));
+        }
 
-    public String getGridName() {
-      return cust.getTableValue("3.1", gdss.getGDSTemplateNumber());
-    }
-
-    public String getGroupName() {
-      return getGridName() + "-" + getNy() + "X" + getNx();
-    }
-
-    public int getNPoints() {
-      return gdss.getNumberPoints();
-    }
-
-    public int getNx() {
-      return gds.getNx();
-    }
-
-    public int getNy() {
-      return gds.getNy();
-    }
-
-    public String getScanMode() {
-      return Long.toBinaryString(gds.scanMode);
-    }
-
-    @Override
-    public String toString() {
-      return getGridName() + " " + getTemplate() + " " + getNx() + " X " + getNy();
-    }
-
-    public void toRawGdsString(Formatter f) {
-      byte[] bytes = gds.getRawBytes();
-      int count = 1;
-      for (byte b : bytes) {
-        short s = DataType.unsignedByteToShort(b);
-        f.format(" %d : %d%n", count++, s);
+      } catch (IntrospectionException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       }
+
+      properties = new PropertyDescriptor[props.size()];
+      props.toArray(properties);
     }
 
+
     @Override
-    public int compareTo(Gds2Bean o) {
-      return getGroupName().compareTo(o.getGroupName());
+    public PropertyDescriptor[] getPropertyDescriptors() {
+      return properties;
     }
+
   }
+
 }
