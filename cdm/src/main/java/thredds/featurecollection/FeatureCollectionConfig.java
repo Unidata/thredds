@@ -443,7 +443,6 @@ public class FeatureCollectionConfig {
       return datasets.contains(type);
     }
 
-
     public void addGdsHash(String fromS, String toS) {
       if (fromS == null || toS == null) return;
       if (gdsHash == null) gdsHash = new HashMap<Integer, Integer>(10);
@@ -487,6 +486,12 @@ public class FeatureCollectionConfig {
       Formatter f = new Formatter();
       f.format("GribConfig: datasetTypes=%s", datasets);
       return f.toString();
+    }
+
+    public Object getIospMessage() {
+      if (lookupTablePath != null) return "gribParameterTableLookup="+lookupTablePath;
+      if (paramTablePath != null) return "gribParameterTable="+paramTablePath;
+      return null;
     }
   }
 
