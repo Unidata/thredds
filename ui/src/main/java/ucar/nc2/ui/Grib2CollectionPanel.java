@@ -77,7 +77,7 @@ public class Grib2CollectionPanel extends JPanel {
   static private Map<String, WmoTemplateTable> gribTemplates = null;
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionPanel.class);
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
   private BeanTableSorted param2BeanTable, record2BeanTable, gds2Table;
   private JSplitPane split, split2;
@@ -86,7 +86,7 @@ public class Grib2CollectionPanel extends JPanel {
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private FileManager fileChooser;
 
-  public Grib2CollectionPanel(PreferencesExt prefs, JPanel buttPanel) {
+  public Grib2CollectionPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     PopupMenu varPopup;
@@ -108,8 +108,10 @@ public class Grib2CollectionPanel extends JPanel {
     param2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
-        if (pb != null)
+        if (pb != null) {
+          makeRecordTable(pb.pds);
           record2BeanTable.setBeans(pb.getRecordBeans());
+        }
       }
     });
 
@@ -150,106 +152,8 @@ public class Grib2CollectionPanel extends JPanel {
       }
     }); */
 
-    record2BeanTable = new BeanTableSorted(Grib2RecordBean.class, (PreferencesExt) prefs.node("Record2Bean"), false, "Grib2Record", "from Grib2Input.getRecords()");
-    varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
-
-    varPopup.addAction("Compare GridRecord", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = record2BeanTable.getSelectedBeans();
-        if (list.size() == 2) {
-          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
-          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
-          Formatter f = new Formatter();
-          compare(bean1, bean2, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Formatter f = new Formatter();
-        List list = record2BeanTable.getSelectedBeans();
-        for (int i = 0; i < list.size(); i++) {
-          Grib2RecordBean bean = (Grib2RecordBean) list.get(i);
-          bean.toRawPdsString(f);
-        }
-        infoPopup.setText(f.toString());
-        infoPopup.gotoTop();
-        infoWindow.show();
-      }
-    });
-
-    varPopup.addAction("Show complete GridRecord", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
-        if (bean != null) {
-          Formatter f = new Formatter();
-          try {
-            showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
-          } catch (IOException ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            f.format("%s", bos.toString());
-          }
-          infoPopup.setText(f.toString());
-          infoPopup.gotoTop();
-          infoWindow.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Show Processed GridRecord", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = record2BeanTable.getSelectedBeans();
-        Formatter f = new Formatter();
-        for (Object o : list) {
-          Grib2RecordBean bean = (Grib2RecordBean) o;
-          bean.showProcessedGridRecord(f);
-        }
-        infoPopup2.setText(f.toString());
-        infoPopup2.gotoTop();
-        infoWindow2.show();
-      }
-    });
-
-    varPopup.addAction("Compare Data", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = record2BeanTable.getSelectedBeans();
-        if (list.size() == 2) {
-          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
-          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
-          Formatter f = new Formatter();
-          compareData(bean1, bean2, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Show Data", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
-        if (bean != null) {
-          Formatter f = new Formatter();
-          showData(bean, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Extract GribRecord to File", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List beans = record2BeanTable.getSelectedBeans();
-        if (beans.size() > 0)
-          writeToFile(beans);
-      }
-    });
+    Class useClass = Grib2RecordBean.class;
+    record2BeanTable = new BeanTableSorted(useClass, (PreferencesExt) prefs.node(useClass.getName()), false, useClass.getName(), "from Grib2Input.getRecords()");
 
     gds2Table = new BeanTableSorted(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
     varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
@@ -373,6 +277,128 @@ public class Grib2CollectionPanel extends JPanel {
 
     add(split, BorderLayout.CENTER);
 
+  }
+
+  void makeRecordTable(Grib2Pds pds) {
+    if (record2BeanTable != null)  record2BeanTable.saveState(false);
+
+    Class beanClass = Grib2RecordBean.class;
+    if (pds instanceof Grib2Pds.PdsAerosol)
+      beanClass = Grib2RecordAerosol.class;
+    else if (pds instanceof Grib2Pds.PdsEnsemble)
+      beanClass = Grib2RecordEnsemble.class;
+    else if (pds instanceof Grib2Pds.PdsInterval)
+      beanClass = Grib2RecordInterval.class;
+    else if (pds instanceof Grib2Pds.PdsProbability)
+      beanClass = Grib2RecordProb.class;
+
+    String prefsName = beanClass.getName();
+    record2BeanTable = new BeanTableSorted(beanClass, (PreferencesExt) prefs.node(prefsName), false, prefsName, "from Grib2Input.getRecords()");
+    PopupMenu varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
+
+    varPopup.addAction("Compare GridRecord", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = record2BeanTable.getSelectedBeans();
+        if (list.size() == 2) {
+          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
+          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
+          Formatter f = new Formatter();
+          compare(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        List list = record2BeanTable.getSelectedBeans();
+        for (int i = 0; i < list.size(); i++) {
+          Grib2RecordBean bean = (Grib2RecordBean) list.get(i);
+          bean.toRawPdsString(f);
+        }
+        infoPopup.setText(f.toString());
+        infoPopup.gotoTop();
+        infoWindow.show();
+      }
+    });
+
+    varPopup.addAction("Show complete GridRecord", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          try {
+            showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
+          } catch (IOException ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace(new PrintStream(bos));
+            f.format("%s", bos.toString());
+          }
+          infoPopup.setText(f.toString());
+          infoPopup.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show Processed GridRecord", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = record2BeanTable.getSelectedBeans();
+        Formatter f = new Formatter();
+        for (Object o : list) {
+          Grib2RecordBean bean = (Grib2RecordBean) o;
+          bean.showProcessedGridRecord(f);
+        }
+        infoPopup2.setText(f.toString());
+        infoPopup2.gotoTop();
+        infoWindow2.show();
+      }
+    });
+
+    varPopup.addAction("Compare Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = record2BeanTable.getSelectedBeans();
+        if (list.size() == 2) {
+          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
+          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
+          Formatter f = new Formatter();
+          compareData(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          showData(bean, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Extract GribRecord to File", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List beans = record2BeanTable.getSelectedBeans();
+        if (beans.size() > 0)
+          writeToFile(beans);
+      }
+    });
+
+    if (split2 != null) {
+      int d = split2.getDividerLocation();
+      split2.setRightComponent(record2BeanTable);
+      split2.setDividerLocation(d);
+    }
   }
 
   public void save() {
@@ -997,7 +1023,16 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     void addRecord(Grib2Record r) throws IOException {
-      records.add(new Grib2RecordBean(r));
+      if (pds instanceof Grib2Pds.PdsAerosol)
+        records.add(new Grib2RecordAerosol(r));
+      else if (pds instanceof Grib2Pds.PdsEnsemble)
+        records.add(new Grib2RecordEnsemble(r));
+      else if (pds instanceof Grib2Pds.PdsInterval)
+        records.add(new Grib2RecordInterval(r));
+       else if (pds instanceof Grib2Pds.PdsProbability)
+        records.add(new Grib2RecordProb(r));
+      else
+        records.add(new Grib2RecordBean(r));
     }
 
     List<Grib2RecordBean> getRecordBeans() {
@@ -1316,10 +1351,6 @@ public class Grib2CollectionPanel extends JPanel {
       return fileList.get(fno).getName();
     }
 
-    /* public String getSurfaceType() {
-      return pds.getLevelType1() + "-" + pds.getLevelType2();
-    } */
-
     public String getLevel() {
       int v1 = pds.getLevelType1();
       int v2 = pds.getLevelType2();
@@ -1327,71 +1358,6 @@ public class Grib2CollectionPanel extends JPanel {
       if (v2 == 255) return "" + pds.getLevelValue1();
       if (v1 != v2) return pds.getLevelValue1() + "-" + pds.getLevelValue2() + " level2 type= " + v2;
       return pds.getLevelValue1() + "-" + pds.getLevelValue2();
-    }
-
-    /*
-    TimeInterval: statProcessType= 0, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 744, timeIncrementUnit= 1, timeIncrement=24
-    TimeInterval: statProcessType= 197, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 23, timeIncrementUnit= 1, timeIncrement=0
-     */
-    public String getTInv() {
-      if (pds.isTimeInterval()) {
-        Formatter f = new Formatter();
-        Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
-        int count = 0;
-        for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals()) {
-          if (count++ > 0) f.format(", ");
-          f.format("%d-%d-%d", ti.statProcessType, ti.timeRangeLength, ti.timeIncrement);
-        }
-        return f.toString();
-      }
-      return "";
-    }
-
-    public String getIntv() {
-      if (pds.isTimeInterval() && cust != null) {
-        TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
-        return intv.toString();
-      }
-      return "";
-    }
-
-    public String getIntv2() {
-      if (pds.isTimeInterval() && cust != null) {
-        int[] intv = cust.getForecastTimeIntervalOffset(gr);
-        return intv[0]+"-"+intv[1];
-      }
-      return "";
-    }
-
-    public long getIntvHash() {
-      if (pds.isTimeInterval()) {
-        Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
-        return pdsi.getIntervalHash();
-      }
-      return 0;
-    }
-
-    public final int getPertN() {
-      int v = pds.getPerturbationNumber();
-      if (v == GribNumbers.UNDEFINED) v = -1;
-      return v;
-    }
-
-    public final int getNForecastsInEns() {
-      int v = pds.getNumberEnsembleForecasts();
-      if (v == GribNumbers.UNDEFINED) v = -1;
-      return v;
-    }
-
-    public final int getPertType() {
-      int v = pds.getPerturbationType();
-      return (v == GribNumbers.UNDEFINED) ? -1 : v;
-    }
-
-    public final String getProbLimits() {
-      double v = pds.getProbabilityLowerLimit();
-      if (v == GribNumbers.UNDEFINEDD) return "";
-      else return pds.getProbabilityLowerLimit() + "-" + pds.getProbabilityUpperLimit();
     }
 
     public long getDataPos() {
@@ -1456,6 +1422,124 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
   }
+
+  public class Grib2RecordInterval extends Grib2RecordBean {
+    Grib2Pds.PdsInterval pdsi;
+
+    public Grib2RecordInterval() {
+    }
+
+    public Grib2RecordInterval(Grib2Record m) throws IOException {
+      super(m);
+      pdsi = (Grib2Pds.PdsInterval) pds;
+    }
+
+     /*
+    TimeInterval: statProcessType= 0, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 744, timeIncrementUnit= 1, timeIncrement=24
+    TimeInterval: statProcessType= 197, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 23, timeIncrementUnit= 1, timeIncrement=0
+     */
+    public String getTInv() {
+      Formatter f = new Formatter();
+      int count = 0;
+      for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals()) {
+        if (count++ > 0) f.format(", ");
+        f.format("%d-%d-%d", ti.statProcessType, ti.timeRangeLength, ti.timeIncrement);
+      }
+      return f.toString();
+    }
+
+    public String getIntv() {
+      if (cust != null) {
+        TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
+        return intv.toString();
+      }
+      return "";
+    }
+
+    public String getIntv2() {
+      if (cust != null) {
+        int[] intv = cust.getForecastTimeIntervalOffset(gr);
+        return intv[0]+"-"+intv[1];
+      }
+      return "";
+    }
+
+    public long getIntvHash() {
+       return pdsi.getIntervalHash();
+    }
+  }
+
+  public class Grib2RecordAerosol extends Grib2RecordBean {
+    Grib2Pds.PdsAerosol pdsi;
+
+    public Grib2RecordAerosol() {
+    }
+
+    public Grib2RecordAerosol(Grib2Record m) throws IOException {
+      super(m);
+      pdsi = (Grib2Pds.PdsAerosol) pds;
+    }
+
+    public int getAerType() { return pdsi.getAerosolType(); }
+    public double getAerIntSizeType()  { return pdsi.getAerosolIntervalSizeType(); }
+    public double getAerSize1()  { return pdsi.getAerosolSize1() * 10e6; } // microns
+    public double getAerSize2()  { return pdsi.getAerosolSize2() * 10e6; } // microns
+    public double getAerIntWavelType()  { return pdsi.getAerosolIntervalWavelengthType(); }
+    public double getAerWavel1()   { return pdsi.getAerosolWavelength1(); }
+    public double getAerWavel2()  { return pdsi.getAerosolWavelength2(); }
+
+  }
+
+  public class Grib2RecordEnsemble extends Grib2RecordBean{
+    Grib2Pds.PdsEnsemble pdsi;
+
+    public Grib2RecordEnsemble() {
+    }
+
+    public Grib2RecordEnsemble(Grib2Record m) throws IOException {
+      super(m);
+      pdsi = (Grib2Pds.PdsEnsemble) pds;
+    }
+
+   public final int getPertN() {
+      int v = pdsi.getPerturbationNumber();
+      if (v == GribNumbers.UNDEFINED) v = -1;
+      return v;
+    }
+
+    public final int getNForecastsInEns() {
+      int v = pdsi.getNumberEnsembleForecasts();
+      if (v == GribNumbers.UNDEFINED) v = -1;
+      return v;
+    }
+
+    public final int getPertType() {
+      int v = pdsi.getPerturbationType();
+      return (v == GribNumbers.UNDEFINED) ? -1 : v;
+    }
+  }
+
+  public class Grib2RecordProb extends Grib2RecordBean{
+    Grib2Pds.PdsProbability pdsi;
+
+    public Grib2RecordProb() {
+    }
+
+    public Grib2RecordProb(Grib2Record m) throws IOException {
+      super(m);
+      pdsi = (Grib2Pds.PdsProbability) pds;
+    }
+
+
+    public final String getProbLimits() {
+      double v = pdsi.getProbabilityLowerLimit();
+      if (v == GribNumbers.UNDEFINEDD) return "";
+      else return pdsi.getProbabilityLowerLimit() + "-" + pdsi.getProbabilityUpperLimit();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////
 
   public class Gds2Bean implements Comparable<Gds2Bean> {
     Grib2SectionGridDefinition gdss;

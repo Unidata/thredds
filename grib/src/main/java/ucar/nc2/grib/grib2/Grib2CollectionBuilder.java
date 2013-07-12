@@ -537,7 +537,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
       int prob = Integer.MIN_VALUE;
       if (pds.isProbability()) {
-        prob = (int) (1000 * pds.getProbabilityUpperLimit());
+        Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+        prob = (int) (1000 * pdsProb.getProbabilityUpperLimit());
       }
       return intvFilter.filterOut(id, haveLength, prob);
     }

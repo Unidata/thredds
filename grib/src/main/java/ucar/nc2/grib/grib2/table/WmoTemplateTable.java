@@ -49,7 +49,7 @@ import java.util.*;
  */
 
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
-  public static final Version standard = Version.GRIB2_8_0_0;
+  public static final Version standard = Version.GRIB2_10_0_1;
 
   public enum Version {
     // GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0;
