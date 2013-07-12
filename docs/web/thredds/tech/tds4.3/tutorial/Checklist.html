@@ -6,7 +6,7 @@
    <script type="text/javascript" src="workshopNav.js"></script>
   </head>
   <body>
-   <h1>TDS Installation Checklist for Production</h1>
+   <h1>TDS Installation Checklist for Production Security</h1>
 
    <div id="section">
     <h2><a name="install">Initial Installation</a></h2>
@@ -46,10 +46,10 @@
     <ol>
      <li><a href="GettingStarted.html#deploying">Download</a> the latest <code>thredds.war</code> file, and put it into <code>${tomcat_home}/webapps</code>.</li>
      <li>Start/restart Tomcat so that it has a chance to create initial files in <code>${tomcat_home}/content/thredds</code>.</li>
-     <li>Modify <code>${tomcat_home}/content/thredds/catalog.xml</code> for your site, as in this <a href="BasicConfig.html#exampleCatalog">example</a>.</li>
+     <li>Modify <code>${tomcat_home}/content/thredds/catalog.xml</code> for your site, as in this <a href="BasicConfigCatalogs.html#exampleCatalog">example</a>.</li>
      <li>Modify <code> ${tomcat_home}/content/thredds/threddsConfig.xml</code> for your site in the following manner:</li>
      <ul>
-      <li><a href="Basic-threddsConfig_xml.html#serverInfo">Add the needed information to the <code>serverInformation</code></a></li>
+      <li><a href="BasicThreddsConfig_xml.html#serverInfo">Add the needed information to the <code>serverInformation</code></a></li>
       <li><a href="AddingServices.html">Enable any other optional services</a> like WMS or WCS.</li>
      </ul>
      <li>If needed, <a href="Security.html#access">limit access to the TDS</a> and create a <code>robots.txt</code> file in <code>${tomcat_home}/webapps/ROOT/</code> to restrict crawler activity.</li>

@@ -25,8 +25,7 @@ Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS
   <li>Server-side Elements
     <ul>
         <li><a href="#datasetRoot_Element">datasetRoot</a></li>
-      <li><a href="#datasetScan_Element">datasetScan</a><a href="#datasetRoot_Element"></a></li>
-      <li><a href="#datasetFmrc_Element">datasetFmrc</a> (deprecated)</li>
+      <li><a href="#datasetScan_Element">datasetScan</a></li>
       <li><a href="#featureCollection">featureCollection</a><br />
       </li>
     </ul>
@@ -75,27 +74,27 @@ Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS
 </h3>
 <pre>  &lt;xsd:element name=&quot;datasetRoot&quot;&gt;<br />    &lt;xsd:complexType&gt;<br />      &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />      &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />    &lt;/xsd:complexType&gt;<br />  &lt;/xsd:element&gt;<br />
 </pre>
-<p>The <i>datasetRoot</i> element, similar to the <i>datasetScan</i> element, maps request URLs to file locations. The
-  difference is that a datasetRoot does not perform any scans or generate
-  any catalogs. It simply allows users to specify individual datasets
-  from the datasetRoot location.<br />
+<p>The <i>datasetRoot</i> element associates  a portion of a URL path with a directory on disk where the data files are stored. <br />
 </p>
 <p>Example:<br />
 </p>
-<pre>&lt;datasetRoot path=&quot;dsR1&quot; location=&quot;C:/data/mydata/&quot; /&gt;<br />...<br />&lt;dataset name=&quot;dataset 1&quot; urlPath=&quot;data1.nc&quot; /&gt;<br />
-</pre>
+<pre>&lt;datasetRoot path=&quot;dsR1&quot; location=&quot;C:/data/mydata/&quot; /&gt;
+&lt;datasetRoot path=&quot;dsR1/sub2&quot; location=&quot;Q:/smaug/floober/&quot; /&gt;<br />...<br />&lt;dataset name=&quot;dataset1&quot; urlPath=&quot;dsR1/dataset1.nc&quot; /&gt;
+&lt;dataset name=&quot;dataset2&quot; urlPath=&quot;dsR1/sub/dataset2.nc&quot; /&gt;
+&lt;dataset name=&quot;dataset3&quot; urlPath=&quot;dsR1/sub2/dataset3.nc&quot; /&gt;<br /></pre>
+<p>In the catalog, <strong>dataset1</strong> will have URL <strong>dsR1/dataset1.nc</strong> (reletive to the catalog URL), and it will be mapped by the server to the file <strong>C:/data/mydata/dataset1.nc</strong>. The <strong>dataset2</strong> has URL <strong>dsR1/sub/dataset2.nc</strong>, and refers to the file <strong>C:/data/mydata/sub/dataset2.nc</strong>. The dataset roots are searched for the longest match, so  <strong>dataset3</strong> with URL <strong>dsR1/sub2/dataset3.nc</strong>, will be matched to the second datasetRoot, and so refers to the file <strong>Q:/smaug/floober/dataset3.nc</strong>.</p>
 <hr style="width: 100%; height: 2px;" />
 <p>The following set of elements are all used in a <em>datasetScan</em></p>
 <h3><a name="datasetScan_Element" id="datasetScan_Element"></a><em>The datasetScan</em> Element</h3>
-<pre>&lt;xsd:element name=&quot;datasetScan&quot; substitutionGroup=&quot;dataset&quot;&gt;<br />  &lt;xsd:complexType&gt;<br />    &lt;xsd:complexContent&gt;<br />      &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br />        &lt;xsd:sequence&gt;<br />          &lt;xsd:element ref=&quot;filter&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;addID&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;namer&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;sort&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;addLatest&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;addProxies&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element name=&quot;addDatasetSize&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;addTimeCoverage&quot; minOccurs=&quot;0&quot; /&gt;<br />        &lt;/xsd:sequence&gt;<br /><br />        &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />        &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot;/&gt;<br />        &lt;xsd:attribute name=&quot;dirLocation&quot; type=&quot;xsd:string&quot;/&gt; &lt;!-- deprecated : use location attribute --&gt;<br />        &lt;xsd:attribute name=&quot;filter&quot; type=&quot;xsd:string&quot;/&gt; &lt;!-- deprecated : use filter element --&gt;<br />        &lt;xsd:attribute name=&quot;addDatasetSize&quot; type=&quot;xsd:boolean&quot;/&gt; &lt;!-- deprecated : use enhance/addDatasetSize element --&gt;<br />        &lt;xsd:attribute name=&quot;addLatest&quot; type=&quot;xsd:boolean&quot;/&gt; &lt;!-- deprecated : use addLatest element --&gt;<br />        &lt;xsd:attribute name=&quot;addId&quot; type=&quot;xsd:boolean&quot;/&gt; &lt;!-- deprecated : use addID element --&gt;<br />      &lt;/xsd:extension&gt;<br />    &lt;/xsd:complexContent&gt;<br />  &lt;/xsd:complexType&gt;<br />&lt;/xsd:element&gt;</pre>
-<p>The <i>datasetScan</i> element allows for the generation of nested THREDDS catalogs by scanning the dataset collection location named in the <i>location</i> attribute. The <i>path</i> attribute is used to map dataset and catalog requests to a given datasetScan.<br />
+<pre>&lt;xsd:element name=&quot;datasetScan&quot; substitutionGroup=&quot;dataset&quot;&gt;<br />  &lt;xsd:complexType&gt;<br />    &lt;xsd:complexContent&gt;<br />      &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br />        &lt;xsd:sequence&gt;<br />          &lt;xsd:element ref=&quot;filter&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;addID&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;namer&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;sort&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;addLatest&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;addProxies&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element name=&quot;addDatasetSize&quot; minOccurs=&quot;0&quot; /&gt;<br />          &lt;xsd:element ref=&quot;addTimeCoverage&quot; minOccurs=&quot;0&quot; /&gt;<br />        &lt;/xsd:sequence&gt;<br /><br />        &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />        &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot;/&gt;<br />      &lt;/xsd:extension&gt;<br />    &lt;/xsd:complexContent&gt;<br />  &lt;/xsd:complexType&gt;<br />&lt;/xsd:element&gt;</pre>
+<p>The <i>datasetScan</i> element generates nested THREDDS catalogs by scanning the directory named in the <i>location</i> attribute, and creating a <em>dataset</em> for each file found, and a <em>catalogRef</em> for each subdirectory. The <i>path</i> attribute is used to create the URL for these files and catalogs. <br />
 </p>
 <p>A <i>datasetScan</i> element is in the dataset substitutionGroup, so it can
-  be used wherever a <i>dataset</i> element can be used. It is an extension of a
+  be used wherever a <i><a href="../v1.0.2/InvCatalogSpec.html#dataset">dataset</a></i><a href="../v1.0.2/InvCatalogSpec.html"> element</a> can be used. It is an extension of a
   DatasetType, so any of dataset's nested elements and attributes can be
   used in it. This allows you to add enhanced metadata to a datasetScan.
   However you should not add nested datasets, as these will be ignored. </p>
-<p>By default, each generated catalog will include all datasets at the
+<p>Each generated catalog will include all datasets at the
   requested level of the given dataset collection location. Each
   collection (directory) dataset will be included as a <i>catalogRef</i> element and each atomic (file) dataset will be included as a <i>dataset</i> element. The name of the resulting <i>dataset</i> or <i>catalogRef</i> will be the name of the corresponding dataset. No metadata will be added other than that contained in the <i>datasetScan</i> element which will be added as appropriate at the different level of
   the given dataset collection location depending on if it is inherited
@@ -103,7 +102,7 @@ Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS
 </p>
 <p>The <i>datasetScan</i> specific nested elements (<a href="#filter_Element">filter</a>, <a href="#addID_Element">addID</a>, <a href="#namer_Element">namer</a>, <a href="#sort_Element">sort</a>, <a href="#addLatest_Element">addLatest</a>, <a href="#addProxies_Element">addProxies</a>, <a href="#addDatasetSizeElement">addDatasetSize</a>, and <a href="#addTimeCoverage_Element">addTimeCoverage</a>) can be used to modify the default behavior or add metadata.<br />
 </p>
-<p>This very simple example: </p>
+<p>Here is a very simple example: </p>
 <pre>
 &lt;datasetScan name=&quot;GRIB2 Data&quot; path=&quot;grib2&quot; location=&quot;C:/data/grib2/&quot; &gt;
   &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
@@ -267,58 +266,8 @@ So, when cataloged, this dataset would end up as something like this:<br />
 <p>The addDatasetSize element indicates that file size metadata in the form of a <i>dataSize</i> element should be added to all atomic datasets.<br />
 </p>
 <p>An example is available in the <a href="../../tds4.3/reference/DatasetScan.html#Adding_Dataset_Size_Information">TDS datasetsScan documentation</a>.</p>
-<p> </p>
-<h3><a name="datasetRoot_Element" id="datasetRoot_Element"></a>datasetRoot Element<br />
-</h3>
-<pre>  &lt;xsd:element name=&quot;datasetRoot&quot;&gt;<br />    &lt;xsd:complexType&gt;<br />      &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />      &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />    &lt;/xsd:complexType&gt;<br />  &lt;/xsd:element&gt;<br />
-</pre>
-<p>The <i>datasetRoot</i> element, similar to the <i>datasetScan</i> element, maps request URLs to dataset collection locations. The
-  difference is that a datasetRoot does not perform any scans or generate
-  any catalogs. It simply allows users to specify individual datasets
-  from the datasetRoot location.<br />
-</p>
-<p>Example:<br />
-</p>
-<pre>&lt;datasetRoot path=&quot;dsR1&quot; location=&quot;C:/data/mydata/&quot; /&gt;<br />...<br />&lt;dataset name=&quot;dataset 1&quot; urlPath=&quot;data1.nc&quot; /&gt;<br />
-</pre>
-<hr style="width: 100%; height: 2px;" />
-<h3><a name="datasetFmrc_Element" id="datasetFmrc_Element"></a>The <em>datasetFmrc</em> Element</h3>
-<p>Note: this element is deprecated in favor of featureCollection</p>
-<pre>
-&lt;!-- Define a Forecast Model Run Collection dataset --&gt;
-&lt;xsd:element name=&quot;datasetFmrc&quot; substitutionGroup=&quot;dataset&quot;&gt;
-  &lt;xsd:complexType&gt;
-    &lt;xsd:complexContent&gt;
-      &lt;xsd:extension base=&quot;DatasetType&quot;&gt;
-         &lt;xsd:sequence&gt;
-          &lt;xsd:element ref=&quot;fmrcInventory&quot; minOccurs=&quot;0&quot;/&gt;
-          &lt;xsd:element ref=&quot;addTimeCoverage&quot; minOccurs=&quot;0&quot;/&gt;
-        &lt;/xsd:sequence&gt;
-        &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-        &lt;xsd:attribute name=&quot;runsOnly&quot; type=&quot;xsd:boolean&quot; /&gt;
-      &lt;/xsd:extension&gt;
-    &lt;/xsd:complexContent&gt;
-  &lt;/xsd:complexType&gt;
-&lt;/xsd:element&gt;</pre>
-<pre>
-&lt;xsd:element name=&quot;fmrcInventory&quot;&gt;
-  &lt;xsd:complexType&gt;
-    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot;/&gt;
-    &lt;xsd:attribute name=&quot;fmrcDefinition&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-    &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
-    &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:string&quot; /&gt;
-  &lt;/xsd:complexType&gt;
-&lt;/xsd:element&gt;
-</pre>
-<p>A <strong>datasetFmrc</strong> is a kind of dataset, and so allows all of the attributes and child elements of the dataset element. </p>
-<h4>Example:<br />
-</h4>
-<pre>  &lt;datasetFmrc name=&quot;SABGOM Forecast Model Run Collection&quot; <strong>path</strong>=&quot;fmrc/sabgom&quot;&gt;<br /><br />    &lt;metadata inherited=&quot;true&quot;&gt;<br />      &lt;serviceName&gt;dapService&lt;/serviceName&gt;<br />    &lt;/metadata&gt;<br /><br />	 &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />      &lt;aggregation dimName=&quot;runtime&quot; type=&quot;<strong>forecastModelRunCollection</strong>&quot; recheckEvery=&quot;10min&quot;&gt;<br />        &lt;scan location=&quot;D:/test/signell/big/&quot; suffix=&quot;.nc&quot; dateFormatMark=&quot;his_#yyyyMMdd&quot; olderThan=&quot;5 min&quot;/&gt;<br />      &lt;/aggregation&gt;<br />    &lt;/netcdf&gt;<br /><br />  &lt;/datasetFmrc&gt;<br />
-</pre>
-<p> Like <em>datasetScan</em>, the <i>path</i> attribute is used to define the URL path that will map to to a given datasetFmrc. </p>
 <hr />
-<p>Much of the current development on the TDS is focused on FeatureCollections, and the details and meanings are described <a href="../../tds4.3/reference/collections/FeatureCollections.html">here</a>. This document focuses just on the syntax, ie what elements are allowed in the configuration catalog. The following set of elements are all used in a <em>featureCollection</em></p>
+<p>Much of the current development on the TDS is focused on FeatureCollections, and the details and meanings are described <a href="../../tds4.3/reference/collections/FeatureCollections.html">here</a>. This document focuses just on the syntax, ie what elements are allowed in the configuration catalog. The following set of elements are all used in a <em>featureCollection</em>:</p>
 <h3><a name="featureCollection" id="featureCollection"></a>The <em>featureCollection</em> Element</h3>
 <pre>
  &lt;xsd:element name=&quot;featureCollection&quot; substitutionGroup=&quot;dataset&quot;&gt;
