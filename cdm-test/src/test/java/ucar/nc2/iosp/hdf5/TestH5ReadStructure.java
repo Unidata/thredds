@@ -38,8 +38,11 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.nc2.NCdump;
+import ucar.unidata.test.util.CompareNetcdf;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
+import java.util.Arrays;
 
 /** Test nc2 read JUnit framework. */
 
@@ -256,4 +259,52 @@ public class TestH5ReadStructure extends TestCase {
 
     ncfile.close();
   }
+
+    public void testMemberVariable() throws java.io.IOException, InvalidRangeException {
+        String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
+
+        NetcdfFile ncfile = NetcdfFile.open(testDir+"20130212_CN021_P3_222k_B02_WD7195FBPAT10231Nat_Nat_Std_CHTNWD_OP3_14.mip222k.oschp");
+
+        Variable v = ncfile.findVariable("/Chromosomes/Summary.StartIndex");
+        System.out.printf("%s%n", v);
+
+//Section section=new Section(new int[]{2}, new int[]{5});
+        Array a1 = v.read(); // section); // different from int[] a1 and different from Arrays a1
+        System.out.printf("size = %d%n", a1.getSize());
+        System.out.printf("%s%n", a1);
+
+        Array a2 = ncfile.readSection("/Chromosomes/Summary.StartIndex");
+        CompareNetcdf.compareData(a1, a2);
+        System.out.printf("size = %d%n", a2.getSize());
+        System.out.printf("%s%n", a2);
+
+        Array a3 = ncfile.readSection("/Chromosomes/Summary(12:20).StartIndex");
+        System.out.printf("size = %d%n", a3.getSize());
+        assert (a3.getSize() == 9);
+        System.out.printf("%s%n", a3);
+
+        Array a4 = a1.section(new int[]{12},new int[]{9});
+        System.out.printf("a3 = %s%n", a3);
+        System.out.printf("a4 = %s%n", a4);
+
+        // the two sections should not be the same object
+        assert (!a3.equals(a4));
+
+        // the two sections should be the same length
+        assert (a3.getSize() == a4.getSize());
+
+        // each value in each section should be equal
+        while (a3.hasNext() && a4.hasNext()) {
+            assert (a3.next().equals(a4.next()));
+        }
+
+        // this low-level test fails
+        //for (int i = 0; i < a3.getSize(); i++) {
+        //   System.out.printf("%s%n %s%n", a3.getLong(i), a4.getLong(i));
+        //   assert (a3.getLong(i) == a4.getLong(i));
+        //}
+
+        //assert (Arrays.equals(a3, a4));
+        ncfile.close();
+    }
 }

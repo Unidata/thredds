@@ -124,7 +124,7 @@ public class TestWriteRecord extends TestCase  {
     valid_range.set(1,100);
     ncfile.addVariableAttribute("rh", "range", valid_range);
 
-    ncfile.addVariableAttribute( "rh", "valid_range", Array.factory(new  double[] {0d, 100d}) );
+    ncfile.addVariableAttribute( "rh", CDM.VALID_RANGE, Array.factory(new  double[] {0d, 100d}) );
 
     // double T(time, lat, lon) ;
     //   T:long_name="surface temperature" ;

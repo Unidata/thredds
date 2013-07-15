@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.17</version>
+    <version>4.3.18-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
@@ -60,6 +60,11 @@
       <groupId>net.jcip</groupId>
       <artifactId>jcip-annotations</artifactId>
     </dependency>
+
+    <dependency>
+       <groupId>com.lexicalscope.jewelcli</groupId>
+       <artifactId>jewelcli</artifactId>
+     </dependency>
 
     <dependency>
       <groupId>edu.ucar</groupId>

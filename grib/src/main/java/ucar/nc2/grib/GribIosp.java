@@ -49,10 +49,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   private static final boolean debug = false;
 
+  // store custom tables in here
   protected FeatureCollectionConfig.GribConfig gribConfig = new FeatureCollectionConfig.GribConfig();
-  // custom tables
-  //protected String lookupTablePath, paramTablePath;
-  //protected Element paramTable = null;
 
   public void setParamTable(Element paramTable) {
     gribConfig.paramTable = paramTable;
@@ -70,12 +68,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   public Object sendIospMessage(Object special) {
     if (special instanceof String) {
       String s = (String) special;
-      if (s.startsWith("GribParameterTableLookup")) {
+      if (s.startsWith("gribParameterTableLookup")) {
         int pos = s.indexOf("=");
         if (pos > 0)
           gribConfig.lookupTablePath = s.substring(pos+1).trim();
 
-      } else if (s.startsWith("GribParameterTable")) {
+      } else if (s.startsWith("gribParameterTable")) {
         int pos = s.indexOf("=");
         if (pos > 0)
           gribConfig.paramTablePath = s.substring(pos+1).trim();

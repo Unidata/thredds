@@ -229,7 +229,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
       Variable tVar = ds.findVariable("time");
       String timeUnits = "seconds since 1980-01-06 00:00:00";  //dtime.getUnit().toString();
-      tVar.removeAttributeIgnoreCase("valid_range");
+      tVar.removeAttributeIgnoreCase(CDM.VALID_RANGE);
       tVar.removeAttributeIgnoreCase(CDM.UNITS);
       tVar.addAttribute(new Attribute(CDM.UNITS, timeUnits));
       tVar.addAttribute(new Attribute(_Coordinate.AxisType,

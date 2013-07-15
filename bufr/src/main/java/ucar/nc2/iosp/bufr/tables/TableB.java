@@ -220,10 +220,14 @@ public class TableB {
       return localOverride;
     }
 
-     public String toString() {
+    public String toString() {
       Formatter out = new Formatter();
       show(out);
       return out.toString();
+    }
+
+    public String getSource() {
+      return getLocation();
     }
 
     void show(Formatter out) {

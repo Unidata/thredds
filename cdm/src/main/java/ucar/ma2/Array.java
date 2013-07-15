@@ -936,7 +936,7 @@ public abstract class Array {
 
   /**
    * Set whether the data should be interpreted as unsigned.
-   * Only valid for byte, short, and int.
+   * Only valid for byte, short, int, and long.
    * When true, conversions to wider types are handled correctly.
    *
    * @param unsigned true if unsigned

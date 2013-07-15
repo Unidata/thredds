@@ -13,7 +13,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.3.17</version>
+  <version>4.3.18-SNAPSHOT</version>
   <name>Parent THREDDS and CDM modules</name>
   <description>
     The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
@@ -482,6 +482,12 @@
         <groupId>edu.wisc.ssec</groupId>
         <artifactId>visad</artifactId>
         <version>${visad.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.lexicalscope.jewelcli</groupId>
+        <artifactId>jewelcli</artifactId>
+        <version>0.8.5</version>
       </dependency>
 
       <!-- UI -->

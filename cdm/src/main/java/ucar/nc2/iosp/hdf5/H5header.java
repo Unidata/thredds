@@ -34,7 +34,6 @@
 package ucar.nc2.iosp.hdf5;
 
 import ucar.nc2.constants.CDM;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
@@ -46,7 +45,6 @@ import ucar.nc2.iosp.LayoutRegular;
 import ucar.ma2.*;
 
 import java.util.*;
-import java.text.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.*;
@@ -77,6 +75,8 @@ public class H5header {
   static public final String HDF5_DIMENSION_LIST  = "DIMENSION_LIST";
   static public final String HDF5_DIMENSION_SCALE  = "DIMENSION_SCALE";
   static public final String HDF5_DIMENSION_LABELS  = "DIMENSION_LABELS";
+  static public final String HDF5_DIMENSION_NAME  = "NAME";
+  static public final String HDF5_REFERENCE_LIST  = "REFERENCE_LIST";
 
   // debugging
   static private boolean debugEnum = false, debugVlen = false;
@@ -140,8 +140,8 @@ public class H5header {
   /* Cant always tell if written with netcdf library. if all dimensions have coordinate variables, eg:
     Q:/cdmUnitTest/formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4
    */
-  boolean isNetcdf4;
-  Map<Integer, DataObjectFacade> dimIds = null; // if isNetcdf4 and all dimension scales have _Netcdf4Dimid attribute
+  private boolean isNetcdf4 = false;
+  //Map<Integer, DataObjectFacade> dimIds = null; // if isNetcdf4 and all dimension scales have _Netcdf4Dimid attribute
 
   private H5Group rootGroup;
   private Map<String, DataObjectFacade> symlinkMap = new HashMap<String, DataObjectFacade>(200);
@@ -160,6 +160,10 @@ public class H5header {
 
   public byte getSizeOffsets() {
     return sizeOffsets;
+  }
+
+  boolean isNetcdf4() {
+    return isNetcdf4;
   }
 
   public void read(java.io.PrintStream debugPS) throws IOException {
@@ -208,7 +212,8 @@ public class H5header {
     replaceSymbolicLinks(rootGroup);
 
     // recursively run through all the dataObjects and add them to the ncfile
-    makeNetcdfGroup(ncfile.getRootGroup(), rootGroup);
+    boolean allSharedDimensions =  makeNetcdfGroup(ncfile.getRootGroup(), rootGroup);
+    if (allSharedDimensions) isNetcdf4 = true;
 
     /*if (debugReference) {
      System.out.println("DataObjects");
@@ -394,16 +399,30 @@ public class H5header {
   ///////////////////////////////////////////////////////////////
   // construct netcdf objects
 
-  private void makeNetcdfGroup(ucar.nc2.Group ncGroup, H5Group h5group) throws IOException {
-    if (h5group == null) return;
+  private boolean makeNetcdfGroup(ucar.nc2.Group ncGroup, H5Group h5group) throws IOException {
+    boolean allHaveSharedDimensions = true;
+    if (h5group == null) return allHaveSharedDimensions; // ??
 
-    // look for dimension scales
+  /* 6/21/2013 new algorithm for dimensions.
+    1. find all objects with all CLASS = "DIMENSION_SCALE", make into a dimension. use shape(0) as length. keep in order
+    2. if also a variable (NAME != "This is a ...") then first dim = itself, second matches length, if multiple match, use :_Netcdf4Coordinates = 0, 3 and order of dimensions.
+    3. use DIMENSION_LIST to assign dimensions to data variables.
+  */
+
+    //  1. find all objects with all CLASS = "DIMENSION_SCALE", make into a dimension. use shape(0) as length. keep in order
     for (DataObjectFacade facade : h5group.nestedObjects) {
       if (facade.isVariable)
         findDimensionScales(ncGroup, h5group, facade);
     }
 
-    // deal with multidim dimension scales - ugh!
+    // 2. if also a variable (NAME != "This is a ...") then first dim = itself, second matches length, if multiple match, use :_Netcdf4Coordinates = 0, 3 and order of dimensions.
+    for (DataObjectFacade facade : h5group.nestedObjects) {
+      if (facade.is2DCoordinate)
+        findDimensionScales2D(h5group, facade);
+    }
+
+    // old way
+    /* deal with multidim dimension scales - ugh!
     if (dimIds != null) {
       for (DataObjectFacade dimscale : dimIds.values()) {
         if (dimscale.dobj.mds.ndims > 1) {
@@ -433,13 +452,14 @@ public class H5header {
         }
         facade.dimList = f.toString();
       }
-    }
+    } */
 
-    // look for references to dimension scales
+    // 3. use DIMENSION_LIST to assign dimensions to other variables.
     for (DataObjectFacade facade : h5group.nestedObjects) {
       if (facade.isVariable)
-        findDimensionLists(ncGroup, h5group, facade);
+        allHaveSharedDimensions &= findSharedDimensions(ncGroup, h5group, facade);
     }
+
     createDimensions(ncGroup, h5group);
 
     // nested objects - groups and variables
@@ -450,7 +470,7 @@ public class H5header {
         ncGroup.addGroup(nestedGroup);
         if (debug1) debugOut.println("--made Group " + nestedGroup.getFullName() + " add to " + ncGroup.getFullName());
         H5Group h5groupNested = new H5Group(facadeNested);
-        makeNetcdfGroup(nestedGroup, h5groupNested);
+        allHaveSharedDimensions &= makeNetcdfGroup(nestedGroup, h5groupNested);
 
       } else if (facadeNested.isVariable) {
         if (debugReference && facadeNested.dobj.mdt.type == 7) debugOut.println(facadeNested);
@@ -494,8 +514,6 @@ public class H5header {
         }
         if (debugV) debugOut.println("  made enumeration " + facadeNested.name);
 
-      } else if (!facadeNested.isDimensionNotVariable && warnings) {
-        debugOut.println("WARN:  DataObject ndo " + facadeNested + " not a Group or a Variable");
       }
 
     } // loop over nested objects
@@ -512,6 +530,7 @@ public class H5header {
 
     // add system attributes
     processSystemAttributes(h5group.facade.dobj.messages, ncGroup.getAttributes());
+    return allHaveSharedDimensions;
   }
 
   /////////////////////////
@@ -572,8 +591,17 @@ public class H5header {
         Attribute att = makeAttribute(matt);
         String val = att.getStringValue();
         if (val.equals(HDF5_DIMENSION_SCALE)) {
-          findNetcdf4DimidAttribute(facade);
 
+           // create a dimension - always use the first dataspace length
+          facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
+          facade.hasNetcdfDimensions = true;
+          if (! h5iosp.includeOriginalAttributes) iter.remove();
+
+          if (facade.dobj.mds.ndims > 1)
+            facade.is2DCoordinate = true;
+
+          /* old way
+          findNetcdf4DimidAttribute(facade);
           if (facade.dobj.mds.ndims == 1) { // 1D dimension scale
             // create a dimension
             facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
@@ -587,13 +615,60 @@ public class H5header {
             if (debugDimensionScales)
               System.out.printf("Found multidim dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getFullName(), matt);
           }
+          */
 
         }
       }
     }
   }
 
-  private void findNetcdf4DimidAttribute(DataObjectFacade facade) throws IOException {
+  private void findDimensionScales2D(H5Group h5group, DataObjectFacade facade) throws IOException {
+    int[] lens = facade.dobj.mds.dimLength;
+    if (lens.length > 2) {
+      log.error("DIMENSION_LIST: dimension scale > 2 = {}", facade.getName());
+      return;
+    }
+
+    // first dimension is itself
+    String name = facade.getName();
+    int pos = name.lastIndexOf('/');
+    String dimName = (pos >= 0) ? name.substring(pos + 1) : name;
+
+    StringBuilder sbuff = new StringBuilder();
+    sbuff.append(dimName);
+    sbuff.append(" ");
+
+    // second dimension is really an anonymous dimension, ironically now we go through amazing hoops to keep it shared
+    // 1. use dimids if they exist
+    // 2. if length matches and unique, use it
+    // 3. if no length matches or multiple matches, then use anonymous
+
+    int want_len = lens[1]; // second dimension
+    Dimension match = null;
+    boolean unique = true;
+    for (Dimension d : h5group.dimList) {
+      if  (d.getLength() == want_len) {
+        if (match == null) match = d;
+        else unique = false;
+      }
+    }
+    if (match != null && unique) {
+      sbuff.append(match.getShortName()); // 2. if length matches and unique, use it
+
+    } else {
+      if (match == null) { // 3. if no length matches or multiple matches, then use anonymous
+        log.error("DIMENSION_LIST: dimension scale {} has second dimension {} but no match", facade.getName(), want_len);
+        sbuff.append(Integer.toString(want_len));
+      } else {
+        log.warn("DIMENSION_LIST: dimension scale {} has second dimension {} but multiple matches", facade.getName(), want_len);
+        sbuff.append(Integer.toString(want_len));
+      }
+    }
+
+    facade.dimList = sbuff.toString();
+  }
+
+  /* private void findNetcdf4DimidAttribute(DataObjectFacade facade) throws IOException {
     for (MessageAttribute matt : facade.dobj.attributes) {
       if (matt.name.equals(Nc4.NETCDF4_DIMID)) {
         if (dimIds == null) dimIds = new HashMap<Integer, DataObjectFacade>();
@@ -605,14 +680,14 @@ public class H5header {
     }
     if (dimIds != null) // supposed to all have them
       log.warn("Missing "+Nc4.NETCDF4_DIMID+" attribute on "+facade.getName());
-  }
+  } */
 
 
   /* the case of multidimensional dimension scale. We need to identify which index to use as the dimension length.
      the pattern is, eg:
       _Netcdf4Coordinates = 6, 4
       _Netcdf4Dimid = 6
-  */
+  *
   private int findCoordinateDimensionIndex(DataObjectFacade facade, H5Group h5group) throws IOException {
     Attribute att_coord = null;
     Attribute att_dimid = null;
@@ -646,22 +721,23 @@ public class H5header {
 
     log.warn("Multidimension dimension scale doesnt have "+Nc4.NETCDF4_COORDINATES+" attribute. Assume Dimension is index 0 (!)");
     return 0;
-  }
+  }  */
 
   // look for references to dimension scales, ie the variables that use them
-  private void findDimensionLists(ucar.nc2.Group g, H5Group h5group, DataObjectFacade facade) throws IOException {
-    // now look for dimension lists and clean up the attributes
+  // return true if this variable is compatible with netcdf4 data model
+  private boolean findSharedDimensions(ucar.nc2.Group g, H5Group h5group, DataObjectFacade facade) throws IOException {
     Iterator<MessageAttribute> iter = facade.dobj.attributes.iterator();
     while (iter.hasNext()) {
       MessageAttribute matt = iter.next();
       // find the dimensions - set length to maximum
+      // DIMENSION_LIST contains, for each dimension, a list of references to Dimension Scales
       if (matt.name.equals(HDF5_DIMENSION_LIST)) { // references : may extend the dimension length
-        Attribute att = makeAttribute(matt); // this reads in the data
+        Attribute att = makeAttribute(matt);       // this reads in the data
         if (att == null) {
-          log.error("DIMENSION_LIST: failed to read");
+          log.error("DIMENSION_LIST: failed to read on variable {}", facade.getName());
 
         } else if (att.getLength() !=  facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly fail here
-          log.error("DIMENSION_LIST: must have same number of dimension scales as dimensions = "+att);
+          log.error("DIMENSION_LIST: must have same number of dimension scales as dimensions att={} on variable {}", att, facade.getName());
 
         } else {
           StringBuilder sbuff = new StringBuilder();
@@ -671,28 +747,32 @@ public class H5header {
             sbuff.append(dimName).append(" ");
           }
           facade.dimList = sbuff.toString();
-          if (debugDimensionScales) System.out.printf("Found dimList '%s' for group '%s' matt=%s %n",
-                  facade.dimList, g.getFullName(), matt);
+          facade.hasNetcdfDimensions = true;
+          if (debugDimensionScales) System.out.printf("Found dimList '%s' for group '%s' matt=%s %n", facade.dimList, g.getFullName(), matt);
           if (! h5iosp.includeOriginalAttributes) iter.remove();
         }
 
-      } else if (matt.name.equals("NAME")) {
+      } else if (matt.name.equals(HDF5_DIMENSION_NAME)) {
         Attribute att = makeAttribute(matt);
         String val = att.getStringValue();
         if (val.startsWith("This is a netCDF dimension but not a netCDF variable")) {
           facade.isVariable = false;
-          facade.isDimensionNotVariable = true;
           isNetcdf4 = true;
         }
         if (! h5iosp.includeOriginalAttributes) iter.remove();
         if (debugDimensionScales) System.out.printf("Found %s %n", val);
 
-      } else if (matt.name.equals("REFERENCE_LIST"))
+      } else if (matt.name.equals(HDF5_REFERENCE_LIST))
         if (! h5iosp.includeOriginalAttributes) iter.remove();
     }
+    boolean result =  facade.hasNetcdfDimensions || facade.dobj.mds.dimLength.length == 0;
+    //if (!result)
+    //  System.out.println("HEY");
+    return result;
 
   }
 
+  // add a dimension, return its name
   private String addDimension(ucar.nc2.Group g, H5Group h5group, String name, int length, boolean isUnlimited) {
     int pos = name.lastIndexOf('/');
     String dimName = (pos >= 0) ? name.substring(pos + 1) : name;
@@ -1965,7 +2045,8 @@ public class H5header {
     boolean isGroup;
     boolean isVariable;
     boolean isTypedef;
-    boolean isDimensionNotVariable;
+    boolean is2DCoordinate;
+    boolean hasNetcdfDimensions;
 
     // is a group
     H5Group group;
@@ -1977,7 +2058,7 @@ public class H5header {
     String linkName = null;
 
     // _Netcdf4Coordinates att.
-    Attribute netcdf4CoordinatesAtt;
+    // Attribute netcdf4CoordinatesAtt;
 
     DataObjectFacade(H5Group parent, String name, String linkName) {
       this.parent = parent;
@@ -3819,7 +3900,7 @@ public class H5header {
             continue;
         }
 
-        // the heapId points to a Linkmessage in the Fractal Heap
+        // the heapId points to a Link message in the Fractal Heap
         long pos = fractalHeap.getHeapId(heapId).getPos();
         if (pos < 0) continue;
         raf.seek(pos);
@@ -4326,7 +4407,7 @@ public class H5header {
 - A serialized form of a dataspace _selection_ of elements (in the dataset pointed to).
 I don't have a formal description of this information now, but it's encoded in the H5S_<foo>_serialize() routines in
 src/H5S<foo>.c, where foo = {all, hyper, point, none}.
-There is _no_ datatype information stored for these sort of selections currently. */
+There is _no_ datatype information stored for these kind of selections currently. */
           raf.seek(ho.dataPos);
           long objId = raf.readLong();
           DataObject ndo = getDataObject(objId, null);

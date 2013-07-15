@@ -128,7 +128,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   // search in the order added
   static { // wont get loaded unless explicitly called
+    // ours
     registerConvention(_Coordinate.Convention, CoordSysBuilder.class, null);
+    registerConvention("BUFR/CDM", BUFRConvention.class, null);
 
     registerConvention("CF-1.", CF1Convention.class, new ConventionNameOk() {
       public boolean isMatch(String convName, String wantName) {

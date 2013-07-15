@@ -208,11 +208,8 @@ public class Giniiosp extends AbstractIOServiceProvider {
     }
     return adata;
   }
-  // for the compressed data read all out into a array and then parse into requested
-
 
   // for the compressed data read all out into a array and then parse into requested
-
   public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int[] origin,
                                   int[] shape, int[] stride, int[] levels) throws IOException, InvalidRangeException {
 
@@ -225,7 +222,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     raf.read(data);
     ByteArrayInputStream ios = new ByteArrayInputStream(data);
 
-    BufferedImage image = javax.imageio.ImageIO.read(ios);
+    BufferedImage image = javax.imageio.ImageIO.read(ios); // LOOK why ImageIO ??
     Raster raster = image.getData();
     DataBuffer db = raster.getDataBuffer();
 

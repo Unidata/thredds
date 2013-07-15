@@ -72,11 +72,14 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   private final List<Message> msgs = new ArrayList<Message>();
   private int[] obsStart; // for each message, the starting observation index
+  private boolean wantTime;
 
+  @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     return MessageScanner.isValidFile(raf);
   }
 
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     long start = System.nanoTime();
     if (debugOpen) {
@@ -126,11 +129,26 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
 
     // this fills the netcdf object
+    if (protoMessage == null)
+      throw new IOException("No data messages in the file= "+ncfile.getLocation());
     construct = new ConstructNC(protoMessage, countObs, ncfile);
 
     ncfile.finish();
   }
 
+  @Override
+  public Object sendIospMessage(Object message) {
+    if (message instanceof String) {
+      String mess = (String) message;
+      if (mess.equals("AddTime")) {
+        wantTime = true;
+        return true;
+      }
+    }
+    return super.sendIospMessage(message);
+  }
+
+  // for BufrMessageViewer
   public void open(RandomAccessFile raf, NetcdfFile ncfile, Message single) throws IOException {
     this.raf = raf;
 
@@ -230,6 +248,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   private int nelems = -1;
 
+  @Override
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     Structure s = construct.recordStructure;
     return new ArraySequence(s.makeStructureMembers(), new SeqIter(), nelems);
@@ -275,14 +294,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
   }
 
-  /**
-   * Get the structure iterator
-   *
-   * @param s          the Structure
-   * @param bufferSize the buffersize
-   * @return the data iterator
-   * @throws java.io.IOException if problem reading data
-   */
+
+  @Override
   public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     return new SeqIter();
   }
@@ -295,7 +308,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     boolean addTime;
 
     SeqIter() {
-      addTime = (construct.recordStructure.findVariable(ConstructNC.TIME_NAME) != null);
+      addTime = false; // construct.recordStructure.findVariable(ConstructNC.TIME_NAME) != null;
       reset();
     }
 
@@ -343,7 +356,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         as = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
       }
 
-      if (addTime) addTime(as);
+      if (wantTime && construct.isTimeOk()) addTime(as);
       return as.getStructureDataIterator();
     }
 

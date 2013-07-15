@@ -870,10 +870,11 @@ public class Grib2Iosp extends GribIosp {
 
       @Override
       public int compareTo(DataRecord o) {
-        int r = partno - o.partno;
+        int r = Integer.compare(partno, o.partno);
         if (r != 0) return r;
-        r = fileno - o.fileno;
-        return (r != 0) ? r : (int) (drsPos - o.drsPos);
+        r = Integer.compare(fileno, o.fileno);
+        if (r != 0) return r;
+        return Long.compare(drsPos, o.drsPos);
       }
     }
   }
@@ -1008,8 +1009,9 @@ public class Grib2Iosp extends GribIosp {
 
       @Override
       public int compareTo(DataRecord o) {
-        int r = fileno - o.fileno;
-        return (r == 0) ? (int) (drsPos - o.drsPos) : r;
+        int r = Integer.compare(fileno, o.fileno);
+        if (r != 0) return r;
+        return Long.compare(drsPos, o.drsPos);
       }
     }
   }

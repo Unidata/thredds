@@ -176,10 +176,12 @@ public class EnumTypedef extends CDMNode {
 
   @Override
   public int hashCode() {
+if(CDMNode.OBJECTHASH) return super.hashCode(); else {
     String name = getShortName();
     int result = name != null ? name.hashCode() : 0;
     result = 31 * result + (map != null ? map.hashCode() : 0);
     return result;
+}
   }
 
   @Override

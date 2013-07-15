@@ -49,6 +49,7 @@ import java.io.IOException;
 @Immutable
 public class BufrIdentificationSection {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIdentificationSection.class);
+  static final private boolean warnDate = false;
 
   /**
    * Master Table number.
@@ -159,15 +160,20 @@ public class BufrIdentificationSection {
       if (lyear > 100)
         lyear -= 100;
       year = lyear + 2000;
-      int temp = raf.read();
-      month = (temp == 0) ? 1 : temp; // joda time does not allow 0 month
-      if (temp == 0) log.warn("month is zero");
-      temp = raf.read();
-      day = (temp == 0) ? 1 : temp;   // joda time does not allow 0 day
-      if (temp == 0) log.warn("day is zero");
+      int tempMonth = raf.read();
+      month = (tempMonth == 0) ? 1 : tempMonth; // joda time does not allow 0 month
+      int tempDay = raf.read();
+      day = (tempDay == 0) ? 1 : tempDay;   // joda time does not allow 0 day
       hour = raf.read();
       minute = raf.read();
       second = 0;
+      if (warnDate && (tempMonth == 0 || tempDay == 0)) {
+        // From manual on codes
+        // When accuracy of the time does not define a time unit, then the value for this unit shall be set to zero (e.g. for a
+        // SYNOP observation at 09 UTC, minute = 0, second = 0.
+        // NCEP codes their BUFR table messages with 0/0/0 0:0:0 in edition 3
+        log.warn(raf.getLocation()+": month or day is zero, set to 1. {}/{}/{} {}:{}:{}", year, tempMonth, tempDay, hour, minute, second);
+      }
 
       int n = length - 17;
       localUse = new byte[n];

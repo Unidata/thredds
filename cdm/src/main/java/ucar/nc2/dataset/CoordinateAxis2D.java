@@ -125,14 +125,19 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
   }
 
-  private static final double THRESH = 100.0;
-  private double connectLon( double connect, double val) {
-    double diff = connect - val;
-    if (Math.abs(diff) < THRESH) return val; // common case fast
+  private static final double MAX_JUMP = 100.0; // larger than you would ever expect
+  static private double connectLon( double connect, double val) {
+    if (Double.isNaN(connect)) return val;
+    if (Double.isNaN(val)) return val;
+
+    double diff = val - connect;
+    if (Math.abs(diff) < MAX_JUMP) return val; // common case fast
     // we have to add or subtract 360
-    double result = diff > 0 ? val + 360 : val - 360;
-    assert ((Math.abs(connect - result) ) < THRESH) ;
-    return result;
+    double result = diff > 0 ? val - 360 : val + 360;
+    double diff2 = connect - result;
+    if ((Math.abs(diff2) ) < Math.abs(diff))
+      val = result;
+    return val;
   }
 
 
@@ -437,5 +442,12 @@ public class CoordinateAxis2D extends CoordinateAxis {
   }
   */
 
+
+  public static void main(String[] args) {
+    double connect = connectLon(-167.258, 156.55109);
+    System.out.printf("%f%n", connect);
+    connect = connectLon(connect, 47.010693);
+    System.out.printf("%f%n", connect);
+  }
 
 }

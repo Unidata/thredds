@@ -2540,7 +2540,7 @@ public class ToolsUI extends JPanel {
 
     Grib2CollectionPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib2CollectionPanel(prefs);
+      gribTable = new ucar.nc2.ui.Grib2CollectionPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -5730,7 +5730,7 @@ public class ToolsUI extends JPanel {
     String version;
     try {
       InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README");
-      if (is == null) return "4.3.17";
+      if (is == null) return "4.3.18";
 // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
       StringBuilder sbuff = new StringBuilder();

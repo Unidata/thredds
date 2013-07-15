@@ -78,17 +78,21 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     // a little tricky to get the coord var cached if we have to read through the datasets on the buildCoords()
     String dimName = getDimensionName();
-    CacheVar coordCacheVar;
+    CacheVar coordCacheVar = null;
     if (type != Aggregation.Type.joinExistingOne) {
       Variable tcv = typical.findVariable(dimName);
-      if (tcv == null)
+      if (tcv == null)  {
+        // LOOK what to do; docs claim we can add the coord variable in the outer ncml
         throw new IllegalArgumentException("AggregationExisting: no coordinate variable for agg dimension= "+dimName);
-      coordCacheVar = new CoordValueVar(dimName, tcv.getDataType(), tcv.getUnitsString());
+      } else {
+        coordCacheVar = new CoordValueVar(dimName, tcv.getDataType(), tcv.getUnitsString());
+      }
 
     } else {
       coordCacheVar = new CoordValueVar(dimName, DataType.STRING, "");      
     }
-    cacheList.add(coordCacheVar);  // coordinate variable is always cached
+    if (coordCacheVar != null)
+      cacheList.add(coordCacheVar);  // coordinate variable is always cached
 
     // gotta check persistence info - before buildCoords - if its going to do any good
     persistRead();

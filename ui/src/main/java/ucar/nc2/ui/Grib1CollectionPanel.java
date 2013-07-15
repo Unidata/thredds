@@ -351,7 +351,7 @@ public class Grib1CollectionPanel extends JPanel {
     for (Object bean : gdss) {
       Gds1Bean gbean = (Gds1Bean)bean;
       gbean.gds.hashCode();
-      f.format("  <gdsName hash='%d' groupName=''/>%n", gbean.gds.hashCode());
+      f.format("  <gdsName hash='%d' groupName='%s'/>%n", gbean.gds.hashCode(), gbean.getGridName());
     }
     f.format("</gribConfig>%n");
   }

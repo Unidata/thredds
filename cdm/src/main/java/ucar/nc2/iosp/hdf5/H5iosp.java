@@ -36,7 +36,6 @@ import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
@@ -93,7 +92,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   public String getFileTypeId() {
     if (isEos) return "HDF5-EOS";
-    if (headerParser.isNetcdf4) return DataFormatType.NETCDF4.toString();
+    if (headerParser.isNetcdf4()) return DataFormatType.NETCDF4.toString();
     return DataFormatType.HDF5.toString();
   }
 

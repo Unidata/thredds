@@ -63,6 +63,7 @@ public interface CDM {
   public static final String TITLE = "title";
   public static final String UNITS = "units";
   public static final String UNSIGNED = "_Unsigned";
+  public static final String VALID_RANGE = "valid_range";
 
   // UACDD
   // http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html

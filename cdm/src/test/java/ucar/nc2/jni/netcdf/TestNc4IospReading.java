@@ -96,7 +96,7 @@ public class TestNc4IospReading {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  //@Test
+  @Test
   public void readAllHDF5() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/", new MyFileFilter(), new MyAct(), true);

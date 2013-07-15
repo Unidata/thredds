@@ -68,8 +68,6 @@ public class TestReadAndCountDods extends TestCase {
     // flipping between 154, 34, 36, 31 and 154, 33, 35, 31
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 154, -1, -1, 31);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 15, 17, 13);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/surface/files/latest.xml", 54, 16, 18, 12);
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/selectsurface/files/latest.xml", 54, 16, 18, 12);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_40km/conduit/files/latest.xml", 176, 29, 31, 25);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);
     TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);
@@ -86,8 +84,8 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 74, 15, 17, 11);
   }
 
-  public void testProblem() throws Exception {
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 15, 17, 13);
+  public void utestProblem() throws Exception {
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/surface/files/latest.xml", 54, 16, 18, 12);
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {

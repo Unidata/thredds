@@ -38,15 +38,11 @@ import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.nc2.iosp.*;
-import ucar.unidata.util.Format;
 
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.CharBuffer;
-import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 /**
@@ -374,7 +370,7 @@ public String NC_check_name(String name) {
   // protected long fileUsed = 0; // how much of the file is written to ?
   // protected long recStart = 0; // where the record data starts
 
-  protected boolean debug = false, debugSize = false, debugSPIO = false, debugRecord = false, debugSync = false;
+  protected boolean debug = false, debugSize = false, debugSPIO = false, debugRecord = false, debugRead = false;
   protected boolean showHeaderBytes = false;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -437,6 +433,11 @@ public String NC_check_name(String name) {
   // data reading
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
+    if (debugRead) {
+      System.out.printf("debugRead %s %s%n", v2.toStringDebug(), section);
+      if (v2.getShortName().equals("cref"))
+        System.out.println("HEY");
+    }
     if (v2 instanceof Structure)
       return readRecordData((Structure) v2, section);
 
@@ -873,9 +874,11 @@ public String NC_check_name(String name) {
   } */
 
   public void flush() throws java.io.IOException {
-    raf.flush();
-    header.writeNumrecs();
-    raf.flush();
+    if (raf != null) {
+      raf.flush();
+      header.writeNumrecs();
+      raf.flush();
+    }
   }
 
   public void close() throws java.io.IOException {

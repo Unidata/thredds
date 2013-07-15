@@ -65,6 +65,7 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.log.LoggerFactory;
 
 /**
  * A Singleton class to initialize the CDM, instantiated by Spring.
@@ -91,8 +92,32 @@ public class CdmInit implements InitializingBean,  DisposableBean{
 
     // 4.3.17
     // feature collection logging
+    /* from log4j RollingFileAppender:
+       <param name="MaxFileSize" value="100KB"/>
+       <param name="MaxBackupIndex" value="2"/>
+
+       currently we have bdb stuff:
+     <FeatureCollection>
+       <dir>/tomcat_home/content/thredds/cache/collection/</dir>
+       <maxSize>20 Mb</maxSize>
+       <jvmPercent>2</jvmPercent>
+     </FeatureCollection>
+
+     how about:
+     <FeatureCollection>
+        <RollingFileAppender>
+          <MaxFileSize>1 MB</MaxFileSize>
+          <MaxBackupIndex>5</MaxBackupIndex>
+          <Level>INFO</Level>
+        </RollingFileAppender>
+      </FeatureCollection>
+     */
     startupLog.info("CdmInit: set LoggerFactorySpecial with logging directory "+System.getProperty("tds.log.dir"));
-    InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(Level.INFO));
+    long maxFileSize = ThreddsConfig.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
+    int maxBackupIndex = ThreddsConfig.getInt("FeatureCollection.RollingFileAppender.MaxBackupIndex", 5);
+    String level = ThreddsConfig.get("FeatureCollection.RollingFileAppender.Level", "INFO");
+    LoggerFactory fac = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
+    InvDatasetFeatureCollection.setLoggerFactory(fac);
 
     // 4.3.16
     String dir = ThreddsConfig.get("CdmRemote.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
@@ -102,7 +127,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     CdmrFeatureController.setDiskCache(cdmrCache);
     startupLog.info("CdmInit:  CdmRemote= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
-    /* new for 4.3.15: grib index file placement, using DiskCache2  */
+    /* 4.3.15: grib index file placement, using DiskCache2  */
     String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = ThreddsConfig.getBoolean("GribIndex.alwaysUse", false);
     String gribIndexPolicy = ThreddsConfig.get("GribIndex.policy", null);

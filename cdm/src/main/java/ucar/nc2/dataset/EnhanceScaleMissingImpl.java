@@ -154,7 +154,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
     ////// missing data : valid_range. assume here its in units of unpacked data. correct this below
     Attribute validRangeAtt = null;
-    if (null != (validRangeAtt = forVar.findAttribute("valid_range"))) {
+    if (null != (validRangeAtt = forVar.findAttribute(CDM.VALID_RANGE))) {
       if (!validRangeAtt.isString() && validRangeAtt.getLength() > 1) {
         valid_min = validRangeAtt.getNumericValue(0).doubleValue();
         valid_max = validRangeAtt.getNumericValue(1).doubleValue();

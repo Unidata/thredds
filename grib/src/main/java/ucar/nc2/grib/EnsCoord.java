@@ -121,9 +121,9 @@ public class EnsCoord  {
 
     @Override
     public int compareTo(Coord o) {
-      if ((code == o.code))
-        return (ensMember < o.ensMember) ? -1 : (ensMember == o.ensMember ? 0 : 1);
-      return (code < o.code) ? -1 : (code == o.code ? 0 : 1);
+      int r = Integer.compare(code, o.code);
+      if (r != 0) return r;
+      return Integer.compare(ensMember, o.ensMember);
     }
 
     @Override

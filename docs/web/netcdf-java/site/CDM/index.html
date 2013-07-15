@@ -30,7 +30,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p>A <strong>Group</strong> is a container for Attributes, Dimensions, EnumTypedefs, Variables, and nested Groups<strong>. </strong>The Groups in a Dataset form a hierarchical tree, like directories on a disk.There is always at least one Group in a Dataset, the <strong>root Group</strong>, whose name is the empty string.  </p>
 <p>A <strong>Variable</strong> is a container for data. It has a <em>DataType</em>, a set of Dimensions that define its array shape, and optionally a set of Attributes. Any shared Dimension it uses must be in the same Group or a parent Group. </p>
 <p>A <strong>Dimension</strong>  is used to define the array shape of a Variable. It may be <em>shared</em> among Variables, which provides a simple yet powerful way of associating Variables. When a Dimension is shared, it has a unique name within the Group. If <em>unlimited</em>,  a Dimension's length may increase. If <em>variableLength</em>, then the actual length is data dependent, and can only be found by reading the data. A variableLength Dimension cannot be shared or unlimited. </p>
-<p>An <strong>Attribute</strong> has a name and a value, and associates arbitrary metadata with a Variable or a Group. The value is a scalar or one dimensional array of Strings or numeric values, so the possible data types are (<strong>String, byte, short, int, long, float, double</strong>).</p>
+<p>An <strong>Attribute</strong> has a name and a value, and associates arbitrary metadata with a Variable or a Group. The value is a scalar or one dimensional array of Strings or numeric values, so the possible data types are (<strong>String, byte, short, int, long, float, double</strong>). The integer types (<strong>byte, short, int, long</strong>) may be signed or unsigned.</p>
 <p>A <strong>Structure</strong> is a type of Variable that contains other Variables, analogous to a <strong><em>struct</em></strong> in C, or a <em><strong>row</strong></em> in a relational database. In general, the data in a Structure are physically stored close together on disk, so that it is efficient to retrieve all of the data in a Structure at the same time. A Variable contained in a Structure is a <strong>member Variable</strong>, and can only be read in the context of its containing Structure. </p>
 <p>A <strong>Sequence</strong> is a one dimensional Structure whose length is not known until you actually read the data. To access the data in a Sequence, you can only iterate through the Sequence, getting the data from one Structure instance at a time. </p>
 <p>An <strong>EnumTypedef</strong> is an enumeration of Strings, used by Variables of type <em><strong>enum</strong></em>. </p>
@@ -46,12 +46,12 @@ dl {margin: 10px 5px 5px 15px;)
 </blockquote>
 <p>An <strong>Object name</strong> refers to the name of a Group, Dimension, Variable,  Attribute, or EnumTypedef. An object name is a String,  a variable length array of Unicode characters. The <a href="Identifiers.html">set of allowed characters</a> is still being considered. </p>
 <h3>Comparision to netCDF-4<a name="netcdf4"></a></h3>
-<p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models. In the CDM:</p>
+<p>The CDM data model is close to, but not identical with the<a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Format.html"> netCDF-4 data model</a> (informal <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">UML</a>). However there is a complete 2-way mapping between the two models. In the CDM:</p>
 <ul>
   <li>Non-shared dimensions are allowed, but netCDF-4 does not support these.</li>
   <li>An attribute type may only be a scalar or 1D array of byte, short, int, long, float, double, or String.</li>
   <li>Variables that are members of Structures may have attributes attached directly to them.</li>
-  <li>The opaque type does include the length of the opaque object, so an array of opaque may have different lengths for each object in the array.</li>
+  <li>The opaque type does not include the length of the opaque object, so an array of opaque may have different lengths for each object in the array.</li>
   <li>There are not separate unsigned integer types. The Variable and Array objects have <em>isUnsigned() </em>methods, and conversion to wider types is correctly done. Since Java does not have unsigned types, the alternative is to automatically widen unsigned data arrays, which would double the memory used.</li>
   <li>NetCDF-4 <em>user-defined types</em> are not kept independently from the variables that use them, except for <em>EnumTypedef</em>. The NetCDF-4 user-defined types are mapped to these CDM constructs:
     <ul>
@@ -180,7 +180,7 @@ With these Feature Types objects, mapping into other data models like ISO/OGC be
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated November 2012
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2013
 </address>
 <p>&nbsp;</p>
 </body>

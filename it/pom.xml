@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.17</version>
+    <version>4.3.18-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
@@ -194,7 +194,7 @@
             <timeout>300000</timeout>
             <containerId>tomcat7x</containerId>
             <zipUrlInstaller>                   
-              <url>http://www.us.apache.org/dist/tomcat/tomcat-7/v7.0.40/bin/apache-tomcat-7.0.40.tar.gz</url>
+              <url>http://www.us.apache.org/dist/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.tar.gz</url>
               <downloadDir>${project.build.directory}/downloads</downloadDir>
               <extractDir>${project.build.directory}/extracts</extractDir>
             </zipUrlInstaller>

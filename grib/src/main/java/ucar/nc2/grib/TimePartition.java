@@ -281,7 +281,8 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public Partition getPartitionLast() {
-    return partitions.get( partitions.size()-1);
+    int last = (this.gribConfig.filesSortIncreasing) ? partitions.size() - 1 : 0;
+    return partitions.get(last);
   }
 
   /* public void cleanup() throws IOException {
@@ -346,7 +347,11 @@ public abstract class TimePartition extends GribCollection {
         return new ArrayList<Partition>();
       }
       List<Partition> c = new ArrayList<Partition>(partitionMap.values());
-      Collections.sort(c);
+      if (this.gribConfig.filesSortIncreasing) {
+          Collections.sort(c);
+      } else {
+          Collections.reverse(c);
+      }
       partitions = c;
     }
     return partitions;

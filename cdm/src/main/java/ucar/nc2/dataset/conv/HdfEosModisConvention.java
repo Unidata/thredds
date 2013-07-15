@@ -17,6 +17,7 @@ import java.io.IOException;
  *
  * @author caron
  * @since 2/23/13
+ * @see "https://lpdaac.usgs.gov/products/modis_overview"
  */
 public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
   private static final String CRS = "Projection";
@@ -41,8 +42,10 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
     Group dataG = g.findGroup(DATA_GROUP);
     if (crs != null && dataG != null) {
       Attribute att = crs.findAttribute(HdfEos.HDFEOS_CRS_Projection);
-      if (att != null && att.getStringValue().equals("GCTP_SNSOID"))
-        return true;
+      if (att == null) return false;
+      if (!att.getStringValue().equals("GCTP_SNSOID") && !att.getStringValue().equals("GCTP_GEO")) return false;
+      if (dataG.findDimensionLocal(DIMX_NAME) == null || dataG.findDimensionLocal(DIMY_NAME) == null) return false;
+      return true;
     }
 
     for (Group ng : g.getGroups()) {
@@ -78,7 +81,7 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
   private boolean addTimeCoord;
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     addTimeCoord = addTimeCoordinate(ds);
-    findGroup(ds, ds.getRootGroup());
+    augmentGroup(ds, ds.getRootGroup());
     ds.addAttribute(ds.getRootGroup(), new Attribute(CDM.CONVENTIONS, "CF-1.0"));
 
     ds.finish();
@@ -127,15 +130,15 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
     }
   }
 
-  private void findGroup(NetcdfDataset ds, Group g) {
-    if (g.findVariable(HdfEos.HDFEOS_CRS) != null)
-      augmentGroup(ds, g);
+  private void augmentGroup(NetcdfDataset ds, Group g) {
+    Variable crs = g.findVariable(HdfEos.HDFEOS_CRS);
+    if (crs != null) augmentGroupWithProjectionInfo(ds, g);
 
     for (Group ng : g.getGroups())
-      findGroup(ds, ng);
+      augmentGroup(ds, ng);
   }
 
-  private void augmentGroup(NetcdfDataset ds, Group g) {
+  private void augmentGroupWithProjectionInfo(NetcdfDataset ds, Group g) {
     Dimension dimX = null, dimY = null;
     Group dataG = g.findGroup(DATA_GROUP);
     if (dataG != null) {
@@ -145,16 +148,11 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
     if (dimX == null || dimY == null) return;
 
     Variable crs = g.findVariable(HdfEos.HDFEOS_CRS);
-    Attribute att = crs.findAttribute(HdfEos.HDFEOS_CRS_Projection);
-    if (att != null && att.getStringValue().equals("GCTP_SNSOID")) {
+    Attribute projAtt = crs.findAttribute(HdfEos.HDFEOS_CRS_Projection);
+    if (projAtt != null) {
       Attribute upperLeft = crs.findAttribute(HdfEos.HDFEOS_CRS_UpperLeft);
       Attribute lowerRight = crs.findAttribute(HdfEos.HDFEOS_CRS_LowerRight);
-
       Attribute projParams = crs.findAttribute(HdfEos.HDFEOS_CRS_ProjParams);
-      ProjectionCT ct = makeSinusoidalProjection(CRS, projParams);
-      VariableDS crss = makeCoordinateTransformVariable(ds, ct);
-      crss.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
-      ds.addVariable(dataG, crss);
 
       double minX = upperLeft.getNumericValue(0).doubleValue();
       double minY = upperLeft.getNumericValue(1).doubleValue();
@@ -162,31 +160,70 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
       double maxX = lowerRight.getNumericValue(0).doubleValue();
       double maxY = lowerRight.getNumericValue(1).doubleValue();
 
-      ds.addCoordinateAxis(makeCoordAxis(ds, dataG, DIMX_NAME, dimX.getLength(), minX,  maxX, true));
-      ds.addCoordinateAxis(makeCoordAxis(ds, dataG, DIMY_NAME, dimY.getLength(), minY,  maxY, false));
+      boolean hasProjection = false;
+      String coordinates = null;
+      ProjectionCT ct;
+      if (projAtt.getStringValue().equals("GCTP_SNSOID")) {
+        hasProjection = true;
+        ct = makeSinusoidalProjection(CRS, projParams);
+        VariableDS crss = makeCoordinateTransformVariable(ds, ct);
+        crss.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
+        ds.addVariable(dataG, crss);
+
+        ds.addCoordinateAxis(makeCoordAxis(ds, dataG, DIMX_NAME, dimX.getLength(), minX,  maxX, true));
+        ds.addCoordinateAxis(makeCoordAxis(ds, dataG, DIMY_NAME, dimY.getLength(), minY,  maxY, false));
+        coordinates = addTimeCoord ? TIME_NAME+" "+DIMX_NAME + " " + DIMY_NAME : DIMX_NAME + " " + DIMY_NAME;
+
+      } else if (projAtt.getStringValue().equals("GCTP_GEO")) {
+
+        ds.addCoordinateAxis(makeLatLonCoordAxis(ds, dataG, dimX.getLength(), minX * 1e-6, maxX * 1e-6, true));
+        ds.addCoordinateAxis(makeLatLonCoordAxis(ds, dataG, dimY.getLength(), minY * 1e-6,  maxY * 1e-6, false));
+        coordinates = addTimeCoord ? TIME_NAME+" Lat Lon" : "Lat Lon";
+      }
 
       for (Variable v : dataG.getVariables()) {
         if (v.getRank() != 2)  continue;
         if (!v.getDimension(0).equals(dimY))  continue;
         if (!v.getDimension(1).equals(dimX))  continue;
 
-        v.addAttribute(new Attribute(CF.GRID_MAPPING, CRS));
-        if (addTimeCoord) {
-          v.addAttribute(new Attribute(_Coordinate.Axes, TIME_NAME+" "+DIMX_NAME + " " + DIMY_NAME));
-          //String dims = v.getDimensionsString();
-          //v.setDimensions(TIME_NAME+" "+dims);
-        }
-        //v.addAttribute(new Attribute(_Coordinate.Axes, DIMX_NAME + " " + DIMY_NAME));
+        if (coordinates != null)
+          v.addAttribute(new Attribute(CF.COORDINATES, coordinates));
+
+        if (hasProjection)
+          v.addAttribute(new Attribute(CF.GRID_MAPPING, CRS));
       }
     }
 
   }
+
+  /*
+  The UpperLeftPointMtrs is in projection coordinates, and identifies the very upper left corner of the upper left pixel of the image data
+  • The LowerRightMtrs identifies the very lower right corner of the lower right pixel of the image data. These projection coordinates are the only metadata that accurately reflect the extreme corners of the gridded image
+   */
 
   private CoordinateAxis makeCoordAxis(NetcdfDataset ds, Group g, String name, int n, double start, double end, boolean isX) {
     CoordinateAxis v = new CoordinateAxis1D(ds, g, name, DataType.DOUBLE, name, "km", isX ? "x coordinate" : "y coordinate");
     double incr = (end - start) / n;
     v.setValues(n, start * .001, incr * .001); // km
     v.addAttribute(new Attribute(_Coordinate.AxisType, isX ? AxisType.GeoX.toString() : AxisType.GeoY.toString()));
+    return v;
+  }
+
+  /*
+    group: MOD_Grid_MOD17A3 {
+    variables:
+      short _HDFEOS_CRS;
+        :Projection = "GCTP_GEO";
+        :UpperLeftPointMtrs = -1.8E8, 9.0E7; // double
+        :LowerRightMtrs = 1.8E8, -9.0E7; // double
+   */
+  private CoordinateAxis makeLatLonCoordAxis(NetcdfDataset ds, Group g, int n, double start, double end, boolean isLon) {
+    String name = isLon ? AxisType.Lon.toString() : AxisType.Lat.toString();
+    String dimName = isLon ? DIMX_NAME : DIMY_NAME;
+    CoordinateAxis v = new CoordinateAxis1D(ds, g, name, DataType.DOUBLE, dimName, isLon ? "degrees_east" : "degrees_north", null);
+    double incr = (end - start) / n;
+    v.setValues(n, start, incr);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, name));
     return v;
   }
 

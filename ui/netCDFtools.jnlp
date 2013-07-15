@@ -30,7 +30,7 @@
     <jar href="jcip-annotations.jar"/>
     <jar href="jcl-over-slf4j.jar"/>
     <jar href="jcommon.jar"/>
-    <jar href="jdom.jar"/>
+    <jar href="jdom2.jar"/>
     <jar href="je.jar"/>
     <jar href="jfreechart.jar"/>
     <jar href="jna.jar"/>

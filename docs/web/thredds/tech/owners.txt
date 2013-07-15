@@ -1,3 +1,59 @@
+July 2013
+
+/c/dev/github/thredds/docs/web/thredds/tech/tds4.3/tutorial (target-4.3.18)
+
+marcos		AddingServices.html
+*caron		AdditionalSecurityConfiguration.html // consolidate in reference ??
+-lansing	BasicThreddsConfig_xml.html
+-lansing	BasicConfigCatalogs.html
+-jenn		BasicTomcatAndTDSSecurity.html
+-lansing 	CatalogPrimer.html	 // tutorial only
+-lansing 	CatalogPrimerW.html  // simplified version for the workshop
+-caron		Checklist.html
+-lansing	ConfigCatalogs.html
+caron		FmrcFeatureCollectionsTutorial.html
+caron		GRIB.pptx
+-jenn		GettingStarted.html
+-lansing 	Metadata.html		// tutorial only
+sean		NcML.htm
+sean		NcMLExamples.html
+sean		NcMLvsFeatureCollections.pptx
+-jenn		Security.html
+jenn		TDSMonitoringAndDebugging.html
+sean		TDSOverview-1.ppt
+ethan		TDSOverview-2.ppt
+?			TDS_Plans.ppt
+caron		TroubleShooting.html
+-caron		index.html
+sean		pythonTDS.ppt
+caron		tdsMonitor.html
+jenn		tutorial.css
+jenn		tutorial2.css
+X			workshop2012.html
+delete?		workshop2013-python.html
+caron		workshop2013.html
+jenn		workshopNav.js
+
+ethan		../reference/ServerInfo.html
+ethan		../reference/CatalogService.html
+ethan		../reference/Services.html
+ethan		../reference/WCS.html
+
+marcos		../reference/WMS.html
+marcos		../reference/NetcdfSubsetServiceConfigure.html
+marcos		../reference/NetcdfSubsetServiceReference.html
+marcos		../reference/ncISO.html
+
+caron		../reference/ThreddsConfigXMLFile.html
+caron		/software/netcdf/ncml/v2.2/Tutorial.html
+caron		/software/netcdf/ncml/v2.2/Aggregation.html
+-caron		../reference/collections/FeatureCollections.html
+-caron		../reference/collections/FmrcCollection.html
+-caron		../reference/collections/GribCollections.html
+-caron		../reference/RestrictedAccess.html
+-caron		../reference/Viewers.html
+
+==========================================================================================
 Oct 2012
 
 caron@ROBERTO /c/dev/github/thredds/docs/web/thredds/tech/tds4.3/reference (target-4.3.14)

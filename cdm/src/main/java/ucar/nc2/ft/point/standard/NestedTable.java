@@ -35,6 +35,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.ma2.StructureDataIteratorLimited;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.FeatureType;
@@ -48,7 +49,6 @@ import ucar.unidata.geoloc.StationImpl;
 
 import java.util.*;
 import java.io.IOException;
-import java.text.ParseException;
 
 /**
  * Implements "nested table" views of point feature datasets.
@@ -471,12 +471,12 @@ public class NestedTable {
 
     if (cve.isString()) {
       String timeString = timeVE.getCoordValueString(tableData);
-      Date date = CalendarDateFormatter.parseISODate(timeString);
+      CalendarDate date = CalendarDateFormatter.isoStringToCalendarDate(null, timeString);
       if (date == null) {
         log.error("Cant parse date - not ISO formatted, = "+timeString);
         return 0.0;
       }
-      return date.getTime() / 1000.0; // LOOK
+      return date.getMillis();
 
     } else {
       return cve.getCoordValue(tableData);

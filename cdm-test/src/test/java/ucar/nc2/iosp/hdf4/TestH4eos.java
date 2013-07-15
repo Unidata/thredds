@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.io.File;
 
 import junit.framework.*;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.test.util.TestDir;
 
 /**
@@ -143,4 +145,37 @@ public class TestH4eos extends TestCase {
     System.out.printf(" sum =          %f%n", MAMath.sumDouble(data));
     System.out.printf(" sum2 =          %f%n", MAMath.sumDouble(data.reduce(0)));
   }
+
+  // test the coordSysBuilder - check if grid exists
+  public void testModis() throws IOException, InvalidRangeException {
+    // GEO (lat//lon)
+    testGridExists(testDir + "eos/modis/MOD17A3.C5.1.GEO.2000.hdf", "MOD_Grid_MOD17A3/Data_Fields/Npp_0\\.05deg");
+
+    // SINUSOIDAL
+    testGridExists(testDir + "eos/modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf", "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NIR_reflectance");
+
+  }
+
+  private void testGridExists(String filename, String vname) throws IOException, InvalidRangeException {
+    NetcdfFile ncfile = null;
+    try {
+      ncfile = NetcdfFile.open(filename);
+      Variable v = ncfile.findVariable(vname);
+      assert v != null : filename+" "+vname;
+    } finally {
+      if (ncfile != null) ncfile.close();
+    }
+
+    GridDataset gds = null;
+    try {
+      gds = GridDataset.open(filename);
+      GeoGrid v = gds.findGridByName(vname);
+      assert v != null : filename+" "+vname;
+    } finally {
+      if (gds != null) gds.close();
+    }
+
+  }
+
+
 }

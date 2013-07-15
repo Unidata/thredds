@@ -52,7 +52,9 @@ import ucar.nc2.constants.FeatureType;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class TestSubset {
 
@@ -923,6 +925,26 @@ public class TestSubset {
     dataset.close();
   }
 
+  public void testAaron() throws Exception{
+  // different scale/offset in aggregation
+       GridDataset dataset = GridDataset.open("G:/work/braekel/dataset.ncml" );
+       GridDatatype grid = null;
+       for( GridDatatype thisGrid : dataset.getGrids() ){
+         if( thisGrid.getName().equals( "cref" )){
+           grid = thisGrid;
+         }
+       }
+       List<Range> ranges = new ArrayList<Range>();
+       ranges.add( new Range( 0, 0 ) );
+       ranges.add( new Range( 0, 0 ) );
+       ranges.add( new Range( 638, 638 ) );
+       ranges.add( new Range( 3750, 4622 ) );
 
+       Array arr = grid.getVariable().read( ranges );
+       Index index = arr.getIndex();
+       index.set( new int[]{0,0,0,834} );
+       System.out.printf("index %d value %f%n", index.currentElement(), arr.getDouble( index ) );
+       dataset.close();
+     }
 }
 

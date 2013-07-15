@@ -116,10 +116,8 @@
 					jsfile.setAttribute("src", context+"/js/ncss/gridDatasetForm.js");
 					var headTag = document.getElementsByTagName("head")[0];
 					headTag.appendChild(jsfile);
-					})();
-
+					})();					
 				</script>
-
 			</head>
 
 			<body onload="Ncss.initGridDataset()">
@@ -164,7 +162,7 @@
 							</span>
 						</h3>
 					</div>
-					<form method="GET" action="{gridForm/attribute::location}">
+					<form id="form" method="GET" action="{gridForm/attribute::location}">
 						<!-- table border="0" cellpadding="4" cellspacing="2" -->
 						<table class="simple">
 							<tr valign="top">
@@ -270,8 +268,6 @@
 
 											<!-- lat/lon subsetting -->
 											<div id="latlonSubset" class="absoluteTopLeft borderLightGrey">
-												<!-- input type="radio" name="latlonSubset" value="bb" checked="checked" 
-													/ -->
 												<span class="bold">Bounding Box (decimal degrees):  </span>
 												<div class="top">
 													<span>north</span>
@@ -301,6 +297,10 @@
 													<br />
 													<span>south</span>
 												</div>
+												<div>
+													<input type="checkbox" name="disableLLSubset" id="disableLLSubset" />
+													<span>Disable horizontal subsetting</span>
+												</div>												
 												<span class="blueLink" id="resetLatLonbbox">reset to full extension</span>
 											</div>
 
@@ -337,6 +337,10 @@
 													<br />
 													<span>miny</span>
 												</div>
+												<div>
+													<input type="checkbox" name="disableProjSubset" id="disableProjSubset" />
+													<span>Disable horizontal subsetting</span>
+												</div>												
 												<span class="blueLink" id="resetProjbbox">reset to full extension</span>
 											</div>
 										</div>

@@ -206,7 +206,8 @@ public class Message {
    */
   public boolean containsBufrTable() throws IOException {
     for (Short key : dds.getDataDescriptors()) {
-      if (Descriptor.isBufrTable(key)) return true;
+      if (Descriptor.isBufrTable(key))
+        return true;
     }
     return false;
   }
