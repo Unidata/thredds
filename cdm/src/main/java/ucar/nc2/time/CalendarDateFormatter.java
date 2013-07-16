@@ -290,6 +290,7 @@ public class CalendarDateFormatter {
 
       return dt;
     } catch (Exception e) {
+      e.printStackTrace();
       throw new IllegalArgumentException("Illegal base time specification: '" + dateString+"' "+e.getMessage());
     }
   }

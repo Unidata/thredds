@@ -11,13 +11,13 @@ subprojects {
     mavenCentral()
   }
 
-  /* uploadArchives {
-    repositories {
-      flatDir {
-        dirs 'repos'
-      }
-    }
-  } */
+  ext {
+    jfreechartVersion = "1.0.14"
+    junitVersion = "4.8.2"
+    log4jVersion = "1.2.17"
+    slf4jVersion = "1.7.5"
+    springVersion = "3.2.3.RELEASE"
+  }
 
   // import fatJar
   buildscript {
@@ -35,7 +35,8 @@ subprojects {
       attributes 'Implementation-Version': version,
               'Implementation-Vendor': 'UCAR/Unidata',
               'Implementation-Vendor-Id': 'edu.ucar',
-              'Built-On': new Date()
+              'Built-On': new Date(),
+              'Build-Jdk': System.properties['java.version']
     }
   }
 

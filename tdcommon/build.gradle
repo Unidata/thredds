@@ -1,0 +1,13 @@
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'tdcommon'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+  compile group: 'log4j', name: 'log4j', version:log4jVersion
+  compile (group: 'org.springframework', name: 'spring-core', version: springVersion)  {
+      exclude group: "commons-logging"
+    }
+}

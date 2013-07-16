@@ -208,9 +208,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       if (convention != null) {
         String hasName = convention.getStringValue();
         int version = CF1Convention.getVersion(hasName);
-        if (version > 0) {
+        if (version >= 0) {
           if (version < 7 ) return Calendar.gregorian;
-          if (version >= 7 ) return Calendar.proleptic_gregorian;
+          if (version >= 7 ) return Calendar.proleptic_gregorian; // LOOK is this true?
         }
         if (COARDSConvention.isMine(hasName)) return Calendar.gregorian;
       }

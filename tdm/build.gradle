@@ -1,0 +1,115 @@
+apply plugin: 'shadow'
+//import org.gradle.api.plugins.shadow.transformers.AppendingTransfomer
+
+buildscript {
+    repositories {
+        maven {
+            name 'Gradle Shadow'
+            url 'http://dl.bintray.com/content/johnrengelman/gradle-plugins'
+        }
+    }
+    dependencies {
+        classpath group: 'org.gradle.plugins', name: 'shadow', version: '0.7.4'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+  compile project(':grib')
+  compile project(':tdcommon')
+
+  runtime group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4jVersion
+
+  compile group: 'org.springframework', name: 'spring-context', version: springVersion
+  compile group: 'org.springframework', name: 'spring-beans', version: springVersion
+}
+
+ext {
+  tdmJar = 'tdm-'+version+'.jar'
+}
+
+shadow {
+  exclude 'com/sleepycat/**'
+  exclude 'net/sf/**'
+  exclude 'org/jsoup/**'
+  exclude 'org/quartz/**'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.RSA'
+
+  manifest {
+    attributes 'Implementation-Title': tdmJar,
+     'Implementation-Version': version,
+     'Implementation-Vendor': 'UCAR/Unidata',
+     'Implementation-Vendor-Id': 'edu.ucar',
+     'Built-On': new Date(),
+     'Main-Class': 'thredds.tdm.TdmRunner'
+  }
+
+  /* transformer(AppendingTransfomer) {
+      resource = 'META-INF/spring.handlers'
+   }
+   transformer(AppendingTransfomer) {
+      resource = 'META-INF/spring.schemas'
+   } */
+}
+
+
+/* apply plugin: 'java'
+
+repositories{
+  mavenCentral()
+}
+
+dependencies{
+  compile 'com.google.guava:guava:12.0'
+}
+
+task showMeCache << {
+  configurations.compile.each { println it }
+}  */
+
+/* shadow {
+  exclude 'com/sleepycat/**'
+  exclude 'org/quartz/**'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.RSA'
+
+  manifest {
+    attributes 'Implementation-Title': tdmJar,
+     'Implementation-Version': version,
+     'Implementation-Vendor': 'UCAR/Unidata',
+     'Implementation-Vendor-Id': 'edu.ucar',
+     'Built-On': new Date(),
+     'Main-Class': 'thredds.tdm.TdmRunner'
+  }
+
+  transformer(AppendingTransfomer) {
+     resource = 'META-INF/spring.handlers'
+  }
+   transformer(AppendingTransfomer) {
+      resource = 'META-INF/spring.schemas'
+   }
+}  */
+
+/*
+
+Transformers: ApacheLicenseResourceTransformer, ApacheNoticeResourceTransformer, AppendingTransformer, ComponentsXmlResourceTransformer, DontIncludeResourceTransformer, IncludeResourceTransformer, ManifestResourceTransformer, ServiceFileTransformer, XmlAppendingTransfomer
+
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>thredds.tdm.TdmRunner</mainClass>
+                </transformer>
+ */
+
+/* fatJar {  // does not inherit from parent jar
+  archiveName = tdmJar
+  manifest {
+    attributes 'Implementation-Title': tdmJar,
+     'Implementation-Version': version,
+     'Implementation-Vendor': 'UCAR/Unidata',
+     'Implementation-Vendor-Id': 'edu.ucar',
+     'Built-On': new Date(),
+     'Main-Class': 'thredds.tdm.TdmRunner'
+  }
+  exclude 'com/sleepycat/**'
+  exclude 'org/quartz/**'
+} */
