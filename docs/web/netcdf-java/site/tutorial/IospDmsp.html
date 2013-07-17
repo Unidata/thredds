@@ -1,7 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>IOSP Example - DMSP</title><meta content="Ethan Davis" name="author"></head>
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>IOSP Example - DMSP</title>
+  <link rel="stylesheet" href="../cdm.css" type="text/css" />
+</head>
 <body>
 <h1>Writing an IOSP: Example - DMSP</h1>
+<hr>
 <p>The ucar.nc2.iosp.dmsp.DSMPiosp class provides access to DMSP
 satellite data in the NOAA/NGDC DMSP archive format. Currently only
 data from the OLS instrument is supported, in particular only NOAA/NGDC
@@ -20,10 +26,10 @@ number of binary data records.<br>
 <pre>======<br>HEADER<br>======<br>RECORD 1 : VARIABLE 1, VARIABLE 2, ..., VARIABLE N<br>======<br>RECORD 2 : VARIABLE 1, VARIABLE 2, ..., VARIABLE N<br>======<br>...<br>======<br>RECORD 3 : VARIABLE 1, VARIABLE 2, ..., VARIABLE N<br>======<br></pre>
 <p>The header record contains metadata
 describing the dataset including the size of the records and the number
-of data records (<a href="IospDmsp.sampleHeader.txt">sample header record</a>):<br>
+of data records (<a href="files/IospDmsp.sampleHeader.txt">sample header record</a>):<br>
 </p>
 <pre>    file ID: /dmsp/moby-1-3/subscriptions/IBAMA/1353226646955.tmp<br><strong>(1)</strong> data set ID: DMSP F14 OLS LS &amp; TS<strong><br>    </strong>record bytes: 3040<br>    number of header records: 1<br><strong>(2)</strong> number of records: 692<br>    suborbit history: F14200307192230.OIS (1,691)<br>    ...<br>    % daylight: 0.0<br>    % full moon: 57.8<br>    % terminator evident: 0.0<br>    end header<br></pre>
-<p>The structure of all the NGDC DMSP data types are described in an XDR descriptor file (<a href="IospDmsp.dda.x.txt">dda.x</a>). Here is a summary of the OIS data record description:</p>
+<p>The structure of all the NGDC DMSP data types are described in an XDR descriptor file (<a href="files/IospDmsp.dda.x.txt">dda.x</a>). Here is a summary of the OIS data record description:</p>
 <pre>    short  Year;                             /* 4 digit year                   */<br><strong>(3)</strong> short  DayOfYear;                        /* day of year (January 1 = 1)    */<br>    double SecondsOfDay;                     /* seconds of day [0.0 - 86400.0) */<br><br>    float Latitude;                          /* Geodetic Latitude in degrees   */<br><strong>(4)</strong> float Longitude;                         /* Longitude in degrees (0 - 360) */<br>    float Altitude;                          /* Altitude in kilometers         */<br>    float Heading;                           /* Heading west of north          */<br><br>    ...<br>   &nbsp;<i>solar and lunar conditions</i><br>    <i>calibration<br></i>    ...<br><br>    struct {<br>      u_int QualityFlag;                     /* scan line quality flag */<br><strong>(5)</strong>   opaque Pixels [ 1465 ];                /* scan line pixels       */<br>    } LightVideoData;                        /* pixels = 6 bit visible data */<br>    struct {<br>      u_int QualityFlag;                     /* scan line quality flag */<br><strong>(6)</strong>   opaque Pixels [ 1465 ];                /* scan line pixels       */<br>    } ThermalVideoData;                      /* pixels = 8 bit thermal data */<br></pre>
 <p>So each data record contains the time (3), the satellite location
 (4), a visible scan and quality flag (5), and a thermal/IR scan and
@@ -55,7 +61,7 @@ by making the unlimited dimension represent the number of records.<br>
 <pre> dimensions:<br>   numScans = UNLIMITED;   // (691 currently)<br>   numSamplesPerScan = 1465;<br> variables:<br>   byte visibleImagery(numScans=691, numSamplesPerScan=1465);<br>   byte infraredImagery(numScans=691, numSamplesPerScan=1465);<br></pre>
 <p>The time and satellite ephemeris data:<br>
 </p>
-<pre>   int year(numScans=691);<br>   int dayOfYear(numScans=691);<br>   double secondsOfDay(numScans=691);<br><br>   float satEphemLatitude(numScans=691);<br>   float satEphemLongitude(numScans=691);<br>   float satEphemAltitude(numScans=691);<br>   float satEphemHeading(numScans=691);<br></pre><p>The remaining data from the dataset maps into the netCDF data model easily (<a href="IospDmsp.sample.cdl">resulting CDL</a>).<br>
+<pre>   int year(numScans=691);<br>   int dayOfYear(numScans=691);<br>   double secondsOfDay(numScans=691);<br><br>   float satEphemLatitude(numScans=691);<br>   float satEphemLongitude(numScans=691);<br>   float satEphemAltitude(numScans=691);<br>   float satEphemHeading(numScans=691);<br></pre><p>The remaining data from the dataset maps into the netCDF data model easily (<a href="files/IospDmsp.sample.cdl">resulting CDL</a>).<br>
 </p>
 <h2>Mapping the Data into a netCDF-3 Convention</h2>
 <p>Whether the information is in the data files or in the format
@@ -74,26 +80,15 @@ conventions. So, we will calculate a more standard time coordinate as
 well as latitude and longitude for every pixel in the imagery:<br>
 </p>
 
-<pre>   float time(numScans=691);<br>   float latitude(numScans=691, numSamplesPerScan=1465);<br>   float longitude(numScans=691, numSamplesPerScan=1465);</pre>
-<p>
-</p>
-
-<p>
-</p>
-
+<pre>   float time(numScans=691);<br>   float latitude(numScans=691, numSamplesPerScan=1465);<br>   float longitude(numScans=691, numSamplesPerScan=1465);
+</pre>
 <h2>Sample DMSP OIS Dataset<br>
 </h2>
-
-
-<p>
-</p>
-
-
 <p>Look at structure of the example dataset in ToolsUI:<br>
 </p>
 
 <ul>
-<li>Start ToolsUI (<a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-dev/">webstart</a>)<br>
+<li>Start ToolsUI (<a href="files/IospDmsp.sample.cdl">webstart</a>)<br>
   </li><li>In Viewer, open "/data/nj22/dmsp/F14200307192230.n.OIS"</li><li>Select "infraredImagery" variable, then right-click, then select "Ncdump Data".</li><li>Click on "Image".</li>
 </ul>
 
@@ -154,9 +149,7 @@ ucar.ma2.Array subsetting.</li>
 <ul></ul>
 <p>Reading all the variable data for any size request means that this
 will not scale well for larger datasets. A future implementation may
-move to reading subsets of the data.<br>
-</p>
-<ul></ul>
+move to reading subsets of the data.</p>
 <h2>Data Type</h2>
 <h3>Grid<br>
 </h3>
@@ -169,28 +162,10 @@ move to reading subsets of the data.<br>
 <p>This representation hides the time dependence of the data but allows
 current applications that read grids to understand this dataset.<br>
 </p>
-<h3>Swath</h3>
-<p>We are still trying to understand swath data. However, our current
-thinking is that the time and location dependence of the data we see
-here is a key aspect. This could be represented with the addition of
-"time" to the "_CoordinateAxes" attributes:<br>
-</p>
-<pre>   byte visibleImagery(numScans=691, numSamplesPerScan=1465);<br>     :_CoordinateAxes = "latitude longitude time";<br>  &nbsp;byte infraredImagery(numScans=691, numSamplesPerScan=1465);<br>     :_CoordinateAxes = "latitude longitude time";<br></pre>
-
-<p>For those of us used to thinking in terms of standard netCDF
-coordinate variables, this can seem misleading since the number of
-dimensions is different than the number of coordinate axes. However, if
-we remember that a coordinate system really just means that every data
-point in the Variable has a corresponding coordinate value for each of
-the CoordinateAxis.<br>
-</p>
-<p>The problem with this representation is that we don't know of any
-applications that understand what this means. Besides which, we're not
-sure how an application would take advantage of understanding this
-representation.<br>
-</p>
-<h3>Image</h3>
-<p>Not sure what this data type might mean. Perhaps an edge case of
-grid having something to do with how cell/pixel extent is handled?<br>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" alt="" width="64" height="64"> This document was last updated July 2013
+</address>
+<p><br>
 </p>
 </body></html>

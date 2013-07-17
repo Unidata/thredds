@@ -3,15 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>IOSP Other Classes</title>
-<style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
-code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;}
-</style>
+   <link rel="stylesheet" href="../cdm.css" type="text/css" />
 </head>
 
 <body>
 <h1><img src="../netcdfBig.gif" width="100" height="55" />Writing an IOSP : Other Classes Needed </h1>
+<hr />
 <h2>ucar.unidata.io.RandomAccessFile</h2>
 <p>This class is a cover for <strong>java.io.RandomAccessFile</strong>, which it (usually) uses underneath. We originally did this for performance, so we could add user-settable buffer sizes. We later added ordering so we could handle files that had both big and little endianness, plus some other methods that improved the API. </p>
 <p>There are  subclasses of <em>RandomAccessFile</em> such as <em>HTTPRandomAccessFile</em> and <em>InMemoryRandomAccessFile</em>, which deal with remote HTTP files and memory resident files. Use of these subclasses is transparent to an IOSP. </p>
@@ -91,7 +88,7 @@ or:
 <br />    public static long <strong>unsignedIntToLong</strong>(int);<br />    public static int <strong>unsignedShortToInt</strong>(short);<br />    public static short <strong>unsignedByteToShort</strong>(byte);<br />}</pre>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Feb 2011.
+<img src="../nc.gif" width="64" height="64" /> This document was last updated on July 2013
 </address>
 <p>&nbsp; </p>
 </body>

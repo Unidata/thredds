@@ -4,10 +4,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>Writing a Coordinate Transform implementation</title>
+   <link rel="stylesheet" href="../cdm.css" type="text/css" />
 </head>
 
 <body>
 <h1>Writing a Coordinate Transform: Projections and Vertical Transforms</h1>
+<hr>
 <h2>Overview</h2>
 <p>A <em><strong>Coordinate Transform</strong></em> represents a mathmatical function that transforms a dataset's coordinates to a coordinates in a <em><strong>Reference Coordinate System</strong></em>. Currently the CDM has two kinds of transforms: <strong>Projections</strong> and <strong>Vertical Transforms</strong>. A <em><strong>Projection</strong></em> maps between cartesian x and y coordinates (called <em><strong>GeoX</strong></em> and <em><strong>GeoY</strong></em>) and latitude, longitude coordinates, by implementing the <strong>ucar.unidata.geoloc.Projection</strong> interface. A <em><strong>Vertical Transform</strong></em> takes a <em><strong>GeoZ</strong></em> coordinate and usually other data fields such as surface pressure, and produces a 3D <em><strong>height</strong></em> or <em><strong>pressure</strong></em> vertical coordinate field. </p>
 <p>A <strong>Coordinate System</strong> may have 0 or more <strong>Coordinate Transforms</strong>, each of which is either a <strong>ProjectionCT</strong> containing a <strong>ucar.unidata.geoloc.Projection</strong> or a <strong>VerticalCT</strong> containing a <strong>ucar.unidata.geoloc.vertical.VerticalTransform:</strong></p>
@@ -54,26 +56,29 @@
 </strong></p>
 <h3>Projection Example</h3>
 <p>Following is an example from the  standard implementation classes in <strong>ucar.nc2.dataset.transform</strong>. </p>
-<pre>public class <strong>LambertConformalConic</strong> extends <strong>AbstractCoordTransBuilder</strong> {</pre>
-<pre>  public String <strong>getTransformName</strong>() {
-<strong>1)</strong> return &quot;lambert_conformal_conic&quot;;
-  }</pre>
-<pre> public TransformType <strong>getTransformType</strong>() {
+<pre>public class <strong>LambertConformalConic</strong> extends <strong>AbstractCoordTransBuilder</strong> {
+ public String <strong>getTransformName</strong>() {
+1)  return &quot;lambert_conformal_conic&quot;;
+ }
+   
+ public TransformType <strong>getTransformType</strong>() {
    return TransformType.Projection;
- }</pre>
-<pre> public CoordinateTransform <strong>makeCoordinateTransform</strong>(NetcdfDataset ds, Variable ctv) {
-<strong>2)</strong> double[] pars = <strong>readAttributeDouble2</strong>(ctv.findAttribute( &quot;standard_parallel&quot;));
+ }
+  
+ public CoordinateTransform <strong>makeCoordinateTransform</strong>(NetcdfDataset ds, Variable ctv) {
+2) double[] pars = <strong>readAttributeDouble2</strong>(ctv.findAttribute( &quot;standard_parallel&quot;));
    double lon0 = <strong>readAttributeDouble</strong>( ctv, &quot;longitude_of_central_meridian&quot;);
    double lat0 = <strong>readAttributeDouble</strong>( ctv, &quot;latitude_of_projection_origin&quot;);
    double false_easting = <strong>readAttributeDouble</strong>( ctv, &quot;false_easting&quot;);
    double false_northing = <strong>readAttributeDouble</strong>( ctv, &quot;false_northing&quot;);
    String units = ds.<strong>findAttValueIgnoreCase</strong>( ctv, &quot;units&quot;, null);
    if (units == null)
-     units = <strong>getUnits</strong>( ds);</pre>
-<pre><strong>3)</strong> ucar.unidata.geoloc.projection.LambertConformal lc = 
+     units = <strong>getUnits</strong>( ds);
+     
+3) ucar.unidata.geoloc.projection.LambertConformal lc = 
      new <strong>ucar.unidata.geoloc.projection.LambertConformal</strong>(lat0, lon0, pars[0], pars[1], false_easting, false_northing, units);
 
-<strong>4)</strong> return new ProjectionCT(ctv.getShortName(), &quot;FGDC&quot;, lc);
+4) return new ProjectionCT(ctv.getShortName(), &quot;FGDC&quot;, lc);
  }
 }
 </pre>
@@ -85,18 +90,20 @@
   </li>
 </ol>
 <h3>Vertical Transform  Example</h3>
-<pre>public class <strong>VAtmSigma</strong> extends <strong>AbstractCoordTransBuilder</strong> {<br>  private String sigma, ps, ptop;</pre>
-<pre>  public String <strong>getTransformName</strong>() {
-<strong>1)</strong>  return &quot;atmosphere_sigma_coordinate&quot;;
-  }</pre>
-<pre>  public TransformType <strong>getTransformType</strong>() {
-   return TransformType.Vertical;
-  }</pre>
-<pre> public CoordinateTransform <strong>makeCoordinateTransform</strong>(NetcdfDataset ds, Variable ctv) {
-<strong>2)</strong> String formula_terms = getFormula(ds, ctv);
-   if (null == formula_terms) return null;</pre>
-<pre>   // parse the formula string
-<strong>3)</strong> StringTokenizer stoke = new StringTokenizer(formula_terms);
+<pre>public class <strong>VAtmSigma</strong> extends <strong>AbstractCoordTransBuilder</strong> {
+  private String sigma, ps, ptop;
+    public String <strong>getTransformName</strong>() {
+1)  return &quot;atmosphere_sigma_coordinate&quot;;
+  }
+  public TransformType <strong>getTransformType</strong>() {
+    return TransformType.Vertical;
+  }
+  public CoordinateTransform <strong>makeCoordinateTransform</strong>(NetcdfDataset ds, Variable ctv) {
+2) String formula_terms = getFormula(ds, ctv);
+   if (null == formula_terms) return null;
+  
+   // parse the formula string
+3) StringTokenizer stoke = new StringTokenizer(formula_terms);
    while (stoke.hasMoreTokens()) {
     String toke = stoke.nextToken();
     if (toke.equalsIgnoreCase(&quot;sigma:&quot;))
@@ -107,16 +114,17 @@
       <strong>ptop</strong> = stoke.nextToken();
    }
 
-<strong>4)</strong> CoordinateTransform rs = new VerticalCT(&quot;AtmSigma_Transform_&quot;+ctv.getName(), getTransformName(), VerticalCT.Type.Sigma, this);
-<strong>5)</strong> rs.addParameter(new Parameter(&quot;standard_name&quot;, getTransformName()));<br>   rs.addParameter(new Parameter(&quot;formula_terms&quot;, formula_terms));
-   rs.addParameter(new Parameter(&quot;formula&quot;, &quot;pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)&quot;));</pre>
-<pre><strong>6)</strong> if (!addParameter( rs, AtmosSigma.PS, ds, ps, false)) return null;
+4) CoordinateTransform rs = new VerticalCT(&quot;AtmSigma_Transform_&quot;+ctv.getName(), getTransformName(), VerticalCT.Type.Sigma, this);
+5) rs.addParameter(new Parameter(&quot;standard_name&quot;, getTransformName()));<br>   rs.addParameter(new Parameter(&quot;formula_terms&quot;, formula_terms));
+   rs.addParameter(new Parameter(&quot;formula&quot;, &quot;pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)&quot;));
+6) if (!addParameter( rs, AtmosSigma.PS, ds, ps, false)) return null;
    if (!addParameter( rs, AtmosSigma.SIGMA, ds, sigma, false)) return null;
-   if (!addParameter( rs, AtmosSigma.PTOP, ds, ptop, true)) return null;</pre>
-<pre>   return rs;
- }</pre>
-<pre>  public ucar.unidata.geoloc.vertical.VerticalTransform <strong>makeMathTransform</strong>(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-<strong>7)</strong> return new AtmosSigma(ds, timeDim, vCT);
+   if (!addParameter( rs, AtmosSigma.PTOP, ds, ptop, true)) return null;
+      return rs;
+  }
+ 
+  public ucar.unidata.geoloc.vertical.VerticalTransform <strong>makeMathTransform</strong>(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+7)  return new AtmosSigma(ds, timeDim, vCT);
   }
 }</pre>
 <ol>
@@ -129,30 +137,38 @@
   <li>The creation of the VerticalTransform is deferred until this method is called by the VerticalCT object. </li>
 </ol>
 <p>The corresponding VerticalTransform class looks like: </p>
-<pre>public class <strong>AtmosSigma</strong> extends VerticalTransformImpl {</pre>
-<pre><strong>1)</strong> public static final String <strong>PTOP</strong> = &quot;Pressure at top&quot;;
+<pre>public class <strong>AtmosSigma</strong> extends VerticalTransformImpl {
+1) public static final String <strong>PTOP</strong> = &quot;Pressure at top&quot;;
    public static final String <strong>PS</strong> = &quot;surfacePressure variable name&quot;;
-   public static final String <strong>SIGMA</strong> = &quot;sigma variable name&quot;;</pre>
-<pre>   private Variable <strong>psVar</strong>; // surface pressue
+   public static final String <strong>SIGMA</strong> = &quot;sigma variable name&quot;;
+   private Variable <strong>psVar</strong>; // surface pressue
    private double[] <strong>sigma</strong>; // The sigma array, function of z
-   private double <strong>ptop</strong>;    // Top of the model</pre>
-<pre>   public AtmosSigma(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-<strong>2)</strong>   super(timeDim);
+   private double <strong>ptop</strong>;    // Top of the model
+   
+   public AtmosSigma(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+2)   super(timeDim);
 
      String psName = vCT.findParameterIgnoreCase(PS).getStringValue();
-<strong>3)   this.psVar</strong> = ds.findStandardVariable(psName);
+3)   this.psVar = ds.findStandardVariable(psName);
 
-     String ptopName = vCT.findParameterIgnoreCase(PTOP).getStringValue();<br>     Variable ptopVar = ds.findStandardVariable(ptopName);<br>     try {<br><strong>4)</strong>     this.ptop = ptopVar.readScalarDouble();<br>     } catch (IOException e) {<br>       throw new IllegalArgumentException(&quot;AtmosSigma failed to read &quot; + ptopVar + &quot; err= &quot;+e.getMessage());<br>     }
+     String ptopName = vCT.findParameterIgnoreCase(PTOP).getStringValue();
+     Variable ptopVar = ds.findStandardVariable(ptopName);
+     try {
+4)     this.ptop = ptopVar.readScalarDouble();
+     } catch (IOException e) {
+       throw new IllegalArgumentException(&quot;AtmosSigma failed to read &quot; + ptopVar + &quot; err= &quot;+e.getMessage());
+     }
 
      String sigmaName = vCT.findParameterIgnoreCase(SIGMA).getStringValue();
      Variable sigmaVar = ds.findStandardVariable(sigmaName) {
      try {
        Array data = sigmaVar.read();
-<strong>5)</strong>     <strong>this.sigma</strong> = (double[]) data.get1DJavaArray(double.class);
+5)     <strong>this.sigma</strong> = (double[]) data.get1DJavaArray(double.class);
      } catch (IOException e) {
        throw new IllegalArgumentException(&quot;AtmosSigma failed to read &quot;+ sigmaName);
-     }</pre>
-<pre><strong>6)</strong>   <strong>units</strong> = ds.findAttValueIgnoreCase(psVar, &quot;units&quot;, &quot;none&quot;);
+     }
+     
+6)   <strong>units</strong> = ds.findAttValueIgnoreCase(psVar, &quot;units&quot;, &quot;none&quot;);
    }
 </pre>
 <p>The <strong>AtmosSigma</strong> class constructor:</p>
@@ -172,15 +188,21 @@
    * @throws IOException problem reading data
    */
  public ArrayDouble.D3 <strong>getCoordinateArray</strong>(int timeIndex) throws IOException, InvalidRangeException {
-<strong>1)</strong> Array ps = <strong>readArray</strong>(psVar, timeIndex);
-   Index psIndex = ps.getIndex();</pre>
-<pre>   int nz = sigma.length;
+1) Array ps = <strong>readArray</strong>(psVar, timeIndex);
+   Index psIndex = ps.getIndex();
+   int nz = sigma.length;
    int[] shape2D = ps.getShape();
    int ny = shape2D[0];
-   int nx = shape2D[1];</pre>
-<pre><strong>2)</strong> ArrayDouble.D3 result = new ArrayDouble.D3(nz, ny, nx);
-</pre>
-<pre>   for (int y = 0; y &lt; ny; y++) {<br>    for (int x = 0; x &lt; nx; x++) {<br><strong>3)</strong>    double psVal = ps.getDouble(psIndex.set(y, x));<br>      for (int z = 0; z &lt; nz; z++)<br><strong>4)</strong>      result.set(z,y,x, <strong>ptop + sigma[z] * (psVal - ptop)</strong>);<br>      }<br>    }
+   int nx = shape2D[1];
+2) ArrayDouble.D3 result = new ArrayDouble.D3(nz, ny, nx);
+
+   for (int y = 0; y &lt; ny; y++) {
+     for (int x = 0; x &lt; nx; x++) {
+3)    double psVal = ps.getDouble(psIndex.set(y, x));
+      for (int z = 0; z &lt; nz; z++) {
+4)      result.set(z,y,x, <strong>ptop + sigma[z] * (psVal - ptop)</strong>);
+      }
+    }
    }
    return result;
  }</pre>
@@ -192,7 +214,7 @@
 </ol>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 23, 2006
+<img src="../nc.gif" width="64" height="64"> This document was last updated July 2013
 </address>
 <p>&nbsp;</p>
 </body>

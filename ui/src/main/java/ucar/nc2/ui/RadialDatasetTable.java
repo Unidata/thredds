@@ -48,6 +48,7 @@ import ucar.ma2.DataType;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -95,6 +96,17 @@ public class RadialDatasetTable extends JPanel {
          infoWindow.show();
        }
      });
+    csPopup.addAction("Show Info", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          VariableBean vb = (VariableBean) varTable.getSelectedBean();
+          Formatter f = new Formatter();
+          showInfo(radialDataset, vb.getName(), f);
+          infoTA.clear();
+          infoTA.appendLine(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      });
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -161,6 +173,43 @@ public class RadialDatasetTable extends JPanel {
     sweepTable.setBeans( sweeps);
   }
 
+  private void showInfo(RadialDatasetSweep rds, String varName, Formatter f) {
+    f.format("Radial Dataset %s%n", rds.getLocation());
+
+      /* radar information */
+    String stationID = rds.getRadarID();
+    String stationName = rds.getRadarName();
+    boolean isVolume = rds.isVolume();
+    f.format("  stationName = %s%n", stationName);
+    f.format("  isVolume = %s%n", isVolume);
+
+      /* radial variable */
+    RadialDatasetSweep.RadialVariable v = (RadialDatasetSweep.RadialVariable) rds.getDataVariable(varName);
+    f.format("  info for variable = %s%n", varName);
+    f.format("  number of sweeps = %d%n", v.getNumSweeps());
+
+    // loop over sweeps
+    for (int sweep = 0; sweep < v.getNumSweeps(); sweep++) {
+      RadialDatasetSweep.Sweep sw = v.getSweep(sweep);
+      float me = sw.getMeanElevation();
+      int nrays = sw.getRadialNumber();
+      int ngates = sw.getGateNumber();
+      f.format("    %d : elev=%f nrays=%d ngates=%d%n", sweep, me, nrays, ngates);
+
+      try {
+        for (int j = 0; j < nrays; j++) {
+          float azi = sw.getAzimuth(j);
+          float ele = sw.getElevation(j);
+          float[] data = sw.readData(j);
+          f.format("      %d : azimuth=%f elev=%f data len=%d%n", j, azi, ele, data.length);
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+
   public class VariableBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
@@ -203,6 +252,7 @@ public class RadialDatasetTable extends JPanel {
 
     public String getDataType() { return dataType; }
     public String getDims() { return dims; }
+
   }
 
   public class SweepBean {

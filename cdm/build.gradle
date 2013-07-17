@@ -17,7 +17,9 @@ sourceSets {
 
 dependencies {
   compile project(':udunits')
-  compile ('commons-httpclient:commons-httpclient:3.1') { transitive = false } // commons-logging
+  compile ('commons-httpclient:commons-httpclient:3.1') {
+    transitive = false  // commons-logging
+  }
   compile 'com.google.protobuf:protobuf-java:2.5.0'
   compile 'com.sleepycat:je:4.0.92'
   compile 'joda-time:joda-time:2.2'

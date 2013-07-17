@@ -13,8 +13,8 @@ dl {margin: 10px 5px 5px 15px;)
 </head>
 
 <body>
-<h1>Point Feature Types</h1>
-<p>Point Feature Datasets contain one or more FeatureCollections:</p>
+<h1>Point Feature Datasets</h1>
+<p>Point Feature Datasets (also known as Discrete Sampling Geometry (DSG) datasets) are collections of Point Features. Point Feature Datasets contain one or more FeatureCollections:</p>
 <pre>  public interface <strong>ucar.nc2.ft.PointFeatureDataset</strong> extends ucar.nc2.ft.<strong>FeatureDataset </strong>{<br />    List&lt;<strong>FeatureCollection</strong>&gt; <strong>getPointFeatureCollectionList</strong>();<br />  }</pre>
 <p>Point Feature Datasets will contain <strong>PointFeatureCollections</strong> or <strong>NestedPointFeatureCollections</strong>, described below. We take the approach that all point feature types are arrangements of collections of <em>PointFeatures</em> (a set of measurements at the same point in space and time), distinguished by the geometry and topology of the collections. The <strong><em>Point Feature Types</em></strong> that we implement are: </p>
 <ol>
