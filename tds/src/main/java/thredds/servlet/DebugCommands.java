@@ -55,11 +55,20 @@ import ucar.unidata.io.RandomAccessFile;
  * @since Jan 15, 2009
  */
 public class DebugCommands {
+  private String version, builddate;
 
   public DebugCommands() {
     makeGeneralActions();
     makeDebugActions();
     makeCacheActions();
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  public void setBuilddate(String builddate) {
+    this.builddate = builddate;
   }
 
   protected void makeCacheActions() {
@@ -232,7 +241,8 @@ public class DebugCommands {
     act = new DebugHandler.Action("showVersion", "Show Build Version") {
       public void doAction(DebugHandler.Event e) {
         try {
-          IO.copyFile(ServletUtil.getRootPath() + "/docs/README.txt", e.pw);
+          e.pw.println("version= "+version);
+          e.pw.println("build date= "+builddate);
         } catch (Exception ioe) {
           e.pw.println(ioe.getMessage());
         }

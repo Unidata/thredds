@@ -60,7 +60,20 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
+  <!-- tell spring that tds.properties gets read in first and overrides anything else -->
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    <property name="locations">
+      <list>
+        <value>classpath:thredds/server/tds.properties</value>
+      </list>
+    </property>
+  </bean>
+
   <!-- A Singleton class to populate the Debug methods in DebugHandler -->
-  <bean class="thredds.servlet.DebugCommands"/>
+  <bean class="thredds.servlet.DebugCommands">
+    <property name="version" value="${tds.version}" />
+    <property name="builddate" value="${tds.version.builddate}" />
+  </bean>
 
 </beans>

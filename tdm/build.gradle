@@ -50,7 +50,12 @@ shadow {
    }
    transformer(AppendingTransfomer) {
       resource = 'META-INF/spring.schemas'
-   } */
+   }
+
+   // Added the provided dependency to compile classpath
+   sourceSets.main.compileClasspath += configurations.provided
+
+   */
 }
 
 
