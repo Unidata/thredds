@@ -32,10 +32,8 @@
 
 package ucar.nc2.ft;
 
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
+
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -45,10 +43,8 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
-import ucar.nc2.util.IO;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
