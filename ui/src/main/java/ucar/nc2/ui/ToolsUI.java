@@ -5938,7 +5938,13 @@ public class ToolsUI extends JPanel {
     DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
     //cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
     //DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
-    thredds.inventory.CollectionManagerAbstract.enableMetadataManager();    // bdb for metadata
+
+    try {
+      //thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
+      thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
+    } catch (Exception e) {
+      log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
+    }
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));

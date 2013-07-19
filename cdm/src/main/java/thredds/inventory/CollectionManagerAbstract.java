@@ -33,7 +33,7 @@
 package thredds.inventory;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.bdb.MetadataManager;
+// import thredds.inventory.bdb.MetadataManager;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.ListenerManager;
 import ucar.unidata.util.StringUtil2;
@@ -97,7 +97,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
 
   @Override
   public void close() {
-    if (mm != null) mm.close();
+    if (store != null) store.close();
   }
 
   public List<String> getFilenames() {
@@ -168,38 +168,37 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   // experimental
   // use bdb to manage metadata associated with the collection. currently, only DatasetInv.xml files
 
-  // explicit enabling - allows deleteOld to work first time
-  static private boolean enableMetadataManager = false;
-  static public void enableMetadataManager() {
-    enableMetadataManager = true;
+  private static StoreKeyValue.Factory storeFactory;
+  static public void setMetadataStore(StoreKeyValue.Factory _storeFactory) {
+    storeFactory = _storeFactory;
   }
 
-  private MetadataManager mm;
+  private StoreKeyValue store;
 
   private void initMM() {
     if (getCollectionName() == null) return; // eg no scan in ncml
     try {
-      mm = new MetadataManager(getCollectionName());
-    } catch (IOException e) {
+      store = storeFactory.open(getCollectionName());
+    } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException(e.getMessage());
     }
   }
 
-  // clean up deleted files in metadata manager
+  /* clean up deleted files in metadata manager
   protected void deleteOld(Map<String, MFile> newMap) {
-    if (mm == null && enableMetadataManager) initMM();
-    if (mm != null) mm.delete(newMap);
-  }
+    if (store == null && enableMetadataManager) initMM();
+    if (store != null) store.delete(newMap);
+  } */
 
   public void putMetadata(MFile file, String key, byte[] value) {
-    if (mm == null) initMM();
-    if (mm != null) mm.put(file.getPath()+"#"+key, value);
+    if (store == null) initMM();
+    if (store != null) store.put(file.getPath()+"#"+key, value);
   }
 
   public byte[] getMetadata(MFile file, String key) {
-    if (mm == null) initMM();
-    return (mm == null) ? null : mm.getBytes(file.getPath()+"#"+key);
+    if (store == null) initMM();
+    return (store == null) ? null : store.getBytes(file.getPath()+"#"+key);
   }
 
 

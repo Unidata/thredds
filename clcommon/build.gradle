@@ -6,4 +6,5 @@ jar {
 
 dependencies {
   compile project(':cdm')
+  compile 'com.sleepycat:je:4.0.92'
 }

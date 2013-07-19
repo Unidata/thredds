@@ -50,6 +50,7 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.inventory.CollectionManagerAbstract;
 import thredds.inventory.CollectionUpdater;
+import thredds.inventory.StoreKeyValue;
 import thredds.server.cdmremote.CdmrFeatureController;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.servlet.ServletUtil;
@@ -148,10 +149,10 @@ public class CdmInit implements InitializingBean,  DisposableBean{
 
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
-      thredds.inventory.CollectionManagerAbstract.enableMetadataManager();
-      startupLog.info("CdmInit: FeatureCollection.cacheDirectory= "+fcCache);
+      thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
+      startupLog.info("CdmInit: CollectionManagerAbstract.setMetadataStore= "+fcCache);
     } catch (Exception e) {
-      startupLog.error("CdmInit: Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);
+      startupLog.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore= "+fcCache, e);
     }
 
     /*
