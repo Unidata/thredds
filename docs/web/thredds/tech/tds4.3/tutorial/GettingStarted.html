@@ -25,7 +25,7 @@
      <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <i>Sun Java</i> and the <i>Apache Tomcat</i> servlet container.</p>
 
 
-     <h3>Installing Java</h3>
+     <h3>Installing Java<a name="installJava"></a></h3>
      <ol>
       <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun. Use the latest 1.7 version of the JDK.</li>
        <p>At the time of this workshop, that is version <i>Java SE 7u25</i>.  We will be using the Linux x64-bit tar.gz file:</p>
@@ -66,7 +66,7 @@
 
 
 
-      <h3>Installing Tomcat</h3>
+      <h3>Installing Tomcat<a name="installTomcat"></a></h3>
     <div id="note" class="info">
      <h4>Tomcat on Windows</h4>
      <p>For more information about installing Tomcat on Windows OS, see the <a href="http://tomcat.apache.org/tomcat-7.0-doc/setup.html#Windows">Tomcat setup guide</a> for installation on different platforms.</p>
@@ -277,7 +277,7 @@ export CATALINA_BASE
      <ul>
       <li><code>-Xms</code> is the initial allocated memory of the JVM (for performance).</li>
       <li><code>-Xmx</code> the maximum allocated memory of the JVM (for performance).</li>
-      <li><code>-server</code> tells the Hostspot compiler to run the JVM in "server" mode.</li>
+      <li><code>-server</code> tells the Hotspot compiler to run the JVM in "server" mode.</li>
       <li><code>-Djava.awt.headless=true</code> is needed to prevent graphics rendering code from assuming a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
       <li><code style="white-space: nowrap;">-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</code> allows the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS to write system preferences to a location that is writable by the Tomcat user.</li>
      </ul>

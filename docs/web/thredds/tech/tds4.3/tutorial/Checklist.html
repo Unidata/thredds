@@ -4,7 +4,7 @@
    <title>TDS Installation Checklist for Production</title>
    <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
    <script type="text/javascript" src="workshopNav.js"></script>
-  </head>
+ </head>
   <body>
    <h1>TDS Installation Checklist for Production Security</h1>
 
@@ -13,46 +13,46 @@
 
     <h3>Install Java</h3>
     <ol>
-     <li><a href="GettingStarted.html#install">Download and install</a> the latest version of JDK 1.7</li>
+     <li><a href="GettingStarted.html#installJava">Download and install</a> the latest version of JDK 1.7</li>
     </ol>
 
     <h3>Tomcat Install</h3>
     <ol>
-     <li>Create a <a href="Security.html#install">dedicated user and group for running Tomcat</a> who does not have root privileges. <a href="Security.html#install">Modify the permissions</a> in <code>${tomcat_home}</code> to allow this user access to only the necessary parts of the Tomcat installation.</li>
+     <li>Create a <a href="Security.html#install">dedicated user and group for running Tomcat</a> who does not have root privileges. <a href="Security.html#install">Modify the permissions</a> in <strong>${tomcat_home}</strong> to allow this user access to only the necessary parts of the Tomcat installation.</li>
      <li><a href="GettingStarted.html#installTomcat">Download and install</a> the latest version of Tomcat 7.</li>
-     <li>In <code>${tomcat_home}/bin</code> <a href="GettingStarted.html#makeSetenv">create a <code>setenv.sh</code></a> shell script, and set the values of <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_BASE</code>.</li>
+     <li>In <strong>${tomcat_home}/bin</strong> <a href="GettingStarted.html#makeSetenv">create a setenv.sh</a> shell script, and set the values of <strong>$JAVA_HOME, $JAVA_OPTS </strong>and<strong> $CATALINA_BASE</strong>.</li>
      <li>Purchase a real certificate from a <a href="http://en.wikipedia.org/wiki/Certificate_authority">certificate authority</a>, so users are not confused and question the legitimacy of your web site.  <!-- (Otherwise, <a href="BasicTomcatAndTDSSecurity.html#createCert">create a self-signed certificate</a>).--> </li>
-     <li>Make the following modifications to <code>${tomcat_home}/conf/server.xml</code>:</li>
+     <li>Make the following modifications to <strong>${tomcat_home}/conf/server.xml</strong>:</li>
       <ul>
-       <li><a href="Security.html#useDigest">Enable digest passwords</a> by commenting out the <code>UserDatabaseRealm</code> and enabling the <code>MemoryRealm</code>.</li>
-       <li><a href="Security.html#enableSSL">Enable SSL</a> by uncommenting the <code>SSL Connector</code> listening on port 8443, and add the required <code>keystoreFile</code> and <code>keystorePass</code> attributes.</li>
-       <li><a href="../reference/Performance.html#enableCompression">Enable compression</a> by adding <code>compression</code> and <code>compressableMimeType</code> attributes to 8080 Connector.</li>
-       <li><a href="TDSMonitoringAndDebugging.html#access">Enable access logging</a> by uncommenting the <code>AccessLogValve</code> and change the <code>prefix</code> and <code>suffix</code> and <code>pattern</code> attributes.</li>
+       <li><a href="Security.html#useDigest">Enable digest passwords</a> by commenting out the <strong>UserDatabaseRealm</strong> and enabling the <strong>MemoryRealm</strong>.</li>
+       <li><a href="Security.html#enableSSL">Enable SSL</a> by uncommenting the SSL Connector listening on port 8443, and add the required <strong>keystoreFile</strong> and <strong>keystorePass</strong> attributes.</li>
+       <li><a href="../reference/Performance.html#enableCompression">Enable compression</a> by adding <strong>compression</strong> and <strong>compressableMimeType</strong> attributes to 8080 Connector.</li>
+       <li><a href="TDSMonitoringAndDebugging.html#access">Enable access logging</a> by uncommenting the <strong>AccessLogValve</strong> and change the <strong>prefix</strong> and <strong>suffix</strong> and <strong>pattern</strong> attributes.</li>
       </ul>
-     <li><a href="Security.html#makeDigest">Create a password digest</a> using the <code>${tomcat_home}/bin/digest.sh</code> script.</li>
-     <li>Make the following modifications to  <code>${tomcat_home}/conf/tomcat-users.xml</code>:</li>
+     <li><a href="Security.html#makeDigest">Create a password digest</a> using the <strong>${tomcat_home}/bin/digest.sh</strong> script.</li>
+     <li>Make the following modifications to  <strong>${tomcat_home}/conf/tomcat-users.xml</strong>:</li>
       <ul>
-       <li>Define the roles <code><a href="GettingStarted.html#grantingAccess">manager-gui</a></code> and <code><a href="Security.html#grantingAccess">tdsConfig</a></code>.</li>
-       <li><a href="Security.html#grantAccess">Add yourself as a user</a> with the roles <code>manager-gui</code> and <code>tdsConfig</code> using your digest password your created in step #6 above.</li>
+       <li>Define the roles <a href="GettingStarted.html#grantingAccess">manager-gui</a> and <a href="Security.html#grantingAccess">tdsConfig</a>.</li>
+       <li><a href="Security.html#grantingAccess">Add yourself as a user</a> with the roles manager-gui and tdsConfig using your digest password your created in step #6 above.</li>
       </ul>
-     <li>Make the following modifications to <code>${tomcat_home}/webapps/manager/WEB-INF/web.xml</code>:</li>
+     <li>Make the following modifications to <strong>${tomcat_home}/webapps/manager/WEB-INF/web.xml</strong>:</li>
      <ol>
-      <li>Make sure the manager is only <a href="Security.html#managerSSL">available via SSL</a> by adding a <code>user-data-constraint</code> with a <code>transport-guarantee</code> of <code>CONFIDENTIAL</code> inside the <code>security-constraint</code> element.</li>
+      <li>Make sure the manager is only <a href="Security.html#managerSSL">available via SSL</a> by adding a user-data-constraint with a transport-guarantee of CONFIDENTIAL inside the security-constraint element.</li>
      </ol>
-     <li><a href="Security.html#unused">Remove any unused applications</a> from <code>${tomcat_home}/webapps</code>.</li>
+     <li><a href="Security.html#unused">Remove any unused applications</a> from ${tomcat_home}/webapps.</li>
     </ol>
 
     <h3>TDS Install</h3>
     <ol>
-     <li><a href="GettingStarted.html#deploying">Download</a> the latest <code>thredds.war</code> file, and put it into <code>${tomcat_home}/webapps</code>.</li>
-     <li>Start/restart Tomcat so that it has a chance to create initial files in <code>${tomcat_home}/content/thredds</code>.</li>
-     <li>Modify <code>${tomcat_home}/content/thredds/catalog.xml</code> for your site, as in this <a href="BasicConfigCatalogs.html#exampleCatalog">example</a>.</li>
-     <li>Modify <code> ${tomcat_home}/content/thredds/threddsConfig.xml</code> for your site in the following manner:</li>
+     <li><a href="GettingStarted.html#deploying">Download</a> the latest thredds.war file, and put it into <strong>${tomcat_home}/webapps</strong>.</li>
+     <li>Start/restart Tomcat so that it has a chance to create initial files in <strong>${tomcat_home}/content/thredds</strong>.</li>
+     <li>Modify <strong>${tomcat_home}/content/thredds/catalog.xml</strong> for your site, as in this <a href="BasicConfigCatalogs.html#exampleCatalog">example</a>.</li>
+     <li>Modify  <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> for your site in the following manner:</li>
      <ul>
-      <li><a href="BasicThreddsConfig_xml.html#serverInfo">Add the needed information to the <code>serverInformation</code></a></li>
+      <li><a href="BasicThreddsConfig_xml.html#serverInfo">Add the needed information to the serverInformation</a></li>
       <li><a href="AddingServices.html">Enable any other optional services</a> like WMS or WCS.</li>
      </ul>
-     <li>If needed, <a href="Security.html#access">limit access to the TDS</a> and create a <code>robots.txt</code> file in <code>${tomcat_home}/webapps/ROOT/</code> to restrict crawler activity.</li>
+     <li>If needed, <a href="Security.html#access">limit access to the TDS</a> and create a robots.txt file in <strong>${tomcat_home}/webapps/ROOT/</strong> to restrict crawler activity.</li>
     </ol>
    </div>  <!-- end section -->
 
@@ -64,16 +64,16 @@
     <h3>Maintenance</h3>
     <p><b>Be sure to periodically check to make sure you are running the <a href="Security.html#versions">latest versions</a> of Java, Tomcat and the TDS.</b></p>
     <ul>
-     <li>If you have enabled <a href="TDSMonitoringAndDebugging.html">access logging</a> (and you should), zip up the unused access logs in <code>${tomcat_home}/logs/</code> and archive them off to another directory.</li>
-     <li>Likewise, zip up the unused TDS servlet logs in <code>${tomcat_home}/content/thredds/logs</code> and archive them as well.</li>
+     <li>If you have enabled <a href="TDSMonitoringAndDebugging.html">access logging</a> (and you should), zip up the unused access logs in <strong>${tomcat_home}/logs/</strong> and archive them off to another directory.</li>
+     <li>Likewise, zip up the unused TDS servlet logs in <strong>${tomcat_home}/content/thredds/logs</strong> and archive them as well.</li>
     </ul>
 
     <h3>Upgrading the TDS</h3>
 
-    <p>When installing a new <code>thredds.war</code>, everything in <code>${tomcat_home}/webapps/</code> is overwritten. However, nothing  in <code>${tomcat_home}/content/</code> is overwritten.</p>
+    <p>When installing a new thredds.war, everything in <strong>${tomcat_home}/webapps/</strong> is overwritten. However, nothing  in <strong>${tomcat_home}/content/</strong> is overwritten.</p>
     <p>Use one of the following methods to deploying a new version of the TDS</p>
     <ul>
-     <li><a href="GettingStarted.html#deployViaManager">Tomcat <code>manager</code> application</a></li>    
+     <li><a href="GettingStarted.html#deployViaManager">Tomcat manager application</a></li>    
      <li><a href="GettingStarted.html#deploying">manual installation</a></li>  
     </ul>
    </div> <!-- end section -->
