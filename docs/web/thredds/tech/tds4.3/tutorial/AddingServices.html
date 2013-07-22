@@ -24,7 +24,7 @@
     <p>Additional WCS configuration options can be set in the <code>threddsConfig.xml</code> file, more details are available in the
       <a href="../reference/ThreddsConfigXMLFile.html#WCS">WCS section</a> of the <code>threddsConfig.xml</code> file documentation. </p>
 
-    <h4>WMS Configuration</h4>
+    <h4 id="wms_configuration">WMS Configuration</h4>
 
     <p>To enable the <a href="../reference/WMS.html">WMS service</a> for locally served datasets, you will need the following in your <code>threddsConfig.xml</code> file:</p>
 <pre>
@@ -154,7 +154,7 @@
    </div> <!-- end section -->
 
    <div id="section">
-     <h2><a name="wmsConfig">More WMS Configuration</a></h2>
+     <h2 id="detailed_wms_configuration"><a name="wmsConfig">More WMS Configuration</a></h2>
      <p>Besides the basic WMS configuration available in the <code>threddsConfig.xml</code>
        file, there are additional configuration settings in the
        <code>wmsConfig.xml</code> file. These settings can be applied globally, by
@@ -205,11 +205,21 @@
    </div> <!-- end section -->
 
    <div id="section">
-     <h2><a name="wmsConfig">Vector Styles</a></h2>
-     <p>The WMS tries to identify vector components that it can combine and display as a single vector layer.
-       It looks for CF <code>standard_name</code> attributes with values of the form "eastward_*" and "northward_*"
-       and combines those that match into a vector layer.
-     </p>
+     <h2 id="styling_extensions"><a name="wmsConfig">Styling capabilities</a></h2>
+     <p>ncWMS provides several styling and displaying capabilities that are also available in TDS:</p>
+     <ul>
+     	<li>
+     		<p>The WMS tries to identify vector components that it can combine and display as a single vector layer.
+       		It looks for CF <code>standard_name</code> attributes with values of the form "eastward_*" and "northward_*"
+       		and combines those that match into a vector layer.</p>
+     	</li>
+     	<li>
+     		<p>ncWMS provides several vector styles: barb, stumpvec, trivec, linevec, fancyvec.</p>
+     	</li>
+     	<li>
+     		<p>Some styling properties can be specified through the <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/WmsExtensions" target="_blank">non-standard optional parameters</a> supported by ncWMS</p>
+     	</li>
+     </ul>
    </div>
 
      <div id="section">
