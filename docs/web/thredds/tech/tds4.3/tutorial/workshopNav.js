@@ -4,9 +4,9 @@
    
    function setWorkshopNav() {
       var pageTitle = $("title").html();
-      if (pageTitle != '2012 TDS Training Workshop Schedule') {
-         var workshopNav = '<ul id="workshopNav">' + 
-                        '<li><a href="/projects/THREDDS/tech/tutorial/workshop2012.html">TDS Workshop Home</a></li>' +
+      if (pageTitle != '2013 TDS Training Workshop Schedule') {
+         var workshopNav = '<ul id="breadcrumbs"">' + 
+                        '<li><a href="/projects/THREDDS/tech/tutorial/workshop2013.html">2013 TDS Workshop Home</a></li>' +
                         '<li>' + pageTitle + '</li>' +
                         '</ul>';
 
