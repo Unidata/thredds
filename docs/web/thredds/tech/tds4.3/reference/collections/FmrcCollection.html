@@ -90,6 +90,33 @@
   </li>
   <li><strong>fmrcInventory</strong> and <strong>addTimeCoverage</strong> elements are no longer needed</li>
 </ol>
+<p><strong>Old way:</strong></p>
+<pre>&lt;datasetFmrc name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
+  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+
+ 1) &lt;<strong>variable</strong> name=&quot;mixed_layer_depth&quot;&gt;
+     &lt;attribute name=&quot;long_name&quot; value=&quot;mixed_layer_depth @ surface&quot;/&gt;
+     &lt;attribute name=&quot;units&quot; value=&quot;m&quot;/&gt;
+    &lt;/variable&gt;
+
+   &lt;aggregation dimName=&quot;runtime&quot; type=&quot;forecastModelRunSingleCollection&quot; timeUnitsChange=&quot;true&quot; recheckEvery=&quot;10 min&quot;&gt;
+ 
+ 2)  &lt;<strong>variable</strong> name=&quot;time&quot;&gt;
+      &lt;attribute name=&quot;units&quot; value=&quot;hours since &quot;/&gt;
+     &lt;/variable&gt;
+   
+ 3)  &lt;<strong>scanFmrc</strong> location=&quot;c:/rps/cf/rtofs&quot; regExp=&quot;.*ofs_atl.*\.grib2$&quot; 
+       runDateMatcher=&quot;#ofs.#yyyyMMdd&quot; forecastOffsetMatcher=&quot;HHH#.grb.grib2#&quot; subdirs=&quot;true&quot;
+       olderThan=&quot;10 min&quot;/&gt; 
+   &lt;/aggregation&gt;
+  &lt;/netcdf&gt;
+ &lt;/datasetFmrc&gt;</pre>
+<p>where:</p>
+<ol>
+  <li>on the outside of the aggregation, attributes are being added/modified for the existing variable &quot;mixed_layer_depth&quot; <em>in the resulting FMRC dataset</em>.</li>
+  <li>on the inside of the aggregation, an attribute is being added/modified for the existing variable &quot;time&quot;<em> for each dataset in the collection</em>. Typically you need to do this in order to make the component files into a gridded dataset.</li>
+  <li>the collection is defined by a <em>scanFmrc</em> element, creating a <em>forecastModelRunSingleCollection</em> with one forecast time per file</li>
+</ol>
 <p>New way:</p>
 <pre>   &lt;<strong>featureCollection</strong> name=&quot;NCEP-GFS-CONUS_80km&quot; <strong>featureType=&quot;FMRC&quot;</strong> harvest=&quot;true&quot; path=&quot;fmrc/NCEP/GFS/CONUS_80km&quot;&gt;
      &lt;metadata inherited=&quot;true&quot;&gt;

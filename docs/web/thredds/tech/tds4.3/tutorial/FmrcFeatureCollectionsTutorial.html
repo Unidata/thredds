@@ -75,8 +75,7 @@
     <pre>&lt;collection spec=&quot;/tds2012data/fmrc/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;</pre>
     <p>extracts the run date by applying the template <code>yyyyMMdd</code> to the portion of the filename after &quot;<code>ocean_fc_</code>&quot;. </p>
     <p>If the information is in a directory name, then you can use the dateFormatMark field on the collection element. In our example, an example dataset paths looks like:<strong> /tds2012data/fmrc/bom/20090330/ocean_fc_20090330_048_eta.nc</strong>. 
-      If we wanted to extract the run time from the directory (pretending we couldn't do that from the filename), this is how we would do that: </p>
-    <p>
+      If we wanted to extract the run time from the directory (pretending we couldn't do that from the filename), this is how we would do that:    </p>
     <pre>&lt;collection spec=&quot;/tds2012data/fmrc/bom/**/ocean_fc_.*\.nc$&quot; dateFormatMark=&quot;#<strong>fmrc/bom/#yyyMMdd</strong>&quot; /&gt;</pre>
     </p>
     Note that we 1) remove the date extractor  from the collection specification string, and 2) add a <strong>dateFormatMark</strong> attribute. In this case, the <em>'#' </em>characters delineate a <strong>substring match</strong> on the entire pathname (so there had better only be one place where the string &quot;<strong>frmc/bom/</strong>&quot; appears). <em>Immediately</em> following the match comes the date extractor string. See <a href="../reference/collections/FeatureCollections.html#dateExtractor">here</a> for more details.
@@ -120,16 +119,14 @@
   &lt;/catalog&gt;
 </pre>
 
-     <div id="expanded" class="troubleshooting">
-      <h4>Notes:</h4>
-      <ol>
+     <h4>Notes:</h4>
+     <ol>
        <li><code>recheckAfter</code>: When a request comes in, if the collection hasn't been checked for 15 minutes,check to see if it has changed. The request will wait until the rescan is finished and a new collection is built (if needed). This minimizes unneeded processing for lightly used collections.</li>
        <li><code>olderThan</code>: Only files that haven't changed for 5 minutes will be included. This excludes files  that are in the middle of being written.</li>
        <li><code>update</code>: The collection will be updated upon TDS startup, and periodically using the cron expression &quot;<code>0 5 3 * * ? *</code>&quot;, meaning every day at 3:05 am local time. This updating is done in the background, as opposed to when a request for it comes in.</li>
        <li><code>protoDataset</code>: The prototypical dataset is chosen to be the &quot;next-to-latest&quot;. The prototypical dataset is changed every day at 3:02 am local time.</li>
        <li><code>fmrcConfig</code>: The kinds of datasets that are created are listed explicitly. You can see how this corresponds directly to the HTML dataset page above. Remove the ones that you don't want to make available. Default is &quot;<code>TwoD Best Files Runs</code>&quot;</li>
-      </ol>
-     </div>
+     </ol>
      <p>The <strong>recheckAfter</strong> attribute and the <strong>update</strong> element are really alternate ways to specify rescanning strategies. Use the <strong>update</strong> element on large collections when you want to ensure quick response. Use the <strong>recheckAfter</strong></code> on lightly used collections in order to minimize server load. <em>Don't use both of them on the same dataset on a real production server.</em></p>
      <p>More details are in the <a href="../reference/collections/FeatureCollections.html">reference doc</a>.</p>
    </div>
