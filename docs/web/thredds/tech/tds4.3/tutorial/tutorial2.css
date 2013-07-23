@@ -6,6 +6,8 @@ h3 {padding: 0px 0px 0px 0px; margin: 20px 0px; font-size: 14pt !important; colo
 h4 {border: none !important;}
 pre {white-space: pre-wrap; position: relative; font-family: "Lucida Console", "Courier New", monospace; margin: 0px 0px 20px 0px; padding: 5px 10px 5px 10px; background: #FAF8F0; border: 1px solid #BEBAB0; font-size: 9pt;}
 .notice {margin-top: -40px; font-size: 10pt}
+
+
 /* breadcrumbs */
 
 ul#breadcrumbs {list-style: none; font-size: 11px; margin: 0 0 20px 0; padding: 0; color: #696969;}
@@ -37,6 +39,8 @@ ul#breadcrumbs li a {padding: 0px 20px 0px 0px; background: transparent url('ima
 .question {background: transparent url('images/question.png') no-repeat 10px 10px;}
 
 
+
+
 /* table stuff */
 table {table-layout: auto; border-collapse: separate; font-size: 10pt; }
 th {text-align: left; background-color: #E7E7E7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
@@ -52,6 +56,17 @@ a.tooltip:hover b {display:block; position:absolute; top:20px; left:-25px; paddi
 a.tooltip:hover b em.outer {position:absolute; left:20px; top:-8px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #000000; overflow:hidden; z-index:100;}
 a.tooltip:hover b em.inner {position:absolute; left:20px; top:-7px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #FFFFFF; overflow:hidden; z-index:100}
 .clear {clear:both;}
+
+/* dialog box*/
+.ui-dialog{text-align: left; font-size: 12pt !important}
+.ui-dialog h3 {border-bottom: 1px solid #696969; background: transparent url('images/view.png') no-repeat left center; padding-left: 100px;}
+.ui-dialog ol  {margin: 0; padding-left: 20px;}
+.ui-dialog pre {margin-top: 20px}
+.ui-dialog-titlebar{display: none;}
+
+
+/* tutorial links */
+.example {display: block; padding: 5px 5px 5px 115px !important; margin: 10px; background: transparent url('images/view.png') no-repeat 10px 2px; font-size: 11pt; color: #0000FF; cursor:pointer; }
 
 
 
