@@ -187,7 +187,7 @@
      <div id="expanded" class="exercise">
        <h3>Exercise: Try Modifying the <code>wmsConfig.xml</code> File</h3>
        <ol>
-         <li>Open a NAM dataset in Godiva2 and plot a parameter.</li>
+         <li>Open a dataset in Godiva2 and plot a parameter.</li>
          <li>Notice the default color scale range is [-50,50]. Decide on a better color scale range.</li>
          <li>Open the
            "<a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">
@@ -197,15 +197,15 @@
 <b>$</b> cd ${tomcat_home}/content/thredds
 <b>$</b> vi wmsConfig.xml
 </pre>
-           and change the color scale range for the target parameter in the NAM datasets.</li>
-         <li>Reopen Godiva2 on another NAM dataset and plot the target parameter. Check the new
+           and change the color scale range for the target parameter in the chosen dataset.</li>
+         <li>Reopen Godiva2 on the dataset and plot the target parameter. Check the new
            default color scale range.</li>
        </ol>
      </div>
    </div> <!-- end section -->
 
    <div id="section">
-     <h2 id="styling_extensions"><a name="wmsConfig">Styling capabilities</a></h2>
+     <h2 id="styling_extensions"><a name="wmsConfig">Styling features and non-standard requests</a></h2>
      <p>ncWMS provides several styling and displaying capabilities that are also available in TDS:</p>
      <ul>
      	<li>
@@ -214,12 +214,29 @@
        		and combines those that match into a vector layer.</p>
      	</li>
      	<li>
-     		<p>ncWMS provides several vector styles: barb, stumpvec, trivec, linevec, fancyvec.</p>
+     		<p>ncWMS provides several vector styles: barb, stumpvec, trivec, linevec, fancyvec.<a href="http://oos.soest.hawaii.edu/pacioos/voyager/" target="_blank">Demo</a></p>
      	</li>
      	<li>
      		<p>Some styling properties can be specified through the <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/WmsExtensions" target="_blank">non-standard optional parameters</a> supported by ncWMS</p>
      	</li>
+     	<li>
+     		<p>Some non-standard requests are supported by ncWMS:</p>
+     			<ol>
+     				<li>GetTransect</li>
+     				<li>GetVerticalProfile</li>
+     				<li>GetVerticalSection</li>
+     			</ol>
+     	</li>     	
      </ul>
+     
+     <div id="expanded" class="exercise">
+     	<h3>Exercise: WMS request with styling parameters</h3>
+     	<ol>
+     		<li>Open the <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/WmsExtensions" target="_blank">non-standard optional parameters</a> supported by ncWMS page</li>
+     		<li>Make several WMS request changing the color scale range and the displaying properties for the values out of range. </li>
+     		<li>Use <a href="http://thredds.ucar.edu/thredds/wms/grib/NCEP/DGEX/CONUS_12km/best?LAYERS=Temperature_isobaric&ELEVATION=50000&TRANSPARENT=true&STYLES=boxfill%2Frainbow&CRS=EPSG%3A4326&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&FORMAT=image%2Fpng&SRS=EPSG%3A4326&BBOX=-140.14654339665,2.0904137233527,-56.175327906289,67.692925825197&WIDTH=256&HEIGHT=256" target="_blank">this</a> as base request.     		
+     	</ol>
+     </div>               
    </div>
 
      <div id="section">
