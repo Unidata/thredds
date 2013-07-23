@@ -160,7 +160,7 @@
      <h3>Exercise: Check that the NAM Dataset is Gridded Data</h3>
      <ol>
       <li>Open the netCDF-Java ToolsUI application [<a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">webstart</a>].</li>
-      <li>In the "FeatureTypes" - "Grids" tab, browse to the <code>/data/ldm/nam_12km</code> directory and open a dataset file.</li>
+      <li>In the "FeatureTypes" - "Grids" tab, browse to the <code>/machine/tds/data/ldm/nam_12km</code> directory and open a dataset file.</li>
       <li>If variables are listed in the top section of the window, the netCDF-Java library has recognized the dataset as gridded data.</li>
      </ol>
      <p><b>Note</b>: While you have ToolsUI open, take a look at the "Viewer" tab and the "THREDDS" tab</p> 
@@ -353,11 +353,11 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
      <h3>Exercise: Managing multiple roots</h3>
      <p>Add a few more datasetScan elements:</p>
      <ol>
-      <li>Check the /data/ldm/fsl, /data/ldm/madis, and /data/ldm/suomi data directories:</li>
-       <pre><b>$</b> ls /data/ldm<br>bufr    dusk         dusk.080527  fsl     ldm.pq  ltng   mcidas    ngrid  nogaps    rcm      severe  surface   wseta<br>cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfiles  rtmodel  suomi   upperair</pre>
-       <pre><b>$</b> ls /data/ldm/fsl<br>01hr  06min  RASS<br><b>$</b> ls /data/ldm/fsl/01hr<br>20082962000.nc  20082981400.nc  20083000800.nc  20083020200.nc  20083032000.nc  20083051400.nc  20083071000.nc  20083090400.nc<br>...<br>20082981200.nc  20083000600.nc  20083020000.nc  20083031800.nc  20083051200.nc  20083070800.nc  20083090200.nc  20083102100.nc</pre>
-       <pre><b>$</b> ls /data/ldm/madis<br>20081022_0700.nc  20081024_1000.nc  20081026_1300.nc  20081028_1600.nc  20081030_1900.nc  20081101_2200.nc  20081104_0100.nc<br>...<br>20081024_0300.nc  20081026_0600.nc  20081028_0900.nc  20081030_1200.nc  20081101_1500.nc  20081103_1800.nc  20081105_2100.nc</pre>
-       <pre><b>$</b> ls /data/ldm/suomi<br>CsuPWVh_2008.308.18.00.0060_nc  CsuPWVh_2008.309.07.00.0060_nc  CsuPWVh_2008.309.20.00.0060_nc  CsuPWVh_2008.310.09.00.0060_nc<br>...<br>CsuPWVh_2008.309.04.00.0060_nc  CsuPWVh_2008.309.17.00.0060_nc  CsuPWVh_2008.310.06.00.0060_nc  CsuPWVh_2008.310.19.00.0060_nc</pre>
+      <li>Check the /machine/tds/data/ldm/fsl, /machine/tds/data/ldm/madis, and /machine/tds/data/ldm/suomi data directories:</li>
+       <pre><b>$</b> ls /machine/tds/data/ldm<br>bufr    dusk         dusk.080527  fsl     ldm.pq  ltng   mcidas    ngrid  nogaps    rcm      severe  surface   wseta<br>cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfiles  rtmodel  suomi   upperair</pre>
+       <pre><b>$</b> ls /machine/tds/data/ldm/fsl<br>01hr  06min  RASS<br><b>$</b> ls /data/ldm/fsl/01hr<br>20082962000.nc  20082981400.nc  20083000800.nc  20083020200.nc  20083032000.nc  20083051400.nc  20083071000.nc  20083090400.nc<br>...<br>20082981200.nc  20083000600.nc  20083020000.nc  20083031800.nc  20083051200.nc  20083070800.nc  20083090200.nc  20083102100.nc</pre>
+       <pre><b>$</b> ls /machine/tds/data/ldm/madis<br>20081022_0700.nc  20081024_1000.nc  20081026_1300.nc  20081028_1600.nc  20081030_1900.nc  20081101_2200.nc  20081104_0100.nc<br>...<br>20081024_0300.nc  20081026_0600.nc  20081028_0900.nc  20081030_1200.nc  20081101_1500.nc  20081103_1800.nc  20081105_2100.nc</pre>
+       <pre><b>$</b> ls /machine/tds/data/ldm/suomi<br>CsuPWVh_2008.308.18.00.0060_nc  CsuPWVh_2008.309.07.00.0060_nc  CsuPWVh_2008.309.20.00.0060_nc  CsuPWVh_2008.310.09.00.0060_nc<br>...<br>CsuPWVh_2008.309.04.00.0060_nc  CsuPWVh_2008.309.17.00.0060_nc  CsuPWVh_2008.310.06.00.0060_nc  CsuPWVh_2008.310.19.00.0060_nc</pre>
       <li>Edit the main TDS configuration catalog:
 <pre>
 <b>$</b> cd ${tomcat_home}/content/thredds
@@ -367,7 +367,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       <li>And add a <code>datasetScan</code> element for the FSL data:
 <pre>
 &lt;datasetScan name="<b>FSL</b>" ID="<b>FSL</b>"
-             path="<b>fsl</b>" location="<b>/data/ldm/fsl</b>"&gt;
+             path="<b>fsl</b>" location="<b>/machine/tds/data/ldm/fsl</b>"&gt;
 
     &lt;metadata inherited="true"&gt;
         &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
@@ -508,7 +508,7 @@ Error {
       </li>
     </ol>
     </div>
-    <div id="expanded" class="exercise"
+    <div id="expanded" class="exercise">
      <h3>Exercise: Filtering Directories</h3>
      <ol>
       <li>Browse around in the "FSL" dataset.</li>
@@ -543,7 +543,7 @@ Error {
 
     <pre>
 &lt;datasetScan name="NCEP NAM 12km" ID="<b>NAM_12km</b>"
-             path="nam_12km" location="/data/ldm/nam_12km"&gt;</pre>
+             path="nam_12km" location="/machine/tds/data/ldm/nam_12km"&gt;</pre>
 
     <p>and for the data file 2008110406f018.grib2, the value of the dataset ID would be "NAM_12km/2008110406f018.grib2". </p>
   
