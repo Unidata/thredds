@@ -1,13 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
  <html>
   <head>
-   <title>Getting started with the TDS: Local test server setup</title>
+   <title>TDS Tutorial: Getting started with the TDS: Local Test Server Setup</title>
    <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
-   <script type="text/javascript" src="workshopNav.js"></script>
+   <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon" />
   </head>
   <body>
- 
-   <h1>Getting started with the TDS: local test server setup</h1>    
+   <ul id="breadcrumbs">
+    <li><a href="/projects/THREDDS/tech/tutorial/workshop2013.html">TDS Workshop Home</a></li> 
+    <li>Getting started with the TDS: Local Test Server Setup</li>
+   </ul>
+
+   <h1>Getting started with the TDS: Local Test Server Setup</h1>    
    <div id="section">
     <h2><a name="install">Installing Java and Tomcat</a></h2>
 
@@ -25,20 +29,31 @@
      <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <i>Sun Java</i> and the <i>Apache Tomcat</i> servlet container.</p>
 
 
-     <h3>Installing Java<a name="installJava"></a></h3>
+     <h3>Installing Java</h3>
      <ol>
       <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun. Use the latest 1.7 version of the JDK.</li>
        <p>At the time of this workshop, that is version <i>Java SE 7u25</i>.  We will be using the Linux x64-bit tar.gz file:</p>
        <p><code>jdk-7u25-linux-x64.tar.gz</code></p>
       <li>Install the JDK as per the Sun <a href="http://docs.oracle.com/javase/7/docs/webnotes/install/">installation instructions</a>.</li>
-        <p>Copy the binary tar.gz file into the installation directory (<code>/home/tds/</code> in this example):</p>
+        <p>Copy the binary tar.gz file into the installation directory (<code>/usr/local/tds/</code> in this example):</p>
 
 <pre>
 <b>$</b> pwd
-/home/tds
+/usr/local/tds
+<b>$</b> cp Downloads/jdk-7u25-linux-x64.tar.gz .
 
 <b>$</b> ls -l  
--rw-r--r-- 1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
+drwxr-xr-x  2 tds workshop     4096 Jul 22 17:29 Downloads
+<b>-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz</b>
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
+drwxr-xr-x  3 tds workshop     4096 Jul 15 10:45 tdsMonitor
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Templates
+-rwxrwxr-x  1 tds workshop 27866303 Jul 15 10:02 toolsUI-4.3.18.jar
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
 </pre>
 
         <p>Unpack the archive file:</p>  
@@ -51,8 +66,18 @@
 
 <pre>
 <b>$</b> ls -l  
-<b>drwxr-xr-x 8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25</b>
--rw-r--r-- 1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
+drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
+<b>drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25</b>
+-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
+drwxr-xr-x  3 tds workshop     4096 Jul 15 10:45 tdsMonitor
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Templates
+-rwxrwxr-x  1 tds workshop 27866303 Jul 15 10:02 toolsUI-4.3.18.jar
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
 </pre>
 
       <div id="expanded" class="troubleshooting">
@@ -66,7 +91,7 @@
 
 
 
-      <h3>Installing Tomcat<a name="installTomcat"></a></h3>
+     <h3>Installing Tomcat</h3>
     <div id="note" class="info">
      <h4>Tomcat on Windows</h4>
      <p>For more information about installing Tomcat on Windows OS, see the <a href="http://tomcat.apache.org/tomcat-7.0-doc/setup.html#Windows">Tomcat setup guide</a> for installation on different platforms.</p>
@@ -76,16 +101,26 @@
         <p>At the time of this workshop, that is version <i>7.0.42</i>. We will be using the binary tar.gz file:</p>
         <p><code>apache-tomcat-7.0.42.tar.gz</code></p>
        <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-7.0-doc/setup.html">installation instructions</a>.</li>
-        <p>Copy the binary tar.gz file into the installation directory (<code>/home/tds/</code> in this example):</p>
+        <p>Copy the binary tar.gz file into the installation directory (<code>/usr/local/tds/</code> in this example):</p>
 
 <pre>
 <b>$</b> pwd
-/home/tds/
+/usr/local/tds
 
 <b>$</b> ls -l 
 <b>-rw-r--r-- 1 tds workshop  7955948 Jul 15 09:35 apache-tomcat-7.0.42.tar.gz</b>
-drwxr-xr-x 8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25
--rw-r--r-- 1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
+drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
+drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25
+-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
+drwxr-xr-x  3 tds workshop     4096 Jul 15 10:45 tdsMonitor
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Templates
+-rwxrwxr-x  1 tds workshop 27866303 Jul 15 10:02 toolsUI-4.3.18.jar
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
 </pre>
 
         <p>Unpack the archive file:</p>  
@@ -100,8 +135,18 @@ drwxr-xr-x 8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25
 <b>$</b> ls -l
 <b>drwxr-xr-x 9 tds workshop     4096 Jul 15 09:37 apache-tomcat-7.0.42</b>
 -rw-r--r-- 1 tds workshop  7955948 Jul 15 09:35 apache-tomcat-7.0.42.tar.gz
-drwxr-xr-x 8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25
--rw-r--r-- 1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
+drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
+drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25
+-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
+drwxr-xr-x  3 tds workshop     4096 Jul 15 10:45 tdsMonitor
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Templates
+-rwxrwxr-x  1 tds workshop 27866303 Jul 15 10:02 toolsUI-4.3.18.jar
+drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
 </pre>
       </ol>
 
@@ -189,7 +234,7 @@ drwxr-xr-x 2 tds workshop  4096 Jul  2 01:57 work
         <p>Run the <code>startup.sh</code> script in the Tomcat <code>bin/</code> directory:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/apache-tomcat-7.0.42
+/usr/local/tds/apache-tomcat-7.0.42
 
 <b>$</b> bin/startup.sh
 </pre>
@@ -199,7 +244,7 @@ drwxr-xr-x 2 tds workshop  4096 Jul  2 01:57 work
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-tds      21912     1 29 09:39 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/home/tds/apache-tomcat-7.0.42/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/apache-tomcat-7.0.42/endorsed -classpath /home/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/home/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar -Dcatalina.base=/home/tds/apache-tomcat-7.0.42 -Dcatalina.home=/home/tds/apache-tomcat-7.0.42 -Djava.io.tmpdir=/home/tds/apache-tomcat-7.0.42/temp org.apache.catalina.startup.Bootstrap start
+tds      21912     1 29 09:39 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-7.0.42/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-7.0.42/endorsed -classpath /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-7.0.42 -Dcatalina.home=/usr/local/tds/apache-tomcat-7.0.42 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-7.0.42/temp org.apache.catalina.startup.Bootstrap start
 tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
 </pre>
 
@@ -248,7 +293,7 @@ tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
 
 <pre>
 <b>$</b> pwd
-/home/tds/apache-tomcat-7.0.42
+/usr/local/tds/apache-tomcat-7.0.42
 
 <b>$</b> cd bin
 <b>$</b> vi setenv.sh
@@ -260,13 +305,13 @@ tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
 #
 # ENVARS for Tomcat and TDS environment
 #
-JAVA_HOME="/home/tds/jdk1.7.0_25"
+JAVA_HOME="/usr/local/tds/jdk1.7.0_25"
 export JAVA_HOME
 
 JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs"
 export JAVA_OPTS
 
-CATALINA_BASE="/home/tds/apache-tomcat-7.0.42"
+CATALINA_BASE="/usr/local/tds/apache-tomcat-7.0.42"
 export CATALINA_BASE
 </pre>
      <div id="note" class="info">
@@ -277,7 +322,7 @@ export CATALINA_BASE
      <ul>
       <li><code>-Xms</code> is the initial allocated memory of the JVM (for performance).</li>
       <li><code>-Xmx</code> the maximum allocated memory of the JVM (for performance).</li>
-      <li><code>-server</code> tells the Hotspot compiler to run the JVM in "server" mode.</li>
+      <li><code>-server</code> tells the Hostspot compiler to run the JVM in "server" mode.</li>
       <li><code>-Djava.awt.headless=true</code> is needed to prevent graphics rendering code from assuming a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
       <li><code style="white-space: nowrap;">-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</code> allows the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS to write system preferences to a location that is writable by the Tomcat user.</li>
      </ul>
@@ -291,11 +336,11 @@ export CATALINA_BASE
 
 <pre>
 <b>$</b> ./startup.sh
-Using CATALINA_BASE:   /home/tds/apache-tomcat-7.0.42
-Using CATALINA_HOME:   /home/tds/apache-tomcat-7.0.42
-Using CATALINA_TMPDIR: /home/tds/apache-tomcat-7.0.42/temp
-Using JRE_HOME:        /home/tds/jdk1.7.0_25
-Using CLASSPATH:       /home/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/home/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar
+Using CATALINA_BASE:   /usr/local/tds/apache-tomcat-7.0.42
+Using CATALINA_HOME:   /usr/local/tds/apache-tomcat-7.0.42
+Using CATALINA_TMPDIR: /usr/local/tds/apache-tomcat-7.0.42/temp
+Using JRE_HOME:        /usr/local/tds/jdk1.7.0_25
+Using CLASSPATH:       /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar
 </pre>
       <div id="expanded" class="question">
        <p>Did you notice any difference in the what is being reported to <code>STDOUT</code> during startup?</p>
@@ -305,7 +350,7 @@ Using CLASSPATH:       /home/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/home/td
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-tds      22007     1  9 09:44 pts/1    00:00:02 /home/tds/jdk1.7.0_25/bin/java -Djava.util.logging.config.file=/home/tds/apache-tomcat-7.0.42/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager <b>-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/home/tds/apache-tomcat-7.0.42/content/thredds/javaUtilPrefs</b> -Djava.endorsed.dirs=/home/tds/apache-tomcat-7.0.42/endorsed -classpath /home/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/home/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar -Dcatalina.base=/home/tds/apache-tomcat-7.0.42 -Dcatalina.home=/home/tds/apache-tomcat-7.0.42 -Djava.io.tmpdir=/home/tds/apache-tomcat-7.0.42/temp org.apache.catalina.startup.Bootstrap start
+tds      22007     1  9 09:44 pts/1    00:00:02 /usr/local/tds/jdk1.7.0_25/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-7.0.42/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager <b>-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/usr/local/tds/apache-tomcat-7.0.42/content/thredds/javaUtilPrefs</b> -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-7.0.42/endorsed -classpath /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-7.0.42 -Dcatalina.home=/usr/local/tds/apache-tomcat-7.0.42 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-7.0.42/temp org.apache.catalina.startup.Bootstrap start
 tds      22030 21675  0 09:44 pts/1    00:00:00 grep tomcat
 </pre>
      <div id="note" class="info">
@@ -342,13 +387,13 @@ WARNING: Couldn't flush system prefs: java.util.prefs.BackingStoreException: /et
 #
 # ENVARS for Tomcat and TDS environment
 #
-JAVA_HOME="/home/tds/jdk1.7.0_25"
+JAVA_HOME="/usr/local/tds/jdk1.7.0_25"
 export JAVA_HOME
 
 JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true <b>-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</b>"
 export JAVA_OPTS
 
-CATALINA_BASE="/home/tds/apache-tomcat-7.0.42"
+CATALINA_BASE="/usr/local/tds/apache-tomcat-7.0.42"
 export CATALINA_BASE
 </pre>
       </ul>
@@ -371,7 +416,7 @@ export CATALINA_BASE
 
 <pre>
 <b>$</b> pwd
-/home/tds/apache-tomcat-7.0.42/webapps
+/usr/local/tds/apache-tomcat-7.0.42/webapps
 <b>$</b> cd ../logs
 
 <b>$</b> ls -l
@@ -396,7 +441,7 @@ export CATALINA_BASE
        <li>Examining <code>catalina.out</code>.</li>
         <p>Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:</p>
 <pre>
-<b>$</b> tail -f /home/tds/apache-tomcat-7.0.42/logs/catalina.out
+<b>$</b> tail -f /usr/local/tds/apache-tomcat-7.0.42/logs/catalina.out
 </pre>
 <p>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</p>
       <div id="expanded" class="question">
@@ -458,7 +503,7 @@ export CATALINA_BASE
          <p>Move into the Tomcat <code>conf/</code> directory and examine the <code>server.xml</code> file:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/apache-tomcat-7.0.42/logs
+/usr/local/tds/apache-tomcat-7.0.42/logs
 <b>$</b> cd ../conf
 
 <b>$</b> less server.xml
@@ -631,7 +676,7 @@ export CATALINA_BASE
          <p>Open the <code>tomcat-users.xml</code> file:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/apache-tomcat-7.0.42/conf
+/usr/local/tds/apache-tomcat-7.0.42/conf
 
 <b>$</b> less tomcat-users.xml
 </pre>  
@@ -734,7 +779,7 @@ export CATALINA_BASE
 
 <pre>
 <b>$</b> pwd
-/home/tds/apache-tomcat-7.0.42/bin
+/usr/local/tds/apache-tomcat-7.0.42/bin
 <b>$</b> cd ../webapps
 
 <b>$</b> mv ~/thredds.war .
@@ -769,7 +814,7 @@ drwxr-xr-x  3 tds workshop     4096 Jul 15 09:37 ROOT
        <p>Move into <code>${tomcat_home}</code> and do a long listing:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/apache-tomcat-7.0.42/webapps
+/usr/local/tds/apache-tomcat-7.0.42/webapps
 <b>$</b> cd ..
 
 <b>$</b> ls -l 
@@ -914,7 +959,7 @@ drwxr-xr-x 3 tds workshop  4096 Jul 15 09:39 work
         <p>List the contents of the Tomcat <code>webapps/</code> directory to verify that both <code>thredds.war</code> and the unpacked <code>thredds/</code> directory have been removed:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/apache-tomcat-7.0.42/conf
+/usr/local/tds/apache-tomcat-7.0.42/conf
 <b>$</b> cd ../webapps
 
 <b>$</b> ls -l
@@ -966,6 +1011,13 @@ drwxr-xr-x  3 tds workshop     4096 Jul 15 09:37 ROOT
    </div> <!-- end section -->
 
 
+  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
+
+   
+   <ul id="breadcrumbs">
+    <li><a href="/projects/THREDDS/tech/tutorial/workshop2013.html">TDS Workshop Home</a></li> 
+    <li>Getting Started: Tomcat, Java and the TDS</li>
+   </ul>
 
 
   </body>
