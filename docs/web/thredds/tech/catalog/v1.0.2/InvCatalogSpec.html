@@ -100,7 +100,7 @@
 
 <h3><em>catalog</em><a name="catalog"></a> element</h3>
 
-<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="base" type="xsd:anyURI" /&gt; &lt;!-- deprecated: not working, don't use --&gt;<br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.1" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;<br></pre>
+<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.1" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;<br></pre>
 
 <p>The <em>catalog</em> element is the top-level element. It may contain zero
   or more <em><a href="#service">service</a></em> elements followed by zero
@@ -109,10 +109,6 @@
   element tells clients until when this catalog is accurate, so they can cache
   the catalog information. The value of the <i>version</i> attribute indicates the version of the InvCatalog specification to which the catalog conforms. The <i>version</i> attribute is optional and to indicate conformance with this specification should be set to "1.0.1".<br>
 </p>
-<p>The <i><a name="catalogBase"></a>base</i> attribute is deprecated, its use is not supported in any known THREDDS code. Do not use as it will generally be ignored.<br>
- </p>
-
-
 <p>Example of simplest useful catalog. Note that to provide access to a dataset you need at least one service element. </p>
 
 <pre> &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1" &gt;<br>   &lt;service name="aggServer" serviceType="DODS"  base="http://acd.ucar.edu/dodsC/" /&gt;<br>   &lt;dataset name="SAGE III Ozone Loss" urlPath="sage.nc"&gt;<br>     &lt;serviceName&gt;aggServer&lt;/serviceName&gt;<br>   &lt;/dataset&gt;<br> &lt;/catalog&gt;</pre>
@@ -153,7 +149,7 @@ URLS</a> for how the resolved URL is created):
 
 <h3><a name="dataset" id="dataset"></a><em>dataset</em> element</h3>
 
-<pre>&lt;xsd:element name="dataset" type="DatasetType" /&gt;<br>&lt;xsd:complexType name="DatasetType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt; &lt;!-- deprecated --&gt;<br>    &lt;xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" /&gt;<br><br>    &lt;xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/&gt;<br>    &lt;xsd:element ref="ncml:netcdf" minOccurs="0"/&gt;<br>    &lt;xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;<br>  &lt;xsd:attribute name="alias" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="authority" type="xsd:string"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="collectionType" type="collectionTypes"/&gt;<br>  &lt;xsd:attribute name="dataType" type="dataTypes"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="harvest" type="xsd:boolean"/&gt;<br>  &lt;xsd:attribute name="ID" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="resourceControl" type="xsd:string"/&gt;<br>      <br>  &lt;xsd:attribute name="serviceName" type="xsd:string" /&gt; &lt;!-- deprecated : use element --&gt; <br>  &lt;xsd:attribute name="urlPath" type="xsd:token" /&gt;<br>&lt;/xsd:complexType&gt;</pre>
+<pre>&lt;xsd:element name="dataset" type="DatasetType" /&gt;<br>&lt;xsd:complexType name="DatasetType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" /&gt;<br><br>    &lt;xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/&gt;<br>    &lt;xsd:element ref="ncml:netcdf" minOccurs="0"/&gt;<br>    &lt;xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;<br>  &lt;xsd:attribute name="alias" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="authority" type="xsd:string"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="collectionType" type="collectionTypes"/&gt;<br>  &lt;xsd:attribute name="dataType" type="dataTypes"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="harvest" type="xsd:boolean"/&gt;<br>  &lt;xsd:attribute name="ID" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="resourceControl" type="xsd:string"/&gt;<br>      <br>  &lt;xsd:attribute name="serviceName" type="xsd:string" /&gt; &lt;!-- deprecated : use element --&gt; <br>  &lt;xsd:attribute name="urlPath" type="xsd:token" /&gt;<br>&lt;/xsd:complexType&gt;</pre>
 
 <p>A <i>dataset</i> element represents a named, logical set of data at a level
   of granularity appropriate for presentation to a user. A dataset is <b><i><a href="#directDataset">direct</a>
@@ -179,9 +175,7 @@ for a number of capabilities including XPath ID reference. <a name="globally_uni
 dataset or catalogRef). The data represented by a nested
 dataset element should be a subset, a specialization or in some other
 sense "contained" within the data represented by its parent dataset
-element. The use of <em>service</em>
-  elements nested inside a dataset is deprecated; you should declare service elements
-  at the top level of the catalog.</p>
+element. </p>
 <p>The <em><a href="#collectionTypes">collectionType</a></em>
   attribute is used to indicate that the dataset is a <a href="#coherentDataset">coherent collection</a>
 and the type of the collections coherence. A datasets data type is very
@@ -991,7 +985,7 @@ service@base attribute.</p>
 
 <hr>
 <p><a name="changes"></a>Change history.</p>
-
+<p>July 12, 2013: remove deprecated elements in catalog and dataset.</p>
 <p>April 11, 2005: Add version 1.0.1 changes.</p>
 
 <p>July 07, 2004: Clarify the relation of dateType to ISO 8601. </p>

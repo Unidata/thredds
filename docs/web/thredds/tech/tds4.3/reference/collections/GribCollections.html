@@ -9,7 +9,7 @@
 <body>
 <h1><img src="../../../images/unidataLogo.png" alt="" width="73" height="75" align="absbottom" /> GRIB Feature Collections</h1>
 <hr />
-<p>GRIB datasets are collections of GRIB records, which consist of gridded data typically from numeric model output. Because of the complexity of how GRIB data is  written and stored, the TDS has developed specialized handling of GRIB datasets, as of version 4.3, called <em><strong>GRIB Feature Collections</strong></em>. Version 4.3 is a complete rewrite of the GRIB IOSP, table handling,  indexing, and server functionality. One can expect significant differences from earlier versions of the TDS in variable naming, as well as time and spatial coordinate handling. Previous versions are not longer supported, and it is strongly recommended that  users  switch ASAP to version 4.3 or greater. As of October 2012, this code is considered  beta.</p>
+<p>GRIB datasets are collections of GRIB records, which consist of gridded data typically from numeric model output. Because of the complexity of how GRIB data is  written and stored, the TDS has developed specialized handling of GRIB datasets, as of version 4.3, called <em><strong>GRIB Feature Collections</strong></em>. Version 4.3 is a complete rewrite of the GRIB IOSP, table handling,  indexing, and server functionality. One can expect significant differences from earlier versions of the TDS in variable naming, as well as time and spatial coordinate handling. Previous versions are no longer supported, and it is strongly recommended that  users  switch ASAP to version 4.3 or greater. </p>
 <p>Some of the new capabilities in version 4.3 are:</p>
 <ul>
   <li>The user need only specify a collection of GRIB-1 or GRIB-2 files, and the software turns them into a dataset.</li>
@@ -22,9 +22,8 @@
 <p>Implementation notes:</p>
 <ul>
   <li>For each grib file, a <em>grib index</em> is written in the same directory, named <strong>&lt;grib filename&gt;.gbx9</strong>. Once written, this never has to be rewritten.</li>
-  <li>For each grib file, a <em>cdm index</em> is written in the same directory, named <strong>&lt;grib filename&gt;.ncx</strong>. This occasionally has to be rewritten when new CDM versions are released, or if you modify your grib confiuration.</li>
+  <li>For each grib file, a <em>cdm index</em> is written in the same directory, named <strong>&lt;grib filename&gt;.ncx</strong>. This occasionally has to be rewritten when new CDM versions are released, or if you modify your grib configuration.</li>
   <li>For each collection, a <em>grib collection index</em>  is written in the <em>collection root directory, </em>named <strong>&lt;collection name&gt;.ncx</strong>. This must be rewritten if any of the collection files change.</li>
-  <li>Do not use CDM disk caching for any of these indices. Let the TDS or TDM write the indices in the same directory as the data files.</li>
 </ul>
 <p>For background, please read:</p>
 <ul>

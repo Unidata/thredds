@@ -722,9 +722,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
-    // handle FILES
+    /* handle FILES
     GridDataset result = super.getGridDataset(matchPath);
-    if (result != null) return result;
+    if (result != null) return result; */
 
     StateGrib localState;
     try {
@@ -736,6 +736,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     DatasetParse dp = parse(matchPath, localState);
     if (dp == null) return null;
+
+    if (dp.filename != null) {  // case 7
+      File want = new File(topDirectory, dp.filename);
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(null, want.getPath(), null, -1, null, gribConfig.getIospMessage());
+      return new ucar.nc2.dt.grid.GridDataset(ncd);
+    }
 
     if (localState.timePartition == null) { // not a time partition
       return localState.gribCollection.getGridDataset(dp.group, dp.filename, gribConfig, logger);
@@ -756,9 +762,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public NetcdfDataset getNetcdfDataset(String matchPath) throws IOException {
-    // handle FILES
+    /* handle FILES
     NetcdfDataset result = super.getNetcdfDataset(matchPath); // case 7
-    if (result != null) return result;
+    if (result != null) return result;  */
 
     StateGrib localState;
     try {
@@ -770,6 +776,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     DatasetParse dp = parse(matchPath, localState);
     if (dp == null) return null;
+
+    if (dp.filename != null) {  // case 7
+      File want = new File(topDirectory, dp.filename);
+      return NetcdfDataset.acquireDataset(null, want.getPath(), null, -1, null, gribConfig.getIospMessage());
+    }
 
     if (localState.timePartition == null) { // not a time partition
       return localState.gribCollection.getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 1 and 2

@@ -50,7 +50,7 @@
        &lt;documentation type=&quot;summary&quot;&gt;Example BOM&lt;/documentation&gt;
      &lt;/metadata&gt;
  
-4)   &lt;collection spec=&quot;/tds2012data/fmrc/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;
+4)   &lt;collection spec=&quot;/data/tds/workshop/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;
    &lt;/featureCollection&gt;
   &lt;/dataset&gt;
 &lt;/catalog&gt;</pre>
@@ -59,7 +59,7 @@
       <li>All services are defined in a compound service type called <code>fmrcServices</code>.</li>
       <li>A THREDDS <code>featureCollection</code> is defined, of type <code>FMRC</code>. All contained datasets will all have a <code>path</code> starting with <code>BOM/model</code>.</li>
       <li>All the <code>metadata</code> contained here will be inherited by the contained datasets.</li>
-      <li>The <code>collection</code> of files is defined, using a <a href="../reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /tds2012data/fmrc/bom/</strong> will be scanned for files with names that start with &quot;<strong><em>ocean_fc_&quot; ,</em></strong> and end with &quot;<em><strong>.nc</strong></em>&quot;. The run data is extracted from the filename.</li>
+      <li>The <code>collection</code> of files is defined, using a <a href="../reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /data/tds/workshop/bom/</strong> will be scanned for files with names that start with &quot;<strong><em>ocean_fc_&quot; ,</em></strong> and end with &quot;<em><strong>.nc</strong></em>&quot;. The run data is extracted from the filename.</li>
      </ol>
      <p>The contained datasets include the resulting 2D time dimension dataset, as well as  1D time views described <a href="../reference/collections/FmrcCollection.html#datasetTypes">here</a>, as seen in the resulting HTML page for that dataset: </p>
      <p><img src="images/FmrcExample1.png" width="760" height="416"/></p>
@@ -72,14 +72,13 @@
     <h2><a name="runtime">Specifying the Run Time</a></h2>
     <p>FMRCs are collections of files with (possibly) different run times, and the software needs to know what that run time is. If you look closely at the files in this example, you may notice that the run time does not appear explicitly inside the file anywhere. Luckily the information is in the filename, which is a common practice. </p>
     <p>1. The recommended way to specify the run time  is to specify a<em> date parsing template </em>in the collection specification string, for example:</p>
-    <pre>&lt;collection spec=&quot;/tds2012data/fmrc/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;</pre>
+    <pre>&lt;collection spec=&quot;/data/tds/workshop/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;</pre>
     <p>extracts the run date by applying the template <code>yyyyMMdd</code> to the portion of the filename after &quot;<code>ocean_fc_</code>&quot;. </p>
-    <p>If the information is in a directory name, then you can use the dateFormatMark field on the collection element. In our example, an example dataset paths looks like:<strong> /tds2012data/fmrc/bom/20090330/ocean_fc_20090330_048_eta.nc</strong>. 
-      If we wanted to extract the run time from the directory (pretending we couldn't do that from the filename), this is how we would do that: </p>
-    <p>
-    <pre>&lt;collection spec=&quot;/tds2012data/fmrc/bom/**/ocean_fc_.*\.nc$&quot; dateFormatMark=&quot;#<strong>fmrc/bom/#yyyMMdd</strong>&quot; /&gt;</pre>
+    <p>If the information is in a directory name, then you can use the dateFormatMark field on the collection element. In our example, an example dataset paths looks like:<strong> /data/tds/workshop/20090330/ocean_fc_20090330_048_eta.nc</strong>. 
+      If we wanted to extract the run time from the directory (pretending we couldn't do that from the filename), this is how we would do that:    </p>
+    <pre>&lt;collection spec=&quot;/data/tds/workshop/bom/**/ocean_fc_.*\.nc$&quot; dateFormatMark=&quot;#<strong>workshop/bom/#yyyMMdd</strong>&quot; /&gt;</pre>
     </p>
-    Note that we 1) remove the date extractor  from the collection specification string, and 2) add a <strong>dateFormatMark</strong> attribute. In this case, the <em>'#' </em>characters delineate a <strong>substring match</strong> on the entire pathname (so there had better only be one place where the string &quot;<strong>frmc/bom/</strong>&quot; appears). <em>Immediately</em> following the match comes the date extractor string. See <a href="../reference/collections/FeatureCollections.html#dateExtractor">here</a> for more details.
+    Note that we 1) remove the date extractor  from the collection specification string, and 2) add a <strong>dateFormatMark</strong> attribute. In this case, the <em>'#' </em>characters delineate a <strong>substring match</strong> on the entire pathname (so there had better only be one place where the string &quot;<strong>workshop/bom/</strong>&quot; appears). <em>Immediately</em> following the match comes the date extractor string. See <a href="../reference/collections/FeatureCollections.html#dateExtractor">here</a> for more details.
     <p>2. The second way to specify the run time is to add a global attribute inside each file of the collection, with name <strong>_CoordinateModelRunDate</strong> whose value is the run time as an ISO date string. For example:</p>
     <pre> 
     :Conventions = &quot;CF-1.4&quot;;
@@ -100,16 +99,16 @@
            version=&quot;1.0.3&quot;&gt; 
     &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
        
-    &lt;featureCollection featureType=&quot;FMRC&quot; name=&quot;NCEP-GFS-Puerto_Rico_191km&quot; harvest=&quot;true&quot; 
-                       path=&quot;fmrc/NCEP/GFS/Puerto_Rico_191km&quot;&gt;
+    &lt;featureCollection featureType=&quot;FMRC&quot; name=&quot;NCEP-GFS_Global_2p5deg&quot;  
+                       path=&quot;fmrc/NCEP/GFS/GFS_Global_2p5deg&quot;&gt;
       &lt;metadata inherited=&quot;true&quot;&gt;
         &lt;serviceName&gt;ncdods&lt;/serviceName&gt;
         &lt;dataFormat&gt;netCDF-4&lt;/dataFormat&gt;
-        &lt;documentation type=&quot;summary&quot;&gt;Specially good GFS_Puerto_Rico_191km&lt;/documentation&gt;
+        &lt;documentation type=&quot;summary&quot;&gt;Specially good GFS_Global_2p5deg&lt;/documentation&gt;
       &lt;/metadata&gt;
    
-      &lt;collection spec=&quot;/data/testdata/2010TdsTW/fmrc/GFS_Puerto_Rico_191km.*\.nc4$&quot; 
-                  name=&quot;GFS_Puerto_Rico&quot;
+      &lt;collection spec=&quot;/data/tds/workshop/gfs/GFS_Global_2p5deg.*\.nc4$&quot; 
+                  name=&quot;GFS_Global_2p5deg&quot;
 <b>1)</b>                recheckAfter=&quot;15 min&quot;
 <b>2)</b>                olderThan=&quot;5 min&quot;/&gt;
 <b>3)</b>    &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; trigger=&quot;allow&quot;/&gt;
@@ -120,16 +119,14 @@
   &lt;/catalog&gt;
 </pre>
 
-     <div id="expanded" class="troubleshooting">
-      <h4>Notes:</h4>
-      <ol>
+     <h4>Notes:</h4>
+     <ol>
        <li><code>recheckAfter</code>: When a request comes in, if the collection hasn't been checked for 15 minutes,check to see if it has changed. The request will wait until the rescan is finished and a new collection is built (if needed). This minimizes unneeded processing for lightly used collections.</li>
        <li><code>olderThan</code>: Only files that haven't changed for 5 minutes will be included. This excludes files  that are in the middle of being written.</li>
        <li><code>update</code>: The collection will be updated upon TDS startup, and periodically using the cron expression &quot;<code>0 5 3 * * ? *</code>&quot;, meaning every day at 3:05 am local time. This updating is done in the background, as opposed to when a request for it comes in.</li>
        <li><code>protoDataset</code>: The prototypical dataset is chosen to be the &quot;next-to-latest&quot;. The prototypical dataset is changed every day at 3:02 am local time.</li>
        <li><code>fmrcConfig</code>: The kinds of datasets that are created are listed explicitly. You can see how this corresponds directly to the HTML dataset page above. Remove the ones that you don't want to make available. Default is &quot;<code>TwoD Best Files Runs</code>&quot;</li>
-      </ol>
-     </div>
+     </ol>
      <p>The <strong>recheckAfter</strong> attribute and the <strong>update</strong> element are really alternate ways to specify rescanning strategies. Use the <strong>update</strong> element on large collections when you want to ensure quick response. Use the <strong>recheckAfter</strong></code> on lightly used collections in order to minimize server load. <em>Don't use both of them on the same dataset on a real production server.</em></p>
      <p>More details are in the <a href="../reference/collections/FeatureCollections.html">reference doc</a>.</p>
    </div>

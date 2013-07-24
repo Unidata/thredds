@@ -24,7 +24,7 @@
     <p>Additional WCS configuration options can be set in the <code>threddsConfig.xml</code> file, more details are available in the
       <a href="../reference/ThreddsConfigXMLFile.html#WCS">WCS section</a> of the <code>threddsConfig.xml</code> file documentation. </p>
 
-    <h4>WMS Configuration</h4>
+    <h4 id="wms_configuration">WMS Configuration</h4>
 
     <p>To enable the <a href="../reference/WMS.html">WMS service</a> for locally served datasets, you will need the following in your <code>threddsConfig.xml</code> file:</p>
 <pre>
@@ -154,7 +154,7 @@
    </div> <!-- end section -->
 
    <div id="section">
-     <h2><a name="wmsConfig">More WMS Configuration</a></h2>
+     <h2 id="detailed_wms_configuration"><a name="wmsConfig">More WMS Configuration</a></h2>
      <p>Besides the basic WMS configuration available in the <code>threddsConfig.xml</code>
        file, there are additional configuration settings in the
        <code>wmsConfig.xml</code> file. These settings can be applied globally, by
@@ -187,7 +187,7 @@
      <div id="expanded" class="exercise">
        <h3>Exercise: Try Modifying the <code>wmsConfig.xml</code> File</h3>
        <ol>
-         <li>Open a NAM dataset in Godiva2 and plot a parameter.</li>
+         <li>Open a dataset in Godiva2 and plot a parameter.</li>
          <li>Notice the default color scale range is [-50,50]. Decide on a better color scale range.</li>
          <li>Open the
            "<a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">
@@ -197,19 +197,46 @@
 <b>$</b> cd ${tomcat_home}/content/thredds
 <b>$</b> vi wmsConfig.xml
 </pre>
-           and change the color scale range for the target parameter in the NAM datasets.</li>
-         <li>Reopen Godiva2 on another NAM dataset and plot the target parameter. Check the new
+           and change the color scale range for the target parameter in the chosen dataset.</li>
+         <li>Reopen Godiva2 on the dataset and plot the target parameter. Check the new
            default color scale range.</li>
        </ol>
      </div>
    </div> <!-- end section -->
 
    <div id="section">
-     <h2><a name="wmsConfig">Vector Styles</a></h2>
-     <p>The WMS tries to identify vector components that it can combine and display as a single vector layer.
-       It looks for CF <code>standard_name</code> attributes with values of the form "eastward_*" and "northward_*"
-       and combines those that match into a vector layer.
-     </p>
+     <h2 id="styling_extensions"><a name="wmsConfig">Styling features and non-standard requests</a></h2>
+     <p>ncWMS provides several styling and displaying capabilities that are also available in TDS:</p>
+     <ul>
+     	<li>
+     		<p>The WMS tries to identify vector components that it can combine and display as a single vector layer.
+       		It looks for CF <code>standard_name</code> attributes with values of the form "eastward_*" and "northward_*"
+       		and combines those that match into a vector layer.</p>
+     	</li>
+     	<li>
+     		<p>ncWMS provides several vector styles: barb, stumpvec, trivec, linevec, fancyvec.<a href="http://oos.soest.hawaii.edu/pacioos/voyager/" target="_blank">Demo</a></p>
+     	</li>
+     	<li>
+     		<p>Some styling properties can be specified through the <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/WmsExtensions" target="_blank">non-standard optional parameters</a> supported by ncWMS</p>
+     	</li>
+     	<li>
+     		<p>Some non-standard requests are supported by ncWMS:</p>
+     			<ol>
+     				<li>GetTransect</li>
+     				<li>GetVerticalProfile</li>
+     				<li>GetVerticalSection</li>
+     			</ol>
+     	</li>     	
+     </ul>
+     
+     <div id="expanded" class="exercise">
+     	<h3>Exercise: WMS request with styling parameters</h3>
+     	<ol>
+     		<li>Open the <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/WmsExtensions" target="_blank">non-standard optional parameters</a> supported by ncWMS page</li>
+     		<li>Make several WMS request changing the color scale range and the displaying properties for the values out of range. </li>
+     		<li>Use <a href="http://thredds.ucar.edu/thredds/wms/grib/NCEP/DGEX/CONUS_12km/best?LAYERS=Temperature_isobaric&ELEVATION=50000&TRANSPARENT=true&STYLES=boxfill%2Frainbow&CRS=EPSG%3A4326&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&FORMAT=image%2Fpng&SRS=EPSG%3A4326&BBOX=-140.14654339665,2.0904137233527,-56.175327906289,67.692925825197&WIDTH=256&HEIGHT=256" target="_blank">this</a> as base request.     		
+     	</ol>
+     </div>               
    </div>
 
      <div id="section">
@@ -236,11 +263,15 @@
         - <a href="http://www.ittvis.com/ProductServices/IDL.aspx">http://www.ittvis.com/ProductServices/IDL.aspx</a>
       </li>
       <li>gvSIG (WMS and WCS) [free] - <a href="http://www.gvsig.org/web/">http://www.gvsig.org/web/</a></li>
-    </ul>
+    </ul>    
     <h3>Godiva2 WMS Client</h3>
     <p>The Godiva2 WMS client is part of the ncWMS code base and as such is included in the TDS distribution. It is a web application written in JavaScript using the OpenLayers library.</p>
     <p>In the TDS, you can access the Godiva2 client from the "Viewers" section of all WMS accessible datasets. The <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/GodivaTwoUserGuide">Godiva2 User Guide</a> is available from the ncWMS site.</p>
-    <a href="images/Godiva2_screenshot.png" target="_blank"><img src="images/Godiva2_screenshot_small.png" alt="Godiva2" height="502" width="600" /></a>  
+    <a href="images/Godiva2_screenshot.png" target="_blank"><img src="images/Godiva2_screenshot_small.png" alt="Godiva2" height="502" width="600" /></a>
+    
+    <h3>OWSLib (python client) example:</h3>
+    <a href="http://nbviewer.ipython.org/urls/raw.github.com/Unidata/tds-python-workshop/master/wms_sample.ipynb" target="_blank">tds-python-workshop WMS notebook</a>
+      
    </div> <!-- end section -->
 
   </body>
