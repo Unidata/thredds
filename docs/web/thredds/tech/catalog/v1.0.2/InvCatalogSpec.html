@@ -141,7 +141,7 @@ should be sufficient to allow clients to access datasets.</p>
 
 <p>Example:
 </p>
-<pre> &lt;service name="mcidasServer" serviceType="ADDE" base="http://motherlode.ucar.edu:8080/adde/" /&gt;<br></pre>
+<pre> &lt;service name="mcidasServer" serviceType="ADDE" base="http://thredds.ucar.edu/thredds/adde/" /&gt;<br></pre>
 
 Example with service base URL relative to catalog URL (see <a href="#constructingURLs">constructing
 URLS</a> for how the resolved URL is created):
@@ -830,9 +830,9 @@ service@base attribute.</p>
 
 <p> When a service base is a <a href="http://www.webreference.com/html/tutorial2/3.html">relative 
   URL</a>, it is resolved against the catalog base URL. For example if the catalog 
-  base URL is <em>http://motherlode.ucar.edu:8080/thredds/dodsC/catalog.xml</em>, and 
-  a service base is <em>airtemp/</em>, then the resolved base is <em>http://motherlode.ucar.edu:8080/thredds/dodsC/airtemp/</em>. 
-  Note that if the service base is <em>/airtemp/</em>, the resolved URL is <em>http://motherlode.ucar.edu:8080/airtemp/</em>. 
+  base URL is <em>http://thredds.ucar.edu/thredds/dodsC/catalog.xml</em>, and
+  a service base is <em>airtemp/</em>, then the resolved base is <em>http://thredds.ucar.edu/thredds/dodsC/airtemp/</em>.
+  Note that if the service base is <em>/airtemp/</em>, the resolved URL is <em>http://thredds.ucar.edu/thredds/airtemp/</em>.
   The <strong>java.net.URI</strong> class in JDK 1.4+ will resolve relative URLs. 
 </p>
 
@@ -925,7 +925,7 @@ service@base attribute.</p>
 
 <p>Example:</p>
 
-<pre> <a href="http://motherlode.ucar.edu:8080/thredds/catalogServices?cmd=subset&amp;catalog=http://motherlode.ucar.edu:8080/thredds/idv/rt-models.1.0.xml&amp;dataset=idd.model.nam_211">http://motherlode.ucar.edu:8080/thredds/catalogServices?cmd=subset&amp;catalog=http://motherlode.ucar.edu:8080/thredds/idv/rt-models.1.0.xml&amp;dataset=idd.model.nam_211</a><br><br></pre>
+<pre> <a href="http://thredds.ucar.edu/thredds/catalogServices?cmd=subset&amp;catalog=http://thredds.ucar.edu/thredds/idv/rt-models.1.0.xml&amp;dataset=idd.model.nam_211">http://thredds.ucar.edu/thredds/catalogServices?cmd=subset&amp;catalog=http://thredds.ucar.edu/thredds/idv/rt-models.1.0.xml&amp;dataset=idd.model.nam_211</a><br><br></pre>
 
 <hr>
 <h2>Index<a name="index"></a> </h2>
