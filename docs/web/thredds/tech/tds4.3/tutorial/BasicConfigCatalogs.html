@@ -215,9 +215,9 @@ http://hostname:port/thredds/dodsC/<b>my/test</b>/grib/data1.grib2
       <li>Take a look at the data (note: the filenames may be different):
 
 <pre>
-<b>$</b> ls /data/ldm
+<b>$</b> ls /machine/tds/data/ldm
 fsl  madis  nam_12km  suomi
-<b>$</b> ls /data/ldm/nam_12km
+<b>$</b> ls /machine/tds/data/ldm/nam_12km
 201307211800.grib2  201307220600.grib2  201307221800.grib2  201307230600.grib2
 201307220000.grib2  201307221200.grib2  201307230000.grib2  201307231200.grib2
 </pre>
@@ -232,7 +232,7 @@ fsl  madis  nam_12km  suomi
       <li>And add a <code>datasetScan</code> element for the NAM data:
 <pre>
 &lt;datasetScan name="<b>NCEP NAM 12km</b>" ID="<b>NAM_12km</b>"
-             path="<b>nam_12km</b>" location="<b>/data/ldm/nam_12km</b>"&gt;
+             path="<b>nam_12km</b>" location="<b>/machine/tds/data/ldm/nam_12km</b>"&gt;
   &lt;metadata inherited="true"&gt;
     &lt;serviceName&gt;odap&lt;/serviceName&gt;
   &lt;/metadata&gt;
