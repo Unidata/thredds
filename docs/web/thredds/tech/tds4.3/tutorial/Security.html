@@ -39,6 +39,33 @@
 
    <h1>Production Server Overview</h1>
 
+
+   <div id="section">
+    <h2><a name="context">What This Section Covers</a></h2>
+
+    <p>Best practices and recommendations on securing a production TDS/Tomcat server:</p>
+    <ul>
+      <li><a a href="#why">Why Is Security Important?</a> </li>
+      <li><a a href="#versions">Keeping Software Versions Up-To-Date</a> </li>
+      <li><a a href="#install">Tomcat Process User/Group and $CATALINA_HOME Permissions</a> </li>
+      <li><a a href="#unused">Removing Unused Web Applications</a> </li>
+      <li><a a href="#digested">Using Digested Passwords</a> </li>
+      <li><a a href="#ssl">Enabling SSL Encryption</a> </li>
+      <li><a a href="#manager">Securing the Tomcat <code>manager</code> Application</a> </li>
+      <li><a a href="#ports">Blocking Non-Essential Port Access At The Firewall</a> </li>
+      <li><a a href="#access">Restricting Access To The TDS By Remote IP Address Or Host</a> </li>
+
+      <li><a a href="#proxy">Reverse Proxy</a> </li>
+      <li><a a href="#jvm">Running Tomcat with a Security Manager</a> </li>
+      <li><a a href="#shutdown">Protecting the Tomcat <code>SHUTDOWN</code> Port</a> </li>
+    </ul>
+
+    <p>You should know how to do a <a href="GettingStarted.html">basic installation</a> of Tomcat, Java, and the TDS; and be familiar with the <a href="GettingStarted.html#tour">Tomcat directory structure</a>; <a href="GettingStarted.html#files">Tomcat server configuration</a>; and the <a href="GettingStarted.html#manager">Tomcat manager application</a>.</p>
+   </div> <!-- end section -->
+
+
+
+
    <div id="section">
     <h2><a name="why">Why Is Security Important?</a></h2>
       <h3>Be afraid</h3>
@@ -62,7 +89,7 @@
       <h3>Resources</h3>
       <ul>
        <li><a href="http://tomcat.apache.org/security.html">Tomcat security reports</a><br>      A complete list of known and documented security vulnerabilities associated with each Tomcat release.</li>
-       <li><a href="http://tomcat.apache.org/lists.html"><code>tomcat-users</code> mailing list</a><br>     A high-traffic mailing list made up of Tomcat users.  New releases of Tomcat are likely to be announced here.</li>
+       <li><a href="http://tomcat.apache.org/lists.html">Tomcat</code> mailing lists</a><br>    Various tomcat-related mailing lists, including <code>tomcat-announce</code> which is a low volume list for release announcements and security vulnerabilities.</li>
        <li><a href="http://java.sun.com/javase/technologies/security/">Java SE Security</a><br>     Sun's Java security page which includes a chronology of Java security issues and user forums.</li>
        <li><a href="/mailing_lists/archives/thredds/"><code>thredds</code> mailing list</a><br>     The THREDDS mailing list where announcements of new releases will be made.</li>
        <li><a href="http://www.securityfocus.com/vulnerabilities">Buqtraq vunerability database</a><br>     SecurityFocus' database of all known vulnerabilities for all different types of software from different vendors.</li>
@@ -75,7 +102,7 @@
      <h3>Rationale</h3>
       <div id="note" class="info">
        <h4>Background info</h4>
-       <p>The JVM doesn't fork at all, nor does it support <code>setuid()</code> calls. The JVM (and therefore Tomcat) is one process. The JVM is a virtual machine with many threads under the same process. </p>
+       <p>The JVM doesn't fork at all, nor does it support <code>setuid()</code> calls. The JVM, and therefore Tomcat, is one process. The JVM is a virtual machine with many threads under the same process. </p>
       </div>
       <ul>
        <li>Because of OS constraints, all threads in the same JVM process must run under the same user id.  No thread may run as the <code>root</code> user unless they are all are run as the <code>root</code> user. Hence, any programs run in Tomcat (TDS, <code>manager</code> application, other JSPs and servlets) will run as the <code>root</code> user.</li>
@@ -326,7 +353,7 @@
      <h3>For running the TDS, keep in mind the following:  </h3>
      <ul>
          <li>Port 8080 should have unrestricted access <i>unless</i> you plan to proxy requests to Tomcat from and HTTP server.</li>
-         <li>If you are allowing any remote management by using the TDS Remote Management Tool or the Tomcat <code>manager</code> application, you must also open up port 8443.</li>
+         <li>If you are using any of the TDS monitoring and debugging tools, or the Tomcat <code>manager</code> application, you must also open up port 8443.</li>
         </ul> 
 
 
@@ -394,7 +421,7 @@
 
       <h3>Resources</h3>
       <ul>
-       <li><a href=http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html">The Valve Component</a><br>      Tomcat documentation about the various <code>valve</code> components available for use.</li>
+       <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html">The Valve Component</a><br>      Tomcat documentation about the various <code>valve</code> components available for use.</li>
       </ul>
    </div> <!-- end Restricting Access To The TDS By Remote IP Address Or Host section -->
 
