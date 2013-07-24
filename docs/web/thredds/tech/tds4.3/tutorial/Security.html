@@ -4,36 +4,34 @@
    <title>Production Server Overview</title>
    <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
    <script type="text/javascript" src="workshopNav.js"></script>
- <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
   <script>
-$(function() {
-    $("a.example").click(function() {
-        var id = $(this).attr("id");
-        $.ajax({
-            url: "examples/" + id + ".html",
-            cache: false
-        }).done(function(html) {
-           $("a#" + id + ".example").after("<div id='" + id + "'></div>");
-           $("div#" + id).dialog({
-               minWidth: 600, 
-               resizable: true,
-               modal: true, 
-               buttons: {
-                   Close : function() {
-                       $("div#" + id).remove();
-                       $(this).dialog( "destroy" );
+    $(function() {
+        $("a.example").click(function() {
+            var id = $(this).attr("id");
+            $.ajax({
+                url: "examples/" + id + ".html",
+                cache: false
+            }).done(function(html) {
+               $("a#" + id + ".example").after("<div id='" + id + "'></div>");
+               $("div#" + id).dialog({
+                   minWidth: 600, 
+                   resizable: true,
+                   modal: true, 
+                   buttons: {
+                       Close : function() {
+                           $("div#" + id).remove();
+                           $(this).dialog( "destroy" );
+                       }
                    }
-               }
-           });
-           $("div#" + id).append(html);
+               });
+               $("div#" + id).append(html);
+            });
         });
     });
-});
-
-
-  </script>
+   </script>
   </head>
   <body>
 

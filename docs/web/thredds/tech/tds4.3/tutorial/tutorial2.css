@@ -6,10 +6,9 @@ h3 {padding: 0px 0px 0px 0px; margin: 20px 0px; font-size: 14pt !important; colo
 h4 {border: none !important;}
 pre {white-space: pre-wrap; position: relative; font-family: "Lucida Console", "Courier New", monospace; margin: 0px 0px 20px 0px; padding: 5px 10px 5px 10px; background: #FAF8F0; border: 1px solid #BEBAB0; font-size: 9pt;}
 .notice {margin-top: -40px; font-size: 10pt}
-
+ul{margin: 0 0 20px 0;}
 
 /* breadcrumbs */
-
 ul#breadcrumbs {list-style: none; font-size: 11px; margin: 0 0 20px 0; padding: 0; color: #696969;}
 ul#breadcrumbs li {display: inline; margin: 0; padding: 0;}
 ul#breadcrumbs li a {padding: 0px 20px 0px 0px; background: transparent url('images/breadcrumb.png') no-repeat center right;}

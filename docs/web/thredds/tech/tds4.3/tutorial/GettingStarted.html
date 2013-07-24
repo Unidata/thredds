@@ -1,17 +1,35 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
  <html>
   <head>
-   <title>TDS Tutorial: Getting started with the TDS: Local Test Server Setup</title>
+   <title>Getting Started With the TDS: Local Test Server Setup</title>
    <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
-   <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon" />
+   <script type="text/javascript" src="workshopNav.js"></script>
   </head>
   <body>
-   <ul id="breadcrumbs">
-    <li><a href="/projects/THREDDS/tech/tutorial/workshop2013.html">TDS Workshop Home</a></li> 
-    <li>Getting started with the TDS: Local Test Server Setup</li>
-   </ul>
+   <h1>Getting Started With the TDS: Local Test Server Setup</h1>    
 
-   <h1>Getting started with the TDS: Local Test Server Setup</h1>    
+   <div id="section">
+    <h2><a name="context">What This Section Covers</a></h2>
+
+    <p>This section covers basic installation and configuration of Tomcat, Java JDK and the TDS for a local test server:</p>
+
+    <p><a href="images/gettingStartedContext.png" target="_blank" style="float:right;"><img src="images/gettingStartedContext.png" width="300" alt="Getting Started Context" /></a></p>
+
+
+    <ul>
+        <li><a href="#install">Installing Java and Tomcat</a></li>
+        <li><a href="#tour">Tomcat Directory Structure: Quick Tour</a></li>
+        <li><a href="#running">Running Tomcat</a></li>
+        <li><a href="#logs">Tomcat Log Files</a></li>
+        <li><a href="#files">Tomcat (Server-Level) Configuration Files</a></li>
+        <li><a href="#deploying">Deploying the TDS</a></li>
+        <li><a href="#manager">Tomcat <code>manager</code> Application</a></li>
+        <li><a href="#next">Next Steps: Where To Go From Here</a></li>
+    </ul>
+
+    <p>No prior knowledge of Tomcat, Java, or the TDS needed.</p>
+   </div> <!-- end section -->
+
    <div id="section">
     <h2><a name="install">Installing Java and Tomcat</a></h2>
 
@@ -318,19 +336,25 @@ export CATALINA_BASE
       <h4>Settings </h4>
       <p>Whenever possible, Unidata recommends <code>-Xmx1500m</code> for 32-bit systems, and<code>-Xmx4096m</code> (or more) for 64-bit systems.</p>
      </div> 
+
      <p>The parameters we pass to <code>$JAVA_OPTS</code>:</p>
+
      <ul>
-      <li><code>-Xms</code> is the initial allocated memory of the JVM (for performance).</li>
+      <li><code>-Xms</code> is the initial and minimum allocated memory of the JVM (for performance).</li>
       <li><code>-Xmx</code> the maximum allocated memory of the JVM (for performance).</li>
-      <li><code>-server</code> tells the Hostspot compiler to run the JVM in "server" mode.</li>
+      <li><code>-server</code> tells the Hostspot compiler to run the JVM in "server" mode (for performance).</li>
       <li><code>-Djava.awt.headless=true</code> is needed to prevent graphics rendering code from assuming a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
       <li><code style="white-space: nowrap;">-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</code> allows the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS to write system preferences to a location that is writable by the Tomcat user.</li>
-     </ul>
-    <div id="note" class="ahead">
-     <h4>Looking Ahead</h4>
-     <p>You will learn more about the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/WMS.html">TDS Web Map Service (WMS)</a> later on in this workshop.</p>
-    </div> 
- 
+
+       <div id="note" class="ahead">
+       <h4>Looking Ahead</h4>
+       <p>You will learn more about the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/WMS.html">TDS Web Map Service (WMS)</a> later on in this workshop.</p>
+       </div> 
+
+
+      </ul>
+
+
      <li>Implement your changes by restarting Tomcat.</li>
      <p>Restart Tomcat and examine the output generated to the terminal window by the startup script:</p>
 
@@ -339,7 +363,7 @@ export CATALINA_BASE
 Using CATALINA_BASE:   /usr/local/tds/apache-tomcat-7.0.42
 Using CATALINA_HOME:   /usr/local/tds/apache-tomcat-7.0.42
 Using CATALINA_TMPDIR: /usr/local/tds/apache-tomcat-7.0.42/temp
-Using JRE_HOME:        /usr/local/tds/jdk1.7.0_25
+<b>Using JRE_HOME:        /usr/local/tds/jdk1.7.0_25</b>
 Using CLASSPATH:       /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar
 </pre>
       <div id="expanded" class="question">
@@ -993,8 +1017,8 @@ drwxr-xr-x  3 tds workshop     4096 Jul 15 09:37 ROOT
 
 
       <div id="note" class="ahead">
-       <h4>TDS remote management tool</h4>
-       <p>You will need to enable <a href="Security.html#ssl">Enable SSL encryption</a> to access TDS remote management tool.</p>
+       <h4>TDS Monitoring &amp; Debugging Tools</h4>
+       <p>You will need to enable <a href="Security.html#ssl">Enable SSL encryption</a> to access a couple ofTDS monitoring and debugging tools.</p>
           
       </div>
 
@@ -1009,15 +1033,6 @@ drwxr-xr-x  3 tds workshop     4096 Jul 15 09:37 ROOT
 
 
    </div> <!-- end section -->
-
-
-  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
-
-   
-   <ul id="breadcrumbs">
-    <li><a href="/projects/THREDDS/tech/tutorial/workshop2013.html">TDS Workshop Home</a></li> 
-    <li>Getting Started: Tomcat, Java and the TDS</li>
-   </ul>
 
 
   </body>
