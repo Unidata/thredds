@@ -15,11 +15,11 @@
   <div id="expanded" class="exercise">
     <h3>Example 1: Local WRF output</h3>
     <ol>
-      <li><p>In the ToolsUI "Viewer" tab, open <code>/tds2012data/ncml/wrf/wrfout_d01_2000-01-25_00--00--00</code> Note that the model output are on an <a href=http://mitgcm.org/sealion/online_documents/node45.html>Arakawa C grid</a>, so we have 'regular' and 'stag' dimensions.</p>
+      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2000-01-25_00--00--00</code> Note that the model output are on an <a href=http://mitgcm.org/sealion/online_documents/node45.html>Arakawa C grid</a>, so we have 'regular' and 'stag' dimensions.</p>
       </li>
       <li><p>Open the following link in your browser: <a href=http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf>WRF goes CF</a></p>
       </li>
-      <li><p>In ToolsUI "NcML" tab, open <code>/tds2012data/ncml/wrf/wrfout_d01_2000-01-25_00--00--00</code>, and save a copy of the resulting NcML.</p>
+      <li><p>In ToolsUI "NcML" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2000-01-25_00--00--00</code>, and save a copy of the resulting NcML.</p>
       </li>
       <li><p>We will not be changing any of the dimensions or global attributes, so remove them from the NcML. Also, many of the variable attribues will not be changed, so they can be removed as well (e.g. FieldType, MemoryOrder, description,...).</p>
       </li>
@@ -27,7 +27,7 @@
       </li>
       <li><p>Pay attention to units (for example, see the variable XTIME).</p>
       </li>
-      <li>To see a partial WRF NcML file, open <code>/tds2012data/ncml/wrf/fix/ wrf-cf.ncml</code>, which was provided by <a href=http://rsignell.tiddlyspot.com/#%5B%5BMaking%20WRF%20files%20CF-Compliant%5D%5D>Rich Signell</a>. Note the addition of the Conventions attribute.
+      <li>To see a partial WRF NcML file, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrf-cf.ncml</code>, which was provided by <a href=http://rsignell.tiddlyspot.com/#%5B%5BMaking%20WRF%20files%20CF-Compliant%5D%5D>Rich Signell</a>. Note the addition of the Conventions attribute.
       </li>
     </ol>
   </div>
@@ -38,7 +38,7 @@
     <ol>
       <li><p>First, shutdown Tomcat and add the following to your <code>catalog.xml</code>:
 <pre>
-&lt;datasetRoot path="workshop_ncml" location="/tds2012data/ncml/unknown" /&gt; 
+&lt;datasetRoot path="workshop_ncml" location="/machine/tds/data/ncmlExamples/simpleNcmlTwo/" /&gt; 
 
 &lt;dataset name="ncml examples" ID="testNcmlDataset" serviceName="odap"
          urlPath="wowkshop_ncml/hwave_4D.nc"/&gt;
