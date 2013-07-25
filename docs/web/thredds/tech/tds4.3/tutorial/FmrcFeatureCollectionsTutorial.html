@@ -50,7 +50,7 @@
        &lt;documentation type=&quot;summary&quot;&gt;Example BOM&lt;/documentation&gt;
      &lt;/metadata&gt;
  
-4)   &lt;collection spec=&quot;/data/tds/workshop/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;
+4)   &lt;collection spec=&quot;/machine/tds/workshop/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;
    &lt;/featureCollection&gt;
   &lt;/dataset&gt;
 &lt;/catalog&gt;</pre>
@@ -59,7 +59,7 @@
       <li>All services are defined in a compound service type called <code>fmrcServices</code>.</li>
       <li>A THREDDS <code>featureCollection</code> is defined, of type <code>FMRC</code>. All contained datasets will all have a <code>path</code> starting with <code>BOM/model</code>.</li>
       <li>All the <code>metadata</code> contained here will be inherited by the contained datasets.</li>
-      <li>The <code>collection</code> of files is defined, using a <a href="../reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /data/tds/workshop/bom/</strong> will be scanned for files with names that start with &quot;<strong><em>ocean_fc_&quot; ,</em></strong> and end with &quot;<em><strong>.nc</strong></em>&quot;. The run data is extracted from the filename.</li>
+      <li>The <code>collection</code> of files is defined, using a <a href="../reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/workshop/bom/</strong> will be scanned for files with names that start with &quot;<strong><em>ocean_fc_&quot; ,</em></strong> and end with &quot;<em><strong>.nc</strong></em>&quot;. The run data is extracted from the filename.</li>
      </ol>
      <p>The contained datasets include the resulting 2D time dimension dataset, as well as  1D time views described <a href="../reference/collections/FmrcCollection.html#datasetTypes">here</a>, as seen in the resulting HTML page for that dataset: </p>
      <p><img src="images/FmrcExample1.png" width="760" height="416"/></p>
@@ -72,11 +72,11 @@
     <h2><a name="runtime">Specifying the Run Time</a></h2>
     <p>FMRCs are collections of files with (possibly) different run times, and the software needs to know what that run time is. If you look closely at the files in this example, you may notice that the run time does not appear explicitly inside the file anywhere. Luckily the information is in the filename, which is a common practice. </p>
     <p>1. The recommended way to specify the run time  is to specify a<em> date parsing template </em>in the collection specification string, for example:</p>
-    <pre>&lt;collection spec=&quot;/data/tds/workshop/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;</pre>
+    <pre>&lt;collection spec=&quot;/machine/tds/workshop/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;</pre>
     <p>extracts the run date by applying the template <code>yyyyMMdd</code> to the portion of the filename after &quot;<code>ocean_fc_</code>&quot;. </p>
-    <p>If the information is in a directory name, then you can use the dateFormatMark field on the collection element. In our example, an example dataset paths looks like:<strong> /data/tds/workshop/20090330/ocean_fc_20090330_048_eta.nc</strong>. 
+    <p>If the information is in a directory name, then you can use the dateFormatMark field on the collection element. In our example, an example dataset paths looks like:<strong> /machine/tds/workshop/20090330/ocean_fc_20090330_048_eta.nc</strong>. 
       If we wanted to extract the run time from the directory (pretending we couldn't do that from the filename), this is how we would do that:    </p>
-    <pre>&lt;collection spec=&quot;/data/tds/workshop/bom/**/ocean_fc_.*\.nc$&quot; dateFormatMark=&quot;#<strong>workshop/bom/#yyyMMdd</strong>&quot; /&gt;</pre>
+    <pre>&lt;collection spec=&quot;/machine/tds/workshop/bom/**/ocean_fc_.*\.nc$&quot; dateFormatMark=&quot;#<strong>workshop/bom/#yyyMMdd</strong>&quot; /&gt;</pre>
     </p>
     Note that we 1) remove the date extractor  from the collection specification string, and 2) add a <strong>dateFormatMark</strong> attribute. In this case, the <em>'#' </em>characters delineate a <strong>substring match</strong> on the entire pathname (so there had better only be one place where the string &quot;<strong>workshop/bom/</strong>&quot; appears). <em>Immediately</em> following the match comes the date extractor string. See <a href="../reference/collections/FeatureCollections.html#dateExtractor">here</a> for more details.
     <p>2. The second way to specify the run time is to add a global attribute inside each file of the collection, with name <strong>_CoordinateModelRunDate</strong> whose value is the run time as an ISO date string. For example:</p>
@@ -107,7 +107,7 @@
         &lt;documentation type=&quot;summary&quot;&gt;Specially good GFS_Global_2p5deg&lt;/documentation&gt;
       &lt;/metadata&gt;
    
-      &lt;collection spec=&quot;/data/tds/workshop/gfs/GFS_Global_2p5deg.*\.nc4$&quot; 
+      &lt;collection spec=&quot;/machine/tds/workshop/gfs/GFS_Global_2p5deg.*\.nc4$&quot; 
                   name=&quot;GFS_Global_2p5deg&quot;
 <b>1)</b>                recheckAfter=&quot;15 min&quot;
 <b>2)</b>                olderThan=&quot;5 min&quot;/&gt;

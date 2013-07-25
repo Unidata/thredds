@@ -480,14 +480,17 @@ de-referencing the catalogRefs, and simplifying:
   </ol>
   <h4>8) latestNamer: Rename the latest file dataset</h4>
   <blockquote>
-    <p>Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is &quot;Latest File&quot;). The dataqsetTypes options <em><strong>LatestFile</strong></em> and <em><strong>Files</strong></em>, must be enabled. Note that this does not affect dataset urlPath, which is always <em>latest.xml</em>.</p></blockquote>
+    <p>Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is &quot;Latest File&quot;). The datasetTypes options <em><strong>LatestFile</strong></em> and <em><strong>Files</strong></em>, must be enabled. Note that this does not affect dataset <strong>urlPath</strong>, which is always <em>latest.xml</em>.</p>
+  </blockquote>
 <pre>
 &lt;gribConfig datasetTypes="Best LatestFile Files"&gt;
   &lt;latestNamer name="My Latest Name"/&gt;
 &lt;/gribConfig&gt;
 </pre>
   <h4>9) bestNamer: Rename the Best dataset</h4>
-  <blockquote><p>Change the name of the Best dataset in the collection (the default name is &quot;Best Timeseries&quot;). The dataqsetTypes <strong><em>Best</em></strong> option must be selected. Note that this does not affect dataset urlPath.</p></blockquote>
+  <blockquote>
+    <p>Change the name of the Best dataset in the collection (the default name is &quot;Best Timeseries&quot;). The datasetTypes <strong><em>Best</em></strong> option must be selected. Note that this does not affect dataset <strong>urlPath</strong>.</p>
+  </blockquote>
 <pre>
 &lt;gribConfig datasetTypes="Best LatestFile Files"&gt;
   &lt;bestNamer name="My Best Name" /&gt;
@@ -502,11 +505,11 @@ de-referencing the catalogRefs, and simplifying:
   &lt;/filesSort&gt;
 &lt;/gribConfig&gt;
 </pre>
-  <p>If you make changes to these parameters (except <strong>datasetTypes</strong>, <strong>LatestNamer</strong>, <strong>BestNamer</strong>, and <strong>filesSort</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
 </blockquote>
+<p>If you make changes to <strong>gribConfig</strong> parameters (except <strong>datasetTypes</strong>, <strong>LatestNamer</strong>, <strong>BestNamer</strong>, and <strong>filesSort</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated March 2013
+<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2013
 </address>
 </body>
 </html>

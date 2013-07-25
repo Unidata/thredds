@@ -590,13 +590,9 @@ public class Grib2Iosp extends GribIosp {
     v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
 
     if (tc.isInterval()) {
-      v.addAttribute(new Attribute(CDM.LONG_NAME, cust.getIntervalName(tc.getCode())));
-      /* GribStatType statType = cust.getStatType(tc.getCode());
-      if (statType == null) {
-        v.addAttribute(new Attribute("Grib2 statistical type", tc.getCode()));
-      } else {
-        v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
-      } */
+      String intvName = cust.getIntervalName(tc.getCode());
+      if (intvName != null)
+        v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));
 
       Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName + "_bounds", DataType.INT, tcName + " 2"));
       v.addAttribute(new Attribute(CF.BOUNDS, tcName + "_bounds"));
