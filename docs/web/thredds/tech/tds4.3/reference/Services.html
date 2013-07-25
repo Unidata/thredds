@@ -15,27 +15,74 @@
         <ul>
             <li><a href="#serverInfo">Server Information Services</a></li>
             <li><a href="#catalogServices">Catalog Services</a></li>
-            <li><a href="#metadataServices">Metadata Services</a></li>
-            <li><a href="#dataAccessServices">Data Access Services</a></li>
+            <li><a href="#metadataServices">Metadata Services</a>
+                <ul>
+                    <li><a href="#ISO">ISO</a></li>
+                    <li><a href="#NCML">NCML</a></li>
+                    <li><a href="#UDDC">UDDC</a></li>
+                </ul>
+            </li>
+            <li><a href="#dataAccessServices">Data Access Services</a>
+                <ul>
+                    <li><a href="#DAP2">OPeNDAP DAP 2.0</a></li>
+                    <li><a href="#WCS">OGC WCS</a></li>
+                    <li><a href="#WMS">OGC WMS</a></li>
+                    <li><a href="#NCSS">NCSS</a></li>
+                    <li><a href="#cdmremote">CDMRemote</a></li>
+                    <li><a href="#HTTP">HTTP File Download</a></li>
+                </ul>
+            </li>
         </ul>
     </li>
-    <li><a href="#requirements">TDS Requirements for THREDDS Catalog <code>service</code> Elements</a></li>
+    <li><a href="#tdsServiceElemRequirements">TDS Requirements for THREDDS Catalog <code>service</code> Elements</a></li>
 </ul>
 <hr>
 <h2><a name="available">Available Services</a></h2>
 
+<p>
+    The THREDDS Data Server (TDS) supports a variety of web services. Each of the available
+    services are listed below with some configuration details.
+</p>
+<p>
+    Since the TDS provides data access services at predefined URL base paths, services
+    whose access is listed as a THREDDS Catalog <strong>service</strong> element must
+    use the exact values listed below for the <strong>serviceType</strong> and service
+    <strong>base</strong> URL. The value of the service <em>name</em> attribute, on the
+    other hand, is completely configurable. (See below for
+    <a href="#tdsServiceElemRequirements">more details</a>.)
+</p>
+
+<p>Notes:</p>
+<ul>
+    <li>Service <strong>base</strong> URLs are relative to the server so your catalogs
+        are independent of your servers hostname or port.</li>
+    <li>For a particular dataset, you can refer to an individual service, or use a
+        compound service (<em>all</em> in the example <a href="#compoundExample">below</a>)
+        which adds all the nested services to the dataset.</li>
+</ul>
+
 <h3><a name="serverInfo">Server Information Services</a></h3>
 <table width="95%">
     <tr>
-        <th width="20">Name</th>
-        <th width="20%">Access Point</th>
-        <th width="20%">Default<br/>Status</th>
-        <th width="40%">Description</th>
+        <th width="15">Name</th>
+        <th width="50%">TDS Configuration</th>
+        <th width="35%">Description</th>
     </tr>
     <tr>
         <td>Server Information (HTML)</td>
-        <td><code>/thredds/serverInfo.html</code></td>
-        <td rowspan="3">Enabled</td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Enabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/serverInfo.html</code></td>
+                </tr>
+            </table>
+        </td>
         <td rowspan="3">
             Provide human and machine readable access to information about the server
             installation. E.g., an abstract and a list of keywords summarizing the
@@ -46,30 +93,64 @@
     </tr>
     <tr>
         <td>Server Information (XML)</td>
-        <td><code>/thredds/serverInfo.xml</code></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Enabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/serverInfo.xml</code></td>
+                </tr>
+            </table>
+        </td>
     </tr>
     <tr>
-        <td>Server Information (Text)</td>
-        <td><code>/thredds/serverVersion.txt</code></td>
+        <td>Server Version Information (Text)</td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Enabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/serverVersion.txt</code></td>
+                </tr>
+            </table>
+        </td>
     </tr>
 </table>
 
 <h3><a name="catalogServices">Catalog Services</a></h3>
 <table width="95%">
     <tr>
-        <th width="20">Name</th>
-        <th width="20%">Access Point</th>
-        <th width="20%">Default<br/>Status</th>
-        <th width="40%">Description</th>
+        <th width="15">Name</th>
+        <th width="50%">TDS Configuration</th>
+        <th width="35%">Description</th>
     </tr>
     <tr>
-        <td>THREDDS Catalog Service</td>
+        <td>THREDDS&nbsp;Catalog Services</td>
         <td>
-            <code>/thredds/catalog.{xml|html}</code><br/>
-            <code>/thredds/catalog/*/catalog.{xml|html}</code><br/>
-            <code>/thredds/*/*.{xml|html}</code>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Enabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td>
+                        <code>/thredds/catalog.{xml|html}</code><br/>
+                        <code>/thredds/catalog/*/catalog.{xml|html}</code><br/>
+                        <code>/thredds/*/*.{xml|html}</code>
+                    </td>
+                </tr>
+            </table>
         </td>
-        <td>Enabled</td>
         <td rowspan="2">
             Provide subsetting and HTML conversion services for THREDDS catalogs. Catalogs
             served by the TDS can be subset and/or viewed as HTML. Remote catalogs, if allowed/enabled,
@@ -81,30 +162,58 @@
                     File (<a href="ThreddsConfigXMLFile.html#Remote">threddsConfig.xml</a>).
                 </li>
             </ul>
-
         </td>
     </tr>
     <tr>
         <td>Remote THREDDS Catalog Service</td>
         <td>
-            <code>/thredds/remoteCatalogService</code>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Disabled</td>
+                </tr>
+                <tr>
+                    <td>Access&nbsp;Point</td>
+                    <td><code>/thredds/remoteCatalogService</code></td>
+                </tr>
+            </table>
         </td>
-        <td>Disabled</td>
     </tr>
 </table>
 
 <h3><a name="metadataServices">Metadata Services</a></h3>
 <table width="95%">
     <tr>
-        <th width="20">Name</th>
-        <th width="20%">Access Point</th>
-        <th width="20%">Default<br/>Status</th>
-        <th width="40%">Description</th>
+        <th width="15">Name</th>
+        <th width="50%">TDS Configuration</th>
+        <th width="35%">Description</th>
     </tr>
     <tr>
-        <td>ISO</td>
-        <td><code>/thredds/iso/*</code></td>
-        <td>Disabled</td>
+        <td><a name="ISO">ISO</a></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Disabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/iso/*</code></td>
+                </tr>
+                <tr><th colspan="2">Catalog Service Configuration<br/>
+                    (exact values <a href="#tdsServiceElemRequirements">required</a>)</th></tr>
+                <tr>
+                    <td>Service Type</td>
+                    <td><strong>ISO</strong></td>
+                </tr>
+                <tr>
+                    <td>Service Base URL</td>
+                    <td><strong>/thredds/iso/</strong></td>
+                </tr>
+            </table>
+        </td>
         <td>Provide ISO 19115 metadata representation of a dataset's structure and metadata
             <ul>
                 <li>More details are available <a href="ncISO.html">here</a>.
@@ -116,9 +225,30 @@
         </td>
     </tr>
     <tr>
-        <td>NCML</td>
-        <td><code>/thredds/ncml/*</code></td>
-        <td>Disabled</td>
+        <td><a name="NCML">NCML</a></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Disabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/ncml/*</code></td>
+                </tr>
+                <tr><th colspan="2">Catalog Service Configuration<br/>
+                    (exact values <a href="#tdsServiceElemRequirements">required</a>)</th></tr>
+                <tr>
+                    <td>Service Type</td>
+                    <td><strong>NCML</strong></td>
+                </tr>
+                <tr>
+                    <td>Service Base URL</td>
+                    <td><strong>/thredds/ncml/</strong></td>
+                </tr>
+            </table>
+        </td>
         <td>Provide NCML representation of a dataset
             <ul>
                 <li>More details are available <a href="ncISO.html">here</a>.
@@ -130,9 +260,30 @@
         </td>
     </tr>
     <tr>
-        <td>UDDC</td>
-        <td><code>/thredds/uddc/*</code></td>
-        <td>Disabled</td>
+        <td><a name="UDDC">UDDC</a></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Disabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/uddc/*</code></td>
+                </tr>
+                <tr><th colspan="2">Catalog Service Configuration<br/>
+                    (exact values <a href="#tdsServiceElemRequirements">required</a>)</th></tr>
+                <tr>
+                    <td>Service Type</td>
+                    <td><strong>UDDC</strong></td>
+                </tr>
+                <tr>
+                    <td>Service Base URL</td>
+                    <td><strong>/thredds/uddc/</strong></td>
+                </tr>
+            </table>
+        </td>
         <td>Provide an evaluation of how well the metadata contained in a dataset conforms
             to the <a href="http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discovery">
                 NetCDF Attribute Convention for Data Discovery (NACDD)</a>
@@ -150,15 +301,35 @@
 <h3><a name="dataAccessServices">Data Access Services</a></h3>
 <table width="95%">
     <tr>
-        <th width="20">Name</th>
-        <th width="20%">Access Point</th>
-        <th width="20%">Default<br/>Status</th>
-        <th width="40%">Description</th>
+        <th width="15">Name</th>
+        <th width="50%">TDS Configuration</th>
+        <th width="35%">Description</th>
     </tr>
     <tr>
-        <td>OPeNDAP DAP2</td>
-        <td><code>/thredds/dodsC/*</code></td>
-        <td>Enabled</td>
+        <td><a name="DAP2">OPeNDAP DAP2</a></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Enabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/dodsC/*</code></td>
+                </tr>
+                <tr><th colspan="2">Catalog Service Configuration<br/>
+                    (exact values <a href="#tdsServiceElemRequirements">required</a>)</th></tr>
+                <tr>
+                    <td>Service Type</td>
+                    <td><strong>OPeNDAP</strong></td>
+                </tr>
+                <tr>
+                    <td>Service Base URL</td>
+                    <td><strong>/thredds/dodsC/</strong></td>
+                </tr>
+            </table>
+        </td>
         <td>OPeNDAP DAP2 data access protocol.
             <ul>
                 <li>Several configuration options are available
@@ -168,9 +339,30 @@
         </td>
     </tr>
     <tr>
-        <td>NetCDF Subset Service</td>
-        <td><code>/thredds/ncss/*</code></td>
-        <td>Disabled</td>
+        <td><a name="NCSS">NetCDF Subset Service</a></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Disabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/ncss/*</code></td>
+                </tr>
+                <tr><th colspan="2">Catalog Service Configuration<br/>
+                    (exact values <a href="#tdsServiceElemRequirements">required</a>)</th></tr>
+                <tr>
+                    <td>Service Type</td>
+                    <td><strong>NCSS</strong></td>
+                </tr>
+                <tr>
+                    <td>Service Base URL</td>
+                    <td><strong>/thredds/ncss/</strong></td>
+                </tr>
+            </table>
+        </td>
         <td>NetCDF Subset Service: a data access protocol.
             <ul>
                 <li>More details are available <a href="NetcdfSubsetServiceReference.html">here</a>.
@@ -185,10 +377,33 @@
         </td>
     </tr>
     <tr>
-        <td>CDM Remote</td>
-        <td><code>/thredds/cdmremote/*</code></td>
-        <td>Disabled, automatically enabled when an appropriate FeatureCollection is used.</td>
-        <td>cdmremote/ncstream data access service.
+        <td><a name="cdmremote">CDM Remote</a></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Disabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/cdmremote/*</code></td>
+                </tr>
+                <tr><th colspan="2">Catalog Service Configuration<br/>
+                    (exact values <a href="#tdsServiceElemRequirements">required</a>)</th></tr>
+                <tr>
+                    <td>Service Type</td>
+                    <td><strong>cdmremote</strong></td>
+                </tr>
+                <tr>
+                    <td>Service Base URL</td>
+                    <td><strong>/thredds/cdmremote/</strong></td>
+                </tr>
+            </table>
+        </td>
+        <td>cdmremote/ncstream data access service. This service is disabled by
+            default. It is automatically enabled when an appropriate
+            FeatureCollection is used.
             <ul>
                 <li>More details are available
                     <a href="/software/netcdf-java/stream/CdmRemote.html">here</a>.
@@ -197,9 +412,30 @@
         </td>
     </tr>
     <tr>
-        <td>OGC Web Coverage Service (WCS)</td>
-        <td><code>/thredds/wcs/*</code></td>
-        <td>Disabled</td>
+        <td><a name="WCS">OGC Web Coverage Service (WCS)</a></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Disabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/wcs/*</code></td>
+                </tr>
+                <tr><th colspan="2">Catalog Service Configuration<br/>
+                    (exact values <a href="#tdsServiceElemRequirements">required</a>)</th></tr>
+                <tr>
+                    <td>Service Type</td>
+                    <td><strong>WCS</strong></td>
+                </tr>
+                <tr>
+                    <td>Service Base URL</td>
+                    <td><strong>/thredds/wcs/</strong></td>
+                </tr>
+            </table>
+        </td>
         <td>OGC WCS supports access to geospatial data as "coverages".
             <ul>
                 <li>More details about the OGC WCS are available
@@ -215,9 +451,30 @@
         </td>
     </tr>
     <tr>
-        <td>OGC Web Map Service (WMS)</td>
-        <td><code>/thredds/wms/*</code></td>
-        <td>Disabled</td>
+        <td><a name="WMS">OGC Web Map Service (WMS)</a></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Disabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/wms/*</code></td>
+                </tr>
+                <tr><th colspan="2">Catalog Service Configuration<br/>
+                    (exact values <a href="#tdsServiceElemRequirements">required</a>)</th></tr>
+                <tr>
+                    <td>Service Type</td>
+                    <td><strong>WMS</strong></td>
+                </tr>
+                <tr>
+                    <td>Service Base URL</td>
+                    <td><strong>/thredds/wms/</strong></td>
+                </tr>
+            </table>
+        </td>
         <td>OGC WMS supports access to georegistered map images from geoscience datasets.
             <ul>
                 <li>More details about the OGC WMS are available
@@ -235,77 +492,99 @@
         </td>
     </tr>
     <tr>
-        <td>HTTP File Download</td>
-        <td><code>/thredds/fileServer/*</code></td>
-        <td>Enabled</td>
+        <td><a name="HTTP">HTTP File Download</a></td>
+        <td>
+            <table width="100%">
+                <tr><th colspan="2">Basic Configuration</th></tr>
+                <tr>
+                    <td>Default&nbsp;Availability</td>
+                    <td>Disabled</td>
+                </tr>
+                <tr>
+                    <td>Access Point</td>
+                    <td><code>/thredds/fileServer/*</code></td>
+                </tr>
+                <tr><th colspan="2">Catalog Service Configuration<br/>
+                    (exact values <a href="#tdsServiceElemRequirements">required</a>)</th></tr>
+                <tr>
+                    <td>Service Type</td>
+                    <td><strong>HTTPServer</strong></td>
+                </tr>
+                <tr>
+                    <td>Service Base URL</td>
+                    <td><strong>/thredds/fileServer/</strong></td>
+                </tr>
+            </table>
+        </td>
         <td>HTTP File Download (HTTP byte ranges are supported)
             <ul>
-              <li>Files accessed through the HTTP file download have their file
-                  handles cached by default. Configuration settings for this caching
-                  can be set with the TDS Configuration File
-                  (<a href="ThreddsConfigXMLFile.html#FileCache">threddsConfig.xml</a>).
-              </li>
+                <li>Files accessed through the HTTP file download have their file
+                    handles cached by default. Configuration settings for this caching
+                    can be set with the TDS Configuration File
+                    (<a href="ThreddsConfigXMLFile.html#FileCache">threddsConfig.xml</a>).
+                </li>
             </ul>
         </td>
     </tr>
+
 </table>
 
 <hr width="100%" />
 
-<h2><a name="requirements">TDS Requirements for THREDDS Catalog <code>service</code> Elements</a></h2>
+<h2><a name="tdsServiceElemRequirements">TDS Requirements for THREDDS Catalog <code>service</code> Elements</a></h2>
+
 <p>
-    The TDS provides data access services at predefined URL base paths. Therefore, it is
-    <b>required that service base URLs must exactly match the values given here</b>, the service
-    type is an important ID and should match the values given here. The service <em>name</em>
-    can be completely configurable.
+    Since the TDS provides data access services at predefined URL base paths, services
+    whose access is listed as a THREDDS Catalog <strong>service</strong> element:
 </p>
-
-<h3>OPeNDAP</h3>
-<pre>&lt;service name="odap" serviceType="OPeNDAP" base="<b>/thredds/dodsC/</b>"/&gt;</pre>
-
-<h3>NetCDF Subset Service</h3>
-<pre>&lt;service name="ncss" serviceType="NetcdfSubset" base="<b>/thredds/ncss/grid/</b>"/&gt;</pre>
-
-<h3>WCS</h3>
-<pre> &lt;service name="wcs" serviceType="WCS" base="<b>/thredds/wcs/</b>"/&gt;</pre>
-
-<h3>WMS</h3>
-<pre> &lt;service name="wms" serviceType="WMS" base="<b>/thredds/wms/</b>"&nbsp;/&gt;</pre>
-
-<h3>HTTP Bulk File Service</h3>
-<pre>&lt;service name="fileServer" serviceType="HTTPServer" base="<b>/thredds/fileServer/"</b>&nbsp;/&gt;</pre>
-
-<h3>ncISO</h3>
-<pre>&lt;service name="iso" serviceType="ISO" base="<b>/thredds/iso/"</b>&nbsp;/&gt;</pre>
-<pre>&lt;service name="ncml" serviceType="NCML" base="<b>/thredds/ncml/"</b>&nbsp;/&gt;</pre>
-<pre>&lt;service name="uddc" serviceType="UDDC" base="<b>/thredds/uddc/"</b>&nbsp;/&gt;</pre>
-
-<p>Notes:</p>
-
 <ul>
-    <li>These base URLs are relative to the server so your catalogs are independent
-        of your servers hostname or port.</li>
-    <li>For a particular dataset, you can refer to an individual service, or use the
-        compound service (<em>all</em> in this example) which adds all the nested services
-        to the dataset.</li>
+    <li>must use the appropriate value for the <strong>serviceType</strong> attribute</li>
+    <li>must use the appropriate value for the service <strong>base</strong> URL attribute</li>
+    <li>may use any value (unique to the catalog) for the service <strong>name</strong> attribute</li>
 </ul>
 
-<h3>An example compound <code>service</code> Element</h3>
+<h3>Examples of All Individual Services</h3>
+<p>Note: The required <strong>serviceType</strong> and <strong>base</strong> values are
+    shown in bold.</p>
 
-<pre>&lt;service name=&quot;all&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
-    &lt;service name=&quot;all&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
-    &lt;service name=&quot;HTTPServer&quot; serviceType=&quot;HTTPServer&quot; base=&quot;/thredds/fileServer/&quot;/&gt;
-    &lt;service name=&quot;opendap&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
-    &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid/&quot;/&gt;
-    &lt;service name=&quot;cdmremote&quot; serviceType=&quot;CdmRemote&quot; base=&quot;/thredds/cdmremote/&quot;/&gt;
+<h4>OPeNDAP</h4>
+<pre>&lt;service name="odap" serviceType="<strong>OPeNDAP</strong>" base="<strong>/thredds/dodsC/</strong>"/&gt;</pre>
 
-    &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot;/&gt;
-    &lt;service name=&quot;wms&quot; serviceType=&quot;WMS&quot; base=&quot;/thredds/wms/&quot;/&gt;
+<h4>NetCDF Subset Service</h4>
+<pre>&lt;service name="ncss" serviceType="<strong>NetcdfSubset</strong>" base="<strong>/thredds/ncss/grid/</strong>"/&gt;</pre>
 
-    &lt;service name=&quot;iso&quot; serviceType=&quot;ISO&quot; base=&quot;/thredds/iso/&quot;/&gt;
-    &lt;service name=&quot;ncml&quot; serviceType=&quot;NCML&quot; base=&quot;/thredds/ncml/&quot;/&gt;
-    &lt;service name=&quot;uddc&quot; serviceType=&quot;UDDC&quot; base=&quot;/thredds/uddc/&quot;/&gt;
-&lt;/service&gt;</pre>
+<h4>WCS</h4>
+<pre> &lt;service name="wcs" serviceType="<strong>WCS</strong>" base="<strong>/thredds/wcs/</strong>"/&gt;</pre>
+
+<h4>WMS</h4>
+<pre> &lt;service name="wms" serviceType="<strong>WMS</strong>" base="<strong>/thredds/wms/</strong>"&nbsp;/&gt;</pre>
+
+<h4>HTTP Bulk File Service</h4>
+<pre>&lt;service name="fileServer" serviceType="<strong>HTTPServer</strong>" base="<strong>/thredds/fileServer/"</strong>&nbsp;/&gt;</pre>
+
+<h4>ncISO</h4>
+<pre>&lt;service name="iso" serviceType="<strong>ISO</strong>" base="<strong>/thredds/iso/"</strong>&nbsp;/&gt;</pre>
+<pre>&lt;service name="ncml" serviceType="<strong>NCML</strong>" base="<strong>/thredds/ncml/"</strong>&nbsp;/&gt;</pre>
+<pre>&lt;service name="uddc" serviceType="<strong>UDDC</strong>" base="<strong>/thredds/uddc/"</strong>&nbsp;/&gt;</pre>
+
+
+<h3><a name="compoundExample">Example compound <code>service</code> Element</a></h3>
+
+<pre>
+&lt;service name=&quot;all&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
+    &lt;service name=&quot;HTTPServer&quot; serviceType=&quot;<strong>HTTPServer</strong>&quot; base=&quot;<strong>/thredds/fileServer/</strong>&quot;/&gt;
+    &lt;service name=&quot;opendap&quot; serviceType=&quot;<strong>OPENDAP</strong>&quot; base=&quot;<strong>/thredds/dodsC/</strong>&quot;/&gt;
+    &lt;service name=&quot;ncss&quot; serviceType=&quot;<strong>NetcdfSubset</strong>&quot; base=&quot;<strong>/thredds/ncss/grid/</strong>&quot;/&gt;
+    &lt;service name=&quot;cdmremote&quot; serviceType=&quot;<strong>CdmRemote</strong>&quot; base=&quot;<strong>/thredds/cdmremote/</strong>&quot;/&gt;
+
+    &lt;service name=&quot;wcs&quot; serviceType=&quot;<strong>WCS</strong>&quot; base=&quot;<strong>/thredds/wcs/</strong>&quot;/&gt;
+    &lt;service name=&quot;wms&quot; serviceType=&quot;<strong>WMS</strong>&quot; base=&quot;<strong>/thredds/wms/</strong>&quot;/&gt;
+
+    &lt;service name=&quot;iso&quot; serviceType=&quot;<strong>ISO</strong>&quot; base=&quot;<strong>/thredds/iso/</strong>&quot;/&gt;
+    &lt;service name=&quot;ncml&quot; serviceType=&quot;<strong>NCML</strong>&quot; base=&quot;<strong>/thredds/ncml/</strong>&quot;/&gt;
+    &lt;service name=&quot;uddc&quot; serviceType=&quot;<strong>UDDC</strong>&quot; base=&quot;<strong>/thredds/uddc/</strong>&quot;/&gt;
+&lt;/service&gt;
+</pre>
 
 <hr width="100%" />
 
