@@ -58,7 +58,7 @@
         <p>In this example, we will use NcML to aggregate data files produced from the same model (same run, actually). However, something key is missing, and we will have to add it ourselves. Once again, we will see that joining these files is only part of the battle!</p>
         <ol>
           <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/aggNcmlTwo/data/umwmout_2013-06-04_23-00-00.nc</code></p></li>
-          <li><p>In the data file path, change <code>umwmout_2013-06-04_23-00-00.nc</code> to <code>umwmout_2013-06-04_00-00-05.nc</code>. Did you notice any changes between the two files>?</p></li>
+          <li><p>In the data file path, change <code>umwmout_2013-06-04_23-00-00.nc</code> to <code>umwmout_2013-06-05_00-00-00.nc</code>. Did you notice any changes between the two files>?</p></li>
           <li><p>Do you notice anything missing? What dimension will we use to aggregate?></p></li>
           <li><p>Open the file in the CoordSys tab. Anything important missing?</p></li>
           <li><p>Oh, no worries, the TIME IS ENCODED IN THE FILE NAME! Good enough, right?</p></li>
@@ -75,7 +75,7 @@
           <li><p>Save the file as <code>/machine/tds/data/ncmlExamples/aggNcmlTwo/joinNew.ncml</code></p></p></li>
           <li><p>Open your NcML file in the Viewer tab. Looks good, right? Ok, cool. All done. Let's close up shop . . . not so fast. Ugh.</p></li>
           <li><p>As it is, this will add a time dimension to all variables in the file. Is that what we want? What about the 1D coordinate variables?</p></li>
-          <li><p>We should explicitly list the variables that we want to aggregate. This can be very tedious. Go ahead and add the following to your NcML file:</p>
+          <li><p>We should explicitly list the variables that we want to aggregate. This can be very tedious. Go ahead and add the following to your NcML file inside the aggregation tag:</p>
           <pre>
 &lt;variableAgg name="u_stokes" /&gt;
 &lt;variableAgg name="v_stokes" /&gt;
