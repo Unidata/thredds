@@ -104,6 +104,13 @@ public class TestNc4IospReading {
   }
 
   @Test
+  public void problem() throws IOException {
+    String filename = "Q:/cdmUnitTest/formats/hdf5/npoess/GATRO-SATMR_npp_d20020906_t0409572_e0410270_b19646_c20090720223122943227_devl_int.h5";
+    doCompare(filename, false, false, false);
+  }
+
+
+  @Test
   public void readAllNetcdf3() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", new MyFileFilter(), new MyAct());
