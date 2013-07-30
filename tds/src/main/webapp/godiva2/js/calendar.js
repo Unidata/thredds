@@ -1093,7 +1093,7 @@ Calendar.prototype._init = function (firstDayOfWeek, date) {
 		date.setFullYear(year);
 	}
 	this.firstDayOfWeek = firstDayOfWeek;
-	this.date = new Date(date);
+	this.date = new Date(date.getTime());	
 	var month = date.getMonth();
 	var mday = date.getDate();
 	var no_days = date.getMonthDays();
