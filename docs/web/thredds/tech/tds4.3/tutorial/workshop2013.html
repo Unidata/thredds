@@ -14,7 +14,7 @@
     <ul>
         <li>Overview of the day</li>
         <li>Introduction of Unidata staff</li>
-        <li><a href="http://www.unidata.ucar.edu/community/surveys/2012training/survey.html">Feedback/Evaluation Form</a>
+        <li><a href="http://www.unidata.ucar.edu/community/surveys/2013training/survey.html">Feedback/Evaluation Form</a>
             (Repeated submissions encouraged)</li>
         <li>Beginners view of TDS (<a href="TDSOverview-1.ppt">ppt</a>)</li>
         <li>TDS Resources: <a href="/projects/THREDDS/tech/TDS.html">Web page</a>,
@@ -99,25 +99,41 @@
       <li><a href="tdsConfigChecklist.html">Checklist for production</a></li>
     </ul>
 
-  <h3>4:30 (Ethan) TDS Summary</h3>
+  <h3>4:30 (Ethan) Review and Contributing</h3>
     <ul>
-      <li>More TDS Overview  (<a href="TDSOverview-2.ppt">ppt</a>) with asides</li>
-      <li>Contributing Development
+      <li>Review  (<a href="TDSOverview-2.ppt">ppt</a>)</li>
+      <li>Contributions / Plug-in Development
         <ul>
-          <li>CDM : IOSPs, CoordSysBuilder, FeatureType handlers</li>
-          <li>TDS: Authorization, DatasetSource, servic</li>
+          <li>CDM:
+            <ul>
+              <li><a href="/software/netcdf-java/tutorial/IOSPoverview.html">IOSP</a>:
+                  adding support for new file formats</li>
+              <li><a href="/software/netcdf-java/tutorial/CoordSysBuilder.html">CoordSysBuilder</a>:
+                  adding support for new coordinate system conventions </li>
+              <li><a href="/software/netcdf-java/reference/FeatureDatasets/Overview.html">FeatureType Handlers</a> </li>
+            </ul>
+          </li>
+          <li>TDS:
+            <ul>
+              <li><a href="../reference/Viewers.html">Dataset Viewer links</a></li>
+              <li><a href="../reference/DatasetSource.html">DatasetSource</a></li>
+              <li><a href="../reference/PluggableRestrictedAccess.html">Authorization</a></li>
+              <li>Web Service (e.g., ncWMS and ncISO both externally developed)</li>
+            </ul>
+          </li>
         </ul>
       </li>
       <li>Open Source / Collaborative Development
         <ul>
-            <li>CDM/TDS on gitHub (<a href="https://github.com/Unidata/thredds">link</a>)</li>
+          <li>CDM/TDS on gitHub (<a href="https://github.com/Unidata/thredds">link</a>)</li>
           <li>CDM/TDS Issue Tracking (<a href="http://www.unidata.ucar.edu/jira/">link</a>)</li>
           <li>CDM/TDS Nightly Build/Test System (Jenkins - not yet publicly available)</li>
           <li><a href="http://www.unidata.ucar.edu/support/#mailinglists">Email Lists</a>: thredds@unidata.ucar.edu; netcdf-java@unidata.ucar.edu</li>
           <li><a href="http://www.unidata.ucar.edu/support/index.html#archives">Support</a>: support-thredds@unidata.ucar.edu; support-netcdf-java@unidata.ucar.edu</li>
           <li>Contributors: ncWMS, ncISO, other</li>
         </ul>
-      </ul>
+      </li>
+    </ul>
 
   <h3>5:00 Day One Finish</h3>
   <h3>6:00 Dinner TBD</h3>
@@ -137,7 +153,18 @@
     </ul>
     <p>This section covers various free, 3rd-party monitoring and debugging tools:</p>
     <ul>
-      <li><a href="FreeMonitoringAndDebuggingTools.html">Free Monitoring and Debugging Tools</a></li>
+      <li><a href="http://www.google.com/search?btnG=1&pws=0&q=log+analyzers">Log analyzers</a></li>
+      <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Tomcat manager application</a></li>
+      <li>Browser-based HTTP header viewers</li>
+      <ul>
+       <li><a href="http://www.youtube.com/watch?v=tKD50_zvZoo">Live HTTP Headers</a> (Firefox Add-On)</li>
+       <li><a href="https://developers.google.com/chrome-developer-tools/docs/network#http_headers">DevTools</a> (Chrome)</li>
+      </ul>
+      <li>JVM monitoring tools</li>
+      <ul>
+       <li><a href="http://visualvm.java.net/api-quickstart.html">VisualVM</a></li>
+       <li><a href="http://www.youtube.com/watch?v=Xy0tsT-GD68">JConsole</a></li>
+      </ul>
     </ul>
 
     <h3>9:00 (John) Monitoring and Debugging (part 2)</h3>
@@ -185,7 +212,7 @@
       <li>Netcdf Subset Service <a href="../reference/NetcdfSubsetServiceConfigure.html">configure</a>, <a href="../reference/NetcdfSubsetServiceReference.html">reference</a></li>
       <li>CdmrFeature Point services</li>
   </ul>
-    <h3>3:45  (Sean) Rosetta</h3>
+    <h3>3:45  (Sean) <a href="http://www.unidata.ucar.edu/software/rosetta/">Rosetta</a> (<a href="http://rosetta.unidata.ucar.edu">live site</a>)</h3>
     <h3>4:00 (Marcos) ncWMS</h3>
     <ul>
       <li><a href="AddingServices.html#wms_configuration">Setting up WMS</a></li>      
@@ -195,7 +222,7 @@
   <h3>4:30 (Ethan) Open Discussion / Participant feedback</h3>
     <ul>
         <li>What features are needed?</li>
-        <li><a href="http://www.unidata.ucar.edu/community/surveys/2012training/survey.html">Feedback/Evaluation Form</a>
+        <li><a href="http://www.unidata.ucar.edu/community/surveys/2013training/survey.html">Feedback/Evaluation Form</a>
             (Repeated submissions encouraged)</li>
     </ul>
     <h3>5:00 Day Two Finish</h3>
