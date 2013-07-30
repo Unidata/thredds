@@ -58,6 +58,10 @@ public interface Nc4prototypes extends Library {
   static public final int NC_MAX_VAR_DIMS = NC_MAX_DIMS; /* max per variable dimensions */
 
   static public final int NC_GLOBAL = -1;
+  static public final int NC_UNLIMITED = 0;
+
+  static public final int NC_NOWRITE = 0;
+  static public final int NC_WRITE = 1;
 
   static public final int NC_BYTE = 1;	/* signed 1 byte integer */
   static public final int NC_CHAR =	2;	/* ISO/ASCII character */
@@ -73,7 +77,7 @@ public interface Nc4prototypes extends Library {
   static public final int NC_STRING =	12;	/* string */
   static public final int NC_MAX_ATOMIC_TYPE = NC_STRING;
 
-  /* The folloing are use internally in support of user-defines
+  /* The following are use internally in support of user-defines
    * types. They are also the class returned by nc_inq_user_type. */
   static public final int NC_VLEN =	13;	/* used internally for vlen types */
   static public final int NC_OPAQUE =	14;	/* used internally for opaque types */

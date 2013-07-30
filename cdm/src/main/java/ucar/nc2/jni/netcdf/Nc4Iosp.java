@@ -222,13 +222,22 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    _open(raf, ncfile, true);
+  }
+
+  public void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
+                   ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    _open(raf, ncfile, false);
+  }
+
+  private void _open(RandomAccessFile raf, NetcdfFile ncfile, boolean readOnly) throws IOException {
     load(); // load jni
     this.ncfile = ncfile;
 
     // open
     if (debug) System.out.println("open " + ncfile.getLocation());
     IntByReference ncidp = new IntByReference();
-    int ret = nc4.nc_open(ncfile.getLocation(), 0, ncidp);
+    int ret = nc4.nc_open(ncfile.getLocation(), readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     ncid = ncidp.getValue();
 
@@ -2002,7 +2011,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // dimensions
     for (Dimension dim : g4.g.getDimensions()) {
-      int dimid = addDimension(grpid, dim.getShortName(), dim.getLength());
+      int len = dim.isUnlimited() ? Nc4prototypes.NC_UNLIMITED : dim.getLength();
+      int dimid = addDimension(grpid, dim.getShortName(), len);
       g4.dimHash.put(dim, dimid);
       if (debugWrite)
         System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
@@ -2187,7 +2197,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
     int vlen = (int) v2.getSize();
     int len = (int) section.computeSize();
-    if (vlen == len) // entire array
+    if (!v2.isUnlimited() && vlen == len) // entire array
       writeDataAll(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, values);
     else
       writeData(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, section, values);

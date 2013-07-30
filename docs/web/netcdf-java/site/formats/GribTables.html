@@ -46,7 +46,8 @@
 <hr WIDTH="100%">
 <h2>GRIB-1 Table Handling<a name="GribTables"></a></h2>
 <h3>Standard table mapping</h3>
-<p>A <em>standard table</em> is a GRIB parameter table that is automatically used by the CDM.  A <em>standard table map</em> is an association of a standard table with a center/subcenter/version id. The CDM internally loads several table maps. You can view all the standard tables used by the CDM in ToolsUI, using the <strong>IOSP/GRIB-1/GRIB1-TABLES</strong> tab. A standard table map looks  like this:</p>
+<p>A <em>standard table</em> is a GRIB parameter table that is automatically used by the CDM.  A <em>standard table map</em> is an association of a standard table with a center/subcenter/version id. The CDM internally loads several table maps, from <strong>resources/grib1/lookupTables.txt </strong>and its subdirectories<strong> resources/grib1/*/lookupTables.txt</strong>. These are stored in the <strong>grib.jar, </strong>and referenced in <strong>ucar.nc2.grib.grib1.tables.Grib1ParamTables</strong>.</p>
+<p>You can view all the standard tables used by the CDM in ToolsUI, using the <strong>IOSP/GRIB-1/GRIB1-TABLES</strong> tab. A standard table map looks  like this:</p>
 <blockquote>
   <pre># resources\grib1\lookupTables.txt
 
@@ -198,7 +199,7 @@ Notes:
 <h2>GRIB-2 Tables (TBD)</h2>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated February, 2012
+<img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July, 2013
 </address>
 </body>
 </html>

@@ -308,7 +308,7 @@ public class NetcdfCFWriter {
 		writer.create();
 
 		// use fileWriter to copy the data
-		fileWriter.copyVarData(varList, null);
+		fileWriter.copyVarData(varList, null, null);
 		updateGeospatialRanges(writer, llrect );
 		writer.close();
 		
@@ -456,7 +456,7 @@ public class NetcdfCFWriter {
 		//updateGeospatialRanges(writer,  llrec);    
 
 		// use fileWriter to copy the data
-		fileWriter.copyVarData(varList, null);
+		fileWriter.copyVarData(varList, null, null);
 
 
 		writer.close();

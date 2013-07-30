@@ -32,17 +32,14 @@
  */
 package ucar.nc2.iosp;
 
-import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 
 import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
 
 /**
- * This is really just an interface to Netcdf-3 file writing.
- * However, we will probably add Netcdf-4 writing, even if its only through a JNI interface.
- * For now, other parties are discouraged from using this, as it will likely be refactored in 4.x.
+ * This is really just an interface to Netcdf-3 and Netcdf-4 file writing.
+ * For now, other parties are discouraged from using this.
  *
  * @author caron
  */
@@ -59,6 +56,17 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @throws java.io.IOException if I/O error
    */
   public void create(String filename, ucar.nc2.NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile) throws IOException;
+
+  /**
+   * Open existing file and allow writing.
+   *
+   * @param raf the file to work on.
+   * @param ncfile add objects to this empty NetcdfFile
+   * @param cancelTask used to monitor user cancellation; may be null.
+   * @throws IOException if I/O error
+   */
+  public void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
+                   ucar.nc2.util.CancelTask cancelTask) throws IOException;
 
   /**
    * Set the fill flag.
