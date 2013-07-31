@@ -262,4 +262,14 @@ public class Misc {
     f.format("tested %d floats diff = %d %n", len, ndiff);
   }
 
+  // from Java7
+  public static int compare(int x, int y) {
+      return (x < y) ? -1 : ((x == y) ? 0 : 1);
+  }
+
+  public static int compare(long x, long y) {
+      return (x < y) ? -1 : ((x == y) ? 0 : 1);
+  }
+
+
 }

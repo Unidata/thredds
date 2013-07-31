@@ -41,6 +41,7 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -866,11 +867,11 @@ public class Grib2Iosp extends GribIosp {
 
       @Override
       public int compareTo(DataRecord o) {
-        int r = Integer.compare(partno, o.partno);
+        int r = Misc.compare(partno, o.partno);
         if (r != 0) return r;
-        r = Integer.compare(fileno, o.fileno);
+        r = Misc.compare(fileno, o.fileno);
         if (r != 0) return r;
-        return Long.compare(drsPos, o.drsPos);
+        return Misc.compare(drsPos, o.drsPos);
       }
     }
   }
@@ -1005,9 +1006,9 @@ public class Grib2Iosp extends GribIosp {
 
       @Override
       public int compareTo(DataRecord o) {
-        int r = Integer.compare(fileno, o.fileno);
+        int r = Misc.compare(fileno, o.fileno);
         if (r != 0) return r;
-        return Long.compare(drsPos, o.drsPos);
+        return Misc.compare(drsPos, o.drsPos);
       }
     }
   }
