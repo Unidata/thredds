@@ -29,6 +29,11 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
+    <dependency>
+      <artifactId>je</artifactId>
+      <groupId>com.sleepycat</groupId>
+    </dependency>
+
   </dependencies>
 
 </project>

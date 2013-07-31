@@ -5923,9 +5923,22 @@ public class ToolsUI extends JPanel {
 
     // prefs storage
     try {
-      String prefStore = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
+      // 4.4
+      String prefStore = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
+      File prefs44 = new File(prefStore);
+
+      if (!prefs44.exists()) { // if 4.4 doesnt exist, see if 4.3 exists
+        String prefStoreBack = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
+        File prefs43 = new File(prefStoreBack);
+        if (prefs43.exists()) { // make a copy of it
+          IO.copyFile(prefs43, prefs44);
+        }
+      }
+
+      // open 4.4 version, create it if doesnt exist
       store = ucar.util.prefs.XMLStore.createFromFile(prefStore, null);
       prefs = store.getPreferences();
+
       Debug.setStore(prefs.node("Debug"));
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed " + e);

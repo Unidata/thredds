@@ -1,21 +1,17 @@
 package ucar.util.prefs;
 
-import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import ucar.nc2.util.IO;
 import ucar.nc2.util.Indent;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Describe
+ * Convert store XML file to version 2
  *
  * @author caron
  * @since 6/23/12
@@ -45,7 +41,8 @@ public class Convert2Version2 {
     }
 
     Element root = doc.getRootElement();
-    check(root, new Indent(2));
+    show(root, new Indent(2));
+    // check(root, new Indent(2));
 
     /*
     org.jdom.Document convertDoc = new Document();
@@ -65,7 +62,7 @@ public class Convert2Version2 {
 
   void add(Element elem, Element parent) {
     if (elem.getName().equals("object"))
-      parent.addContent( (Element) elem.clone());
+      parent.addContent( elem.clone());
 
     for (Object child : elem.getChildren()) {
       add((Element) child, parent);
@@ -114,11 +111,10 @@ public class Convert2Version2 {
       assert obj != null;
       String c = obj.getAttributeValue("class");
       System.out.printf("%s%s key=%s class=%s%n", indent, name, key, c);
-
     }
 
-      for (Object co : e.getChildren())
-        check((Element)co,indent);
+    for (Object co : e.getChildren())
+      check((Element)co,indent);
   }
 
 

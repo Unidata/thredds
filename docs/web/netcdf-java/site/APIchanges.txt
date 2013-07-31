@@ -1,4 +1,14 @@
 ========================================
+API Changes from Java-Netcdf version 4.3 to 4.4
+
+ucar.unidata.geoloc
+  * ProjectionRect no longer subclasses java.awt.geom.Rectangle2D$Double, to remove awt package from core (not supported on android)
+  
+ToolsUI
+  * first time starting, ProjectionRect stored in prefrences will fail, must be re-entered
+  * preferences are now seperate from 4.3 to prevent thrashing
+
+========================================
 API Changes from Java-Netcdf version 2.2 to 4.0
 
  Data Model
