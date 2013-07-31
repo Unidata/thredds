@@ -33,6 +33,7 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.util.Misc;
 
 import java.util.Formatter;
 import java.util.List;
@@ -121,9 +122,9 @@ public class EnsCoord  {
 
     @Override
     public int compareTo(Coord o) {
-      int r = Integer.compare(code, o.code);
+      int r = Misc.compare(code, o.code);
       if (r != 0) return r;
-      return Integer.compare(ensMember, o.ensMember);
+      return Misc.compare(ensMember, o.ensMember);
     }
 
     @Override

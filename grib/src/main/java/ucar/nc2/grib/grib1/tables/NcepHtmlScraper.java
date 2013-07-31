@@ -113,9 +113,11 @@ public class NcepHtmlScraper {
      for (GribLevelType p : stuff) {
        org.jdom2.Element paramElem = new org.jdom2.Element("parameter");
        paramElem.setAttribute("code", Integer.toString(p.getCode()));
-       paramElem.addContent(new org.jdom2.Element("description").setText(p.getDatum()));
+       paramElem.addContent(new org.jdom2.Element("description").setText(p.getDesc()));
        paramElem.addContent(new org.jdom2.Element("abbrev").setText(p.getAbbrev()));
-       if (p.getUnits() != null) paramElem.addContent(new org.jdom2.Element("units").setText(p.getUnits()));
+       String units = p.getUnits();
+       if (units == null) units = handcodedUnits(p.getCode());
+       if (units != null) paramElem.addContent(new org.jdom2.Element("units").setText(units));
        if (p.getDatum() != null) paramElem.addContent(new org.jdom2.Element("datum").setText(p.getDatum()));
        if (p.isPositiveUp()) paramElem.addContent(new org.jdom2.Element("isPositiveUp").setText("true"));
        if (p.isLayer()) paramElem.addContent(new org.jdom2.Element("isLayer").setText("true"));
@@ -131,6 +133,19 @@ public class NcepHtmlScraper {
 
      if (show) System.out.printf("%s%n", x);
    }
+
+  private String handcodedUnits(int code) {
+    switch (code) {
+      case 216 :
+      case 217 :
+      case 237:
+      case 238:
+        return "m";
+      case 235 :
+        return ".1 degC";
+    }
+    return null;
+  }
 
    /*  Grib1LevelTypeTable will go away soon
    void writeWmoTable3() throws IOException {

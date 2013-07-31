@@ -1,8 +1,5 @@
 package thredds.server.ncSubset.controller;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -50,10 +47,7 @@ public abstract class AbstractNcssDataRequestController extends AbstractNcssCont
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> handle(Exception e, HttpServletResponse response){
 		
-		StringWriter errors = new StringWriter();
-		e.printStackTrace(new PrintWriter(errors));
-		log.error( errors.toString() );
-		
+		log.error("Exception handled in AbstractNcssDataRequestController", e);
 		response.reset();
 		
 		HttpHeaders responseHeaders = new HttpHeaders();

@@ -8,18 +8,18 @@
   <body>
 
   <h1>NcML Examples</h1>
-   Our goal in this section is to make enhance two sample datasets using NcML. The first dataset is gridded output from the <a href=www.wrf-model.org>Weather Research and Forecasting</a> (WRF) model, a very popular atmospheric model among educators and researchers. Our goal will be to make this file <a href=http://cf-pcmdi.llnl.gov>CF</a> compliant. The second dataset is an unknown gridded (we think) netCDF file. In the first example, we will be 'fixing' a file that resides on disk; the file in the second example will live on our local TDS.
+   Our goal in this section is to enhance two sample datasets using NcML. The first dataset is gridded output from the <a href=www.wrf-model.org>Weather Research and Forecasting</a> (WRF) model, a very popular atmospheric model among educators and researchers. Our goal will be to make this file <a href=http://cf-pcmdi.llnl.gov>CF</a> compliant. The second dataset is an unknown gridded (we think) netCDF file. In the first example, we will be 'fixing' a file that resides on disk; the file in the second example will live on our local TDS.
 
   <div id="section">
   <h2><a name="PointCF">NcML Examples</a></h2>
   <div id="expanded" class="exercise">
     <h3>Example 1: Local WRF output</h3>
     <ol>
-      <li><p>In the ToolsUI "Viewer" tab, open <code>/tds2012data/ncml/wrf/wrfout_d01_2000-01-25_00--00--00</code> Note that the model output are on an <a href=http://mitgcm.org/sealion/online_documents/node45.html>Arakawa C grid</a>, so we have 'regular' and 'stag' dimensions.</p>
+      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2000-01-25_00--00--00</code> Note that the model output are on an <a href=http://mitgcm.org/sealion/online_documents/node45.html>Arakawa C grid</a>, so we have 'regular' and 'stag' dimensions.</p>
       </li>
       <li><p>Open the following link in your browser: <a href=http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf>WRF goes CF</a></p>
       </li>
-      <li><p>In ToolsUI "NcML" tab, open <code>/tds2012data/ncml/wrf/wrfout_d01_2000-01-25_00--00--00</code>, and save a copy of the resulting NcML.</p>
+      <li><p>In ToolsUI "NcML" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2000-01-25_00--00--00</code>, and save a copy of the resulting NcML.</p>
       </li>
       <li><p>We will not be changing any of the dimensions or global attributes, so remove them from the NcML. Also, many of the variable attribues will not be changed, so they can be removed as well (e.g. FieldType, MemoryOrder, description,...).</p>
       </li>
@@ -27,7 +27,7 @@
       </li>
       <li><p>Pay attention to units (for example, see the variable XTIME).</p>
       </li>
-      <li>To see a partial WRF NcML file, open <code>/tds2012data/ncml/wrf/fix/ wrf-cf.ncml</code>, which was provided by <a href=http://rsignell.tiddlyspot.com/#%5B%5BMaking%20WRF%20files%20CF-Compliant%5D%5D>Rich Signell</a>. Note the addition of the Conventions attribute.
+      <li>To see a partial WRF NcML file, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrf-cf.ncml</code>, which was provided by <a href=http://rsignell.tiddlyspot.com/#%5B%5BMaking%20WRF%20files%20CF-Compliant%5D%5D>Rich Signell</a>. Note the addition of the Conventions attribute.
       </li>
     </ol>
   </div>
@@ -38,10 +38,10 @@
     <ol>
       <li><p>First, shutdown Tomcat and add the following to your <code>catalog.xml</code>:
 <pre>
-&lt;datasetRoot path="workshop_ncml" location="/tds2012data/ncml/unknown" /&gt; 
+&lt;datasetRoot path="workshop_ncml" location="/machine/tds/data/ncmlExamples/simpleNcmlTwo/" /&gt; 
 
 &lt;dataset name="ncml examples" ID="testNcmlDataset" serviceName="odap"
-         urlPath="wowkshop_ncml/hwave_4D.nc"/&gt;
+         urlPath="workshop_ncml/hwave_4D.nc"/&gt;
 </pre>
       <p>then start up Tomcat.</p>
       </li>
@@ -87,10 +87,9 @@
 &lt;/variable&gt;
 </pre>
     </li>	
-	<li><p>The variable wave_height needs a udunit compatible units (meters should be meter, or just m), and we need to add an attribute called coordinates that has a value "time level latitude longitude":</p>
+	<li><p>The variable wave_height needs an attribute called coordinates that has a value "time level latitude longitude":</p>
 <pre>
 &lt;variable name="wave_height"&gt;
-  &lt;attribute name="units" value="m" /&gt;
   &lt;attribute name="coordinates" value="time level latitude longitude"/&gt;
 &lt;/variable&gt;
 </pre>	

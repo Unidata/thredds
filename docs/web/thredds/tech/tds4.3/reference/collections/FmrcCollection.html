@@ -3,12 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>FMRC Collections</title>
-<style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
-code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;)
-.style1 {font-style: italic}
-</style>
+  <link href="../../../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
@@ -16,7 +11,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p> A <em><strong>Forecast Model Run Collection (FMRC) </strong></em>is a  <em><strong>collection of forecast model runs</strong></em><em><strong>, </strong></em>which can be uniquely identified by the start of the model run, called the model<em><strong> run time</strong></em>, also called the <em><strong>analysis time </strong></em>or<em><strong> generating time</strong></em>. Each model run has a series of forecast times. A collection of these runs therefore has two time coordinates, the run time and the forecast time. An FMRC creates a 2D time collection dataset, and then creates various 1D time subsets out of it.</p>
 <p>Previously this functionality was provided using <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">FMRC Aggregation</a> through NcML and the <strong>&lt;fmrcDataset&gt;</strong> element in the TDS configuration catalog. As of TDS 4.2, that implementation is now deprecated, at least on the server, and <strong>&lt;featureCollection&gt;</strong> elements are the correct way to provide this functionality. As of 4.3, <em> one should <strong>only</strong> serve GRIB files with featureCollection=GRIB.</em></p>
 <hr />
-<h3>fmrcConfig element</h3>
+<h3><a name="fmrcConfig" id="fmrcConfig"></a>fmrcConfig element</h3>
 <p>Defines options on feature collections with <strong> featureType</strong>=&quot;FMRC&quot;.</p>
 <pre>&lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs&quot; /&gt;
 </pre>
@@ -94,6 +89,33 @@ dl {margin: 10px 5px 5px 15px;)
     </ul>
   </li>
   <li><strong>fmrcInventory</strong> and <strong>addTimeCoverage</strong> elements are no longer needed</li>
+</ol>
+<p><strong>Old way:</strong></p>
+<pre>&lt;datasetFmrc name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
+  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+
+ 1) &lt;<strong>variable</strong> name=&quot;mixed_layer_depth&quot;&gt;
+     &lt;attribute name=&quot;long_name&quot; value=&quot;mixed_layer_depth @ surface&quot;/&gt;
+     &lt;attribute name=&quot;units&quot; value=&quot;m&quot;/&gt;
+    &lt;/variable&gt;
+
+   &lt;aggregation dimName=&quot;runtime&quot; type=&quot;forecastModelRunSingleCollection&quot; timeUnitsChange=&quot;true&quot; recheckEvery=&quot;10 min&quot;&gt;
+ 
+ 2)  &lt;<strong>variable</strong> name=&quot;time&quot;&gt;
+      &lt;attribute name=&quot;units&quot; value=&quot;hours since &quot;/&gt;
+     &lt;/variable&gt;
+   
+ 3)  &lt;<strong>scanFmrc</strong> location=&quot;c:/rps/cf/rtofs&quot; regExp=&quot;.*ofs_atl.*\.grib2$&quot; 
+       runDateMatcher=&quot;#ofs.#yyyyMMdd&quot; forecastOffsetMatcher=&quot;HHH#.grb.grib2#&quot; subdirs=&quot;true&quot;
+       olderThan=&quot;10 min&quot;/&gt; 
+   &lt;/aggregation&gt;
+  &lt;/netcdf&gt;
+ &lt;/datasetFmrc&gt;</pre>
+<p>where:</p>
+<ol>
+  <li>on the outside of the aggregation, attributes are being added/modified for the existing variable &quot;mixed_layer_depth&quot; <em>in the resulting FMRC dataset</em>.</li>
+  <li>on the inside of the aggregation, an attribute is being added/modified for the existing variable &quot;time&quot;<em> for each dataset in the collection</em>. Typically you need to do this in order to make the component files into a gridded dataset.</li>
+  <li>the collection is defined by a <em>scanFmrc</em> element, creating a <em>forecastModelRunSingleCollection</em> with one forecast time per file</li>
 </ol>
 <p>New way:</p>
 <pre>   &lt;<strong>featureCollection</strong> name=&quot;NCEP-GFS-CONUS_80km&quot; <strong>featureType=&quot;FMRC&quot;</strong> harvest=&quot;true&quot; path=&quot;fmrc/NCEP/GFS/CONUS_80km&quot;&gt;

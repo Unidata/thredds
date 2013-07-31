@@ -132,7 +132,7 @@ h1 {
     font-size: 9pt;
 }
 
-
+pre {white-space: pre-wrap; position: relative; font-family: "Lucida Console", "Courier New", monospace; margin: 0px 0px 20px 0px; padding: 5px 10px 5px 10px; background: #FAF8F0; border: 1px solid #BEBAB0; font-size: 9pt;}
 
 #section #subsection ul {
     list-style-type: none;

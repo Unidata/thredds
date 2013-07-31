@@ -5676,7 +5676,7 @@ public class ToolsUI extends JPanel {
                "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
                "<br><b><i>Developers:</b>John Caron, Ethan Davis, Lansing Madry, Marcos Hermida, Sean Arms</i></b>" +
                "</center>" +
-               "<br><br>With thanks to these <b>Open Source</b> contributers:" +
+               "<br><br>With thanks to these <b>Open Source</b> contributors:" +
                "<ul>" +
                "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
                "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
@@ -5730,7 +5730,7 @@ public class ToolsUI extends JPanel {
     String version;
     try {
       InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README");
-      if (is == null) return "4.3.17";
+      if (is == null) return "4.3.18";
 // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
       StringBuilder sbuff = new StringBuilder();

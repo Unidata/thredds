@@ -3,9 +3,9 @@
 <head>
 
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="Author" content="John Caron">
-
-  <title>Catalog Spec 1.0.2</title>
+    <link rel="stylesheet" href="../../tds.css" type="text/css">
+    <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+    <title>Catalog Spec 1.0.2</title>
 </head>
 <body>
   <h1><img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.2 </h1>
@@ -66,7 +66,7 @@
   <h3>Related resources:</h3>
 
 <ul>
-<li>Catalog <a href="Primer.html">Primer</a></li>
+<li>Catalog <a href="../../tds4.3/tutorial/CatalogPrimer.html">Primer</a></li>
   <li><a href="../Example1.0rc8.xml">Example</a> 1.0 Catalog</li>
   <li>InvCatalog XML Schema:</li>
   <ul>
@@ -100,7 +100,7 @@
 
 <h3><em>catalog</em><a name="catalog"></a> element</h3>
 
-<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="base" type="xsd:anyURI" /&gt; &lt;!-- deprecated: not working, don't use --&gt;<br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.1" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;<br></pre>
+<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.1" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;<br></pre>
 
 <p>The <em>catalog</em> element is the top-level element. It may contain zero
   or more <em><a href="#service">service</a></em> elements followed by zero
@@ -109,10 +109,6 @@
   element tells clients until when this catalog is accurate, so they can cache
   the catalog information. The value of the <i>version</i> attribute indicates the version of the InvCatalog specification to which the catalog conforms. The <i>version</i> attribute is optional and to indicate conformance with this specification should be set to "1.0.1".<br>
 </p>
-<p>The <i><a name="catalogBase"></a>base</i> attribute is deprecated, its use is not supported in any known THREDDS code. Do not use as it will generally be ignored.<br>
- </p>
-
-
 <p>Example of simplest useful catalog. Note that to provide access to a dataset you need at least one service element. </p>
 
 <pre> &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1" &gt;<br>   &lt;service name="aggServer" serviceType="DODS"  base="http://acd.ucar.edu/dodsC/" /&gt;<br>   &lt;dataset name="SAGE III Ozone Loss" urlPath="sage.nc"&gt;<br>     &lt;serviceName&gt;aggServer&lt;/serviceName&gt;<br>   &lt;/dataset&gt;<br> &lt;/catalog&gt;</pre>
@@ -145,7 +141,7 @@ should be sufficient to allow clients to access datasets.</p>
 
 <p>Example:
 </p>
-<pre> &lt;service name="mcidasServer" serviceType="ADDE" base="http://motherlode.ucar.edu:8080/adde/" /&gt;<br></pre>
+<pre> &lt;service name="mcidasServer" serviceType="ADDE" base="http://thredds.ucar.edu/thredds/adde/" /&gt;<br></pre>
 
 Example with service base URL relative to catalog URL (see <a href="#constructingURLs">constructing
 URLS</a> for how the resolved URL is created):
@@ -153,7 +149,7 @@ URLS</a> for how the resolved URL is created):
 
 <h3><a name="dataset" id="dataset"></a><em>dataset</em> element</h3>
 
-<pre>&lt;xsd:element name="dataset" type="DatasetType" /&gt;<br>&lt;xsd:complexType name="DatasetType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt; &lt;!-- deprecated --&gt;<br>    &lt;xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" /&gt;<br><br>    &lt;xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/&gt;<br>    &lt;xsd:element ref="ncml:netcdf" minOccurs="0"/&gt;<br>    &lt;xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;<br>  &lt;xsd:attribute name="alias" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="authority" type="xsd:string"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="collectionType" type="collectionTypes"/&gt;<br>  &lt;xsd:attribute name="dataType" type="dataTypes"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="harvest" type="xsd:boolean"/&gt;<br>  &lt;xsd:attribute name="ID" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="resourceControl" type="xsd:string"/&gt;<br>      <br>  &lt;xsd:attribute name="serviceName" type="xsd:string" /&gt; &lt;!-- deprecated : use element --&gt; <br>  &lt;xsd:attribute name="urlPath" type="xsd:token" /&gt;<br>&lt;/xsd:complexType&gt;</pre>
+<pre>&lt;xsd:element name="dataset" type="DatasetType" /&gt;<br>&lt;xsd:complexType name="DatasetType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" /&gt;<br><br>    &lt;xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/&gt;<br>    &lt;xsd:element ref="ncml:netcdf" minOccurs="0"/&gt;<br>    &lt;xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;<br>  &lt;xsd:attribute name="alias" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="authority" type="xsd:string"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="collectionType" type="collectionTypes"/&gt;<br>  &lt;xsd:attribute name="dataType" type="dataTypes"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="harvest" type="xsd:boolean"/&gt;<br>  &lt;xsd:attribute name="ID" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="resourceControl" type="xsd:string"/&gt;<br>      <br>  &lt;xsd:attribute name="serviceName" type="xsd:string" /&gt; &lt;!-- deprecated : use element --&gt; <br>  &lt;xsd:attribute name="urlPath" type="xsd:token" /&gt;<br>&lt;/xsd:complexType&gt;</pre>
 
 <p>A <i>dataset</i> element represents a named, logical set of data at a level
   of granularity appropriate for presentation to a user. A dataset is <b><i><a href="#directDataset">direct</a>
@@ -179,9 +175,7 @@ for a number of capabilities including XPath ID reference. <a name="globally_uni
 dataset or catalogRef). The data represented by a nested
 dataset element should be a subset, a specialization or in some other
 sense "contained" within the data represented by its parent dataset
-element. The use of <em>service</em>
-  elements nested inside a dataset is deprecated; you should declare service elements
-  at the top level of the catalog.</p>
+element. </p>
 <p>The <em><a href="#collectionTypes">collectionType</a></em>
   attribute is used to indicate that the dataset is a <a href="#coherentDataset">coherent collection</a>
 and the type of the collections coherence. A datasets data type is very
@@ -836,9 +830,9 @@ service@base attribute.</p>
 
 <p> When a service base is a <a href="http://www.webreference.com/html/tutorial2/3.html">relative 
   URL</a>, it is resolved against the catalog base URL. For example if the catalog 
-  base URL is <em>http://motherlode.ucar.edu:8080/thredds/dodsC/catalog.xml</em>, and 
-  a service base is <em>airtemp/</em>, then the resolved base is <em>http://motherlode.ucar.edu:8080/thredds/dodsC/airtemp/</em>. 
-  Note that if the service base is <em>/airtemp/</em>, the resolved URL is <em>http://motherlode.ucar.edu:8080/airtemp/</em>. 
+  base URL is <em>http://thredds.ucar.edu/thredds/dodsC/catalog.xml</em>, and
+  a service base is <em>airtemp/</em>, then the resolved base is <em>http://thredds.ucar.edu/thredds/dodsC/airtemp/</em>.
+  Note that if the service base is <em>/airtemp/</em>, the resolved URL is <em>http://thredds.ucar.edu/thredds/airtemp/</em>.
   The <strong>java.net.URI</strong> class in JDK 1.4+ will resolve relative URLs. 
 </p>
 
@@ -931,7 +925,7 @@ service@base attribute.</p>
 
 <p>Example:</p>
 
-<pre> <a href="http://motherlode.ucar.edu:8080/thredds/catalogServices?cmd=subset&amp;catalog=http://motherlode.ucar.edu:8080/thredds/idv/rt-models.1.0.xml&amp;dataset=idd.model.nam_211">http://motherlode.ucar.edu:8080/thredds/catalogServices?cmd=subset&amp;catalog=http://motherlode.ucar.edu:8080/thredds/idv/rt-models.1.0.xml&amp;dataset=idd.model.nam_211</a><br><br></pre>
+<pre> <a href="http://thredds.ucar.edu/thredds/catalogServices?cmd=subset&amp;catalog=http://thredds.ucar.edu/thredds/idv/rt-models.1.0.xml&amp;dataset=idd.model.nam_211">http://thredds.ucar.edu/thredds/catalogServices?cmd=subset&amp;catalog=http://thredds.ucar.edu/thredds/idv/rt-models.1.0.xml&amp;dataset=idd.model.nam_211</a><br><br></pre>
 
 <hr>
 <h2>Index<a name="index"></a> </h2>
@@ -991,7 +985,7 @@ service@base attribute.</p>
 
 <hr>
 <p><a name="changes"></a>Change history.</p>
-
+<p>July 12, 2013: remove deprecated elements in catalog and dataset.</p>
 <p>April 11, 2005: Add version 1.0.1 changes.</p>
 
 <p>July 07, 2004: Clarify the relation of dateType to ISO 8601. </p>

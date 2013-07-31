@@ -1,18 +1,73 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
  <html>
   <head>
-   <title>Tomcat and TDS Security</title>
+   <title>Production Server Overview</title>
    <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
    <script type="text/javascript" src="workshopNav.js"></script>
+   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+  <script>
+    $(function() {
+        $("a.example").click(function() {
+            var id = $(this).attr("id");
+            $.ajax({
+                url: "examples/" + id + ".html",
+                cache: false
+            }).done(function(html) {
+               $("a#" + id + ".example").after("<div id='" + id + "'></div>");
+               $("div#" + id).dialog({
+                   minWidth: 600, 
+                   resizable: true,
+                   modal: true, 
+                   buttons: {
+                       Close : function() {
+                           $("div#" + id).remove();
+                           $(this).dialog( "destroy" );
+                       }
+                   }
+               });
+               $("div#" + id).append(html);
+            });
+        });
+    });
+   </script>
   </head>
   <body>
 
 
 
-   <h1>Tomcat and TDS Security</h1>
+   <h1>Production Server Overview</h1>
+
 
    <div id="section">
-    <h2><a name="why">Why Is This Important?</a></h2>
+    <h2><a name="context">What This Section Covers</a></h2>
+
+    <p>Best practices and recommendations on securing a production TDS/Tomcat server:</p>
+    <ul>
+      <li><a a href="#why">Why Is Security Important?</a> </li>
+      <li><a a href="#versions">Keeping Software Versions Up-To-Date</a> </li>
+      <li><a a href="#install">Tomcat Process User/Group and $CATALINA_HOME Permissions</a> </li>
+      <li><a a href="#unused">Removing Unused Web Applications</a> </li>
+      <li><a a href="#digested">Using Digested Passwords</a> </li>
+      <li><a a href="#ssl">Enabling SSL Encryption</a> </li>
+      <li><a a href="#manager">Securing the Tomcat <code>manager</code> Application</a> </li>
+      <li><a a href="#ports">Blocking Non-Essential Port Access At The Firewall</a> </li>
+      <li><a a href="#access">Restricting Access To The TDS By Remote IP Address Or Host</a> </li>
+
+      <li><a a href="#proxy">Reverse Proxy</a> </li>
+      <li><a a href="#jvm">Running Tomcat with a Security Manager</a> </li>
+      <li><a a href="#shutdown">Protecting the Tomcat <code>SHUTDOWN</code> Port</a> </li>
+    </ul>
+
+    <p>You should know how to do a <a href="GettingStarted.html">basic installation</a> of Tomcat, Java, and the TDS; and be familiar with the <a href="GettingStarted.html#tour">Tomcat directory structure</a>; <a href="GettingStarted.html#files">Tomcat server configuration</a>; and the <a href="GettingStarted.html#manager">Tomcat manager application</a>.</p>
+   </div> <!-- end section -->
+
+
+
+
+   <div id="section">
+    <h2><a name="why">Why Is Security Important?</a></h2>
       <h3>Be afraid</h3>
       <ul>
        <li>Misconfiguration of Tomcat can introduce vulnerabilities in security.</li>
@@ -34,7 +89,7 @@
       <h3>Resources</h3>
       <ul>
        <li><a href="http://tomcat.apache.org/security.html">Tomcat security reports</a><br>      A complete list of known and documented security vulnerabilities associated with each Tomcat release.</li>
-       <li><a href="http://tomcat.apache.org/lists.html"><code>tomcat-users</code> mailing list</a><br>     A high-traffic mailing list made up of Tomcat users.  New releases of Tomcat are likely to be announced here.</li>
+       <li><a href="http://tomcat.apache.org/lists.html">Tomcat</code> mailing lists</a><br>    Various tomcat-related mailing lists, including <code>tomcat-announce</code> which is a low volume list for release announcements and security vulnerabilities.</li>
        <li><a href="http://java.sun.com/javase/technologies/security/">Java SE Security</a><br>     Sun's Java security page which includes a chronology of Java security issues and user forums.</li>
        <li><a href="/mailing_lists/archives/thredds/"><code>thredds</code> mailing list</a><br>     The THREDDS mailing list where announcements of new releases will be made.</li>
        <li><a href="http://www.securityfocus.com/vulnerabilities">Buqtraq vunerability database</a><br>     SecurityFocus' database of all known vulnerabilities for all different types of software from different vendors.</li>
@@ -47,87 +102,36 @@
      <h3>Rationale</h3>
       <div id="note" class="info">
        <h4>Background info</h4>
-       <p>The JVM doesn't fork at all, nor does it support <code>setuid()</code> calls. The JVM (and therefore Tomcat) is one process. The JVM is a virtual machine with many threads under the same process. </p>
+       <p>The JVM doesn't fork at all, nor does it support <code>setuid()</code> calls. The JVM, and therefore Tomcat, is one process. The JVM is a virtual machine with many threads under the same process. </p>
       </div>
       <ul>
        <li>Because of OS constraints, all threads in the same JVM process must run under the same user id.  No thread may run as the <code>root</code> user unless they are all are run as the <code>root</code> user. Hence, any programs run in Tomcat (TDS, <code>manager</code> application, other JSPs and servlets) will run as the <code>root</code> user.</li>
        <li>If you choose to run the Tomcat process as the <code>root</code> user, and an attacker manages to exploit a weakness in Tomcat or something running in <code>webapps/</code> to run arbitrary commands,  <i>those commands will be run as the superuser</i>!</li>
-       <li>We <i>strongly discourage</i> running Tomcat as the <code>root</code> user and recommend creating an unprivileged, dedicated user and group for running the Tomcat process.</li>
-       <li>We also recommend restricting the permissions of the Tomcat user/group within <code>${tomcat_home}</code>.</li>
+       <li>We <i>strongly discourage</i> running Tomcat as the <code>root</code> user and recommend creating an unprivileged, dedicated user and group for running the Tomcat process. 
+
+      <a id="tomcatUserAndGroup" class="example">
+       Create a dedicated user and group for running Tomcat
+      </a>
+
+
+ </li>
+       <li>We also recommend restricting the permissions of the Tomcat user/group within <code>${tomcat_home}</code>. 
+
+
+      <a id="tomcatHomePerms" class="example">
+      Restrict the permissions in <code>${tomcat_home}</code>
+      </a>
+
+ </li>
       </ul>
 
-      <h3>Creating a dedicated Tomcat user/group &amp; setting permissions in <code>${tomcat_home}</code></h3>
-      <ol>
-       <li>Create a dedicated user and group for running Tomcat.</li>
-       <p>In this example, both the user and group names will be names <code>tomcat</code>, and the user's home directory, aka <code>${tomcat_home}</code>,  is <code>/opt/tomcat</code> (notice the symlink below).  The groupadd and useradd commands were run as the root:</p>
-<pre>
-<b>#</b> groupadd tomcat
-<b>#</b> useradd -g tomcat -d /opt/tomcat tomcat
-<b>#</b> passwd tomcat
-</pre>
 
-       <li>Tighten the permissions in <code>${tomcat_home}</code></li>
-        <p>Change the user/group ownership <code>${tomcat_home}</code> to the <code>tomcat</code> user and <code>tomcat</code> group: </p>
-<pre>
-<b>#</b> cd /opt
-<b>#</b> chown -R tomcat:tomcat apache-tomcat-7.0.32
-<b>#</b> ls -ld  *tomcat*
-drwxr-xr-x  9 <b>tomcat  tomcat</b>  4096 Jul 15 16:03 apache-tomcat-7.0.32
-lrwxrwxrwx  1 root    other     20 Jul 15 19:00 tomcat -> apache-tomcat-7.0.32
-</pre>
-        <p>Change the user/ownership of the <code>${tomcat_home}/conf</code> directory to be owned by the <code>root</code> user, have a group of <code>tomcat</code> and have a permission of user/group read only:</p>
-
-<pre>
-<b>#</b> cd /opt/tomcat
-<b>#</b> ls -l
-total 92
-drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:05 bin
-drwxr-xr-x 2 tomcat  tomcat  4096 Jul 18 12:18 conf
-drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:03 lib
-drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 logs
-drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:03 temp
-drwxr-xr-x 7 tomcat  tomcat  4096 Jul 15 16:04 webapps
-drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
-
-<b>#</b> chown -R root:tomcat conf
-<b>#</b> chmod -R 440 conf/*
-<b>#</b> ls -l conf
-total 92
--r--r----- 1 root    tomcat  9978 Feb  2 12:06 catalina.policy
--r--r----- 1 root    tomcat  3713 Feb  2 12:06 catalina.properties
--r--r----- 1 root    tomcat  1395 Feb  2 12:06 context.xml
--r--r----- 1 root    tomcat  1353 Jul 18 12:14 keystore
--r--r----- 1 root    tomcat  3257 Feb  2 12:06 logging.properties
--r--r----- 1 root    tomcat  6814 Jul 18 12:18 server.xml
--r--r----- 1 root    tomcat   210 Jul 18 12:10 tomcat-users.xml
--r--r----- 1 root    tomcat 51835 Feb  2 12:06 web.xml
-</pre>
-
-          <p>Change the user/ownership of the <code>${tomcat_home}/bin</code> and <code>${tomcat_home}/lib</code> directories to be owned by the <code>root</code> user and have a group of <code>tomcat</code>:</p>
-
-
-<pre>
-<b>#</b> chown -R root:tomcat lib
-<b>#</b> chown -R root:tomcat bin
-<b>#</b> ls -l
-total 92
-drwxr-xr-x 2 root    tomcat  4096 Jul 15 16:05 bin
-drwxr-xr-x 2 root    tomcat  4096 Jul 18 12:18 conf
-drwxr-xr-x 2 root    tomcat  4096 Jul 15 16:03 lib
-drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 logs
-drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:03 temp
-drwxr-xr-x 7 tomcat  tomcat  4096 Jul 15 16:04 webapps
-drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
-</pre>
-      </ol>
+     
 
       <h3>Resources</h3>
       <ul>
        <li><a href="http://marc.info/?t=104516038700003&r=1&w=2">Tomcat as root and security issues</a><br>      A lengthy thread in the <code>tomcat-users</code> mailing list archives dedicated to the perils of running Tomcat as the <code>root</code> user.</li>
       </ul>
-
-
-
    </div> <!-- end Tomcat Installation Permissions &amp; User/Group Ownership section -->
 
 
@@ -172,135 +176,9 @@ drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
         <li>How it works: When a client makes a request Tomcat will tell the client that a digested password is required. Based on this dialog, the client will automatically digest the password entered by the user.</li>
        </ul>
 
-
-      <h3><a name="useDigest"></a>Configure Tomcat to use digested passwords</h3>
-
-<ol>
-        <li>First we need to enable digest passwords support in Tomcat by modifying a couple of Tomcat Realms in the <code>server.xml</code> file in the Tomcat <code>conf/</code> directory. </li> 
-
-          <p>A <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html">Tomcat Realm</a> represents a "database" of usernames, passwords, and roles assigned to tomcat users.</p>
-
-          <table>
-           <tr>
-            <th>  
-             Realm Name
-            </th>
-            <th> 
-             Purpose
-            </th>
-           </tr>
-
-           <tr>
-            <td> 
-             <code>UserDatabaseRealm</code>
-            </td>
-            <td> 
-              The <code>UserDatabaseRealm</code> is enabled by default and reads clear text user password information stored in <code>tomcat-users.xml</code>.
-            </td>
-           </tr>
-
-
-           <tr>
-            <td> 
-             <code>MemoryRealm</code>
-            </td>
-            <td> 
-              The <code>MemoryRealm</code> reads the user password information stored in the <code>tomcat-users.xml</code> in a specified encrypted format.
-            </td>
-           </tr>
-          </table>
-
-      
-         <p>Open the <code>server.xml</code> with your favorite editor:</p>
-<pre>
-<b>$</b> vi server.xml
-</pre>
-        <p>Locate the <code>UserDatabaseRealm</code> (in the <code>LockOutRealm</code>, right above the <code>Host</code> element) and comment it out:</p>
-<pre>
-&lt;!-- Use the LockOutRealm to prevent attempts to guess user passwords
-     via a brute-force attack --&gt;
-&lt;Realm className="org.apache.catalina.realm.LockOutRealm"&gt;
-  &lt;!-- This Realm uses the UserDatabase configured in the global JNDI
-       resources under the key "UserDatabase".  Any edits
-       that are performed against this UserDatabase are immediately
-       available for use by the Realm.  --&gt;
-     <b>&lt;!--
-      &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
-         resourceName="UserDatabase"/&gt;
-     --&gt;</b>
-&lt;/Realm&gt;
-
-&lt;Host name="localhost"  appBase="webapps"
-      unpackWARs="true" autoDeploy="true"&gt;
-</pre>  
-
-
-
-     <p>Now add the following <code>MemoryRealm</code> information below the commented out <code>UserDatabaseRealm</code>:</p>
-
-
-<pre>
-&lt;!-- Use the LockOutRealm to prevent attempts to guess user passwords
-     via a brute-force attack --&gt;
-&lt;Realm className="org.apache.catalina.realm.LockOutRealm"&gt;
-  &lt;!-- This Realm uses the UserDatabase configured in the global JNDI
-       resources under the key "UserDatabase".  Any edits
-       that are performed against this UserDatabase are immediately
-       available for use by the Realm.  --&gt;
-     &lt;!--
-      &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
-         resourceName="UserDatabase"/&gt;
-     --&gt;
-      <b>&lt;Realm className="org.apache.catalina.realm.MemoryRealm" 
-             digest="SHA" /&gt;</b>
-&lt;/Realm&gt;
-
-&lt;Host name="localhost"  appBase="webapps"
-      unpackWARs="true" autoDeploy="true"&gt;
-</pre>  
-    <li><a name="makeDigest"></a>Create a SHA encrypted version of your password.</li>
-     <p>Tomcat provides a script (<code>${tomcat_home}/bin/digest.sh</code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself previously:</p>
-
-<pre>
-<b>$</b> /home/tds/workshop/apache-tomcat-7.0.32/bin/digest.sh -a SHA secret
-secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
-</pre>  
-
-     <li>Update <code>tomcat-users.xml</code>.</li>
-     <p>Replace your clear-text password in <code>tomcat-users.xml</code> with the encrypted version:</p>
-
-<pre>
-&lt;tomcat-users&gt;
-    &lt;role rolename="manager-gui"/&gt;
-    &lt;user username="admin" password="<b>e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4</b>" 
-          roles="manager-gui"/&gt;
-&lt;/tomcat-users&gt;
-</pre>  
-     
-
-
-      <div id="note" class="info">
-       <h4>BASIC authentication</h4>
-       <p>Since we are using BASIC authentication, you will need to clear any authenticated sessions in your browser to test whether digested passwords have been enabled.</p>
-      </div>
-
-<li>Verify digest passwords have been successfully enabled in Tomcat.</li>
-  <p>Restart Tomcat and verify digest passwords have been successfully enabled by logging into the Tomcat <code>manager</code> application using your password in clear text: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></p>
-
-</ol>
-      <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting</h4>
-       <ul>
-        <li>Check the XML syntax in <code>tomcat-users.xml</code> and <code>server.xml</code> to make sure it is well-formed and without error.</li>
-        <li>Did you restart Tomcat after you made your changes to <code>tomcat-users.xml</code> and <code>server.xml</code> ?</li>
-        <li>Any errors will be reported in the <code>catalina.out</code> file in the Tomcat <code>logs/</code> directory. </li>
-        <li>You do not need to type the encrypted version of your password into the browser (the browser auto-magically encrypts your password for you before it transmits it to the server).</li>
-       </ul>
-      </div>
-
-
-
-
+      <a id="digestedPasswords" class="example">
+       Configure Tomcat to use digested passwords
+      </a>
 
    </div> <!-- end Using Digested Passwords section -->
 
@@ -351,145 +229,24 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
        <li>Tomcat uses the <code>keystore</code> file for SSL transactions.</li>
       </ul>
 
-      <h3>Accessing the TDS remote management tool</h3>
-       <p>Other than the compelling security reasons, you will want to enable SSL to take advantage of the TDS remote management tool which (out-of-the-box) requires SSL in order to access:
-      <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a></p>
-      <ol>
-
-    
-       <li><a name="enableSSL"></a>Configure Tomcat to enable SSL and use the self-signed certificate.</li>
-       <div id="expanded" class="question">
-        <p>Based on what we know about Tomcat configuration, which file in <code>${tomcat_home}/conf</code> should we edit to to enable SSL?</p>
-       </div>
-        <p>Open <code>${tomcat_home}/conf/server.xml</code> with your favorite editor:</p>
-
-<pre>
-<b>$</b> vi server.xml
-</pre>
-        <p>Locate the <code>Java HTTP/1.1 Connector</code> listening on port 8080 and verify it is redirecting SSL traffic to port 8443:</p>
-<pre>
-&lt;Connector port="8080" protocol="HTTP/1.1"
-              connectionTimeout="20000"
-              <b>redirectPort="8443"</b> /&gt;
-</pre>
-        <p>Find and uncomment the <code>SSL HTTP/1.1 Connector</code> listening on port 8443 to activate this connector:</p>
-<pre>
-&lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
-              maxThreads="150" scheme="https" secure="true"
-              clientAuth="false" sslProtocol="TLS" /&gt;
-</pre>
-        <p>Add a <code>keystoreFile</code> attribute to the <code>SSL HTTP/1.1 Connector</code> to tell Tomcat where to find your keystore:</p>
-<pre>
-&lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
-              maxThreads="150" scheme="https" secure="true"
-              clientAuth="false" sslProtocol="TLS" 
-              <b>keystoreFile="/home/tds/workshop/apache-tomcat-7.0.32/conf/keystore"</b> /&gt;
-</pre>
-
-        <p>Since we opted to not use the default <code>keystore password</code>, we need to specify the new password so Tomcat can open the file:</p>
-<pre>
-&lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
-              maxThreads="150" scheme="https" secure="true"
-              clientAuth="false" sslProtocol="TLS"
-              keystoreFile="/home/tds/workshop/apache-tomcat-7.0.32/conf/keystore" 
-              <b>keystorePass="foobar"</b> /&gt;
-</pre>
-
-
-        <p>Finally, verify the <code>AprLifecycleListener</code> is uncommented (found near the top of the file):</p>
-<pre>
-&lt;!--APR library loader. Documentation at /docs/apr.html --&gt;
-&lt;Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" /&gt;
-</pre>
-
-       <li>Verify SSL has been enabled.</li>
-
-
-        <p>Restart Tomcat:</p>
-<pre>
-<b>$</b> ${tomcat_home}/bin/shutdown.sh
-<b>$</b> ${tomcat_home}/bin/startup.sh
-</pre>
-
-        <p>Verify Tomcat is listening on port 8443 by running the <code>netstat</code> command:</p>
-
-<pre>
-<b>$</b> netstat -an | grep tcp | grep 8443
-</pre>
-      <div id="note" class="info">
-       <h4><code>man netstat</code></h4>
-       <p>Run <code>man netstat</code> in your terminal window to learn more about this command.</p>
-      </div> 
-
-        <p><code>netstat</code> (short for <b>net</b>work <b>stat</b>istics) is available on Unix, Unix-like, and Windows NT-based operating systems.  It is a command-line tool that displays:</p>
-        <ul class="little">
-         <li> network connections (both incoming and outgoing)</li>
-         <li> routing tables</li>
-         <li> and a number of network interface statistics</li>
-        </ul> 
-
-
-
-         <p>Look for the following in the output:</p>
-<pre>
-tcp        0      0 :::<b>8443</b>                    :::*                        LISTEN
-</pre>
-
-
-
-      <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting</h4>
-       <ul>
-        <li>Check the XML syntax in <code>server.xml</code> to make sure it is well-formed and without error.</li>
-        <li>When generating the self-signed certificate, the last password (the <code>key password</code>) and <code>keystore password</code> should be the same (<code>changeit</code>). If they differ, Tomcat cannot open the keystore and you will get this error: <code>java.io.IOException: Cannot recover key</code>.</li>
-        <li>Did you restart Tomcat after you made your changes to <code>server.xml</code>?</li>
-        <li>Did you specify the full path to the <code>keystore</code> file in <code>server.xml</code>?</li>
-       </ul>
-      </div>
-      <a name="grantingAccess"></a>
-        <li>Modify <code>${tomcat_home}/conf/tomcat-users.xml</code> to add a new role with the rolename attribute of <code>tdsConfig</code>, and add this role to your list of roles:</li>
-<pre>
-&lt;tomcat-users&gt;
-    &lt;role rolename="manager-gui"/&gt;
-    <b>&lt;role rolename="tdsConfig"/&gt;</b>
-    &lt;user username="admin" password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" 
-          roles="manager-gui,<b>tdsConfig</b>"/&gt;
-&lt;/tomcat-users&gt;
-</pre>  
-        <li>Restart Tomcat and try to access the TDS remote management tool: <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug/</a></li>
-         <p><a href="images/ugly.png"><img src="images/ugly.png" width="400" height="433" alt="SSL warning for self-signed certificate"></a></p>
-       </ol>
+      <a id="enablingSSL" class="example">
+       Enabling SSL in Tomcat
+      </a>
 
 
       <h3>Configuring web applications for SSL</h3>
-      <div id="expanded" class="question">
-       <p>How did Tomcat know to use SSL for the TDS remote management tool?</p>
-      </div>
-      <div id="expanded" class="question">
-       <p>Where, in any of the configuration changes you made to <code>${tomcat_home}/conf/server.xml</code> or <code>${tomcat_home}/conf/tomcat-users.xml</code>, did you explicitly specify that TDS remote management tool <i>must</i> be accessed via SSL?</p>       
-      </div>
 
-      <h3>The missing piece: <code>/WEB-INF/web.xml</code></h3>
-       <ul>
-        
-        <li>This is specified in the web application deployment descriptor, aka <code>web.xml</code>.</li>
-        <li>Deployment descriptors are found in the <code>WEB-INF</code> directory of the web application: <code>&lt;application name&gt;/WEB-INF/web.xml</code>. </li>
+      <div id="note" class="ahead">
+       <h4>Looking Ahead</h4>
+       <p>Other than the compelling security reasons, you will want to enable SSL to take advantage of a couple of monitoring and debugging tools:  the <a href="http://localhost:8080/thredds/admin/debug">TDS Remote Management Tool</a>, and the <a href="tdsMonitor.html">TdsMonitor Tool</a> -- both of which (out-of-the-box) require SSL to access.</p>
+      </div> 
+
+       <ul>        
+        <li>The web application deployment descriptor, aka <code>web.xml</code>, specifies if all or parts of it need to be accessed via SSL.</li>
+        <li>Deployment descriptors are found in the <code>WEB-INF</code> directory of the web application: <code>${tomcat_home}/webapps/application_name/WEB-INF/web.xml</code>. </li>
         <li>By convention, Tomcat and other servlet containers will read the web application deployment descriptors for initialization parameters and container-managed security constraints upon application deployment.</li>
-        <li>The TDS has been pre-configured to require that SSL encryption is enabled in order to access the remote management tool.</li>
-       </ul>
-
-      <h3>Looking at the TDS deployment descriptor</h3>
-
- 
-        <ol>
-         <li>Have a look at the deployment descriptor that comes with the TDS.</li>
-          <p>Navigate to the unpacked <code>thredds</code> directory in <code>${tomcat_home}/webapps</code>, and view the file: </p>
-<pre>
-<b>$</b> cd /home/tds/workshop/apache-tomcat-7.0.32/webapps/thredds
-<b>$</b> less WEB-INF/web.xml
-</pre>  
-       <li>Look for a reference to the TDS remote management tool's URL (<code>/admin/debug</code>).</li>
-         <p>Near the bottom of the deployment descriptor you will find this entry:</p>
+        <li><i>The TDS has been pre-configured to require that SSL encryption is enabled in order to access the both the  <a href="http://localhost:8080/thredds/admin/debug">TDS Remote Management Tool</a>, and the <a href="tdsMonitor.html">TdsMonitor Tool</a>.</i></li>
+        <p><code>web.xml</code> from the TDS Remote Management Tool:</p>
 
 <pre>
   &lt;!-- This allows "remote configuration":
@@ -528,418 +285,11 @@ tcp        0      0 :::<b>8443</b>                    :::*                      
           <li>Specify <code>NONE</code> to indicate that the container must accept the constrained requests on any connection, including an unprotected one.</li>
          </ol>
         </ul>
-       </ol>
 
-      <div id="note" class="info">
-       <h4>Changes to the <code>manager</code> application</h4>
-       <p>The <code>manager</code> application URLs and roles has been re-structured. See the Tomcat <a href="http://tomcat.apache.org/migration.html">Migration guide</a> for more information.</p>
-      </div>
-      <h3><a name="managerSSL"></a>Enabling SSL for the Tomcat <code>manager</code> application</h3>
-      <ol>
-       <li>Modify the deployment descriptor of the Tomcat <code>manager</code> application.</li>
-        <ul class="little">
-        <li><b>If you are using Tomcat version 6.0.29 or older:</b></li>
-
-        <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code>manager</code> application:</p>
-<pre>
-<b>$</b> vi ${tomcat_home}/webapps/manager/WEB-INF/web.xml
-</pre>   
-
-
-        <p>Locate the <code>&lt;security-constraint&gt;</code> element (near the bottom of the file):</p>
-<pre>
-  &lt;!-- Define a Security Constraint on this Application --&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;HTMLManger and Manager command&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/list&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/expire&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/sessions&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/start&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/stop&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/install&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/remove&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/deploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/undeploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/reload&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/save&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/serverinfo&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/roles&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/resources&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;!-- NOTE:  This role is not present in the default users file --&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-</pre>
-
-        <p>Add a <code>&lt;user-data-constraint&gt;</code> with a <code>&lt;transport-guarantee&gt;</code> of <code>CONFIDENTIAL</code> to enable port-forwarding to port 8443:</p>
-<pre>
-  &lt;!-- Define a Security Constraint on this Application --&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;HTMLManger and Manager command&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/list&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/expire&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/sessions&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/start&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/stop&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/install&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/remove&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/deploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/undeploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/reload&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/save&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/serverinfo&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/roles&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/resources&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-   <b> &lt;user-data-constraint&gt;
-       &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b>
-  &lt;/security-constraint&gt;
-</pre>
-        <li><b>If you are using Tomcat version 6.0.30 or 6.0.32:</b></li>
-
-
-        <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code>manager</code> application:</p>
-<pre>
-<b>$</b> vi ${tomcat_home}/webapps/manager/WEB-INF/web.xml
-</pre>   
-
-
-        <p>Locate the <code>&lt;security-constraint&gt;</code> element (near the bottom of the file):</p>
-<pre>
-  &lt;!-- Define a Security Constraint on this Application --&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;Manager commands&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/list&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/expire&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/sessions&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/start&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/stop&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/install&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/remove&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/deploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/undeploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/reload&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/save&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/serverinfo&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/roles&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/resources&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/findleaks&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;!-- NOTE: 1. These roles are not present in the default users file
-                  2. The manager role is deprecated, it will be removed in
-                     Tomcat 7.
-                  3. Use the manager-script role to take advantage of the new
-                     CSRF protection. Using the manager role or assigning both
-                     the manager-script and manager-gui roles to the same user
-                     will bypass the CSRF protection. --&gt;
-       &lt;role-name&gt;manager-script&lt;/role-name&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;HTML Manager commands&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;!-- NOTE: 1. These roles are not present in the default users file
-                  2. The manager role is deprecated, it will be removed in
-                     Tomcat 7.
-                  3. Use just the manager-gui role to take advantage of the new
-                     CSRF protection. Assigning the manager role or manager-gui
-                     role along with either the manager-script or manager-jmx
-                     roles to the same user will bypass the CSRF protection. --&gt;
-       &lt;role-name&gt;manager-gui&lt;/role-name&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;JMX proxy&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;!-- NOTE: 1. These roles are not present in the default users file
-                  2. The manager role is deprecated, it will be removed in
-                     Tomcat 7.
-                  3. Use the manager-jmx role to take advantage of the new
-                     CSRF protection. Using the manager role or assigning both
-                     the manager-jmx and manager-gui roles to the same user
-                     will bypass the CSRF protection. --&gt;
-       &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;Status&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;!-- NOTE: 1. These roles are not present in the default users file
-                  2. The manager role is deprecated, it will be removed in
-                     Tomcat 7. --&gt;
-       &lt;role-name&gt;manager-status&lt;/role-name&gt;
-       &lt;role-name&gt;manager-gui&lt;/role-name&gt;
-       &lt;role-name&gt;manager-script&lt;/role-name&gt;
-       &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-
-</pre>
-        <p>The  <code>manager</code> application deployment descriptor for these later versions of Tomcat 6 has been modified to be similar to the configuration the <code>manager</code> application as it appears in Tomcat 7.  The deployment descriptor contains a <code>&lt;security-constraint&gt;</code> section for three of the <code>ContactPaths</code> (as per <a href="http://tomcat.apache.org/migration.html#Manager_application">Manager Application section of the Tomcat Migration Guide</a>), as well as a 'catch all' <code>&lt;security-constraint&gt;</code> to handle the various script-oriented <code>manager</code> commands found in earlier versions of Tomcat 6.</p>
-
-        <p>Add a <code>&lt;user-data-constraint&gt;</code> with a <code>&lt;transport-guarantee&gt;</code> of <code>CONFIDENTIAL</code> for the desired <code>ContactPaths</code> to to enable port-forwarding to port 8443:</p>
-
-<pre>
-  &lt;!-- Define a Security Constraint on this Application --&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;Manager commands&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/list&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/expire&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/sessions&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/start&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/stop&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/install&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/remove&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/deploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/undeploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/reload&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/save&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/serverinfo&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/roles&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/resources&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/findleaks&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;!-- NOTE: 1. These roles are not present in the default users file
-                  2. The manager role is deprecated, it will be removed in
-                     Tomcat 7.
-                  3. Use the manager-script role to take advantage of the new
-                     CSRF protection. Using the manager role or assigning both
-                     the manager-script and manager-gui roles to the same user
-                     will bypass the CSRF protection. --&gt;
-       &lt;role-name&gt;manager-script&lt;/role-name&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-    <b>&lt;user-data-constraint&gt;
-        &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b>
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;HTML Manager commands&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;!-- NOTE: 1. These roles are not present in the default users file
-                  2. The manager role is deprecated, it will be removed in
-                     Tomcat 7.
-                  3. Use just the manager-gui role to take advantage of the new
-                     CSRF protection. Assigning the manager role or manager-gui
-                     role along with either the manager-script or manager-jmx
-                     roles to the same user will bypass the CSRF protection. --&gt;
-       &lt;role-name&gt;manager-gui&lt;/role-name&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-    <b>&lt;user-data-constraint&gt;
-        &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b>
-  &lt;/security-constraint&gt;
-
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;JMX proxy&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;!-- NOTE: 1. These roles are not present in the default users file
-                  2. The manager role is deprecated, it will be removed in
-                     Tomcat 7.
-                  3. Use the manager-jmx role to take advantage of the new
-                     CSRF protection. Using the manager role or assigning both
-                     the manager-jmx and manager-gui roles to the same user
-                     will bypass the CSRF protection. --&gt;
-       &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-    <b>&lt;user-data-constraint&gt;
-        &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b>
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;Status&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;!-- NOTE: 1. These roles are not present in the default users file
-                  2. The manager role is deprecated, it will be removed in
-                     Tomcat 7. --&gt;
-       &lt;role-name&gt;manager-status&lt;/role-name&gt;
-       &lt;role-name&gt;manager-gui&lt;/role-name&gt;
-       &lt;role-name&gt;manager-script&lt;/role-name&gt;
-       &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-    <b>&lt;user-data-constraint&gt;
-        &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b>
-  &lt;/security-constraint&gt;
-
-</pre>
-        <li><b>If you are using Tomcat 7:</b></li>
-
-        <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code>manager</code> application:</p>
-<pre>
-<b>$</b> vi ${tomcat_home}/webapps/manager/WEB-INF/web.xml
-</pre>   
-
-
-        <p>Locate the <code>&lt;security-constraint&gt;</code> elements (near the bottom of the file):</p>
-<pre>
-  &lt;!-- Define a Security Constraint on this Application --&gt;
-  &lt;!-- NOTE:  None of these roles are present in the default users file --&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;HTML Manager interface (for humans)&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager-gui&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;Text Manager interface (for scripts)&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/text/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager-script&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;JMX Proxy interface&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;Status interface&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager-gui&lt;/role-name&gt;
-       &lt;role-name&gt;manager-script&lt;/role-name&gt;
-       &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
-       &lt;role-name&gt;manager-status&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-
-</pre>
-        <p>The Tomcat 7 version of the <code>manager</code> application deployment descriptor contains a <code>&lt;security-constraint&gt;</code> section for each of the four possible <code>ContactPaths</code> (as per <a href="http://tomcat.apache.org/migration.html#Manager_application">Manager Application section of the Tomcat Migration Guide</a>).</p>
-
-        <p>Add a <code>&lt;user-data-constraint&gt;</code> with a <code>&lt;transport-guarantee&gt;</code> of <code>CONFIDENTIAL</code> for the desired <code>ContactPaths</code> to to enable port-forwarding to port 8443:</p>
-<pre>
-  &lt;!-- Define a Security Constraint on this Application --&gt;
-  &lt;!-- NOTE:  None of these roles are present in the default users file --&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;HTML Manager interface (for humans)&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager-gui&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-    <b>&lt;user-data-constraint&gt;
-        &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b>
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;Text Manager interface (for scripts)&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/text/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager-script&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-   <b> &lt;user-data-constraint&gt;
-        &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b>
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;JMX Proxy interface&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-   <b> &lt;user-data-constraint&gt;
-        &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b>
-  &lt;/security-constraint&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;Status interface&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager-gui&lt;/role-name&gt;
-       &lt;role-name&gt;manager-script&lt;/role-name&gt;
-       &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
-       &lt;role-name&gt;manager-status&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-   <b> &lt;user-data-constraint&gt;
-        &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b>
-  &lt;/security-constraint&gt;
-
-</pre>
-        </ul>
-
-      </ul>
-     <li>Verify SSL has been enabled for the Tomcat <code>manager</code> application.</li>
-      <p>Restart Tomcat and verify SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li></p>
-
-      <p><a href="images/managerssl.png"><img src="images/managerssl.png" width="500" height="138" alt="Tomcat manager authentication prompt"></a></p>
-
-
-      <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting</h4>
-       <ul>
-        <li>Check the XML syntax in <code>web.xml</code> to make sure it is well-formed and without error.</li>
-        <li>Did you specify a <code>&lt;transport-guarantee&gt;</code> of <code>CONFIDENTIAL</code>? </li>
-        <li>Did you restart Tomcat after you made your changes to <code>web.xml</code>?</li>
+      <a id="accessingTDSMonitoringAndDebuggingTools" class="example">
+       Accessing TDS Monitoring and Debugging Tools
+      </a>
        </ul>
-      </div>
-     </ol>
-
-
-
       <h3>Resources</h3>
       <ul>
        <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html">SSL Configuration HOW-TO</a><br>      The Apache Tomcat document detailing how to enable SSL.</li>
@@ -948,6 +298,39 @@ tcp        0      0 :::<b>8443</b>                    :::*                      
       </ul>
 
    </div> <!-- end Enabling SSL Encryption section -->
+
+
+
+   <div id="section">
+    <h2><a name="manager">Securing the Tomcat <code>manager</code> Application</a> </h2>
+
+      <div id="note" class="info">
+       <h4>Changes to the <code>manager</code> application</h4>
+       <p>The <code>manager</code> application URLs and roles has been re-structured. See the Tomcat <a href="http://tomcat.apache.org/migration.html">Migration guide</a> for more information.</p>
+      </div>
+     <h3>Rationale</h3>
+
+      <ul>
+       <li>"Free" web application that comes with Tomcat distribution that lives in the Tomcat Lives in the <code>${tomcat_home}/webapps/manager</code> directory. </li>
+       <li>Not enabled by default.</li>
+       <li>Allows Tomcat administrators to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat.</li>
+       <li>If exploited, an attacker can use the <code>manager</code> application to install programs on your server willy-nilly.</li>
+       <li>If you choose to enable the <code>manager</code> application, we <i>highly recommend</i> enabling digested passwords and SSL encryption for the <code>manager</code>.</li>
+       <li>Restricting access to the  <code>manager</code> application to a small subset of IP addressess or host names using a Tomcat valve, etc., is also a good idea.</li>
+       <li>Uninstall this application if you don't plan to use it.</li>
+      </ul>
+
+      <a id="tomcatManagerSSL" class="example">
+       Enabling SSL for the Tomcat <code>manager</code> application
+      </a>
+
+      <h3>Resources</h3>
+      <ul>
+       <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Manager App HOW-TO</a><br>      The Apache Tomcat document referencing how to use and configure the <code>manager</code> application.</li>
+       <li><a href="http://tomcat.apache.org/migration.html#Manager_application">Tomcat Migration Guide</a><br>      A document detailing the various changes between Tomcat versions contains a section dedicated to the  <code>manager</code> application.</li>
+      </ul>
+
+   </div> <!-- end Securing the Tomcat manager Application section -->
 
 
 
@@ -967,36 +350,15 @@ tcp        0      0 :::<b>8443</b>                    :::*                      
        <li>We recommend working with your systems/network administrator to block access to all non-essential ports at the firewall.</li>
       </ul>
 
-     <h3>Port Tinkering</h3>
-      <ol>
-       <li>Shutdown Tomcat without using the <code>${tomcat_home}/bin/shutdown.sh</code> script.</li>
-        <p>Make sure Tomcat is running and then type the following in your terminal window:</p>  
-<pre>
-<b>$</b> telnet localhost 8005
-</pre>
-       <p>When prompted, issue Tomcat the shutdown command by typing <code>SHUTDOWN</code>:</p>
-<pre>
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-<b>SHUTDOWN</b>
-</pre>
-      <div id="expanded" class="question">
-       <p> What happened when you issued the <code>SHUTDOWN</code> command via telnet?  Is this what you expected?</p>
-      </div>
-      </ol>  
-
-
      <h3>For running the TDS, keep in mind the following:  </h3>
      <ul>
          <li>Port 8080 should have unrestricted access <i>unless</i> you plan to proxy requests to Tomcat from and HTTP server.</li>
-         <li>If you are allowing any remote management by using the TDS Remote Management Tool or the Tomcat <code>manager</code> application, you must also open up port 8443.</li>
+         <li>If you are using any of the TDS monitoring and debugging tools, or the Tomcat <code>manager</code> application, you must also open up port 8443.</li>
         </ul> 
 
 
       <h3>Resources</h3>
       <ul>
-       <li><a href=http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables">Linux Firewalls Using  <code>iptables</code></a><br>      An article showing how to set up a firewall on a linux server.</li>
       <li>Your local systems/network administrator:<br> 
 <img src="images/super.png" alt="systems/network administrator"></li>
         
@@ -1012,12 +374,13 @@ Escape character is '^]'.
     <h2><a name="access">Restricting Access To The TDS By Remote IP Address Or Host</a> </h2>
 
 
+
+
+     <h3>Rationale</h3>
       <div id="note" class="info">
        <h4>Tomcat Valves</h4>
        <p>A <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html">valve</a> element represents a component that will be inserted into the request processing pipeline for the associated Catalina container. </p>
       </div>
-
-     <h3>Rationale</h3>
       <ul>
        <li>Use the Tomcat <code>RemoteHostValve</code> or <code>RemoteAddrValve</code> to restrict access to the TDS and/or other web applications.</li>
        <li>Configured in the Tomcat <code>conf/server.xml</code> file.</li>
@@ -1058,39 +421,11 @@ Escape character is '^]'.
 
       <h3>Resources</h3>
       <ul>
-       <li><a href=http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html">The Valve Component</a><br>      Tomcat documentation about the various <code>valve</code> components available for use.</li>
+       <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html">The Valve Component</a><br>      Tomcat documentation about the various <code>valve</code> components available for use.</li>
       </ul>
-
-
    </div> <!-- end Restricting Access To The TDS By Remote IP Address Or Host section -->
 
 
-   <div id="section">
-    <h2><a name="manager">Securing the Tomcat <code>manager</code> Application</a> </h2>
-
-      <div id="note" class="info">
-       <h4>Changes to the <code>manager</code> application</h4>
-       <p>The <code>manager</code> application URLs and roles has been re-structured. See the Tomcat <a href="http://tomcat.apache.org/migration.html">Migration guide</a> for more information.</p>
-      </div>
-     <h3>Rationale</h3>
-
-      <ul>
-       <li>"Free" web application that comes with Tomcat distribution that lives in the Tomcat Lives in the <code>${tomcat_home}/webapps/manager</code> directory. </li>
-       <li>Not enabled by default.</li>
-       <li>Allows Tomcat administrators to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat.</li>
-       <li>If exploited, an attacker can use the <code>manager</code> application to install programs on your server willy-nilly.</li>
-       <li>If you choose to enable the <code>manager</code> application, we <i>highly recommend</i> enabling digested passwords and SSL encryption for the <code>manager</code>.</li>
-       <li>Restricting access to the  <code>manager</code> application to a small subset of IP addressess or host names using a Tomcat valve, etc., is also a good idea.</li>
-       <li>Uninstall this application if you don't plan to use it.</li>
-      </ul>
-
-      <h3>Resources</h3>
-      <ul>
-       <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Manager App HOW-TO</a><br>      The Apache Tomcat document referencing how to use and configure the <code>manager</code> application.</li>
-       <li><a href="http://tomcat.apache.org/migration.html#Manager_application">Tomcat Migration Guide</a><br>      A document detailing the various changes between Tomcat versions contains a section dedicated to the  <code>manager</code> application.</li>
-      </ul>
-
-   </div> <!-- end Securing the Tomcat manager Application section -->
 
 
    <div id="section">
@@ -1138,42 +473,11 @@ Escape character is '^]'.
      <h3><code>SHUTDOWN</code> on port 8005</h3>
       <ul>
        <li>Tomcat uses a the default port of 8005 as the designated shutdown port.  Shutdown scripts make a call to this port and issue the <code>SHUTDOWN</code> command.</li>
-       <li>If you are running a publicly accessible server make sure you prevent external access to the shutdown port by using a suitable firewall. </li>
        <li>If need be, you can always change the shutdown command or even the port number in <code>${tomcat_home}/conf/server.xml</code>. </li>
      </ul>
 
 
    </div> <!-- end  section -->
-
-
-   <div id="section">
-    <h2><a name="versioninfo">Remove Tomcat Version String From HTTP Error Messages</a> </h2>
-
-     <h3>Tomcat Version Information</h3>
-     <ul>
-       <li>By default, the Tomcat version number will be displayed on any HTTP error pages displayed by Tomcat.</li>
-       <li>Remove the Tomcat version string from HTTP error messages by repacking <code>${tomcat_home}/lib/catalina.jar</code> with an updated <code>ServerInfo.properties</code> file.</li>      
-     </ul>
-     <ol>
-      <li>Unpack <code>catalina.jar</code></li>
-<pre>
-<b>$</b> cd ${tomcat_home}/lib
-<b>$</b> jar xf catalina.jar org/apache/catalina/util/ServerInfo.properties
-</pre>
-      <li>Update <code>ServerInfo.properties</code> by changing <code>server.info</code>  line to <code>server.info=Apache Tomcat</code>.  Repackage <code>catalina.jar</code></li>
-<pre>
-<b>$</b> jar uf catalina.jar org/apache/catalina/util/ServerInfo.properties
-</pre>
-
-       <li>Remove the  <code>${tomcat_home}/lib/org</code> directory created when extracting the <code>ServerInfo.properties</code>  file)</li>
-<pre>
-<b>$</b> rm -r org
-</pre>
-      </ol>     
-
-
-   </div> <!-- end  section -->
-
 
 
    

@@ -398,6 +398,11 @@ public String NC_check_name(String name) {
   //////////////////////////////////////////////////////////////////////////////////////
   // read existing file
 
+  public void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
+                   ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    open(raf, ncfile, cancelTask);
+  }
+
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);

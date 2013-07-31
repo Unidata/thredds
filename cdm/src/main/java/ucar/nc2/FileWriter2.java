@@ -357,10 +357,6 @@ public class FileWriter2 {
 
   }
 
-  public double copyVarData(List<Variable> vars, Structure recordVar) throws IOException {
-    return copyVarData(vars, recordVar, null);
-  }
-
   /**
    * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
    * When theres a record variable, its much more efficient to use it.
@@ -432,7 +428,7 @@ public class FileWriter2 {
   }
 
   // copy all the data in oldVar to the newVar
-  private void copyAll(Variable oldVar, Variable newVar) throws IOException {
+  void copyAll(Variable oldVar, Variable newVar) throws IOException {
 
     Array data = oldVar.read();
     try {

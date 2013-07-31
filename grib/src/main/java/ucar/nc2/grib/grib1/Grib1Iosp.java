@@ -41,6 +41,7 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -334,6 +335,8 @@ public class Grib1Iosp extends GribIosp {
         v.addAttribute(new Attribute("Grib1_Parameter_Name", param.getName()));
 
       v.addAttribute(new Attribute("Grib1_Level_Type", vindex.levelType));
+      v.addAttribute(new Attribute("Grib1_Level_Desc", cust.getLevelDescription( vindex.levelType)));
+
       if ( vindex.intvName != null && vindex.intvName.length() != 0)
         v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
       if (vindex.intvType >= 0) {
@@ -595,11 +598,11 @@ public class Grib1Iosp extends GribIosp {
 
       @Override
       public int compareTo(DataRecord o) {
-        int r = Integer.compare(partno, o.partno);
+        int r = Misc.compare(partno, o.partno);
         if (r != 0) return r;
-        r = Integer.compare(fileno, o.fileno);
+        r = Misc.compare(fileno, o.fileno);
         if (r != 0) return r;
-        return Long.compare(pos, o.pos);
+        return Misc.compare(pos, o.pos);
       }
     }
   }
@@ -697,9 +700,9 @@ public class Grib1Iosp extends GribIosp {
 
       @Override
       public int compareTo(DataRecord o) {
-        int r = Integer.compare(fileno, o.fileno);
+        int r = Misc.compare(fileno, o.fileno);
         if (r != 0) return r;
-        return Long.compare(pos, o.pos);
+        return Misc.compare(pos, o.pos);
       }
     }
   }

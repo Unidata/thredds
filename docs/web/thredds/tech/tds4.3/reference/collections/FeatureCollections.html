@@ -3,11 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Feature Collections</title>
-<style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
-code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;}
-</style>
+  <link href="../../../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
@@ -15,7 +11,7 @@ dl {margin: 10px 5px 5px 15px;}
 <hr />
 <h2>Overview</h2>
 <p>The <b>featureCollection</b> element is a way to tell the TDS to serve collections of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used  for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack. This allows the TDS to automatically create logical datasets composed of  collections of files, and to allow subsetting in coordinate space  on them, eg through the WMS, WCS, and Netcdf Subsetting Service.</p>
-<p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong> = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 also allows <strong>featureType</strong> =<em> GRIB</em>, which can only be used for collections of GRIB files. <em>Currently, one should <strong>only</strong> serve GRIB files with featureCollection=GRIB.</em></p>
+<p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong> = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 also allows <strong>featureType</strong> =<em> GRIB</em>, which is  used for collections of GRIB files. <em>Currently, one should <strong>only</strong> serve GRIB files with featureCollection=GRIB.</em></p>
 <p>The <b>featureCollection</b> element is a subtype of <strong>dataset</strong> element. It defines a<em> logical dataset</em> for the TDS. All of the elements that can be used inside of a <strong>dataset</strong> element can be used inside of a <b>featureCollection</b> element.</p>
 <p>A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance, and in managing collections that change. For high-performance servers, its better to let a background process manage indexing, and the THREDDS Data Manager (<a href="TDM.html">TDM</a>) is an experimental (alpha release) application for this purpose available in TDS 4.3.</p>
 <h3>Contents:</h3>
@@ -140,7 +136,7 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
 </blockquote>
 <h3>protoDataset element</h3>
 <p>Provides control over the choice of the <strong><em>prototype dataset</em></strong> for the collection. The protype dataset is used to populate the metadata for the feature collection.</p>
-<pre>&lt;protoDataset <strong>choice</strong>=&quot;Penultimate&quot; param=&quot;0&quot; <strong>change</strong>=&quot;expr&quot;&gt;
+<pre>&lt;protoDataset <strong>choice</strong>=&quot;Penultimate&quot; <strong>change</strong>=&quot;<em>0 2 3 * * ? *</em>&quot;&gt;
   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />    &lt;attribute name=&quot;featureType&quot; value=&quot;timeSeries&quot;/&gt;<br />
   &lt;/netcdf&gt;
 &lt;/protoDataset&gt;
@@ -151,7 +147,7 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
    &lt;/xsd:sequence&gt;
 2) &lt;xsd:attribute name=&quot;choice&quot; type=&quot;protoChoices&quot;/&gt;
 3) &lt;xsd:attribute name=&quot;change&quot; type=&quot;xsd:string&quot;/&gt;
-4) &lt;xsd:attribute name=&quot;param&quot; type=&quot;xsd:string&quot;/&gt;
+
  &lt;/xsd:complexType&gt;</pre>
 <pre> &lt;xsd:simpleType name=&quot;protoChoices&quot;&gt;
   &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
@@ -173,10 +169,9 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
   <li><strong>change</strong>= &quot;cron expr&quot; (optional). On rolling datsets, you need to change the prototype periodically, otherwise it will get deleted eventually. This attribute specifies when the protoDataset should be reselected, using a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a>.
     <ul>
       <li><em>change = &quot;0 2 3 * * ? *&quot;</em> means every day at 3.02 am.</li>
-      <li>if not specified, the prototype dataset is not changed, except when restarting the TDS.</li>
+      <li>if not specified, the prototype dataset is not changed, except when restarting the TDS</li>
     </ul>
   </li>
-  <li><strong>param</strong>= (not implemented) used only with choice=&quot;Run&quot;. Names the run to use,  in hours since 0Z. For example,  choice=&quot;Run&quot; param=&quot;0&quot; means to use the latest 0Z dataset run</li>
 </ol>
 <p>The choice of the protoDataset matters when the datasets are not <em>homogenous</em>:</p>
 <ol>
@@ -186,7 +181,8 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
 </ol>
 <h3>update element</h3>
 <p>For collections that change, the <strong>update</strong> element provides options to update the collection, either synchronously (while a user request waits) or asynchronously (in a background task, so that requests do not wait). If there is no update element, then the dataset is considered <em>static</em>, and  the indexes are never updated by the TDS. (To force updated indices, delete the collection index, usually<strong> &lt;collection root directory&gt; / &lt;dataset name&gt;.ncx</strong>.)</p>
-<pre>&lt;update startup=&quot;true&quot; rescan=&quot;cron expr&quot;<strong> </strong>trigger=&quot;allow&quot; <strong></strong>/&gt;
+<pre>
+&lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
 
 &lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;</pre>
 The XML Schema definition for the update element:
@@ -268,36 +264,8 @@ The XML Schema definition for the update element:
 <hr />
 <h2>NcML Modifications<a name="ncml" id="ncml"></a> </h2>
 <p>NcML is no longer used to define the collection, but it may still be used to modify the feature collection dataset. </p>
-<p><strong>Old way:</strong></p>
-<pre>&lt;datasetFmrc name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
-  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
-
- 1) &lt;<strong>variable</strong> name=&quot;mixed_layer_depth&quot;&gt;
-     &lt;attribute name=&quot;long_name&quot; value=&quot;mixed_layer_depth @ surface&quot;/&gt;
-     &lt;attribute name=&quot;units&quot; value=&quot;m&quot;/&gt;
-    &lt;/variable&gt;
-
-   &lt;aggregation dimName=&quot;runtime&quot; type=&quot;forecastModelRunSingleCollection&quot; timeUnitsChange=&quot;true&quot; recheckEvery=&quot;10 min&quot;&gt;
- 
- 2)  &lt;<strong>variable</strong> name=&quot;time&quot;&gt;
-      &lt;attribute name=&quot;units&quot; value=&quot;hours since &quot;/&gt;
-     &lt;/variable&gt;
-   
- 3)  &lt;<strong>scanFmrc</strong> location=&quot;c:/rps/cf/rtofs&quot; regExp=&quot;.*ofs_atl.*\.grib2$&quot; 
-       runDateMatcher=&quot;#ofs.#yyyyMMdd&quot; forecastOffsetMatcher=&quot;HHH#.grb.grib2#&quot; subdirs=&quot;true&quot;
-       olderThan=&quot;10 min&quot;/&gt; 
-   &lt;/aggregation&gt;
-  &lt;/netcdf&gt;
- &lt;/datasetFmrc&gt;</pre>
-<p>where:</p>
-<ol>
-  <li>on the outside of the aggregation, attributes are being added/modified for the existing variable &quot;mixed_layer_depth&quot; <em>in the resulting FMRC dataset</em>.</li>
-  <li>on the inside of the aggregation, an attribute is being added/modified for the existing variable &quot;time&quot;<em> for each dataset in the collection</em>. Typically you need to do this in order to make the component files into a gridded dataset.</li>
-  <li>the collection is defined by a <em>scanFmrc</em> element, creating a <em>forecastModelRunSingleCollection</em> with one forecast time per file</li>
-</ol>
-<p><strong>New way:</strong></p>
 <pre>&lt;<strong>featureCollection featureType=&quot;FMRC&quot; </strong>name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
-1) &lt;collection spec=&quot;c:/rps/cf/rtofs/.*ofs_atl.*\.grib2$&quot; <strong>recheckAfter</strong>=&quot;10 min&quot; <strong>olderThan</strong>=&quot;5 min&quot;/&gt;
+1) &lt;<strong>collection</strong> spec=&quot;c:/rps/cf/rtofs/.*ofs_atl.*\.grib2$&quot; <strong>recheckAfter</strong>=&quot;10 min&quot; <strong>olderThan</strong>=&quot;5 min&quot;/&gt;
 
 2) &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
     &lt;variable name=&quot;time&quot;&gt;
@@ -319,14 +287,14 @@ The XML Schema definition for the update element:
 </pre>
 <p>where:</p>
 <ol>
-  <li>the collection is now defined by a <em>collection</em> element, allowing any number of forecast times per file</li>
-  <li>when you want <em>to modify the component files of the collection</em>, you put an NcML element inside the <em>featureCollection</em> element. This modifies the component files before they are turned into a gridded dataset.</li>
-  <li>when you want <em>to modify the resulting FMRC dataset,</em> you put an NcML element inside the <em>protoDataset</em> element. This defines the &quot;prototypical&quot; dataset used as the template for the resulting FMRC datasets.</li>
+  <li>The collection is  defined by a <em>collection</em> element, allowing any number of forecast times per file</li>
+  <li>When you want <em>to modify the component files of the collection</em>, you put an NcML element inside the <em>featureCollection</em> element. This modifies the component files before they are turned into a gridded dataset. In this case we haved fixed the time coordinate units attribute, otherwise the individual files would not get recognized as Grid datasets, and the feature collection will fail.</li>
+  <li>When you want <em>to modify the resulting FMRC dataset,</em> you put an NcML element inside the <em>protoDataset</em> element. In this case we have added a global attribute named <em>speech</em> and 2 attributes on the variable named <em>mixed_layer_depth</em>.</li>
 </ol>
 <p></p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" width="76" height="67" /> This document was last updated  May 2013.
+<img src="../../../images/thread.png" width="76" height="67" /> This document was last updated  July 2013.
 </address>
 </body>
 </html>

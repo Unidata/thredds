@@ -153,7 +153,7 @@
 
         <documentation type="summary">The NCEP Climate Forecast System Reanalysis (CFSR) was designed and executed as a global,
           high resolution, coupled atmosphere-ocean-land surface-sea ice system to provide the best estimate of the state of
-          these coupled domains over the 31-year period of 1979 to 2009.
+          these coupled domains over the 31-year period of 1979 to 2009.  This is a small part of that for testing.
         </documentation>
       </metadata>
 
@@ -165,8 +165,8 @@
         <collection spec="/data/thredds/ncdc/cfsr/timeseries/**/.*grb2$"
                     timePartition="directory"
                     dateFormatMark="#timeseries/#yyyyMM"/>
-        <update startup="nocheck" trigger="allow" />
-        <tdm startup="true" trigger="allow"/>
+        <update startup="true" trigger="allow" />                                             S
+        <!-- tdm startup="true" trigger="allow"/ -->
         <gribConfig>
           <gdsHash from="1450218978" to="1450192070"/>
           <gdsName hash='1450192070' groupName='FLX GaussianT382'/>

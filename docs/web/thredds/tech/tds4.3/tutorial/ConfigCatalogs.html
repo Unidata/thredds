@@ -154,13 +154,13 @@
      </ul>
     </div>
 
-    <p>You can check that a data file is recognized as "gridded" with netCDF-Java ToolsUI (available for download from the  <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java home page</a> or you can use  <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">webstart</a>).</p>
+    <p>You can check that a data file is recognized as "gridded" with netCDF-Java ToolsUI (available for download from the  <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java home page</a> or you can use  <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart/netCDFtools.jnlp">webstart</a>).</p>
 
     <div id="expanded" class="exercise">
      <h3>Exercise: Check that the NAM Dataset is Gridded Data</h3>
      <ol>
-      <li>Open the netCDF-Java ToolsUI application [<a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">webstart</a>].</li>
-      <li>In the "FeatureTypes" - "Grids" tab, browse to the <code>/data/ldm/nam_12km</code> directory and open a dataset file.</li>
+      <li>Open the netCDF-Java ToolsUI application [<a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart/netCDFtools.jnlp">webstart</a>].</li>
+      <li>In the "FeatureTypes" - "Grids" tab, browse to the <code>/machine/tds/data/ldm/nam_12km</code> directory and open a dataset file.</li>
       <li>If variables are listed in the top section of the window, the netCDF-Java library has recognized the dataset as gridded data.</li>
      </ol>
      <p><b>Note</b>: While you have ToolsUI open, take a look at the "Viewer" tab and the "THREDDS" tab</p> 
@@ -353,11 +353,40 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
      <h3>Exercise: Managing multiple roots</h3>
      <p>Add a few more datasetScan elements:</p>
      <ol>
-      <li>Check the /data/ldm/fsl, /data/ldm/madis, and /data/ldm/suomi data directories:</li>
-       <pre><b>$</b> ls /data/ldm<br>bufr    dusk         dusk.080527  fsl     ldm.pq  ltng   mcidas    ngrid  nogaps    rcm      severe  surface   wseta<br>cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfiles  rtmodel  suomi   upperair</pre>
-       <pre><b>$</b> ls /data/ldm/fsl<br>01hr  06min  RASS<br><b>$</b> ls /data/ldm/fsl/01hr<br>20082962000.nc  20082981400.nc  20083000800.nc  20083020200.nc  20083032000.nc  20083051400.nc  20083071000.nc  20083090400.nc<br>...<br>20082981200.nc  20083000600.nc  20083020000.nc  20083031800.nc  20083051200.nc  20083070800.nc  20083090200.nc  20083102100.nc</pre>
-       <pre><b>$</b> ls /data/ldm/madis<br>20081022_0700.nc  20081024_1000.nc  20081026_1300.nc  20081028_1600.nc  20081030_1900.nc  20081101_2200.nc  20081104_0100.nc<br>...<br>20081024_0300.nc  20081026_0600.nc  20081028_0900.nc  20081030_1200.nc  20081101_1500.nc  20081103_1800.nc  20081105_2100.nc</pre>
-       <pre><b>$</b> ls /data/ldm/suomi<br>CsuPWVh_2008.308.18.00.0060_nc  CsuPWVh_2008.309.07.00.0060_nc  CsuPWVh_2008.309.20.00.0060_nc  CsuPWVh_2008.310.09.00.0060_nc<br>...<br>CsuPWVh_2008.309.04.00.0060_nc  CsuPWVh_2008.309.17.00.0060_nc  CsuPWVh_2008.310.06.00.0060_nc  CsuPWVh_2008.310.19.00.0060_nc</pre>
+      <li>Check the /machine/tds/data/ldm/fsl, /machine/tds/data/ldm/madis, and /machine/tds/data/ldm/suomi data directories:</li>
+       <pre><b>$</b> ls /machine/tds/data/ldm<br>fsl  madis  nam_12km  suomi</pre>
+       <pre><b>$</b> ls /machine/tds/data/ldm/fsl<br>01hr  06min  RASS<br><b>$</b> ls /machine/tds/data/ldm/fsl/01hr<br>20132021700.nc  20132030000.nc  20132030700.nc  20132031400.nc  20132032100.nc  ...
+20132021800.nc  20132030100.nc  20132030800.nc  20132031500.nc  20132032200.nc  ...
+20132021900.nc  20132030200.nc  20132030900.nc  20132031600.nc  20132032300.nc  ...
+20132022000.nc  20132030300.nc  20132031000.nc  20132031700.nc  20132040000.nc  ...
+20132022100.nc  20132030400.nc  20132031100.nc  20132031800.nc  20132040100.nc  ...
+20132022200.nc  20132030500.nc  20132031200.nc  20132031900.nc  20132040200.nc  ...
+20132022300.nc  20132030600.nc  20132031300.nc  20132032000.nc  20132040300.nc  ...</pre>
+       <pre><b>$</b> ls /machine/tds/data/ldm/madis<br>20130721_0400.nc  20130721_1300.nc  20130721_2200.nc  20130722_0700.nc  ...
+20130721_0500.nc  20130721_1400.nc  20130721_2300.nc  20130722_0800.nc  ...
+20130721_0600.nc  20130721_1500.nc  20130722_0000.nc  20130722_0900.nc  ...
+20130721_0700.nc  20130721_1600.nc  20130722_0100.nc  20130722_1000.nc  ...
+20130721_0800.nc  20130721_1700.nc  20130722_0200.nc  20130722_1100.nc  ...
+20130721_0900.nc  20130721_1800.nc  20130722_0300.nc  20130722_1200.nc  ...
+20130721_1000.nc  20130721_1900.nc  20130722_0400.nc  20130722_1300.nc  ...
+20130721_1100.nc  20130721_2000.nc  20130722_0500.nc  20130722_1400.nc  ...
+20130721_1200.nc  20130721_2100.nc  20130722_0600.nc  20130722_1500.nc  ...</pre>
+       <pre><b>$</b> ls /machine/tds/data/ldm/suomi<br>CsuPWVh_2013.202.16.00.0060_nc  CsuPWVh_2013.203.08.00.0060_nc  ...
+CsuPWVh_2013.202.17.00.0060_nc  CsuPWVh_2013.203.09.00.0060_nc  ...
+CsuPWVh_2013.202.18.00.0060_nc  CsuPWVh_2013.203.10.00.0060_nc  ...
+CsuPWVh_2013.202.19.00.0060_nc  CsuPWVh_2013.203.11.00.0060_nc  ...
+CsuPWVh_2013.202.20.00.0060_nc  CsuPWVh_2013.203.12.00.0060_nc  ...
+CsuPWVh_2013.202.21.00.0060_nc  CsuPWVh_2013.203.13.00.0060_nc  ...
+CsuPWVh_2013.202.22.00.0060_nc  CsuPWVh_2013.203.14.00.0060_nc  ...
+CsuPWVh_2013.202.23.00.0060_nc  CsuPWVh_2013.203.15.00.0060_nc  ...
+CsuPWVh_2013.203.00.00.0060_nc  CsuPWVh_2013.203.16.00.0060_nc  ...
+CsuPWVh_2013.203.01.00.0060_nc  CsuPWVh_2013.203.17.00.0060_nc  ...
+CsuPWVh_2013.203.02.00.0060_nc  CsuPWVh_2013.203.18.00.0060_nc  ...
+CsuPWVh_2013.203.03.00.0060_nc  CsuPWVh_2013.203.19.00.0060_nc  ...
+CsuPWVh_2013.203.04.00.0060_nc  CsuPWVh_2013.203.20.00.0060_nc  ...
+CsuPWVh_2013.203.05.00.0060_nc  CsuPWVh_2013.203.21.00.0060_nc  ...
+CsuPWVh_2013.203.06.00.0060_nc  CsuPWVh_2013.203.22.00.0060_nc  ...
+CsuPWVh_2013.203.07.00.0060_nc  CsuPWVh_2013.203.23.00.0060_nc  ...</pre>
       <li>Edit the main TDS configuration catalog:
 <pre>
 <b>$</b> cd ${tomcat_home}/content/thredds
@@ -367,7 +396,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       <li>And add a <code>datasetScan</code> element for the FSL data:
 <pre>
 &lt;datasetScan name="<b>FSL</b>" ID="<b>FSL</b>"
-             path="<b>fsl</b>" location="<b>/data/ldm/fsl</b>"&gt;
+             path="<b>fsl</b>" location="<b>/machine/tds/data/ldm/fsl</b>"&gt;
 
     &lt;metadata inherited="true"&gt;
         &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
@@ -481,7 +510,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 <pre>
 Error {
     code = 500;
-    message = "Cant read /data/ldm/madis/.scour*: not a valid NetCDF file.";
+    message = "Cant read /machine/tds/data/ldm/madis/.scour*: not a valid NetCDF file.";
 };
 </pre>
       </li>
@@ -508,7 +537,7 @@ Error {
       </li>
     </ol>
     </div>
-    <div id="expanded" class="exercise"
+    <div id="expanded" class="exercise">
      <h3>Exercise: Filtering Directories</h3>
      <ol>
       <li>Browse around in the "FSL" dataset.</li>
@@ -543,7 +572,7 @@ Error {
 
     <pre>
 &lt;datasetScan name="NCEP NAM 12km" ID="<b>NAM_12km</b>"
-             path="nam_12km" location="/data/ldm/nam_12km"&gt;</pre>
+             path="nam_12km" location="/machine/tds/data/ldm/nam_12km"&gt;</pre>
 
     <p>and for the data file 2008110406f018.grib2, the value of the dataset ID would be "NAM_12km/2008110406f018.grib2". </p>
   

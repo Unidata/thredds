@@ -1,10 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
-
-
-
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>TDS</title>
-</head><body>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>TDS</title>
+  <link rel="stylesheet" href="tds.css" type="text/css" />
+</head>
+<body>
     <h1 align="left"> <img src="images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"><strong>THREDDS Data Server</strong></h1>
     <hr>
 <h2> Overview</h2>
@@ -43,14 +43,14 @@ possible, and we have made the server as secure as possible. The
 library is freely available and the source code is released under the
 (MIT-style)  netCDF library <a href="http://www.unidata.ucar.edu/software/netcdf/copyright.html">license</a>.
 </p>
-<p>Much of the realtime data available over the Unidata <a href="http://www.unidata.ucar.edu/software/idd/index.html">Internet Data Distribution</a> (IDD) is available through a THREDDS Data Server hosted at Unidata on <a href="http://motherlode.ucar.edu:8080/thredds/">motherlode.ucar.edu</a>.
+<p>Much of the realtime data available over the Unidata <a href="http://www.unidata.ucar.edu/software/idd/index.html">Internet Data Distribution</a> (IDD) is available through a THREDDS Data Server hosted at Unidata on <a href="http://thredds.ucar.edu/thredds/">thredds.ucar.edu</a>.
 You are welcome to browse and access these meteorological datasets. If
 you need regular access to large amounts of data, please contact <a href="mailto:support-idd@unidata.ucar.edu.">support-idd@unidata.ucar.edu.</a></p>
 <h2>System Requirements</h2>
 <ul>
-  <li><a href="http://www.oracle.com/technetwork/java/index.html">Java</a> version 6 or 7 (aka 1.6 or 1.7).</li>
+  <li><a href="http://www.oracle.com/technetwork/java/index.html">Java</a> version 6 or 7 (aka 1.6 or 1.7). Version 5 (coming in 2014) will require Java 7.</li>
   <li>Version 4.2 requires <a href="http://tomcat.apache.org/">Tomcat</a> 5.5 or above, we recommend the latest version of Tomcat 6 or 7.</li>
-  <li>Version 4.3 requires Tomcat 6, we recommend the latest version of Tomcat 7..</li>
+  <li>Version 4.3 requires Tomcat 6, but we recommend the latest version of Tomcat 7.</li>
   <li><strong>Be sure to keep up with the latest versions of Java and Tomcat for security fixes. This is required for publically accessible servers!</strong></li>
 </ul>
 
@@ -65,7 +65,8 @@ you need regular access to large amounts of data, please contact <a href="mailto
         <li><a href="tds4.3/reference/index.html">Reference</a></li>
       <li><a href="tds4.3/tutorial/index.html">Tutorial</a></li>
       <li><a href="tds4.3/faq.html">FAQ</a></li>
-      <li><a href="tds4.3/UpgradingTo4.3.html">Upgrading to TDS 4.3</a></li>
+      <li><a href="tds4.3/UpgradingTo4.3.html">Upgrading to TDS 4.3</a> </li>
+      <li><a href="tds4.3/AccessChangesTds4.3.html">New GRIB handling in TDS 4.3</a></li>
       <li><a href="tds4.3/tutorial/Checklist.html">Checklist for Production Installation</a></li>
       <li><a href="tds4.3/SourceCodeBuild.html">Building TDS 4.3 from Source Code</a></li>
     </ul>
@@ -149,13 +150,13 @@ you need regular access to large amounts of data, please contact <a href="mailto
   <li><a href="catalog/index.html">THREDDS Catalogs</a></li>
   <li><a href="tds4.2/tutorial/workshop2011.html">2011 workshop</a></li>
   <li><a href="tds4.3/tutorial/workshop2012.html">2012 workshop</a></li>
-  <li><a href="StatusReport.html">THREDDS Status Report </a></li>
+  <li><a href="tds4.3/tutorial/workshop2013.html">2013 workshop</a></li>
   <li> Fact Sheet
     [<a href="http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.doc">Word Doc</a>]
     [<a href="http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.pdf">PDF</a>]</li>
 </ul>
 <hr width="100%">
 <address>
-<img src="images/thread.png" alt="THREDDS" height="101" width="101">This document  was last updated June 2013
+<img src="images/thread.png" alt="THREDDS" height="101" width="101">This document  was last updated July 2013
 </address>
 </body></html>

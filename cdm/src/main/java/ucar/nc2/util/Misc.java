@@ -45,7 +45,6 @@ import java.util.*;
  */
 public class Misc {
 
-  private static boolean show = false;
   //private static double maxAbsoluteError = 1.0e-6;
   private static double maxReletiveError = 1.0e-6;
 
@@ -89,6 +88,7 @@ public class Misc {
    * @return true if within tolerance
    */
   public static boolean closeEnough( double v1, double v2, double tol) {
+    boolean show = false;
     if (show) {
       double d1 = Math.abs(v1-v2);
       double d3 = Math.abs(v1/v2);
@@ -261,5 +261,15 @@ public class Misc {
     }
     f.format("tested %d floats diff = %d %n", len, ndiff);
   }
+
+  // from Java7
+  public static int compare(int x, int y) {
+      return (x < y) ? -1 : ((x == y) ? 0 : 1);
+  }
+
+  public static int compare(long x, long y) {
+      return (x < y) ? -1 : ((x == y) ? 0 : 1);
+  }
+
 
 }

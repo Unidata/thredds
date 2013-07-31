@@ -429,7 +429,7 @@ public class HdfEos {
     		ProjParams=(6371007.181000,0,0,0,0,0,0,0,0,0,0,0,0)
     		SphereCode=-1
      */
-    String proj = gridElem.getChild("Projection").getText();
+    Element proj = gridElem.getChild("Projection");
     if (proj != null) {
       Variable crs = new Variable(ncfile, parent, null, HDFEOS_CRS);
       crs.setDataType(DataType.SHORT);

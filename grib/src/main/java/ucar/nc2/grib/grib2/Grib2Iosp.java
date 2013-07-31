@@ -41,6 +41,7 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -590,13 +591,9 @@ public class Grib2Iosp extends GribIosp {
     v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
 
     if (tc.isInterval()) {
-      v.addAttribute(new Attribute(CDM.LONG_NAME, cust.getIntervalName(tc.getCode())));
-      /* GribStatType statType = cust.getStatType(tc.getCode());
-      if (statType == null) {
-        v.addAttribute(new Attribute("Grib2 statistical type", tc.getCode()));
-      } else {
-        v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
-      } */
+      String intvName = cust.getIntervalName(tc.getCode());
+      if (intvName != null)
+        v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));
 
       Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName + "_bounds", DataType.INT, tcName + " 2"));
       v.addAttribute(new Attribute(CF.BOUNDS, tcName + "_bounds"));
@@ -870,11 +867,11 @@ public class Grib2Iosp extends GribIosp {
 
       @Override
       public int compareTo(DataRecord o) {
-        int r = Integer.compare(partno, o.partno);
+        int r = Misc.compare(partno, o.partno);
         if (r != 0) return r;
-        r = Integer.compare(fileno, o.fileno);
+        r = Misc.compare(fileno, o.fileno);
         if (r != 0) return r;
-        return Long.compare(drsPos, o.drsPos);
+        return Misc.compare(drsPos, o.drsPos);
       }
     }
   }
@@ -1009,9 +1006,9 @@ public class Grib2Iosp extends GribIosp {
 
       @Override
       public int compareTo(DataRecord o) {
-        int r = Integer.compare(fileno, o.fileno);
+        int r = Misc.compare(fileno, o.fileno);
         if (r != 0) return r;
-        return Long.compare(drsPos, o.drsPos);
+        return Misc.compare(drsPos, o.drsPos);
       }
     }
   }
