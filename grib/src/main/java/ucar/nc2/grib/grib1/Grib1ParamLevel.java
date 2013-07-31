@@ -50,6 +50,22 @@ public class Grib1ParamLevel {
   private final float value1;
   private final float value2;
 
+
+  /**
+   * Allows center specific parsing
+   *
+   * @param cust customized for this center/subcenter
+   * @param levelType the level type
+   * @param value1 first level value
+   * @param value2 second level value
+   */
+  public Grib1ParamLevel(Grib1Customizer cust, int levelType, float value1, float value2) {
+    this.cust = cust;
+    this.levelType = levelType;
+    this.value1 = value1;
+    this.value2 = value2;
+  }
+
   /**
    * Implements tables 3 and 3a.
    *

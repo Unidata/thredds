@@ -26,5 +26,8 @@
   - use program ucar.nc2.grib.grib1.tables.NcepHtmlScraper
   - table 3, table(s) 2 and table A
 
+07/31/2013
+  - NcepHtmlScraper had bug in table3, where the description was incorrect. regenerate.
+    why didnt we notice this, for NCEP special level handling.
 
 

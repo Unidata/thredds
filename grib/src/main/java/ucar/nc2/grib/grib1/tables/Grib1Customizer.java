@@ -73,6 +73,7 @@ public class Grib1Customizer implements GribTables {
   static public Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
     if (center == 7) return new NcepTables(tables);
     else if (center == 9) return new NcepRfcTables(tables);
+    else if (center == 57) return new AfwaTables(tables);
     else if (center == 58) return new FnmocTables(tables);
     else return new Grib1Customizer(center, tables);
   }
