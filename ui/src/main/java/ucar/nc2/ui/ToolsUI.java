@@ -76,7 +76,8 @@ import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.util.*;
 
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.*;
 
 import thredds.inventory.MController;
@@ -110,7 +111,7 @@ public class ToolsUI extends JPanel {
   static private final String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
   static private boolean debugListen = false;
 
-  private ucar.util.prefs.PreferencesExt mainPrefs;
+  private PreferencesExt mainPrefs;
 
   // UI
   private AggPanel aggPanel;
@@ -180,7 +181,7 @@ public class ToolsUI extends JPanel {
   private boolean debug = false, debugTab = false, debugCB = false;
 
 
-  public ToolsUI(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) {
+  public ToolsUI(PreferencesExt prefs, JFrame parentFrame) {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
@@ -5730,7 +5731,7 @@ public class ToolsUI extends JPanel {
     String version;
     try {
       InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README");
-      if (is == null) return "4.3.18";
+      if (is == null) return "4.4.0";
 // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
       StringBuilder sbuff = new StringBuilder();
@@ -5906,7 +5907,7 @@ public class ToolsUI extends JPanel {
     }
 
     if (!configRead) {
-      String filename = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
+      String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
       File f = new File(filename);
       if (f.exists()) {
         try {
@@ -5924,11 +5925,11 @@ public class ToolsUI extends JPanel {
     // prefs storage
     try {
       // 4.4
-      String prefStore = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
+      String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
       File prefs44 = new File(prefStore);
 
       if (!prefs44.exists()) { // if 4.4 doesnt exist, see if 4.3 exists
-        String prefStoreBack = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
+        String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
         File prefs43 = new File(prefStoreBack);
         if (prefs43.exists()) { // make a copy of it
           IO.copyFile(prefs43, prefs44);
@@ -5936,7 +5937,7 @@ public class ToolsUI extends JPanel {
       }
 
       // open 4.4 version, create it if doesnt exist
-      store = ucar.util.prefs.XMLStore.createFromFile(prefStore, null);
+      store = XMLStore.createFromFile(prefStore, null);
       prefs = store.getPreferences();
 
       Debug.setStore(prefs.node("Debug"));

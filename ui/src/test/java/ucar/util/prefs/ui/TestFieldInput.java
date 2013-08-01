@@ -40,7 +40,8 @@ import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
 
-import junit.framework.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 
 
 public class TestFieldInput {

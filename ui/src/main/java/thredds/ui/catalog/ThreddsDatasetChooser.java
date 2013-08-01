@@ -36,7 +36,8 @@ package thredds.ui.catalog;
 import thredds.catalog.*;
 import thredds.ui.catalog.query.QueryChooser;
 //import thredds.catalog.ui.tools.CatalogSearcher;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -129,7 +130,7 @@ public class ThreddsDatasetChooser extends JPanel {
    * @param pipeOutput send selection message to System.out
    * @param messageOutput send selection to popup message
    */
-  public ThreddsDatasetChooser(ucar.util.prefs.PreferencesExt prefs, JTabbedPane tabs, JFrame frame,
+  public ThreddsDatasetChooser(PreferencesExt prefs, JTabbedPane tabs, JFrame frame,
     boolean pipeOutput, boolean messageOutput, boolean addDqc) {
 
     this.frame = frame;
@@ -409,7 +410,7 @@ public class ThreddsDatasetChooser extends JPanel {
     }
 
     try {
-      store = ucar.util.prefs.XMLStore.createFromFile("ThreddsDatasetChooser", null);
+      store = XMLStore.createFromFile("ThreddsDatasetChooser", null);
       p = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);

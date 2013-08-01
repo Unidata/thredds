@@ -35,6 +35,8 @@ package ucar.util.prefs.ui;
 
 import junit.framework.*;
 import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 
 public class TestDebug extends TestCase {
   private static PreferencesExt store = new PreferencesExt(null,"");

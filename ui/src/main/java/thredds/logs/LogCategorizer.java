@@ -33,8 +33,6 @@
 
 package thredds.logs;
 
-import thredds.filesystem.CacheDirectory;
-import thredds.filesystem.CacheManager;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -47,6 +45,7 @@ import java.io.*;
  */
 public class LogCategorizer {
   static String prefix = "/thredds/catalog/";
+  static boolean showRoots = false;
 
   // default roots
   static private String roots =
@@ -366,18 +365,19 @@ public class LogCategorizer {
       if (remaining.startsWith("/"))
         remaining = remaining.substring(1);
 
-      String dirName = match.dir + remaining;
+      /* String dirName = match.dir + remaining;
       CacheDirectory mdir = manager.get(dirName, true);
       if (mdir == null)
         if (show) System.out.printf("Dir %s from path %s doesnt exist%n", dirName, log.path);
         else if (show)
-          System.out.printf("Dir %s from path %s ok%n", dirName, log.path);
+          System.out.printf("Dir %s from path %s ok%n", dirName, log.path); */
     }
 
   }
 
   //////////////////////////////////////////////////////
 
+  /*
   String ehLocation = "C:/data/ehcache/";
   CacheManager manager;
 
@@ -408,7 +408,6 @@ public class LogCategorizer {
     manager.close();
   }
 
-  static boolean showRoots = false;
   static boolean show = false;
   static boolean nocache = false;
 
@@ -434,5 +433,5 @@ public class LogCategorizer {
     System.out.printf("   datasetReq= %d%n", reader.datasetReq);
     System.out.printf("   unknownReq= %d%n", reader.unknownReq);
     reader.close();
-  }
+  }  */
 }

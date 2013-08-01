@@ -33,7 +33,6 @@
 package ucar.nc2.ui.widget;
 
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.ComboBox;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

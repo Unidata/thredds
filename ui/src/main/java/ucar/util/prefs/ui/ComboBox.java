@@ -34,7 +34,9 @@
 package ucar.util.prefs.ui;
 
 import ucar.nc2.ui.widget.IndependentDialog;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PersistenceManager;
+import ucar.util.prefs.PreferencesExt;
+
 import java.util.*;
 import java.util.List;
 import java.io.IOException;

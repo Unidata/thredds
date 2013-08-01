@@ -34,7 +34,8 @@
 package ucar.util.prefs.ui;
 
 import ucar.nc2.ui.widget.MultilineTooltip;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 
 import java.awt.*;
 import java.awt.event.*;

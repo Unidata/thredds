@@ -49,7 +49,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.*;
 
 import ucar.unidata.util.Parameter;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 
 import java.awt.*;

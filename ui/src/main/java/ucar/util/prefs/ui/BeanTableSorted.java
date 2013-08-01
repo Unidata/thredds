@@ -33,7 +33,7 @@
 
 package ucar.util.prefs.ui;
 
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
 
 import java.beans.BeanInfo;
 

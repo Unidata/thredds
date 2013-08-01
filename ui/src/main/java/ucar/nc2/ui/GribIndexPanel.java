@@ -2,7 +2,6 @@ package ucar.nc2.ui;
 
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
-import ucar.nc2.grib.grib1.Grib1IndexProto;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -17,11 +16,8 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.*;
 

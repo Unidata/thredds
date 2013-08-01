@@ -19,7 +19,19 @@ subprojects {
     springVersion = "3.2.3.RELEASE"
   }
 
-  // import fatJar
+  buildscript {
+      repositories {
+          maven {
+              name 'Gradle Shadow'
+              url 'http://dl.bintray.com/content/johnrengelman/gradle-plugins'
+          }
+      }
+      dependencies {
+          classpath 'org.gradle.plugins:shadow:0.7.4'
+      }
+  }
+
+  /* import fatJar
   buildscript {
       repositories {
           mavenCentral()
@@ -28,7 +40,7 @@ subprojects {
       dependencies {
           classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
       }
-  }
+  }  */
 
   jar {
     manifest {

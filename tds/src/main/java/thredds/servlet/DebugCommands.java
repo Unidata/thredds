@@ -43,7 +43,7 @@ import java.io.PrintStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import thredds.filesystem.CacheManager;
+//import thredds.filesystem.CacheManager;
 import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -190,14 +190,14 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("showMFileCache", "Show MFile Directory Cache") {
+    /* act = new DebugHandler.Action("showMFileCache", "Show MFile Directory Cache") {
       public void doAction(DebugHandler.Event e) {
         Formatter f = new Formatter(e.pw);
         f.format("MFile Directory Cache %n %s %n", CacheManager.show("directories"));
         e.pw.flush();
       }
     };
-    debugHandler.addAction(act);
+    debugHandler.addAction(act); */
 
   }
 

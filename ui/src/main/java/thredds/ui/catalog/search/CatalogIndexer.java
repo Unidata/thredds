@@ -39,7 +39,7 @@ import thredds.catalog.dl.*;
 import thredds.ui.catalog.CatalogChooser;
 import thredds.ui.catalog.CatalogTreeView;
 import ucar.nc2.ui.widget.*;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
 import java.util.*;

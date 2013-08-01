@@ -42,7 +42,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.NCdumpW;
 
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;

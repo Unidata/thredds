@@ -1,4 +1,4 @@
-apply plugin: 'fatjar'
+apply plugin: 'shadow'
 
 jar {
     manifest {
@@ -23,7 +23,6 @@ dependencies {
   compile 'com.google.protobuf:protobuf-java:2.5.0'
   compile 'joda-time:joda-time:2.2'
   compile 'net.jcip:jcip-annotations:1.0'
-  compile 'net.sf.ehcache:ehcache:1.6.2'
   compile 'org.jdom:jdom2:2.0.4'
   compile ('org.quartz-scheduler:quartz:2.1.5') {   // eliminate c3p0
     transitive = false
@@ -69,20 +68,24 @@ task releaseDocs(dependsOn: javadoc) << {
 
 /////////
 
-ext {
-  cdmJar = 'cdmFat-'+version+'.jar'
-}
+shadow {
+  outputFile = file("${destinationDir }/cdms-${version}.jar")
+  stats = true
 
-fatJar {  // does not inherit from parent jar
-  archiveName = cdmJar
-  manifest {
-    attributes 'Implementation-Title': cdmJar,
-     'Implementation-Version': version,
-     'Implementation-Vendor': 'UCAR/Unidata',
-     'Implementation-Vendor-Id': 'edu.ucar',
-     'Built-On': new Date(),
-     'Main-Class': 'ucar.nc2.NCdumpW'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.RSA'
+  exclude 'META-INF/NOTICE'
+  exclude 'META-INF/LICENSE'
+  exclude 'META-INF/*.txt'
+  exclude 'META-INF/*.xml'
+
+  artifactSet {
+      exclude 'commons-logging:commons-logging:*'
   }
-  exclude 'com/sleepycat/**'
-  exclude 'org/quartz/**'
+
+  jar {
+    manifest {
+      attributes 'Main-Class': 'ucar.nc2.NCdumpW'
+    }
+  }
 }

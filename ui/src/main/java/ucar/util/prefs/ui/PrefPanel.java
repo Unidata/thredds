@@ -35,11 +35,12 @@ package ucar.util.prefs.ui;
 
 import java.util.List;
 import java.util.prefs.Preferences;
-import ucar.util.prefs.*;
 
 import com.jgoodies.forms.layout.*;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.builder.PanelBuilder;
+import ucar.util.prefs.PersistenceManager;
+import ucar.util.prefs.PreferencesExt;
 
 import java.awt.*;
 import java.awt.event.*;

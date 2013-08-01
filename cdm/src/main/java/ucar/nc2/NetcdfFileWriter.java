@@ -102,7 +102,7 @@ public class NetcdfFileWriter {
    * @throws java.io.IOException on I/O error
    */
   static public NetcdfFileWriter openExisting(String location) throws IOException {
-    return new NetcdfFileWriter(null, location, true);  // dont know the version yet
+    return new NetcdfFileWriter(null, null, null, location, true, null); // dont know the version yet
   }
 
   static public NetcdfFileWriter createNew(Version version, String location) throws IOException {
@@ -139,23 +139,9 @@ public class NetcdfFileWriter {
   private long preallocateSize;
 
   /**
-   * Open or create a new Netcdf file, put it into define mode to allow writing.
+   * Open an existing or create a new Netcdf file
    *
-   * @param version    which kind of file to write, if null, use netcdf3
-   * @param location   open a new file at this location
-   * @param isExisting true if file already exists
-   * @throws IOException on I/O error
-   */
-  private NetcdfFileWriter(Version version, String location, boolean isExisting) throws IOException {
-    this(version, null, null, location, isExisting, null);
-  }
-
-  /**
-   * Open or create a new Netcdf file, put it into define mode to allow
-   * writing, using the provided IOSP and RAF.
-   * This allows specialized writers.
-   *
-   * @param version    which kind of file to write, if null, use netcdf3
+   * @param version which kind of file to write, if null, use netcdf3 (isExisting= false) else open file and figure out the version
    * @param iospw      IO service provider to use, if null use standard defined by version
    * @param raf        Random access file to use, may be null if iospw is, otherwise must be opened read/write
    * @param location   open a new file at this location
@@ -166,27 +152,31 @@ public class NetcdfFileWriter {
   protected NetcdfFileWriter(Version version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
                              String location, boolean isExisting, Nc4Chunking chunker) throws IOException {
 
-    if (version == null) version = Version.netcdf3;
-    this.version = version;
-    this.location = location;
-
     if (isExisting) {
       if (raf == null)
         raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
 
       if (H5header.isValidFile(raf)) {
-        if (!version.isNetdf4format())
+        if (version != null && !version.isNetdf4format())
           throw new IllegalArgumentException(location + " must be netcdf-4 file");
+        else version = Version.netcdf4;
+
       } else if (N3header.isValidFile(raf)) {
-        if (version.isNetdf4format())
+        if (version != null && version.isNetdf4format())
           throw new IllegalArgumentException(location + " must be netcdf-3 file");
+        else version = Version.netcdf3;
+
       } else {
         throw new IllegalArgumentException(location + " must be netcdf-3 or netcdf-4 file");
       }
 
     } else {
+      if (version == null) version = Version.netcdf3;
       isNewFile = true;
     }
+
+    this.version = version;
+    this.location = location;
 
     if (iospw == null) {
       if (version.useJniIosp()) {
@@ -214,7 +204,7 @@ public class NetcdfFileWriter {
 
     this.ncfile = new NetcdfFile(spiw, location);  // package private
     if (isExisting)
-      spiw.open(raf, ncfile, null);
+      spiw.openForWriting(raf, ncfile, null);
     else
       defineMode = true;
   }
@@ -704,6 +694,8 @@ public class NetcdfFileWriter {
   public void create() throws java.io.IOException {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
+    if (!isNewFile)
+      throw new UnsupportedOperationException("can only call create on a new file");
 
     ncfile.finish(); // ??
     spiw.setFill(fill); // ??
@@ -759,7 +751,7 @@ public class NetcdfFileWriter {
 
     NetcdfFile oldFile = NetcdfFile.open(tmpFile.getPath());
 
-    // use record dimension if it has one
+    /* use record dimension if it has one
     Structure recordVar = null;
     if (oldFile.hasUnlimitedDimension()) {
       oldFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -768,36 +760,34 @@ public class NetcdfFileWriter {
         Boolean result = (Boolean) spiw.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
         if (!result)
           recordVar = null;
+      }
       } */
-    }
 
     // create new file with current set of objects
     spiw.create(location, ncfile, extraHeader, preallocateSize, isLargeFile);
     spiw.setFill(fill);
     //isClosed = false;
 
-    // wait till header is written before adding the record variable to the file
+    /* wait till header is written before adding the record variable to the file
     if (recordVar != null) {
       Boolean result = (Boolean) spiw.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       if (!result)
         recordVar = null;
-    }
+    } */
 
-    // copy old file to new
-    List<Variable> oldList = new ArrayList<Variable>(ncfile.getVariables().size());
+    FileWriter2 fileWriter2 = new FileWriter2(this);
+
     for (Variable v : ncfile.getVariables()) {
       Variable oldVar = oldFile.findVariable(v.getFullNameEscaped());
-      if (oldVar != null)
-        oldList.add(oldVar);
+      if (oldVar != null) {
+        fileWriter2.copyAll(oldVar, v);
     }
-    FileWriter2 fileWriter2 = new FileWriter2(oldFile, location, version, null);
-    fileWriter2.copyVarData(oldList, recordVar);  // LOOK ??
-    flush();
+    }
 
     // delete old
     oldFile.close();
     if (!tmpFile.delete())
-      throw new RuntimeException("Cant delete " + location);
+      throw new RuntimeException("Cant delete "+tmpFile.getAbsolutePath());
   }
 
   public Structure addRecordStructure() {
@@ -820,6 +810,9 @@ public class NetcdfFileWriter {
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
   public void write(Variable v, Array values) throws java.io.IOException, InvalidRangeException {
+    if (ncfile != v.getNetcdfFile())
+      throw new IllegalArgumentException("Variable is not owned by this writer.");
+
     write(v, new int[values.getRank()], values);
   }
 

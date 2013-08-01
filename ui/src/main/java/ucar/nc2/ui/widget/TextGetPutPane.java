@@ -37,8 +37,8 @@ import thredds.catalog.*;
 import thredds.catalog.query.*;
 
 import ucar.nc2.util.net.HttpClientManager;
-import ucar.util.prefs.*;
 import ucar.nc2.util.IO;
+import ucar.util.prefs.PreferencesExt;
 
 import java.awt.*;
 import java.awt.event.*;

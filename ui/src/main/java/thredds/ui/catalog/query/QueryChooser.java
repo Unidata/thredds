@@ -80,7 +80,7 @@ import javax.swing.event.*;
 
 public class QueryChooser extends JPanel {
   private static final String HDIVIDER = "HSplit_Divider";
-  private ucar.util.prefs.PreferencesExt prefs;
+  private PreferencesExt prefs;
 
   private DqcFactory dqcFactory = new DqcFactory(true);
 
@@ -116,7 +116,7 @@ public class QueryChooser extends JPanel {
    * @param prefs     store persistent info
    * @param showCombo add combobox, keep list of DQC URLs
    */
-  public QueryChooser(ucar.util.prefs.PreferencesExt prefs, boolean showCombo) {
+  public QueryChooser(PreferencesExt prefs, boolean showCombo) {
     this.prefs = prefs;
 
     innerPanel = new JPanel();
