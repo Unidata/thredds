@@ -10,6 +10,7 @@ test from command line: "gradle -version"
 2) full make
 cd $THREDDS
 gradle clean install -x test
+more
 
 ========================================
 Making a release for CDM/TDS with jenkins
