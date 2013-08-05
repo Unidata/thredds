@@ -56,7 +56,7 @@ public class TestNcMLcaching {
     //ucar.nc2.dataset.NetcdfDataset.initNetcdfFileCache(10,100,60*60);
 
     // filesystem caching test
-    mc = thredds.filesystem.ControllerCaching.makeTestController("/data/thredds/ehcache/");
+    //mc = thredds.filesystem.ControllerCaching.makeTestController("/data/thredds/ehcache/");
     //DatasetScanner.setController(mc);
 
     suite.addTest( ucar.nc2.ncml.TestNcML.suite());

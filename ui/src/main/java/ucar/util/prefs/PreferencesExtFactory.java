@@ -30,36 +30,33 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: QueryAction.java 63 2006-07-12 21:50:51Z edavis $
-package thredds.dqc;
+
+package ucar.util.prefs;
 
 /**
- * A description
+ *  Implementation of  <tt>PreferencesFactory</tt> to return PreferencesExt objects. Using this
+ *  method of obtaining a Preferences object is optional; you can also just pass around the
+ *  Preferences object explicitly.
  *
- * User: edavis
- * Date: Jan 23, 2004
- * Time: 9:09:03 PM
+ *  The default Preferences.userRoot() and Preferences.systemRoot() are empty. To use
+ *  persistent versions, you must set them explicitly through
+ *  <pre>
+ *    PreferencesExt.setSystemRoot( PreferencesExt prefs);
+ *    PreferencesExt.setUserRoot( PreferencesExt prefs);
+ *  </pre>
+ *  and also call:
+ *  <pre>
+ *    System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+ *  </pre>
+ *
  */
-public class QueryAction
-{
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( QueryAction.class );
+public class PreferencesExtFactory implements java.util.prefs.PreferencesFactory  {
 
-  protected String base = null;
-  // @todo construct should be a type safe enumeration: "paramValue" or "template"
-  protected String construct = null;
-  // @todo returns should be a type safe enumeration: "catalog" or "other"
-  protected String returns = "catalog";
+    public java.util.prefs.Preferences userRoot() {
+        return PreferencesExt.userRoot;
+    }
 
-  private QueryAction() {}
-  protected QueryAction( String base, String construct)
-  {
-    this.base = base;
-    this.construct = construct;
-  }
-  protected QueryAction( String base, String construct, String returns)
-  {
-    this.base = base;
-    this.construct = construct;
-    this.returns = returns;
-  }
+    public java.util.prefs.Preferences systemRoot() {
+        return PreferencesExt.systemRoot;
+    }
 }

@@ -30,23 +30,30 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: DqcHandlerInstantiationException.java 51 2006-07-12 17:13:13Z caron $
-package thredds.dqc.server;
+package ucar.util.prefs;
 
-/**
- * Thrown when a call to DqcHandler.factory() fails.
- */
-public class DqcHandlerInstantiationException extends Exception
-{
-  public DqcHandlerInstantiationException() { super(); }
-  public DqcHandlerInstantiationException( String message ) { super( message ); }
-  public DqcHandlerInstantiationException( String message, Throwable cause ) { super( message, cause ); }
-  public DqcHandlerInstantiationException( Throwable cause ) { super( cause ); }
+public interface PersistenceManager {
+
+  public void addPreferenceChangeListener(java.util.prefs.PreferenceChangeListener pcl);
+
+  public String get(String key, String def);
+  public void put(String key, String value);
+
+  public boolean getBoolean(String key, boolean def);
+  public void putBoolean(String key, boolean value);
+
+  public double getDouble(String key, double def);
+  public void putDouble(String key, double value);
+
+  public int getInt(String key, int def);
+  public void putInt(String key, int value);
+
+  public java.util.List getList(String key, java.util.List def);
+  public void putList(String key, java.util.List value);
+
+  public Object getObject(String key);
+  public void putObject(String key, Object value);
+
+  public long getLong(String key, long def);
+  public void putLong(String key, long value);
 }
-
-/*
- * $Log: DqcHandlerInstantiationException.java,v $
- * Revision 1.3  2004/08/23 16:50:34  edavis
- * Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
- *
- */
