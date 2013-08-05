@@ -31,6 +31,10 @@ subprojects {
       }
   }
 
+  task wrapper(type: Wrapper) {
+    gradleVersion = '1.7-rc-2'
+  }
+
   /* import fatJar
   buildscript {
       repositories {

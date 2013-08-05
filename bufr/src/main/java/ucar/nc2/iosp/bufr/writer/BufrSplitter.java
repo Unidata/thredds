@@ -316,7 +316,8 @@ public class BufrSplitter {
 
   public static void main(String[] args) {
     try {
-      Options options = CliFactory.parseArguments(Options.class, "--fileSpec", "G:/work/manross/gdas.adpupa.t00z.20120603.bufr.le", "--dirOut", "G:/work/manross/splitupa" );
+      //Options options = CliFactory.parseArguments(Options.class, "--fileSpec", "E:/data/work/manross/gdas.adpupa.t00z.20120603.bufr.le", "--dirOut", "E:/data/work/manross/split_adpupa" );
+      Options options = CliFactory.parseArguments(Options.class, "--fileSpec", "E:/data/work/manross/gdas.adpsfc.t00z.20120603.bufr.le", "--dirOut", "E:/data/work/manross/split_adpsfc" );
       BufrSplitter splitter = new BufrSplitter(options);
       splitter.execute();
 
