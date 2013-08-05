@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
          xmlns:xlink="http://www.w3.org/1999/xlink"
          name="Unidata THREDDS Data Server - Other Model Data"
          version="1.0.4">
@@ -60,7 +59,7 @@
         <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
 
-        <gribConfig>
+        <gribConfig datasetTypes="Best LatestFile Files">
           <gdsHash from="-752078894" to="1193085709"/>
           <gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/>
           <gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/>
@@ -105,6 +104,7 @@
                     olderThan="5 min"/>
         <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
       <featureCollection name="AMPS-D2" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D2">
@@ -113,6 +113,7 @@
                     olderThan="5 min"/>
         <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
       <featureCollection name="AMPS-D3" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D3">
@@ -121,6 +122,7 @@
                     olderThan="5 min"/>
         <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
       <featureCollection name="AMPS-D5" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D5">
@@ -129,6 +131,7 @@
                     olderThan="5 min"/>
         <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
       <featureCollection name="AMPS-D6" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D6">
@@ -137,6 +140,7 @@
                     olderThan="5 min"/>
         <update startup="nocheck" trigger="allow" />
         <tdm startup="true" rescan="0 14,29,44,59 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files" />
       </featureCollection>
 
     </dataset>
@@ -165,7 +169,7 @@
         <collection spec="/data/thredds/ncdc/cfsr/timeseries/**/.*grb2$"
                     timePartition="directory"
                     dateFormatMark="#timeseries/#yyyyMM"/>
-        <update startup="true" trigger="allow" />                                             S
+        <update startup="true" trigger="allow" />
         <!-- tdm startup="true" trigger="allow"/ -->
         <gribConfig>
           <gdsHash from="1450218978" to="1450192070"/>
