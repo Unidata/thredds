@@ -450,8 +450,8 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         return fmrc.getDatasetBest();
 
       } else if (wantType.equals(OFFSET) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets)) {
-        int pos1 = wantName.indexOf(OFFSET_NAME);
-        int pos2 = wantName.indexOf("hr");
+        int pos1 = wantName.lastIndexOf(OFFSET_NAME);
+        int pos2 = wantName.lastIndexOf("hr");
         if ((pos1<0) || (pos2<0)) return null;
         String id = wantName.substring(pos1+OFFSET_NAME.length(), pos2);
         try {
