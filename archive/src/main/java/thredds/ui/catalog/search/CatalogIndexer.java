@@ -153,7 +153,7 @@ public class CatalogIndexer extends JPanel {
 
      // window to show index results
     indexMessages = new TextHistoryPane( false);
-    indexWindow = new IndependentWindow( "Indexing", BAMutil.getImage( "thredds"), indexMessages);
+    indexWindow = new IndependentWindow( "Indexing", BAMutil.getImage("thredds"), indexMessages);
     indexWindow.setBounds((Rectangle)prefs.getBean(SOURCE_WINDOW_SIZE, new Rectangle(50, 50, 850, 450)));
 
     // add a show source button to catalog chooser

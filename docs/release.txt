@@ -1,5 +1,55 @@
 ========================================
 Building with gradle (4.4+)
+
+1. checkout from git
+
+2. configure gradle
+
+add a file gradle.properties to $userHome/.gradle  directory, with these properties:
+
+  keystore=/share/idv/.keystore-2012
+  keystoreAlias=<alias>
+  keystorePassword=<password>
+  webdir=W:/content/software/netcdf-java/v4.3/
+  ftpdir=V:/pub/netcdf-java/v4.3
+
+where:
+
+ first 3 are for signing jars
+ next 2 are locations for releasing cdm jars
+ (the values can all be fake until you get to step 4, but keys must be defined)
+
+3. build from command line. this will download current gradle
+
+  gradlew clean install -x test
+
+4. build from intellij (problems with 12.1, apparently will be improved in v13)
+
+4.1 upgrade intellij Project
+
+  File > Settings
+  Gradle
+
+  - enter $thredds/build.gradle into box
+  - accept all the defaults
+
+  A JetGradle left side tab will now appear
+
+4.2 new intellij project
+
+  1) File > Import Project
+
+    - navigate entry box to $thredds/build.gradle
+    - accept all the defaults
+    - a .idea directory is added under $thredds
+
+  2) add git root to project
+
+     File > Settings
+     Version Control - add $thredds to git root
+
+
+--------------------------
 08/05/2013
 
 1) install gradle

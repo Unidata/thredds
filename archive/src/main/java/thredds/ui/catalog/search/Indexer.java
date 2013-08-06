@@ -116,7 +116,7 @@ public class Indexer {
     for (int i=0; i<uq.size(); i++) {
       Object elem = (Object) uq.get(i);
       String className = elem.getClass().getName();
-      int pos = className.lastIndexOf("."); // just want the last part
+      int pos = className.lastIndexOf(""); // just want the last part
       className = className.substring(pos+1);
       doc.add( Field.Text(className, elem.toString()));
       indexMessages.append("  indexed "+className+" == "+elem.toString()+"\n");

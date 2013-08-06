@@ -31,21 +31,6 @@ subprojects {
       }
   }
 
-  task wrapper(type: Wrapper) {
-    gradleVersion = '1.7-rc-2'
-  }
-
-  /* import fatJar
-  buildscript {
-      repositories {
-          mavenCentral()
-      }
-
-      dependencies {
-          classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
-      }
-  }  */
-
   jar {
     manifest {
       attributes 'Implementation-Version': version,
@@ -54,6 +39,14 @@ subprojects {
               'Built-On': new Date(),
               'Build-Jdk': System.properties['java.version']
     }
+  }
+
+  dependencies {
+    testCompile group: 'junit', name: 'junit', version: junitVersion
+  }
+
+  task wrapper(type: Wrapper) {
+    gradleVersion = '1.7-rc-2'
   }
 
 }

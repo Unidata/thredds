@@ -47,6 +47,11 @@
       <groupId>edu.ucar</groupId>
       <artifactId>visadCdm</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.sleepycat</groupId>
       <artifactId>je</artifactId>

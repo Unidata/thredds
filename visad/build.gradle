@@ -52,5 +52,4 @@ jar {
 dependencies {
   compile project(':cdm')
   compile 'edu.wisc.ssec:visad:2.0-20130124'
-  // compile files('../lib/external/visad.jar')
 }
