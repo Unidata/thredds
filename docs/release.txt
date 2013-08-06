@@ -1,16 +1,40 @@
-Making a release with gradle
+========================================
+Building with gradle (4.4+)
+08/05/2013
 
-1) prep
+1) install gradle
+
 Download latest gradle from gradle.org. Currently at 1.7-rc-2
 Unzip into your chosen directory.
-Add env variable GRADLE_HOME to top directory
+Add env variable GRADLE_HOME = gradle top directory
 Add GRADLE_HOME/bin directory to your path
 test from command line: "gradle -version"
 
-2) full make
+2) configure gradle
+
+add a file gradle.properties to $userHome/.gradle  directory, with these properties:
+
+  keystore=/share/idv/.keystore-2012
+  keystoreAlias=<alias>
+  keystorePassword=<password>
+  webdir=W:/content/software/netcdf-java/v4.3/
+  ftpdir=V:/pub/netcdf-java/v4.3
+
+where:
+
+first 3 are for signing jars
+next 2 are locations for releasing cdm jars
+(the values can all be fake until you get to step 4, but keys must be defined)
+
+3) building
+
 cd $THREDDS
 gradle clean install -x test
-more
+
+first time, you will see gradle pull down maven artifacts into its repository in $userHome/.gradle/cache
+
+3) release
+
 
 ========================================
 Making a release for CDM/TDS with jenkins
