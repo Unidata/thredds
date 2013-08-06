@@ -2536,6 +2536,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.Grib2CollectionPanel gribTable;
 
     void closeOpenFiles() throws IOException {
+      gribTable.closeOpenFiles();
     }
 
     Grib2CollectionPanel(PreferencesExt p) {

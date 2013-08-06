@@ -333,6 +333,10 @@ public class BeanTable extends JPanel {
     revalidate();  // LOOK soemtimes it doesnt, try this
   }
 
+  public void clearBeans() {
+    setBeans(new ArrayList());
+  }
+
   public List getBeans( ) { return beans; }
   public JTable getJTable( ) { return jtable; }
 
