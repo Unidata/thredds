@@ -72,7 +72,7 @@ public class StructureTable extends JPanel {
   private PopupMenu popup;
   private FileManager fileChooser; // for exporting
   private TextHistoryPane dumpTA;
-  private IndependentDialog dumpWindow;
+  private IndependentWindow dumpWindow;
 
   public StructureTable(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -88,7 +88,7 @@ public class StructureTable extends JPanel {
 
     // other widgets
     dumpTA = new TextHistoryPane(false);
-    dumpWindow = new IndependentDialog(null, false, "Show Data", dumpTA);
+    dumpWindow = new IndependentWindow("Show Data", BAMutil.getImage("netcdfUI"), dumpTA);
     if (prefs != null)
       dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 600, 600)));
     else

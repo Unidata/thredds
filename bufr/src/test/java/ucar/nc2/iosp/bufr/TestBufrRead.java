@@ -113,7 +113,7 @@ public class TestBufrRead {
               out.close();
               System.out.printf("  nbits = %d%n", n);
             }
-            assert m.isBitCountOk() : "bit count wrong";
+            assert m.isBitCountOk() : "bit count wrong on " + filename;
           }
 
           totalObs += nobs;

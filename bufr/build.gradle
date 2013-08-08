@@ -7,4 +7,9 @@ jar {
 dependencies {
   compile project(':cdm')
   compile ('com.lexicalscope.jewelcli:jewelcli:0.8.5')
+  testCompile project(':cdm').sourceSets.test.output
+}
+
+task show {
+  println project(':cdm').sourceSets.test.output.each {println it}
 }

@@ -42,6 +42,7 @@ subprojects {
   }
 
   dependencies {
+    // testCompile project(':cdm').sourceSets.test.classes
     testCompile group: 'junit', name: 'junit', version: junitVersion
   }
 

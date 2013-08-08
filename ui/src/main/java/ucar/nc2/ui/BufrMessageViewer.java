@@ -92,11 +92,11 @@ public class BufrMessageViewer extends JPanel {
     AbstractButton showButt = BAMutil.makeButtcon("addCoords", "Read Data", false);
     showButt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        List<Object> obs = messageTable.getBeans();
-        for (Object ob : obs) {
-          MessageBean mb = (MessageBean) ob;
-          mb.read();
-        }
+        Formatter f = new Formatter();
+        readData(f);
+        infoTA2.setText(f.toString());
+        infoTA2.gotoTop();
+        infoWindow2.show();
       }
     });
     buttPanel.add(showButt);
@@ -402,10 +402,18 @@ public class BufrMessageViewer extends JPanel {
     }
   }
 
+  private void readData(Formatter f) {
+    List<MessageBean> beans = messageTable.getBeans();
+    for (MessageBean bean : beans) {
+      bean.read();
+    }
+  }
+
   private void dumpDDS() {
     List<MessageBean> beans = messageTable.getBeans();
     HashMap<Integer, Message> map = new HashMap<Integer, Message>(2 * beans.size());
 
+    // unique DDS
     for (MessageBean mb : beans) {
       map.put(mb.m.hashCode(), mb.m);
     }

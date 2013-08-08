@@ -129,13 +129,13 @@ class ConstructNC {
     //recordStructure.setDimensions("record");
 
     DataDescriptor root = proto.getRootDataDescriptor();
-    if (hasTime()) {
+    /* if (hasTime()) {
       isTimeOk = true;
       Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, TIME_NAME, DataType.STRING, ""));
       timev.addAttribute(new Attribute(CDM.UNITS, dateUnit.toString()));
       timev.addAttribute(new Attribute("long_name", "time of observation"));
       timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
-    }
+    } */
 
     for (DataDescriptor dkey : root.subKeys) {
       if (!dkey.isOkForVariable()) continue;
@@ -419,30 +419,35 @@ class ConstructNC {
 
   private void annotate(Variable v, DataDescriptor dkey) {
     String id = dkey.getFxyName();
-    if (id.equals("0-5-1") || id.equals("0-5-2")) {
-      v.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    }
+    StandardFields.Type stype = StandardFields.findStandardField(id);
+    if (stype == null) return;
 
-    if (id.equals("0-6-1") || id.equals("0-6-2")) {
-      v.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-    }
+    switch (stype) {
+      case lat:
+        v.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+        break;
 
-    if (id.equals("0-7-1") || id.equals("0-7-2")|| id.equals("0-7-10")|| id.equals("0-7-30")) {
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-    }
+      case lon:
+        v.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+        break;
 
-    if (id.equals("0-7-6") || id.equals("0-7-7")) { // LOOK : height above station ??
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-    }
+      case height:
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+        break;
 
-    if (id.equals("0-1-7") || id.equals("0-1-11") || id.equals("0-1-18") || (id.equals("0-1-194") && (proto.ids.getCenterId() == 59))) {
-      v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_ID));
-    }
+      case heightAboveStation:
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));  // LOOK wrong
+        break;
 
-    if (id.equals("0-1-2")) {
-      v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_WMOID));
+      case stationId:
+        v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_ID));
+        break;
+
+      case wmoId:
+        v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_WMOID));
+        break;
     }
 
   }
@@ -551,38 +556,4 @@ class ConstructNC {
     }
   }
 
-  // not currently used
-  static private String identifyCoords(String val) {
-    if (val.equals("0-5-1") || val.equals("0-5-2"))
-      return AxisType.Lat.toString();
-
-    if (val.equals("0-6-1") || val.equals("0-6-2"))
-      return AxisType.Lon.toString();
-
-    if (val.equals("0-7-30") || val.equals("0-7-1") || val.equals("0-7-2") || val.equals("0-7-10"))
-      return AxisType.Height.toString();
-
-    if (val.equals("0-4-1"))
-      return "year";
-    if (val.equals("0-4-2"))
-      return "month";
-    if (val.equals("0-4-3"))
-      return "day";
-    if (val.equals("0-4-4"))
-      return "hour";
-    if (val.equals("0-4-5"))
-      return "minute";
-    if (val.equals("0-4-6") || val.equals("0-4-7"))
-      return "sec";
-
-    if (val.equals("0-1-1"))
-      return "wmo_block";
-    if (val.equals("0-1-2"))
-      return "wmo_id";
-
-    if ((val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") || val.equals("0-1-18")))
-      return "station_id";
-
-    return null;
-  }
 }

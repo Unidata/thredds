@@ -9,7 +9,7 @@ jar {
 sourceSets {
     main {
         java {
-            exclude 'thredds/catalog2/**/*.java'
+            // exclude 'thredds/catalog2/**/*.java'
             exclude 'ucar/nc2/util/reflect/*.java'
         }
     }
@@ -17,9 +17,7 @@ sourceSets {
 
 dependencies {
   compile project(':udunits')
-  compile ('commons-httpclient:commons-httpclient:3.1') {
-    transitive = false  // commons-logging
-  }
+  compile ('commons-httpclient:commons-httpclient:3.1')
   compile 'com.google.protobuf:protobuf-java:2.5.0'
   compile 'joda-time:joda-time:2.2'
   compile 'net.jcip:jcip-annotations:1.0'
@@ -29,8 +27,6 @@ dependencies {
   }
   compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
   runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
-
-  testCompile group: 'junit', name: 'junit', version: junitVersion
 }
 
 javadoc {

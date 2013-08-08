@@ -19,9 +19,13 @@ where:
  next 2 are locations for releasing cdm jars
  (the values can all be fake until you get to step 4, but keys must be defined)
 
-3. build from command line. this will download current gradle
+3. build from command line. this will download current gradle, skipping tests:
 
-  gradlew clean install -x test
+    gradlew clean build -x test
+
+   to run tests:
+
+    gradlew test --continue
 
 4. build from intellij (problems with 12.1, apparently will be improved in v13)
 
