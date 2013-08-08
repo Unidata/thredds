@@ -40,10 +40,10 @@ import java.util.List;
 /**
  * Essentially a TableB entry, modified by any relevent TableC operators.
  * TableD has been expanded.
- * Replication gets made into nested DataDesccriptors, which we map to Structures (fixed replication) or
+ * Replication gets made into nested DataDescriptors, which we map to Structures (fixed replication) or
  * Sequences (deferred replication).
  * Most of the processing is done by DataDescriptorTreeConstructor.convert().
- * Here we encapsolate the final result, ready to map to the CDM.
+ * Here we encapsulate the final result, ready to map to the CDM.
  *
  * @author caron
  * @since Apr 5, 2008

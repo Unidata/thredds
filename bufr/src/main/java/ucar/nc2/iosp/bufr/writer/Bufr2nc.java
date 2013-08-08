@@ -83,6 +83,7 @@ public class Bufr2nc {
   public void scanBufrFile(String filename) throws Exception {
     int count = 0;
     RandomAccessFile raf = null;
+    int messHash = 0;
 
     try {
       raf = new RandomAccessFile(filename, "r");
@@ -93,6 +94,7 @@ public class Bufr2nc {
         if (m == null) continue;
         if (m.containsBufrTable()) continue;
         if (count == 0) {
+          messHash = m.hashCode();
           makeFieldConverter(m);
         }
 
@@ -106,7 +108,7 @@ public class Bufr2nc {
 
     // show the results
     Indent indent = new Indent(2);
-    out.format("<bufr2nc location='%s' ddsHash='%s' featureType='%s'>%n", filename, Integer.toHexString(rootConvert.dds.hashCode()),
+    out.format("<bufr2nc location='%s' hash='%s' featureType='%s'>%n", filename, Integer.toHexString(messHash),
             guessFeatureType());
     indent.incr();
     for (FieldConverter fld : rootConvert.flds) {

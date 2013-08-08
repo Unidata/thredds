@@ -100,6 +100,20 @@ public class MessageScanner {
     raf.order(RandomAccessFile.BIG_ENDIAN);
   }
 
+  public Message getFirstDataMessage() throws IOException {
+    while (hasNext()) {
+      Message m = next();
+      if (m == null) continue;
+      if (m.containsBufrTable()) continue; // not data
+      return m;
+    }
+    return null;
+  }
+
+  public void reset() throws IOException {
+    lastPos = 0;
+  }
+
   public boolean hasNext() throws IOException {
     if (lastPos >= raf.length()) return false;
     raf.seek(lastPos);

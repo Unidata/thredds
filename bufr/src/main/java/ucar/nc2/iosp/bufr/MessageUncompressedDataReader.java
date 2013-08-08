@@ -115,7 +115,7 @@ public class MessageUncompressedDataReader {
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
 
-    boolean addTime = (s.findVariable(ConstructNC.TIME_NAME) != null);
+    boolean addTime = (s.findVariable(BufrIosp.TIME_NAME) != null);
     readData(abb, m, raf, null, addTime, f);
 
     //Formatter ff = new Formatter(System.out);
@@ -384,8 +384,9 @@ public class MessageUncompressedDataReader {
         m.setDataParam(offset);
 
         Variable mv = seq.findVariable(m.getName());
-        DataDescriptor dk = (DataDescriptor) mv.getSPobject();
-        if (dk.replication == 0)
+        BufrConfig.FieldConverter fld = (BufrConfig.FieldConverter) mv.getSPobject();
+        DataDescriptor dk = fld.dds;
+        if (dk.replication == 0)  // LOOK
           offset += 4;
         else
           offset += dk.getByteWidthCDM();

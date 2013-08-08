@@ -132,7 +132,8 @@ public interface IOServiceProvider {
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
 
   /**
-   * Get the structure iterator. iosps with top level sequences must override
+   * Get the structure iterator. iosps with top level sequences must override.
+   * Not threadsafe; do not use multiple StructureDataIterator for the same iosp.
    *
    * @param s          the Structure
    * @param bufferSize the buffersize

@@ -54,7 +54,6 @@ import java.io.IOException;
 
 class ConstructNC {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConstructNC.class);
-  static final String TIME_NAME = "time";
   static private final boolean warnUnits = false;
 
   private ucar.nc2.NetcdfFile ncfile;

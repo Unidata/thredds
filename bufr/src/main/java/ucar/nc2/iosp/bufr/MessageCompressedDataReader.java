@@ -243,7 +243,7 @@ public class MessageCompressedDataReader {
     if (root.isBad) return 0;
 
     DebugOut out = (f == null) ? null : new DebugOut(f);
-    BitCounterCompressed[] counterFlds = new BitCounterCompressed[root.subKeys.size()]; // one for each field
+    BitCounterCompressed[] counterFlds = new BitCounterCompressed[root.subKeys.size()]; // one for each field  LOOK why not m.counterFlds ?
     readData(out, reader, counterFlds, root, 0, m.getNumberDatasets(), req);
 
     m.msg_nbits = 0;
