@@ -1,5 +1,8 @@
 package ucar.nc2.iosp.bufr;
 
+import ucar.ma2.*;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Structure;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
@@ -18,8 +21,12 @@ import java.util.List;
 public class BufrConfig {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrConfig.class);
 
-  static public BufrConfig openFromBufrFile(RandomAccessFile raf) throws IOException {
-    return new BufrConfig( raf);
+  static public BufrConfig openFromBufrFile(RandomAccessFile raf, boolean read) throws IOException {
+    return new BufrConfig( raf, read);
+  }
+
+  static public BufrConfig openFromMessage(RandomAccessFile raf, Message m) throws IOException {
+    return new BufrConfig( raf, m);
   }
 
   private String filename;
@@ -35,24 +42,30 @@ public class BufrConfig {
    * @param bufrFilename open this file
    * @throws java.io.IOException on IO error
    */
-  private BufrConfig(String bufrFilename) throws IOException {
+  private BufrConfig(String bufrFilename, boolean read) throws IOException {
     this.filename =  bufrFilename;
     try {
-      scanBufrFile(new RandomAccessFile(bufrFilename, "r"));
+      scanBufrFile(new RandomAccessFile(bufrFilename, "r"), read);
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException(e.getMessage());
     }
   }
 
-  private BufrConfig(RandomAccessFile raf) throws IOException {
+  private BufrConfig(RandomAccessFile raf, boolean read) throws IOException {
     this.filename =  raf.getLocation();
     try {
-      scanBufrFile(raf);
+      scanBufrFile(raf, read);
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException(e.getMessage());
     }
+  }
+
+  private BufrConfig(RandomAccessFile raf, Message m) throws IOException {
+    this.filename =  raf.getLocation();
+    this.messHash = m.hashCode();
+    this.rootConverter = new FieldConverter(m.getRootDataDescriptor());
   }
 
   public String getFilename() {
@@ -71,7 +84,7 @@ public class BufrConfig {
     return featureType;
   }
 
-  private void scanBufrFile(RandomAccessFile raf) throws Exception {
+  private void scanBufrFile(RandomAccessFile raf, boolean read) throws Exception {
     int hashErr = 0;
     int bitcountErr = 0;
     int count = 0;
@@ -87,6 +100,19 @@ public class BufrConfig {
           messHash = m.hashCode();
           standardFields = StandardFields.extract(m);
           rootConverter = new FieldConverter(m.getRootDataDescriptor());
+          if (!read) return;
+
+          /* m.isBitCountOk();
+          if (!m.dds.isCompressed() ) {
+             Formatter out = new Formatter();
+             Indent indent = new Indent(2);
+
+             out.format("Start of message, ndataset=%d%n", m.counterDatasets.length);
+             for (BitCounterUncompressed bcu : m.counterDatasets) {
+               bcu.toString(out, indent);
+             }
+             System.out.printf("%s%n", out);
+           } */
         }
 
         if (messHash != m.hashCode()) {
@@ -99,7 +125,9 @@ public class BufrConfig {
           bitcountErr++;
           continue; // keep trying
         }
-        processSequences(m.getRootDataDescriptor(), rootConverter);
+
+        processSeq(raf, m);
+        //processSequences(m.getRootDataDescriptor(), rootConverter);
         count++;
       }
     } finally {
@@ -107,8 +135,6 @@ public class BufrConfig {
         log.error("DDS has different hash for {}/{} for file = {}", hashErr, count, filename);
       if (bitcountErr != 0)
         log.error("Bit counting failed on {}/{} for file = {}", bitcountErr, count, filename);
-      if (raf != null)
-        raf.close();
     }
 
     featureType = guessFeatureType(standardFields);
@@ -170,6 +196,53 @@ public class BufrConfig {
 }
   */
 
+  static private class FakeNetcdfFile extends NetcdfFile {
+  }
+
+  private void processSeq(RandomAccessFile raf, Message m) throws IOException {
+    BufrConfig config = BufrConfig.openFromMessage(raf, m);
+    Construct2 construct = new Construct2(m, config, new FakeNetcdfFile());
+
+    // read all the messages
+    ArrayStructure data;
+    if (!m.dds.isCompressed()) {
+      MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+      data = reader.readEntireMessage(construct.recordStructure, m, m, raf, null);
+    } else {
+      MessageCompressedDataReader reader = new MessageCompressedDataReader();
+      data = reader.readEntireMessage(construct.recordStructure, m, m, raf, null);
+    }
+
+    processSeq(data.getStructureDataIterator(), rootConverter);
+  }
+
+  private void processSeq(StructureDataIterator sdataIter, FieldConverter parent) throws IOException {
+     try {
+       while (sdataIter.hasNext()) {
+         StructureData sdata = sdataIter.next();
+
+         for (StructureMembers.Member m : sdata.getMembers()) {
+           if (m.getDataType() == DataType.SEQUENCE) {
+             FieldConverter seq = parent.findChild(m.getName());
+             if (seq == null) {
+               log.error("BufrConfig cant find Child member= {} for file = {}", m, filename);
+               continue;
+             }
+             ArraySequence data = (ArraySequence) sdata.getArray(m);
+             int n = data.getStructureDataCount();
+             seq.trackSeqCounts(n);
+             processSeq(data.getStructureDataIterator(), seq);
+           }
+         }
+       }
+     } finally {
+       sdataIter.finish();
+     }
+   }
+
+
+
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public enum Action { remove, asMissing, asArray, concat }
@@ -205,6 +278,15 @@ public class BufrConfig {
 
     public String getUnits() {
       return dds.units;
+    }
+
+    FieldConverter findChild(String want) {
+      for (FieldConverter child : flds) {
+        String name = child.dds.getName();
+        if (name.equals(want))
+          return child;
+      }
+      return null;
     }
 
     public FieldConverter getChild(int i) {
@@ -273,11 +355,44 @@ public class BufrConfig {
   private void processSequences(DataDescriptor parentDD, FieldConverter parentFld) throws IOException {
     int count = 0;
     for (DataDescriptor subdd : parentDD.getSubKeys()) {
+      FieldConverter seq = parentFld.getChild(count);
+
       if (subdd.replication == 0) { // sequence
-        FieldConverter seq = parentFld.getChild(count);
-        seq.trackSeqCounts(n);
+        seq.trackSeqCounts(0);
       }
+
+      // recurse
+      if (subdd.getSubKeys() != null) {
+        processSequences(subdd, seq);
+      }
+
       count++;
     }
+  }
+
+  void show(Formatter out) {
+      // show the results
+    Indent indent = new Indent(2);
+    out.format("<bufr2nc location='%s' hash='%s' featureType='%s'>%n", filename, Integer.toHexString(messHash), featureType);
+    indent.incr();
+    for (FieldConverter fld : rootConverter.flds) {
+      fld.show(out, indent);
+    }
+    indent.decr();
+    out.format("</bufr2nc>%n");
+}
+
+  public static void main(String[] args) throws IOException {
+
+    String filename = "G:/work/manross/split/872d794d.bufr";
+    //String filename = "Q:/cdmUnitTest/formats/bufr/US058MCUS-BUFtdp.SPOUT_00011_buoy_20091101021700.bufr";
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    BufrConfig config = BufrConfig.openFromBufrFile(raf, true);
+
+    Formatter out = new Formatter();
+    config.show(out);
+    System.out.printf("%s%n", out);
+
+    raf.close();
   }
 }

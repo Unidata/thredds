@@ -111,21 +111,22 @@ class Construct2 {
       DataDescriptor dkey = fld.dds;
       if (!dkey.isOkForVariable()) continue;
 
-      if (fld.isSeq) {
+      if (dkey.replication == 0) {
         addSequence(recordStructure, fld);
 
       } else if (dkey.replication > 1) {
 
-        List<BufrConfig.FieldConverter>
+        List<BufrConfig.FieldConverter> subFlds = fld.flds;
         List<DataDescriptor> subKeys = dkey.subKeys;
         if (subKeys.size() == 1) {  // only one member
-          DataDescriptor sub = dkey.subKeys.get(0);
-          if (sub.dpi != null) {
-            addDpiStructure(recordStructure, fld, sub);
+          DataDescriptor subDds = dkey.subKeys.get(0);
+          BufrConfig.FieldConverter subFld = subFlds.get(0);
+          if (subDds.dpi != null) {
+            addDpiStructure(recordStructure, fld, subFld);
 
-          } else if (sub.replication == 1) { // one member not a replication
-            Variable v = addVariable(recordStructure, sub, dkey.replication);
-            v.setSPobject(dkey); // set the replicating dkey as SPI object
+          } else if (subDds.replication == 1) { // one member not a replication
+            Variable v = addVariable(recordStructure, subFld, dkey.replication);
+            v.setSPobject(fld); // set the replicating field as SPI object
 
           } else { // one member is a replication (two replications in a row)
             addStructure(recordStructure, fld, dkey.replication);
@@ -142,8 +143,9 @@ class Construct2 {
 
   private int structNum = 1;
   private void addStructure(Structure parent, BufrConfig.FieldConverter fld, int count) {
+    DataDescriptor dkey = fld.dds;
     String uname = findUniqueName(parent, fld.getName(), "struct");
-    dataDesc.name = uname; // name may need to be changed for uniqueness
+    dkey.name = uname; // name may need to be changed for uniqueness
 
     //String structName = dataDesc.name != null ? dataDesc.name : "struct" + structNum++;
     Structure struct = new Structure(ncfile, null, parent, uname);
@@ -159,18 +161,19 @@ class Construct2 {
     parent.addMemberVariable(struct);
     struct.setSPobject(fld);
 
-    dataDesc.refersTo = struct;
+    dkey.refersTo = struct;
   }
 
   private int seqNum = 1;
   private void addSequence(Structure parent, BufrConfig.FieldConverter fld) {
     if (fld.getAction() == BufrConfig.Action.asMissing) {
       // add members
-      addVariable(recordStructure, fld, dkey.replication);
+      // LOOK addVariable(recordStructure, fld, dkey.replication);
     }
 
+    DataDescriptor dkey = fld.dds;
     String uname = findUniqueName(parent, fld.getName(), "seq");
-    dataDesc.name = uname; // name may need to be changed for uniqueness
+    dkey.name = uname; // name may need to be changed for uniqueness
 
     //String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
     //String seqName = dataDesc.name != null ? dataDesc.name : "seq" + seqNum++;
@@ -184,36 +187,40 @@ class Construct2 {
     parent.addMemberVariable(seq);
     seq.setSPobject(fld);
 
-    dataDesc.refersTo = seq;
+    dkey.refersTo = seq;
   }
 
   private void addMember(Structure parent, BufrConfig.FieldConverter fld) {
-    if (fld.isSeq)
+    DataDescriptor dkey = fld.dds;
+
+    if (dkey.replication == 0)
       addSequence(parent, fld);
 
     else if (dkey.replication > 1) {
       List<DataDescriptor> subKeys = dkey.subKeys;
       if (subKeys.size() == 1) {
         DataDescriptor sub = dkey.subKeys.get(0);
-        Variable v = addVariable(parent, sub, dkey.replication);
-        v.setSPobject(dkey); // set the replicating dkey as SPI object
+        BufrConfig.FieldConverter subFld = fld.flds.get(0);
+        Variable v = addVariable(parent, subFld, dkey.replication);
+        v.setSPobject(fld); // set the replicating field as SPI object
 
       } else {
-        addStructure(parent, dkey, dkey.replication);
+        addStructure(parent, fld, dkey.replication);
       }
 
     } else {
-      addVariable(parent, dkey, dkey.replication);
+      addVariable(parent, fld, dkey.replication);
     }
   }
 
   private void addDpiStructure(Structure parent, BufrConfig.FieldConverter parentFld, BufrConfig.FieldConverter dpiField) {
+    DataDescriptor dpiKey = dpiField.dds;
     String uname = findUniqueName(parent, dpiField.getName(), "struct");
-    dpiField.name = uname; // name may need to be changed for uniqueness
+    dpiKey.name = uname; // name may need to be changed for uniqueness
 
     //String structName = findUnique(parent, dpiField.name);
     Structure struct = new Structure(ncfile, null, parent, uname);
-    int n = parentDD.replication;
+    int n = parentFld.dds.replication;
     try {
       struct.setDimensionsAnonymous(new int[]{n}); // anon vector
     } catch (InvalidRangeException e) {
@@ -233,7 +240,7 @@ class Construct2 {
     parent.addMemberVariable(struct);
     struct.setSPobject(dpiField);  // ??
 
-    dpiField.refersTo = struct;
+    dpiKey.refersTo = struct;
 
     // add some fake dkeys corresponding to above
     // DataDescriptor nameDD = new DataDescriptor();
@@ -242,7 +249,7 @@ class Construct2 {
   private void addDpiSequence(Structure parent, BufrConfig.FieldConverter fld) {
     Structure struct = new Structure(ncfile, null, parent, "statistics");
     try {
-      struct.setDimensionsAnonymous(new int[] {dataDesc.replication}); // scalar
+      struct.setDimensionsAnonymous(new int[] { fld.dds.replication}); // scalar
     } catch (InvalidRangeException e) {
       e.printStackTrace();  
     }
@@ -260,8 +267,9 @@ class Construct2 {
   }
 
   private Variable addVariable(Structure struct, BufrConfig.FieldConverter fld, int count) {
+    DataDescriptor dkey = fld.dds;
     String uname = findUniqueName(struct, fld.getName(), "unknown");
-    dataDesc.name = uname; // name may need to be changed for uniqueness
+    dkey.name = uname; // name may need to be changed for uniqueness
 
     Variable v = new Variable(ncfile, null, struct, uname);
     try {

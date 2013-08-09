@@ -32,6 +32,10 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import ucar.nc2.util.Indent;
+
+import java.util.Arrays;
+import java.util.Formatter;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -139,4 +143,24 @@ public class BitCounterUncompressed implements BitCounter {
     return startBit[row];
   }
 
+  public void toString(Formatter f, Indent indent) {
+    f.format("%s dds=%s, ", indent, parent.getFxyName());
+    f.format("nrows=%d%n", nrows);
+    if (subCounters == null) return;
+
+    indent.incr();
+    int count = 0;
+
+    // Map<DataDescriptor, BitCounterUncompressed[]> subCounters; // nested tables; null for regular fields
+    for (BitCounterUncompressed[] bcus : subCounters.values()) {
+      if (bcus == null)
+        f.format("%s%d: null", indent, count);
+      else {
+        for (BitCounterUncompressed bcu : bcus)
+          bcu.toString(f, indent);
+      }
+      count++;
+    }
+    indent.decr();
+  }
 }

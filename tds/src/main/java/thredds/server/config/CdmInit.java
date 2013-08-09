@@ -149,7 +149,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
 
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
-      thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
+      //LOOK thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
       startupLog.info("CdmInit: CollectionManagerAbstract.setMetadataStore= "+fcCache);
     } catch (Exception e) {
       startupLog.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore= "+fcCache, e);

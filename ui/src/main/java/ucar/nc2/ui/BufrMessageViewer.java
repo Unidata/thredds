@@ -480,7 +480,7 @@ public class BufrMessageViewer extends JPanel {
   }
 
   private NetcdfDataset getBufrMessageAsDataset(Message m) throws IOException {
-    BufrIosp iosp = new BufrIosp();
+    BufrIosp2 iosp = new BufrIosp2();
     BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
     iosp.open(raf, ncfile, m);
     return new NetcdfDataset(ncfile);

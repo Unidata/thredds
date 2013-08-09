@@ -369,6 +369,9 @@ public class MessageUncompressedDataReader {
 
     if (req.wantRow()) {
       Sequence seq = (Sequence) seqdd.refersTo;
+
+      if (seq == null)
+        System.out.println("HEY");
       assert seq != null;
 
       // for the obs structure

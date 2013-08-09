@@ -5955,7 +5955,7 @@ public class ToolsUI extends JPanel {
 
     try {
       //thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
-      thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
+      //thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
     } catch (Exception e) {
       log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
     }

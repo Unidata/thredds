@@ -71,7 +71,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   private Message protoMessage;
   private MessageScanner scanner;
   private HashSet<Integer> messHash = null;
-
+  private boolean isSingle;
   //private final List<Message> msgs = new ArrayList<Message>();
   //private int[] obsStart; // for each message, the starting observation index
   private boolean wantTime;
@@ -94,10 +94,42 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     if (!protoMessage.isTablesComplete())
       throw new IllegalStateException("BUFR file has incomplete tables");
 
-    BufrConfig convert = BufrConfig.openFromBufrFile(raf);
+    BufrConfig convert = BufrConfig.openFromBufrFile(raf, true);
 
     // this fills the netcdf object
     construct = new Construct2(protoMessage, convert, ncfile);
+    ncfile.finish();
+  }
+
+    // for BufrMessageViewer
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, Message single) throws IOException {
+    this.raf = raf;
+
+    protoMessage = single;
+    protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables
+    if (!protoMessage.isTablesComplete())
+      throw new IllegalStateException("BUFR file has incomplete tables");
+
+    BufrConfig config = BufrConfig.openFromMessage(raf, protoMessage);
+
+    // this fills the netcdf object
+    construct = new Construct2(protoMessage, config, ncfile);
+    isSingle = true;
+
+    /* msgs.add(single);
+
+    // count where the obs start in the messages
+    obsStart = new int[msgs.size()];
+    int mi = 0;
+    int countObs = 0;
+    for (Message m : msgs) {
+      obsStart[mi++] = countObs;
+      countObs += m.getNumberDatasets();
+    }
+
+    // this fills the netcdf object
+    construct = new Construct2(protoMessage, countObs, ncfile); */
+
     ncfile.finish();
   }
 
@@ -186,7 +218,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   // LOOK not threadsafe - alterntive is to open raf for each iterator
   @Override
   public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
-    return new SeqIter();
+    return isSingle ? new SeqIterSingle() : new SeqIter();
   }
 
   private class SeqIter implements StructureDataIterator {
@@ -281,6 +313,79 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
       currIter = null;
     }
   }
+
+
+  private class SeqIterSingle implements StructureDataIterator {
+    StructureDataIterator currIter;
+    int recnum = 0;
+    int bufferSize = -1;
+
+    SeqIterSingle() {
+      reset();
+    }
+
+    @Override
+    public StructureDataIterator reset() {
+      recnum = 0;
+      currIter = null;
+      return this;
+    }
+
+    @Override
+    public boolean hasNext() throws IOException {
+      if (currIter == null) {
+        currIter = readProtoMessage();
+        if (currIter == null) {
+          nelems = recnum;
+          return false;
+        }
+      }
+
+      if (!currIter.hasNext()) {
+        return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public StructureData next() throws IOException {
+      recnum++;
+      return currIter.next();
+    }
+
+    private StructureDataIterator readProtoMessage() throws IOException {
+      Message m = protoMessage;
+      ArrayStructure as;
+      if (m.dds.isCompressed()) {
+        MessageCompressedDataReader reader = new MessageCompressedDataReader();
+        as = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
+      } else {
+        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+        as = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
+      }
+
+      return as.getStructureDataIterator();
+    }
+
+    @Override
+    public void setBufferSize(int bufferSize) {
+      this.bufferSize = bufferSize;
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return recnum - 1;
+    }
+
+    @Override
+    public void finish() {
+      if (currIter != null) currIter.finish();
+      currIter = null;
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   @Override
   public String getDetailInfo() {
