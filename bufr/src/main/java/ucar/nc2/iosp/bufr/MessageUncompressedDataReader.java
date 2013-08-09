@@ -108,8 +108,6 @@ public class MessageUncompressedDataReader {
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureBB.setOffsets(members);
 
-    // bbtest = null;
-    
     int n = m.getNumberDatasets();
     ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{n});
     ByteBuffer bb = abb.getByteBuffer();
@@ -123,13 +121,6 @@ public class MessageUncompressedDataReader {
     //abb.showInternal(ff, "");
     return abb;
   }
-
-
-    // temp debugging
-  // private ByteBuffer bbtest = null;
-
-  // read / count the bits in an uncompressed message
-  // This assumes that all of the fields and all of the datasets are being read
 
   /**
    * Read some or all datasets from a single message
@@ -226,25 +217,22 @@ public class MessageUncompressedDataReader {
       // sequence
       if (dkey.replication == 0) {
 
+        // find out how many objects in the sequence
         int count = (int) reader.bits2UInt(dkey.replicationCountSize);
         if (out != null) out.f.format("%4d delayed replication count=%d %n", out.fldno++, count);
-        /* if (count < 0) {
-          System.out.println("HEY");
-          count = 0;
-        } */
-
         if ((out != null) && (count > 0)) {
           out.f.format("%4d %s read sequence %s count= %d bitSize=%d start at=0x%x %n",
                   out.fldno, out.indent(), dkey.getFxyName(), count, dkey.replicationCountSize, reader.getPos());
         }
 
+        // read the data
         BitCounterUncompressed bitCounterNested = table.makeNested(dkey, count, nestedRow, dkey.replicationCountSize);
-
-        // make an ArraySequence for this observation
         ArraySequence seq = makeArraySequenceUncompressed(out, reader, bitCounterNested, dkey, req);
 
         if (req.wantRow()) {
           int index = req.abb.addObjectToHeap(seq);
+          if (req.bb.position() >= req.bb.limit())
+            System.out.println("HEY");
           req.bb.putInt(index); // an index into the Heap
         }
         continue;
@@ -253,9 +241,7 @@ public class MessageUncompressedDataReader {
       // compound
       if (dkey.type == 3) {
         BitCounterUncompressed nested = table.makeNested(dkey, dkey.replication, nestedRow, 0);
-        if (out != null)
-          out.f.format("%4d %s read structure %s count= %d\n",
-                  out.fldno, out.indent(), dkey.getFxyName(), dkey.replication);
+        if (out != null) out.f.format("%4d %s read structure %s count= %d\n", out.fldno, out.indent(), dkey.getFxyName(), dkey.replication);
 
         for (int i = 0; i < dkey.replication; i++) {
           if (out != null) {

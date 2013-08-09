@@ -34,6 +34,7 @@
 package ucar.nc2.iosp.bufr;
 
 import org.junit.Test;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
@@ -42,12 +43,13 @@ import java.util.Formatter;
 import ucar.unidata.test.util.TestDir;
 
 /**
- * Saanity check on reading bufr messages
+ * Sanity check on reading bufr messages
  *
  * @author caron
  * @since Apr 1, 2008
  */
 public class TestBufrRead {
+  String unitDir =  TestDir.cdmUnitTestDir + "formats/bufr";
 
   class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
@@ -58,36 +60,54 @@ public class TestBufrRead {
   }
 
   @Test
-  public void readAllInUnitTestDir() throws IOException {
+  public void bitCountAllInUnitTestDir() throws IOException {
     int count = 0;
-    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/bufr", new MyFileFilter(), new TestDir.Act() {
+    count += TestDir.actOnAll(unitDir, new MyFileFilter(), new TestDir.Act() {
       public int doAct(String filename) throws IOException {
-        return readBufr(filename);
+        return bitCount(filename);
       }
     }, true);
-    System.out.println("***READ " + count + " files");
+    System.out.println("***BitCount " + count + " records");
   }
 
-  // @Test
-  public void readAllInIddDir() throws IOException {
+  @Test
+  public void openAllInUnitTestDir() throws IOException {
     int count = 0;
-    assert 13852 == (count = readBufr(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueIDD.bufr")) : count; // was 12337
-    assert 11249 == (count = readBufr(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueBrasil.bufr")) : count;  // was 11533
-    assert 22710 == (count = readBufr(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueExamples.bufr")) : count; // was 12727
-    assert 9929 == (count = readBufr(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueFnmoc.bufr")) : count;
+    count += TestDir.actOnAll(unitDir, new MyFileFilter(), new TestDir.Act() {
+      public int doAct(String filename) throws IOException {
+        openNetcdf(filename);
+        return 1;
+      }
+    }, true);
+    System.out.println("***Opened " + count + " files");
+  }
+
+    // @Test
+  public void problem() throws IOException {
+    openNetcdf("Q:\\cdmUnitTest\\formats\\bufr\\US058MCUS-BUFtdp.SPOUT_00011_buoy_20091101021700.bufr");
+  }
+
+
+  // @Test
+  public void bitCountAllInIddDir() throws IOException {
+    int count = 0;
+    assert 13852 == (count = bitCount(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueIDD.bufr")) : count; // was 12337
+    assert 11249 == (count = bitCount(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueBrasil.bufr")) : count;  // was 11533
+    assert 22710 == (count = bitCount(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueExamples.bufr")) : count; // was 12727
+    assert 9929 == (count = bitCount(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueFnmoc.bufr")) : count;
   }
 
   public void utestCountMessages() throws IOException {
     int count = 0;
-    count += readBufr(TestDir.cdmUnitTestDir + "formats/bufr/uniqueIDD.bufr");
+    count += bitCount(TestDir.cdmUnitTestDir + "formats/bufr/uniqueIDD.bufr");
     //count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueBrasil.bufr");
     //count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueExamples.bufr");
     //count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueFnmoc.bufr");
     System.out.printf("total read ok = %d%n",count);
   }
 
-  private int readBufr(String filename) throws IOException {
-    System.out.printf("%n***READ bufr %s%n", filename);
+  private int bitCount(String filename) throws IOException {
+    System.out.printf("%n***bitCount bufr %s%n", filename);
     int count = 0;
     int totalObs = 0;
     RandomAccessFile raf = null;
@@ -133,6 +153,18 @@ public class TestBufrRead {
 
     return totalObs;
   }
+
+  private void openNetcdf(String filename) throws IOException {
+    System.out.printf("%n***openNetcdf bufr %s%n", filename);
+    NetcdfFile ncfile = null;
+    try {
+      ncfile = NetcdfFile.open(filename);
+      System.out.printf("%s%n", ncfile);
+    } finally {
+      if (ncfile != null) ncfile.close();
+    }
+  }
+
 
 
 }

@@ -79,7 +79,7 @@ public class EmbeddedTable {
 
   private void read2() throws IOException {
     Message proto = messages.get(0);
-    BufrConfig config = BufrConfig.openFromMessage(raf, proto);
+    BufrConfig config = BufrConfig.openFromMessage(raf, proto, null);
     Construct2 construct = new Construct2(proto, config, new FakeNetcdfFile());
 
     seq2 = (Structure) construct.recordStructure.findVariable("seq2");

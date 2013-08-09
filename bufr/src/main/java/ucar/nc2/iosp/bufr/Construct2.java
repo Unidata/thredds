@@ -106,10 +106,9 @@ class Construct2 {
 
     BufrConfig.FieldConverter root = bufrConfig.getRootConverter();
     for (BufrConfig.FieldConverter fld : root.flds) {
-      if (fld.getAction() == BufrConfig.Action.remove) continue;
-
       DataDescriptor dkey = fld.dds;
-      if (!dkey.isOkForVariable()) continue;
+      if (!dkey.isOkForVariable())
+        continue;
 
       if (dkey.replication == 0) {
         addSequence(recordStructure, fld);
@@ -166,7 +165,7 @@ class Construct2 {
 
   private int seqNum = 1;
   private void addSequence(Structure parent, BufrConfig.FieldConverter fld) {
-    if (fld.getAction() == BufrConfig.Action.asMissing) {
+    if (fld.makeAction() == BufrConfig.Action.asMissing) {
       // add members
       // LOOK addVariable(recordStructure, fld, dkey.replication);
     }

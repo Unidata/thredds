@@ -156,7 +156,7 @@ public class Bufr2nc {
       this.dds = dds;
       if (dds.getSubKeys() != null)
         this.flds = new ArrayList<FieldConverter>(dds.getSubKeys().size());
-      this.type = StandardFields.findStandardField(dds.getFxyName());
+      this.type = StandardFields.findField(0, dds.getFxyName());
     }
 
     FieldConverter findChild(StructureMembers.Member m) {

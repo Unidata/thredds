@@ -110,7 +110,7 @@ public class MessageScanner {
     return null;
   }
 
-  public void reset() throws IOException {
+  public void reset() {
     lastPos = 0;
   }
 

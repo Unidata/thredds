@@ -32,12 +32,12 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import org.jdom2.Element;
 import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.bufr.writer.Bufr2nc;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 
@@ -75,6 +75,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   //private final List<Message> msgs = new ArrayList<Message>();
   //private int[] obsStart; // for each message, the starting observation index
   private boolean wantTime;
+  private Element iospParam;
 
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -90,14 +91,15 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     protoMessage = scanner.getFirstDataMessage();
     if (protoMessage == null)
       throw new IOException("No data messages in the file= "+ncfile.getLocation());
-    DataDescriptor dds = protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables
+    // DataDescriptor dds = protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables
     if (!protoMessage.isTablesComplete())
       throw new IllegalStateException("BUFR file has incomplete tables");
 
-    BufrConfig convert = BufrConfig.openFromBufrFile(raf, true);
+    //BufrConfig convert = BufrConfig.openFromBufrFile(raf, true);
+    BufrConfig config = BufrConfig.openFromMessage(raf, protoMessage, iospParam);
 
     // this fills the netcdf object
-    construct = new Construct2(protoMessage, convert, ncfile);
+    construct = new Construct2(protoMessage, config, ncfile);
     ncfile.finish();
   }
 
@@ -110,25 +112,11 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     if (!protoMessage.isTablesComplete())
       throw new IllegalStateException("BUFR file has incomplete tables");
 
-    BufrConfig config = BufrConfig.openFromMessage(raf, protoMessage);
+    BufrConfig config = BufrConfig.openFromMessage(raf, protoMessage, null);
 
     // this fills the netcdf object
     construct = new Construct2(protoMessage, config, ncfile);
     isSingle = true;
-
-    /* msgs.add(single);
-
-    // count where the obs start in the messages
-    obsStart = new int[msgs.size()];
-    int mi = 0;
-    int countObs = 0;
-    for (Message m : msgs) {
-      obsStart[mi++] = countObs;
-      countObs += m.getNumberDatasets();
-    }
-
-    // this fills the netcdf object
-    construct = new Construct2(protoMessage, countObs, ncfile); */
 
     ncfile.finish();
   }
@@ -141,7 +129,13 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
         wantTime = true;
         return true;
       }
+
+    } else if (message instanceof Element) {
+      iospParam = (Element) message;
+      iospParam.detach();
+      return true;
     }
+
     return super.sendIospMessage(message);
   }
 
@@ -236,14 +230,13 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     public StructureDataIterator reset() {
       recnum = 0;
       currIter = null;
+      scanner.reset();
       return this;
     }
 
     @Override
     public boolean hasNext() throws IOException {
       if (currIter == null) {
-        scanner.reset();
-
         currIter = readNextMessage();
         if (currIter == null) {
           nelems = recnum;
