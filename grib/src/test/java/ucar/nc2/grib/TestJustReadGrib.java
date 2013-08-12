@@ -56,16 +56,22 @@ public class TestJustReadGrib  {
   }
 
   @Test
-  public void readMotherloadFiles() throws Exception {
+  public void readMotherloadNcepFiles() throws Exception {
     readAllDir( TestDir.cdmUnitTestDir + "tds/ncep", null, true);
+  }
+
+  @Test
+  public void readMotherloadFnmocFiles() throws Exception {
+    readAllDir( TestDir.cdmUnitTestDir + "tds/fnmoc", null, true);
   }
 
   void readAllDir(String dirName, String suffix, boolean recurse) throws Exception {
     TestDir.actOnAll(dirName, new GribFilter(), new GribAct(), recurse);
   }
 
+  @Test
   public void testProblem() throws IOException {
-    String filename = "Q:/cdmUnitTest/tds/ncep/RUC2_CONUS_20km_pressure_20100509_1300.grib2";
+    String filename = "Q:\\cdmUnitTest\\tds\\fnmoc\\NAVGEM/FNMOC_NAVGEM_Global_0p5deg_20130802_1200.grib1";
     System.out.println("read file= "+filename);
     NetcdfFile ncfile = NetcdfDataset.openFile( filename, null);
     ncfile.close();
@@ -81,6 +87,11 @@ public class TestJustReadGrib  {
       if (path.endsWith(".gbx8")) return false;
       if (path.endsWith(".gbx9")) return false;
       if (path.endsWith(".ncx")) return false;
+      try {
+        System.out.printf("opening %s%n", file.getCanonicalPath());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       return true;
     }
   }

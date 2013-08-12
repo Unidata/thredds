@@ -35,3 +35,12 @@ tds/src/content/
 tds/src/test/data/thredds/cataloggen/config/
 tds/src/test/data/thredds/logs/
 opendap/src/test/data/test.*.*
+
+# OS generated files 
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+*.swp
+*.*~
+._*

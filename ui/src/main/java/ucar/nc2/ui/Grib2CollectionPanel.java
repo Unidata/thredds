@@ -408,6 +408,12 @@ public class Grib2CollectionPanel extends JPanel {
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
+  void closeOpenFiles() throws IOException {
+    param2BeanTable.clearBeans();
+    record2BeanTable.clearBeans();
+    gds2Table.clearBeans();
+  }
+
   ///////////////////////////////////////////////
 
   private String spec;

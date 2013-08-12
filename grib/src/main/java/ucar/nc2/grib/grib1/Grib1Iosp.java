@@ -335,7 +335,13 @@ public class Grib1Iosp extends GribIosp {
         v.addAttribute(new Attribute("Grib1_Parameter_Name", param.getName()));
 
       v.addAttribute(new Attribute("Grib1_Level_Type", vindex.levelType));
-      v.addAttribute(new Attribute("Grib1_Level_Desc", cust.getLevelDescription( vindex.levelType)));
+      String ldesc = cust.getLevelDescription(vindex.levelType);
+      if (ldesc != null)
+        v.addAttribute(new Attribute("Grib1_Level_Desc", ldesc));
+      /* else {
+        System.out.printf("%s%n", "HEY");
+        cust.getLevelDescription(vindex.levelType);
+      } */
 
       if ( vindex.intvName != null && vindex.intvName.length() != 0)
         v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
