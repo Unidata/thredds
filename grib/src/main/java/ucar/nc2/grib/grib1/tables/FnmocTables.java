@@ -35,8 +35,8 @@ package ucar.nc2.grib.grib1.tables;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribLevelType;
+import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.VertCoord;
 
 import java.io.IOException;

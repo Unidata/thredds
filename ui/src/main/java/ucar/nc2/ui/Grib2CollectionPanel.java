@@ -1173,11 +1173,11 @@ public class Grib2CollectionPanel extends JPanel {
       return GribUtils.makeNameFromDescription(cust.getVariableName(gr));
     }
 
-    public String getOldName() {
+   /*  public String getOldName() {
       String oldName = ucar.grib.grib2.ParameterTable.getParameterName(discipline, pds.getParameterCategory(), pds.getParameterNumber());
       boolean diff = !oldName.equalsIgnoreCase(getName());
       return diff ? "*" + oldName : oldName;
-    }
+    } */
 
     public String getUnits() {
       Grib2Customizer.Parameter p = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());

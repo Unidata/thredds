@@ -49,7 +49,6 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
-import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
@@ -887,7 +886,6 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);
-    GribServiceProvider.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
     ucar.nc2.FileWriter.setDebugFlags(debugFlags);

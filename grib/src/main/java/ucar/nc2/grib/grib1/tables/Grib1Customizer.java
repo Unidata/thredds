@@ -36,12 +36,9 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import thredds.featurecollection.TimeUnitConverter;
-import ucar.grib.GribNumbers;
-import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.wmo.CommonCodeTable;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.InputStream;

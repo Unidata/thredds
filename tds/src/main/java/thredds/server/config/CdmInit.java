@@ -38,19 +38,15 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Level;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
-import thredds.inventory.CollectionManagerAbstract;
 import thredds.inventory.CollectionUpdater;
-import thredds.inventory.StoreKeyValue;
 import thredds.server.cdmremote.CdmrFeatureController;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.servlet.ServletUtil;
@@ -59,7 +55,6 @@ import thredds.util.LoggerFactorySpecial;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.TimePartition;
-import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -215,7 +210,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
       startupLog.info("CdmInit: HTTPFileCache.initCache= [" + min + "," + max + "] scour = " + secs);
     }
 
-    // for backwards compatibility - should be replaced by direct specifying of the IndexExtendMode
+    /* for backwards compatibility - should be replaced by direct specifying of the IndexExtendMode
     // turn off Grib extend indexing; indexes are automatically done every 10 minutes externally
     boolean extendIndex = ThreddsConfig.getBoolean("GribIndexing.setExtendIndex", false);
     GridServiceProvider.IndexExtendMode mode = extendIndex ? GridServiceProvider.IndexExtendMode.extendwrite : GridServiceProvider.IndexExtendMode.readonly;
@@ -225,7 +220,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
 
     boolean alwaysUseCache = ThreddsConfig.getBoolean("GribIndexing.alwaysUseCache", false);
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( alwaysUseCache );
-    startupLog.info("CdmInit: GribIndexing.alwaysUseCache= "+alwaysUseCache);
+    startupLog.info("CdmInit: GribIndexing.alwaysUseCache= "+alwaysUseCache); */
 
     // optimization: netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
