@@ -35,6 +35,7 @@ package ucar.nc2.dt.grid;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 
@@ -45,7 +46,7 @@ public class TestWritePermute extends TestCase {
 
   public void testWritePermute() throws Exception {
     NetcdfFileWriteable ncfile = new NetcdfFileWriteable();
-    ncfile.setName(TestLocal.cdmTestDataDir+"permuteTest.nc");
+    ncfile.setName(TestDir.cdmLocalTestDataDir+"permuteTest.nc");
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);

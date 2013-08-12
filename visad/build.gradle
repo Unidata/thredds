@@ -52,4 +52,5 @@ jar {
 dependencies {
   compile project(':cdm')
   compile 'edu.wisc.ssec:visad:2.0-20130124'
+  testCompile project(':cdm').sourceSets.test.output
 }

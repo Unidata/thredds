@@ -61,7 +61,7 @@ import java.util.List;
 /**
  * An IOSP for Gempak Sounding (SN) data.
  *
- * @author Unidata Java Development Team
+ * @author dmurray
  */
 public class GempakSoundingIOSP extends GempakStationFileIOSP {
 

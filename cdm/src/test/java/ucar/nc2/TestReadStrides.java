@@ -35,6 +35,7 @@ package ucar.nc2;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.unidata.test.ma2.TestMa2Utils;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.List;
@@ -49,7 +50,7 @@ public class TestReadStrides extends TestCase {
   }
 
   public void testReadStridesCached() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestLocalNC2.openFile("ncml/nc/time0.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal("ncml/nc/time0.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("T")));
@@ -134,7 +135,7 @@ public class TestReadStrides extends TestCase {
   }
 
   public void testReadStridesNoCache() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestLocalNC2.openFile("ncml/nc/time0.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal("ncml/nc/time0.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("T")));
@@ -213,7 +214,7 @@ public class TestReadStrides extends TestCase {
   }
 
   private void testReadStrides(String filename) throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestLocalNC2.openFile(filename);
+    NetcdfFile ncfile = TestDir.openFileLocal(filename);
 
     List vars = ncfile.getVariables();
     for (int i = 0; i < vars.size(); i++) {

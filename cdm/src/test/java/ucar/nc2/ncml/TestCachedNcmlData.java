@@ -4,15 +4,11 @@ import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
-import ucar.nc2.TestLocal;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.radial.Netcdf2Dataset;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
-
-import static ucar.nc2.TestLocal.cdmTestDataDir;
 
 /**
  * Describe
@@ -27,7 +23,7 @@ public class TestCachedNcmlData {
 
     NetcdfFile ncd = null;
     try {
-      ncd = NetcdfDataset.openFile(cdmTestDataDir + "point/profileMultidim.ncml", null);
+      ncd = NetcdfDataset.openFile(TestDir.cdmLocalTestDataDir + "point/profileMultidim.ncml", null);
       Variable v = ncd.findVariable("data");
       assert v != null;
       Array data = v.read();
@@ -42,7 +38,7 @@ public class TestCachedNcmlData {
 
     NetcdfFile ncd = null;
     try {
-      ncd = NetcdfDataset.openFile(cdmTestDataDir + "point/profileMultidim.ncml", null);
+      ncd = NetcdfDataset.openFile(TestDir.cdmLocalTestDataDir + "point/profileMultidim.ncml", null);
       boolean ok = (Boolean) ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       assert ok;
       

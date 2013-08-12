@@ -52,7 +52,7 @@ public class TestJustReadGrib  {
 
   @Test
   public void readGrib2Files() throws Exception {
-    readAllDir( TestDir.cdmUnitTestDir + "formats/grib1", null, false);
+    readAllDir( TestDir.cdmUnitTestDir + "formats/grib2", null, false);
   }
 
   @Test

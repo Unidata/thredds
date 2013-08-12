@@ -62,7 +62,6 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.ncml.Aggregation;
-import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dataset.*;
 
 import ucar.nc2.geotiff.GeoTiff;
@@ -1992,11 +1991,6 @@ public class ToolsUI extends JPanel {
     NetcdfDataset ds = null;
     CoordSysTable coordSysTable;
 
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
-
     void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
@@ -2006,10 +2000,6 @@ public class ToolsUI extends JPanel {
       super(p, "dataset:", true, false);
       coordSysTable = new CoordSysTable(prefs, buttPanel);
       add(coordSysTable, BorderLayout.CENTER);
-
-      defComboBox = new JComboBox(FmrcDefinition.getDefinitionFiles());
-      defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
-      defWindow.setLocationRelativeTo(defButt);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
       infoButton.addActionListener(new ActionListener() {
@@ -2066,19 +2056,6 @@ public class ToolsUI extends JPanel {
       }
 
       Object spiObject = null;
-      if (useDefinition) {
-        String currentDef = (String) defComboBox.getSelectedItem();
-        if (currentDef != null) {
-          FmrcDefinition fmrc_def = new FmrcDefinition();
-          try {
-            fmrc_def.readDefinitionXML(currentDef);
-            spiObject = fmrc_def;
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);

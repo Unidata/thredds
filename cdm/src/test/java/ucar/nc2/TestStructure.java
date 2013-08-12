@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.*;
@@ -51,7 +52,7 @@ public class TestStructure extends TestCase {
   NetcdfFile ncfile;
 
   protected void setUp() throws Exception {
-    ncfile = TestLocalNC2.openFile("testWriteRecord.nc");
+    ncfile = TestDir.openFileLocal("testWriteRecord.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
 
@@ -244,7 +245,7 @@ public class TestStructure extends TestCase {
 
   public void testReadBothWaysV3mode() throws IOException {
     //readBothWays(TestAll.testdataDir+"grid/netcdf/mm5/n040.nc");
-    readBothWays(TestLocal.cdmTestDataDir + "testWriteRecord.nc");
+    readBothWays(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc");
     //readBothWays(TestAll.testdataDir+"station/ldm-old/2004061915_metar.nc");
 
     System.out.println("*** testReadBothWaysV3mode ok");

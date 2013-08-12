@@ -35,6 +35,7 @@ package ucar.nc2;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.unidata.test.ma2.TestStructureArray;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 
@@ -49,7 +50,7 @@ public class TestStructureArray2 extends TestCase {
   }
 
   public void testBB() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestLocalNC2.openFile("testWriteRecord.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal("testWriteRecord.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     Structure v = (Structure) ncfile.findVariable("record");
@@ -68,7 +69,7 @@ public class TestStructureArray2 extends TestCase {
   }
 
   public void testMA() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestLocalNC2.openFile("jan.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal("jan.nc");
     Dimension dim = ncfile.findDimension("time");
     assert dim != null;
 

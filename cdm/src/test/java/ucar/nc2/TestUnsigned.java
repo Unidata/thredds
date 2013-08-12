@@ -38,6 +38,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -52,7 +53,7 @@ public class TestUnsigned {
 
   @Test
   public void testSigned() throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testWrite.nc");
+    NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWrite.nc");
 
     Variable v = null;
     assert(null != (v = ncfile.findVariable("bvar")));
@@ -72,7 +73,7 @@ public class TestUnsigned {
 
   @Test
   public void testUnsigned() throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testUnsignedByte.ncml");
+    NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testUnsignedByte.ncml");
 
     Variable v = null;
     assert(null != (v = ncfile.findVariable("bvar")));
@@ -92,7 +93,7 @@ public class TestUnsigned {
   @Test
   public void testUnsignedWrap() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestLocal.cdmTestDataDir +"testWrite.nc'>\n" +
+        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestDir.cdmLocalTestDataDir +"testWrite.nc'>\n" +
         "  <variable name='bvar' shape='lat' type='byte'>\n" +
         "    <attribute name='_Unsigned' value='true' />\n" +
         "    <attribute name='scale_factor' type='float' value='2.0' />\n" +

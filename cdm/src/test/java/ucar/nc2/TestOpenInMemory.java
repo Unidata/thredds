@@ -39,6 +39,7 @@ import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.ArrayChar;
 import ucar.nc2.util.IO;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -49,7 +50,7 @@ public class TestOpenInMemory extends TestCase {
   }
 
   private NetcdfFile openInMemory( String filename) throws IOException {
-      String pathname = TestLocal.cdmTestDataDir +filename;
+      String pathname = TestDir.cdmLocalTestDataDir +filename;
       System.out.println("**** OpenInMemory "+pathname);
 
       byte[] ba = IO.readFileToByteArray( pathname);

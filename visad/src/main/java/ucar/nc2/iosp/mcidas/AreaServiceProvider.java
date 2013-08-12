@@ -56,8 +56,7 @@ import java.io.IOException;
  * IOServiceProvider for McIDAS AREA files
  *
  *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * @author dmurray
  */
 public class AreaServiceProvider extends AbstractIOServiceProvider {
 

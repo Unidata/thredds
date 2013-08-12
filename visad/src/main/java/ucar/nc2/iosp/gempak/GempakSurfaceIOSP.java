@@ -62,7 +62,7 @@ import java.util.List;
 /**
  * An IOSP for Gempak Surface data.
  *
- * @author Unidata Java Development Team
+ * @author dmurray
  */
 public class GempakSurfaceIOSP extends GempakStationFileIOSP {
 

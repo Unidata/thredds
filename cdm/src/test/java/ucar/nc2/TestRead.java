@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 
@@ -46,7 +47,7 @@ public class TestRead extends TestCase {
   }
 
   public void testNC3Read() throws IOException {
-    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
     assert(null != ncfile.findDimension("lat"));
     assert(null != ncfile.findDimension("lon"));

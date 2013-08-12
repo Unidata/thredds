@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 
@@ -64,8 +65,8 @@ public class TestDump extends TestCase  {
 
   public void testNCdump() {
     try {
-      NCdump.print( TestLocal.cdmTestDataDir +"testWrite.nc", out, false, true, false, false, null, null);
-      NCdump.printNcML( TestLocal.cdmTestDataDir +"testWriteRecord.nc", out);
+      NCdump.print( TestDir.cdmLocalTestDataDir +"testWrite.nc", out, false, true, false, false, null, null);
+      NCdump.printNcML( TestDir.cdmLocalTestDataDir +"testWriteRecord.nc", out);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       assert (false);

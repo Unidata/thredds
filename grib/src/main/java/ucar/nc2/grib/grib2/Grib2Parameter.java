@@ -35,7 +35,6 @@ package ucar.nc2.grib.grib2;
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;

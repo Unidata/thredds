@@ -437,4 +437,34 @@ public class ProjectionRect implements java.io.Serializable {
     s.writeDouble(getWidth());
     s.writeDouble(getHeight());
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    ProjectionRect that = (ProjectionRect) o;
+
+    if (Double.compare(that.height, height) != 0) return false;
+    if (Double.compare(that.width, width) != 0) return false;
+    if (Double.compare(that.x, x) != 0) return false;
+    if (Double.compare(that.y, y) != 0) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(x);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(y);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(width);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(height);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    return result;
+  }
 }

@@ -9,9 +9,13 @@ jar {
 sourceSets {
     main {
         java {
-            // exclude 'thredds/catalog2/**/*.java'
             exclude 'ucar/nc2/util/reflect/*.java'
         }
+    }
+    test {
+       java {
+           exclude 'thredds/catalog2/**/*.java'
+       }
     }
 }
 

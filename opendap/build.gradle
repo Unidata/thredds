@@ -3,4 +3,5 @@ apply plugin: 'java'
 dependencies {
   compile project(':cdm')
   compile 'javax.servlet:servlet-api:2.5'
+  testCompile project(':cdm').sourceSets.test.output
 }

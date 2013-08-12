@@ -68,6 +68,8 @@ public class TestBeans extends TestCase {
 
       TesterBean tbean =  (TesterBean) prefs.getBean( "default", null);
       TesterBean tbeano =  (TesterBean) prefs.getBean( "defaultObject", null);
+      assert tbean != null;
+      assert tbeano != null;
 
       assert tbean.getB() == tbeano.getB() : "boolean failed";
       assert tbean.getByte() == tbeano.getByte() : "byte failed";

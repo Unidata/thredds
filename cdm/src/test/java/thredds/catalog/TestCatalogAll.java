@@ -34,7 +34,6 @@ package thredds.catalog;
 
 import java.util.*;
 import junit.framework.*;
-import thredds.catalog.util.TestDeepCopyUtils;
 
 /**
  * TestSuite that runs all the sample tests
@@ -143,7 +142,7 @@ public class TestCatalogAll extends TestCase {
     suite.addTest(new TestSuite(TestSpatialCoverage.class)); // */
     suite.addTest(new TestSuite(TestTimeCoverage.class)); // */
 
-    suite.addTest( new JUnit4TestAdapter( TestDeepCopyUtils.class ));
+    //suite.addTest( new JUnit4TestAdapter( TestDeepCopyUtils.class ));
 
     suite.addTestSuite( thredds.catalog.parser.jdom.TestDatasetScanFilter.class );
     suite.addTestSuite( thredds.catalog.parser.jdom.TestReadMetadata.class );

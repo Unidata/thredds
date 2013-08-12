@@ -37,6 +37,7 @@ import ucar.nc2.TestLocal;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -88,7 +89,7 @@ public class TestFileCacheConcurrent {
 
     // load some files into the cache
     List<String> fileList = new ArrayList<String>(100);
-    loadFiles(new File(TestLocal.cdmTestDataDir), "nc", fileList);
+    loadFiles(new File(TestDir.cdmLocalTestDataDir), "nc", fileList);
     int nfiles = fileList.size();
     System.out.println(" loaded " + nfiles + " files");
 

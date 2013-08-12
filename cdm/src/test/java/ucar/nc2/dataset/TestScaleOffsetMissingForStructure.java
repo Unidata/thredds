@@ -36,13 +36,14 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
 public class TestScaleOffsetMissingForStructure extends TestCase {
 
   public void testNetcdfFile() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfDataset.openFile(TestLocal.cdmTestDataDir + "testScaleRecord.nc", null);
+    NetcdfFile ncfile = NetcdfDataset.openFile(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc", null);
     Variable v = ncfile.findVariable("testScale");
     assert null != v;
     assert v.getDataType() == DataType.SHORT;
@@ -94,7 +95,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
   }
 
   public void testNetcdfDataset() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc");
     System.out.printf("Open %s%n", ncfile.getLocation());
     VariableDS v = (VariableDS) ncfile.findVariable("testScale");
     assert null != v;
@@ -145,7 +146,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
   }
 
   public void testNetcdfDatasetAttributes() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc");
     VariableDS v = (VariableDS) ncfile.findVariable("testScale");
     assert null != v;
     assert v.getDataType() == DataType.FLOAT;

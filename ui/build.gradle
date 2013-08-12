@@ -35,6 +35,8 @@ dependencies {
     transitive = false  // commons-logging
   }
   compile group: 'org.springframework', name: 'spring-context', version:springVersion
+
+  testCompile project(':cdm').sourceSets.test.output
   runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
 }
 

@@ -51,8 +51,7 @@ import java.io.IOException;
 /**
  * An IOSP for McIDAS Grid data
  *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * @author dmurray
  */
 public class McIDASGridServiceProvider extends GridServiceProvider {
 

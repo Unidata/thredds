@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -43,7 +44,7 @@ public class TestAttributes extends TestCase {
 
 
   public void testNC3ReadAttributes() throws IOException {
-    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
     // global attributes
     assert("face".equals(ncfile.findAttValueIgnoreCase(null, "yo", "barf")));

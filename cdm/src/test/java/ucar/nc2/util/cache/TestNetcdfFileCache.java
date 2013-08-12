@@ -37,6 +37,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestLocal;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class TestNetcdfFileCache extends TestCase {
 
 
   public void testNetcdfFileCache() throws IOException {
-    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
     System.out.println(" loaded " + count);
 
     cache.showCache(new Formatter(System.out));
@@ -86,7 +87,7 @@ public class TestNetcdfFileCache extends TestCase {
 
     // load same files again - should be added to the list, rather than creating a new elem
     int saveCount = count;
-    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -102,7 +103,7 @@ public class TestNetcdfFileCache extends TestCase {
     assert map.values().size() == 0;
 
     // load again
-    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -123,8 +124,8 @@ public class TestNetcdfFileCache extends TestCase {
     assert map.values().size() == 0 : map.values().size();
 
     // load twice
-    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
-    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
+    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -206,7 +207,7 @@ public class TestNetcdfFileCache extends TestCase {
   }
 
   private void testPeriodicCleanup(FileCache cache) throws IOException {
-    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
     System.out.println(" loaded " + count);
 
     // close all
@@ -238,7 +239,7 @@ public class TestNetcdfFileCache extends TestCase {
   int SKIP = 100;
 
   public void testConcurrentAccess() throws InterruptedException {
-    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
     Map<Object, FileCache.CacheElement> map = cache.getCache();
     List<String> files = new ArrayList<String>();
     for (Object key : map.keySet()) {
