@@ -116,7 +116,7 @@ public class TestNcMLValues {
     }
 
     @After
-    protected void tearDown() throws IOException {
+    public void tearDown() throws IOException {
         ncfile.close();
     }
 
