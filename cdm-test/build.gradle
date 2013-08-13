@@ -8,9 +8,7 @@ dependencies {
   compile (project(':opendap'))  { // eliminate servlet
       transitive = false
     }
-  compile (project(':visad')) {   // eliminate original visad.jar
-    transitive = false
-  }
+  compile (project(':visad'))
   testCompile project(':cdm').sourceSets.test.output
 }
 

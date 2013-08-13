@@ -72,8 +72,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   private MessageScanner scanner;
   private HashSet<Integer> messHash = null;
   private boolean isSingle;
-  //private final List<Message> msgs = new ArrayList<Message>();
-  //private int[] obsStart; // for each message, the starting observation index
+  private BufrConfig config;
   private boolean wantTime;
   private Element iospParam;
 
@@ -96,7 +95,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
       throw new IllegalStateException("BUFR file has incomplete tables");
 
     //BufrConfig convert = BufrConfig.openFromBufrFile(raf, true);
-    BufrConfig config = BufrConfig.openFromMessage(raf, protoMessage, iospParam);
+    config = BufrConfig.openFromMessage(raf, protoMessage, iospParam);
 
     // this fills the netcdf object
     construct = new Construct2(protoMessage, config, ncfile);
@@ -137,6 +136,10 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     }
 
     return super.sendIospMessage(message);
+  }
+
+  public BufrConfig getConfig() {
+    return config;
   }
 
   /* / for BufrMessageViewer

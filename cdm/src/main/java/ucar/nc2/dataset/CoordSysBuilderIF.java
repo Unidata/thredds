@@ -41,7 +41,7 @@ import java.io.IOException;
  * @author john caron
  */
 public interface CoordSysBuilderIF {
-  
+
   /**
    * Pass in the name of the Convention used to locate this CoordSysBuilderIF.
    * @param convName the name of the Convention
@@ -50,7 +50,7 @@ public interface CoordSysBuilderIF {
 
   /**
    * Get the name of the Convention. In the case where the Convention attribute is not set in the file,
-   *  this name cannot be used to identify the Convention. The isMine() method is called instead.
+   * this name cannot be used to identify the Convention. The isMine() method is called instead.
    * @return Convention name
    */
   public String getConventionUsed();

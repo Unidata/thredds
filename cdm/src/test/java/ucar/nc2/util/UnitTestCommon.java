@@ -143,5 +143,10 @@ public class UnitTestCommon extends TestCase
         }
 
     }
+
+  // suppress warning message
+  public void testFakerooni() {
+    assert true;
+  }
 }
 

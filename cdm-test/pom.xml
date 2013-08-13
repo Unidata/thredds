@@ -26,6 +26,11 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
+      <artifactId>clcommon</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
       <artifactId>grib</artifactId>
     </dependency>
 
@@ -42,6 +47,12 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>visadCdm</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.wisc.ssec</groupId>
+      <artifactId>visad</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>

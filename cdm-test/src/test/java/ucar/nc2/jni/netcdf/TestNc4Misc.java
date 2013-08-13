@@ -1,5 +1,6 @@
 package ucar.nc2.jni.netcdf;
 
+import org.junit.Before;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -21,6 +22,12 @@ import java.util.List;
  * @since 7/30/13
  */
 public class TestNc4Misc {
+
+  @Before
+  public void setLibrary() {
+    Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+    System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
+  }
 
   @Test
   public void testUnlimitedDimension() throws IOException, InvalidRangeException {

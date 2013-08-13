@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -124,9 +125,6 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <excludes>
-            <!-- exclude>thredds/logs/**</exclude -->
-            <exclude>ucar/nc2/dataset/grid/**</exclude>
-            <!--exclude>ucar/nc2/jni/**</exclude -->
             <exclude>ucar/nc2/util/reflect/**</exclude>
           </excludes>
 
@@ -139,7 +137,7 @@
         <configuration>
           <skip>${skipTests}</skip>
           <testFailureIgnore>true</testFailureIgnore>
-	  <argLine>-Dfile.encoding=UTF-8</argLine>
+          <argLine>-Dfile.encoding=UTF-8</argLine>
         </configuration>
       </plugin>
 
@@ -159,7 +157,8 @@
             <configuration>
               <includes>
                 <include>ucar/unidata/test/**</include>
-                <include>ucar/nc2/util/**</include>    <!-- makes the nc2/util/memory/build.xml ant tasks redundant -->
+                <include>ucar/nc2/util/**</include>
+                <!-- makes the nc2/util/memory/build.xml ant tasks redundant -->
                 <include>ucar/nc2/TestLocal.*</include>
               </includes>
             </configuration>

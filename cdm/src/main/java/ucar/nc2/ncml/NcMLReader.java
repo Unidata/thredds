@@ -1214,7 +1214,6 @@ public class NcMLReader {
     // otherwise values are listed in text
     String values = varElem.getChildText("values", ncNS);
     String sep = valuesElem.getAttributeValue("separator");
-    if (sep == null) sep = " ";
 
     if (v.getDataType() == DataType.CHAR) {
       int nhave = values.length();
@@ -1227,11 +1226,17 @@ public class NcMLReader {
       Array dataArray = Array.factory(DataType.CHAR.getPrimitiveClassType(), v.getShape(), data);
       v.setCachedData(dataArray, true);
 
-    } else {
-      // or a list of values
-        String[] tokens = StringUtil2.splitString(values);
-        List<String> valList = Arrays.asList(tokens);
-        v.setValues(valList);
+    } else if (sep != null) {
+      List<String> valList = new ArrayList<String>();
+      StringTokenizer tokn = new StringTokenizer(values, sep);
+      while (tokn.hasMoreTokens())
+        valList.add(tokn.nextToken());
+      v.setValues(valList);
+
+    } else { // default is to use whitespace
+      String[] tokens = StringUtil2.splitString(values);
+      List<String> valList = Arrays.asList(tokens);
+      v.setValues(valList);
     }
   }
 

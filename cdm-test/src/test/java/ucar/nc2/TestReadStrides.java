@@ -209,7 +209,7 @@ public class TestReadStrides extends TestCase {
   }
 
   public void testReadStridesAll() throws IOException, InvalidRangeException {
-    //testReadStrides("test/data/ncml/nc/time0.nc");
+    testReadStrides("ncml/nc/time0.nc");
     testReadStrides("gini/HI-NATIONAL_14km_IR_20050918_2000.gini");
   }
 

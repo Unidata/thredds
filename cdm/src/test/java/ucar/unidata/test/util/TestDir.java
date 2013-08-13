@@ -120,8 +120,13 @@ public class TestDir {
       return ncfile;
 
     } catch (java.io.IOException e) {
-      File absf = new File(filename);
-      System.out.printf("abs path of %s == %s%n", filename, absf.getAbsolutePath());
+
+      try {
+        File absf = new File(filename);
+        System.out.printf("abs path of %s == %s%n", filename, absf.getCanonicalPath());
+      } catch (IOException ioe) {
+        e.printStackTrace();
+      }
       File pwd = new File (".");
       System.out.printf("pwd = %s%n", pwd.getAbsolutePath());
       System.out.println(" fail = "+e);
