@@ -142,31 +142,9 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     return config;
   }
 
-  /* / for BufrMessageViewer
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, Message single) throws IOException {
-    this.raf = raf;
-
-    protoMessage = single;
-    protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables
-    if (!protoMessage.isTablesComplete())
-      throw new IllegalStateException("BUFR file has incomplete tables");
-
-    msgs.add(single);
-
-    // count where the obs start in the messages
-    obsStart = new int[msgs.size()];
-    int mi = 0;
-    int countObs = 0;
-    for (Message m : msgs) {
-      obsStart[mi++] = countObs;
-      countObs += m.getNumberDatasets();
-    }
-
-    // this fills the netcdf object
-    construct = new Construct2(protoMessage, countObs, ncfile);
-
-    ncfile.finish();
-  }  */
+  public Element getElem() {
+    return iospParam;
+  }
 
   private int nelems = -1;
 
