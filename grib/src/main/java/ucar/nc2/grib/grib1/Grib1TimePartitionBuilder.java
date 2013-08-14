@@ -218,19 +218,19 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
 
     // for each group in canonical Partition
     GribCollection canonGc = canon.gc;
-    for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
-      String gname = firstGroup.getId();
+    for (GribCollection.GroupHcs canonGroup : canonGc.getGroups()) {
+      String gname = canonGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // hash proto variables for quick lookup
-      Map<Integer, GribCollection.VariableIndex> check = new HashMap<Integer, GribCollection.VariableIndex>(firstGroup.varIndex.size());
-      List<GribCollection.VariableIndex> varIndexP = new ArrayList<GribCollection.VariableIndex>(firstGroup.varIndex.size());
-      for (GribCollection.VariableIndex vi : firstGroup.varIndex) {
+      Map<Integer, GribCollection.VariableIndex> check = new HashMap<Integer, GribCollection.VariableIndex>(canonGroup.varIndex.size());
+      List<GribCollection.VariableIndex> varIndexP = new ArrayList<GribCollection.VariableIndex>(canonGroup.varIndex.size());
+      for (GribCollection.VariableIndex vi : canonGroup.varIndex) {
         TimePartition.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, npart);
         varIndexP.add(vip);
         check.put(vi.cdmHash, vip); // replace with its evil twin
       }
-      firstGroup.varIndex = varIndexP;// replace with its evil twin
+      canonGroup.varIndex = varIndexP;// replace with its evil twin
 
       // for each partition
       for (int partno = 0; partno < npart; partno++) {
@@ -239,10 +239,10 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
 
         // get corresponding group
         GribCollection gc = tpp.gc;
-        int groupIdx = gc.findGroupIdxById(firstGroup.getId());
+        int groupIdx = gc.findGroupIdxById(canonGroup.getId());
         if (groupIdx < 0) {
-          f.format(" Cant find group %s in partition %s%n", gname, tpp.getName());
-          ok = false;
+          f.format(" Cant find group %s (%d) in partition %s%n", gname, canonGroup.hashCode(), tpp.getName());
+          // ok = false;
           continue;
         }
         GribCollection.GroupHcs group = gc.getGroup(groupIdx);

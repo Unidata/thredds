@@ -55,9 +55,6 @@ import java.util.*;
  */
 public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2Partition0Index";
-
-  //static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartitionBuilder.class);
-  //static private final int versionTP = 4;  // this needs to update when grib2collection version does
   static private final boolean trace = false;
 
   // called by tdm
@@ -207,7 +204,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     logger.info(" Using canonical partition {}", canon.getDcm().getCollectionName());
 
     // check consistency across vert and ens coords
-    // also replace variables  in canonGc with partitoned variables
+    // also replace variables in canonGc with partitoned variables
     Formatter f = new Formatter();
     GribCollection canonGc = checkPartitions(canon, f);
     if (canonGc == null) {
@@ -241,21 +238,21 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // for each group in canonical Partition
     GribCollection canonGc = canon.gc;
-    for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
-      String gname = firstGroup.getId();
+    for (GribCollection.GroupHcs canonGroup : canonGc.getGroups()) {
+      String gname = canonGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // hash proto variables for quick lookup
-      Map<Integer, GribCollection.VariableIndex> check = new HashMap<Integer, GribCollection.VariableIndex>(firstGroup.varIndex.size());
-      List<GribCollection.VariableIndex> varIndexP = new ArrayList<GribCollection.VariableIndex>(firstGroup.varIndex.size());
-      for (GribCollection.VariableIndex vi : firstGroup.varIndex) {
+      Map<Integer, GribCollection.VariableIndex> check = new HashMap<Integer, GribCollection.VariableIndex>(canonGroup.varIndex.size());
+      List<GribCollection.VariableIndex> varIndexP = new ArrayList<GribCollection.VariableIndex>(canonGroup.varIndex.size());
+      for (GribCollection.VariableIndex vi : canonGroup.varIndex) {
         TimePartition.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, npart);
         varIndexP.add(vip);
         if (check.containsKey(vi.cdmHash))
-          System.out.println("HEY DUPLICATE");
+          f.format(" duplicate variable %s (%d) in partition %s%n", vi, vi.hashCode(), gname);
         check.put(vi.cdmHash, vip); // replace with its evil twin
       }
-      firstGroup.varIndex = varIndexP;// replace with its evil twin
+      canonGroup.varIndex = varIndexP;// replace with its evil twin
 
       // for each partition
       for (int partno = 0; partno < npart; partno++) {
@@ -264,10 +261,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
         // get corresponding group
         GribCollection gc = tpp.gc;
-        int groupIdx = gc.findGroupIdxById(firstGroup.getId());
+        int groupIdx = gc.findGroupIdxById(canonGroup.getId());
         if (groupIdx < 0) {
-          f.format(" Cant find group %s in partition %s%n", gname, tpp.getName());
-          ok = false;
+          f.format(" Cant find group %s (%d) in partition %s%n", gname, canonGroup.hashCode(), tpp.getName());
+          // ok = false;
           continue;
         }
         GribCollection.GroupHcs group = gc.getGroup(groupIdx);
@@ -350,7 +347,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       for (TimePartition.Partition tpp : partitions) {
         GribCollection.GroupHcs gg = tpp.gc.findGroupById(gname);
         if (gg == null)
-          logger.error(" Cant find group {} in partition {}", gname, tpp.getName());
+          logger.error(" Cant find group {} in partition {} for PartitionedTimeCoordinates", gname, tpp.getName());
         else
           pgList.add(new PartGroup(gg, tpp));
       }
