@@ -381,7 +381,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       if ((v2 == null) && (orgVar != null))
         v2 = findVariableFromOrgName(m.getName());
       if (v2 == null) {
-        log.warn("StructureDataDS.convert Cant find member " + m.getName());
+        findVariableFromOrgName(m.getName());
+        // log.warn("StructureDataDS.convert Cant find member " + m.getName());
         continue;
       }
       StructureMembers.Member mResult = smResult.findMember(m.getName());

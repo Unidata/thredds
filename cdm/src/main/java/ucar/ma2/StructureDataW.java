@@ -206,6 +206,9 @@ public class StructureDataW extends StructureData {
    */
   public short getScalarShort(StructureMembers.Member m) {
     Array data = getArray(m);
+    if (data == null) {
+      getArray(m);
+    }
     return data.getShort(Index.scalarIndexImmutable);
   }
 

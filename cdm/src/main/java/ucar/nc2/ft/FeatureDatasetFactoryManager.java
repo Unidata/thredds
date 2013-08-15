@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ServiceLoader;
 
 /**
  * Manager of factories for FeatureDatasets.
@@ -80,6 +81,10 @@ public class FeatureDatasetFactoryManager {
     registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
 
     registerFactory(FeatureType.UGRID, "ucar.nc2.ft.ugrid.UGridDatasetStandardFactory");
+
+    for (FeatureDatasetFactory csb : ServiceLoader.load(FeatureDatasetFactory.class)) {
+      registerFactory(csb.getClass());
+    }
 
     // further calls to registerFactory are by the user
     userMode = true;

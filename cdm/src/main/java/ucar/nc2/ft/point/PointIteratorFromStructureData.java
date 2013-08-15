@@ -52,12 +52,18 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
   // makeFeature may return null, if so then skip it and go to next iteration
   protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
 
-  private Filter filter;
+  private PointFeatureIterator.Filter filter;
   private StructureDataIterator structIter;
   private PointFeature feature = null; // hasNext must cache
   private boolean finished = false;
 
-  public PointIteratorFromStructureData(StructureDataIterator structIter, Filter filter) throws IOException {
+  /**
+   * Constructor
+   * @param structIter  original iterator
+   * @param filter      optional filter
+   * @throws IOException
+   */
+  public PointIteratorFromStructureData(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
     this.structIter = structIter;
     this.filter = filter;
   }

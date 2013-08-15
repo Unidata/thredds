@@ -1,7 +1,7 @@
 package thredds.inventory;
 
 /**
- * Describe
+ * Abstraction for object persistance using key/value stores.
  *
  * @author caron
  * @since 7/18/13

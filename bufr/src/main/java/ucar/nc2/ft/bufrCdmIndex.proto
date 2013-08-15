@@ -1,0 +1,41 @@
+package bufrCdmIndex;
+
+option java_package = "ucar.nc2.ft.bufr";
+option java_outer_classname = "BufrCdmIndexProto";
+
+message Station {
+  required string id = 1;
+  required double lat = 2;
+  required double lon = 3;
+  optional double alt = 4;
+  optional string desc = 5;
+  optional string wmoId = 6;
+}
+
+message StationList {
+  repeated Station stations = 1;
+}
+
+enum Action {
+    remove = 0;
+    asMissing = 1;
+    asArray = 2;
+    concat = 3;
+}
+
+message Field {
+  repeated Field flds = 1;
+  optional uint32 min = 2;
+  optional uint32 max = 3;
+  optional bool isSeq = 4 [default false];
+  optional enum action = 5;
+}
+
+message BufrIndex {
+  required string filename = 1;
+  repeated Station stations = 2;
+}
+
+//  cd c:/dev/github/thredds/bufr/src/main/java
+//  protoc --proto_path=. --java_out=. ucar/nc2/ft/bufr/bufrCdmIndex.proto
+

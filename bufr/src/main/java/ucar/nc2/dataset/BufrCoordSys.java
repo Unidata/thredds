@@ -4,6 +4,7 @@ import org.jdom2.Element;
 import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
+import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.*;
@@ -14,19 +15,20 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.List;
 
 /**
- * Describe
+ * Modify BUFR with BufrConfig
  *
  * @author caron
  * @since 8/12/13
  */
 public class BufrCoordSys extends CoordSysBuilder {
 
-
   public static boolean isMine(NetcdfFile ncfile) {
-    IOServiceProvider iosp = ncfile.getIosp();
-    return iosp != null && iosp instanceof BufrIosp2;
+    //IOServiceProvider iosp = ncfile.getIosp();
+    //return iosp != null && iosp instanceof BufrIosp2;
+    return false;
   }
 
   // needed for ServiceLoader
@@ -37,15 +39,19 @@ public class BufrCoordSys extends CoordSysBuilder {
   public void augmentDataset(NetcdfDataset ncd, CancelTask cancelTask) throws IOException {
     BufrIosp2 iosp = (BufrIosp2) ncd.getIosp();
     BufrConfig config = iosp.getConfig();
+    if (config == null) return;
+
     Formatter f = new Formatter();
     config.show(f);
     System.out.printf("%s%n", f);
 
     Element iospParam = iosp.getElem();
-    if (iospParam != null)
-      show(iospParam.getChild("bufr2nc", NcMLReader.ncNS ), new Indent(2));
+    if (iospParam != null) {
+      Element parent = iospParam.getChild("bufr2nc", NcMLReader.ncNS);
+      show(parent, new Indent(2));
 
-    processSeq(ncd);
+      processSeq((Structure) ncd.findVariable(BufrIosp2.obsRecord), parent);
+    }
   }
 
   private void show(Element parent, Indent indent) {
@@ -62,11 +68,20 @@ public class BufrCoordSys extends CoordSysBuilder {
     }
   }
 
-  private void processSeq(NetcdfDataset ncd) throws IOException {
-    SequenceDS obs = (SequenceDS) ncd.findVariable(BufrIosp2.obsRecord);
-    Variable rv = obs.findVariable("BYTCNT");
-    if (rv == null) System.out.printf("failed to remove %s%n", "BYTCNT");
-    else obs.removeMemberVariable(rv);
+  private void processSeq(Structure struct, Element parent) throws IOException {
+    if (parent == null || struct == null) return;
+    List<Variable> vars = struct.getVariables();
+    for (Element child : parent.getChildren("fld", NcMLReader.ncNS)) {
+      String idxS = child.getAttributeValue("idx");
+      int idx = Integer.parseInt(idxS);
+      if (idx <0 || idx >= vars.size()) {
+        log.error("Bad index = %s", child);
+        continue;
+      }
+      Variable want = vars.get(idx);
+      struct.removeMemberVariable(want);
+      System.out.printf("removed %s%n", want);
+    }
   }
 
   /* private void processSeq(StructureDataIterator sdataIter, FieldConverter parent) throws IOException {

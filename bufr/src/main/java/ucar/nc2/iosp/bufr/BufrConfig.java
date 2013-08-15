@@ -90,6 +90,12 @@ public class BufrConfig {
     return featureType;
   }
 
+  public FieldConverter getStandardField(StandardFields.Type want) {
+    for (FieldConverter fld : rootConverter.flds)
+      if (fld.type == want) return fld;
+    return null;
+  }
+
   ////////////////////////////////////////////////////////////////////////////
 
   private void merge(Element iospParam) {
@@ -299,6 +305,10 @@ public class BufrConfig {
 
     public String getUnits() {
       return dds.units;
+    }
+
+    public String getFxyName() {
+      return dds.getFxyName();
     }
 
     public Action getAction() {
