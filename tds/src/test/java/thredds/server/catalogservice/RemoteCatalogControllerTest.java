@@ -8,14 +8,17 @@ import static org.springframework.test.web.ModelAndViewAssert.assertViewName;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.mock.web.MockTdsContextLoader;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {	"/WEB-INF/applicationContext-tdsConfig.xml", "/WEB-INF/catalogService-servlet.xml" }, loader = MockTdsContextLoader.class)
 public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 
@@ -55,7 +58,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 	public void showCommandTest() throws Exception{
 
 		// Testing against some reliable remote TDS
-		catUriString = "http://motherlode.ucar.edu:8080/thredds/catalog.xml";
+		catUriString = "http://thredds-dev.ucar.edu/thredds/catalog.xml";
 		request.setRequestURI(catUriString);
 
 		// REQUEST WITH DEFAULT VALUES

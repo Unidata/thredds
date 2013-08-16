@@ -1,7 +1,5 @@
 package thredds.mock.web;
 
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.mock.web.MockServletConfig;
@@ -12,9 +10,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import thredds.server.config.TdsContext;
-import thredds.servlet.ServletUtil;
-import thredds.servlet.ThreddsConfig;
-import ucar.nc2.util.cache.FileCache;
 
 /**
  * 
@@ -36,9 +31,7 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 	@Override
 	public ApplicationContext loadContext(String... locations) throws Exception {
 	
-
-		final MockServletContext servletContext = new MockTdsServletContext();
-			
+		final MockServletContext servletContext = new MockTdsServletContext();			
 		final MockServletConfig servletConfig = new MockServletConfig(servletContext);
 		
 		// Initialize the File Cache 
@@ -50,25 +43,20 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 		webApplicationContext.setServletConfig(servletConfig);
 		webApplicationContext.setConfigLocations(locations);
 		
-		webApplicationContext.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor(){
-			@Override
-			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory){
-			
-				//servletContext and servletConfig can be autowired by the servlet tests (OpendapServlet, fileServlet...)							
-				beanFactory.registerResolvableDependency(MockServletContext.class, servletContext );
-				beanFactory.registerResolvableDependency(MockServletConfig.class, servletConfig );
-				
-				
-			}
-		});		
+//		webApplicationContext.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor(){
+//			@Override
+//			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory){
+//			
+//				//servletContext and servletConfig can be autowired by the servlet tests (OpendapServlet, fileServlet...)							
+//				beanFactory.registerResolvableDependency(MockServletContext.class, servletContext );
+//				beanFactory.registerResolvableDependency(MockServletConfig.class, servletConfig );
+//				
+//				
+//			}
+//		});		
 
-		
-		
+				
 		webApplicationContext.refresh();
-
-		// Initialize the TdsContext in the loader to avoid initialization
-		// We no longer need this since tdsContext, cdmInit, dataRootHandler are beans that implement InitializingBean 		
-		//initTdsContext(webApplicationContext, servletContext);
 
 		TdsContext tdsContext = webApplicationContext.getBean(TdsContext.class);
 		checkContentRootPath(webApplicationContext, tdsContext);

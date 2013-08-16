@@ -6,12 +6,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
 
 import org.jdom2.Document;
-import org.jdom2.Namespace;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.xpath.XPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +19,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.mock.web.TdsContentRootPath;
 import thredds.test.util.xml.NcmlParserUtil;
 import thredds.test.util.xml.XmlUtil;
 import ucar.nc2.NetcdfFile;
