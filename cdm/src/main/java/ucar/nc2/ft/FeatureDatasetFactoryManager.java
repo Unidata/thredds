@@ -73,6 +73,10 @@ public class FeatureDatasetFactoryManager {
 
   // search in the order added
   static {
+    for (FeatureDatasetFactory csb : ServiceLoader.load(FeatureDatasetFactory.class)) {
+      registerFactory(csb.getClass());
+    }
+
     registerFactory(FeatureType.ANY_POINT, PointDatasetStandardFactory.class);
     registerFactory(FeatureType.SWATH, SwathDatasetFactory.class);
     registerFactory(FeatureType.SWATH, GridDatasetStandardFactory.class); // LOOK - why not use FeatureType[] getFeatureType(
@@ -81,10 +85,6 @@ public class FeatureDatasetFactoryManager {
     registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
 
     registerFactory(FeatureType.UGRID, "ucar.nc2.ft.ugrid.UGridDatasetStandardFactory");
-
-    for (FeatureDatasetFactory csb : ServiceLoader.load(FeatureDatasetFactory.class)) {
-      registerFactory(csb.getClass());
-    }
 
     // further calls to registerFactory are by the user
     userMode = true;

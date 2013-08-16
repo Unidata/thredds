@@ -38,7 +38,6 @@ import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -54,9 +53,9 @@ import java.util.*;
 public class BufrIosp2 extends AbstractIOServiceProvider {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp2.class);
 
-  static final String TIME_NAME = "time";
   static public final String obsRecord = "obs";
   static public final String fxyAttName = "BUFR:TableB_descriptor";
+  static public final String centerId = "BUFR:centerId";
 
   // debugging
   static private boolean debugCompress = false;
@@ -74,7 +73,6 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   private HashSet<Integer> messHash = null;
   private boolean isSingle;
   private BufrConfig config;
-  private boolean wantTime;
   private Element iospParam;
 
   @Override
@@ -123,14 +121,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
   @Override
   public Object sendIospMessage(Object message) {
-    if (message instanceof String) {
-      String mess = (String) message;
-      if (mess.equals("AddTime")) {
-        wantTime = true;
-        return true;
-      }
-
-    } else if (message instanceof Element) {
+    if (message instanceof Element) {
       iospParam = (Element) message;
       iospParam.detach();
       return true;
@@ -155,43 +146,6 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     return new ArraySequence(s.makeStructureMembers(), new SeqIter(), nelems);
   }
 
-  private void addTime(ArrayStructure as) throws IOException {
-    int n = (int) as.getSize();
-    Array timeData = Array.factory(String.class, new int[]{n});
-    IndexIterator ii = timeData.getIndexIterator();
-
-    if (as instanceof ArrayStructureBB) {
-      ArrayStructureBB asbb = (ArrayStructureBB) as;
-      StructureMembers.Member m = asbb.findMember( TIME_NAME);
-      StructureDataIterator iter = as.getStructureDataIterator();
-      try {
-        int recno = 0;
-        while (iter.hasNext()) {
-          CalendarDate cd = construct.makeObsTimeValue(iter.next());
-          asbb.addObjectToHeap(recno, m, cd.toString()); // add object into the Heap
-          recno++;
-        }
-      } finally {
-        iter.finish();
-      }
-
-    } else {
-      StructureDataIterator iter = as.getStructureDataIterator();
-      try {
-        while (iter.hasNext()) {
-          CalendarDate cd = construct.makeObsTimeValue(iter.next());
-          ii.setObjectNext( cd.toString());
-        }
-      } finally {
-        iter.finish();
-      }
-      StructureMembers.Member m = as.findMember(TIME_NAME);
-      m.setDataArray(timeData);
-    }
-  }
-
-
-  // LOOK not threadsafe - alterntive is to open raf for each iterator
   @Override
   public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     return isSingle ? new SeqIterSingle() : new SeqIter();
@@ -365,9 +319,11 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   @Override
   public String getDetailInfo() {
     Formatter ff = new Formatter();
-    ff.format("%s",super.getDetailInfo());
+    ff.format("%s", super.getDetailInfo());
     try {
       protoMessage.dump(ff);
+      ff.format("%n");
+      config.show(ff);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -384,4 +340,4 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     return "WMO Binary Universal Form";
   }
 
-} // end BufrIosp2
+}

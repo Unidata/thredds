@@ -37,7 +37,7 @@ public class BufrConfig {
   }
 
   private String filename;
-  private StandardFields.Extract standardFields;
+  private StandardFields.ExtractFromMessage standardFields;
   private FieldConverter rootConverter;
   private int messHash = 0;
   //private int nmess = 0;
@@ -76,6 +76,7 @@ public class BufrConfig {
     this.filename =  raf.getLocation();
     this.messHash = m.hashCode();
     this.rootConverter = new FieldConverter(m.ids.getCenterId(), m.getRootDataDescriptor());
+    standardFields = StandardFields.extract(m);
   }
 
   public String getFilename() {
@@ -194,7 +195,7 @@ public class BufrConfig {
     }
   }
 
-  private FeatureType guessFeatureType(StandardFields.Extract standardFields) {
+  private FeatureType guessFeatureType(StandardFields.ExtractFromMessage standardFields) {
     if (standardFields.hasStation()) return FeatureType.STATION;
     if (standardFields.hasTime()) return FeatureType.POINT;
     return FeatureType.NONE;
@@ -260,7 +261,7 @@ public class BufrConfig {
      else {
        check.count++;
        if (!station.equals(check))
-         log.warn("bad station");
+         log.warn("bad station doesnt equal "+station+" != "+check);
      }
    }
 
@@ -342,6 +343,7 @@ public class BufrConfig {
       result = 31 * result + (wmoId != null ? wmoId.hashCode() : 0);
       return result;
     }
+
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -15,10 +15,12 @@ import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.Station;
 
 import java.io.File;
 import java.io.IOException;
@@ -120,36 +122,32 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   private class BufrStationCollection extends StationTimeSeriesCollectionImpl {
     BufrCdmIndex index;
     SequenceDS obs;
-    String stationMember;
+    DateUnit dateUnit;
+    StandardFields.ExtractFromStructure extract;
 
     private BufrStationCollection(NetcdfDataset ncfile, BufrCdmIndex index) {
       super(ncfile.getLocation());
       this.index = index;
 
       this.obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
-      BufrCdmIndexProto.Field stationField = index.getStandardField(BufrCdmIndexProto.FldType.stationId);
-      String wantFxy = Descriptor.makeString((short) stationField.getFxy());
-      for (Variable member : this.obs.getVariables()) {
-        Attribute att = member.findAttribute(BufrIosp2.fxyAttName);
-        if (att != null && att.getStringValue().equals( wantFxy)) {
-          this.stationMember = member.getShortName();
-          break;
-        }
-      }
+
+      // need  the center id to match the standard fields
+      Attribute centerAtt = ncfile.findGlobalAttribute(BufrIosp2.centerId);
+      int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
+      this.extract = new StandardFields.ExtractFromStructure(center, obs);
+
+      try {
+         dateUnit = new DateUnit("msecs since 1970-01-01T00:00:00");
+       } catch (Exception e) {
+         e.printStackTrace();  //cant happen
+       }
     }
 
     @Override
     protected void initStationHelper() {
-      DateUnit du = null;
-      try {
-        du = new DateUnit("secs since 1970-01-01T00:00");
-      } catch (Exception e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      }
-
       stationHelper = new StationHelper();
       for (BufrCdmIndexProto.Station s : index.stations)
-        stationHelper.addStation( new BufrStation(s, du));
+        stationHelper.addStation( new BufrStation(s, dateUnit));
     }
 
     private class BufrStation extends StationFeatureImpl {
@@ -172,12 +170,14 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
         @Override
         protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
-          String stationId = sdata.getScalarString(stationMember).trim();
+          extract.extract(sdata);
+          String stationId = extract.getStationId();
           //System.out.printf("  '%s' '%s' (%d) %n", s.getName(), stationId, countRecords++);
           //if (count > 10) return null;
           if (!stationId.equals(s.getName()))
             return null;
-          return new BufrStationPoint(s, 0, 0, timeUnit, sdata);  // LOOK  obsTime, nomTime
+          CalendarDate date = extract.makeCalendarDate();
+          return new BufrStationPoint(s, date.getMillis(), 0, dateUnit, sdata);  // LOOK  obsTime, nomTime
         }
       }
 
@@ -196,7 +196,40 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       }
     }
 
+    // iterates once over all the records
+    public class BufrRecordIterator extends PointIteratorFromStructureData {
+      StationHelper stationsWanted;
+
+      public BufrRecordIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter, StationHelper stationsWanted) throws IOException {
+        super(structIter, filter);
+        this.stationsWanted = stationsWanted;
+      }
+
+      @Override
+      protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
+        extract.extract(sdata);
+        String stationId = extract.getStationId();
+        Station want = stationsWanted.getStation(stationId);
+        if (want == null)
+          return null;
+        CalendarDate date = extract.makeCalendarDate();
+        return new BufrPoint(want, date.getMillis(), 0, dateUnit, sdata);  // LOOK  obsTime, nomTime
+      }
+    }
+
+    public class BufrPoint extends PointFeatureImpl {
+      StructureData sdata;
+
+      public BufrPoint(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
+        super(location, obsTime, nomTime, timeUnit);
+        this.sdata = sdata;
+      }
+
+      @Override
+      public StructureData getData() throws IOException {
+        return sdata;
+      }
+    }
+
   }
-
-
 }

@@ -33,9 +33,13 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
+import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
+import ucar.nc2.ft.point.bufr.StandardFields;
 import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CancelTask;
 import ucar.util.prefs.PreferencesExt;
@@ -569,15 +573,18 @@ public class BufrMessageViewer extends JPanel {
 
   private RandomAccessFile raf;
   private MessageScanner scan;
+  int center;
 
   public void setBufrFile(RandomAccessFile raf) throws IOException {
     this.raf = raf;
     java.util.List<MessageBean> beanList = new ArrayList<MessageBean>();
+    center = -1;
 
     scan = new MessageScanner(raf, 0, true);
     while (scan.hasNext()) {
       Message m = scan.next();
       if (m == null) continue;
+      if (center == -1) center = m.ids.getCenterId();
 
       beanList.add(new MessageBean(m));
     }
@@ -623,11 +630,12 @@ public class BufrMessageViewer extends JPanel {
       NetcdfDataset ncd = makeBufrMessageAsDataset(m);
       Variable v = ncd.findVariable(BufrIosp.obsRecord);
       if ((v != null) && (v instanceof Structure)) {
-        Structure obs = (Structure) v;
+        StructureDS obs = (StructureDS) v;
+        StandardFields.ExtractFromStructure extract = new StandardFields.ExtractFromStructure(center, obs);
         StructureDataIterator iter = obs.getStructureIterator();
         try {
           while (iter.hasNext()) {
-            beanList.add(new ObsBean(obs, iter.next()));
+            beanList.add(new ObsBean(extract, iter.next()));
           }
         } finally {
           iter.finish();
@@ -830,9 +838,9 @@ public class BufrMessageViewer extends JPanel {
 
 
   public class ObsBean {
-    double lat = Double.NaN, lon = Double.NaN, alt = Double.NaN;
-    int year = -1, month = -1, day = -1, hour = -1, minute = -1, sec = -1;
-    Date time;
+    double lat = Double.NaN, lon = Double.NaN, height = Double.NaN, heightOfStation = Double.NaN;
+    int year = -1, month = -1, day = -1, hour = -1, minute = -1, sec = -1, doy = -1;
+    CalendarDate date;
     int wmo_block = -1, wmo_id = -1;
     String stn = null;
 
@@ -843,97 +851,23 @@ public class BufrMessageViewer extends JPanel {
 
     // create from a dataset
 
-    public ObsBean(Structure obs, StructureData sdata) {
-      // first choice
-      for (Variable v : obs.getVariables()) {
-        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-        if (att == null) continue;
-        String val = att.getStringValue();
-        if (val.equals("0-5-1") && Double.isNaN(lat)) {
-          lat = sdata.convertScalarDouble(v.getShortName());
-        } else if (val.equals("0-6-1") && Double.isNaN(lon)) {
-          lon = sdata.convertScalarDouble(v.getShortName());
-        } else if (val.equals("0-7-30") && Double.isNaN(alt)) {
-
-          alt = sdata.convertScalarDouble(v.getShortName());
-        } else if (val.equals("0-4-1") && (year < 0)) {
-          year = sdata.convertScalarInt(v.getShortName());
-        } else if (val.equals("0-4-2") && (month < 0)) {
-          month = sdata.convertScalarInt(v.getShortName());
-        } else if (val.equals("0-4-3") && (day < 0)) {
-          day = sdata.convertScalarInt(v.getShortName());
-        } else if (val.equals("0-4-4") && (hour < 0)) {
-          hour = sdata.convertScalarInt(v.getShortName());
-        } else if (val.equals("0-4-5") && (minute < 0)) {
-          minute = sdata.convertScalarInt(v.getShortName());
-        } else if (val.equals("0-4-6") && (sec < 0)) {
-          sec = sdata.convertScalarInt(v.getShortName());
-
-        } else if (val.equals("0-1-1") && (wmo_block < 0)) {
-          wmo_block = sdata.convertScalarInt(v.getShortName());
-        } else if (val.equals("0-1-2") && (wmo_id < 0)) {
-          wmo_id = sdata.convertScalarInt(v.getShortName());
-
-        } else if ((stn == null) && val.equals("0-1-18")) {
-          if (v.getDataType().isString())
-            stn = sdata.getScalarString(v.getShortName());
-          else
-            stn = Integer.toString(sdata.convertScalarInt(v.getShortName()));
-        }
-      }
-
-      // second choice
-      for (Variable v : obs.getVariables()) {
-        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-        if (att == null) continue;
-        String val = att.getStringValue();
-        if (val.equals("0-5-2") && Double.isNaN(lat)) {
-          lat = sdata.convertScalarDouble(v.getShortName());
-        } else if (val.equals("0-6-2") && Double.isNaN(lon)) {
-          lon = sdata.convertScalarDouble(v.getShortName());
-        } else if (val.equals("0-7-1") && Double.isNaN(alt)) {
-          alt = sdata.convertScalarDouble(v.getShortName());
-        } else if ((val.equals("0-4-7")) && (sec < 0)) {
-          sec = sdata.convertScalarInt(v.getShortName());
-        } else if ((stn == null) && (val.equals("0-1-15") || val.equals("0-1-19"))) {
-          if (v.getDataType().isString())
-            stn = sdata.getScalarString(v.getShortName());
-          else
-            stn = Integer.toString(sdata.convertScalarInt(v.getShortName()));
-        }
-      }
-
-      // third choice
-      for (Variable v : obs.getVariables()) {
-        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-        if (att == null) continue;
-        String val = att.getStringValue();
-        if (val.equals("0-7-10") && Double.isNaN(alt)) {
-          alt = sdata.convertScalarDouble(v.getShortName());
-        } else if (val.equals("0-7-2") && Double.isNaN(alt)) {
-          alt = sdata.convertScalarDouble(v.getShortName());
-
-        } else if ((stn == null) && (val.equals("0-1-2"))) {
-          if (v.getDataType().isString())
-            stn = sdata.getScalarString(v.getShortName());
-          else
-            stn = Integer.toString(sdata.convertScalarInt(v.getShortName()));
-        }
-      }
-
-      // 4th choice
-      if (stn == null)
-        for (Variable v : obs.getVariables()) {
-          Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-          if (att == null) continue;
-          String val = att.getStringValue();
-          if (val.equals("0-1-5") || val.equals("0-1-6") || val.equals("0-1-7") || val.equals("0-1-8") || val.equals("0-1-10") || val.equals("0-1-11")) {
-            if (v.getDataType().isString())
-              stn = sdata.getScalarString(v.getShortName());
-            else
-              stn = Integer.toString(sdata.convertScalarInt(v.getShortName()));
-          }
-        }
+    public ObsBean(StandardFields.ExtractFromStructure extract, StructureData sdata) {
+      extract.extract(sdata);
+      this.stn = extract.getStationId();
+      this.date = extract.makeCalendarDate();
+      this.lat = extract.getFieldValueD(BufrCdmIndexProto.FldType.lat);
+      this.lon = extract.getFieldValueD(BufrCdmIndexProto.FldType.lon);
+      this.height = extract.getFieldValueD(BufrCdmIndexProto.FldType.height);
+      this.heightOfStation = extract.getFieldValueD(BufrCdmIndexProto.FldType.heightOfStation);
+      this.year = extract.getFieldValue(BufrCdmIndexProto.FldType.year);
+      this.month = extract.getFieldValue(BufrCdmIndexProto.FldType.month);
+      this.day = extract.getFieldValue(BufrCdmIndexProto.FldType.day);
+      this.hour = extract.getFieldValue(BufrCdmIndexProto.FldType.hour);
+      this.minute = extract.getFieldValue(BufrCdmIndexProto.FldType.minute);
+      this.sec = extract.getFieldValue(BufrCdmIndexProto.FldType.sec);
+      this.doy = extract.getFieldValue(BufrCdmIndexProto.FldType.doy);
+      this.wmo_block = extract.getFieldValue(BufrCdmIndexProto.FldType.wmoBlock);
+      this.wmo_id = extract.getFieldValue(BufrCdmIndexProto.FldType.wmoId);
     }
 
     public double getLat() {
@@ -945,10 +879,14 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public double getHeight() {
-      return alt;
+      return height;
     }
 
-    public int getYear() {
+    public double getHeightOfStation() {
+       return heightOfStation;
+     }
+
+     public int getYear() {
       return year;
     }
 
@@ -972,6 +910,10 @@ public class BufrMessageViewer extends JPanel {
       return sec;
     }
 
+    public int getDoy() {
+      return doy;
+    }
+
     public String getWmoId() {
       return wmo_block + "/" + wmo_id;
     }
@@ -979,6 +921,12 @@ public class BufrMessageViewer extends JPanel {
     public String getStation() {
       return stn;
     }
+
+    public String getDate() {
+      return date.toString();
+    }
+
+
   }
 
 }

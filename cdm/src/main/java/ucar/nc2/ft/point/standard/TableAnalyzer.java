@@ -76,14 +76,6 @@ public class TableAnalyzer {
       }
     });
 
-    // reflection is used to decouple optional jars
-    try {
-      Class c = TableAnalyzer.class.getClassLoader().loadClass("ucar.nc2.ft.point.standard.plug.BufrCdm"); // only load if bufr.jar is present
-      registerAnalyzer("BUFR/CDM", c, null);
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-
     registerAnalyzer("GEMPAK/CDM", GempakCdm.class, null);
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class, null);
 

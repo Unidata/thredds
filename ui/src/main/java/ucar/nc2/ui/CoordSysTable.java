@@ -114,7 +114,7 @@ public class CoordSysTable extends JPanel {
     varPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        VariableDS v = (VariableDS) ds.findVariable(vb.getName());
+        Variable v = ds.findVariable(vb.getName());
         if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(v.toString());
@@ -565,12 +565,14 @@ public class CoordSysTable extends JPanel {
     return buff.toString();
   }
 
-  private String showMissing(VariableDS v) {
+  private String showMissing(Variable v) {
+    if (!(v instanceof VariableDS)) return "";
+    VariableDS ve = (VariableDS) v;
     Formatter buff = new Formatter();
     buff.format("%s:", v.getFullName());
-    EnumSet<NetcdfDataset.Enhance> enhanceMode = v.getEnhanceMode();
+    EnumSet<NetcdfDataset.Enhance> enhanceMode = ve.getEnhanceMode();
     buff.format("enhanceMode= %s%n", enhanceMode);
-    v.showScaleMissingProxy(buff);
+    ve.showScaleMissingProxy(buff);
     return buff.toString();
   }
 

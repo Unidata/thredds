@@ -37,6 +37,8 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.StandardFields;
 import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -46,22 +48,22 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * BufrIosp2 delegates the construction of the Netcdf objects to Construct2.
+ * BufrIosp delegates the construction of the Netcdf objects to ConstructNC.
  *
  * @author caron
  */
 
-public class Construct2 {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Construct2.class);
+class ConstructNC {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConstructNC.class);
   static private final boolean warnUnits = false;
 
   private ucar.nc2.NetcdfFile ncfile;
 
   Sequence recordStructure;
-  int centerId;
-  Formatter coordinates = new Formatter();
+  private Message proto;
 
-  Construct2(Message proto, BufrConfig bufrConfig, ucar.nc2.NetcdfFile nc) throws IOException {
+  ConstructNC(Message proto, int nobs, ucar.nc2.NetcdfFile nc) throws IOException {
+    this.proto = proto;
     this.ncfile = nc;
 
     //dkeyRoot = dds.getDescriptorRoot();
@@ -74,109 +76,124 @@ public class Construct2 {
     int subcat = proto.ids.getSubCategory();
 
     // global Attributes
-    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM BufrIosp2"));
-    if (bufrConfig.getFeatureType() != null)
-      ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, bufrConfig.getFeatureType().toString()));
+    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of BUFR data by CDM"));
     if (nc.getLocation() != null)
       ncfile.addAttribute(null, new Attribute("location", nc.getLocation()));
-    ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
-
     ncfile.addAttribute(null, new Attribute("BUFR:edition", proto.is.getBufrEdition()));
     ncfile.addAttribute(null, new Attribute("BUFR:categoryName", proto.getCategoryName()));
     ncfile.addAttribute(null, new Attribute("BUFR:category", cat));
     ncfile.addAttribute(null, new Attribute("BUFR:subCategory", subcat));
     ncfile.addAttribute(null, new Attribute("BUFR:localSubCategory", proto.ids.getLocalSubCategory()));
     ncfile.addAttribute(null, new Attribute("BUFR:centerName", proto.getCenterName()));
-    ncfile.addAttribute(null, new Attribute(BufrIosp2.centerId, proto.ids.getCenterId()));
+    ncfile.addAttribute(null, new Attribute("BUFR:center", proto.ids.getCenterId()));
     ncfile.addAttribute(null, new Attribute("BUFR:subCenter", proto.ids.getSubCenterId()));
     //ncfile.addAttribute(null, new Attribute("BUFR:tableName", proto.ids.getMasterTableFilename()));
     ncfile.addAttribute(null, new Attribute("BUFR:table", proto.ids.getMasterTableId()));
     ncfile.addAttribute(null, new Attribute("BUFR:tableVersion", proto.ids.getMasterTableVersion()));
     ncfile.addAttribute(null, new Attribute("BUFR:localTableVersion", proto.ids.getLocalTableVersion()));
 
-    centerId = proto.ids.getCenterId();
-
     String header = proto.getHeader();
     if (header != null)
       ncfile.addAttribute(null, new Attribute("WMO Header", header));
+    ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
 
-    makeObsRecord(bufrConfig);
-    String coordS = coordinates.toString();
-    if (!coordS.isEmpty())
-      recordStructure.addAttribute(new Attribute("coordinates", coordS));
+    makeObsRecord();
+    //makeReportIndexStructure();
 
     ncfile.finish();
   }
 
-   private void makeObsRecord(BufrConfig bufrConfig) throws IOException {
-    recordStructure = new Sequence(ncfile, null, null, BufrIosp2.obsRecord);
+  private Structure makeReportIndexStructure() throws IOException {
+    Structure reportIndex = new Structure(ncfile, null, null, BufrIosp.obsIndex);
+    ncfile.addVariable(null, reportIndex);
+    reportIndex.setDimensions("record");
+
+    reportIndex.addAttribute(new Attribute("long_name", "index on report"));
+
+    Variable v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "name", DataType.STRING, ""));
+    v.addAttribute(new Attribute("long_name", "name of station"));
+    v.addAttribute(new Attribute("standard_name", "station_name"));
+
+    v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "time", DataType.LONG, ""));
+    v.addAttribute(new Attribute(CDM.UNITS, "msecs since 1970-01-01 00:00"));
+    v.addAttribute(new Attribute("long_name", "observation time"));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+
+    return reportIndex;
+  }
+
+
+  private void makeObsRecord() throws IOException {
+    recordStructure = new Sequence(ncfile, null, null, BufrIosp.obsRecord);
     ncfile.addVariable(null, recordStructure);
+    //recordStructure.setDimensions("record");
 
-    BufrConfig.FieldConverter root = bufrConfig.getRootConverter();
-    for (BufrConfig.FieldConverter fld : root.flds) {
-      DataDescriptor dkey = fld.dds;
-      if (!dkey.isOkForVariable())
-        continue;
+    DataDescriptor root = proto.getRootDataDescriptor();
+    /* if (hasTime()) {
+      isTimeOk = true;
+      Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, TIME_NAME, DataType.STRING, ""));
+      timev.addAttribute(new Attribute(CDM.UNITS, dateUnit.toString()));
+      timev.addAttribute(new Attribute("long_name", "time of observation"));
+      timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+    } */
 
-      if (dkey.replication == 0) {
-        addSequence(recordStructure, fld);
+    for (DataDescriptor dkey : root.subKeys) {
+      if (!dkey.isOkForVariable()) continue;
 
-      } else if (dkey.replication > 1) {
+      if (dkey.replication == 0)
+        addSequence(recordStructure, dkey);
 
-        List<BufrConfig.FieldConverter> subFlds = fld.flds;
+      else if (dkey.replication > 1) {
         List<DataDescriptor> subKeys = dkey.subKeys;
         if (subKeys.size() == 1) {  // only one member
-          DataDescriptor subDds = dkey.subKeys.get(0);
-          BufrConfig.FieldConverter subFld = subFlds.get(0);
-          if (subDds.dpi != null) {
-            addDpiStructure(recordStructure, fld, subFld);
+          DataDescriptor sub = dkey.subKeys.get(0);
+          if (sub.dpi != null) {
+            addDpiStructure(recordStructure, dkey, sub);
 
-          } else if (subDds.replication == 1) { // one member not a replication
-            Variable v = addVariable(recordStructure, subFld, dkey.replication);
-            v.setSPobject(fld); // set the replicating field as SPI object
+          } else if (sub.replication == 1) { // one member not a replication
+            Variable v = addVariable(recordStructure, sub, dkey.replication);
+            v.setSPobject(dkey); // set the replicating dkey as SPI object
 
           } else { // one member is a replication (two replications in a row)
-            addStructure(recordStructure, fld, dkey.replication);
+            addStructure(recordStructure, dkey, dkey.replication);
           }
         } else if (subKeys.size() > 1) {
-          addStructure(recordStructure, fld, dkey.replication);
+          addStructure(recordStructure, dkey, dkey.replication);
         }
 
-      } else { // replication == 1
-        addVariable(recordStructure, fld, dkey.replication);
+      } else {
+        addVariable(recordStructure, dkey, dkey.replication);
       }
     }
   }
 
   private int structNum = 1;
-  private void addStructure(Structure parent, BufrConfig.FieldConverter fld, int count) {
-    DataDescriptor dkey = fld.dds;
-    String uname = findUniqueName(parent, fld.getName(), "struct");
-    dkey.name = uname; // name may need to be changed for uniqueness
+  private void addStructure(Structure parent, DataDescriptor dataDesc, int count) {
+    String uname = findUnique(parent, dataDesc.name, "struct");
+    dataDesc.name = uname; // name may need to be changed for uniqueness
 
     //String structName = dataDesc.name != null ? dataDesc.name : "struct" + structNum++;
     Structure struct = new Structure(ncfile, null, parent, uname);
     try {
       struct.setDimensionsAnonymous(new int[]{count}); // anon vector
     } catch (InvalidRangeException e) {
-      log.error("illegal count= " + count + " for " + fld);
+      log.error("illegal count= " + count + " for " + dataDesc);
     }
 
-    for (BufrConfig.FieldConverter subKey : fld.flds)
+    for (DataDescriptor subKey : dataDesc.getSubKeys())
       addMember(struct, subKey);
 
     parent.addMemberVariable(struct);
-    struct.setSPobject(fld);
+    struct.setSPobject(dataDesc);
 
-    dkey.refersTo = struct;
+    dataDesc.refersTo = struct;
   }
 
   private int seqNum = 1;
-  private void addSequence(Structure parent, BufrConfig.FieldConverter fld) {
 
-    DataDescriptor dkey = fld.dds;
-    String uname = findUniqueName(parent, fld.getName(), "seq");
-    dkey.name = uname; // name may need to be changed for uniqueness
+  private void addSequence(Structure parent, DataDescriptor dataDesc) {
+    String uname = findUnique(parent, dataDesc.name, "seq");
+    dataDesc.name = uname; // name may need to be changed for uniqueness
 
     //String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
     //String seqName = dataDesc.name != null ? dataDesc.name : "seq" + seqNum++;
@@ -184,46 +201,42 @@ public class Construct2 {
     Sequence seq = new Sequence(ncfile, null, parent, uname);
     seq.setDimensions(""); // scalar
 
-    for (BufrConfig.FieldConverter subKey : fld.flds)
-      addMember(seq, subKey);
+    for (DataDescriptor dkey : dataDesc.getSubKeys())
+      addMember(seq, dkey);
 
     parent.addMemberVariable(seq);
-    seq.setSPobject(fld);
+    seq.setSPobject(dataDesc);
 
-    dkey.refersTo = seq;
+    dataDesc.refersTo = seq;
   }
 
-  private void addMember(Structure parent, BufrConfig.FieldConverter fld) {
-    DataDescriptor dkey = fld.dds;
-
+  private void addMember(Structure parent, DataDescriptor dkey) {
     if (dkey.replication == 0)
-      addSequence(parent, fld);
+      addSequence(parent, dkey);
 
     else if (dkey.replication > 1) {
       List<DataDescriptor> subKeys = dkey.subKeys;
       if (subKeys.size() == 1) {
         DataDescriptor sub = dkey.subKeys.get(0);
-        BufrConfig.FieldConverter subFld = fld.flds.get(0);
-        Variable v = addVariable(parent, subFld, dkey.replication);
-        v.setSPobject(fld); // set the replicating field as SPI object
+        Variable v = addVariable(parent, sub, dkey.replication);
+        v.setSPobject(dkey); // set the replicating dkey as SPI object
 
       } else {
-        addStructure(parent, fld, dkey.replication);
+        addStructure(parent, dkey, dkey.replication);
       }
 
     } else {
-      addVariable(parent, fld, dkey.replication);
+      addVariable(parent, dkey, dkey.replication);
     }
   }
 
-  private void addDpiStructure(Structure parent, BufrConfig.FieldConverter parentFld, BufrConfig.FieldConverter dpiField) {
-    DataDescriptor dpiKey = dpiField.dds;
-    String uname = findUniqueName(parent, dpiField.getName(), "struct");
-    dpiKey.name = uname; // name may need to be changed for uniqueness
+  private void addDpiStructure(Structure parent, DataDescriptor parentDD, DataDescriptor dpiField) {
+    String uname = findUnique(parent, dpiField.name, "struct");
+    dpiField.name = uname; // name may need to be changed for uniqueness
 
     //String structName = findUnique(parent, dpiField.name);
     Structure struct = new Structure(ncfile, null, parent, uname);
-    int n = parentFld.dds.replication;
+    int n = parentDD.replication;
     try {
       struct.setDimensionsAnonymous(new int[]{n}); // anon vector
     } catch (InvalidRangeException e) {
@@ -243,16 +256,16 @@ public class Construct2 {
     parent.addMemberVariable(struct);
     struct.setSPobject(dpiField);  // ??
 
-    dpiKey.refersTo = struct;
+    dpiField.refersTo = struct;
 
     // add some fake dkeys corresponding to above
     // DataDescriptor nameDD = new DataDescriptor();
   }
 
-  private void addDpiSequence(Structure parent, BufrConfig.FieldConverter fld) {
+  private void addDpiSequence(Structure parent, DataDescriptor dataDesc) {
     Structure struct = new Structure(ncfile, null, parent, "statistics");
     try {
-      struct.setDimensionsAnonymous(new int[] { fld.dds.replication}); // scalar
+      struct.setDimensionsAnonymous(new int[] {dataDesc.replication}); // scalar
     } catch (InvalidRangeException e) {
       e.printStackTrace();  
     }
@@ -269,10 +282,9 @@ public class Construct2 {
     parent.addMemberVariable(struct);    
   }
 
-  private Variable addVariable(Structure struct, BufrConfig.FieldConverter fld, int count) {
-    DataDescriptor dkey = fld.dds;
-    String uname = findUniqueName(struct, fld.getName(), "unknown");
-    dkey.name = uname; // name may need to be changed for uniqueness
+  private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
+    String uname = findUnique(struct, dataDesc.name, "unknown");
+    dataDesc.name = uname; // name may need to be changed for uniqueness
 
     Variable v = new Variable(ncfile, null, struct, uname);
     try {
@@ -281,25 +293,23 @@ public class Construct2 {
       else
         v.setDimensions(""); // scalar
     } catch (InvalidRangeException e) {
-      log.error("illegal count= " + count + " for " + fld);
+      log.error("illegal count= " + count + " for " + dataDesc);
     }
 
-    if (fld.getDesc() != null)
-        v.addAttribute(new Attribute("long_name", fld.getDesc()));
+    if (dataDesc.desc != null)
+        v.addAttribute(new Attribute("long_name", dataDesc.desc));
 
-    if (fld.getUnits() == null) {
+    if (dataDesc.units == null) {
       if (warnUnits) log.warn("dataDesc.units == null for " + uname);
     } else {
-      String units = fld.getUnits();
-      if (units.equalsIgnoreCase("Code_Table") || units.equalsIgnoreCase("Code Table"))
-        v.addAttribute(new Attribute(CDM.UNITS, "CodeTable " + fld.dds.getFxyName()));
-      else if (units.equalsIgnoreCase("Flag_Table") || units.equalsIgnoreCase("Flag Table"))
-        v.addAttribute(new Attribute(CDM.UNITS, "FlagTable " + fld.dds.getFxyName()));
-      else if (!units.startsWith("CCITT") && !units.startsWith("Numeric"))
-        v.addAttribute(new Attribute(CDM.UNITS, units));
+      if (dataDesc.units.equalsIgnoreCase("Code_Table") || dataDesc.units.equalsIgnoreCase("Code Table"))
+        v.addAttribute(new Attribute(CDM.UNITS, "CodeTable " + dataDesc.getFxyName()));
+      else if (dataDesc.units.equalsIgnoreCase("Flag_Table") || dataDesc.units.equalsIgnoreCase("Flag Table"))
+        v.addAttribute(new Attribute(CDM.UNITS, "FlagTable " + dataDesc.getFxyName()));
+      else if (!dataDesc.units.startsWith("CCITT") && !dataDesc.units.startsWith("Numeric"))
+        v.addAttribute(new Attribute(CDM.UNITS, dataDesc.units));
     }
 
-    DataDescriptor dataDesc = fld.dds;
     if (dataDesc.type == 1) {
       v.setDataType(DataType.CHAR);
       int size = dataDesc.bitWidth / 8;
@@ -380,18 +390,17 @@ public class Construct2 {
 
     }
 
-    annotate(v, fld);
-    v.addAttribute(new Attribute(BufrIosp2.fxyAttName, dataDesc.getFxyName()));
+    annotate(v, dataDesc);
+    v.addAttribute(new Attribute("BUFR:TableB_descriptor", dataDesc.getFxyName()));
     v.addAttribute(new Attribute("BUFR:bitWidth", dataDesc.bitWidth));
     struct.addMemberVariable(v);
-
-    v.setSPobject(fld);
+    v.setSPobject(dataDesc);
     return v;
   }
 
 
   private int tempNo = 1;
-  private String findUniqueName(Structure struct, String want, String def) {
+  private String findUnique(Structure struct, String want, String def) {
     if (want == null) return def + tempNo++;
 
     String vwant = NetcdfFile.makeValidCdmObjectName(want);
@@ -408,35 +417,28 @@ public class Construct2 {
   }
 
 
-  private void annotate(Variable v, BufrConfig.FieldConverter fld) {
-    if (fld.type == null) return;
+  private void annotate(Variable v, DataDescriptor dkey) {
+    String id = dkey.getFxyName();
+    BufrCdmIndexProto.FldType stype = StandardFields.findStandardField(id);
+    if (stype == null) return;
 
-    switch (fld.type) {
+    switch (stype) {
       case lat:
         v.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
         v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-        coordinates.format("%s ", v.getShortName());
         break;
 
       case lon:
         v.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
         v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-        coordinates.format("%s ", v.getShortName());
         break;
 
       case height:
         v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-        coordinates.format("%s ", v.getShortName());
-        break;
-
-      case heightOfStation:
-        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-        coordinates.format("%s ", v.getShortName());
         break;
 
       case heightAboveStation:
-        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-        coordinates.format("%s ", v.getShortName());
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));  // LOOK wrong
         break;
 
       case stationId:
@@ -450,21 +452,108 @@ public class Construct2 {
 
   }
 
-  private void annotateObs(Sequence recordStructure) {
-    StandardFields.ExtractFromStructure extract = new StandardFields.ExtractFromStructure(centerId, recordStructure);
-
-    Formatter f = new Formatter();
-    String name = extract.getFieldName(BufrCdmIndexProto.FldType.lat);
-    if (name != null) f.format("%s ", name);
-    name = extract.getFieldName(BufrCdmIndexProto.FldType.lon);
-    if (name != null) f.format("%s ", name);
-    name = extract.getFieldName(BufrCdmIndexProto.FldType.height);
-    if (name != null) f.format("%s ", name);
-    name = extract.getFieldName(BufrCdmIndexProto.FldType.heightAboveStation);
-    if (name != null) f.format("%s ", name);
-
-    recordStructure.addAttribute(new Attribute("coordinates", f.toString()));
+  boolean isTimeOk() {
+    return isTimeOk;
   }
 
+  private boolean isTimeOk;
+  private String yearName, monthName, dayName, hourName, minName, secName, doyName;
+  private CalendarDateUnit dateUnit;
+
+  // determine if the fields exist to create time coordinate
+  private boolean hasTime() throws IOException {
+
+    DataDescriptor root = proto.getRootDataDescriptor();
+    for (DataDescriptor dkey : root.subKeys) {
+      if (!dkey.isOkForVariable()) continue;
+
+      String key = dkey.getFxyName();
+      if (key.equals("0-4-1") && (yearName == null))
+        yearName = dkey.name;
+      if (key.equals("0-4-2") && (monthName == null))
+        monthName = dkey.name;
+      if (key.equals("0-4-3") && (dayName == null))
+        dayName = dkey.name;
+      if (key.equals("0-4-43") && (doyName == null))
+        doyName = dkey.name;
+      if (key.equals("0-4-4") && (hourName == null))
+        hourName = dkey.name;
+      if (key.equals("0-4-5") && (minName == null))
+        minName = dkey.name;
+      if ((key.equals("0-4-6") || key.equals("0-4-7")) && (secName == null))
+        secName = dkey.name;
+    }
+
+    boolean hasTime = (yearName != null) && (((monthName != null) && (dayName != null)) || (doyName != null)) && (hourName != null);
+
+    if (hasTime) {
+      String u;
+      if (secName != null)
+        u = "secs";
+      else if (minName != null)
+        u = "minutes";
+      else
+        u = "hours";
+      try {
+        // dateUnit = CalendarDateUnit.of(null, u + " since " +proto.getReferenceTime());
+        dateUnit = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");
+      } catch (Exception e) {
+        log.error("BufrIosp failed to create date unit", e);
+        hasTime = false;
+      }
+    }
+
+    return hasTime;
+  }
+
+  /* double makeObsTimeValue(ArrayStructure abb) {
+    int year = abb.convertScalarInt(0, abb.findMember(yearName));
+    int hour = abb.convertScalarInt(0, abb.findMember(hourName));
+    int min = (minName == null) ? 0 : abb.convertScalarInt(0, abb.findMember(minName));
+    int sec = (secName == null) ? 0 : abb.convertScalarInt(0, abb.findMember(secName));
+
+    if (dayName != null) {
+      int day = abb.convertScalarInt(0, abb.findMember(dayName));
+      int month = abb.convertScalarInt(0, abb.findMember(monthName));
+      cal.set(year, month-1, day, hour, min, sec);
+    } else {
+      int doy = abb.convertScalarInt(0, abb.findMember(doyName));
+      cal.set(Calendar.YEAR, year);
+      cal.set(Calendar.DAY_OF_YEAR, doy);
+      cal.set(Calendar.HOUR_OF_DAY, hour);
+      cal.set(Calendar.MINUTE, min);
+      cal.set(Calendar.SECOND, sec);
+    }
+    Date d = cal.getTime();
+    return dateUnit.makeValue(d);
+  } */
+
+  CalendarDate makeObsTimeValue(StructureData sdata) {
+
+    int year = sdata.convertScalarInt(yearName);
+    int hour = sdata.convertScalarInt(hourName);
+    int min = (minName == null) ? 0 : sdata.convertScalarInt(minName);
+    int sec = (secName == null) ? 0 : sdata.convertScalarInt(secName);
+    if (sec < 0)  {
+      System.out.println("HEY");
+      sdata.convertScalarInt(secName);
+      sec = 0;
+    }
+
+    if (dayName != null) {
+      int day = sdata.convertScalarInt(dayName);
+      int month = sdata.convertScalarInt(monthName);
+      try {
+        return CalendarDate.of(null, year, month, day, hour, min, sec);
+      } catch(RuntimeException t) {
+        log.error("Illegal Date fields", t);
+        return CalendarDate.present(); // LOOK FAKE
+      }
+
+    } else {
+      int doy = sdata.convertScalarInt(doyName);
+      return CalendarDate.withDoy(null, year, doy, hour, min, sec);
+    }
+  }
 
 }
