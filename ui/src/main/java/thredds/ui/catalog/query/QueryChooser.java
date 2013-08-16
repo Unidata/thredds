@@ -964,7 +964,10 @@ public class QueryChooser extends JPanel {
       return s.getValue();
     }
 
-    public String getName() {
+    public int getNobs() { return -1; }
+
+
+     public String getName() {
       return s.getValue();
     }
 

@@ -33,6 +33,8 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.ft.point.bufr.BufrCdmIndex;
+import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CancelTask;
@@ -107,28 +109,6 @@ public class BufrMessageViewer extends JPanel {
     });
     buttPanel.add(tableButt);
 
-    AbstractButton configButt = BAMutil.makeButtcon("Dump", "Make BufrConfig", false);
-    configButt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (raf == null) return;
-        try {
-          BufrConfig config = BufrConfig.openFromBufrFile(raf, true);
-          Formatter out = new Formatter();
-          config.show(out);
-          infoTA2.setText(out.toString());
-
-        } catch (Exception ex) {
-          ex.printStackTrace();
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          ex.printStackTrace(new PrintStream(bos));
-          infoTA2.setText(bos.toString());
-        }
-        infoTA2.gotoTop();
-        infoWindow2.show();
-      }
-    });
-    buttPanel.add(configButt);
-
     AbstractButton showButt = BAMutil.makeButtcon("GetAll", "Read All Data", false);
     showButt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -166,6 +146,49 @@ public class BufrMessageViewer extends JPanel {
       }
     });
     buttPanel.add(distinctMessButt);
+
+    AbstractButton configButt = BAMutil.makeButtcon("Dump", "Make BufrConfig", false);
+    configButt.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (raf == null) return;
+        try {
+          BufrConfig config = BufrConfig.scanEntireFile(raf);
+          Formatter out = new Formatter();
+          config.show(out);
+          infoTA2.setText(out.toString());
+
+        } catch (Exception ex) {
+          ex.printStackTrace();
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+          ex.printStackTrace(new PrintStream(bos));
+          infoTA2.setText(bos.toString());
+        }
+        infoTA2.gotoTop();
+        infoWindow2.show();
+      }
+    });
+    buttPanel.add(configButt);
+
+    AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+    writeButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        try {
+          writeIndex(f);
+          f.format("Index written");
+          infoTA2.setText(f.toString());
+
+        } catch (Exception ex) {
+          ex.printStackTrace();
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+          ex.printStackTrace(new PrintStream(bos));
+          infoTA2.setText(bos.toString());
+        }
+        infoTA2.gotoTop();
+        infoWindow2.show();
+      }
+    });
+    buttPanel.add(writeButton);
 
     ///////////////////////////////////////
 
@@ -334,9 +357,7 @@ public class BufrMessageViewer extends JPanel {
           } else
             defloc = header;
 
-          if (fileChooser == null)
-            fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-
+          makeFileChooser();
           String filename = fileChooser.chooseFilenameToSave(defloc + ".bufr");
           if (filename == null) return;
 
@@ -405,6 +426,33 @@ public class BufrMessageViewer extends JPanel {
     add(split, BorderLayout.CENTER);
   }
 
+  private void makeFileChooser() {
+    if (fileChooser == null)
+      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+  }
+
+  public boolean writeIndex(Formatter f) throws IOException {
+    //MFileCollectionManager dcm = scanCollection(spec, f);
+
+    File bufrFile = new File(raf.getLocation());
+    String name = bufrFile.getName();
+    int pos = name.lastIndexOf('/');
+    if (pos < 0) pos = name.lastIndexOf('\\');
+    if (pos > 0) name = name.substring(pos + 1);
+    File def = new File(bufrFile.getParent(), name + BufrCdmIndex.NCX_IDX);
+
+    makeFileChooser();
+    String filename = fileChooser.chooseFilename(def);
+    if (filename == null) return false;
+    if (!filename.endsWith(BufrCdmIndex.NCX_IDX))
+      filename += BufrCdmIndex.NCX_IDX;
+    File idxFile = new File(filename);
+
+    BufrConfig config = BufrConfig.scanEntireFile(raf);
+    return BufrCdmIndex.writeIndex(raf.getLocation(), config, idxFile);
+  }
+
+
   private void makeDataTable() {
     // the data Table
     dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
@@ -420,9 +468,7 @@ public class BufrMessageViewer extends JPanel {
       map.put(mb.m.hashCode(), mb.m);
     }
 
-    if (fileChooser == null)
-      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-
+    makeFileChooser();
     String defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
     String dirName = fileChooser.chooseDirectory(defloc);
     if (dirName == null) return;
@@ -482,9 +528,7 @@ public class BufrMessageViewer extends JPanel {
       map.put(mb.m.hashCode(), mb.m);
     }
 
-    if (fileChooser == null)
-      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-
+    makeFileChooser();
     String defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
     int pos = defloc.lastIndexOf(".");
     if (pos > 0)

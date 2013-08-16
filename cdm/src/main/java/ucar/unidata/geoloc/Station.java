@@ -57,4 +57,10 @@ public interface Station extends EarthLocation, Comparable<Station> {
    */
   public String getDescription();
 
+  /**
+   * get Number of obs at this station
+   * @return Number of obs or -1 if unknown
+   */
+  public int getNobs();
+
 }

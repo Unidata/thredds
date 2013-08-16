@@ -58,7 +58,7 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
 
   public StationFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
     super(name);
-    s = new StationImpl(name, desc, wmoId, lat, lon, alt);
+    s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
     this.timeUnit = timeUnit;
     this.npts = npts;
   }

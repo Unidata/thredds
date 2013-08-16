@@ -408,8 +408,9 @@ public class PointFeatureDatasetViewer extends JPanel {
       List<Station> stations = stationCollection.getStations();
       if (stations == null) return;
 
-      for (Station station : stations)
+      for (Station station : stations) {
         stationBeans.add( new StationBean(station));
+      }
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
@@ -781,7 +782,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public StationBean(Station s) {
       this.s = s;
-      // this.npts = s.getNumberPoints();
+      this.npts = s.getNobs();
     }
 
     // for BeanTable

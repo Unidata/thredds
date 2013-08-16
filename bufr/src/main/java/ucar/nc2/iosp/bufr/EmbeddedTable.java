@@ -134,7 +134,7 @@ public class EmbeddedTable {
       String data = sdata.getScalarString(m);
       if (showB) System.out.printf("%s == %s%n" ,v, data);
 
-      Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+      Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
       if (att.getStringValue().equals("0-0-10"))
         f = sdata.getScalarString(m);
       else if (att.getStringValue().equals("0-0-11"))
@@ -199,7 +199,7 @@ public class EmbeddedTable {
         continue;
       }
 
-      Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+      Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
       if (att != null) {
         if (showD) System.out.printf("%s == %s%n" ,v, sdata.getScalarString(m));
         if (att.getStringValue().equals("0-0-10"))
@@ -238,7 +238,7 @@ public class EmbeddedTable {
         String data = sdata.getScalarString(m);
         if (showD) System.out.printf("%s == %s%n" ,v, data);
 
-        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+        Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
         if (att != null && att.getStringValue().equals("0-0-30"))
           fxyS = sdata.getScalarString(m);
       }

@@ -94,6 +94,10 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     return npts;
   }
 
+  public int getNobs() {
+    return npts;
+  }
+
   public DateRange getDateRange() {
     return (dateRange == null) ? null : dateRange.toDateRange();
   }

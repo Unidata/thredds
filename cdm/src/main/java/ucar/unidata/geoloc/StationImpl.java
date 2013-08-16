@@ -38,14 +38,23 @@ package ucar.unidata.geoloc;
  */
 public class StationImpl extends EarthLocationImpl implements Station {
   protected String name, desc, wmoId;
+  protected int nobs = -1;
 
-  protected StationImpl() {};
+  protected StationImpl() {}
 
   public StationImpl( String name, String desc, String wmoId, double lat, double lon, double alt) {
-    super( lat, lon, alt);
-    this.name = name;
-    this.desc = desc;
-    this.wmoId = wmoId;
+    super(lat, lon, alt);
+    setName(name);
+    setDescription(desc);
+    setWmoId(wmoId);
+  }
+
+  public StationImpl( String name, String desc, String wmoId, double lat, double lon, double alt, int nobs) {
+    super(lat, lon, alt);
+    setName(name);
+    setDescription(desc);
+    setWmoId(wmoId);
+    this.nobs = nobs;
   }
 
   /**
@@ -66,11 +75,14 @@ public class StationImpl extends EarthLocationImpl implements Station {
    */
   public String getWmoId() { return wmoId; }
 
+  public int getNobs() { return nobs; }
+
   /////
 
-  protected void setName(String name) { this.name = name; }
-  protected void setDescription(String desc) { this.desc = desc; }
-  protected void setWmoId(String wmoId) { this.wmoId = wmoId; }
+  protected void setName(String name) { this.name = name.trim(); }
+  protected void setDescription(String desc) { this.desc = desc.trim(); }
+  protected void setWmoId(String wmoId) { this.wmoId = wmoId.trim(); }
+  protected void setNobs(int nobs) { this.nobs = nobs; }
 
   public int compareTo(Station so) {
     return name.compareTo( so.getName());

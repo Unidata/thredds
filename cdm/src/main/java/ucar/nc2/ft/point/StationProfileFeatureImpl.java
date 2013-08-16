@@ -58,7 +58,7 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
 
   public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
     super( name, FeatureType.STATION_PROFILE);
-    s = new StationImpl(name, desc, wmoId, lat, lon, alt);
+    s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
     this.timeUnit = timeUnit;
     this.timeSeriesNpts = npts;
   }
@@ -68,6 +68,11 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
     this.s = s;
     this.timeUnit = timeUnit;
     this.timeSeriesNpts = npts;
+  }
+
+  @Override
+  public int getNobs() {
+    return this.timeSeriesNpts;
   }
 
   @Override

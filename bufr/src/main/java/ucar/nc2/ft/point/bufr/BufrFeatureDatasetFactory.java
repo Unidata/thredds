@@ -1,4 +1,4 @@
-package ucar.nc2.ft.point;
+package ucar.nc2.ft.point.bufr;
 
 import org.jdom2.Element;
 import ucar.ma2.StructureData;
@@ -6,26 +6,21 @@ import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.*;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.iosp.bufr.BufrIosp2;
-import ucar.nc2.iosp.bufr.StandardFields;
+import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.Station;
-import ucar.unidata.geoloc.StationImpl;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
@@ -52,7 +47,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
   @Override
   public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog) throws IOException {
-    BufrIosp2 iosp = (BufrIosp2) ncd.getIosp();
+    /* BufrIosp2 iosp = (BufrIosp2) ncd.getIosp();
     BufrConfig config = iosp.getConfig();
     Formatter f = new Formatter();
     config.show(f);
@@ -64,9 +59,11 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       show(parent, new Indent(2));
 
       processSeq((Structure) ncd.findVariable(BufrIosp2.obsRecord), parent);
-    }
+    }  */
 
-    return new BufrStationDataset(ncd, config);
+    File indexFile = BufrCdmIndex.calcIndexFile(ncd.getLocation());
+    BufrCdmIndex index = BufrCdmIndex.readIndex(indexFile.getPath());
+    return new BufrStationDataset(ncd, index);
   }
 
   private void show(Element parent, Indent indent) {
@@ -106,10 +103,10 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     //  return null;
     //}
 
-    private BufrStationDataset(NetcdfDataset ncfile, BufrConfig config) {
+    private BufrStationDataset(NetcdfDataset ncfile, BufrCdmIndex index) {
       super(ncfile, FeatureType.STATION);
 
-      BufrStationCollection bufrCollection = new BufrStationCollection(ncfile, config);
+      BufrStationCollection bufrCollection = new BufrStationCollection(ncfile, index);
       setPointFeatureCollection(bufrCollection);
     }
 
@@ -121,19 +118,20 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   }
 
   private class BufrStationCollection extends StationTimeSeriesCollectionImpl {
-    BufrConfig config;
+    BufrCdmIndex index;
     SequenceDS obs;
     String stationMember;
 
-    private BufrStationCollection(NetcdfDataset ncfile, BufrConfig config) {
+    private BufrStationCollection(NetcdfDataset ncfile, BufrCdmIndex index) {
       super(ncfile.getLocation());
-      this.config = config;
+      this.index = index;
 
       this.obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
-      BufrConfig.FieldConverter stationField = config.getStandardField(StandardFields.Type.stationId);
+      BufrCdmIndexProto.Field stationField = index.getStandardField(BufrCdmIndexProto.FldType.stationId);
+      String wantFxy = Descriptor.makeString((short) stationField.getFxy());
       for (Variable member : this.obs.getVariables()) {
-        Attribute att = member.findAttribute("BUFR:TableB_descriptor");
-        if (att != null && att.getStringValue().equals(stationField.getFxyName())) {
+        Attribute att = member.findAttribute(BufrIosp2.fxyAttName);
+        if (att != null && att.getStringValue().equals( wantFxy)) {
           this.stationMember = member.getShortName();
           break;
         }
@@ -150,13 +148,13 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       }
 
       stationHelper = new StationHelper();
-      Station s = new StationImpl("RUP54", null, null, 0, 0, 0);
-      stationHelper.addStation(new BufrStation(s, du, -1));
+      for (BufrCdmIndexProto.Station s : index.stations)
+        stationHelper.addStation( new BufrStation(s, du));
     }
 
     private class BufrStation extends StationFeatureImpl {
-      private BufrStation(Station s, DateUnit timeUnit, int npts) {
-        super(s, timeUnit, npts);
+      private BufrStation(BufrCdmIndexProto.Station proto, DateUnit timeUnit) {
+        super(proto.getId(), proto.getDesc(), proto.getWmoId(), proto.getLat(), proto.getLon(), proto.getAlt(), timeUnit, proto.getCount());
       }
 
       @Override
@@ -166,7 +164,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
       // iterates over the records for this station
       public class BufrStationIterator extends PointIteratorFromStructureData {
-        int count = 0;
+        int countRecords = 0;
 
         public BufrStationIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
           super(structIter, filter);
@@ -175,9 +173,10 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         @Override
         protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
           String stationId = sdata.getScalarString(stationMember).trim();
-          //System.out.printf("  '%s' '%s' (%d) %n", s.getName(), stationId, count++);
+          //System.out.printf("  '%s' '%s' (%d) %n", s.getName(), stationId, countRecords++);
           //if (count > 10) return null;
-          if (!stationId.equals(s.getName())) return null;
+          if (!stationId.equals(s.getName()))
+            return null;
           return new BufrStationPoint(s, 0, 0, timeUnit, sdata);  // LOOK  obsTime, nomTime
         }
       }

@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.bufr.writer;
 
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.iosp.bufr.MessageScanner;
@@ -244,7 +245,7 @@ public class Bufr2Xml {
     if ((units != null) && !units.equals(name) && !units.startsWith("Code"))
       staxWriter.writeAttribute(CDM.UNITS, StringUtil2.quoteXmlAttribute(v.getUnitsString()));
 
-    Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+    Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
     String desc = (att == null) ? "N/A" : att.getStringValue();
     staxWriter.writeAttribute("bufr", StringUtil2.quoteXmlAttribute(desc)); // */
 

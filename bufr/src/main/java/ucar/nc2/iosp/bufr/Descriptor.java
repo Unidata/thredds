@@ -49,8 +49,12 @@ public class Descriptor {
     int f = (fxy & 0xC000) >> 14;
     int x = (fxy & 0x3F00) >> 8;
     int y = fxy & 0xFF;
+    return makeString(f,x,y);
+  }
+
+  static public String makeString(int f, int x, int y) {
     Formatter out = new Formatter();
-    out.format("%d-%02d-%03d",f,x,y);
+    out.format("%d-%d-%d",f,x,y);
     return out.toString();
   }
 

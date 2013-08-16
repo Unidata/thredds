@@ -56,6 +56,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
   static final String TIME_NAME = "time";
   static public final String obsRecord = "obs";
+  static public final String fxyAttName = "BUFR:TableB_descriptor";
 
   // debugging
   static private boolean debugCompress = false;
@@ -94,7 +95,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     if (!protoMessage.isTablesComplete())
       throw new IllegalStateException("BUFR file has incomplete tables");
 
-    //BufrConfig convert = BufrConfig.openFromBufrFile(raf, true);
+    // just get the fields
     config = BufrConfig.openFromMessage(raf, protoMessage, iospParam);
 
     // this fills the netcdf object

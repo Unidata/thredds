@@ -184,7 +184,7 @@ public class DataDescriptor {
   }
 
   public String getFxyName() {
-    return f +"-"+x+"-"+y;
+    return Descriptor.makeString(f,x,y);
   }
 
 

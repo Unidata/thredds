@@ -34,10 +34,11 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
+import ucar.nc2.ft.point.bufr.StandardFields;
 import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -418,7 +419,7 @@ class ConstructNC {
 
   private void annotate(Variable v, DataDescriptor dkey) {
     String id = dkey.getFxyName();
-    StandardFields.Type stype = StandardFields.findStandardField(id);
+    BufrCdmIndexProto.FldType stype = StandardFields.findStandardField(id);
     if (stype == null) return;
 
     switch (stype) {

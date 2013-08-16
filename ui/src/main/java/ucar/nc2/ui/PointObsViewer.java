@@ -259,6 +259,8 @@ public class PointObsViewer extends JPanel {
       setTime(obs.getObservationTimeAsDate());
     }
 
+    public int getNobs() { return -1; }
+
     public String getTime() {
       return timeObs;
     }

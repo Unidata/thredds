@@ -211,6 +211,9 @@ public class StationRadialViewer extends JPanel {
     public int compareTo(Station so) {
       return getName().compareTo(so.getName());
     }
+
+    public int getNobs() { return -1; }
+
   }
 
 }

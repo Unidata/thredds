@@ -51,7 +51,7 @@ import java.io.IOException;
  * @author caron
  */
 
-class Construct2 {
+public class Construct2 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Construct2.class);
   static private final boolean warnUnits = false;
 
@@ -165,10 +165,6 @@ class Construct2 {
 
   private int seqNum = 1;
   private void addSequence(Structure parent, BufrConfig.FieldConverter fld) {
-    if (fld.makeAction() == BufrConfig.Action.asMissing) {
-      // add members
-      // LOOK addVariable(recordStructure, fld, dkey.replication);
-    }
 
     DataDescriptor dkey = fld.dds;
     String uname = findUniqueName(parent, fld.getName(), "seq");
@@ -377,7 +373,7 @@ class Construct2 {
     }
 
     annotate(v, fld);
-    v.addAttribute(new Attribute("BUFR:TableB_descriptor", dataDesc.getFxyName()));
+    v.addAttribute(new Attribute(BufrIosp2.fxyAttName, dataDesc.getFxyName()));
     v.addAttribute(new Attribute("BUFR:bitWidth", dataDesc.bitWidth));
     struct.addMemberVariable(v);
 

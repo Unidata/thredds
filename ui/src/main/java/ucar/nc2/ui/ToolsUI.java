@@ -116,9 +116,9 @@ public class ToolsUI extends JPanel {
   private BufrPanel bufrPanel;
   private BufrTableBPanel bufrTableBPanel;
   private BufrTableDPanel bufrTableDPanel;
+  private BufrCdmIndexPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmrFeature cdmremotePanel;
-  private CdmIndexPanel cdmIdxPanel;
   private CoordSysPanel coordSysPanel;
   private CoveragePanel coveragePanel;
   private DatasetViewerPanel viewerPanel;
@@ -129,6 +129,7 @@ public class ToolsUI extends JPanel {
   private FmrcCollectionPanel fmrcCollectionPanel;
   private GeoGridPanel gridPanel;
   private GeotiffPanel geotiffPanel;
+  private GribCdmIndexPanel gribCdmIndexPanel;
   private GribFilesPanel gribFilesPanel;
   private GribIndexPanel gribIdxPanel;
   private GribRenamePanel gribVariableRenamePanel;
@@ -237,7 +238,6 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("GRIB1", grib1TabPane);
     iospTabPane.addTab("HDF5", hdf5TabPane);
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
-    iospTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
     iospTabPane.addTab("NcStream", new JLabel("NcStream"));
     iospTabPane.addTab("CdmrFeature", new JLabel("CdmrFeature"));
     iospTabPane.addChangeListener(new ChangeListener() {
@@ -263,6 +263,7 @@ public class ToolsUI extends JPanel {
 
     // nested-2 tab - bufr
     bufrTabPane.addTab("BUFR", new JLabel("BUFR"));
+    bufrTabPane.addTab("BufrCdmIndex", new JLabel("BufrCdmIndex"));
     bufrTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
     bufrTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
     bufrTabPane.addTab("BUFR-CODES", new JLabel("BUFR-CODES"));
@@ -290,6 +291,7 @@ public class ToolsUI extends JPanel {
     // nested-2 tab - grib-2
     grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2collection"));
     grib2TabPane.addTab("GribIndex", new JLabel("GribIndex"));
+    grib2TabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
     grib2TabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
     grib2TabPane.addTab("GRIB2data", new JLabel("GRIB2data"));
     grib2TabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
@@ -523,9 +525,13 @@ public class ToolsUI extends JPanel {
       grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
       c = grib2DataPanel;
 
+    } else if (title.equals("BufrCdmIndex")) {
+      bufrCdmIndexPanel = new BufrCdmIndexPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
+      c = bufrCdmIndexPanel;
+
     } else if (title.equals("CdmIndex")) {
-      cdmIdxPanel = new CdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
-      c = cdmIdxPanel;
+      gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
+      c = gribCdmIndexPanel;
 
     } else if (title.equals("GribIndex")) {
       gribIdxPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
@@ -1020,7 +1026,8 @@ public class ToolsUI extends JPanel {
     if (bufrCodePanel != null) bufrCodePanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
     if (cdmremotePanel != null) cdmremotePanel.save();
-    if (cdmIdxPanel != null) cdmIdxPanel.save();
+    if (bufrCdmIndexPanel != null) bufrCdmIndexPanel.save();
+    if (gribCdmIndexPanel != null) gribCdmIndexPanel.save();
     if (fmrcCollectionPanel != null) fmrcCollectionPanel.save();
     if (coveragePanel != null) coveragePanel.save();
     if (fcPanel != null) fcPanel.save();
@@ -2740,14 +2747,57 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
-  private class CdmIndexPanel extends OpPanel {
+  private class BufrCdmIndexPanel extends OpPanel {
+    ucar.nc2.ui.BufrCdmIndexPanel table;
+
+    void closeOpenFiles() throws IOException {
+    }
+
+    BufrCdmIndexPanel(PreferencesExt p) {
+      super(p, "index file:", true, false);
+      table = new ucar.nc2.ui.BufrCdmIndexPanel(prefs, buttPanel);
+      add(table, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        table.setIndexFile(command);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "BufrCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      table.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
+  private class GribCdmIndexPanel extends OpPanel {
     ucar.nc2.ui.GribCollectionIndexPanel gribTable;
 
     void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
     }
 
-    CdmIndexPanel(PreferencesExt p) {
+    GribCdmIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
       gribTable = new ucar.nc2.ui.GribCollectionIndexPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
@@ -2762,7 +2812,7 @@ public class ToolsUI extends JPanel {
         gribTable.setIndexFile(command);
 
       } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());
         err = true;
 
       } catch (Exception e) {

@@ -51,7 +51,6 @@ import ucar.unidata.util.StringUtil2;
  */
 public class GempakStation implements Station {
 
-
     /** STID identifier */
     public static final String STID = "STID";
 
@@ -157,6 +156,8 @@ public class GempakStation implements Station {
         builder.append(StringUtil2.padLeft(swfo.trim(), 3));
         return builder.toString();
     }
+
+  public int getNobs() { return -1; }
 
     /**
      * Set the STID
