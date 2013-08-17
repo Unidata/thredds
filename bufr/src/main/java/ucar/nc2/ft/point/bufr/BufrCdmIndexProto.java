@@ -2814,6 +2814,26 @@ public final class BufrCdmIndexProto {
      * <code>required .bufrCdmIndex.Field root = 3;</code>
      */
     ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder getRootOrBuilder();
+
+    // required uint64 start = 4;
+    /**
+     * <code>required uint64 start = 4;</code>
+     */
+    boolean hasStart();
+    /**
+     * <code>required uint64 start = 4;</code>
+     */
+    long getStart();
+
+    // required uint64 end = 5;
+    /**
+     * <code>required uint64 end = 5;</code>
+     */
+    boolean hasEnd();
+    /**
+     * <code>required uint64 end = 5;</code>
+     */
+    long getEnd();
   }
   /**
    * Protobuf type {@code bufrCdmIndex.BufrIndex}
@@ -2890,6 +2910,16 @@ public final class BufrCdmIndexProto {
                 root_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000002;
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000004;
+              start_ = input.readUInt64();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000008;
+              end_ = input.readUInt64();
               break;
             }
           }
@@ -3036,10 +3066,44 @@ public final class BufrCdmIndexProto {
       return root_;
     }
 
+    // required uint64 start = 4;
+    public static final int START_FIELD_NUMBER = 4;
+    private long start_;
+    /**
+     * <code>required uint64 start = 4;</code>
+     */
+    public boolean hasStart() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required uint64 start = 4;</code>
+     */
+    public long getStart() {
+      return start_;
+    }
+
+    // required uint64 end = 5;
+    public static final int END_FIELD_NUMBER = 5;
+    private long end_;
+    /**
+     * <code>required uint64 end = 5;</code>
+     */
+    public boolean hasEnd() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required uint64 end = 5;</code>
+     */
+    public long getEnd() {
+      return end_;
+    }
+
     private void initFields() {
       filename_ = "";
       stations_ = java.util.Collections.emptyList();
       root_ = ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.getDefaultInstance();
+      start_ = 0L;
+      end_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3051,6 +3115,14 @@ public final class BufrCdmIndexProto {
         return false;
       }
       if (!hasRoot()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasStart()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEnd()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -3080,6 +3152,12 @@ public final class BufrCdmIndexProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeMessage(3, root_);
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt64(4, start_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeUInt64(5, end_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -3100,6 +3178,14 @@ public final class BufrCdmIndexProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, root_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(4, start_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(5, end_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3233,6 +3319,10 @@ public final class BufrCdmIndexProto {
           rootBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000004);
+        start_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        end_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -3282,6 +3372,14 @@ public final class BufrCdmIndexProto {
         } else {
           result.root_ = rootBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.start_ = start_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.end_ = end_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3332,6 +3430,12 @@ public final class BufrCdmIndexProto {
         if (other.hasRoot()) {
           mergeRoot(other.getRoot());
         }
+        if (other.hasStart()) {
+          setStart(other.getStart());
+        }
+        if (other.hasEnd()) {
+          setEnd(other.getEnd());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -3342,6 +3446,14 @@ public final class BufrCdmIndexProto {
           return false;
         }
         if (!hasRoot()) {
+          
+          return false;
+        }
+        if (!hasStart()) {
+          
+          return false;
+        }
+        if (!hasEnd()) {
           
           return false;
         }
@@ -3808,6 +3920,72 @@ public final class BufrCdmIndexProto {
         return rootBuilder_;
       }
 
+      // required uint64 start = 4;
+      private long start_ ;
+      /**
+       * <code>required uint64 start = 4;</code>
+       */
+      public boolean hasStart() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required uint64 start = 4;</code>
+       */
+      public long getStart() {
+        return start_;
+      }
+      /**
+       * <code>required uint64 start = 4;</code>
+       */
+      public Builder setStart(long value) {
+        bitField0_ |= 0x00000008;
+        start_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 start = 4;</code>
+       */
+      public Builder clearStart() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        start_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // required uint64 end = 5;
+      private long end_ ;
+      /**
+       * <code>required uint64 end = 5;</code>
+       */
+      public boolean hasEnd() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>required uint64 end = 5;</code>
+       */
+      public long getEnd() {
+        return end_;
+      }
+      /**
+       * <code>required uint64 end = 5;</code>
+       */
+      public Builder setEnd(long value) {
+        bitField0_ |= 0x00000010;
+        end_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 end = 5;</code>
+       */
+      public Builder clearEnd() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        end_ = 0L;
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:bufrCdmIndex.BufrIndex)
     }
 
@@ -3851,19 +4029,19 @@ public final class BufrCdmIndexProto {
       "\022!\n\004flds\030\003 \003(\0132\023.bufrCdmIndex.Field\022\'\n\006a" +
       "ction\030\004 \001(\0162\027.bufrCdmIndex.FldAction\022#\n\004" +
       "type\030\005 \001(\0162\025.bufrCdmIndex.FldType\022\013\n\003min" +
-      "\030\006 \001(\r\022\013\n\003max\030\007 \001(\r\"i\n\tBufrIndex\022\020\n\010file" +
-      "name\030\001 \002(\t\022\'\n\010stations\030\002 \003(\0132\025.bufrCdmIn",
-      "dex.Station\022!\n\004root\030\003 \002(\0132\023.bufrCdmIndex" +
-      ".Field*I\n\tFldAction\022\010\n\004none\020\000\022\n\n\006remove\020" +
-      "\001\022\r\n\tasMissing\020\002\022\013\n\007asArray\020\003\022\n\n\006concat\020" +
-      "\004*\354\001\n\007FldType\022\007\n\003lat\020\001\022\007\n\003lon\020\002\022\n\n\006heigh" +
-      "t\020\003\022\026\n\022heightAboveStation\020\004\022\023\n\017heightOfS" +
-      "tation\020\005\022\r\n\tstationId\020\n\022\017\n\013stationDesc\020\013" +
-      "\022\t\n\005wmoId\020\014\022\014\n\010wmoBlock\020\r\022\010\n\004year\020\017\022\t\n\005m" +
-      "onth\020\020\022\007\n\003day\020\021\022\010\n\004hour\020\022\022\n\n\006minute\020\023\022\007\n" +
-      "\003sec\020\024\022\007\n\003doy\020\025\022\014\n\010timeIncr\020\026\022\t\n\005incrS\020\027" +
-      "B+\n\026ucar.nc2.ft.point.bufrB\021BufrCdmIndex",
-      "Proto"
+      "\030\006 \001(\r\022\013\n\003max\030\007 \001(\r\"\205\001\n\tBufrIndex\022\020\n\010fil" +
+      "ename\030\001 \002(\t\022\'\n\010stations\030\002 \003(\0132\025.bufrCdmI",
+      "ndex.Station\022!\n\004root\030\003 \002(\0132\023.bufrCdmInde" +
+      "x.Field\022\r\n\005start\030\004 \002(\004\022\013\n\003end\030\005 \002(\004*I\n\tF" +
+      "ldAction\022\010\n\004none\020\000\022\n\n\006remove\020\001\022\r\n\tasMiss" +
+      "ing\020\002\022\013\n\007asArray\020\003\022\n\n\006concat\020\004*\354\001\n\007FldTy" +
+      "pe\022\007\n\003lat\020\001\022\007\n\003lon\020\002\022\n\n\006height\020\003\022\026\n\022heig" +
+      "htAboveStation\020\004\022\023\n\017heightOfStation\020\005\022\r\n" +
+      "\tstationId\020\n\022\017\n\013stationDesc\020\013\022\t\n\005wmoId\020\014" +
+      "\022\014\n\010wmoBlock\020\r\022\010\n\004year\020\017\022\t\n\005month\020\020\022\007\n\003d" +
+      "ay\020\021\022\010\n\004hour\020\022\022\n\n\006minute\020\023\022\007\n\003sec\020\024\022\007\n\003d" +
+      "oy\020\025\022\014\n\010timeIncr\020\026\022\t\n\005incrS\020\027B+\n\026ucar.nc",
+      "2.ft.point.bufrB\021BufrCdmIndexProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3887,7 +4065,7 @@ public final class BufrCdmIndexProto {
           internal_static_bufrCdmIndex_BufrIndex_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_bufrCdmIndex_BufrIndex_descriptor,
-              new java.lang.String[] { "Filename", "Stations", "Root", });
+              new java.lang.String[] { "Filename", "Stations", "Root", "Start", "End", });
           return null;
         }
       };

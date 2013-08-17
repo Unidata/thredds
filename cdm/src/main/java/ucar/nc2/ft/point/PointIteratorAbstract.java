@@ -127,8 +127,8 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
 
   static public class Filter implements PointFeatureIterator.Filter {
 
-    private LatLonRect filter_bb;
-    private CalendarDateRange filter_date;
+    private final LatLonRect filter_bb;
+    private final CalendarDateRange filter_date;
 
     public Filter(LatLonRect filter_bb, CalendarDateRange filter_date) {
       this.filter_bb = filter_bb;

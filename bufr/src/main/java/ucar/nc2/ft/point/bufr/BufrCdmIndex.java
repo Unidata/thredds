@@ -2,15 +2,13 @@ package ucar.nc2.ft.point.bufr;
 
 import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Manage cdm index (ncx) for Bufr files.
@@ -78,6 +76,8 @@ public class BufrCdmIndex {
       BufrCdmIndexProto.BufrIndex.Builder indexBuilder = BufrCdmIndexProto.BufrIndex.newBuilder();
       indexBuilder.setFilename(bufrFilename);
       indexBuilder.setRoot(buildField(config.getRootConverter()));
+      indexBuilder.setStart(config.getStart());
+      indexBuilder.setEnd(config.getEnd());
 
       Map<String,BufrConfig.BufrStation> smaps = config.getStationMap();
       if (smaps != null) {
@@ -147,11 +147,14 @@ public class BufrCdmIndex {
 
   //////////////////////////////////////////////////////////////////
 
+  public String idxFilename;
   public String bufrFilename;
   public BufrCdmIndexProto.Field root;
   public List<BufrCdmIndexProto.Station> stations;
+  public long start, end;
 
   protected boolean readIndex(RandomAccessFile raf) throws IOException {
+    this.idxFilename = raf.getLocation();
 
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -183,6 +186,8 @@ public class BufrCdmIndex {
       bufrFilename = proto.getFilename();
       root = proto.getRoot();
       stations = proto.getStationsList();
+      start = proto.getStart();
+      end = proto.getEnd();
 
     } catch (Throwable t) {
       log.error("Error reading index " + raf.getLocation(), t);
@@ -192,12 +197,12 @@ public class BufrCdmIndex {
     return true;
   }
 
-  public BufrCdmIndexProto.Field getStandardField(BufrCdmIndexProto.FldType type) {
-    for (BufrCdmIndexProto.Field fld : root.getFldsList()) {
-      if (fld.getType() == type) return  fld;
-    }
-    return null;
+  public void showIndex(Formatter f) {
+    f.format("BufrCdmIndex %n");
+    f.format("  idxFilename=%s%n", idxFilename);
+    f.format("  bufrFilename=%s%n", bufrFilename);
+    f.format("  start=%s%n", CalendarDate.of(start));
+    f.format("  end=%s%n", CalendarDate.of(end));
   }
-
 
 }

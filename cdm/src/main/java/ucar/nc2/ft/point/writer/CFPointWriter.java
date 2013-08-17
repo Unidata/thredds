@@ -27,7 +27,6 @@ public class CFPointWriter {
   private static boolean debug = false;
 
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
-    int count = 0;
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
       assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
 

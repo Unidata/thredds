@@ -6,6 +6,7 @@ import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
@@ -16,14 +17,17 @@ import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
@@ -99,22 +103,42 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   }
 
   private class BufrStationDataset extends PointDatasetImpl {
-
-    // LOOK - need to modify the list of Variables
-    //public List<VariableSimpleIF> getDataVariables() {
-    //  return null;
-    //}
+    private BufrCdmIndex index;
 
     private BufrStationDataset(NetcdfDataset ncfile, BufrCdmIndex index) {
       super(ncfile, FeatureType.STATION);
+      this.index = index;
 
       BufrStationCollection bufrCollection = new BufrStationCollection(ncfile, index);
       setPointFeatureCollection(bufrCollection);
+
+      CalendarDateRange dateRange = CalendarDateRange.of(CalendarDate.of(index.start), CalendarDate.of(index.end) );
+      setDateRange(dateRange);
+
+      // create the list of data variables
+      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
+      List<Variable> members = obs.getVariables();
+      this.dataVariables = new ArrayList<VariableSimpleIF>( members.size());
+
+      List<BufrCdmIndexProto.Field> flds = index.root.getFldsList();
+      int count = 0;
+      for (Variable v : members) {
+        BufrCdmIndexProto.Field fld = flds.get(count++);
+        if (fld.getAction() == BufrCdmIndexProto.FldAction.remove) continue;
+        this.dataVariables.add(v);
+      }
+
     }
 
     @Override
     public FeatureType getFeatureType() {
       return FeatureType.STATION;
+    }
+
+    @Override
+    public void getDetailInfo(java.util.Formatter sf) {
+      super.getDetailInfo(sf);
+      index.showIndex(sf);
     }
 
   }
@@ -196,38 +220,71 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       }
     }
 
-    // iterates once over all the records
-    public class BufrRecordIterator extends PointIteratorFromStructureData {
-      StationHelper stationsWanted;
-
-      public BufrRecordIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter, StationHelper stationsWanted) throws IOException {
-        super(structIter, filter);
-        this.stationsWanted = stationsWanted;
-      }
-
-      @Override
-      protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
-        extract.extract(sdata);
-        String stationId = extract.getStationId();
-        Station want = stationsWanted.getStation(stationId);
-        if (want == null)
-          return null;
-        CalendarDate date = extract.makeCalendarDate();
-        return new BufrPoint(want, date.getMillis(), 0, dateUnit, sdata);  // LOOK  obsTime, nomTime
-      }
+    // flatten into a PointFeatureCollection
+    // if empty, may return null
+    public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+      return new BufrPointFeatureCollection(boundingBox, dateRange);
     }
 
-    public class BufrPoint extends PointFeatureImpl {
-      StructureData sdata;
+    private class BufrPointFeatureCollection extends PointCollectionImpl {
+      StationHelper stationsWanted;
+      PointFeatureIterator.Filter filter;
 
-      public BufrPoint(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
-        super(location, obsTime, nomTime, timeUnit);
-        this.sdata = sdata;
+      BufrPointFeatureCollection(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+        super("", boundingBox, dateRange, -1);
+        stationsWanted = stationHelper.subset(boundingBox);
+        if (dateRange != null) filter = new PointIteratorAbstract.Filter(null, dateRange);
       }
 
       @Override
-      public StructureData getData() throws IOException {
-        return sdata;
+      public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+        return new BufrRecordIterator(obs.getStructureIterator(), filter);
+      }
+
+      // iterates once over all the records
+      public class BufrRecordIterator extends PointIteratorFromStructureData {
+        int countHere = 0;
+        public BufrRecordIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
+          super(structIter, filter);
+        }
+
+        @Override
+        protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
+          extract.extract(sdata);
+          String stationId = extract.getStationId();
+          Station want = stationsWanted.getStation(stationId);
+          if (want == null)
+            return null;
+          CalendarDate date = extract.makeCalendarDate();
+          countHere++;
+          return new BufrPoint(want, date.getMillis(), 0, dateUnit, sdata);  // LOOK  obsTime, nomTime
+        }
+
+        @Override
+        public void finish() {
+          System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getCount());
+          super.finish();
+        }
+
+      }
+
+      public class BufrPoint extends PointFeatureImpl implements StationPointFeature {
+        StructureData sdata;
+
+        public BufrPoint(Station want, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
+          super(want, obsTime, nomTime, timeUnit);
+          this.sdata = sdata;
+        }
+
+        @Override
+        public StructureData getData() throws IOException {
+          return sdata;
+        }
+
+        @Override
+        public Station getStation() {
+          return (Station) location;
+        }
       }
     }
 

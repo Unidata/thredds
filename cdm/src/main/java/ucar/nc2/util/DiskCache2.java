@@ -169,7 +169,7 @@ public class DiskCache2 {
       fail = true;
       cacheLog.error("DiskCache2 failed to create directory "+root);
     } else {
-      cacheLog.info("DiskCache2 create directory "+root);
+      cacheLog.debug("DiskCache2 create directory "+root);
     }
   }
 

@@ -58,11 +58,12 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   static public final String centerId = "BUFR:centerId";
 
   // debugging
-  static private boolean debugCompress = false;
+  static private boolean debugIter = true;
   static private boolean debugOpen = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugOpen = debugFlag.isSet("Bufr/open");
+    debugIter = debugFlag.isSet("Bufr/iter");
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,6 +241,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     public void finish() {
       if (currIter != null) currIter.finish();
       currIter = null;
+      if (debugIter) System.out.printf("BUFR read recnum %d%n", recnum);
     }
   }
 

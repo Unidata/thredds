@@ -35,8 +35,8 @@ package ucar.nc2.iosp.bufr.writer;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.netcdf3.N3iosp;
-import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.ma2.*;
 
 import java.io.IOException;
@@ -88,7 +88,7 @@ public class WriteT41_ncFlat {
     }
 
     // Variables
-    Structure recordStruct = (Structure) bufr.findVariable(BufrIosp.obsRecord);
+    Structure recordStruct = (Structure) bufr.findVariable(BufrIosp2.obsRecord);
     for (Variable oldVar : recordStruct.getVariables()) {
       if (oldVar.getDataType() == DataType.SEQUENCE) continue;
 

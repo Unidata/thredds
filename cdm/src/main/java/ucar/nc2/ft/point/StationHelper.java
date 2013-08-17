@@ -127,5 +127,11 @@ public class StationHelper {
     return result;
   }
 
+  public StationHelper subset(LatLonRect bb) throws IOException {
+    StationHelper result = new StationHelper();
+    result.setStations( getStations(bb));
+    return result;
+  }
+
 }
 

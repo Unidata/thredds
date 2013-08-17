@@ -113,7 +113,7 @@ public class MessageUncompressedDataReader {
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
 
-    boolean addTime = (s.findVariable(BufrIosp.TIME_NAME) != null);
+    boolean addTime = false; // (s.findVariable(BufrIosp2.TIME_NAME) != null);
     readData(abb, m, raf, null, addTime, f);
 
     //Formatter ff = new Formatter(System.out);

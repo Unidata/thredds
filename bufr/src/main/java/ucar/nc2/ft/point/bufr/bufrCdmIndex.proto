@@ -56,6 +56,8 @@ message BufrIndex {
   required string filename = 1;
   repeated Station stations = 2;
   required Field root = 3;
+  required uint64 start = 4;
+  required uint64 end = 5;
 }
 
 //  cd c:/dev/github/thredds/bufr/src/main/java

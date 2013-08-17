@@ -42,7 +42,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
- * Abstract superclass for singly nested NestedPointFeatureCollection
+ * Abstract superclass for singly nested NestedPointFeatureCollection, such as Station, Profile, and Trajectory.
  * Subclass must supply getPointFeatureCollectionIterator()
  *
  * @author caron

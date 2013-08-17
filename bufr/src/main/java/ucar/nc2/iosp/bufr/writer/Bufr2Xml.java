@@ -35,7 +35,7 @@ package ucar.nc2.iosp.bufr.writer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.iosp.bufr.BufrIosp;
+import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.*;
 import ucar.nc2.util.Indent;
@@ -136,7 +136,7 @@ public class Bufr2Xml {
       staxWriter.writeCharacters(message.getCategoryFullName());
       staxWriter.writeEndElement();
 
-      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp.obsRecord);
+      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
       StructureDataIterator sdataIter = obs.getStructureIterator(-1);
 
       writeSequence(obs, sdataIter);

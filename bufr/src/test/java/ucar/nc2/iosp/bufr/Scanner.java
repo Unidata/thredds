@@ -788,14 +788,6 @@ public class Scanner {
     }
   }
 
-  static void scanReader2(String filein) throws IOException, InvalidRangeException {
-    System.out.printf("scanReader2 %s%n", filein);
-    BufrIosp.doon(filein);
-    //NetcdfFile ncfile = NetcdfFile.open(filein);
-    //BufrIosp iosp =  (BufrIosp) ncfile.getIosp();
-    //iosp.compare((Structure) ncfile.findVariable("obsRecord"));
-  }
-
 
   // extract the msgno-th message to fileOut
   static void extractNthMessage(String filein, int msgno, String fileout) throws IOException {

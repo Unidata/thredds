@@ -2,6 +2,7 @@ package ucar.nc2.iosp.bufr;
 
 import org.jdom2.Element;
 import ucar.ma2.*;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -9,6 +10,7 @@ import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.StandardFields;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.StationImpl;
 import ucar.unidata.io.RandomAccessFile;
@@ -43,6 +45,8 @@ public class BufrConfig {
   //private int nmess = 0;
   private FeatureType featureType;
   private Map<String, BufrStation> map;
+  private long start = Long.MAX_VALUE;
+  private long end = Long.MIN_VALUE;
 
   /*
    * Open file as a stream of BUFR messages, create config file.
@@ -103,6 +107,14 @@ public class BufrConfig {
     for (FieldConverter fld : rootConverter.flds)
       if (fld.type == want) return fld;
     return null;
+  }
+
+  public long getStart() {
+    return start;
+  }
+
+  public long getEnd() {
+    return end;
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -168,7 +180,9 @@ public class BufrConfig {
   }
 
   ////////////////////////////////////////////////////////////////////////////
+  private StandardFields.ExtractFromStructure extract;
   private boolean hasStations = false;
+  private boolean hasDate = false;
   private void scanBufrFile(RandomAccessFile raf) throws Exception {
     NetcdfDataset ncd = null;
 
@@ -184,9 +198,15 @@ public class BufrConfig {
          map = new HashMap<String, BufrStation>(1000);
        }
       featureType = guessFeatureType(standardFields);
+      hasDate = standardFields.hasTime();
 
-      ncd = NetcdfDataset.openDataset(raf.getLocation()); // LOOK open raf
+      ncd = NetcdfDataset.openDataset(raf.getLocation()); // LOOK opening another raf
+      Attribute centerAtt = ncd.findGlobalAttribute(BufrIosp2.centerId);
+      int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
+
       SequenceDS seq = (SequenceDS) ncd.findVariable(null, BufrIosp2.obsRecord);
+      extract = new StandardFields.ExtractFromStructure(center, seq);
+
       StructureDataIterator iter = seq.getStructureIterator();
       processSeq( iter, rootConverter, true);
 
@@ -227,7 +247,17 @@ public class BufrConfig {
      try {
        while (sdataIter.hasNext()) {
          StructureData sdata = sdataIter.next();
-         if (hasStations && isTop) processStations(parent, sdata);
+
+         if (isTop) {
+           if (hasStations) processStations(parent, sdata);
+           if (hasDate) {
+             extract.extract(sdata);
+             CalendarDate date = extract.makeCalendarDate();
+             long msecs = date.getMillis();
+             if (this.start > msecs) this.start = msecs;
+             if (this.end < msecs) this.end = msecs;
+           }
+         }
 
          int count = 0;
          for (StructureMembers.Member m : sdata.getMembers()) {

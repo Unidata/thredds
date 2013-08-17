@@ -35,6 +35,7 @@ package ucar.nc2.ui;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.iosp.bufr.Descriptor;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -73,8 +74,9 @@ public class BufrCdmIndexPanel extends JPanel {
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        if (index == null) return;
         Formatter f = new Formatter();
-        showIndex(f);
+        index.showIndex(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
@@ -134,11 +136,6 @@ public class BufrCdmIndexPanel extends JPanel {
   }
 
   ///////////////////////////////////////////////
-
-  private void showIndex(Formatter f) {
-    if (index == null) return;
-    f.format("bufrFilename=%s%n", index.bufrFilename);
-  }
 
   BufrCdmIndex index;
   public void setIndexFile(String indexFile) throws IOException {
