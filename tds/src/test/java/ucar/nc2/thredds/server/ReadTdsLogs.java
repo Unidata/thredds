@@ -406,6 +406,12 @@ public class ReadTdsLogs {
        continue;
      }   */
 
+      if (!log.path.contains("ncss")) {
+        // System.out.println(" *** skip fmrc " + log);
+        skip++;
+        continue;
+      }
+
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
         skip++;

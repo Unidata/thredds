@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Write netcdf3 files in CF 1.6 point obs conventions
+ * Write Point Feature Collections into netcdf3/4 files in CF 1.6 point obs conventions
  *
  * @author caron
  * @since 4/11/12
@@ -128,7 +128,6 @@ public class CFPointWriter {
         }
 
         writer.writeRecord(profile.getName(), pf, pf.getData());
-
         count++;
         if (debug && count % 100 == 0) System.out.printf("%d ", count);
         if (debug && count % 1000 == 0) System.out.printf("%n ");
@@ -141,8 +140,10 @@ public class CFPointWriter {
   }
 
   /////////////////////////////////////////////////
-  private static final String[] reservedAtts = new String[]{CDM.CONVENTIONS,
-          CDM.LAT_MIN, CDM.LAT_MAX, CDM.LON_MIN, CDM.LON_MAX, CDM.TIME_START, CDM.TIME_END,
+
+  // attributes with these nams will not be copied to the output file
+  private static final String[] reservedAtts = new String[]{
+          CDM.CONVENTIONS, CDM.LAT_MIN, CDM.LAT_MAX, CDM.LON_MIN, CDM.LON_MAX, CDM.TIME_START, CDM.TIME_END,
           _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3};
 
   private static final List<String> reservedAttsList = Arrays.asList(reservedAtts);
@@ -181,14 +182,11 @@ public class CFPointWriter {
 	    addDefaultAtts(addTimeCoverage);
   }  
   
-
   private void createWriter(String fileOut, NetcdfFileWriter.Version version) throws IOException {
     writer = NetcdfFileWriter.createNew(version, fileOut, null);
     writer.setFill(false);
   }
   
- 
-
   private void addAtts(List<Attribute> atts) {
 
     if (writer == null) throw new IllegalStateException("NetcdfFileWriter must be created");
@@ -241,7 +239,6 @@ public class CFPointWriter {
     writer.updateAttribute(null, new Attribute(CDM.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
     writer.updateAttribute(null, new Attribute(CDM.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
 
- 
     if((writer.getNetcdfFile().findAttribute("@"+CDM.TIME_START) != null) &&  (writer.getNetcdfFile().findAttribute("@"+CDM.TIME_END) != null )){
     	
     	if (minDate == null) minDate = CalendarDate.present();

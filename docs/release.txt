@@ -27,6 +27,12 @@ where:
 
     gradlew test --continue
 
+   optional libraries using shadow:
+
+     gradlew shadow -p cdm (build cdms.jar)
+     gradlew shadow -p ncIdv (build ncIdvs.jar)
+     gradlew shadow -p ui (build toolsUI.jar)
+
 4. build from intellij (problems with 12.1, apparently will be improved in v13)
 
 4.1 upgrade intellij Project

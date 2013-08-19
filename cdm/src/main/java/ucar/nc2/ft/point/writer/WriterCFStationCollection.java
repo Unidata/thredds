@@ -174,7 +174,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
   private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
     String coordNames = latName + " " + lonName + " " + altName + " " + timeName;
-    if(!useAlt){
+    if (!useAlt){
     	coordNames = latName + " " + lonName + " " + timeName;
     }
 
@@ -186,14 +186,14 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
     // add them
     for (Dimension d : dimSet) {
-      if (!d.isUnlimited())
+      if (d.isUnlimited()) continue;
+      if (d.isShared())
         writer.addDimension(null, d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength());
     }
     
-    // find all variables already in use 
+    // eliminate coordinate variables
     List<VariableSimpleIF> useDataVars = new ArrayList<VariableSimpleIF>(dataVars.size());
     for (VariableSimpleIF var : dataVars) {
-      
       if (writer.findVariable(var.getShortName()) == null) useDataVars.add(var);
     }
 
@@ -202,8 +202,14 @@ public class WriterCFStationCollection  extends CFPointWriter {
       List<Dimension> dims = oldVar.getDimensions();
       StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
-        if (!d.isUnlimited())
+        if (d.isUnlimited()) continue;
+        if (d.isShared())
           dimNames.append(" ").append(d.getShortName());
+        else { // anon dimensions
+          String dimName = oldVar.getShortName() + "_strlen";
+          writer.addDimension(null, dimName, d.getLength());
+          dimNames.append(" ").append(dimName);
+        }
       }
       Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
 

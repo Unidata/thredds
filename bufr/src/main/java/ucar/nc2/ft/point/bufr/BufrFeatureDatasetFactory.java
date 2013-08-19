@@ -1,6 +1,7 @@
 package ucar.nc2.ft.point.bufr;
 
 import org.jdom2.Element;
+import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Attribute;
@@ -125,6 +126,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       for (Variable v : members) {
         BufrCdmIndexProto.Field fld = flds.get(count++);
         if (fld.getAction() == BufrCdmIndexProto.FldAction.remove) continue;
+        if (v.getDataType() == DataType.SEQUENCE) continue;
         this.dataVariables.add(v);
       }
 
