@@ -13,6 +13,9 @@
   <!-- Enables the Spring MVC @Controller programming model  -->
   <mvc:annotation-driven />
   
+  <!-- enabling component-scan in Spring for annotated wirings --> 
+  <context:component-scan base-package="thredds"/>  
+  
   <!-- Handler Mapping -->
   <!--  In Spring 3.2  DefaultAnnotationHandlerMapping was deprecated in favor of   RequestMappingHandlerMapping-->
   <!--  bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /-->
@@ -27,8 +30,7 @@
     </mvc:interceptor>
   </mvc:interceptors>  
   
-  <!-- enabling component-scan in Spring for annotated wirings --> 
-  <context:component-scan base-package="thredds"/>
+
 
   <import resource="cdmrFeature-servlet.xml"/>	
 
@@ -55,29 +57,11 @@
     <property name="webappDocsUrl" value="${tds.documentation.url}" />
     <property name="webappLogoUrl" value="${tds.logo.url}" />
     <property name="webappLogoAlt" value="${tds.logo.alt}" />
-
     <property name="installUrl" value="${tds.install.url}" />
   </bean>
 
   <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
 
-  <!-- bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
-    <property name="tdsContext" ref="tdsContext" />
-    <property name="htmlConfig" ref="htmlConfig" />
-  </bean-->
-
-  <!-- seems to be duplicated -->
-  <!-- bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-    <property name="locations">
-      <list>
-        <value>classpath:thredds/server/tds.properties</value>
-      </list>
-    </property>
-  </bean -->
-
-  <!-- A Singleton class to initialize the CDM -->
-  <!-- bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy" /-->
 
     <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>

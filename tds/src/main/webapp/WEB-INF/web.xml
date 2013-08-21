@@ -61,27 +61,6 @@
     <filter-class>thredds.servlet.filter.CookieFilter</filter-class>
   </filter>
 
-  <!-- filter>
-    <filter-name>Cams</filter-name>
-    <filter-class>com.cafesoft.security.webagent.servletFilter.CamsServletFilterWebAgent</filter-class>
-
-    <init-param>
-      <param-name>configPath</param-name>
-      <param-value>C:/Program Files (x86)/Apache Software Foundation/apache-tomcat-5.5.20/conf/cams-webagent.conf
-      </param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>contextClass</param-name>
-      <param-value>com.cafesoft.security.common.agent.StandardCamsAgentContext</param-value>
-    </init-param>
-  </filter -->
-
-  <!-- filter-mapping>
-    <filter-name>Cams</filter-name>
-    <url-pattern>/restrictedAccess/*</url-pattern>
-  </filter-mapping -->
-
   <filter-mapping>
     <filter-name>RequestBracketingLogMessageFilter</filter-name>
     <!-- servlet-name>metadata</servlet-name-->
@@ -107,10 +86,12 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>root</servlet-name>
   </filter-mapping>
-  <filter-mapping>
+  
+  <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>serverInfo</servlet-name>
-  </filter-mapping>
+  </filter-mapping-->
+  
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>catalogService</servlet-name>
@@ -133,10 +114,11 @@
     <servlet-name>MetarSubsetService</servlet-name>
   </filter-mapping-->
 
-  <filter-mapping>
+  <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>dqc</servlet-name>
-  </filter-mapping>
+  </filter-mapping-->
+  
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>catalogGen</servlet-name>
@@ -160,10 +142,6 @@
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>wms</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>ForecastModelRunInventory</servlet-name>
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
@@ -254,26 +232,6 @@
     <param-value>false</param-value>
   </context-param>
 
-
-  <!--
-     Spring Listener to setup Log4j configuration. Should be listed before any other Spring listeners.
-
-     NOTE: We don't use the Log4jConfigListener. Instead, TdsConfigContextListener directly calls
-     Log4jWebConfigurer.initLogging(ServletContext) after determining the log directory and setting
-     the "tds.log.dir" Java system property. The "tds.log.dir" property is used for ${key} replacement
-     in our log4j config file (see "log4jConfigLocation" above). Information needed to determine the
-     log directory is made available once the Spring ContextLoaderListener is run. The Spring
-     ContextLoaderListener is run before logging is configured so we sometimes get error messages
-     that look like the following:
-
-         log4j:WARN No appenders could be found for logger (org.springframework.util.ClassUtils).
-         log4j:WARN Please initialize the log4j system properly.
-         
-  <listener>
-    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-  </listener>
-   -->
-
   <!--
      Spring listener to bootstrap Spring WebApplicationContext. Used to
      handle Spring bean configuration outside of SpringMVC configuration.
@@ -289,9 +247,9 @@
   </listener>
 
   <!-- TDS context configuration listener. -->
-  <listener>
+  <!-- listener>
     <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
-  </listener>
+  </listener-->
 
 
   <listener>
@@ -321,11 +279,11 @@
     <load-on-startup>0</load-on-startup>
   </servlet>
 
-  <servlet>
+  <!-- servlet>
     <servlet-name>serverInfo</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
-  </servlet>
+  </servlet-->
 
   <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.) -->
   <servlet>
@@ -361,15 +319,7 @@
     <load-on-startup>4</load-on-startup>
   </servlet>
 
-  <!-- Setup for the DQC servlet. -->
-  <servlet>
-    <servlet-name>dqc</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
   <!-- data services -->
-
   <!-- NetCDF/OPeNDAP server -->
   <servlet>
     <display-name>OPeNDAP Server</display-name>
@@ -410,12 +360,6 @@
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
-
-  <!-- servlet>
-    <servlet-name>cdmrFeature</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet-->
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
   <servlet>
@@ -509,7 +453,7 @@
     <url-pattern>*.gif</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>serverInfo</servlet-name>
     <url-pattern>/serverInfo.html</url-pattern>
   </servlet-mapping>
@@ -520,7 +464,7 @@
   <servlet-mapping>
     <servlet-name>serverInfo</servlet-name>
     <url-pattern>/serverVersion.txt</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>catalogService</servlet-name>
@@ -586,11 +530,6 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>dqc</servlet-name>
-    <url-pattern>/dqc/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
     <servlet-name>FileServer</servlet-name>
     <url-pattern>/fileServer/*</url-pattern>
   </servlet-mapping>
@@ -599,11 +538,6 @@
     <servlet-name>cdmRemote</servlet-name>
     <url-pattern>/cdmremote/*</url-pattern>
   </servlet-mapping>
-
-  <!-- servlet-mapping>
-    <servlet-name>cdmrFeature</servlet-name>
-    <url-pattern>/cdmrfeature/*</url-pattern>
-  </servlet-mapping-->
 
   <servlet-mapping>
     <servlet-name>RestrictedDataset</servlet-name>
@@ -625,11 +559,6 @@
   <servlet-mapping>
     <servlet-name>catalogGen</servlet-name>
     <url-pattern>/cataloggen/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>ForecastModelRunInventory</servlet-name>
-    <url-pattern>/modelInventory/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

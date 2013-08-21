@@ -54,7 +54,7 @@
     <property name="supportedMethods" value="GET"/>
     <property name="collections" ref="collectionManager"/>
   </bean -->
-
+  <!-- 	
   <bean id="collectionManager" class="thredds.server.cdmremote.CollectionManager">
     <property name="collections">
       <list>
@@ -126,5 +126,5 @@
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
   </bean>
-
+  -->
 </beans>

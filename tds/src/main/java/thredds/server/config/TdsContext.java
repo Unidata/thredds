@@ -43,6 +43,7 @@ import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +54,7 @@ import org.springframework.web.util.Log4jWebConfigurer;
 
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetScan;
+import thredds.inventory.CollectionUpdater;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import thredds.util.filesource.BasicDescendantFileSource;
@@ -64,12 +66,12 @@ import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * TDS context initialization - called from TdsConfigContextListener (not anymore).
+ *
  * TDS context implements ServletContextAware so it gets a ServletContext and performs most initial THREDDS set up:
  *  - checks version
  *  - sets the content directory
- *  - read persistent user defined params and runs ThreddsConfig.init
- *  - makes log and public dirs in content directory
+ *  - reads persistent user defined params and runs ThreddsConfig.init
+ *  - creates, if don't exist, log and public dirs in content directory
  *  - Sets InvDatasetScan and InvDatasetFeatureCollection properties
  *  - Get default and jsp dispatchers from servletContext
  *  - Creates and initializes the TdsConfigMapper
@@ -78,7 +80,7 @@ import ucar.unidata.util.StringUtil2;
  * @since 4.0
  */
 @Component
-public final class TdsContext implements ServletContextAware, InitializingBean {
+public final class TdsContext implements ServletContextAware, InitializingBean, DisposableBean {
 
 //  ToDo Once Log4j config is called by Spring listener instead of ours, use this logger instead of System.out.println.
 //  private org.slf4j.Logger logServerStartup =
@@ -198,7 +200,18 @@ public final class TdsContext implements ServletContextAware, InitializingBean {
     this.wmsConfig = wmsConfig;
   }
 
-  public void destroy() {}
+  /*
+   * Release tdsContext resouces 
+   * (non-Javadoc)
+   * @see org.springframework.beans.factory.DisposableBean#destroy()
+   */
+  public void destroy() {
+	  logServerStartup.info( "TdsContext: releasing resources");
+	  logServerStartup.info( "TdsContext: Shutting down collection manager");
+	  CollectionUpdater.INSTANCE.shutdown();
+	  logServerStartup.info( "TdsContext: shutdownLogging()");
+	  Log4jWebConfigurer.shutdownLogging( servletContext );	  
+  }
 
   
   public void afterPropertiesSet(){
