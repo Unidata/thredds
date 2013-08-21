@@ -184,8 +184,8 @@ public class NetcdfFileWriter {
         try {
           //  Nc4Iosp.setLibraryAndPath(path, name);
           Class iospClass = this.getClass().getClassLoader().loadClass("ucar.nc2.jni.netcdf.Nc4Iosp");
-          Constructor ctor = iospClass.getConstructor(Version.class);
-          spi = (IOServiceProviderWriter) ctor.newInstance(version);
+          Constructor<IOServiceProviderWriter> ctor = iospClass.getConstructor(Version.class);
+          spi = ctor.newInstance(version);
 
           Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
           method.invoke(spi, chunker);

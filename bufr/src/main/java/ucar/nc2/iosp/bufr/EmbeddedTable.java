@@ -82,21 +82,23 @@ public class EmbeddedTable {
     BufrConfig config = BufrConfig.openFromMessage(raf, proto, null);
     Construct2 construct = new Construct2(proto, config, new FakeNetcdfFile());
 
-    seq2 = (Structure) construct.recordStructure.findVariable("seq2");
-    seq3 = (Structure) construct.recordStructure.findVariable("seq3");
+    Sequence obs = construct.getObsStructure();
+    seq2 = (Structure) obs.findVariable("seq2");
+    seq3 = (Structure) obs.findVariable("seq3");
     if (seq3 == null)
       System.out.println("HEY");
-    seq4 = (Structure) seq3.findVariable("seq4");
+    else
+      seq4 = (Structure) seq3.findVariable("seq4");
 
     // read all the messages
     ArrayStructure data;
     for (Message m : messages) {
       if (!m.dds.isCompressed()) {
         MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        data = reader.readEntireMessage(construct.recordStructure, proto, m, raf, null);
+        data = reader.readEntireMessage(obs, proto, m, raf, null);
       } else {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        data = reader.readEntireMessage(construct.recordStructure, proto, m, raf, null);
+        data = reader.readEntireMessage(obs, proto, m, raf, null);
       }
       while ( data.hasNext()) {
         StructureData sdata = (StructureData) data.next();

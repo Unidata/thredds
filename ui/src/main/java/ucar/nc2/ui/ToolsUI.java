@@ -2751,6 +2751,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.BufrCdmIndexPanel table;
 
     void closeOpenFiles() throws IOException {
+      //table.closeOpenFiles();
     }
 
     BufrCdmIndexPanel(PreferencesExt p) {

@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.io.File;
 
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.dt.grid.CFGridWriter;
 import ucar.nc2.util.DiskCache2;
 import ucar.ma2.InvalidRangeException;
 
@@ -122,7 +122,7 @@ public class GetCoverage
       File dir = new File( getDiskCache().getRootDirectory() );
       File ncFile = File.createTempFile( "WCS", ".nc", dir );
 
-      NetcdfCFWriter writer = new NetcdfCFWriter();
+      CFGridWriter writer = new CFGridWriter();
       writer.makeFile( ncFile.getPath(), dataset,
                        Collections.singletonList( identifier ), null, null,
   //                     Collections.singletonList( req.getCoverage() ),

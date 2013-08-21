@@ -1,9 +1,7 @@
 package ucar.nc2.ft.point.bufr;
 
 import org.jdom2.Element;
-import ucar.ma2.DataType;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
+import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -15,7 +13,6 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.BufrIosp2;
-import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -28,9 +25,7 @@ import ucar.unidata.geoloc.Station;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * Use BufrConfig to make BUFR files into PointFeatureDataset
@@ -104,32 +99,24 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   }
 
   private class BufrStationDataset extends PointDatasetImpl {
+    private Munge munger;
     private BufrCdmIndex index;
+    private SequenceDS obs;
 
     private BufrStationDataset(NetcdfDataset ncfile, BufrCdmIndex index) {
       super(ncfile, FeatureType.STATION);
       this.index = index;
 
-      BufrStationCollection bufrCollection = new BufrStationCollection(ncfile, index);
+       // create the list of data variables
+      munger = new Munge();
+      obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
+      this.dataVariables = munger.makeDataVariables(index, obs);
+
+      BufrStationCollection bufrCollection = new BufrStationCollection(ncfile.getLocation());
       setPointFeatureCollection(bufrCollection);
 
-      CalendarDateRange dateRange = CalendarDateRange.of(CalendarDate.of(index.start), CalendarDate.of(index.end) );
+      CalendarDateRange dateRange = CalendarDateRange.of(CalendarDate.of(index.start), CalendarDate.of(index.end));
       setDateRange(dateRange);
-
-      // create the list of data variables
-      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
-      List<Variable> members = obs.getVariables();
-      this.dataVariables = new ArrayList<VariableSimpleIF>( members.size());
-
-      List<BufrCdmIndexProto.Field> flds = index.root.getFldsList();
-      int count = 0;
-      for (Variable v : members) {
-        BufrCdmIndexProto.Field fld = flds.get(count++);
-        if (fld.getAction() == BufrCdmIndexProto.FldAction.remove) continue;
-        if (v.getDataType() == DataType.SEQUENCE) continue;
-        this.dataVariables.add(v);
-      }
-
     }
 
     @Override
@@ -143,152 +130,276 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       index.showIndex(sf);
     }
 
-  }
+    private class BufrStationCollection extends StationTimeSeriesCollectionImpl {
+      DateUnit dateUnit;
+      StandardFields.ExtractFromStructure extract;
 
-  private class BufrStationCollection extends StationTimeSeriesCollectionImpl {
-    BufrCdmIndex index;
-    SequenceDS obs;
-    DateUnit dateUnit;
-    StandardFields.ExtractFromStructure extract;
+      private BufrStationCollection(String name) {
+        super(name);
 
-    private BufrStationCollection(NetcdfDataset ncfile, BufrCdmIndex index) {
-      super(ncfile.getLocation());
-      this.index = index;
+        // need  the center id to match the standard fields
+        Attribute centerAtt = ncfile.findGlobalAttribute(BufrIosp2.centerId);
+        int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
+        this.extract = new StandardFields.ExtractFromStructure(center, obs);
 
-      this.obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
-
-      // need  the center id to match the standard fields
-      Attribute centerAtt = ncfile.findGlobalAttribute(BufrIosp2.centerId);
-      int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
-      this.extract = new StandardFields.ExtractFromStructure(center, obs);
-
-      try {
-         dateUnit = new DateUnit("msecs since 1970-01-01T00:00:00");
-       } catch (Exception e) {
-         e.printStackTrace();  //cant happen
-       }
-    }
-
-    @Override
-    protected void initStationHelper() {
-      stationHelper = new StationHelper();
-      for (BufrCdmIndexProto.Station s : index.stations)
-        stationHelper.addStation( new BufrStation(s, dateUnit));
-    }
-
-    private class BufrStation extends StationFeatureImpl {
-      private BufrStation(BufrCdmIndexProto.Station proto, DateUnit timeUnit) {
-        super(proto.getId(), proto.getDesc(), proto.getWmoId(), proto.getLat(), proto.getLon(), proto.getAlt(), timeUnit, proto.getCount());
+        try {
+          dateUnit = new DateUnit("msecs since 1970-01-01T00:00:00");
+        } catch (Exception e) {
+          e.printStackTrace();  //cant happen
+        }
       }
 
       @Override
-      public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-        return new BufrStationIterator(obs.getStructureIterator(), null);
+      protected void initStationHelper() {
+        if (stationHelper != null) return;
+
+        stationHelper = new StationHelper();
+        for (BufrCdmIndexProto.Station s : index.stations)
+          stationHelper.addStation(new BufrStation(s, dateUnit));
       }
 
-      // iterates over the records for this station
-      public class BufrStationIterator extends PointIteratorFromStructureData {
-        int countRecords = 0;
-
-        public BufrStationIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
-          super(structIter, filter);
+      private class BufrStation extends StationFeatureImpl {
+        private BufrStation(BufrCdmIndexProto.Station proto, DateUnit timeUnit) {
+          super(proto.getId(), proto.getDesc(), proto.getWmoId(), proto.getLat(), proto.getLon(), proto.getAlt(), timeUnit, proto.getCount());
         }
 
         @Override
-        protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
-          extract.extract(sdata);
-          String stationId = extract.getStationId();
-          //System.out.printf("  '%s' '%s' (%d) %n", s.getName(), stationId, countRecords++);
-          //if (count > 10) return null;
-          if (!stationId.equals(s.getName()))
-            return null;
-          CalendarDate date = extract.makeCalendarDate();
-          return new BufrStationPoint(s, date.getMillis(), 0, dateUnit, sdata);  // LOOK  obsTime, nomTime
+        public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+          return new BufrStationIterator(obs.getStructureIterator(), null);
+        }
+
+        // iterates over the records for this station
+        public class BufrStationIterator extends PointIteratorFromStructureData {
+          int countRecords = 0;
+
+          public BufrStationIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
+            super(structIter, filter);
+          }
+
+          @Override
+          protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
+            extract.extract(sdata);
+            String stationId = extract.getStationId();
+            //System.out.printf("  '%s' '%s' (%d) %n", s.getName(), stationId, countRecords++);
+            //if (count > 10) return null;
+            if (!stationId.equals(s.getName()))
+              return null;
+            CalendarDate date = extract.makeCalendarDate();
+            return new BufrStationPoint(s, date.getMillis(), 0, dateUnit, munger.munge(sdata));  // LOOK  obsTime, nomTime
+          }
+        }
+
+        public class BufrStationPoint extends PointFeatureImpl {
+          StructureData sdata;
+
+          public BufrStationPoint(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
+            super(location, obsTime, nomTime, timeUnit);
+            this.sdata = sdata;
+          }
+
+          @Override
+          public StructureData getData() throws IOException {
+            return sdata;
+          }
         }
       }
 
-      public class BufrStationPoint extends PointFeatureImpl {
-        StructureData sdata;
+      // flatten into a PointFeatureCollection
+      // if empty, may return null
+      public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+        return new BufrPointFeatureCollection(boundingBox, dateRange);
+      }
 
-        public BufrStationPoint(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
-          super(location, obsTime, nomTime, timeUnit);
-          this.sdata = sdata;
+      private class BufrPointFeatureCollection extends PointCollectionImpl {
+        StationHelper stationsWanted;
+        PointFeatureIterator.Filter filter;
+
+        BufrPointFeatureCollection(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+          super("", boundingBox, dateRange, -1);
+          initStationHelper();
+          stationsWanted = stationHelper.subset(boundingBox);
+          if (dateRange != null) filter = new PointIteratorAbstract.Filter(null, dateRange);
         }
 
         @Override
-        public StructureData getData() throws IOException {
-          return sdata;
+        public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+          return new BufrRecordIterator(obs.getStructureIterator(), filter);
+        }
+
+        // iterates once over all the records
+        public class BufrRecordIterator extends PointIteratorFromStructureData {
+          int countHere = 0;
+
+          public BufrRecordIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
+            super(structIter, filter);
+          }
+
+          @Override
+          protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
+            extract.extract(sdata);
+            String stationId = extract.getStationId();
+            Station want = stationsWanted.getStation(stationId);
+            if (want == null)
+              return null;
+            CalendarDate date = extract.makeCalendarDate();
+            countHere++;
+            return new BufrPoint(want, date.getMillis(), 0, dateUnit, munger.munge(sdata));
+          }
+
+          @Override
+          public void finish() {
+            System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getCount());
+            super.finish();
+          }
+
+        }
+
+        public class BufrPoint extends PointFeatureImpl implements StationPointFeature {
+          StructureData sdata;
+
+          public BufrPoint(Station want, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
+            super(want, obsTime, nomTime, timeUnit);
+            this.sdata = sdata;
+          }
+
+          @Override
+          public StructureData getData() throws IOException {
+            return sdata;
+          }
+
+          @Override
+          public Station getStation() {
+            return (Station) location;
+          }
         }
       }
+
     }
-
-    // flatten into a PointFeatureCollection
-    // if empty, may return null
-    public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-      return new BufrPointFeatureCollection(boundingBox, dateRange);
-    }
-
-    private class BufrPointFeatureCollection extends PointCollectionImpl {
-      StationHelper stationsWanted;
-      PointFeatureIterator.Filter filter;
-
-      BufrPointFeatureCollection(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-        super("", boundingBox, dateRange, -1);
-        stationsWanted = stationHelper.subset(boundingBox);
-        if (dateRange != null) filter = new PointIteratorAbstract.Filter(null, dateRange);
-      }
-
-      @Override
-      public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-        return new BufrRecordIterator(obs.getStructureIterator(), filter);
-      }
-
-      // iterates once over all the records
-      public class BufrRecordIterator extends PointIteratorFromStructureData {
-        int countHere = 0;
-        public BufrRecordIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
-          super(structIter, filter);
-        }
-
-        @Override
-        protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
-          extract.extract(sdata);
-          String stationId = extract.getStationId();
-          Station want = stationsWanted.getStation(stationId);
-          if (want == null)
-            return null;
-          CalendarDate date = extract.makeCalendarDate();
-          countHere++;
-          return new BufrPoint(want, date.getMillis(), 0, dateUnit, sdata);  // LOOK  obsTime, nomTime
-        }
-
-        @Override
-        public void finish() {
-          System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getCount());
-          super.finish();
-        }
-
-      }
-
-      public class BufrPoint extends PointFeatureImpl implements StationPointFeature {
-        StructureData sdata;
-
-        public BufrPoint(Station want, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
-          super(want, obsTime, nomTime, timeUnit);
-          this.sdata = sdata;
-        }
-
-        @Override
-        public StructureData getData() throws IOException {
-          return sdata;
-        }
-
-        @Override
-        public Station getStation() {
-          return (Station) location;
-        }
-      }
-    }
-
   }
+
+  private class Action {
+    BufrCdmIndexProto.FldAction what;
+    String seqName1;
+
+    private Action(BufrCdmIndexProto.FldAction what) {
+      this.what = what;
+    }
+  }
+
+  private class Munge {
+    String sdataName;
+    boolean needed;
+    protected Map<String, Action> actions = new HashMap<String,Action>(32);
+
+    List<VariableSimpleIF> makeDataVariables(BufrCdmIndex index, Structure obs) {
+      this.sdataName = obs.getShortName()+"Munged";
+
+      List<Variable> members = obs.getVariables();
+      List<VariableSimpleIF> result = new ArrayList<VariableSimpleIF>(members.size());
+
+      List<BufrCdmIndexProto.Field> flds = index.root.getFldsList();
+      int count = 0;
+      for (Variable v : members) {
+        BufrCdmIndexProto.Field fld = flds.get(count++);
+        if (fld.getAction() != null && fld.getAction() != BufrCdmIndexProto.FldAction.none) {
+          needed = true;
+          Action act = new Action(fld.getAction());
+          actions.put(v.getShortName(), act);
+
+          if (fld.getAction() == BufrCdmIndexProto.FldAction.remove) {
+            continue; // skip
+
+          } else if (fld.getAction() == BufrCdmIndexProto.FldAction.asMissing) {
+            // promote the children
+            Structure s = (Structure) v;
+            for (Variable child : s.getVariables()) {
+              result.add(child);
+            }
+            continue;
+          }
+        }
+
+        if (v.getDataType() == DataType.SEQUENCE) continue;
+        result.add(v);
+      }
+      return result;
+    }
+
+    StructureData munge(StructureData org) throws IOException {
+      return needed ? new StructureDataMunged2(org) : org;
+    }
+
+    class StructureDataMunged extends StructureDataProxy {
+
+      StructureDataMunged(StructureData sdata) throws IOException {
+        super(sdata);
+
+        // munge the StructureMembers
+        StructureMembers sm = new StructureMembers(sdataName);
+
+        for (StructureMembers.Member m : sdata.getMembers()) {
+          Action act = actions.get(m.getName());
+          if (act == null) {
+            sm.addMember(m);
+
+          } else if (act.what == BufrCdmIndexProto.FldAction.remove) {
+            continue;
+
+          } else if (act.what == BufrCdmIndexProto.FldAction.asMissing) {
+            ArraySequence seq = sdata.getArraySequence(m);
+            StructureDataIterator iter = seq.getStructureDataIterator();
+            if (!iter.hasNext()) {
+              for (StructureMembers.Member childMember : seq.getMembers()) {
+                 sm.addMember(childMember); // LOOK ??
+               }
+            } else {
+              StructureData childStruct = iter.next();
+              for (StructureMembers.Member childMember : childStruct.getMembers()) {
+                sm.addMember(childMember); // LOOK ??
+              }
+
+            }
+
+          } else {
+            sm.addMember(m);
+          }
+        }
+
+        this.members = sm;
+      }
+    } // StructureDataMunged
+
+    class StructureDataMunged2 extends StructureDataComposite {
+
+      StructureDataMunged2(StructureData sdata) throws IOException {
+
+        add(sdata);
+        for (StructureMembers.Member m : sdata.getMembers()) {
+          Action act = actions.get(m.getName());
+          if (act == null) {
+            continue;
+
+          } else if (act.what == BufrCdmIndexProto.FldAction.remove) {
+            this.members.hideMember(m) ;
+
+          } else if (act.what == BufrCdmIndexProto.FldAction.asMissing) {  // 0 or 1
+            this.members.hideMember(m) ;
+            ArraySequence seq = sdata.getArraySequence(m);
+            StructureDataIterator iter = seq.getStructureDataIterator();
+            if (iter.hasNext()) {
+              add(iter.next());
+            } else {
+              // missing data
+              // add(makeMissing(seq));
+            }
+          }
+        }
+      }
+
+    }
+
+
+
+  } // Munge
+
 }

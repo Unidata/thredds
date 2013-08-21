@@ -76,6 +76,13 @@ public class CancelTaskImpl implements CancelTask {
   }
 
   /**
+   * Application calls to see if task is done.
+   */
+  public void setDone(boolean done) {
+    this.done = done;
+  }
+
+  /**
    * Application will call this when the user cancels.
    */
   public void cancel() {

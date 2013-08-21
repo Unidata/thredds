@@ -35,7 +35,7 @@ package thredds.wcs.v1_0_0_Plus;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.dt.grid.CFGridWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.*;
@@ -223,7 +223,7 @@ public class WcsCoverage
 
         //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
 
-        NetcdfCFWriter writer = new NetcdfCFWriter();
+        CFGridWriter writer = new CFGridWriter();
         this.coordSys.getVerticalAxis().isNumeric();
         writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
                          rangeSubset,

@@ -24,7 +24,7 @@ import java.util.*;
  * @since 4/11/12
  */
 public class CFPointWriter {
-  private static boolean debug = false;
+  private static boolean debug = true;
 
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
@@ -90,6 +90,7 @@ public class CFPointWriter {
       if (count == 0) {
         writer.writeHeader(fds.getStations(), fdpoint.getDataVariables(), pf.getTimeUnit(), "");
       }
+
       StationPointFeature spf = (StationPointFeature) pf;
       writer.writeRecord(spf.getStation(), pf, pf.getData());
       count++;

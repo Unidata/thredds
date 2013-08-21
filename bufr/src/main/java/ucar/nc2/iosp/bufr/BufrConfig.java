@@ -8,6 +8,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
+import ucar.nc2.ft.point.bufr.BufrField;
 import ucar.nc2.ft.point.bufr.StandardFields;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarDate;
@@ -210,6 +211,8 @@ public class BufrConfig {
       StructureDataIterator iter = seq.getStructureIterator();
       processSeq( iter, rootConverter, true);
 
+      setStandardActions(rootConverter);
+
     } finally {
       if (ncd != null) ncd.close();
     }
@@ -219,6 +222,13 @@ public class BufrConfig {
     if (standardFields.hasStation()) return FeatureType.STATION;
     if (standardFields.hasTime()) return FeatureType.POINT;
     return FeatureType.NONE;
+  }
+
+  private void setStandardActions(FieldConverter fld) {
+    fld.setAction(fld.makeAction());
+    if (fld.flds == null) return;
+    for (FieldConverter child : fld.flds)
+      setStandardActions(child);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -234,10 +244,10 @@ public class BufrConfig {
     ArrayStructure data;
     if (!m.dds.isCompressed()) {
       MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-      data = reader.readEntireMessage(construct.recordStructure, m, m, raf, null);
+      data = reader.readEntireMessage(construct.getObsStructure(), m, m, raf, null);
     } else {
       MessageCompressedDataReader reader = new MessageCompressedDataReader();
-      data = reader.readEntireMessage(construct.recordStructure, m, m, raf, null);
+      data = reader.readEntireMessage(construct.getObsStructure(), m, m, raf, null);
     }
 
     processSeq(data.getStructureDataIterator(), rootConverter, true);
@@ -300,7 +310,7 @@ public class BufrConfig {
 
     void read(FieldConverter parent, StructureData sdata) {
       int count = 0;
-      List<FieldConverter> flds = parent.getFlds(); // asssume these track exactly the members
+      List<FieldConverter> flds = parent.getChildren(); // asssume these track exactly the members
       for (StructureMembers.Member m : sdata.getMembers()) {
         FieldConverter fld = flds.get(count++);
         if (fld.getType() == null) continue;
@@ -378,7 +388,15 @@ public class BufrConfig {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public class FieldConverter {
+  private BufrConfig() {
+  }
+
+  static public FieldConverter makeFieldConverter() {
+    BufrConfig fake = new BufrConfig();
+    return fake.new FieldConverter();
+  }
+
+  public class FieldConverter implements BufrField {
     DataDescriptor dds;
     List<FieldConverter> flds;
     BufrCdmIndexProto.FldType type;
@@ -436,7 +454,7 @@ public class BufrConfig {
       return type;
     }
 
-    public List<FieldConverter> getFlds() {
+    public List<FieldConverter> getChildren() {
       return flds;
     }
 

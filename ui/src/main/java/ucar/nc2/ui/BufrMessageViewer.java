@@ -173,14 +173,15 @@ public class BufrMessageViewer extends JPanel {
     });
     buttPanel.add(configButt);
 
-    AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+    AbstractButton writeButton = BAMutil.makeButtcon("V3", "Write index", false);
     writeButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         try {
-          writeIndex(f);
-          f.format("Index written");
-          infoTA2.setText(f.toString());
+          if (writeIndex(f)) {
+            f.format("Index written");
+            infoTA2.setText(f.toString());
+          }
 
         } catch (Exception ex) {
           ex.printStackTrace();

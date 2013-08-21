@@ -40,10 +40,10 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.CFGridWriter;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dataset.*;
 
-import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
@@ -295,7 +295,7 @@ public class GeoGridTable extends JPanel {
     if (data.version == NetcdfFileWriter.Version.ncstream) return;
 
     try {
-      NetcdfCFWriter.makeFileVersioned(data.outputFilename, gridDataset, getSelectedGrids(), null, null, data.version);
+      CFGridWriter.makeFileVersioned(data.outputFilename, gridDataset, getSelectedGrids(), null, null, data.version);
       JOptionPane.showMessageDialog(this, "File successfully written");
     } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());

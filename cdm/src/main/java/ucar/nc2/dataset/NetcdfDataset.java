@@ -1916,6 +1916,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     NetcdfFile ncfileOut = writer.write(cancel);
     if (ncfileOut != null) ncfileOut.close();
     ncfileIn.close();
+    cancel.setDone(true);
     System.out.printf("%s%n", cancel);
   }
 

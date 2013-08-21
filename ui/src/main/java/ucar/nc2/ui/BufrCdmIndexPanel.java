@@ -34,16 +34,17 @@ package ucar.nc2.ui;
 
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
+import ucar.nc2.ft.point.bufr.BufrField;
+import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
 import javax.swing.*;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -84,6 +85,27 @@ public class BufrCdmIndexPanel extends JPanel {
     });
     buttPanel.add(infoButton);
 
+    AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+    writeButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        try {
+          if (writeIndex(f)) {
+            f.format("Index written");
+            detailTA.setText(f.toString());
+          }
+
+        } catch (Exception ex) {
+          ex.printStackTrace();
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+          ex.printStackTrace(new PrintStream(bos));
+          detailTA.setText(bos.toString());
+        }
+        detailTA.gotoTop();
+        detailWindow.show();
+      }
+    });
+    buttPanel.add(writeButton);
 
     /* AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
     filesButton.addActionListener(new ActionListener() {
@@ -103,8 +125,11 @@ public class BufrCdmIndexPanel extends JPanel {
 
     ////////////////
     stationTable = new BeanTableSorted(StationBean.class, (PreferencesExt) prefs.node("StationBean"), false, "stations", "BufrCdmIndexProto.Station", null);
-    fldTable = new BeanTableSorted(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields", "BufrCdmIndexProto.Field", null);
+    fldTable = new BeanTableSorted(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields", "BufrCdmIndexProto.Field", new FieldBean());
 
+    JTable table = fldTable.getJTable();
+    JComboBox<BufrCdmIndexProto.FldType> comboBox = new JComboBox<BufrCdmIndexProto.FldType>(BufrCdmIndexProto.FldType.values());
+    table.setDefaultEditor(BufrCdmIndexProto.FldType.class, new DefaultCellEditor(comboBox)) ;
 
     /////////////////////////////////////////
     // the info windows
@@ -137,10 +162,13 @@ public class BufrCdmIndexPanel extends JPanel {
 
   ///////////////////////////////////////////////
 
+  String indexFilename;
   BufrCdmIndex index;
-  public void setIndexFile(String indexFile) throws IOException {
+  FieldBean rootBean;
+  public void setIndexFile(String indexFilename) throws IOException {
+    this.indexFilename = indexFilename;
 
-    index = BufrCdmIndex.readIndex(indexFile);
+    index = BufrCdmIndex.readIndex(indexFilename);
 
     List<StationBean> stations = new ArrayList<StationBean>();
     if (index.stations != null) {
@@ -150,18 +178,42 @@ public class BufrCdmIndexPanel extends JPanel {
     stationTable.setBeans(stations);
 
     List<FieldBean> flds = new ArrayList<FieldBean>();
-    if (index.root != null)
-      addFields(index.root, flds);
+    if (index.root != null) {
+      rootBean = new FieldBean(null, index.root);
+      addFields(index.root, rootBean, flds);
+    }
     fldTable.setBeans(flds);
   }
 
-  private void addFields(BufrCdmIndexProto.Field parent, List<FieldBean> flds) {
+  private void addFields(BufrCdmIndexProto.Field parent, FieldBean parentBean, List<FieldBean> flds) {
     if (parent.getFldsList() == null) return;
+    parentBean.children = new ArrayList<FieldBean>();
     for (BufrCdmIndexProto.Field child : parent.getFldsList()) {
-      flds.add(new FieldBean(parent, child));
-      addFields(child, flds);
+      FieldBean childBean = new FieldBean(parent, child);
+      flds.add(childBean);
+      parentBean.children.add(childBean);
+      addFields(child, childBean, flds);
     }
   }
+
+  // transform beans back into an index and write it out
+  public boolean writeIndex(Formatter f) throws IOException {
+    makeFileChooser();
+    String filename = fileChooser.chooseFilename(indexFilename);
+    if (filename == null) return false;
+    if (!filename.endsWith(BufrCdmIndex.NCX_IDX))
+      filename += BufrCdmIndex.NCX_IDX;
+    File idxFile = new File(filename);
+
+    return BufrCdmIndex.writeIndex(index, rootBean, idxFile);
+  }
+
+  private FileManager fileChooser;
+  private void makeFileChooser() {
+    if (fileChooser == null)
+      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+  }
+
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -206,9 +258,19 @@ public class BufrCdmIndexPanel extends JPanel {
   }
 
     ////////////////////////////////////////////////////////////////////////////
-
-  public class FieldBean {
+  public class FieldBean implements BufrField {
     BufrCdmIndexProto.Field parent, child;
+    List<FieldBean> children;
+    BufrCdmIndexProto.FldAction act;
+    BufrCdmIndexProto.FldType type;
+
+    public String editableProperties() {
+      return "actionS type";
+    }
+
+    public String hiddenProperties() {
+      return "action children";
+    }
 
     public FieldBean() {
     }
@@ -226,16 +288,55 @@ public class BufrCdmIndexPanel extends JPanel {
       return child.getName();
     }
 
-    public String getFxy() {
+    public String getDesc() {
+      return child.getDesc();
+    }
+
+    public String getUnits() {
+      return child.getUnits();
+    }
+
+    public short getFxy() {
+      return (short) child.getFxy();
+    }
+
+    @Override
+    public String getFxyName() {
       return Descriptor.makeString((short)child.getFxy());
     }
 
-    public String getAction() {
+    @Override
+    public BufrCdmIndexProto.FldAction getAction() {
+      if (act != null) return act;
+      return child.hasAction() ? child.getAction() : null;
+    }
+
+    @Override
+    public BufrCdmIndexProto.FldType getType() {
+      if (type != null) return type;
+      return child.hasType() ? child.getType() : null;
+    }
+
+    public void setType(BufrCdmIndexProto.FldType type) {
+      this.type = type;
+    }
+
+    public String getActionS() {
+      if (act != null) return act.toString();
       return child.hasAction() ? child.getAction().toString() : "";
     }
 
-    public String getType() {
-      return child.hasType() ? child.getType().toString() : "";
+    public void setActionS(String actS) {
+      try {
+        this.act =  BufrCdmIndexProto.FldAction.valueOf(actS);
+      } catch (Exception ee) {
+        // never mind
+      }
+    }
+
+    @Override
+    public boolean isSeq() {
+      return child.hasMax();
     }
 
     public int getMin() {
@@ -244,6 +345,11 @@ public class BufrCdmIndexPanel extends JPanel {
 
     public int getMax() {
       return child.hasMax() ? child.getMax() : -1;
+    }
+
+    @Override
+    public List<? extends BufrField> getChildren() {
+      return children;
     }
 
   }

@@ -49,6 +49,7 @@ import java.util.*;
  * IOSP for BUFR data - version 2, use the preprocssor
  *
  * @author caron
+ * @since 8/8/13
  */
 public class BufrIosp2 extends AbstractIOServiceProvider {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp2.class);
@@ -68,7 +69,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private Construct2 construct;
+  private Structure obsStructure;
   private Message protoMessage;
   private MessageScanner scanner;
   private HashSet<Integer> messHash = null;
@@ -98,7 +99,8 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     config = BufrConfig.openFromMessage(raf, protoMessage, iospParam);
 
     // this fills the netcdf object
-    construct = new Construct2(protoMessage, config, ncfile);
+    Construct2 construct = new Construct2(protoMessage, config, ncfile);
+    obsStructure = construct.getObsStructure();
     ncfile.finish();
   }
 
@@ -114,7 +116,8 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     BufrConfig config = BufrConfig.openFromMessage(raf, protoMessage, null);
 
     // this fills the netcdf object
-    construct = new Construct2(protoMessage, config, ncfile);
+    Construct2 construct = new Construct2(protoMessage, config, ncfile);
+    obsStructure = construct.getObsStructure();
     isSingle = true;
 
     ncfile.finish();
@@ -143,8 +146,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
   @Override
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-    Structure s = construct.recordStructure;
-    return new ArraySequence(s.makeStructureMembers(), new SeqIter(), nelems);
+    return new ArraySequence(obsStructure.makeStructureMembers(), getStructureIterator(null, -1), nelems);
   }
 
   @Override
@@ -219,10 +221,10 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
       ArrayStructure as;
       if (m.dds.isCompressed()) {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        as = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
+        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
       } else {
         MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        as = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
+        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
       }
       return as;
     }
@@ -244,7 +246,6 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
       if (debugIter) System.out.printf("BUFR read recnum %d%n", recnum);
     }
   }
-
 
   private class SeqIterSingle implements StructureDataIterator {
     StructureDataIterator currIter;
@@ -290,10 +291,10 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
       ArrayStructure as;
       if (m.dds.isCompressed()) {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        as = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
+        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
       } else {
         MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        as = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
+        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
       }
 
       return as.getStructureDataIterator();

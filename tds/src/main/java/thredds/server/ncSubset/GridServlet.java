@@ -46,11 +46,11 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.CFGridWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridDatasetInfo;
-import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.InvalidRangeException;
@@ -517,7 +517,7 @@ public class GridServlet extends AbstractServlet {
     String url = buildCacheUrl( pathname );
 
     try {
-      NetcdfCFWriter writer = new NetcdfCFWriter();
+      CFGridWriter writer = new CFGridWriter();
 
       writer.makeFile(cacheFilename, gds, qp.vars,
               useBB ? qp.getBB() : null,

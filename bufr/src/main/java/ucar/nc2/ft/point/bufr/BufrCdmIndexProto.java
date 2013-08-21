@@ -14,58 +14,58 @@ public final class BufrCdmIndexProto {
   public enum FldAction
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
-     * <code>none = 0;</code>
+     * <code>none = 1;</code>
      */
-    none(0, 0),
+    none(0, 1),
     /**
-     * <code>remove = 1;</code>
+     * <code>remove = 2;</code>
      */
-    remove(1, 1),
+    remove(1, 2),
     /**
-     * <code>asMissing = 2;</code>
+     * <code>asMissing = 3;</code>
      */
-    asMissing(2, 2),
+    asMissing(2, 3),
     /**
-     * <code>asArray = 3;</code>
+     * <code>asArray = 4;</code>
      */
-    asArray(3, 3),
+    asArray(3, 4),
     /**
-     * <code>concat = 4;</code>
+     * <code>concat = 5;</code>
      */
-    concat(4, 4),
+    concat(4, 5),
     ;
 
     /**
-     * <code>none = 0;</code>
+     * <code>none = 1;</code>
      */
-    public static final int none_VALUE = 0;
+    public static final int none_VALUE = 1;
     /**
-     * <code>remove = 1;</code>
+     * <code>remove = 2;</code>
      */
-    public static final int remove_VALUE = 1;
+    public static final int remove_VALUE = 2;
     /**
-     * <code>asMissing = 2;</code>
+     * <code>asMissing = 3;</code>
      */
-    public static final int asMissing_VALUE = 2;
+    public static final int asMissing_VALUE = 3;
     /**
-     * <code>asArray = 3;</code>
+     * <code>asArray = 4;</code>
      */
-    public static final int asArray_VALUE = 3;
+    public static final int asArray_VALUE = 4;
     /**
-     * <code>concat = 4;</code>
+     * <code>concat = 5;</code>
      */
-    public static final int concat_VALUE = 4;
+    public static final int concat_VALUE = 5;
 
 
     public final int getNumber() { return value; }
 
     public static FldAction valueOf(int value) {
       switch (value) {
-        case 0: return none;
-        case 1: return remove;
-        case 2: return asMissing;
-        case 3: return asArray;
-        case 4: return concat;
+        case 1: return none;
+        case 2: return remove;
+        case 3: return asMissing;
+        case 4: return asArray;
+        case 5: return concat;
         default: return null;
       }
     }
@@ -1574,6 +1574,36 @@ public final class BufrCdmIndexProto {
      * <code>optional uint32 max = 7;</code>
      */
     int getMax();
+
+    // optional string desc = 8;
+    /**
+     * <code>optional string desc = 8;</code>
+     */
+    boolean hasDesc();
+    /**
+     * <code>optional string desc = 8;</code>
+     */
+    java.lang.String getDesc();
+    /**
+     * <code>optional string desc = 8;</code>
+     */
+    com.google.protobuf.ByteString
+        getDescBytes();
+
+    // optional string units = 9;
+    /**
+     * <code>optional string units = 9;</code>
+     */
+    boolean hasUnits();
+    /**
+     * <code>optional string units = 9;</code>
+     */
+    java.lang.String getUnits();
+    /**
+     * <code>optional string units = 9;</code>
+     */
+    com.google.protobuf.ByteString
+        getUnitsBytes();
   }
   /**
    * Protobuf type {@code bufrCdmIndex.Field}
@@ -1674,6 +1704,16 @@ public final class BufrCdmIndexProto {
             case 56: {
               bitField0_ |= 0x00000020;
               max_ = input.readUInt32();
+              break;
+            }
+            case 66: {
+              bitField0_ |= 0x00000040;
+              desc_ = input.readBytes();
+              break;
+            }
+            case 74: {
+              bitField0_ |= 0x00000080;
+              units_ = input.readBytes();
               break;
             }
           }
@@ -1878,6 +1918,92 @@ public final class BufrCdmIndexProto {
       return max_;
     }
 
+    // optional string desc = 8;
+    public static final int DESC_FIELD_NUMBER = 8;
+    private java.lang.Object desc_;
+    /**
+     * <code>optional string desc = 8;</code>
+     */
+    public boolean hasDesc() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>optional string desc = 8;</code>
+     */
+    public java.lang.String getDesc() {
+      java.lang.Object ref = desc_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          desc_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string desc = 8;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDescBytes() {
+      java.lang.Object ref = desc_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        desc_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string units = 9;
+    public static final int UNITS_FIELD_NUMBER = 9;
+    private java.lang.Object units_;
+    /**
+     * <code>optional string units = 9;</code>
+     */
+    public boolean hasUnits() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional string units = 9;</code>
+     */
+    public java.lang.String getUnits() {
+      java.lang.Object ref = units_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          units_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string units = 9;</code>
+     */
+    public com.google.protobuf.ByteString
+        getUnitsBytes() {
+      java.lang.Object ref = units_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        units_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       fxy_ = 0;
       name_ = "";
@@ -1886,6 +2012,8 @@ public final class BufrCdmIndexProto {
       type_ = ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType.lat;
       min_ = 0;
       max_ = 0;
+      desc_ = "";
+      units_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1930,6 +2058,12 @@ public final class BufrCdmIndexProto {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeUInt32(7, max_);
       }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBytes(8, getDescBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBytes(9, getUnitsBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1966,6 +2100,14 @@ public final class BufrCdmIndexProto {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(7, max_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(8, getDescBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(9, getUnitsBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2102,6 +2244,10 @@ public final class BufrCdmIndexProto {
         bitField0_ = (bitField0_ & ~0x00000020);
         max_ = 0;
         bitField0_ = (bitField0_ & ~0x00000040);
+        desc_ = "";
+        bitField0_ = (bitField0_ & ~0x00000080);
+        units_ = "";
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
 
@@ -2163,6 +2309,14 @@ public final class BufrCdmIndexProto {
           to_bitField0_ |= 0x00000020;
         }
         result.max_ = max_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.desc_ = desc_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.units_ = units_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2224,6 +2378,16 @@ public final class BufrCdmIndexProto {
         }
         if (other.hasMax()) {
           setMax(other.getMax());
+        }
+        if (other.hasDesc()) {
+          bitField0_ |= 0x00000080;
+          desc_ = other.desc_;
+          onChanged();
+        }
+        if (other.hasUnits()) {
+          bitField0_ |= 0x00000100;
+          units_ = other.units_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2743,6 +2907,154 @@ public final class BufrCdmIndexProto {
       public Builder clearMax() {
         bitField0_ = (bitField0_ & ~0x00000040);
         max_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional string desc = 8;
+      private java.lang.Object desc_ = "";
+      /**
+       * <code>optional string desc = 8;</code>
+       */
+      public boolean hasDesc() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional string desc = 8;</code>
+       */
+      public java.lang.String getDesc() {
+        java.lang.Object ref = desc_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          desc_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string desc = 8;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDescBytes() {
+        java.lang.Object ref = desc_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          desc_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string desc = 8;</code>
+       */
+      public Builder setDesc(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        desc_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string desc = 8;</code>
+       */
+      public Builder clearDesc() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        desc_ = getDefaultInstance().getDesc();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string desc = 8;</code>
+       */
+      public Builder setDescBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        desc_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string units = 9;
+      private java.lang.Object units_ = "";
+      /**
+       * <code>optional string units = 9;</code>
+       */
+      public boolean hasUnits() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional string units = 9;</code>
+       */
+      public java.lang.String getUnits() {
+        java.lang.Object ref = units_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          units_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string units = 9;</code>
+       */
+      public com.google.protobuf.ByteString
+          getUnitsBytes() {
+        java.lang.Object ref = units_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          units_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string units = 9;</code>
+       */
+      public Builder setUnits(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        units_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string units = 9;</code>
+       */
+      public Builder clearUnits() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        units_ = getDefaultInstance().getUnits();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string units = 9;</code>
+       */
+      public Builder setUnitsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        units_ = value;
         onChanged();
         return this;
       }
@@ -4025,23 +4337,24 @@ public final class BufrCdmIndexProto {
       "oto\022\014bufrCdmIndex\"h\n\007Station\022\n\n\002id\030\001 \002(\t" +
       "\022\013\n\003lat\030\002 \002(\001\022\013\n\003lon\030\003 \002(\001\022\013\n\003alt\030\004 \001(\001\022" +
       "\014\n\004desc\030\005 \001(\t\022\r\n\005wmoId\030\006 \001(\t\022\r\n\005count\030\007 " +
-      "\002(\005\"\255\001\n\005Field\022\013\n\003fxy\030\001 \002(\r\022\014\n\004name\030\002 \001(\t" +
+      "\002(\005\"\312\001\n\005Field\022\013\n\003fxy\030\001 \002(\r\022\014\n\004name\030\002 \001(\t" +
       "\022!\n\004flds\030\003 \003(\0132\023.bufrCdmIndex.Field\022\'\n\006a" +
       "ction\030\004 \001(\0162\027.bufrCdmIndex.FldAction\022#\n\004" +
       "type\030\005 \001(\0162\025.bufrCdmIndex.FldType\022\013\n\003min" +
-      "\030\006 \001(\r\022\013\n\003max\030\007 \001(\r\"\205\001\n\tBufrIndex\022\020\n\010fil" +
-      "ename\030\001 \002(\t\022\'\n\010stations\030\002 \003(\0132\025.bufrCdmI",
-      "ndex.Station\022!\n\004root\030\003 \002(\0132\023.bufrCdmInde" +
-      "x.Field\022\r\n\005start\030\004 \002(\004\022\013\n\003end\030\005 \002(\004*I\n\tF" +
-      "ldAction\022\010\n\004none\020\000\022\n\n\006remove\020\001\022\r\n\tasMiss" +
-      "ing\020\002\022\013\n\007asArray\020\003\022\n\n\006concat\020\004*\354\001\n\007FldTy" +
-      "pe\022\007\n\003lat\020\001\022\007\n\003lon\020\002\022\n\n\006height\020\003\022\026\n\022heig" +
-      "htAboveStation\020\004\022\023\n\017heightOfStation\020\005\022\r\n" +
-      "\tstationId\020\n\022\017\n\013stationDesc\020\013\022\t\n\005wmoId\020\014" +
-      "\022\014\n\010wmoBlock\020\r\022\010\n\004year\020\017\022\t\n\005month\020\020\022\007\n\003d" +
-      "ay\020\021\022\010\n\004hour\020\022\022\n\n\006minute\020\023\022\007\n\003sec\020\024\022\007\n\003d" +
-      "oy\020\025\022\014\n\010timeIncr\020\026\022\t\n\005incrS\020\027B+\n\026ucar.nc",
-      "2.ft.point.bufrB\021BufrCdmIndexProto"
+      "\030\006 \001(\r\022\013\n\003max\030\007 \001(\r\022\014\n\004desc\030\010 \001(\t\022\r\n\005uni" +
+      "ts\030\t \001(\t\"\205\001\n\tBufrIndex\022\020\n\010filename\030\001 \002(\t",
+      "\022\'\n\010stations\030\002 \003(\0132\025.bufrCdmIndex.Statio" +
+      "n\022!\n\004root\030\003 \002(\0132\023.bufrCdmIndex.Field\022\r\n\005" +
+      "start\030\004 \002(\004\022\013\n\003end\030\005 \002(\004*I\n\tFldAction\022\010\n" +
+      "\004none\020\001\022\n\n\006remove\020\002\022\r\n\tasMissing\020\003\022\013\n\007as" +
+      "Array\020\004\022\n\n\006concat\020\005*\354\001\n\007FldType\022\007\n\003lat\020\001" +
+      "\022\007\n\003lon\020\002\022\n\n\006height\020\003\022\026\n\022heightAboveStat" +
+      "ion\020\004\022\023\n\017heightOfStation\020\005\022\r\n\tstationId\020" +
+      "\n\022\017\n\013stationDesc\020\013\022\t\n\005wmoId\020\014\022\014\n\010wmoBloc" +
+      "k\020\r\022\010\n\004year\020\017\022\t\n\005month\020\020\022\007\n\003day\020\021\022\010\n\004hou" +
+      "r\020\022\022\n\n\006minute\020\023\022\007\n\003sec\020\024\022\007\n\003doy\020\025\022\014\n\010tim",
+      "eIncr\020\026\022\t\n\005incrS\020\027B+\n\026ucar.nc2.ft.point." +
+      "bufrB\021BufrCdmIndexProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4059,7 +4372,7 @@ public final class BufrCdmIndexProto {
           internal_static_bufrCdmIndex_Field_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_bufrCdmIndex_Field_descriptor,
-              new java.lang.String[] { "Fxy", "Name", "Flds", "Action", "Type", "Min", "Max", });
+              new java.lang.String[] { "Fxy", "Name", "Flds", "Action", "Type", "Min", "Max", "Desc", "Units", });
           internal_static_bufrCdmIndex_BufrIndex_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_bufrCdmIndex_BufrIndex_fieldAccessorTable = new

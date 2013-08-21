@@ -32,13 +32,10 @@
  */
 package ucar.ma2;
 
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
-
 import java.io.IOException;
 
 /**
- * Read a maximum number of sdatas from a StructureDataIterator.
+ * Read a maximum number of StructureData objects from a StructureDataIterator.
  *
  * @author caron
  * @since Apr 23, 2008

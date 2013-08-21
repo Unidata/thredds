@@ -34,6 +34,7 @@ package ucar.nc2.ft.point.writer;
 
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.*;
@@ -74,6 +75,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
   private Variable lat, lon, alt, time, id, wmoId, desc, stationIndex, record;
 
   private List<Dimension> stationDims = new ArrayList<Dimension>(1);
+  private Dimension recordDim;
 
   private boolean useAlt = false;
   private boolean useWmoId = false;
@@ -91,7 +93,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
     this.altUnits = altUnits;
 
     createStations(stns);
-    createObsVariables(timeUnit);
+    createCoordVariables(timeUnit);
     createDataVariables(vars);
 
     writer.create(); // done with define mode
@@ -124,7 +126,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
     llbb = getBoundingBox(stnList); // gets written in super.finish();
 
     // add the dimensions
-    writer.addUnlimitedDimension(recordDimName);
+    recordDim = writer.addUnlimitedDimension(recordDimName);
     Dimension stationDim = writer.addDimension(null, stationDimName, nstns);
     stationDims.add(stationDim);
 
@@ -160,7 +162,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
     }
   }
 
-  private void createObsVariables(DateUnit timeUnit) throws IOException {
+  private void createCoordVariables(DateUnit timeUnit) throws IOException {
     // time variable
 	  
     time = writer.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
@@ -178,7 +180,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
     	coordNames = latName + " " + lonName + " " + timeName;
     }
 
-    // find all dimensions needed by the data variables
+    /* find all dimensions needed by the data variables
     for (VariableSimpleIF var : dataVars) {
       List<Dimension> dims = var.getDimensions();
       dimSet.addAll(dims);
@@ -189,7 +191,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
       if (d.isUnlimited()) continue;
       if (d.isShared())
         writer.addDimension(null, d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength());
-    }
+    }  */
     
     // eliminate coordinate variables
     List<VariableSimpleIF> useDataVars = new ArrayList<VariableSimpleIF>(dataVars.size());
@@ -197,10 +199,12 @@ public class WriterCFStationCollection  extends CFPointWriter {
       if (writer.findVariable(var.getShortName()) == null) useDataVars.add(var);
     }
 
-    // add the data variables all using the record dimension
+    // add the data variables, all using the record dimension
     for (VariableSimpleIF oldVar : useDataVars) {
-      List<Dimension> dims = oldVar.getDimensions();
-      StringBuilder dimNames = new StringBuilder(recordDimName);
+      List<Dimension> dims = getNewDimensions(oldVar);
+      dims.add(0, recordDim);
+
+      /* StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
         if (d.isUnlimited()) continue;
         if (d.isShared())
@@ -210,8 +214,21 @@ public class WriterCFStationCollection  extends CFPointWriter {
           writer.addDimension(null, dimName, d.getLength());
           dimNames.append(" ").append(dimName);
         }
+      }  */
+
+      Variable newVar;
+      if ((oldVar.getDataType().equals(DataType.STRING))) {
+        newVar = writer.addStringVariable(null, oldVar.getShortName(), dims, 10);
+
+      /* } else if ((oldVar.getDataType().equals(DataType.CHAR)) && dims.size() > 1) {
+        int n = dims.size();
+        List<Dimension> cdims = dims.subList(0, n-1);
+        Dimension lenDim = dims.get(n-1);
+        newVar = writer.addStringVariable(null, oldVar.getShortName(), cdims, lenDim.getLength());  */
+
+      } else {
+        newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
       }
-      Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
@@ -219,6 +236,33 @@ public class WriterCFStationCollection  extends CFPointWriter {
       }
       newVar.addAttribute(new Attribute(CF.COORDINATES, coordNames));
     }
+
+    System.out.printf("%s%n", writer.getNetcdfFile());
+  }
+
+  int countDim = 0;
+  private final Map<String, Dimension> gdimHash = new HashMap<String, Dimension>(); // name, newDim : global dimensions (classic mode)
+  private List<Dimension> getNewDimensions(VariableSimpleIF oldVar) {
+    List<Dimension> result = new ArrayList<Dimension>(oldVar.getRank());
+
+    // dimensions
+    for (Dimension oldD : oldVar.getDimensions()) {
+      Dimension newD = gdimHash.get(oldD.getShortName());
+      if (newD != null) continue;
+      if (oldD.isShared()) {
+        newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+                oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+        gdimHash.put(oldD.getShortName(), newD);
+        if (debug) System.out.println("add dim= " + newD);
+        result.add(newD);
+      } else {
+        String dimName = (oldVar.getDataType() == DataType.CHAR) ? oldVar.getShortName()+"_strlen" : "dim"+countDim++;
+        newD = writer.addDimension(null, dimName, oldD.isUnlimited() ? 0 : oldD.getLength());
+        gdimHash.put(dimName, newD);
+        result.add(newD);
+      }
+    }
+    return result;
   }
 
   private HashMap<String, Integer> stationMap;
@@ -319,60 +363,31 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
   ////////////////////////////
 
-    /* public static void rewrite(String fileIn, String fileOut) throws IOException {
+  public static void main(String args[]) throws IOException {
     long start = System.currentTimeMillis();
+    String outputFile = "G:/work/manross/split/872d794d.bufr.nc";
+    String fDataset = "G:/work/manross/split/872d794d.bufr";
 
-    // do it in memory for speed
-    NetcdfFile ncfile = NetcdfFile.openInMemory(fileIn);
-    NetcdfDataset ncd = new NetcdfDataset( ncfile);
+    System.out.println("WriterCFStationCollection from "+fDataset+" to "+outputFile);
 
-    StringBuilder errlog = new StringBuilder();
-    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, ncd, null, errlog);
-
-    List<ucar.unidata.geoloc.Station> stns = sobs.getStations();
-    List<VariableSimpleIF> vars = sobs.getDataVariables();
-
-    WriterStationObsDataset writer = new WriterStationObsDataset(fileOut, "rewrite "+fileIn);
-    File f = new File( fileIn);
-    writer.setLength(f.length());
-    writer.writeHeader(stns, vars);
-
-    for (ucar.unidata.geoloc.Station s : stns) {
-      DataIterator iter = sobs.getDataIterator(s);
-      while (iter.hasNext()) {
-        StationObsDatatype sobsData = (StationObsDatatype) iter.nextData();
-        StructureData data = sobsData.getData();
-        writer.writeRecord(sobsData, data);
-      }
+        // open point dataset
+    Formatter out = new Formatter();
+    FeatureDataset fdataset = FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, fDataset, null, out);
+    if (fdataset == null) {
+      System.out.printf("**failed on %s %n --> %s %n", fDataset, out);
+      assert false;
     }
+    assert fdataset instanceof FeatureDatasetPoint;
+    FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
 
-    writer.finish();
 
-    long took = System.currentTimeMillis() - start;
-    System.out.println("Rewrite " + fileIn+" to "+fileOut+ " took = " + took);
-  }
+    int count = CFPointWriter.writeFeatureCollection(fdpoint, outputFile, null);
+    System.out.printf(" nrecords written = %d%n%n", count);
 
-  public static void main2(String args[]) throws IOException {
-    long start = System.currentTimeMillis();
-    String toLocation = "C:/temp2/";
-    String fromLocation = "C:/data/metars/";
-
-    if (args.length > 1) {
-      fromLocation = args[0];
-      toLocation = args[1];
-    }
-    System.out.println("Rewrite .nc files from "+fromLocation+" to "+toLocation);
-
-    File dir = new File(fromLocation);
-    File[] files = dir.listFiles();
-    for (File file : files) {
-      if (file.getName().endsWith(".nc"))
-        rewrite(file.getAbsolutePath(), toLocation + file.getName());
-    }
 
     long took = System.currentTimeMillis() - start;
     System.out.println("That took = " + took);
 
-  }   */
+  }
 
 }

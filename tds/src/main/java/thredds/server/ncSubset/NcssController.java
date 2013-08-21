@@ -50,8 +50,8 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.CFGridWriter;
 import ucar.nc2.dt.grid.GridDatasetInfo;
-import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -352,7 +352,7 @@ public class NcssController extends AbstractController implements LastModified {
 
   private long makeGridFileSizeEstimate(GridDataset gds, QueryParams qp, boolean useBB, boolean addLatLon, Range zRange) throws IOException, InvalidRangeException {
 
-    NetcdfCFWriter writer = new NetcdfCFWriter();
+    CFGridWriter writer = new CFGridWriter();
     
     return writer.makeGridFileSizeEstimate(gds, qp.vars,
                   useBB ? qp.getBB() : null,
@@ -383,7 +383,7 @@ public class NcssController extends AbstractController implements LastModified {
     String url = buildCacheUrl(pathname);
 
     try {
-      NetcdfCFWriter writer = new NetcdfCFWriter();
+      CFGridWriter writer = new CFGridWriter();
 
       writer.makeFile(cacheFilename, gds, qp.vars,
               useBB ? qp.getBB() : null,

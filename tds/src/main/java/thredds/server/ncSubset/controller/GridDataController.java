@@ -74,7 +74,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.dt.grid.CFGridWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.IO;
@@ -158,7 +158,7 @@ class GridDataController extends AbstractNcssDataRequestController {
       if(!wantedDates.isEmpty())
     	  wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
 
-      NetcdfCFWriter writer = new NetcdfCFWriter();
+      CFGridWriter writer = new CFGridWriter();
       maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
       if (maxFileDownloadSize > 0) {
         long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon());
@@ -171,7 +171,7 @@ class GridDataController extends AbstractNcssDataRequestController {
       }
              
             
-      makeGridFile(new NetcdfCFWriter(), getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon(), version);
+      makeGridFile(new CFGridWriter(), getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon(), version);
     //}
   }
 
@@ -213,7 +213,7 @@ class GridDataController extends AbstractNcssDataRequestController {
     List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
     CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
 
-    NetcdfCFWriter writer = new NetcdfCFWriter();
+    CFGridWriter writer = new CFGridWriter();
     maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
     if (maxFileDownloadSize > 0) {
       long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon());
@@ -396,7 +396,7 @@ class GridDataController extends AbstractNcssDataRequestController {
     return zRange;
   }
 
-  private void makeGridFile(NetcdfCFWriter writer, GridDataset gds, List<String> vars, LatLonRect bbox, Integer horizStride,
+  private void makeGridFile(CFGridWriter writer, GridDataset gds, List<String> vars, LatLonRect bbox, Integer horizStride,
                             Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon, NetcdfFileWriter.Version version)
           throws RequestTooLargeException, InvalidRangeException, IOException {
 	  		 

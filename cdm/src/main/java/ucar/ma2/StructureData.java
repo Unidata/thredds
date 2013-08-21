@@ -164,7 +164,8 @@ abstract public class StructureData {
    */
   public Object getScalarObject(String memberName) {
     StructureMembers.Member m = members.findMember(memberName);
-    if (m == null) throw new IllegalArgumentException("illegal member name =" + memberName);
+    if (m == null)
+      throw new IllegalArgumentException("illegal member name =" + memberName);
     return getScalarObject(m);
   }
 

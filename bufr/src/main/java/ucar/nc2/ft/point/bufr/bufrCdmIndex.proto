@@ -14,11 +14,11 @@ message Station {
 }
 
 enum FldAction {
-  none = 0;
-  remove = 1;
-  asMissing = 2;
-  asArray = 3;
-  concat = 4;
+  none = 1;
+  remove = 2;
+  asMissing = 3;
+  asArray = 4;
+  concat = 5;
 }
 
 enum FldType {
@@ -50,6 +50,8 @@ message Field {
   optional FldType type = 5;
   optional uint32 min = 6;
   optional uint32 max = 7;
+  optional string desc = 8;
+  optional string units = 9;
 }
 
 message BufrIndex {

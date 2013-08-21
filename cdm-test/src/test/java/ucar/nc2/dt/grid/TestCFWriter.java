@@ -58,7 +58,7 @@ public class TestCFWriter extends TestCase {
     List<String> gridList = new ArrayList<String>();
     gridList.add(varName);
 
-    NetcdfCFWriter writer = new NetcdfCFWriter();
+    CFGridWriter writer = new CFGridWriter();
     writer.makeFile(fileOut, gds, gridList,
             new LatLonRect(new LatLonPointImpl(30, -109), 10, 50),
             null,

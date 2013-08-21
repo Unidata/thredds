@@ -34,7 +34,7 @@
 package ucar.ma2;
 
 /**
- * Class Description.
+ * A StructureData with scalar data.
  *
  * @author caron
  * @since Jan 26, 2009

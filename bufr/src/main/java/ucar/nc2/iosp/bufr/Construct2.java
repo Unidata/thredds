@@ -49,17 +49,18 @@ import java.io.IOException;
  * BufrIosp2 delegates the construction of the Netcdf objects to Construct2.
  *
  * @author caron
+ * @since 8/8/13
  */
 
-public class Construct2 {
+class Construct2 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Construct2.class);
   static private final boolean warnUnits = false;
 
   private ucar.nc2.NetcdfFile ncfile;
 
-  Sequence recordStructure;
-  int centerId;
-  Formatter coordinates = new Formatter();
+  private Sequence recordStructure;
+  private int centerId;
+  private Formatter coordinates = new Formatter();
 
   Construct2(Message proto, BufrConfig bufrConfig, ucar.nc2.NetcdfFile nc) throws IOException {
     this.ncfile = nc;
@@ -108,7 +109,11 @@ public class Construct2 {
     ncfile.finish();
   }
 
-   private void makeObsRecord(BufrConfig bufrConfig) throws IOException {
+  Sequence getObsStructure() {
+    return recordStructure;
+  }
+
+  private void makeObsRecord(BufrConfig bufrConfig) throws IOException {
     recordStructure = new Sequence(ncfile, null, null, BufrIosp2.obsRecord);
     ncfile.addVariable(null, recordStructure);
 
@@ -148,7 +153,6 @@ public class Construct2 {
     }
   }
 
-  private int structNum = 1;
   private void addStructure(Structure parent, BufrConfig.FieldConverter fld, int count) {
     DataDescriptor dkey = fld.dds;
     String uname = findUniqueName(parent, fld.getName(), "struct");
@@ -172,6 +176,7 @@ public class Construct2 {
   }
 
   private int seqNum = 1;
+
   private void addSequence(Structure parent, BufrConfig.FieldConverter fld) {
 
     DataDescriptor dkey = fld.dds;
@@ -252,9 +257,9 @@ public class Construct2 {
   private void addDpiSequence(Structure parent, BufrConfig.FieldConverter fld) {
     Structure struct = new Structure(ncfile, null, parent, "statistics");
     try {
-      struct.setDimensionsAnonymous(new int[] { fld.dds.replication}); // scalar
+      struct.setDimensionsAnonymous(new int[]{fld.dds.replication}); // scalar
     } catch (InvalidRangeException e) {
-      e.printStackTrace();  
+      e.printStackTrace();
     }
     Variable v = new Variable(ncfile, null, struct, "name");
     v.setDataType(DataType.STRING); // scalar
@@ -266,12 +271,12 @@ public class Construct2 {
     v.setDimensions(""); // scalar
     struct.addMemberVariable(v);
 
-    parent.addMemberVariable(struct);    
+    parent.addMemberVariable(struct);
   }
 
   private Variable addVariable(Structure struct, BufrConfig.FieldConverter fld, int count) {
     DataDescriptor dkey = fld.dds;
-    String uname = findUniqueName(struct, fld.getName(), "unknown");
+    String uname = findGloballyUniqueName(fld.getName(), "unknown");
     dkey.name = uname; // name may need to be changed for uniqueness
 
     Variable v = new Variable(ncfile, null, struct, uname);
@@ -285,7 +290,7 @@ public class Construct2 {
     }
 
     if (fld.getDesc() != null)
-        v.addAttribute(new Attribute("long_name", fld.getDesc()));
+      v.addAttribute(new Attribute("long_name", fld.getDesc()));
 
     if (fld.getUnits() == null) {
       if (warnUnits) log.warn("dataDesc.units == null for " + uname);
@@ -334,7 +339,7 @@ public class Construct2 {
 
     } else {
       int nbits = dataDesc.bitWidth;
-      // use of unsigend seems fishy, since only ime it uses high bit is for missing
+      // use of unsigned seems fishy, since only time it uses high bit is for missing
       // not necessarily true, just when they "add one bit" to deal with missing case
       if (nbits < 9) {
         v.setDataType(DataType.BYTE);
@@ -348,7 +353,7 @@ public class Construct2 {
         v.setDataType(DataType.SHORT);
         if (nbits == 16) {
           v.addAttribute(new Attribute("_Unsigned", "true"));
-          v.addAttribute(new Attribute("missing_value", BufrNumbers.missingValue(nbits)));
+          v.addAttribute(new Attribute("missing_value", (int) BufrNumbers.missingValue(nbits)));
         } else
           v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missingValue(nbits)));
 
@@ -358,9 +363,9 @@ public class Construct2 {
           v.addAttribute(new Attribute("_Unsigned", "true"));
           v.addAttribute(new Attribute("missing_value", (int) BufrNumbers.missingValue(nbits)));
         } else
-          v.addAttribute(new Attribute("missing_value", BufrNumbers.missingValue(nbits)));
+          v.addAttribute(new Attribute("missing_value", (int) BufrNumbers.missingValue(nbits)));
 
-      } else  {
+      } else {
         v.setDataType(DataType.LONG);
         v.addAttribute(new Attribute("missing_value", BufrNumbers.missingValue(nbits)));
       }
@@ -404,6 +409,25 @@ public class Construct2 {
       oldV = struct.findVariable(wantSeq);
       if (oldV == null) return wantSeq;
       seq++;
+    }
+  }
+
+  // force globally unique variable names, even when they are in different Structures.
+  // this allows us to promote structure members without worrying about name collisions
+  private Map<String, Integer> names = new HashMap<String, Integer>(100);
+  private String findGloballyUniqueName(String want, String def) {
+    if (want == null) return def + tempNo++;
+
+    String vwant = NetcdfFile.makeValidCdmObjectName(want);
+    Integer have = names.get(vwant);
+    if (have == null) {
+      names.put(vwant,1);
+      return vwant;
+    } else {
+      have = have + 1;
+      String wantSeq = vwant + "-" + have;
+      names.put(vwant,have);
+      return wantSeq;
     }
   }
 

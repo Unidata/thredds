@@ -37,7 +37,7 @@ import java.util.HashMap;
 
 /**
  * A composite of other StructureData.
- * If multiple of same name, first one is used
+ * If multiple members of same name exist, the first one added is used
  *
  * @author caron
  * @since Jan 21, 2009

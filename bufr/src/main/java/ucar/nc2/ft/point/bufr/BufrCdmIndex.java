@@ -3,7 +3,6 @@ package ucar.nc2.ft.point.bufr;
 import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -57,11 +56,10 @@ public class BufrCdmIndex {
    sizeIndex
    BufrCdmIndexProto (sizeIndex bytes)
   */
- private boolean writeIndex2(String bufrFilename, BufrConfig config, File indexFile) throws IOException {
-
+  private boolean writeIndex2(String bufrFilename, BufrConfig config, File indexFile) throws IOException {
     if (indexFile.exists()) {
       if (!indexFile.delete())
-        log.warn(" gc1 cant delete index file {}", indexFile.getPath());
+        log.warn(" BufrCdmIndex cant delete index file {}", indexFile.getPath());
     }
     log.debug(" createIndex for {}", indexFile.getPath());
 
@@ -75,13 +73,14 @@ public class BufrCdmIndex {
       // build it
       BufrCdmIndexProto.BufrIndex.Builder indexBuilder = BufrCdmIndexProto.BufrIndex.newBuilder();
       indexBuilder.setFilename(bufrFilename);
-      indexBuilder.setRoot(buildField(config.getRootConverter()));
+      root = buildField(config.getRootConverter());
+      indexBuilder.setRoot(root);
       indexBuilder.setStart(config.getStart());
       indexBuilder.setEnd(config.getEnd());
 
       Map<String,BufrConfig.BufrStation> smaps = config.getStationMap();
       if (smaps != null) {
-        List<BufrConfig.BufrStation> stations = new ArrayList(smaps.values());
+        List<BufrConfig.BufrStation> stations = new ArrayList<BufrConfig.BufrStation>(smaps.values());
         Collections.sort(stations);
         for (BufrConfig.BufrStation s : stations) {
           indexBuilder.addStations(buildStation(s));
@@ -93,7 +92,53 @@ public class BufrCdmIndex {
       byte[] b = index.toByteArray();
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
+
+      return true;
+
+    } finally {
+      log.debug("  file size =  %d bytes", raf.length());
+      raf.close();
+    }
+  }
+
+  public static boolean writeIndex(BufrCdmIndex index, BufrField root, File indexFile) throws IOException {
+    if (indexFile.exists()) {
+      if (!indexFile.delete())
+        log.warn(" BufrCdmIndex cant delete index file {}", indexFile.getPath());
+    }
+    log.debug(" createIndex for {}", indexFile.getPath());
+
+    RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw");
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    try {
+      //// header message
+      raf.write(MAGIC_START.getBytes("UTF-8"));
+      raf.writeInt(version);
+
+      // build it
+      BufrCdmIndexProto.BufrIndex.Builder indexBuilder = BufrCdmIndexProto.BufrIndex.newBuilder();
+      indexBuilder.setFilename(index.bufrFilename);
+      BufrCdmIndexProto.Field rootf = buildField(root);
+      indexBuilder.setRoot( rootf);
+      indexBuilder.setStart(index.start);
+      indexBuilder.setEnd(index.end);
+
+      if (index.stations != null) {
+        for (BufrCdmIndexProto.Station s : index.stations) {
+          indexBuilder.addStations(s);
+        }
+      }
+
+      // write it
+      BufrCdmIndexProto.BufrIndex indexOut = indexBuilder.build();
+      byte[] b = indexOut.toByteArray();
+      NcStream.writeVInt(raf, b.length); // message size
+      raf.write(b);  // message  - all in one gulp
       log.debug("  write BufrCdmIndexProto= {} bytes", b.length);
+
+      //System.out.printf("  write BufrCdmIndexProto= %d bytes", b.length);
+      //showProtoRoot(rootf);
+
       return true;
 
     } finally {
@@ -118,7 +163,7 @@ public class BufrCdmIndex {
     return builder.build();
   }
 
-  private BufrCdmIndexProto.Field buildField(BufrConfig.FieldConverter fld) {
+  private static BufrCdmIndexProto.Field buildField(BufrField fld) {
     BufrCdmIndexProto.Field.Builder fldBuilder = BufrCdmIndexProto.Field.newBuilder();
 
     fldBuilder.setFxy(fld.getFxy());
@@ -126,12 +171,18 @@ public class BufrCdmIndex {
     if (fld.getName() != null)
       fldBuilder.setName(fld.getName());
 
-    if (fld.getFlds() != null) {
-      for (BufrConfig.FieldConverter child : fld.getFlds())
+    if (fld.getDesc() != null)
+      fldBuilder.setDesc(fld.getDesc());
+
+    if (fld.getUnits() != null)
+      fldBuilder.setUnits(fld.getUnits());
+
+    if (fld.getChildren() != null) {
+      for (BufrField child : fld.getChildren())
         fldBuilder.addFlds(buildField(child));
     }
 
-    if (fld.getAction() != null)
+    if (fld.getAction() != null && fld.getAction() != BufrCdmIndexProto.FldAction.none)
       fldBuilder.setAction( fld.getAction());
 
     if (fld.getType() != null)
@@ -189,12 +240,22 @@ public class BufrCdmIndex {
       start = proto.getStart();
       end = proto.getEnd();
 
+      //showProtoRoot(root);
+
     } catch (Throwable t) {
       log.error("Error reading index " + raf.getLocation(), t);
       return false;
     }
 
     return true;
+  }
+
+  static void showProtoRoot(BufrCdmIndexProto.Field fld) {
+    String act = fld.hasAction() ? fld.getAction().toString() : "-";
+    System.out.printf("%10s %s%n", act, fld.getName());
+    for (BufrCdmIndexProto.Field child : fld.getFldsList())
+      showProtoRoot(child);
+
   }
 
   public void showIndex(Formatter f) {
