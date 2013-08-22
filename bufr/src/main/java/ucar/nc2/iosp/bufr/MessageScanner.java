@@ -76,14 +76,12 @@ public class MessageScanner {
   private ucar.unidata.io.RandomAccessFile raf = null;
   private boolean useEmbeddedTables;
 
-  //private GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-
-  //private BufrMessage first = null;
   private int countMsgs = 0;
   private int countObs = 0;
   private byte[] header;
   private long startPos = 0;
   private long lastPos = 0;
+  private boolean debug = true;
 
   private EmbeddedTable embedTable = null;
 
@@ -105,6 +103,7 @@ public class MessageScanner {
       Message m = next();
       if (m == null) continue;
       if (m.containsBufrTable()) continue; // not data
+      if (m.getNumberDatasets() == 0) continue; // empty
       return m;
     }
     return null;
@@ -127,7 +126,7 @@ public class MessageScanner {
       raf.seek(startPos);
       raf.read(header);
     }
-    // System.out.println(" more "+more+" at "+startPos+" lastPos "+ lastPos+" nbytes= "+nbytes+ " msg "+countMsgs);
+    if (debug && countMsgs % 100 == 0) System.out.println(" hasNext "+more+" at "+startPos+" lastPos "+ lastPos+" msg "+countMsgs);
     return more;
   }
 

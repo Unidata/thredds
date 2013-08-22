@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.util.Indent;
+
 import java.util.Formatter;
 import java.util.List;
 
@@ -97,7 +99,7 @@ abstract public class StructureData {
    *
    * @param members    StructureData is always contained in a StructureArray.
    */
-  public StructureData(StructureMembers members) {
+  protected StructureData(StructureMembers members) {
     this.members = members;
   }
 
@@ -667,14 +669,16 @@ abstract public class StructureData {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // debugging
-  public void showInternal(Formatter f, String leadingSpace) {
-    f.format("%sStructureData %s class=%s hash=0x%x%n", leadingSpace, members.getName(), this.getClass().getName(), hashCode());
+  public void showInternal(Formatter f, Indent indent) {
+    f.format("%sStructureData %s class=%s hash=0x%x%n", indent, members.getName(), this.getClass().getName(), hashCode());
   }
 
-  public void showInternalMembers(Formatter f, String leadingSpace) {
-    f.format("%sStructureData %s class=%s hash=0x%x%n", leadingSpace, members.getName(), this.getClass().getName(), hashCode());
+  public void showInternalMembers(Formatter f, Indent indent) {
+    f.format("%sStructureData %s class=%s hash=0x%x%n", indent, members.getName(), this.getClass().getName(), hashCode());
+    indent.incr();
     for (StructureMembers.Member m : getMembers())
-      m.showInternal(f, leadingSpace+"  ");
+      m.showInternal(f, indent);
+    indent.incr();
   }
 
    public String toString() { 

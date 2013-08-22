@@ -43,7 +43,7 @@ import java.util.HashMap;
  * @since Jan 21, 2009
  */
 public class StructureDataComposite extends StructureData {
-  protected Map<StructureMembers.Member, StructureData> proxy = new HashMap<StructureMembers.Member,StructureData>(32);
+  protected Map<StructureMembers.Member, StructureData> proxy = new HashMap<StructureMembers.Member, StructureData>(32);
 
   public StructureDataComposite() {
     super(new StructureMembers(""));
@@ -53,6 +53,15 @@ public class StructureDataComposite extends StructureData {
     for (StructureMembers.Member m : sdata.getMembers()) {
       if (this.members.findMember(m.getName()) == null) {
         this.members.addMember(m);
+        proxy.put(m, sdata);
+      }
+    }
+  }
+
+  public void add(int pos, StructureData sdata) {
+    for (StructureMembers.Member m : sdata.getMembers()) {
+      if (this.members.findMember(m.getName()) == null) {
+        this.members.addMember(pos++, m);
         proxy.put(m, sdata);
       }
     }

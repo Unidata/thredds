@@ -78,6 +78,7 @@ import java.nio.channels.WritableByteChannel;
  * @since Aug 15, 2008
  */
 public class BufrMessageViewer extends JPanel {
+
   private PreferencesExt prefs;
 
   private BeanTableSorted messageTable, obsTable, ddsTable;
@@ -599,14 +600,14 @@ public class BufrMessageViewer extends JPanel {
     BufrIosp2 iosp = new BufrIosp2();
     BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
     iosp.open(raf, ncfile, m);
-    return new NetcdfDataset(ncfile);
+    return new NetcdfDataset(ncfile, BufrIosp2.enhance);
   }
 
   private NetcdfDataset makeBufrDataset() throws IOException {
     BufrIosp2 iosp = new BufrIosp2();
     BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
     iosp.open(raf, ncfile, (CancelTask) null);
-    return new NetcdfDataset(ncfile);
+    return new NetcdfDataset(ncfile, BufrIosp2.enhance);
   }
 
   private class BufrNetcdf extends NetcdfFile {

@@ -184,8 +184,10 @@ public class BufrConfig {
   private StandardFields.ExtractFromStructure extract;
   private boolean hasStations = false;
   private boolean hasDate = false;
+  private int countObs = 0;
   private void scanBufrFile(RandomAccessFile raf) throws Exception {
     NetcdfDataset ncd = null;
+    countObs = 0;
 
     try {
       MessageScanner scanner = new MessageScanner(raf);
@@ -201,7 +203,7 @@ public class BufrConfig {
       featureType = guessFeatureType(standardFields);
       hasDate = standardFields.hasTime();
 
-      ncd = NetcdfDataset.openDataset(raf.getLocation()); // LOOK opening another raf
+      ncd = NetcdfDataset.openDataset(raf.getLocation(), BufrIosp2.enhance, -1, null, null); // LOOK opening another raf
       Attribute centerAtt = ncd.findGlobalAttribute(BufrIosp2.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
 
@@ -216,6 +218,7 @@ public class BufrConfig {
     } finally {
       if (ncd != null) ncd.close();
     }
+    System.out.printf("nobs = %d%n", countObs);
   }
 
   private FeatureType guessFeatureType(StandardFields.ExtractFromMessage standardFields) {
@@ -253,19 +256,30 @@ public class BufrConfig {
     processSeq(data.getStructureDataIterator(), rootConverter, true);
   }
 
+  private CalendarDate today = CalendarDate.present();
   private void processSeq(StructureDataIterator sdataIter, FieldConverter parent, boolean isTop) throws IOException {
      try {
        while (sdataIter.hasNext()) {
          StructureData sdata = sdataIter.next();
 
          if (isTop) {
+           countObs++;
            if (hasStations) processStations(parent, sdata);
            if (hasDate) {
              extract.extract(sdata);
              CalendarDate date = extract.makeCalendarDate();
+             if (Math.abs(date.getDifferenceInMsecs(today)) > 1000L * 3600 * 24 * 100) {
+               extract.makeCalendarDate();
+             }
              long msecs = date.getMillis();
-             if (this.start > msecs) this.start = msecs;
-             if (this.end < msecs) this.end = msecs;
+             if (this.start > msecs) {
+               this.start = msecs;
+               //System.out.printf("new start %s%n", date);
+             }
+             if (this.end < msecs) {
+               this.end = msecs;
+               //System.out.printf("new end %s%n", date);
+             }
            }
          }
 

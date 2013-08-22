@@ -544,17 +544,19 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   @Override
-  public void showInternal(Formatter f, String leadingSpace) {
-    super.showInternal(f, leadingSpace);
+  public void showInternal(Formatter f, Indent indent) {
+    super.showInternal(f, indent);
 
-    f.format("%sByteBuffer = %s (hash=0x%x)%n", leadingSpace,  bbuffer, bbuffer.hashCode());
+    f.format("%sByteBuffer = %s (hash=0x%x)%n", indent,  bbuffer, bbuffer.hashCode());
     if (null != heap) {
-      f.format("%s  Heap Objects%n", leadingSpace);
+      f.format("%s  Heap Objects%n", indent);
       for (int i=0; i<heap.size(); i++) {
         Object o =  heap.get(i);
-        f.format("%s   %d class=%s hash=0x%x = %s%n", leadingSpace, i, o.getClass().getName(), o.hashCode(), o);
-        if (o instanceof ArrayStructure)
-          ((ArrayStructure) o).showInternal(f, leadingSpace+"    ");
+        f.format("%s   %d class=%s hash=0x%x = %s%n", indent, i, o.getClass().getName(), o.hashCode(), o);
+        if (o instanceof ArrayStructure) {
+          ((ArrayStructure) o).showInternal(f, indent.incr());
+          indent.decr();
+        }
       }
       f.format("%n");
     }

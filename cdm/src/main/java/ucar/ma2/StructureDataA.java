@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.util.Indent;
+
 import java.util.Formatter;
 
 /**
@@ -274,9 +276,9 @@ public class StructureDataA extends StructureData {
   }
 
   @Override
-  public void showInternal(Formatter f, String leadingSpace) {
-    super.showInternal(f, leadingSpace);
-    sa.showInternal(f, leadingSpace);
+  public void showInternal(Formatter f, Indent indent) {
+    super.showInternal(f, indent);
+    sa.showInternal(f, indent);
   }
 
 }

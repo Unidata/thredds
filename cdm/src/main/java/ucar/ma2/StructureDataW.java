@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.util.Indent;
+
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,12 +41,13 @@ import java.util.Map;
 /**
  * A StructureData implementation that has its data self-contained.
  * This is often the easiest to construct, but not very efficient for large arrays of Structures.
+ * You should call setMemberData() for each member.
  *
  * @author caron
  */
 
 public class StructureDataW extends StructureData {
-  protected Map<StructureMembers.Member,Array> memberData = new HashMap<StructureMembers.Member,Array>(); // Members
+  protected final Map<StructureMembers.Member,Array> memberData;
 
   /**
    * Constructor.
@@ -53,6 +56,7 @@ public class StructureDataW extends StructureData {
    */
   public StructureDataW(StructureMembers members) {
     super(members);
+    memberData = new HashMap<StructureMembers.Member,Array>(2*members.getMembers().size());
   }
 
   /* Copy constructor.
@@ -162,6 +166,10 @@ public class StructureDataW extends StructureData {
    */
   public byte getScalarByte(StructureMembers.Member m) {
     Array data = getArray(m);
+    if (data == null) {
+      System.out.println("HEY");
+      data = getArray(m);
+    }
     return data.getByte(Index.scalarIndexImmutable);
   }
 
@@ -336,11 +344,11 @@ public class StructureDataW extends StructureData {
   }
 
   @Override
-  public void showInternal(Formatter f, String leadingSpace) {
-    super.showInternal(f, leadingSpace);
+  public void showInternal(Formatter f, Indent indent) {
+    super.showInternal(f, indent);
     for (StructureMembers.Member m : memberData.keySet()) {
       Array data = memberData.get(m);
-      f.format("%s %s = %s%n", leadingSpace, m, data);
+      f.format("%s %s = %s%n", indent, m, data);
     }
 
   }

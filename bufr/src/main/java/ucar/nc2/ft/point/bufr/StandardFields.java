@@ -59,7 +59,7 @@ public class StandardFields {
     // 4th choice  LOOK
     addField("0-1-5", BufrCdmIndexProto.FldType.stationId);
     addField("0-1-6", BufrCdmIndexProto.FldType.stationId);
-    addField("0-1-7", BufrCdmIndexProto.FldType.stationId);
+    // addField("0-1-7", BufrCdmIndexProto.FldType.stationId); satellite id
     addField("0-1-8", BufrCdmIndexProto.FldType.stationId);
     addField("0-1-10", BufrCdmIndexProto.FldType.stationId);
     addField("0-1-11", BufrCdmIndexProto.FldType.stationId);
@@ -287,6 +287,7 @@ public class StandardFields {
       int hour = !hasField(BufrCdmIndexProto.FldType.hour) ? 0 : getFieldValue(BufrCdmIndexProto.FldType.hour);
       int minute = !hasField(BufrCdmIndexProto.FldType.minute) ? 0 : getFieldValue(BufrCdmIndexProto.FldType.minute);
       int sec = !hasField(BufrCdmIndexProto.FldType.sec) ? 0 : getFieldValue(BufrCdmIndexProto.FldType.sec);
+      if (sec < 0) sec = 0;
 
       if (hasField(BufrCdmIndexProto.FldType.month) && hasField(BufrCdmIndexProto.FldType.day)) {
         int month = getFieldValue(BufrCdmIndexProto.FldType.month);

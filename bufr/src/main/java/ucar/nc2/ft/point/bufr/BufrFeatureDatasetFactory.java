@@ -9,6 +9,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.iosp.IOServiceProvider;
@@ -290,6 +291,8 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     String sdataName;
     boolean needed;
     protected Map<String, Action> actions = new HashMap<String,Action>(32);
+    protected Map<String, StructureData> missingData = new HashMap<String, StructureData>(32);
+    protected Map<String, VariableDS> vars = new HashMap<String, VariableDS>(32);
 
     List<VariableSimpleIF> makeDataVariables(BufrCdmIndex index, Structure obs) {
       this.sdataName = obs.getShortName()+"Munged";
@@ -314,6 +317,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
             Structure s = (Structure) v;
             for (Variable child : s.getVariables()) {
               result.add(child);
+              vars.put(child.getShortName(), (VariableDS) child); // tracj ones we may have to create missing values for
             }
             continue;
           }
@@ -383,19 +387,35 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
             this.members.hideMember(m) ;
 
           } else if (act.what == BufrCdmIndexProto.FldAction.asMissing) {  // 0 or 1
-            this.members.hideMember(m) ;
+            int pos = this.members.hideMember(m) ;
             ArraySequence seq = sdata.getArraySequence(m);
             StructureDataIterator iter = seq.getStructureDataIterator();
             if (iter.hasNext()) {
-              add(iter.next());
+              add(pos, iter.next());
             } else {
               // missing data
-              // add(makeMissing(seq));
+              add(pos, makeMissing(m, seq));
             }
           }
         }
       }
+    }
 
+
+    StructureData makeMissing(StructureMembers.Member seqm, ArraySequence seq) {
+      StructureData result = missingData.get(seqm.getName());
+      if (result != null) return result;
+
+      StructureMembers sm = new StructureMembers(seq.getStructureMembers());
+      StructureDataW resultW = new StructureDataW(sm);
+      for (StructureMembers.Member m : sm.getMembers()) {
+        VariableDS var = vars.get(m.getName());
+        Array missingData = var.getMissingDataArray(m.getShape());
+        resultW.setMemberData(m, missingData);
+      }
+
+      missingData.put(seqm.getName(), resultW);
+      return resultW;
     }
 
 

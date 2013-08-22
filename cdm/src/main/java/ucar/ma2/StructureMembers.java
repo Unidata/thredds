@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.util.Indent;
 
 import java.util.*;
 
@@ -84,16 +85,34 @@ public class StructureMembers {
       memberHash.put(m.getName(), m);
   }
 
+  /**
+   * Add a member at the given position.
+   *
+   * @param m member to add
+   */
+  public void addMember(int pos, Member m) {
+    members.add(pos, m);
+    if (memberHash != null)
+      memberHash.put(m.getName(), m);
+  }
+
   public Member addMember(String name, String desc, String units, DataType dtype, int[] shape) {
     Member m = new Member(name, desc, units, dtype, shape);
     addMember(m);
     return m;
   }
 
-  // LOOK seems wrong
-  public void hideMember(Member m) {
-    if (m == null) return;
+  /**
+   * Remove the given member
+   * @param m memebr
+   * @return position that it used to occupy, or -1 if not found
+   */
+  public int hideMember(Member m) {
+    if (m == null) return -1;
+    int index = members.indexOf(m);
     members.remove(m);
+    memberHash.remove(m);
+    return index;
   }
   
   /**
@@ -390,12 +409,14 @@ public class StructureMembers {
         this.desc = desc;
     }
 
-    public void showInternal(Formatter f, String leadingSpace) {
-      f.format("%sname='%s' desc='%s' units='%s' dtype=%s size=%d dataObject=%s dataParam=%d", leadingSpace, name, desc, units, dtype, size, dataObject, dataParam);
+    public void showInternal(Formatter f, Indent indent) {
+      f.format("%sname='%s' desc='%s' units='%s' dtype=%s size=%d dataObject=%s dataParam=%d", indent, name, desc, units, dtype, size, dataObject, dataParam);
       if (members != null) {
-        f.format("%n%sNested members %s%n", leadingSpace, members.getName());
+        indent.incr();
+        f.format("%n%sNested members %s%n", indent, members.getName());
         for (StructureMembers.Member m : members.getMembers())
-          m.showInternal(f, leadingSpace + "  ");
+          m.showInternal(f, indent);
+        indent.decr();
       }
       f.format("%n");
     }

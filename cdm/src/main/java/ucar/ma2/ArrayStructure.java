@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.util.Indent;
+
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
@@ -981,14 +983,16 @@ public abstract class ArrayStructure extends Array {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  public void showInternal(Formatter f, String leadingSpace) {
-    f.format("%sArrayStructure %s size=%d class=%s hash=0x%x%n", leadingSpace, members.getName(), getSize(), this.getClass().getName(), hashCode());
+  public void showInternal(Formatter f, Indent indent) {
+    f.format("%sArrayStructure %s size=%d class=%s hash=0x%x%n", indent, members.getName(), getSize(), this.getClass().getName(), hashCode());
   }
 
-  public void showInternalMembers(Formatter f, String leadingSpace) {
-    f.format("%sArrayStructure %s class=%s hash=0x%x%n", leadingSpace, members.getName(), this.getClass().getName(), hashCode());
+  public void showInternalMembers(Formatter f, Indent indent) {
+    f.format("%sArrayStructure %s class=%s hash=0x%x%n", indent, members.getName(), this.getClass().getName(), hashCode());
+    indent.incr();
     for (StructureMembers.Member m : getMembers())
-      m.showInternal(f, leadingSpace+"  ");
+      m.showInternal(f, indent);
+    indent.incr();
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////

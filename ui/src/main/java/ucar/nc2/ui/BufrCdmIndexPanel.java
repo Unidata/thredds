@@ -35,9 +35,7 @@ package ucar.nc2.ui;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.BufrField;
-import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.iosp.bufr.Descriptor;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
@@ -130,6 +128,16 @@ public class BufrCdmIndexPanel extends JPanel {
     JTable table = fldTable.getJTable();
     JComboBox<BufrCdmIndexProto.FldType> comboBox = new JComboBox<BufrCdmIndexProto.FldType>(BufrCdmIndexProto.FldType.values());
     table.setDefaultEditor(BufrCdmIndexProto.FldType.class, new DefaultCellEditor(comboBox)) ;
+
+    TableColumn sportColumn = table.getColumnModel().getColumn(2);
+    JComboBox<String> cb = new JComboBox<String>();
+    cb.addItem("Snowboarding");
+    cb.addItem("Rowing");
+    cb.addItem("Chasing toddlers");
+    cb.addItem("Speed reading");
+    cb.addItem("Teaching high school");
+    cb.addItem("None");
+    sportColumn.setCellEditor(new DefaultCellEditor(cb));
 
     /////////////////////////////////////////
     // the info windows
@@ -265,7 +273,7 @@ public class BufrCdmIndexPanel extends JPanel {
     BufrCdmIndexProto.FldType type;
 
     public String editableProperties() {
-      return "actionS type";
+      return "actionS type name";
     }
 
     public String hiddenProperties() {

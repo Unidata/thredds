@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.util.Indent;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -364,12 +366,13 @@ public class ArraySequence extends ArrayStructure {
   }
 
   @Override
-  public void showInternal(Formatter f, String leadingSpace) {
-    super.showInternal(f, leadingSpace);
-    f.format("%sStructureDataIterator Class=%s hash=0x%x%n", leadingSpace, iter.getClass().getName(), iter.hashCode());
+  public void showInternal(Formatter f, Indent indent) {
+    super.showInternal(f, indent);
+    f.format("%sStructureDataIterator Class=%s hash=0x%x%n", indent, iter.getClass().getName(), iter.hashCode());
     if (iter instanceof ArrayStructure.ArrayStructureIterator) {
       ArrayStructure.ArrayStructureIterator ii = (ArrayStructure.ArrayStructureIterator) iter;
-      ii.getArrayStructure().showInternal(f, leadingSpace + "  ");
+      ii.getArrayStructure().showInternal(f, indent.incr());
+      indent.decr();
     }
   }
 

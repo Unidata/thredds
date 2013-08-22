@@ -55,6 +55,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.*;
 
+import ucar.nc2.util.Indent;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.TableSorter;
 
@@ -356,9 +357,9 @@ public class StructureTable extends JPanel {
     if (sd == null) return;
 
     Formatter f = new Formatter();
-    sd.showInternalMembers(f, "");
+    sd.showInternalMembers(f, new Indent(2));
     f.format("%n");
-    sd.showInternal(f, "");
+    sd.showInternal(f, new Indent(2));
     dumpTA.setText(f.toString());
     dumpWindow.setVisible(true);
   }
