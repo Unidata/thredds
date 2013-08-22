@@ -178,7 +178,9 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   private void initMM() {
     if (getCollectionName() == null) return; // eg no scan in ncml
     try {
-    	store = storeFactory.open(getCollectionName());    	
+    	if(storeFactory != null)
+    		store = storeFactory.open(getCollectionName());
+    	
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException(e.getMessage());

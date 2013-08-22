@@ -1,13 +1,14 @@
 package thredds.server.serverinfo;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-import thredds.server.config.TdsContext;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import thredds.server.config.TdsContext;
 
 /**
  * _more_
@@ -15,43 +16,39 @@ import java.util.Map;
  * @author edavis
  * @since 4.1
  */
-public class ServerInfoController extends AbstractController
+@Controller
+public class ServerInfoController
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  //private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
+  @Autowired
   private TdsContext tdsContext;
 
-  public void setTdsContext( TdsContext tdsContext ) {
-    this.tdsContext = tdsContext;
+
+  @RequestMapping(value="/serverInfo.html")
+  protected ModelAndView getServerInfoHtml(){
+    return new ModelAndView( "thredds/server/serverinfo/serverInfo_html", getServerInfoModel());    
   }
-
-  protected ModelAndView handleRequestInternal( HttpServletRequest request,
-                                                HttpServletResponse response )
-          throws Exception
-  {
-    // Get the request path.
-    String reqPath = request.getServletPath();
-    if ( reqPath == null )
-    {
-      response.sendError( HttpServletResponse.SC_NOT_FOUND );
-      return null;
-    }
-
-    Map<String,Object> model = new HashMap<String,Object>();
-    model.put( "serverInfo", this.tdsContext.getServerInfo() );
-    model.put( "webappName", this.tdsContext.getWebappName() );
-    model.put( "webappVersion", this.tdsContext.getWebappVersion() );
-    model.put( "webappVersionBuildDate", this.tdsContext.getWebappVersionBuildDate() );
-    
-    if ( reqPath.equals( "/serverInfo.html" )) {
-      return new ModelAndView( "thredds/server/serverinfo/serverInfo_html", model);
-    } else if ( reqPath.equals( "/serverInfo.xml" )) {
-      return new ModelAndView( "thredds/server/serverinfo/serverInfo_xml", model );
-    } else if ( reqPath.equals( "/serverVersion.txt" )) {
-      return new ModelAndView( "thredds/server/serverinfo/serverVersion_txt", model );
-    } else{
-      response.sendError( HttpServletResponse.SC_NOT_FOUND );
-      return null;
-    }
+  
+  
+  @RequestMapping(value="/serverInfo.xml")
+  protected ModelAndView getServerInfoXML(){
+	 return new ModelAndView( "thredds/server/serverinfo/serverInfo_xml", getServerInfoModel());
+  }  
+  
+  @RequestMapping(value="/serverVersion.txt")
+  protected ModelAndView getServerVersion(){
+	  return new ModelAndView( "thredds/server/serverinfo/serverVersion_txt", getServerInfoModel() );
+  }  
+  
+  private Map<String, Object> getServerInfoModel(){
+	  
+	    Map<String,Object> model = new HashMap<String,Object>();
+	    model.put( "serverInfo", this.tdsContext.getServerInfo() );
+	    model.put( "webappName", this.tdsContext.getWebappName() );
+	    model.put( "webappVersion", this.tdsContext.getWebappVersion() );
+	    model.put( "webappVersionBuildDate", this.tdsContext.getWebappVersionBuildDate() );	  
+	    
+	    return model;
   }
 }
