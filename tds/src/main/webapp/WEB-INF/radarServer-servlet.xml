@@ -54,7 +54,8 @@
       </value>
     </property>
   </bean>
-
+	
+  <!-- 		
   <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
     <property name="cache" value="true"/>
     <property name="order" value="1"/>
@@ -65,6 +66,7 @@
     <property name="prefix" value="/WEB-INF/jsp/" />
     <property name="suffix" value=".jsp" />
   </bean>
+   -->
 
   <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
       <property name="exceptionMappings">

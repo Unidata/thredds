@@ -32,18 +32,20 @@
  */
 package thredds.server.root;
 
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.ModelAndView;
+import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import thredds.servlet.HtmlWriter;
-import thredds.servlet.DataRootHandler;
-import thredds.server.config.TdsContext;
-import thredds.util.RequestForwardUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.io.File;
+import thredds.server.config.TdsContext;
+import thredds.servlet.DataRootHandler;
+import thredds.servlet.HtmlWriter;
+import thredds.util.RequestForwardUtils;
 
 /**
  * Handle /admin/content/
@@ -55,24 +57,37 @@ import java.io.File;
  * @author caron
  * @since 4.0
  */
-public class DirDisplayController extends AbstractController {
+//public class DirDisplayController extends AbstractController {
+@Controller
+public class DirDisplayController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
 
+  @Autowired
   private TdsContext tdsContext;
+  
+  @Autowired  
   private HtmlWriter htmlWriter;
 
-  public void setTdsContext(TdsContext tdsContext) {
-    this.tdsContext = tdsContext;
-  }
+//  public void setTdsContext(TdsContext tdsContext) {
+//    this.tdsContext = tdsContext;
+//  }
 
-  public void setHtmlWriter( HtmlWriter htmlWriter ) {
-    this.htmlWriter = htmlWriter;
-  }
-
+//  public void setHtmlWriter( HtmlWriter htmlWriter ) {
+//    this.htmlWriter = htmlWriter;
+//  }
+  
+  @RequestMapping("/admin/**")
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    String path = req.getPathInfo();
+	  
+    //String path = req.getPathInfo();
+    //if (path == null) path = "";
+    
+    String path = req.getServletPath();
     if (path == null) path = "";
+    
+    if(path.startsWith("/admin") )
+    	path = path.substring("/admin".length(), path.length());    
 
     // Don't allow ".." directories in path.
     if (path.indexOf("/../") != -1

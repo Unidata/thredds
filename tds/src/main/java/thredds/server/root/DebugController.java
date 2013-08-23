@@ -32,16 +32,14 @@
  */
 package thredds.server.root;
 
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import thredds.servlet.DebugHandler;
-import thredds.server.config.TdsContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.Iterator;
+import thredds.servlet.DebugHandler;
 
 /**
  * Handle the /admin/debug interface
@@ -49,24 +47,27 @@ import java.util.Iterator;
  * @author caron
  * @since 4.0
  */
-public class DebugController extends AbstractController {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+//
+@Controller
+@RequestMapping(value ="/admin", method=RequestMethod.GET)
+public class DebugController{
+//  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+//
+//  private TdsContext tdsContext;
+//
+//  public void setTdsContext(TdsContext tdsContext) {
+//    this.tdsContext = tdsContext;
+//  }
+  
+  @RequestMapping(value={"/debug", "/debug/*"})
+  protected void handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-  private TdsContext tdsContext;
+    //String path = req.getPathInfo();
+    //if (path == null) path = "";
 
-  public void setTdsContext(TdsContext tdsContext) {
-    this.tdsContext = tdsContext;
-  }
-
-  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
-    String path = req.getPathInfo();
-    if (path == null) path = "";
-
-    if (path.equals("/debug") || path.equals("/debug/")) {
+    //if (path.equals("/debug") || path.equals("/debug/")) {
       DebugHandler.doDebug(null, req, res);
-    }
-
-    return null; // ToDo 
+    //}
+ 
   }
 }

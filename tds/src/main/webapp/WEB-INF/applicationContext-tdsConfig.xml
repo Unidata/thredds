@@ -10,6 +10,9 @@
               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
               http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
+  
+  <!-- Application root Context: defines shared resources visible to all other web components -->
+  
   <!-- Enables the Spring MVC @Controller programming model  -->
   <mvc:annotation-driven />
   
@@ -18,8 +21,7 @@
   
   <!-- Handler Mapping -->
   <!--  In Spring 3.2  DefaultAnnotationHandlerMapping was deprecated in favor of   RequestMappingHandlerMapping-->
-  <!--  bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /-->
-  
+  <!--  bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /-->  
   <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
    
   <!-- ncss interceptor -->
@@ -31,8 +33,6 @@
   </mvc:interceptors>  
   
 
-
-  <import resource="cdmrFeature-servlet.xml"/>	
 
   <!-- tell spring that tds.properties gets read in first and overrides anything else -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

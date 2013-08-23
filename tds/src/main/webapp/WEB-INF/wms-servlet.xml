@@ -17,20 +17,24 @@
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-    <property name="alwaysUseFullPath" value="true"/>
     <property name="mappings">
-      <value>
-        /wms/** = wmsController
+      <value><!-- Maps from /wms/* (defined in web.xml servlet mappings) -->
+        /**=wmsController
       </value>
     </property>
   </bean>
 
+  <!-- 
+  	AbstractWmsController returns views using /WEB-INF/jsp/wms/ as root directory for finding them. So we need a viewResolver different
+  	from the TDS controllers that use /WEB-INF/jsp/    
+  -->  
   <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
     <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
     <property name="prefix" value="/WEB-INF/jsp/wms/"/>
     <property name="suffix" value=".jsp"/>
   </bean>
-
+  
+  
   <!-- Exception Handling: this ensures that all WmsExceptions are returned to
      the user as an XML document, created by displayWmsException.jsp.
      Note that we don't have to register this anywhere as an exception handler

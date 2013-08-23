@@ -32,66 +32,38 @@
  */
 package thredds.server.root;
 
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.mvc.LastModified;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import thredds.server.config.TdsContext;
-import thredds.util.TdsPathUtils;
-import thredds.util.RequestForwardUtils;
-
-import java.io.File;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * _more_
- *
+ * 
  * @author edavis
  * @since 4.0
  */
-public class RootController extends AbstractController implements LastModified
-{
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+@Controller
+public class RootController{
 
-  private TdsContext tdsContext;
+	//@Autowired
+	//private TdsContext tdsContext;
 
-  public void setTdsContext( TdsContext tdsContext )
-  {
-    this.tdsContext = tdsContext;
-  }
+	//public void setTdsContext(TdsContext tdsContext) {
+	//	this.tdsContext = tdsContext;
+	//}
 
-  protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
-          throws Exception
-  {
+	@RequestMapping(value = "/")
+	public String getRootPage() {
+		return "redirect:/catalog.html";
+	}
 
-    String path = TdsPathUtils.extractPath( req );
-    if (( null == path) || path.equals( "/" ) || path.equals( ""))
-    {
-      String newPath = tdsContext.getContextPath() + "/catalog.html";
-      res.sendRedirect( newPath );
-      return null;
-    }
-
-    File file = tdsContext.getPublicDocFileSource().getFile( path );
-    if ( file == null )
-    {
-      RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(), req, res );
-      return null;
-    }
-    return new ModelAndView( "threddsFileView", "file", file );
-  }
-
-  public long getLastModified( HttpServletRequest req )
-  {
-    String path = TdsPathUtils.extractPath( req );
-    File file = tdsContext.getPublicDocFileSource().getFile( path );
-    if ( file == null )
-      return -1;
-    long lastModTime = file.lastModified();
-    if ( lastModTime == 0L )
-      return -1;
-    return lastModTime;
-  }
+//	public long getLastModified(HttpServletRequest req) {
+//		String path = TdsPathUtils.extractPath(req);
+//		File file = tdsContext.getPublicDocFileSource().getFile(path);
+//		if (file == null)
+//			return -1;
+//		long lastModTime = file.lastModified();
+//		if (lastModTime == 0L)
+//			return -1;
+//		return lastModTime;
+//	}
 }

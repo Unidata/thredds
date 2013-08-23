@@ -47,15 +47,6 @@
     <filter-class>thredds.servlet.filter.CatalogGenFilter</filter-class>
   </filter>
 
-  <!-- filter>
-    <filter-name>Cache10dayFilter</filter-name>
-    <filter-class>thredds.servlet.filter.ResponseHeaderFilter</filter-class>
-    <init-param>
-      <param-name>Cache-Control</param-name>
-      <param-value>max-age=864000</param-value>
-    </init-param>
-  </filter -->
-
   <filter>
     <filter-name>CookieFilter</filter-name>
     <filter-class>thredds.servlet.filter.CookieFilter</filter-class>
@@ -107,8 +98,10 @@
 
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>admin</servlet-name>
+    <!-- servlet-name>admin</servlet-name -->
+    <url-pattern>/admin/*</url-pattern>
   </filter-mapping>
+  
   <!--filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>MetarSubsetService</servlet-name>
@@ -147,17 +140,9 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>DLwriter</servlet-name>
   </filter-mapping>
-  <!-- filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>View</servlet-name>
-  </filter-mapping -->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>cdmRemote</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>cdmrFeature</servlet-name>
   </filter-mapping>
 
   <!--
@@ -239,18 +224,10 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
-  </context-param>
-  
-  
+  </context-param>   
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
-
-  <!-- TDS context configuration listener. -->
-  <!-- listener>
-    <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
-  </listener-->
-
 
   <listener>
     <listener-class>thredds.server.opendap.OpendapSessionAttributeListener</listener-class>
@@ -273,17 +250,16 @@
 
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
+  <!-- root servlet -->
   <servlet>
     <servlet-name>root</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
-
-  <!-- servlet>
-    <servlet-name>serverInfo</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	<init-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/servlet-context.xml</param-value>
+	</init-param>        
     <load-on-startup>1</load-on-startup>
-  </servlet-->
+  </servlet>
 
   <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.) -->
   <servlet>
@@ -299,27 +275,9 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <!-- Metadata services (ncISO) from NGDC -->
-  <!-- servlet>
-    <servlet-name>metadata</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
-  </servlet -->
-
-
-  <servlet>
-    <servlet-name>admin</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>test</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
 
   <!-- data services -->
+  <!-- NON-SPRING  controllers ands servlets -->
   <!-- NetCDF/OPeNDAP server -->
   <servlet>
     <display-name>OPeNDAP Server</display-name>
@@ -444,6 +402,7 @@
     <servlet-name>root</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
+  <!-- 
   <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>*.css</url-pattern>
@@ -452,20 +411,8 @@
     <servlet-name>root</servlet-name>
     <url-pattern>*.gif</url-pattern>
   </servlet-mapping>
-
-  <!-- servlet-mapping>
-    <servlet-name>serverInfo</servlet-name>
-    <url-pattern>/serverInfo.html</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>serverInfo</servlet-name>
-    <url-pattern>/serverInfo.xml</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>serverInfo</servlet-name>
-    <url-pattern>/serverVersion.txt</url-pattern>
-  </servlet-mapping -->
-
+  -->
+  
   <servlet-mapping>
     <servlet-name>catalogService</servlet-name>
     <url-pattern>*.xml</url-pattern>
@@ -489,33 +436,6 @@
   <servlet-mapping>
     <servlet-name>catalogService</servlet-name>
     <url-pattern>/remoteCatalogValidation.html</url-pattern>
-  </servlet-mapping>
-
-  <!-- Metadata services (ncISO) from NGDC -->
-  <!-- 
-  <servlet-mapping>
-    <servlet-name>metadata</servlet-name>
-    <url-pattern>/ncml/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>metadata</servlet-name>
-    <url-pattern>/uddc/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>metadata</servlet-name>
-    <url-pattern>/iso/*</url-pattern>
-  </servlet-mapping>
-   -->
-
-  <!-- old debug, content handling -->
-  <servlet-mapping>
-    <servlet-name>admin</servlet-name>
-    <url-pattern>/admin/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>test</servlet-name>
-    <url-pattern>/test/*</url-pattern>
   </servlet-mapping>
 
   <!-- data services -->

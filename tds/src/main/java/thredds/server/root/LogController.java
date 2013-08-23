@@ -1,20 +1,28 @@
 package thredds.server.root;
 
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.ModelAndView;
-import thredds.server.config.TdsContext;
-import thredds.servlet.DataRootHandler;
-import thredds.servlet.PathMatcher;
-import thredds.servlet.ServletUtil;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.util.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import thredds.server.config.TdsContext;
+import thredds.servlet.DataRootHandler;
+import thredds.servlet.PathMatcher;
+import thredds.servlet.ServletUtil;
 
 /**
  * Handle the /admin/log interface
@@ -22,16 +30,21 @@ import java.io.PrintWriter;
  * @author caron
  * @since 4.0
  */
-public class LogController extends AbstractController {
+//public class LogController extends AbstractController {
+@Controller
+@RequestMapping(value="/admin", method=RequestMethod.GET)
+public class LogController{
+	
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   private File accessLogDirectory;
   private List<File> accessLogFiles = new ArrayList<File>(10);
 
+  @Autowired
   private TdsContext tdsContext;
 
-  public void setTdsContext(TdsContext tdsContext) {
-    this.tdsContext = tdsContext;
-  }
+//  public void setTdsContext(TdsContext tdsContext) {
+//    this.tdsContext = tdsContext;
+//  }
 
   public void setAccessLogDirectory(String accessLogDirectory) {
     this.accessLogDirectory = new File(accessLogDirectory);
@@ -77,10 +90,17 @@ public class LogController extends AbstractController {
   } */
 
   ////////
+  @RequestMapping(value={"/log/**","/roots"})
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    String path = req.getPathInfo();
-    if (path == null) path = "";
+    //String path = req.getPathInfo();
+    //if (path == null) path = "";
 
+    String path = req.getServletPath();
+    if (path == null) path = "";
+    
+    if(path.startsWith("/admin") )
+    	path = path.substring("/admin".length(), path.length());    
+    
     // Don't allow ".." directories in path.
     if (path.indexOf("/../") != -1
             || path.equals("..")

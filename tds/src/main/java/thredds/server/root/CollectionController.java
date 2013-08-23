@@ -1,10 +1,23 @@
 package thredds.server.root;
 
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdater;
@@ -15,18 +28,15 @@ import thredds.servlet.DebugHandler;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.util.StringUtil2;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.util.*;
-
 /**
  * Allow external triggers for rereading Feature collections
  *
  * @author caron
  * @since May 4, 2010
  */
-public class CollectionController extends AbstractController {
+@Controller
+@RequestMapping(value={"/admin"})
+public class CollectionController implements InitializingBean{ //extends AbstractController {
   private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   //private final org.slf4j.Logger logFc = org.slf4j.LoggerFactory.getLogger(DatasetCollectionMFiles.class);
 
@@ -34,11 +44,18 @@ public class CollectionController extends AbstractController {
   private static final String COLLECTION = "collection";
   private static final String TRIGGER = "trigger";
   private static final String NOCHECK = "nocheck";
+  
+  
   private final TdsContext tdsContext;
+  //private final TdsContext tdsContext;
   //private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
-
+  
+  @Autowired 
   CollectionController(TdsContext _tdsContext) {
-    this.tdsContext = _tdsContext;
+	  this.tdsContext = _tdsContext;
+  }
+  public void afterPropertiesSet(){
+    //this.tdsContext = _tdsContext;
 
     DebugHandler debugHandler = DebugHandler.get("Collections");
     DebugHandler.Action act;
@@ -100,9 +117,14 @@ public class CollectionController extends AbstractController {
     debugHandler.addAction(act);
   }
 
+  @RequestMapping(value={"/collection", "/collection/trigger"})
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    String path = req.getPathInfo();
+    //String path = req.getPathInfo();
+    String path = req.getServletPath();
     if (path == null) path = "";
+    
+    if(path.startsWith("/admin") )
+    	path = path.substring("/admin".length(), path.length());
 
     PrintWriter pw = res.getWriter();
     res.setContentType("text/html");
