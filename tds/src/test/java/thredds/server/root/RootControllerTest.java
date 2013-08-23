@@ -1,5 +1,6 @@
 package thredds.server.root;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -14,41 +15,37 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.config.TdsContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml","/WEB-INF/root-servlet.xml" },loader=MockTdsContextLoader.class)
+@ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"},loader=MockTdsContextLoader.class)
 public class RootControllerTest {
 	
 	
 	@Autowired
-	private TdsContext tdsContext;
+	private WebApplicationContext wac;
 	
-  	
-	@Autowired
-	private RootController rootController;
+	private MockMvc mockMvc;		
+	private RequestBuilder requestBuilder;	
 		
-	@Before
-	public void setUp() throws Exception {
-	
-		rootController.setTdsContext(tdsContext);
-				
-	}
-	
 	@Test
-	public void testHandleRequest() throws Exception{
-							
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog.html");
-		request.setContextPath("/thredds");
-		request.setPathInfo("catalog.html");        
-        MockHttpServletResponse response = new MockHttpServletResponse();
+	public void testRootRequest() throws Exception{							
 		
-        ModelAndView mv = rootController.handleRequest(request, response);
-	        
-		fail("Not yet implemented");
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		requestBuilder = MockMvcRequestBuilders.get("/");
+		MvcResult mvc = this.mockMvc.perform(requestBuilder).andReturn();
+		//Check that "/" is redirected
+		assertEquals(302, mvc.getResponse().getStatus());		
+		assertEquals("redirect:/catalog.html", mvc.getModelAndView().getViewName());
 	}
 
 
