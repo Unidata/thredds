@@ -316,7 +316,7 @@ public class BufrTables {
     return null;
   }
 
-  private static TableConfig matchTableConfig(BufrIdentificationSection ids) {
+  /* private static TableConfig matchTableConfig(BufrIdentificationSection ids) {
     if (tables == null) readLookupTable();
 
     int center = ids.getCenterId();
@@ -326,7 +326,7 @@ public class BufrTables {
     int cat = ids.getCategory();
 
     return matchTableConfig(center, subcenter, master, local, cat);
-  }
+  }  */
 
   ///////////////////////
 
@@ -357,8 +357,8 @@ public class BufrTables {
     }
   }
 
-  static public Tables getLocalTables(BufrIdentificationSection ids) throws IOException {
-    TableConfig tc = matchTableConfig(ids);
+  static public Tables getLocalTables(int center, int subcenter, int master, int local, int cat) throws IOException {
+    TableConfig tc = matchTableConfig(center, subcenter, master, local, cat);
     if (tc == null) return null;
 
     if (tc.tableBformat == Format.ncep_nm) { // LOOK ??
@@ -404,10 +404,6 @@ public class BufrTables {
     return latestWmoB;
   }
 
-  static public TableB getWmoTableB(BufrIdentificationSection ids) throws IOException {
-    return getWmoTableB(ids.getMasterTableVersion());
-  }
-
   /*
     // private static final String version14 = "wmo.v14";
     static public TableB getWmoTableBold(int version) throws IOException {
@@ -435,8 +431,8 @@ public class BufrTables {
     return result;
   } */
 
-  static public TableB getWmoTableB(int version) throws IOException {
-    TableConfig tc = matchTableConfig(0, 0, version, 0, -1);
+  static public TableB getWmoTableB(int masterTableVersion) throws IOException {
+    TableConfig tc = matchTableConfig(0, 0, masterTableVersion, 0, -1);
     if (tc != null) return readTableB(tc.tableBname, tc.tableBformat, false);
     return null;
   }
@@ -893,12 +889,8 @@ public class BufrTables {
     return latestWmoD;
   }
 
-  static public TableD getWmoTableD(BufrIdentificationSection ids) throws IOException {
-    return getWmoTableD(ids.getMasterTableVersion());
-  }
-
-  static public TableD getWmoTableD(int version) throws IOException {
-    TableConfig tc = matchTableConfig(0, 0, version, 0, -1);
+  static public TableD getWmoTableD(int masterTableVersion) throws IOException {
+    TableConfig tc = matchTableConfig(0, 0, masterTableVersion, 0, -1);
     if (tc != null) return readTableD(tc.tableDname, tc.tableDformat, false);
     return null;
   }

@@ -95,7 +95,7 @@ public class Descriptor {
 
   static private final String[] descType = {"tableB", "replication", "tableC-operators", "tableD"};
 
-  static public void show(Formatter out, short fxy, TableLookup lookup) {
+  static public void show(Formatter out, short fxy, BufrTableLookup lookup) {
     int f = (fxy & 0xC000) >> 14;
 
     if (f == 0) {
@@ -117,7 +117,7 @@ public class Descriptor {
     }
   }
 
-  static public String getName(short fxy, TableLookup lookup) {
+  static public String getName(short fxy, BufrTableLookup lookup) {
     int f = (fxy & 0xC000) >> 14;
 
     if (f == 0) {

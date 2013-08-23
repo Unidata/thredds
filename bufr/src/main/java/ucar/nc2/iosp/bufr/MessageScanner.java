@@ -37,8 +37,6 @@ import ucar.unidata.io.KMPMatch;
 
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 /**
  * Sequentially scans a BUFR file, extracts the messages.
@@ -47,7 +45,6 @@ import java.util.TimeZone;
  * @since May 9, 2008
  */
 public class MessageScanner {
-  //static public final int MAX_MESSAGE_SIZE = 15000; // see http://www.weather.gov/tg/tablea.html
   static public final int MAX_MESSAGE_SIZE = 500 * 1000; // GTS allows up to 500 Kb messages (ref?)
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MessageScanner.class);
 
@@ -81,7 +78,7 @@ public class MessageScanner {
   private byte[] header;
   private long startPos = 0;
   private long lastPos = 0;
-  private boolean debug = true;
+  private boolean debug = false;
 
   private EmbeddedTable embedTable = null;
 
@@ -130,72 +127,84 @@ public class MessageScanner {
     return more;
   }
 
-  public Message next() throws IOException {
-    long start = raf.getFilePointer();
-    raf.seek(start + 4);
+  public Message next() {
 
-    BufrIndicatorSection is = new BufrIndicatorSection(raf);
-    BufrIdentificationSection ids = new BufrIdentificationSection(raf, is);
-    BufrDataDescriptionSection dds = new BufrDataDescriptionSection(raf);
+    try {
+      long start = raf.getFilePointer();
+      raf.seek(start + 4);
 
-    long dataPos = raf.getFilePointer();
-    int dataLength = BufrNumbers.uint3(raf);
-    BufrDataSection dataSection = new BufrDataSection(dataPos, dataLength);
-    lastPos = dataPos + dataLength + 4; // position to the end message plus 1
-    //nbytes +=  lastPos - startPos;
+      BufrIndicatorSection is = new BufrIndicatorSection(raf);
+      BufrIdentificationSection ids = new BufrIdentificationSection(raf, is);
+      BufrDataDescriptionSection dds = new BufrDataDescriptionSection(raf);
 
-    /* length consistency checks
-    if (is.getBufrLength() > MAX_MESSAGE_SIZE) {
-      log.warn("Illegal length - BUFR message at pos "+start+" header= "+cleanup(header)+" size= "+is.getBufrLength());
-      return null;
-    } */
+      long dataPos = raf.getFilePointer();
+      int dataLength = BufrNumbers.uint3(raf);
+      BufrDataSection dataSection = new BufrDataSection(dataPos, dataLength);
+      lastPos = dataPos + dataLength + 4; // position to the end message plus 1
+      //nbytes +=  lastPos - startPos;
 
-    if (is.getBufrEdition() > 4) {
-      log.warn("Illegal edition - BUFR message at pos " + start + " header= " + cleanup(header));
-      return null;
-    }
+      /* length consistency checks
+      if (is.getBufrLength() > MAX_MESSAGE_SIZE) {
+        log.warn("Illegal length - BUFR message at pos "+start+" header= "+cleanup(header)+" size= "+is.getBufrLength());
+        return null;
+      } */
 
-    if (is.getBufrEdition() < 2) {
-      log.warn("Edition "+ is.getBufrEdition()+" is not supported - BUFR message at pos " + start + " header= " +cleanup(header));
-      return null;
-    }
-
-    // check that end section is correct
-    long ending = dataPos + dataLength;
-    raf.seek(dataPos + dataLength);
-    for (int i = 0; i < 3; i++) {
-      if (raf.read() != 55) {
-        log.warn("Missing End of BUFR message at pos=" + ending + " header= " + cleanup(header));
+      if (is.getBufrEdition() > 4) {
+        log.warn("Illegal edition - BUFR message at pos " + start + " header= " + cleanup(header));
         return null;
       }
-    }
-    // allow off by one : may happen when dataLength rounded to even bytes
-    if (raf.read() != 55) {
-      raf.seek(dataPos + dataLength-1); // see if byte before is a '7'
-      if (raf.read() != 55) {
-        log.warn("Missing End of BUFR message at pos=" +ending+ " header= " + cleanup(header)+" edition= "+is.getBufrEdition());
+
+      if (is.getBufrEdition() < 2) {
+        log.warn("Edition "+ is.getBufrEdition()+" is not supported - BUFR message at pos " + start + " header= " +cleanup(header));
         return null;
-      } else {
-        log.warn("End of BUFR message off-by-one at pos= " +ending+ " header= " + cleanup(header)+" edition= "+is.getBufrEdition());
-        lastPos--;
       }
+
+      // check that end section is correct
+      long ending = dataPos + dataLength;
+      raf.seek(dataPos + dataLength);
+      for (int i = 0; i < 3; i++) {
+        if (raf.read() != 55) {
+          log.warn("Missing End of BUFR message at pos=" + ending + " header= " + cleanup(header));
+          return null;
+        }
+      }
+      // allow off by one : may happen when dataLength rounded to even bytes
+      if (raf.read() != 55) {
+        raf.seek(dataPos + dataLength-1); // see if byte before is a '7'
+        if (raf.read() != 55) {
+          log.warn("Missing End of BUFR message at pos=" +ending+ " header= " + cleanup(header)+" edition= "+is.getBufrEdition());
+          return null;
+        } else {
+          log.warn("End of BUFR message off-by-one at pos= " +ending+ " header= " + cleanup(header)+" edition= "+is.getBufrEdition());
+          lastPos--;
+        }
+      }
+
+      Message m = new Message(raf, is, ids, dds, dataSection);
+      m.setHeader( cleanup(header));
+      m.setStartPos( start);
+
+      if (useEmbeddedTables && m.containsBufrTable()) {
+        if (embedTable == null) embedTable = new EmbeddedTable(m, raf);
+        embedTable.addTable(m);
+      } else if (embedTable != null) {
+        m.setTableLookup(embedTable.getTableLookup());
+      }
+
+      countMsgs++;
+      countObs += dds.getNumberDatasets();
+      raf.seek(start + is.getBufrLength());
+      return m;
+
+    } catch (IOException ioe) {
+      log.error("Error reading message at "+lastPos, ioe);
+      try {
+        lastPos = raf.getFilePointer(); // dont do an infinite loop
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+      return null;
     }
-
-    Message m = new Message(raf, is, ids, dds, dataSection);
-    m.setHeader( cleanup(header));
-    m.setStartPos( start);
-
-    if (useEmbeddedTables && m.containsBufrTable()) {
-      if (embedTable == null) embedTable = new EmbeddedTable(m.ids, raf);
-      embedTable.addTable(m);
-    } else if (embedTable != null) {
-      m.setTableLookup(embedTable.getTableLookup());
-    }
-
-    countMsgs++;
-    countObs += dds.getNumberDatasets();
-    raf.seek(start + is.getBufrLength());
-    return m;
   }
 
   public TableLookup getTableLookup() throws IOException {

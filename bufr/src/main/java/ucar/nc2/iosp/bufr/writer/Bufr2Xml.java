@@ -35,7 +35,6 @@ package ucar.nc2.iosp.bufr.writer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.*;
 import ucar.nc2.util.Indent;
@@ -68,7 +67,7 @@ public class Bufr2Xml {
   private Indent indent;
   private boolean skipMissing;
 
-  public Bufr2Xml(Message message, NetcdfDataset ncfile, OutputStream os, boolean skipMissing) throws IOException {
+  public Bufr2Xml(Message message, NetcdfFile ncfile, OutputStream os, boolean skipMissing) throws IOException {
     this.skipMissing = skipMissing;
 
     indent = new Indent(2);
@@ -93,7 +92,7 @@ public class Bufr2Xml {
     }
   }
 
-  void writeMessage(Message message, NetcdfDataset ncfile) {
+  void writeMessage(Message message, NetcdfFile ncfile) {
 
     try {
       staxWriter.writeCharacters("\n");
@@ -123,17 +122,17 @@ public class Bufr2Xml {
       staxWriter.writeCharacters("\n");
       staxWriter.writeCharacters(indent.toString());
       staxWriter.writeStartElement("tableVersion");
-      staxWriter.writeCharacters(message.getTableName());
+      staxWriter.writeCharacters(message.getLookup().getTableName());
       staxWriter.writeEndElement();
 
       staxWriter.writeStartElement("center");
-      staxWriter.writeCharacters(message.getCenterName());
+      staxWriter.writeCharacters(message.getLookup().getCenterName());
       staxWriter.writeEndElement();
 
       staxWriter.writeCharacters("\n");
       staxWriter.writeCharacters(indent.toString());
       staxWriter.writeStartElement("category");
-      staxWriter.writeCharacters(message.getCategoryFullName());
+      staxWriter.writeCharacters(message.getLookup().getCategoryFullName());
       staxWriter.writeEndElement();
 
       SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);

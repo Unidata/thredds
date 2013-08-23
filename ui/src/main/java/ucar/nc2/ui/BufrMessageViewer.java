@@ -33,7 +33,6 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.StandardFields;
@@ -47,7 +46,6 @@ import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.*;
 import ucar.ma2.StructureDataIterator;
@@ -99,7 +97,7 @@ public class BufrMessageViewer extends JPanel {
     tableButt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         try {
-          NetcdfDataset ncd = makeBufrDataset() ;
+          NetcdfFile ncd = makeBufrDataset() ;
           Variable v = ncd.findVariable(BufrIosp2.obsRecord);
           if ((v != null) && (v instanceof Structure)) {
             if (dataTable == null) makeDataTable();
@@ -275,7 +273,7 @@ public class BufrMessageViewer extends JPanel {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         if (mb == null) return;
         try {
-          NetcdfDataset ncd = makeBufrMessageAsDataset(mb.m);
+          NetcdfFile ncd = makeBufrMessageAsDataset(mb.m);
           Variable v = ncd.findVariable(BufrIosp2.obsRecord);
           if ((v != null) && (v instanceof Structure)) {
             if (dataTable == null) makeDataTable();
@@ -396,7 +394,7 @@ public class BufrMessageViewer extends JPanel {
         try {
           infoTA.clear();
 
-          NetcdfDataset ncd = makeBufrMessageAsDataset(mb.m);
+          NetcdfFile ncd = makeBufrMessageAsDataset(mb.m);
           new Bufr2Xml(m, ncd, out, true);
           infoTA.setText(out.toString());
 
@@ -596,18 +594,18 @@ public class BufrMessageViewer extends JPanel {
     ddsTable.setBeans(new ArrayList());
   }
 
-  private NetcdfDataset makeBufrMessageAsDataset(Message m) throws IOException {
+  private NetcdfFile makeBufrMessageAsDataset(Message m) throws IOException {
     BufrIosp2 iosp = new BufrIosp2();
     BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
     iosp.open(raf, ncfile, m);
-    return new NetcdfDataset(ncfile, BufrIosp2.enhance);
+    return ncfile;
   }
 
-  private NetcdfDataset makeBufrDataset() throws IOException {
+  private NetcdfFile makeBufrDataset() throws IOException {
     BufrIosp2 iosp = new BufrIosp2();
     BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
     iosp.open(raf, ncfile, (CancelTask) null);
-    return new NetcdfDataset(ncfile, BufrIosp2.enhance);
+    return ncfile;
   }
 
   private class BufrNetcdf extends NetcdfFile {
@@ -629,11 +627,11 @@ public class BufrMessageViewer extends JPanel {
 
     java.util.List<ObsBean> beanList = new ArrayList<ObsBean>();
     try {
-      NetcdfDataset ncd = makeBufrMessageAsDataset(m);
+      NetcdfFile ncd = makeBufrMessageAsDataset(m);
       Variable v = ncd.findVariable(BufrIosp2.obsRecord);
       if ((v != null) && (v instanceof Structure)) {
-        StructureDS obs = (StructureDS) v;
-        StandardFields.ExtractFromStructure extract = new StandardFields.ExtractFromStructure(center, obs);
+        Structure obs = (Structure) v;
+        StandardFields.StandardFieldsFromStructure extract = new StandardFields.StandardFieldsFromStructure(center, obs);
         StructureDataIterator iter = obs.getStructureIterator();
         try {
           while (iter.hasNext()) {
@@ -667,15 +665,15 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getCategory() throws IOException {
-      return m.getCategoryFullName();
+      return m.getLookup().getCategoryFullName();
     }
 
     public String getCenter() {
-      return m.getCenterName();
+      return m.getLookup().getCenterName();
     }
 
     public String getTable() {
-      return m.getTableName();
+      return m.getLookup().getTableName();
     }
 
     public String getHeader() {
@@ -696,6 +694,10 @@ public class BufrMessageViewer extends JPanel {
 
     public String getHash() {
       return Integer.toHexString(m.hashCode());
+    }
+
+    public String getDdsHash() {
+      return Integer.toHexString(m.dds.getDataDescriptors().hashCode());
     }
 
     public String getCompress() {
@@ -760,7 +762,7 @@ public class BufrMessageViewer extends JPanel {
 
     private void read() {
       try {
-        NetcdfDataset ncd = makeBufrMessageAsDataset(m);
+        NetcdfFile ncd = makeBufrMessageAsDataset(m);
         SequenceDS v = (SequenceDS) ncd.findVariable(BufrIosp2.obsRecord);
         StructureDataIterator iter = v.getStructureIterator(-1);
         try {
@@ -853,7 +855,7 @@ public class BufrMessageViewer extends JPanel {
 
     // create from a dataset
 
-    public ObsBean(StandardFields.ExtractFromStructure extract, StructureData sdata) {
+    public ObsBean(StandardFields.StandardFieldsFromStructure extract, StructureData sdata) {
       extract.extract(sdata);
       this.stn = extract.getStationId();
       this.date = extract.makeCalendarDate();

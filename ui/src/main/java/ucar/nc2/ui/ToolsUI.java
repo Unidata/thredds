@@ -116,6 +116,7 @@ public class ToolsUI extends JPanel {
   private BufrPanel bufrPanel;
   private BufrTableBPanel bufrTableBPanel;
   private BufrTableDPanel bufrTableDPanel;
+  private BufrReportPanel bufrReportPanel;
   private BufrCdmIndexPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmrFeature cdmremotePanel;
@@ -267,6 +268,7 @@ public class ToolsUI extends JPanel {
     bufrTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
     bufrTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
     bufrTabPane.addTab("BUFR-CODES", new JLabel("BUFR-CODES"));
+    bufrTabPane.addTab("BufrReports", new JLabel("BufrReports"));
     bufrTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = bufrTabPane.getSelectedComponent();
@@ -496,6 +498,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("BUFRTableD")) {
       bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
       c = bufrTableDPanel;
+
+    } else if (title.equals("BufrReports")) {
+      bufrReportPanel = new BufrReportPanel((PreferencesExt) mainPrefs.node("bufrReports"));
+      c = bufrReportPanel;
 
     } else if (title.equals("BUFR-CODES")) {
       bufrCodePanel = new BufrCodePanel((PreferencesExt) mainPrefs.node("bufr-codes"));
@@ -1023,6 +1029,7 @@ public class ToolsUI extends JPanel {
     if (bufrPanel != null) bufrPanel.save();
     if (bufrTableBPanel != null) bufrTableBPanel.save();
     if (bufrTableDPanel != null) bufrTableDPanel.save();
+    if (bufrReportPanel != null) bufrReportPanel.save();
     if (bufrCodePanel != null) bufrCodePanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
     if (cdmremotePanel != null) cdmremotePanel.save();
@@ -1538,7 +1545,8 @@ public class ToolsUI extends JPanel {
 
     abstract boolean process(Object command);
 
-    abstract void closeOpenFiles() throws IOException;
+    void closeOpenFiles() throws IOException {
+    }
 
     void save() {
       cb.save();
@@ -2450,6 +2458,74 @@ public class ToolsUI extends JPanel {
 
   }
 
+  ////////////////////////////////////////////////////////////////////////
+  private class BufrReportPanel extends OpPanel {
+    ucar.nc2.ui.BufrReportPanel reportPanel;
+    boolean useIndex = true;
+    JComboBox<ucar.nc2.ui.BufrReportPanel.Report> reports;
+
+    BufrReportPanel(PreferencesExt p) {
+      super(p, "collection:", true, false);
+      reportPanel = new ucar.nc2.ui.BufrReportPanel(prefs, buttPanel);
+      add(reportPanel, BorderLayout.CENTER);
+
+      reports = new JComboBox<ucar.nc2.ui.BufrReportPanel.Report>(ucar.nc2.ui.BufrReportPanel.Report.values());
+      buttPanel.add(reports);
+
+      AbstractAction useIndexButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          useIndex = state.booleanValue();
+        }
+      };
+      useIndexButt.putValue(BAMutil.STATE, useIndex);
+      BAMutil.setActionProperties(useIndexButt, "Doit", "use default table", true, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, useIndexButt);
+
+      AbstractAction doitButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          process();
+        }
+      };
+      BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, doitButt);
+    }
+
+    boolean process(Object o) {
+      return reportPanel.setCollection((String) o);
+    }
+
+    boolean process() {
+      boolean err = false;
+      String command = (String) cb.getSelectedItem();
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        reportPanel.doReport(command, useIndex, (ucar.nc2.ui.BufrReportPanel.Report) reports.getSelectedItem());
+
+      } catch (IOException ioe) {
+        JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());
+        ioe.printStackTrace();
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      reportPanel.save();
+      super.save();
+    }
+
+  }
+
   /////////////////////////////////////////////////////////////////////
   private class GribFilesPanel extends OpPanel {
     ucar.nc2.ui.GribFilesPanel gribTable;
@@ -3085,9 +3161,6 @@ public class ToolsUI extends JPanel {
       };
       BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
       BAMutil.addActionToContainer(buttPanel, doitButt);
-    }
-
-    void closeOpenFiles() {
     }
 
     boolean process(Object o) {

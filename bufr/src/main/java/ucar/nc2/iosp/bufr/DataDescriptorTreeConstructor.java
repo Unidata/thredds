@@ -51,7 +51,7 @@ public class DataDescriptorTreeConstructor {
   //////////////////////////////////////////////////////////////////////////////////
   private DataDescriptor root;
 
-  public DataDescriptor factory(TableLookup lookup, BufrDataDescriptionSection dds) {
+  public DataDescriptor factory(BufrTableLookup lookup, BufrDataDescriptionSection dds) {
     root = new DataDescriptor();
 
     // convert ids to DataDescriptor
@@ -80,7 +80,7 @@ public class DataDescriptorTreeConstructor {
   }
 
   // convert ids to DataDescriptors, expand table D
-  private List<DataDescriptor> decode(List<Short> keyDesc, TableLookup lookup) {
+  private List<DataDescriptor> decode(List<Short> keyDesc, BufrTableLookup lookup) {
     if (keyDesc == null) return null;
 
     List<DataDescriptor> keys = new ArrayList<DataDescriptor>();

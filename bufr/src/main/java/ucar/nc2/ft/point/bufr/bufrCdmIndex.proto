@@ -52,6 +52,9 @@ message Field {
   optional uint32 max = 7;
   optional string desc = 8;
   optional string units = 9;
+  required int32 scale = 10;     // bufr scale and offset
+  required int32 reference = 11;
+  required int32 bitWidth = 12;
 }
 
 message BufrIndex {

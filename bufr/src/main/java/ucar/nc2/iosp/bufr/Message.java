@@ -32,11 +32,8 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.nc2.iosp.bufr.tables.TableA;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.bufr.tables.TableB;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -47,6 +44,7 @@ import java.util.regex.Matcher;
 /**
  * Encapsolates a complete BUFR message.
  * A message has a DataDescriptor and one or more "datasets" aka "data subsets" aka "observations" aka "obs".
+ * Table lookup is done through getLookup().
  *
  * @author caron
  * @since May 9, 2008
@@ -60,7 +58,7 @@ public class Message {
   public BufrDataSection dataSection;
 
   private RandomAccessFile raf;
-  private TableLookup lookup;
+  private BufrTableLookup lookup;
   private DataDescriptor root;
 
   private String header; // wmo header
@@ -79,11 +77,11 @@ public class Message {
     this.ids = ids;
     this.dds = dds;
     this.dataSection = dataSection;
-    lookup = new TableLookup(ids);
+    lookup = BufrTableLookup.factory(this);
   }
 
-  public void setTableLookup(TableLookup lookup) {
-    this.lookup = lookup;
+  void setTableLookup(TableLookup lookup) {
+    this.lookup.setTableLookup(lookup);
   }
 
   public void close() throws IOException {
@@ -97,31 +95,6 @@ public class Message {
    */
   public int getNumberDatasets() {
     return dds.getNumberDatasets();
-  }
-
-  public String getCategoryName() {
-    return TableA.getDataCategory(ids.getCategory());
-  }
-
-  public String getCategoryNo() {
-    String result = ids.getCategory() + "." + ids.getSubCategory();
-    if (ids.getLocalSubCategory() >= 0) result += "." + ids.getLocalSubCategory();
-    return result;
-  }
-
-  public String getCenterName() {
-    String name = CommonCodeTable.getCenterNameBufr(ids.getCenterId(), is.getBufrEdition());
-    String subname = CommonCodeTable.getSubCenterName(ids.getCenterId(), ids.getSubCenterId());
-    if (subname != null) name = name +" / " + subname;
-    return ids.getCenterId() + "." + ids.getSubCenterId() + " (" + name + ")";
-  }
-
-  public String getCenterNo() {
-    return ids.getCenterId() + "." + ids.getSubCenterId();
-  }
-
-  public String getTableName() {
-    return ids.getMasterTableId() + "." + ids.getMasterTableVersion() + "." + ids.getLocalTableVersion();
   }
 
   public CalendarDate getReferenceTime() {
@@ -223,26 +196,7 @@ public class Message {
     return !root.isBad;
   }
 
-  public void showMissingFields(Formatter out) throws IOException {
-    showMissingFields(dds.getDataDescriptors(), out);
-  }
-
-  private void showMissingFields(List<Short> ddsList, Formatter out) throws IOException {
-    for (short fxy : ddsList) {
-      int f = (fxy & 0xC000) >> 14;
-      if (f == 3) {
-        List<Short> sublist = lookup.getDescriptorsTableD(fxy);
-        if (sublist == null) out.format("%s, ", Descriptor.makeString(fxy));
-        else showMissingFields(sublist, out);
-
-      } else if (f == 0) {  // skip the 2- operators for now
-        TableB.Descriptor b = lookup.getDescriptorTableB(fxy);
-        if (b == null) out.format("%s, ", Descriptor.makeString(fxy));
-      }
-    }
-  }
-
-  public TableLookup getTableLookup() {
+  public BufrTableLookup getLookup() {
     return lookup;
   }
 
@@ -359,17 +313,22 @@ public class Message {
     return true;
   }
 
-  ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
   // perhaps move this into a helper class - started from ucar.bufr.Dump
+
+
+  public void showMissingFields(Formatter out) throws IOException {
+    lookup.showMissingFields(dds.getDataDescriptors(), out);
+  }
 
   public void dump(Formatter out) throws IOException {
 
     int listHash = dds.getDataDescriptors().hashCode();
     out.format(" BUFR edition %d time= %s wmoHeader=%s hash=[0x%x] listHash=[0x%x] (%d) %n",
             is.getBufrEdition(), getReferenceTime(), getHeader(), hashCode(), listHash, listHash);
-    out.format("   Category= %s %n", getCategoryFullName());
-    out.format("   Center= %s %n", getCenterName());
-    out.format("   Table= %s %n", getTableName());
+    out.format("   Category= %s %n", lookup.getCategoryFullName());
+    out.format("   Center= %s %n", lookup.getCenterName());
+    out.format("   Table= %s %n", lookup.getTableName());
     out.format("    Table B= wmoTable= %s localTable= %s mode=%s%n", lookup.getWmoTableBName(), lookup.getLocalTableBName(), lookup.getMode());
     out.format("    Table D= wmoTable= %s localTable= %s%n", lookup.getWmoTableDName(), lookup.getLocalTableDName());
 
@@ -394,7 +353,7 @@ public class Message {
             nbits, nbytes, root.getByteWidthCDM(), root.isVarLength(), m.dds.isCompressed()); */
   }
 
-  private void dumpDesc(Formatter out, List<Short> desc, TableLookup table, int indent) {
+  private void dumpDesc(Formatter out, List<Short> desc, BufrTableLookup table, int indent) {
     if (desc == null) return;
 
     for (Short fxy : desc) {
@@ -403,7 +362,7 @@ public class Message {
       out.format("%n");
       int f = (fxy & 0xC000) >> 14;
       if (f == 3) {
-        List<Short> sublist = table.getDescriptorsTableD(fxy);
+        List<Short> sublist = table.getDescriptorListTableD(fxy);
         dumpDesc(out, sublist, table, indent + 2);
       }
     }
@@ -418,24 +377,14 @@ public class Message {
     }
   }
 
-  public String getCategoryFullName() throws IOException {
-    String catName = getCategoryName();
-    String subcatName = CommonCodeTable.getDataSubcategoy(ids.getCategory(), ids.getSubCategory());
-
-    if (subcatName != null)
-      return getCategoryNo() + "="+ catName + " / " + subcatName;
-    else
-      return getCategoryNo() + "="+ catName;
-  }
-
   public void dumpHeader(Formatter out) {
 
     out.format(" BUFR edition %d time= %s wmoHeader=%s %n", is.getBufrEdition(), getReferenceTime(), getHeader());
-    out.format("   Category= %d %s %s %n", ids.getCategory(), getCategoryName(), getCategoryNo());
-    out.format("   Center= %s %s %n", getCenterName(), getCenterNo());
+    out.format("   Category= %d %s %s %n", lookup.getCategory(), lookup.getCategoryName(), lookup.getCategoryNo());
+    out.format("   Center= %s %s %n", lookup.getCenterName(), lookup.getCenterNo());
     out.format("   Table= %d.%d local= %d wmoTables= %s,%s localTables= %s,%s %n",
             ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion(),
-            lookup.getWmoTableBName(),lookup.getWmoTableDName(),lookup.getLocalTableBName(),lookup.getLocalTableDName());
+            lookup.getWmoTableBName(), lookup.getWmoTableDName(), lookup.getLocalTableBName(), lookup.getLocalTableDName());
 
     out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b\n", dds.getNumberDatasets(), dds.getDataType(),
             dds.isObserved(), dds.isCompressed());
@@ -443,7 +392,7 @@ public class Message {
 
   public void dumpHeaderShort(Formatter out) {
     out.format(" %s, Cat= %s, Center= %s (%s), Table= %d.%d.%d %n", getHeader(),
-            getCategoryName(), getCenterName(), getCenterNo(),
+            lookup.getCategoryName(), lookup.getCenterName(), lookup.getCenterNo(),
             ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion());
   }
 

@@ -67,61 +67,13 @@ import java.util.List;
  * @author John
  * @since 8/28/11
  */
-public class Grib1ReportPanel extends JPanel {
+public class Grib1ReportPanel extends ReportPanel {
   public static enum Report {
     checkTables, showLocalParams, scanIssues, rename, checkRename, showEncoding// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
   }
 
-  private PreferencesExt prefs;
-  private TextHistoryPane reportPane;
-
   public Grib1ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
-    this.prefs = prefs;
-    reportPane = new TextHistoryPane();
-    setLayout(new BorderLayout());
-    add(reportPane, BorderLayout.CENTER);
-  }
-
-  public void save() {
-  }
-
-  public void showInfo(Formatter f) {
-  }
-
-  public boolean setCollection(String spec) {
-    Formatter f = new Formatter();
-    f.format("collection = %s%n", spec);
-    boolean hasFiles = false;
-
-    CollectionManager dcm = getCollection(spec, f);
-    if (dcm == null) {
-      return false;
-    }
-
-    for (MFile mfile : dcm.getFiles()) {
-      f.format(" %s%n", mfile.getPath());
-      hasFiles = true;
-    }
-
-    reportPane.setText(f.toString());
-    reportPane.gotoTop();
-    return hasFiles;
-  }
-
-  private CollectionManager getCollection(String spec, Formatter f) {
-    CollectionManager dc = null;
-    try {
-      dc = MFileCollectionManager.open(spec, null, f);
-      dc.scan(false);
-
-    } catch (Exception e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      e.printStackTrace(new PrintStream(bos));
-      reportPane.setText(bos.toString());
-      return null;
-    }
-
-    return dc;
+    super(prefs, buttPanel);
   }
 
   public void doReport(String spec, boolean useIndex, Report which) throws IOException {
@@ -227,62 +179,6 @@ public class Grib1ReportPanel extends JPanel {
     accum[1] += nonop;
     accum[2] += local;
     accum[3] += miss;
-  }
-
-  private class Counter {
-    Map<Integer, Integer> set = new HashMap<Integer, Integer>();
-    String name;
-
-    private Counter(String name) {
-      this.name = name;
-    }
-
-    void count(int value) {
-      Integer count = set.get(value);
-      if (count == null)
-        set.put(value, 1);
-      else
-        set.put(value, count + 1);
-    }
-
-    void show(Formatter f) {
-      f.format("%n%s%n", name);
-      java.util.List<Integer> list = new ArrayList<Integer>(set.keySet());
-      Collections.sort(list);
-      for (int template : list) {
-        int count = set.get(template);
-        f.format("   %3d: count = %d%n", template, count);
-      }
-    }
-
-  }
-
-  private class CounterS {
-    Map<String, Integer> set = new HashMap<String, Integer>();
-    String name;
-
-    private CounterS(String name) {
-      this.name = name;
-    }
-
-    void count(String value) {
-      Integer count = set.get(value);
-      if (count == null)
-        set.put(value, 1);
-      else
-        set.put(value, count + 1);
-    }
-
-    void show(Formatter f) {
-      f.format("%n%s%n", name);
-      java.util.List<String> list = new ArrayList<String>(set.keySet());
-      Collections.sort(list);
-      for (String key : list) {
-        int count = set.get(key);
-        f.format("   %10s: count = %d%n", key, count);
-      }
-    }
-
   }
 
   /////////////////////////////////////////////////////////////////

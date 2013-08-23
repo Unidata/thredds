@@ -112,8 +112,7 @@ public class BufrIdentificationSection {
    * @param is  the BufrIndicatorSection, needed for the bufr edition number
    * @throws IOException if raf contains no valid BUFR file
    */
-  public BufrIdentificationSection(RandomAccessFile raf, BufrIndicatorSection is)
-      throws IOException {
+  public BufrIdentificationSection(RandomAccessFile raf, BufrIndicatorSection is) throws IOException {
 
     // section 1 octet 1-3 (length of section)
     int length = BufrNumbers.int3(raf);
@@ -122,6 +121,7 @@ public class BufrIdentificationSection {
     master_table = raf.read();
 
     if (is.getBufrEdition() < 4) {
+      if (length < 17) throw new IOException("Invalid BUFR message");
 
       if (is.getBufrEdition() == 2) {
         subcenter_id = 255;
@@ -180,6 +180,8 @@ public class BufrIdentificationSection {
       raf.read(localUse);
 
     } else {  // BUFR Edition 4 and above are slightly different
+      if (length < 22) throw new IOException("Invalid BUFR message");
+
       //    	 Center  octet 5 - 6
       center_id = BufrNumbers.int2(raf);
 

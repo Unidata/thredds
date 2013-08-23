@@ -69,43 +69,14 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
 
   //////////////////////////////////////////////////////////////////////////
 /*
-<Common_C01_20121107_en>
-<No>7</No>
-<CodeFigureForF1F2>05</CodeFigureForF1F2>
-<CodeFigureForF3F3F3>005</CodeFigureForF3F3F3>
-<Octet5GRIB1_Octet6BUFR3>5</Octet5GRIB1_Octet6BUFR3>
-<OriginatingGeneratingCentres_en>Moscow</OriginatingGeneratingCentres_en>
+<Common_C13_20130508_en>
+<No>35</No>
+<CodeFigure_DataCategories>2</CodeFigure_DataCategories>
+<Name_DataCategories_en>Vertical soundings (other than satellite)</Name_DataCategories_en>
+<CodeFigure_InternationalDataSubcategories>21</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_en>Profiles of atmospheric constituents concentrations</Name_InternationalDataSubcategories_en>
 <Status>Operational</Status>
-</Common_C01_20121107_en>
-
-<Common_C03_20121107_en>
-<No>1</No>
-<CodeFigureForIXIIXIX>001</CodeFigureForIXIIXIX>
-<CodeFigureForBUFR>1</CodeFigureForBUFR>
-<InstrumentMakeAndType_en>Sippican T-4</InstrumentMakeAndType_en>
-<EquationCoefficients_a>6.472</EquationCoefficients_a>
-<EquationCoefficients_b>-2.16</EquationCoefficients_b>
-<Status>Operational</Status>
-</Common_C03_20121107_en>
-
-<Common_C11_20121107_en>
-<No>1</No>
-<CREX2>00000</CREX2>
-<GRIB2_BUFR4>0</GRIB2_BUFR4>
-<OriginatingGeneratingCentre_en>WMO Secretariat</OriginatingGeneratingCentre_en>
-<Status>Operational</Status>
-</Common_C11_20121107_en>
-<Common_C11_20121107_en>
-
-
-<Common_C12_20121107_en>
-<No>5</No>
-<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
-<Name_OriginatingCentres_en>Melbourne</Name_OriginatingCentres_en>
-<CodeFigure_SubCentres>211</CodeFigure_SubCentres>
-<Name_SubCentres_en>Melbourne Crib Point 1</Name_SubCentres_en>
-<Status>Operational</Status>
-</Common_C12_20121107_en>
+</Common_C13_20130508_en>
 
    */
   public enum Table {                              // code                code2                  value
@@ -142,13 +113,11 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     public String getResourceName() {
       //return "/resources/wmo/CommonCodeTable_" + this.name() + "_02Nov11_en.xml"; // previous
       //return "/resources/wmo/Common_C" + this.num0 + "_20121107_en.xml"; // nov 2012
-      return "/resources/wmo/Common_C" + this.num0 + "_20130226_en.xml"; // nov 2012
+      return "/resources/wmo/Common_C" + this.num0 + "_20130508_en.xml"; // nov 2012
     }
 
-    public String getRootElemName() { // CommonCodeTable_C1_Nov11_en
-      //return "Common_C11_20121107_en" + this.name() + "_Nov11_en"; // previous
-      // return "Common_C" + this.num0 + "_20121107_en"; // nov 2012
-      return "Common_C" + this.num0 + "_20130226_en"; // nov 2012
+    public String getRootElemName() {
+      return "Common_C" + this.num0 + "_20130508_en";
     }
 
     public int getTableNo() {

@@ -4,9 +4,10 @@ import org.jdom2.Element;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Sequence;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.SequenceDS;
+//import ucar.nc2.dataset.NetcdfDataset;
+//import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.BufrField;
 import ucar.nc2.ft.point.bufr.StandardFields;
@@ -40,7 +41,7 @@ public class BufrConfig {
   }
 
   private String filename;
-  private StandardFields.ExtractFromMessage standardFields;
+  private StandardFields.StandardFieldsFromMessage standardFields;
   private FieldConverter rootConverter;
   private int messHash = 0;
   //private int nmess = 0;
@@ -48,6 +49,7 @@ public class BufrConfig {
   private Map<String, BufrStation> map;
   private long start = Long.MAX_VALUE;
   private long end = Long.MIN_VALUE;
+  private boolean debug = true;
 
   /*
    * Open file as a stream of BUFR messages, create config file.
@@ -181,12 +183,12 @@ public class BufrConfig {
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  private StandardFields.ExtractFromStructure extract;
+  private StandardFields.StandardFieldsFromStructure extract;
   private boolean hasStations = false;
   private boolean hasDate = false;
   private int countObs = 0;
   private void scanBufrFile(RandomAccessFile raf) throws Exception {
-    NetcdfDataset ncd = null;
+    NetcdfFile ncd = null;
     countObs = 0;
 
     try {
@@ -203,12 +205,13 @@ public class BufrConfig {
       featureType = guessFeatureType(standardFields);
       hasDate = standardFields.hasTime();
 
-      ncd = NetcdfDataset.openDataset(raf.getLocation(), BufrIosp2.enhance, -1, null, null); // LOOK opening another raf
+      //ncd = NetcdfDataset.openDataset(raf.getLocation(), BufrIosp2.enhance, -1, null, null); // LOOK opening another raf
+      ncd = NetcdfFile.open(raf.getLocation()); // LOOK opening another raf
       Attribute centerAtt = ncd.findGlobalAttribute(BufrIosp2.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
 
-      SequenceDS seq = (SequenceDS) ncd.findVariable(null, BufrIosp2.obsRecord);
-      extract = new StandardFields.ExtractFromStructure(center, seq);
+      Sequence seq = (Sequence) ncd.findVariable(null, BufrIosp2.obsRecord);
+      extract = new StandardFields.StandardFieldsFromStructure(center, seq);
 
       StructureDataIterator iter = seq.getStructureIterator();
       processSeq( iter, rootConverter, true);
@@ -221,7 +224,7 @@ public class BufrConfig {
     System.out.printf("nobs = %d%n", countObs);
   }
 
-  private FeatureType guessFeatureType(StandardFields.ExtractFromMessage standardFields) {
+  private FeatureType guessFeatureType(StandardFields.StandardFieldsFromMessage standardFields) {
     if (standardFields.hasStation()) return FeatureType.STATION;
     if (standardFields.hasTime()) return FeatureType.POINT;
     return FeatureType.NONE;
@@ -264,6 +267,8 @@ public class BufrConfig {
 
          if (isTop) {
            countObs++;
+           if (debug && countObs % 100 == 0) System.out.printf("%d ", countObs);
+
            if (hasStations) processStations(parent, sdata);
            if (hasDate) {
              extract.extract(sdata);
@@ -402,14 +407,6 @@ public class BufrConfig {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private BufrConfig() {
-  }
-
-  static public FieldConverter makeFieldConverter() {
-    BufrConfig fake = new BufrConfig();
-    return fake.new FieldConverter();
-  }
-
   public class FieldConverter implements BufrField {
     DataDescriptor dds;
     List<FieldConverter> flds;
@@ -420,12 +417,6 @@ public class BufrConfig {
     boolean isSeq;
 
     private FieldConverter() {}
-
-    public void addField(FieldConverter child) {
-      if (flds == null)
-        this.flds = new ArrayList<FieldConverter>(dds.getSubKeys().size());
-      this.flds.add(child);
-    }
 
     private FieldConverter(int center, DataDescriptor dds) {
       this.dds = dds;
@@ -482,6 +473,18 @@ public class BufrConfig {
 
     public int getMax() {
       return max;
+    }
+
+    public int getScale() {
+      return dds.getScale();
+    }
+
+    public int getReference() {
+      return dds.getRefVal();
+    }
+
+    public int getBitWidth() {
+      return dds.getBitWidth();
     }
 
     public void setAction(String action) {

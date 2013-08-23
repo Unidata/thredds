@@ -64,11 +64,11 @@ public class EmbeddedTable {
   private TableB b;
   private TableD d;
   private Structure seq2, seq3, seq4;
-  private TableLookup lookup;
+  private TableLookup tlookup;
 
-  EmbeddedTable(BufrIdentificationSection ids, RandomAccessFile raf) {
+  EmbeddedTable(Message m, RandomAccessFile raf) {
     this.raf = raf;
-    this.ids = ids;
+    this.ids = m.ids;
     b = new TableB("embed", raf.getLocation());
     d = new TableD("embed", raf.getLocation());
   }
@@ -256,9 +256,9 @@ public class EmbeddedTable {
     if (!tableRead) {
       read2();
       tableRead = true;
-      lookup = new TableLookup(ids, b, d);
+      tlookup = new TableLookup(ids, b, d);
     }
-    return lookup;
+    return tlookup;
   }
 
   static private class FakeNetcdfFile extends NetcdfFile {

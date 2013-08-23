@@ -291,14 +291,14 @@ public class BufrTableDViewer extends JPanel {
     while (scan.hasNext()) {
       Message m = scan.next();
       if (m == null) continue;
-      TableLookup lookup = m.getTableLookup(); // bad
+      BufrTableLookup lookup = m.getLookup(); // bad
       List<Short> raw = m.dds.getDataDescriptors();
       String src = m.getHeader().trim() +"("+Integer.toHexString(m.hashCode())+") " + filename;
       setDataDescriptors(src, lookup, raw);
     }
   }
 
-  private void setDataDescriptors(String src, TableLookup lookup, List<Short> seq) {
+  private void setDataDescriptors(String src, BufrTableLookup lookup, List<Short> seq) {
     for (Short key : seq) {
       int f = (key & 0xC000) >> 14;
       if (f != 3) continue;
@@ -311,7 +311,7 @@ public class BufrTableDViewer extends JPanel {
       if (!list.contains(src))
         list.add(src);
 
-      List<Short> subseq = lookup.getDescriptorsTableD(key);
+      List<Short> subseq = lookup.getDescriptorListTableD(key);
       if (subseq != null)
         setDataDescriptors(src, lookup, subseq);
     }

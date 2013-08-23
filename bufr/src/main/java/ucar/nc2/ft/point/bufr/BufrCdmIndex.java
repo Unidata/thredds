@@ -167,6 +167,9 @@ public class BufrCdmIndex {
     BufrCdmIndexProto.Field.Builder fldBuilder = BufrCdmIndexProto.Field.newBuilder();
 
     fldBuilder.setFxy(fld.getFxy());
+    fldBuilder.setScale(fld.getScale());
+    fldBuilder.setReference(fld.getReference());
+    fldBuilder.setBitWidth(fld.getBitWidth());
 
     if (fld.getName() != null)
       fldBuilder.setName(fld.getName());

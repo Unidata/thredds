@@ -6,7 +6,6 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.iosp.bufr.Message;
@@ -127,13 +126,13 @@ public class StandardFields {
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  public static ExtractFromMessage extract(Message m) throws IOException {
-    ExtractFromMessage result = new ExtractFromMessage();
+  public static StandardFieldsFromMessage extract(Message m) throws IOException {
+    StandardFieldsFromMessage result = new StandardFieldsFromMessage();
     extract(m.ids.getCenterId(), m.getRootDataDescriptor(), result);
     return result;
   }
 
-  private static void extract(int center, DataDescriptor dds, ExtractFromMessage extract) {
+  private static void extract(int center, DataDescriptor dds, StandardFieldsFromMessage extract) {
     for (DataDescriptor subdds : dds.getSubKeys()) {
       extract.match(center, subdds);
 
@@ -142,7 +141,7 @@ public class StandardFields {
     }
   }
 
-  public static class ExtractFromMessage {
+  public static class StandardFieldsFromMessage {
 
     Map<BufrCdmIndexProto.FldType, List<DataDescriptor>> typeMap = new TreeMap<BufrCdmIndexProto.FldType, List<DataDescriptor>>();
 
@@ -192,7 +191,7 @@ public class StandardFields {
     }
   }
 
-  public static class ExtractFromStructure {
+  public static class StandardFieldsFromStructure {
 
     private class Field {
       TypeAndOrder tao;
@@ -200,16 +199,20 @@ public class StandardFields {
       String valueS;
       int value = -1;
       double valueD = Double.NaN;
+      double scale;
 
-      private Field(TypeAndOrder tao, String memberName) {
+      private Field(TypeAndOrder tao, Variable v) {
         this.tao = tao;
-        this.memberName = memberName;
+        this.memberName = v.getShortName();
+        Attribute att = v.findAttribute("scale_factor");
+        if (att != null && !att.isString())
+          scale = att.getNumericValue().doubleValue();
       }
     }
 
     private Map<BufrCdmIndexProto.FldType, Field> map = new HashMap<BufrCdmIndexProto.FldType, Field>();
 
-    public ExtractFromStructure(int center, Structure obs) {
+    public StandardFieldsFromStructure(int center, Structure obs) {
       // run through all available fields - LOOK we are not recursing into sub sequences
       for (Variable v : obs.getVariables()) {
         Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
@@ -220,18 +223,18 @@ public class StandardFields {
 
         Field oldFld = map.get(tao.type);
         if (oldFld == null) {
-          Field fld = new Field(tao, v.getShortName());
+          Field fld = new Field(tao, v);
           map.put(tao.type, fld);
         } else {
           if (oldFld.tao.order < tao.order) {  // replace old one
-            Field fld = new Field(tao, v.getShortName());
+            Field fld = new Field(tao, v);
             map.put(tao.type, fld);
           }
         }
       }
     }
 
-    // extract standard fields from specific StructureData
+    // extract standard fields values from specific StructureData
     public void extract(StructureData sdata) {
       StructureMembers sm = sdata.getStructureMembers();
       for (Field fld : map.values()) {
@@ -287,7 +290,14 @@ public class StandardFields {
       int hour = !hasField(BufrCdmIndexProto.FldType.hour) ? 0 : getFieldValue(BufrCdmIndexProto.FldType.hour);
       int minute = !hasField(BufrCdmIndexProto.FldType.minute) ? 0 : getFieldValue(BufrCdmIndexProto.FldType.minute);
       int sec = !hasField(BufrCdmIndexProto.FldType.sec) ? 0 : getFieldValue(BufrCdmIndexProto.FldType.sec);
-      if (sec < 0) sec = 0;
+      if (sec < 0) {
+        sec = 0;
+      } else if (sec > 0){
+        Field fld = map.get(BufrCdmIndexProto.FldType.sec);
+        if (fld.scale != 0) {
+          sec = (int) (sec * fld.scale);  // throw away msecs
+        }
+      }
 
       if (hasField(BufrCdmIndexProto.FldType.month) && hasField(BufrCdmIndexProto.FldType.day)) {
         int month = getFieldValue(BufrCdmIndexProto.FldType.month);

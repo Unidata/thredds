@@ -1604,6 +1604,44 @@ public final class BufrCdmIndexProto {
      */
     com.google.protobuf.ByteString
         getUnitsBytes();
+
+    // required int32 scale = 10;
+    /**
+     * <code>required int32 scale = 10;</code>
+     *
+     * <pre>
+     * bufr scale and offset
+     * </pre>
+     */
+    boolean hasScale();
+    /**
+     * <code>required int32 scale = 10;</code>
+     *
+     * <pre>
+     * bufr scale and offset
+     * </pre>
+     */
+    int getScale();
+
+    // required int32 reference = 11;
+    /**
+     * <code>required int32 reference = 11;</code>
+     */
+    boolean hasReference();
+    /**
+     * <code>required int32 reference = 11;</code>
+     */
+    int getReference();
+
+    // required int32 bitWidth = 12;
+    /**
+     * <code>required int32 bitWidth = 12;</code>
+     */
+    boolean hasBitWidth();
+    /**
+     * <code>required int32 bitWidth = 12;</code>
+     */
+    int getBitWidth();
   }
   /**
    * Protobuf type {@code bufrCdmIndex.Field}
@@ -1714,6 +1752,21 @@ public final class BufrCdmIndexProto {
             case 74: {
               bitField0_ |= 0x00000080;
               units_ = input.readBytes();
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000100;
+              scale_ = input.readInt32();
+              break;
+            }
+            case 88: {
+              bitField0_ |= 0x00000200;
+              reference_ = input.readInt32();
+              break;
+            }
+            case 96: {
+              bitField0_ |= 0x00000400;
+              bitWidth_ = input.readInt32();
               break;
             }
           }
@@ -2004,6 +2057,62 @@ public final class BufrCdmIndexProto {
       }
     }
 
+    // required int32 scale = 10;
+    public static final int SCALE_FIELD_NUMBER = 10;
+    private int scale_;
+    /**
+     * <code>required int32 scale = 10;</code>
+     *
+     * <pre>
+     * bufr scale and offset
+     * </pre>
+     */
+    public boolean hasScale() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>required int32 scale = 10;</code>
+     *
+     * <pre>
+     * bufr scale and offset
+     * </pre>
+     */
+    public int getScale() {
+      return scale_;
+    }
+
+    // required int32 reference = 11;
+    public static final int REFERENCE_FIELD_NUMBER = 11;
+    private int reference_;
+    /**
+     * <code>required int32 reference = 11;</code>
+     */
+    public boolean hasReference() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>required int32 reference = 11;</code>
+     */
+    public int getReference() {
+      return reference_;
+    }
+
+    // required int32 bitWidth = 12;
+    public static final int BITWIDTH_FIELD_NUMBER = 12;
+    private int bitWidth_;
+    /**
+     * <code>required int32 bitWidth = 12;</code>
+     */
+    public boolean hasBitWidth() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    /**
+     * <code>required int32 bitWidth = 12;</code>
+     */
+    public int getBitWidth() {
+      return bitWidth_;
+    }
+
     private void initFields() {
       fxy_ = 0;
       name_ = "";
@@ -2014,6 +2123,9 @@ public final class BufrCdmIndexProto {
       max_ = 0;
       desc_ = "";
       units_ = "";
+      scale_ = 0;
+      reference_ = 0;
+      bitWidth_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2021,6 +2133,18 @@ public final class BufrCdmIndexProto {
       if (isInitialized != -1) return isInitialized == 1;
 
       if (!hasFxy()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasScale()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasReference()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasBitWidth()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -2063,6 +2187,15 @@ public final class BufrCdmIndexProto {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeBytes(9, getUnitsBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeInt32(10, scale_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeInt32(11, reference_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeInt32(12, bitWidth_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2108,6 +2241,18 @@ public final class BufrCdmIndexProto {
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(9, getUnitsBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(10, scale_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(11, reference_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(12, bitWidth_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2248,6 +2393,12 @@ public final class BufrCdmIndexProto {
         bitField0_ = (bitField0_ & ~0x00000080);
         units_ = "";
         bitField0_ = (bitField0_ & ~0x00000100);
+        scale_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000200);
+        reference_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000400);
+        bitWidth_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
 
@@ -2317,6 +2468,18 @@ public final class BufrCdmIndexProto {
           to_bitField0_ |= 0x00000080;
         }
         result.units_ = units_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.scale_ = scale_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.reference_ = reference_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        result.bitWidth_ = bitWidth_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2389,12 +2552,33 @@ public final class BufrCdmIndexProto {
           units_ = other.units_;
           onChanged();
         }
+        if (other.hasScale()) {
+          setScale(other.getScale());
+        }
+        if (other.hasReference()) {
+          setReference(other.getReference());
+        }
+        if (other.hasBitWidth()) {
+          setBitWidth(other.getBitWidth());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
         if (!hasFxy()) {
+          
+          return false;
+        }
+        if (!hasScale()) {
+          
+          return false;
+        }
+        if (!hasReference()) {
+          
+          return false;
+        }
+        if (!hasBitWidth()) {
           
           return false;
         }
@@ -3055,6 +3239,121 @@ public final class BufrCdmIndexProto {
   }
   bitField0_ |= 0x00000100;
         units_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required int32 scale = 10;
+      private int scale_ ;
+      /**
+       * <code>required int32 scale = 10;</code>
+       *
+       * <pre>
+       * bufr scale and offset
+       * </pre>
+       */
+      public boolean hasScale() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>required int32 scale = 10;</code>
+       *
+       * <pre>
+       * bufr scale and offset
+       * </pre>
+       */
+      public int getScale() {
+        return scale_;
+      }
+      /**
+       * <code>required int32 scale = 10;</code>
+       *
+       * <pre>
+       * bufr scale and offset
+       * </pre>
+       */
+      public Builder setScale(int value) {
+        bitField0_ |= 0x00000200;
+        scale_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 scale = 10;</code>
+       *
+       * <pre>
+       * bufr scale and offset
+       * </pre>
+       */
+      public Builder clearScale() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        scale_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // required int32 reference = 11;
+      private int reference_ ;
+      /**
+       * <code>required int32 reference = 11;</code>
+       */
+      public boolean hasReference() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      /**
+       * <code>required int32 reference = 11;</code>
+       */
+      public int getReference() {
+        return reference_;
+      }
+      /**
+       * <code>required int32 reference = 11;</code>
+       */
+      public Builder setReference(int value) {
+        bitField0_ |= 0x00000400;
+        reference_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 reference = 11;</code>
+       */
+      public Builder clearReference() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        reference_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // required int32 bitWidth = 12;
+      private int bitWidth_ ;
+      /**
+       * <code>required int32 bitWidth = 12;</code>
+       */
+      public boolean hasBitWidth() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      /**
+       * <code>required int32 bitWidth = 12;</code>
+       */
+      public int getBitWidth() {
+        return bitWidth_;
+      }
+      /**
+       * <code>required int32 bitWidth = 12;</code>
+       */
+      public Builder setBitWidth(int value) {
+        bitField0_ |= 0x00000800;
+        bitWidth_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 bitWidth = 12;</code>
+       */
+      public Builder clearBitWidth() {
+        bitField0_ = (bitField0_ & ~0x00000800);
+        bitWidth_ = 0;
         onChanged();
         return this;
       }
@@ -4337,24 +4636,25 @@ public final class BufrCdmIndexProto {
       "oto\022\014bufrCdmIndex\"h\n\007Station\022\n\n\002id\030\001 \002(\t" +
       "\022\013\n\003lat\030\002 \002(\001\022\013\n\003lon\030\003 \002(\001\022\013\n\003alt\030\004 \001(\001\022" +
       "\014\n\004desc\030\005 \001(\t\022\r\n\005wmoId\030\006 \001(\t\022\r\n\005count\030\007 " +
-      "\002(\005\"\312\001\n\005Field\022\013\n\003fxy\030\001 \002(\r\022\014\n\004name\030\002 \001(\t" +
+      "\002(\005\"\376\001\n\005Field\022\013\n\003fxy\030\001 \002(\r\022\014\n\004name\030\002 \001(\t" +
       "\022!\n\004flds\030\003 \003(\0132\023.bufrCdmIndex.Field\022\'\n\006a" +
       "ction\030\004 \001(\0162\027.bufrCdmIndex.FldAction\022#\n\004" +
       "type\030\005 \001(\0162\025.bufrCdmIndex.FldType\022\013\n\003min" +
       "\030\006 \001(\r\022\013\n\003max\030\007 \001(\r\022\014\n\004desc\030\010 \001(\t\022\r\n\005uni" +
-      "ts\030\t \001(\t\"\205\001\n\tBufrIndex\022\020\n\010filename\030\001 \002(\t",
-      "\022\'\n\010stations\030\002 \003(\0132\025.bufrCdmIndex.Statio" +
-      "n\022!\n\004root\030\003 \002(\0132\023.bufrCdmIndex.Field\022\r\n\005" +
-      "start\030\004 \002(\004\022\013\n\003end\030\005 \002(\004*I\n\tFldAction\022\010\n" +
-      "\004none\020\001\022\n\n\006remove\020\002\022\r\n\tasMissing\020\003\022\013\n\007as" +
-      "Array\020\004\022\n\n\006concat\020\005*\354\001\n\007FldType\022\007\n\003lat\020\001" +
-      "\022\007\n\003lon\020\002\022\n\n\006height\020\003\022\026\n\022heightAboveStat" +
-      "ion\020\004\022\023\n\017heightOfStation\020\005\022\r\n\tstationId\020" +
-      "\n\022\017\n\013stationDesc\020\013\022\t\n\005wmoId\020\014\022\014\n\010wmoBloc" +
-      "k\020\r\022\010\n\004year\020\017\022\t\n\005month\020\020\022\007\n\003day\020\021\022\010\n\004hou" +
-      "r\020\022\022\n\n\006minute\020\023\022\007\n\003sec\020\024\022\007\n\003doy\020\025\022\014\n\010tim",
-      "eIncr\020\026\022\t\n\005incrS\020\027B+\n\026ucar.nc2.ft.point." +
-      "bufrB\021BufrCdmIndexProto"
+      "ts\030\t \001(\t\022\r\n\005scale\030\n \002(\005\022\021\n\treference\030\013 \002",
+      "(\005\022\020\n\010bitWidth\030\014 \002(\005\"\205\001\n\tBufrIndex\022\020\n\010fi" +
+      "lename\030\001 \002(\t\022\'\n\010stations\030\002 \003(\0132\025.bufrCdm" +
+      "Index.Station\022!\n\004root\030\003 \002(\0132\023.bufrCdmInd" +
+      "ex.Field\022\r\n\005start\030\004 \002(\004\022\013\n\003end\030\005 \002(\004*I\n\t" +
+      "FldAction\022\010\n\004none\020\001\022\n\n\006remove\020\002\022\r\n\tasMis" +
+      "sing\020\003\022\013\n\007asArray\020\004\022\n\n\006concat\020\005*\354\001\n\007FldT" +
+      "ype\022\007\n\003lat\020\001\022\007\n\003lon\020\002\022\n\n\006height\020\003\022\026\n\022hei" +
+      "ghtAboveStation\020\004\022\023\n\017heightOfStation\020\005\022\r" +
+      "\n\tstationId\020\n\022\017\n\013stationDesc\020\013\022\t\n\005wmoId\020" +
+      "\014\022\014\n\010wmoBlock\020\r\022\010\n\004year\020\017\022\t\n\005month\020\020\022\007\n\003",
+      "day\020\021\022\010\n\004hour\020\022\022\n\n\006minute\020\023\022\007\n\003sec\020\024\022\007\n\003" +
+      "doy\020\025\022\014\n\010timeIncr\020\026\022\t\n\005incrS\020\027B+\n\026ucar.n" +
+      "c2.ft.point.bufrB\021BufrCdmIndexProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4372,7 +4672,7 @@ public final class BufrCdmIndexProto {
           internal_static_bufrCdmIndex_Field_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_bufrCdmIndex_Field_descriptor,
-              new java.lang.String[] { "Fxy", "Name", "Flds", "Action", "Type", "Min", "Max", "Desc", "Units", });
+              new java.lang.String[] { "Fxy", "Name", "Flds", "Action", "Type", "Min", "Max", "Desc", "Units", "Scale", "Reference", "BitWidth", });
           internal_static_bufrCdmIndex_BufrIndex_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_bufrCdmIndex_BufrIndex_fieldAccessorTable = new

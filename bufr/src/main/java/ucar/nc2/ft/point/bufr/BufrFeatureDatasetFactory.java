@@ -133,7 +133,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
     private class BufrStationCollection extends StationTimeSeriesCollectionImpl {
       DateUnit dateUnit;
-      StandardFields.ExtractFromStructure extract;
+      StandardFields.StandardFieldsFromStructure extract;
 
       private BufrStationCollection(String name) {
         super(name);
@@ -141,7 +141,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         // need  the center id to match the standard fields
         Attribute centerAtt = ncfile.findGlobalAttribute(BufrIosp2.centerId);
         int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
-        this.extract = new StandardFields.ExtractFromStructure(center, obs);
+        this.extract = new StandardFields.StandardFieldsFromStructure(center, obs);
 
         try {
           dateUnit = new DateUnit("msecs since 1970-01-01T00:00:00");

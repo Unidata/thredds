@@ -83,11 +83,11 @@ class Construct2 {
     ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
 
     ncfile.addAttribute(null, new Attribute("BUFR:edition", proto.is.getBufrEdition()));
-    ncfile.addAttribute(null, new Attribute("BUFR:categoryName", proto.getCategoryName()));
+    ncfile.addAttribute(null, new Attribute("BUFR:categoryName", proto.getLookup().getCategoryName()));
     ncfile.addAttribute(null, new Attribute("BUFR:category", cat));
     ncfile.addAttribute(null, new Attribute("BUFR:subCategory", subcat));
     ncfile.addAttribute(null, new Attribute("BUFR:localSubCategory", proto.ids.getLocalSubCategory()));
-    ncfile.addAttribute(null, new Attribute("BUFR:centerName", proto.getCenterName()));
+    ncfile.addAttribute(null, new Attribute("BUFR:centerName", proto.getLookup().getCenterName()));
     ncfile.addAttribute(null, new Attribute(BufrIosp2.centerId, proto.ids.getCenterId()));
     ncfile.addAttribute(null, new Attribute("BUFR:subCenter", proto.ids.getSubCenterId()));
     //ncfile.addAttribute(null, new Attribute("BUFR:tableName", proto.ids.getMasterTableFilename()));
@@ -475,7 +475,7 @@ class Construct2 {
   }
 
   private void annotateObs(Sequence recordStructure) {
-    StandardFields.ExtractFromStructure extract = new StandardFields.ExtractFromStructure(centerId, recordStructure);
+    StandardFields.StandardFieldsFromStructure extract = new StandardFields.StandardFieldsFromStructure(centerId, recordStructure);
 
     Formatter f = new Formatter();
     String name = extract.getFieldName(BufrCdmIndexProto.FldType.lat);

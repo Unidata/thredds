@@ -55,7 +55,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Formatter;
-import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,7 +62,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.Message;
@@ -537,8 +535,8 @@ public class BtServlet extends HttpServlet {
 
       bufrMessage.setAttribute("nobs", Integer.toString(m.getNumberDatasets()));
       bufrMessage.addContent(new Element("WMOheader").setText(extractWMO(m.getHeader())));
-      bufrMessage.addContent(new Element("center").setText(m.getCenterName()));
-      bufrMessage.addContent(new Element("category").setText(m.getCategoryFullName()));
+      bufrMessage.addContent(new Element("center").setText(m.getLookup().getCenterName()));
+      bufrMessage.addContent(new Element("category").setText(m.getLookup().getCategoryFullName()));
       bufrMessage.addContent(new Element("date").setText( m.ids.getReferenceTime().toString() ));
       count++;
     }

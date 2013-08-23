@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Description
+ * Read standard WMO Table A (data categories)
  *
  * @author John
  * @since 8/12/11

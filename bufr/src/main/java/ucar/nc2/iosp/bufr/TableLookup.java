@@ -57,11 +57,11 @@ public class TableLookup {
   private final TableD wmoTableD;
   private final BufrTables.Mode mode;
 
-  public TableLookup(BufrIdentificationSection ids) throws IOException {
-    this.wmoTableB = BufrTables.getWmoTableB(ids);
-    this.wmoTableD = BufrTables.getWmoTableD(ids);
+  public TableLookup(int center, int subcenter, int masterTableVersion, int local, int cat) throws IOException {
+    this.wmoTableB = BufrTables.getWmoTableB(masterTableVersion);
+    this.wmoTableD = BufrTables.getWmoTableD(masterTableVersion);
 
-    BufrTables.Tables tables = BufrTables.getLocalTables(ids);
+    BufrTables.Tables tables = BufrTables.getLocalTables(center, subcenter, masterTableVersion, local, cat);
     if (tables != null) {
       this.localTableB = tables.b;
       this.localTableD = tables.d;
@@ -74,8 +74,8 @@ public class TableLookup {
   }
 
   public TableLookup(BufrIdentificationSection ids, TableB b, TableD d) throws IOException {
-    this.wmoTableB = BufrTables.getWmoTableB(ids);
-    this.wmoTableD = BufrTables.getWmoTableD(ids);
+    this.wmoTableB = BufrTables.getWmoTableB(ids.getMasterTableVersion());
+    this.wmoTableD = BufrTables.getWmoTableD(ids.getMasterTableVersion());
     this.localTableB = b;
     this.localTableD = d;
     this.mode = BufrTables.Mode.localOverride;
@@ -142,23 +142,6 @@ public class TableLookup {
       System.out.printf(" TableLookup cant find Table B descriptor = %s in tables %s, %s mode=%s%n", Descriptor.makeString(fxy),
               getLocalTableBName(), getWmoTableBName(), mode);
     return b;
-  }
-
-  public List<Short> getDescriptorsTableD(short id) {
-    TableD.Descriptor d = getDescriptorTableD(id);
-    if (d != null)
-      return d.getSequence();
-    return null;
-  }
-
-  public List<String> getDescriptorsTableD(String fxy) {
-    short id = Descriptor.getFxy(fxy);
-    List<Short> seq = getDescriptorsTableD(id);
-    if (seq == null) return null;
-    List<String> result = new ArrayList<String>(seq.size());
-    for (Short s : seq)
-      result.add(Descriptor.makeString(s));
-    return result;
   }
 
   public TableD.Descriptor getDescriptorTableD(short fxy) {

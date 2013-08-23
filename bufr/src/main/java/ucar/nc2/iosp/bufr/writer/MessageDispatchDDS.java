@@ -235,7 +235,7 @@ public class MessageDispatchDDS {
                   mtype.hash, mtype.fileout, mtype.name, mtype.index,
                   mtype.count, mtype.countObs, mtype.countBytes / 1000,
                   m.isTablesComplete(), !hasBadMessages, mtype.nbad,
-                  m.getCenterNo(), m.getTableName(), m.is.getBufrEdition(), m.getCategoryNo());
+                  m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.is.getBufrEdition(), m.getLookup().getCategoryNo());
         }
         if (showResults) out.format("\n");
         cfg.close();

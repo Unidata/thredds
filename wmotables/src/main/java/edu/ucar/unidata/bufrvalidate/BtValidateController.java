@@ -41,7 +41,6 @@ import org.jdom2.transform.JDOMSource;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.MessageScanner;
-import ucar.nc2.units.DateFormatter;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
@@ -51,7 +50,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
-import java.util.GregorianCalendar;
 import java.util.Set;
 import java.util.HashSet;
 import java.nio.channels.WritableByteChannel;
@@ -215,8 +213,8 @@ public class BtValidateController extends AbstractCommandController {
 
         bufrMessage.setAttribute("nobs", Integer.toString(m.getNumberDatasets()));
         bufrMessage.addContent(new Element("WMOheader").setText(m.extractWMO()));
-        bufrMessage.addContent(new Element("center").setText(m.getCenterName()));
-        bufrMessage.addContent(new Element("category").setText(m.getCategoryFullName()));
+        bufrMessage.addContent(new Element("center").setText(m.getLookup().getCenterName()));
+        bufrMessage.addContent(new Element("category").setText(m.getLookup().getCategoryFullName()));
         bufrMessage.addContent(new Element("date").setText( m.ids.getReferenceTime().toString()));
         count++;
       }

@@ -79,7 +79,7 @@ public class DataDescriptor {
   DataDescriptor() {
   }
 
-  public DataDescriptor(short fxy, TableLookup lookup) {
+  public DataDescriptor(short fxy, BufrTableLookup lookup) {
     this.fxy = fxy;
     this.f = (fxy & 0xC000) >> 14;
     this.x = (fxy & 0x3F00) >> 8;
@@ -221,6 +221,16 @@ public class DataDescriptor {
   }
 
   public float convert( long raw) {
+    if ( BufrNumbers.isMissing(raw, bitWidth)) return Float.NaN;
+
+    // bpacked = (value * 10^scale - refVal)
+    // value = (bpacked + refVal) / 10^scale
+    float fscale = (float) Math.pow(10.0, -scale); // LOOK precompute ??
+    float fval = (raw + refVal);
+    return fscale * fval;
+  }
+
+  public static float convert( long raw, int scale, int refVal, int bitWidth) {
     if ( BufrNumbers.isMissing(raw, bitWidth)) return Float.NaN;
 
     // bpacked = (value * 10^scale - refVal)

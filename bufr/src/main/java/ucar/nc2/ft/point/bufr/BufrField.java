@@ -24,6 +24,10 @@ public interface BufrField {
   public int getMin();
   public int getMax();
 
+  public int getScale();
+  public int getReference();
+  public int getBitWidth();
+
   public List<? extends BufrField> getChildren();
 
 }

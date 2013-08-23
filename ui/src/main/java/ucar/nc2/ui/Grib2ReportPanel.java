@@ -43,7 +43,7 @@ import java.util.List;
  * @author caron
  * @since Dec 13, 2010
  */
-public class Grib2ReportPanel extends JPanel {
+public class Grib2ReportPanel extends ReportPanel {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
   public static enum Report {
@@ -51,56 +51,8 @@ public class Grib2ReportPanel extends JPanel {
     rename, renameCheck, copyCompress
   }
 
-  private PreferencesExt prefs;
-  private TextHistoryPane reportPane;
-
   public Grib2ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
-    this.prefs = prefs;
-    reportPane = new TextHistoryPane();
-    setLayout(new BorderLayout());
-    add(reportPane, BorderLayout.CENTER);
-  }
-
-  public void save() {
-  }
-
-  public void showInfo(Formatter f) {
-  }
-
-  public boolean setCollection(String spec) {
-    Formatter f = new Formatter();
-    f.format("collection = %s%n", spec);
-    boolean hasFiles = false;
-
-    CollectionManager dcm = getCollection(spec, f);
-    if (dcm == null) {
-      return false;
-    }
-
-    for (MFile mfile : dcm.getFiles()) {
-      f.format(" %s%n", mfile.getPath());
-      hasFiles = true;
-    }
-
-    reportPane.setText(f.toString());
-    reportPane.gotoTop();
-    return hasFiles;
-  }
-
-  private CollectionManager getCollection(String spec, Formatter f) {
-    CollectionManager dc = null;
-    try {
-      dc = MFileCollectionManager.open(spec, null, f);
-      dc.scan(false);
-
-    } catch (Exception e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      e.printStackTrace(new PrintStream(bos));
-      reportPane.setText(bos.toString());
-      return null;
-    }
-
-    return dc;
+    super(prefs, buttPanel);
   }
 
   public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Report which) throws IOException {
@@ -534,39 +486,6 @@ public class Grib2ReportPanel extends JPanel {
   }
 
   ///////////////////////////////////////////////
-
-  private class Counter {
-    Map<Integer, Integer> set = new HashMap<Integer, Integer>();
-    String name;
-
-    private Counter(String name) {
-      this.name = name;
-    }
-
-    void reset() {
-      set = new HashMap<Integer, Integer>();
-    }
-
-    void count(int value) {
-      Integer count = set.get(value);
-      if (count == null)
-        set.put(value, 1);
-      else
-        set.put(value, count + 1);
-    }
-
-    void show(Formatter f) {
-      f.format("%n%s%n", name);
-      List<Integer> list = new ArrayList<Integer>(set.keySet());
-      Collections.sort(list);
-      for (int template : list) {
-        int count = set.get(template);
-        f.format("   %3d: count = %d%n", template, count);
-      }
-    }
-
-  }
-
   int total = 0;
   int prob = 0;
 

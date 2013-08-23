@@ -37,7 +37,7 @@ import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
+//import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 
@@ -68,7 +68,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     debugIter = debugFlag.isSet("Bufr/iter");
   }
 
-  static public final Set<NetcdfDataset.Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(NetcdfDataset.Enhance.ScaleMissing));
+  //static public final Set<NetcdfDataset.Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(NetcdfDataset.Enhance.ScaleMissing));
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

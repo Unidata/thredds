@@ -127,7 +127,7 @@ public class BufrCdmIndexPanel extends JPanel {
 
     JTable table = fldTable.getJTable();
     JComboBox<BufrCdmIndexProto.FldType> comboBox = new JComboBox<BufrCdmIndexProto.FldType>(BufrCdmIndexProto.FldType.values());
-    table.setDefaultEditor(BufrCdmIndexProto.FldType.class, new DefaultCellEditor(comboBox)) ;
+    table.setDefaultEditor(BufrCdmIndexProto.FldType.class, new DefaultCellEditor(comboBox));
 
     TableColumn sportColumn = table.getColumnModel().getColumn(2);
     JComboBox<String> cb = new JComboBox<String>();
@@ -173,6 +173,7 @@ public class BufrCdmIndexPanel extends JPanel {
   String indexFilename;
   BufrCdmIndex index;
   FieldBean rootBean;
+
   public void setIndexFile(String indexFilename) throws IOException {
     this.indexFilename = indexFilename;
 
@@ -217,6 +218,7 @@ public class BufrCdmIndexPanel extends JPanel {
   }
 
   private FileManager fileChooser;
+
   private void makeFileChooser() {
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -265,7 +267,7 @@ public class BufrCdmIndexPanel extends JPanel {
 
   }
 
-    ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
   public class FieldBean implements BufrField {
     BufrCdmIndexProto.Field parent, child;
     List<FieldBean> children;
@@ -277,7 +279,7 @@ public class BufrCdmIndexPanel extends JPanel {
     }
 
     public String hiddenProperties() {
-      return "action children";
+      return "action children fxy";
     }
 
     public FieldBean() {
@@ -292,25 +294,29 @@ public class BufrCdmIndexPanel extends JPanel {
       return parent.getName();
     }
 
+    @Override
     public String getName() {
       return child.getName();
     }
 
+    @Override
     public String getDesc() {
       return child.getDesc();
     }
 
+    @Override
     public String getUnits() {
       return child.getUnits();
     }
 
+    @Override
     public short getFxy() {
       return (short) child.getFxy();
     }
 
     @Override
     public String getFxyName() {
-      return Descriptor.makeString((short)child.getFxy());
+      return Descriptor.makeString((short) child.getFxy());
     }
 
     @Override
@@ -336,7 +342,7 @@ public class BufrCdmIndexPanel extends JPanel {
 
     public void setActionS(String actS) {
       try {
-        this.act =  BufrCdmIndexProto.FldAction.valueOf(actS);
+        this.act = BufrCdmIndexProto.FldAction.valueOf(actS);
       } catch (Exception ee) {
         // never mind
       }
@@ -347,12 +353,29 @@ public class BufrCdmIndexPanel extends JPanel {
       return child.hasMax();
     }
 
+    @Override
     public int getMin() {
-       return child.hasMin() ? child.getMin() : -1;
-     }
+      return child.hasMin() ? child.getMin() : -1;
+    }
 
+    @Override
     public int getMax() {
       return child.hasMax() ? child.getMax() : -1;
+    }
+
+    @Override
+    public int getScale() {
+      return child.getScale();
+    }
+
+    @Override
+    public int getReference() {
+      return child.getReference();
+    }
+
+    @Override
+    public int getBitWidth() {
+      return child.getBitWidth();
     }
 
     @Override

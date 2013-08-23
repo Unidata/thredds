@@ -33,8 +33,6 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.iosp.bufr.Message;
 
 import java.io.*;
 import java.util.*;
@@ -419,7 +417,7 @@ public class Scanner {
       if (csv != null)
         csv.format("Ox%x, %s, %d, %d, %s, %s, %s, %s, %s %n",
           m.hashCode(), extractWMO(m.getHeader()), totalm, totalo, m.isTablesComplete(),
-          m.getCenterNo(), m.getTableName(), m.is.getBufrEdition(), m.getCategoryNo());
+          m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.is.getBufrEdition(), m.getLookup().getCategoryNo());
     }
 
     int nwmo = 0;
@@ -436,7 +434,7 @@ public class Scanner {
       Counter hc = headerCount.get( extractWMO(m.getHeader()));
       int count = (hc == null) ? 0 : hc.count;
       out.format(" WMO %s (%d) cat= %s (%s), center = %s (%s) [0x%x]\n", wmo, count,
-              m.getCategoryName(), m.getCategoryNo(), m.getCenterName(), m.getCenterNo(), m.hashCode());
+              m.getLookup().getCategoryName(), m.getLookup().getCategoryNo(), m.getLookup().getCenterName(), m.getLookup().getCenterNo(), m.hashCode());
       total_wmo_count += count;
       nwmo++;
     }
@@ -663,7 +661,7 @@ public class Scanner {
 
   static private List<DataDescriptor> addDesc(Message m, List<String> keyDesc) {
     if (keyDesc == null) return null;
-    TableLookup lookup = m.getTableLookup();
+    BufrTableLookup lookup = m.getLookup();
 
     List<DataDescriptor> keys = new ArrayList<DataDescriptor>();
     for (String desc : keyDesc) {
@@ -679,7 +677,7 @@ public class Scanner {
       c.count++;
 
       if (dd.f == 3) {
-        List<String> subDesc = lookup.getDescriptorsTableD( dd.getFxyName());
+        List<String> subDesc = lookup.getDescriptorListTableD(dd.getFxyName());
         addDesc(m, subDesc);
       }
     }
@@ -715,7 +713,7 @@ public class Scanner {
       if (messCsv != null) {
         messCsv.format("%s, %d, %d, %d, 0x%x, %s, %s, %s, %s %n",
             c.s, c.count, c.countObs, c.countBytes/1000, c.m.hashCode(),
-            scrub(c.m.getCenterName()), c.m.getTableName(), c.m.is.getBufrEdition(), scrub(c.m.getCategoryFullName()));
+            scrub(c.m.getLookup().getCenterName()), c.m.getLookup().getTableName(), c.m.is.getBufrEdition(), scrub(c.m.getLookup().getCategoryFullName()));
       }
     }
 
@@ -736,8 +734,8 @@ public class Scanner {
       out.format(" %5d %-10s %n",  c.count, Descriptor.makeString(fxy));
       if (ddsCsv != null) {
         ddsCsv.format("'%s', %s, %d, %s, %s, %s%n", Descriptor.makeString(fxy),
-            scrub(Descriptor.getName(fxy.shortValue(), c.m.getTableLookup())),
-            c.count, extractWMO(c.m.getHeader()), c.m.getTableName(), scrub(c.m.getCenterName()));
+            scrub(Descriptor.getName(fxy.shortValue(), c.m.getLookup())),
+            c.count, extractWMO(c.m.getHeader()), c.m.getLookup().getTableName(), scrub(c.m.getLookup().getCenterName()));
       }
     }
   }
