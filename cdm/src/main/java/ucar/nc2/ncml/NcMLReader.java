@@ -36,7 +36,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
-import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.jni.netcdf.Nc4Chunking;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;

@@ -169,7 +169,7 @@
       <plugin>
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
-        <version>1.1.1</version>
+        <version>1.4.3</version>
         <executions>
           <execution>
             <id>start-containter</id>
@@ -206,20 +206,17 @@
               <cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
               <cargo.tomcat.shutdown.port>8006</cargo.tomcat.shutdown.port>
             </properties>
+          </configuration>
             <deployables>
               <deployable>
                 <location>${project.basedir}/../tds/target/thredds.war</location>
-                <!-- location>${project.build.directory}/thredds.war</location-->
-                <!-- groupId>${project.groupId}</groupId>
-                            <artifactId>thredds</artifactId-->
                 <type>war</type>
                 <pingURL>http://localhost:8081/thredds/catalog.html</pingURL>
                 <properties>
                   <context>/thredds</context>
                 </properties>
               </deployable>
-            </deployables>
-          </configuration>
+            </deployables>          
         </configuration>
       </plugin>
 
