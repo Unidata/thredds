@@ -1,0 +1,333 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>NetCDF Subset Service</title>
+</head>
+
+<body>
+<h1><img src="../images/THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service Reference (TDS 4.2)</h1>
+<hr>
+  <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
+  <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:caron@unidata.ucar.edu">John Caron</a></em></p>
+  <h3><strong>Contents:</strong></h3>
+  <ol>
+    <li>      <a href="#Overview">Overview</a></li>
+    <li>      <a href="#Common">Subsetting Parameters (summary)</a></li>
+    <li><a href="#DatasetDescription">Dataset Descriptions</a></li>
+    <li><a href="#Reference">Reference</a></li>
+    <li><a href="#REST">REST Design</a> </li>
+  </ol>
+  <h2><a name="Overview"></a>Overview</h2>
+  <p>The NetCDF Subset Service is a web service for subsetting  <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using  earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but  not resampled or reprojected, and preserve the  resolution and accuracy of the original dataset. </p>
+  <p>A Dataset is described by a <a href="#DatasetDescription">Dataset Description</a> XML document, which describes the dataset in enough detail to enable a programmatic client to form valid data requests. </p>
+  <p>The NetCDF Subset Service may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
+  <p>The NetCDF Subset Service uses HTTP GET with key-value pairs (KVP). The service interface tries to follow <a href="#REST">REST design</a>, as well as <a href="https://developers.google.com/kml/">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
+  <p>Currently both Grids and Station data can be used with this service. See:</p>
+  <ul>
+    <li><a href="StationDataSubsetService.html">NetCDF Subset Service for Point Data</a></li>
+    <li><a href="GridDataSubsetService.html">NetCDF Subset Service for Gridded Data</a></li>
+  </ul>
+  <p>&nbsp;</p>
+  <h2><strong><a name="Common"></a> Subsetting Parameters (summary) </strong></h2>
+  <h3><strong>A. Specify variables</strong></h3>
+  <ul>
+    <li><strong>var=</strong>name of variables, separated by ',' (comma).</li>
+  </ul>
+  <p>The list of valid variables is available from the Dataset Description. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> </strong><strong>var=QCSurface</strong></li>
+    <li><strong>var=QC,LZT,PQ</strong></li>
+    <li><strong>var=T&amp;var=Pressure&amp;var=RH </strong>(allowed, but comma seperated names are preferred) </li>
+  </ul>
+  <p>Variable names with spaces or other illegal characters must be escaped. </p>
+  <h3><strong>B. Specify spatial extent</strong></h3>
+  <p>Latitude, longitude values are specified  in decimal degrees north and east, respectively. </p>
+  <h4><strong>1. Specify lat/lon bounding box</strong></h4>
+  <p>Specify all of these parameters  (order does not matter): </p>
+  <ol>
+    <ul>
+      <li><strong>north</strong>: latitude north (decimal degrees) </li>
+      <li><strong>south</strong>: latitude south (decimal degrees) </li>
+      <li><strong>east</strong>: longitude east (decimal degrees) </li>
+      <li><strong>west</strong>: longitude west (decimal degrees) </li>
+    </ul>
+  </ol>
+  <p>The bounding box has <strong>west</strong> as its west edge, includes all points going <strong>east</strong> until the east edge. Units must be degrees east, may be positive or negative, and will be taken modulo 360. Therefore, when crossing the dateline, the west edge may be greater than the east edge. Examples:</p>
+  <ul>
+    <li><strong> </strong><strong>north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong></li>
+  </ul>
+  <h4><strong>2. Specify lat/lon point</strong></h4>
+  <ul>
+    <li><strong>latitude: </strong>latitude of point, decimal degrees north </li>
+    <li><strong>longitude: </strong>longitude of point, decimal degrees east </li>
+  </ul>
+  <p>The requested  point must lie within the dataset spatial range. For observations, the station closest to the requested point will be used. For grids, the grid cell containing  the requested point will be used. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> latitude</strong><strong>=17.3&amp;longitude=140.2</strong></li>
+  </ul>
+  <p><strong>3. Specify station list </strong></p>
+  <ul>
+    <li><strong>stn=</strong>name of stations, separated by ',' (comma) </li>
+  </ul>
+  <p>This can only be used for station datasets. The list of valid stations is available from the Dataset Description. Station names with spaces or other illegal characters must be escaped. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> </strong><strong>stn=KDEN</strong></li>
+    <li><strong>stn=KDEN,KPAL,SDOL</strong></li>
+    <li><strong>stn=KDEN&amp;stn=KPAL&amp;stn=SDOL</strong></li>
+  </ul>
+  <p><strong>4. Specify horizontal stride (<em>Grid</em> Subsetting only)</strong></p>
+  <p>You can optionally take only every nth point (both the x and y dimensions). </p>
+  <p>Example:</p>
+  <ul>
+    <li><strong> horizStride=3 </strong>(take every 3rd point in both x and y)</li>
+  </ul>
+  <p>&nbsp;</p>
+  <h3>C. Specify time<a name="temporal"></a> </h3>
+  <p>Use one of the following methods:</p>
+  <h4><strong>1. Time range</strong></h4>
+  <p>Specify 2 of these 3 parameters (order does not matter): </p>
+  <ul>
+    <li><strong>time_start</strong>: starting time as an <a href="#W3Cdate">W3Cate string</a> or &quot;present&quot; </li>
+    <li><strong>time_end</strong>: ending time  as an <a href="#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
+    <li><strong>time_duration</strong>: length of time as an <a href="#W3Cduration">W3C time duration</a> </li>
+  </ul>
+  <p>The intersection of the requested time range with the dataset time range will be returned. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> time_start=2007-03-29T12:00:00Z&amp;time_end=2007-03-29T13:00:00Z</strong> (between 12 and 1 pm Greenwich time)</li>
+    <li><strong>time_start=present&amp;time_duration=P3D</strong> (get 3 day forecast starting from the present) </li>
+    <li><strong>time_end=present&amp;time_duration=PT3H</strong> (get last 3 hours) </li>
+  </ul>
+  <h4><strong>2. Time point</strong></h4>
+  <ul>
+    <li><strong>time: </strong>time as an <a href="#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
+  </ul>
+  <p>The  requested time point must lie within the dataset time range. The time slice/point closest to the requested time will be returned. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> time=2007-03-29T12:00:00Z</strong></li>
+    <li><strong>time=present</strong></li>
+  </ul>
+  <h3>D. Specify the return format<a name="accept"></a></h3>
+  <p>Specify the return format(s) that you want by using the <strong>accept</strong> parameter: </p>
+  <blockquote>
+    <p><strong>accept=mime_type[,mime-type][,mime-type]</strong></p>
+  </blockquote>
+  <p>The list of possible return formats varies depending on the dataset, and can be found in the Dataset Description Document. Your request specifies the list of acceptable types, if none are valid a 400 &quot;Bad Request&quot; HTTP status is returned. If you specify multiple mime-types, the server will choose one of them.</p>
+  <p>The server returns the actual return format in the Content-Type header, examples: </p>
+  <ul>
+    <li><strong>Content-Type: text/plain;charset=ISO-8859-1</strong></li>
+    <li><strong>Content-Type: application/x-netcdf</strong></li>
+  </ul>
+  <p>Query examples:</p>
+  <ul>
+    <li><strong>accept=application/x-netcdf </strong>requests a netcdf file </li>
+    <li><strong>accept=netcdf </strong>requests a netcdf file </li>
+    <li><strong>accept=ascii,csv</strong> requests either an ascii or csv document back </li>
+  </ul>
+  <p>The possible mime-types and aliases: </p>
+  <table width="600" border="1">
+    <tr>
+      <th width="227" scope="col">Mime Type </th>
+      <th width="357" scope="col">Synonyms</th>
+    </tr>
+    <tr>
+      <td>text/plain</td>
+      <td>raw, ascii </td>
+    </tr>
+    <tr>
+      <td>application/xml</td>
+      <td>xml</td>
+    </tr>
+    <tr>
+      <td>text/csv</td>
+      <td>csv</td>
+    </tr>
+    <tr>
+      <td>text/html</td>
+      <td>html</td>
+    </tr>
+    <tr>
+      <td>application/x-netcdf</td>
+      <td>netcdf</td>
+    </tr>
+  </table>
+  <p>The list of actual return formats  depends on the dataset, and can be found in the Dataset Description Document.</p>
+  <p>&nbsp;</p>
+  <h3><strong>E. Specify the vertical coordinate</strong></h3>
+  <p>You may specify a vertical coordinate. Example:</p>
+  <ul>
+    <li><strong> vertCoord=850</strong></li>
+  </ul>
+  <h3><strong>F. Adding Lat/Lon arrays to the file </strong></h3>
+  <p>If the grid is a lat/lon grid, the lat and lon coordinates will be automatically included (as 1D coordinate variables). When the grid is on a projection, the lat/lon information will not be included unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
+  <p>The 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </p>
+  <p>&nbsp;</p>
+  <h2>Dataset Descriptions<a name="DatasetDescription"></a> </h2>
+  <p>Each dataset has an XML document called the <em><strong>Dataset Description Document</strong></em>. These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients with the necessary information to formulate a valid request and send it to the serve</em>r. <strong>The content of these documents is still evolving.</strong> </p>
+  <h3>Station Observation Dataset</h3>
+  <p>A Station Observation Dataset is a collection of time series of observations at named locations called <em>stations</em>. </p>
+  <p>The dataset is described by a <em><strong>stationObsDataset</strong></em> document, which in turn points to the list of valid stations   in a seperate <em><strong>stationCollection</strong></em> document. The stationCollection document can be quite large, and caching on the client (eg using the <em>If-Modified-Since</em> header) is an important optimization. </p>
+  <ul>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml"><strong>stationObsDataset</strong></a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml"><strong>stationCollection</strong></a> document (<a href="metars/stations.xml">offline</a> example) </li>
+  </ul>
+  <h3>Grid Dataset</h3>
+  <p>A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical and time coordinates. Grid data points next to each other in index space are next to each other in coordinate space. </p>
+  <ul>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/grid/fmrc/NCEP/GFS/CONUS_80km/NCEP-GFS-CONUS_80km_best.ncd/dataset.xml"><strong>gridDataset</strong></a> document (<a href="grids/gridDataset.xml">offline</a> example) </li>
+  </ul>
+  <hr>
+  <div class="div4">
+    <h2><a name="Reference"></a>Reference</h2>
+    <h3>W3C Time Duration<a name="W3Cduration"></a> </h3>
+    <p> The lexical representation for <b>duration</b> is the</a><a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a> extended format P<em>n</em>Y<em>n</em> M<em>n</em>DT<em>n</em>H <em>n</em>M<em>n</em>S, where <em>n</em>Y represents the number of years, <em>n</em>M the number of months, <em>n</em>D the number of days, 'T' is the date/time separator, <em>n</em>H the number of hours, <em>n</em>M the number of minutes and <em>n</em>S the number of seconds. The number of seconds can include decimal digits to arbitrary precision.</p>
+    <p> The values of the Year, Month, Day, Hour and Minutes components are not restricted but allow an arbitrary unsigned integer, i.e., an integer that conforms to the pattern <code>[0-9]+</code>.. Similarly, the value of the Seconds component allows an arbitrary unsigned decimal. Following <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>, at least one digit must follow the decimal point if it appears. That is, the value of the Seconds component must conform to the pattern <code>[0-9]+(\.[0-9]+)?</code>. Thus, the lexical representation of <b>duration</b> does not follow the alternative format of &sect; 5.5.3.2.1 of <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>.</p>
+    <p> An optional preceding minus sign ('-') is allowed, to indicate a negative duration. If the sign is omitted a positive duration is indicated. See also <a href="http://www.w3.org/TR/xmlschema-2/#isoformats">ISO 8601 Date and Time Formats (&sect;D)</a>. </p>
+    <p> For example, to indicate a duration of 1 year, 2 months, 3 days, 10 hours, and 30 minutes, one would write: <code>P1Y2M3DT10H30M</code>. One could also indicate a duration of minus 120 days as: <code>-P120D</code>. </p>
+    <p> Reduced precision and truncated representations of this format are allowed provided they conform to the following: </p>
+    <ul>
+      <li> If the number of years, months, days, hours, minutes, or seconds in any expression equals zero, the number and its corresponding designator <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-may"><span class="arrow">&middot;</span>may<span class="arrow">&middot;</span></a> be omitted. However, at least one number and its designator <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-must"><span class="arrow">&middot;</span>must<span class="arrow">&middot;</span></a> be present. </li>
+      <li> The seconds part <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-may"><span class="arrow">&middot;</span>may<span class="arrow">&middot;</span></a> have a decimal fraction. </li>
+      <li> The designator 'T' must be absent if and only if all of the time items are absent. The designator 'P' must always be present. </li>
+    </ul>
+    <p> For example, P1347Y, P1347M and P1Y2MT2H are all allowed; P0Y1347M and P0Y1347M0D are allowed. P-1347M is not allowed although -P1347M is allowed. P1Y2MT is not allowed. </p>
+    <p>See XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#duration">duration</a> for full details. </p>
+    <h3>W3C Dates<a name="W3Cdate" id="W3Cdate"></a></h3>
+    <p> For our purposes, and ISO Date can be a dateTime or a date: </p>
+    <p><b>A dateTime</b> has the form: <code>'-'? yyyy '-' mm '-' dd 'T' hh ':' mm ':' ss ('.' s+)? (zzzzzz)?</code></p>
+    <p>where </p>
+    <ul>
+      <li>'-'? <em>yyyy</em> is a four-or-more digit optionally negative-signed numeral that represents the year; if more than four digits, leading zeros are prohibited, and '0000' is prohibited (see the Note above <a href="http://www.w3.org/TR/xmlschema-2/#year-zero"> (&sect;3.2.7)</a>; also note that a plus sign is <b>not</b> permitted);</li>
+      <li>the remaining '-'s are separators between parts of the date portion;</li>
+      <li>the first <em>mm</em> is a two-digit numeral that represents the month;</li>
+      <li><em>dd</em> is a two-digit numeral that represents the day;</li>
+      <li>'T' is a separator indicating that time-of-day follows;</li>
+      <li><em>hh</em> is a two-digit numeral that represents the hour; '24' is permitted if the minutes and seconds represented are zero, and the <b>dateTime</b> value so represented is the first instant of the following day (the hour property of a <b>dateTime</b> object in the <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-value-space"><span class="arrow">&middot;</span>value space<span class="arrow">&middot;</span></a> cannot have a value greater than 23);</li>
+      <li>':' is a separator between parts of the time-of-day portion;</li>
+      <li>the second <em>mm</em> is a two-digit numeral that represents the minute;</li>
+      <li><em>ss</em> is a two-integer-digit numeral that represents the whole seconds;</li>
+      <li>'.' <em>s+</em> (if present) represents the fractional seconds;</li>
+      <li><em>zzzzzz</em> (if present) represents the time zone (as described below).</li>
+    </ul>
+    <p> For example, 2002-10-10T12:00:00-05:00 (noon on 10 October 2002, Central Daylight Savings Time as well as Eastern Standard Time in the U.S.) is 2002-10-10T17:00:00Z, five hours later than 2002-10-10T12:00:00Z. </p>
+    <p>A <strong>date</strong> is the same as a dateTime without the time part : <code>'-'? yyyy '-' mm '-' dd zzzzzz?</code></p>
+  </div>
+  <p>See XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a> and <a href="http://www.w3.org/TR/xmlschema-2/#date">date</a> for full details </p>
+  <hr>
+  <h2><a name="REST"></a>REST Design </h2>
+  <h3>1. What are the resources/URIs?</h3>
+  <p>The resources are THREDDS datasets. The resource URIs can be discovered in a <a href="../TDS.html#Catalogs">THREDDS catalog</a>, by looking for datasets that use the <strong>NetcdfSubset</strong> Service type. Generally these resource URLs look like: </p>
+  <blockquote>  
+    <p><strong> http://servername:8080/thredds/ncss/{path/dataset}</strong> </p>
+    <p><strong>http://servername:8080/thredds/ncss/grid/{path/dataset}</strong></p>
+  </blockquote>
+  <p>Typically the user wants a <a href="#subset">subset</a> of the dataset.This is considered a <em>view</em> of a resource, rather than a separate resource: </p>
+  <blockquote>
+    <p><strong> http://servername:8080/thredds/ncss/{path/dataset}?{subset}</strong></p>
+  </blockquote>
+  <p>A desired <em><a href="#representation">representation</a></em> of the resource is specified using the <strong>accept</strong> parameter. Again, different representations are not considered separate resources. Following the <strong>Accept</strong> HTTP header, accept takes a comma delimited list of mime-types (or aliases), but does not allow wild cards (*) or q parameters. </p>
+  <blockquote>
+    <p><strong> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;accept={mime-type}</strong></p>
+  </blockquote>
+  <h3><strong>2. What's the format/representation?</strong></h3>
+  <p>The dataset itself has two representations: </p>
+  <ul>
+    <li> an XML file describing the dataset, called the <a href="#DatasetDescription">Dataset Description</a>
+        <ul>
+          <li><strong>http://servername:8080/thredds/ncss/{path/dataset}/dataset.xml</strong></li>
+        </ul>
+    </li>
+    <li> An HTML form to allow interactive user input:</li>
+    <ul>
+      <li><strong>http://servername:8080/thredds/ncss/{path/dataset}/dataset.html</strong></li>
+    </ul>
+  </ul>
+  <p>Results of a subset request can be: </p>
+  <ul>
+    <li> <strong>a netCDF binary file</strong>
+        <ul>
+          <li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=application/x-netcdf</strong></li>
+        </ul>
+    </li>
+    <li> <strong>an XML document </strong>
+        <ul>
+          <li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=application/xml</strong></li>
+        </ul>
+    </li>
+    <li> <strong>ASCII text </strong>
+        <ul>
+          <li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=text/plain</strong></li>
+        </ul>
+    </li>
+    <li> <strong>Excel CSV (comma separated values) </strong>
+        <ul>
+          <li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=text/csv</strong></li>
+        </ul>
+    </li>
+  </ul>
+  <ol>
+    <li>The netCDF binary file will be encoded using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF conventions</a> when possible, and when not possible, the encoding will be submitted to CF for approval.</li>
+    <li>The XML, ASCII, and CSV files are intended for use only for small extractions of data, and are generally missing some or all of the metadata of the dataset. </li>
+    <li>Multiple accept values can be specified, eg <strong>accept=xml,csv </strong>(comma delimited, no spaces). The server will select from that list. </li>
+  </ol>
+  <p><strong>Representation types</strong></p>
+  <table width="600" border="1">
+    <tr>
+      <th width="227" scope="col">Mime Type </th>
+      <th width="357" scope="col">Synonyms</th>
+    </tr>
+    <tr>
+      <td>text/plain</td>
+      <td>raw, ascii </td>
+    </tr>
+    <tr>
+      <td>application/xml</td>
+      <td>xml</td>
+    </tr>
+    <tr>
+      <td>text/csv</td>
+      <td>csv</td>
+    </tr>
+    <tr>
+      <td>text/html</td>
+      <td>html</td>
+    </tr>
+    <tr>
+      <td>application/x-netcdf</td>
+      <td>netcdf</td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <h3>3. What are the Methods?</h3>
+  <blockquote>
+    <p>Only the GET method is allowed. </p>
+  </blockquote>
+  <h3>4. What Status codes can be returned?</h3>
+  <ul>
+    <li>200 : success</li>
+    <li>307 : redirect to an authorization challenge</li>
+    <li>400 : malformed request</li>
+    <li>401 : authorization challenge</li>
+    <li>404 : unknown resource</li>
+    <li>501 : request requires too much server resources / data result would be too large </li>
+  </ul>
+  <h3>REST Resources:</h3>
+  <ul>
+    <li><a href="http://www.xml.com/pub/a/2004/08/11/rest.html">Implementing REST Web Services: Best Practices and Guidelines
+    </a></li>
+  </ul>
+<p> </p>
+<hr WIDTH="100%">
+<address>
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on March, 2012
+</address>
+<p>&nbsp;
+</p>
+</body>
+</html>

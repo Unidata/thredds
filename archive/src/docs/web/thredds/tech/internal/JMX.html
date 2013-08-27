@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+ <h1>JMX</h1>
+ <p>Using Java 1.6, add -Dcom.sun.management.jmxremote to JVM options on tomcat startup</p>
+ <p>On local machine, start up jconsole, which will autodetect all Java JVM. visualVM also works if you install the JMX plugin</p>
+ <h3>Remote</h3>
+ <p>Add to tomcat JVM options:</p>
+ <p>-Dcom.sun.management.jmxremote <br />
+   -Dcom.sun.management.jmxremote.<strong>port=8686</strong> <br />
+   -Dcom.sun.management.jmxremote.authenticate=false <br />
+ -Dcom.sun.management.jmxremote.ssl=false </p>
+ <p>Make sure that the firewall is letting port 8686 through.</p>
+ <p><a href="https://wiki.internet2.edu/confluence/display/CPD/Monitoring+Tomcat+with+JMX">Reference</a><br />
+ </p>
+ <h1>Profiling</h1>
+ <p>/opt/tds-test/bin/startupJmxYjp.sh</p>
+ <p>has this line:</p>
+ <p>JAVA_TOOL_OPTIONS=&quot;-agentlib:yjpagent=sessionname=Tomcat,<strong>port=2036</strong> $JAVA_TOOL_OPTIONS&quot;<br />
+ </p>
+ <p>Make sure that the firewall is letting port 2036 through.</p>
+ <p>&nbsp;</p>
+</body>
+</html>
