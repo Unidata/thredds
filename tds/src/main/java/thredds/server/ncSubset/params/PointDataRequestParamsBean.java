@@ -1,27 +1,34 @@
 package thredds.server.ncSubset.params;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
+import thredds.server.ncSubset.validation.SubsetTypeConstraint;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 
+@SubsetTypeConstraint
 public class PointDataRequestParamsBean extends RequestParamsBean {
 	
-	@NotNull(message="latitude param may not be null")	
+	//@NotNull(message="latitude param may not be null")	
 	private Double latitude;
 	
-	@NotNull(message="longitude param may not be null")
+	//@NotNull(message="longitude param may not be null")
 	private Double longitude;
 			
-	//@NotNull(message="point param may not be null")
-	private Boolean point;
-		
+
+	//private Boolean point;
+	
+	//Spatial subsetting type. Must be: point (default), all, bb, stns
+	private String stn;
+	
+	//Must be present if stn=stns
+	private List<String> stns;
 	
 	public Double getLatitude() {
 		return latitude;
 	}
-	
-	
+		
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
@@ -33,15 +40,39 @@ public class PointDataRequestParamsBean extends RequestParamsBean {
 		this.longitude = longitude;
 	}
 
-	public Boolean getPoint() {
+	/*public Boolean getPoint() {
 		return point;
 	}
 	public void setPoint(Boolean point) {
 		this.point = point;
+	}*/
+	
+	public String getStn(){
+		return this.stn;
 	}
+	
+	public void setStn(String stn){
+		this.stn = stn;
+	}
+	
+	public List<String> getStns(){
+		return this.stns;
+	}
+	
+	public void setStns(List<String> stns){
+		this.stns = stns;
+	}	
 	
 	public LatLonPoint getLatLonPoint(){
 		return new LatLonPointImpl(latitude, longitude);
+	}
+	
+	/*
+	 * Point requests on PointFeatures may have a bbox (stn=bb) 
+	 */
+	public LatLonRect getLatLonRect(){
+		/* TODO */
+		return null;
 	}
 
 }

@@ -33,26 +33,28 @@
 
 package thredds.servlet;
 
-import thredds.catalog.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDataset.Enhance;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.util.cache.FileFactory;
-
-import java.io.*;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 
-import thredds.servlet.restrict.RestrictedDatasetServlet;
-
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
+
+import thredds.catalog.InvAccess;
+import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.catalog.InvDatasetFmrc;
+import thredds.catalog.InvDatasetImpl;
+import thredds.catalog.InvDatasetScan;
+import thredds.servlet.restrict.RestrictedDatasetServlet;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.util.cache.FileFactory;
 
 
 /**
@@ -308,6 +310,7 @@ public class DatasetHandler {
       // Convert to NetcdfDataset
       ncd = NetcdfDataset.wrap( ncfile, enhanceMode );
       return new ucar.nc2.dt.grid.GridDataset(ncd);
+
 
     } catch ( Throwable t ) {
       if ( ncd == null )

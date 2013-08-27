@@ -182,7 +182,6 @@ class PointDataController extends AbstractNcssDataRequestController{
 				throw new VariableNotContainedInDatasetException("Variable: "+var+" is not contained in the requested dataset");
 			}			
 
-
 			CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();					
 
 			String axisKey = null;

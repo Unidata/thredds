@@ -2,9 +2,6 @@ package thredds.server.ncSubset.params;
 
 import javax.validation.constraints.NotNull;
 
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
-
 public class GridDataRequestParamsBean extends RequestParamsBean {
 	
 	//@NotNull(message="north param may not be null")	

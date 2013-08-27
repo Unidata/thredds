@@ -63,6 +63,27 @@
     <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
   </featureCollection>
   
+  <!-- test Point Feature Collection (Station with metar data) -->
+  <!--
+  		pathInfo: nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr 
+   -->
+    <featureCollection name="Metar Station Data" harvest="true" featureType="Station" path="nws/metar/ncdecoded">
+      <metadata inherited="true">
+        <dataType>Station</dataType>
+        <documentation type="summary">Metars: hourly surface weather observations</documentation>
+        <keyword>metar</keyword>
+        <keyword>surface observations</keyword>
+      </metadata>
+
+      <property name="raw" value="report"/>
+      <property name="resolution" value="20 min"/>
+
+      <collection spec="content/data/point_features/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$" />
+      <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      <protoDataset choice="Penultimate" />
+      <pointConfig datasetTypes="cdmrFeature Files"/>
+    </featureCollection>  
+  
   
   <!-- catalogRef xlink:title="Test FMRC with inner and outer NcML" xlink:href="wav_mod.xml" name=""/-->
 
