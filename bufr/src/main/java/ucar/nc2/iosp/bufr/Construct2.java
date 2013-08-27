@@ -71,34 +71,34 @@ class Construct2 {
     //int outputBytes = dds.getTotalBytes();
 
     // the category
-    int cat = proto.ids.getCategory();
-    int subcat = proto.ids.getSubCategory();
+   // int cat = proto.ids.getCategory();
+    //int subcat = proto.ids.getSubCategory();
 
     // global Attributes
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM BufrIosp2"));
     if (bufrConfig.getFeatureType() != null)
-      ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, bufrConfig.getFeatureType().toString()));
-    if (nc.getLocation() != null)
-      ncfile.addAttribute(null, new Attribute("location", nc.getLocation()));
-    ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
+      ncfile.addAttribute(null, CF.FEATURE_TYPE, bufrConfig.getFeatureType().toString());
+    ncfile.addAttribute(null, "location", nc.getLocation());
 
-    ncfile.addAttribute(null, new Attribute("BUFR:edition", proto.is.getBufrEdition()));
-    ncfile.addAttribute(null, new Attribute("BUFR:categoryName", proto.getLookup().getCategoryName()));
-    ncfile.addAttribute(null, new Attribute("BUFR:category", cat));
-    ncfile.addAttribute(null, new Attribute("BUFR:subCategory", subcat));
+    ncfile.addAttribute(null, "BUFR:categoryName", proto.getLookup().getCategoryName());
+    ncfile.addAttribute(null, "BUFR:subCategoryName", proto.getLookup().getSubCategoryName());
+    ncfile.addAttribute(null, "BUFR:centerName", proto.getLookup().getCenterName());
+    ncfile.addAttribute(null, new Attribute("BUFR:category", proto.ids.getCategory()));
+    ncfile.addAttribute(null, new Attribute("BUFR:subCategory", proto.ids.getSubCategory()));
     ncfile.addAttribute(null, new Attribute("BUFR:localSubCategory", proto.ids.getLocalSubCategory()));
-    ncfile.addAttribute(null, new Attribute("BUFR:centerName", proto.getLookup().getCenterName()));
     ncfile.addAttribute(null, new Attribute(BufrIosp2.centerId, proto.ids.getCenterId()));
     ncfile.addAttribute(null, new Attribute("BUFR:subCenter", proto.ids.getSubCenterId()));
-    //ncfile.addAttribute(null, new Attribute("BUFR:tableName", proto.ids.getMasterTableFilename()));
+    //ncfile.addAttribute(null, "BUFR:tableName", proto.ids.getMasterTableFilename()));
     ncfile.addAttribute(null, new Attribute("BUFR:table", proto.ids.getMasterTableId()));
     ncfile.addAttribute(null, new Attribute("BUFR:tableVersion", proto.ids.getMasterTableVersion()));
     ncfile.addAttribute(null, new Attribute("BUFR:localTableVersion", proto.ids.getLocalTableVersion()));
+    ncfile.addAttribute(null, "Conventions", "BUFR/CDM");
+    ncfile.addAttribute(null, new Attribute("BUFR:edition", proto.is.getBufrEdition()));
 
     centerId = proto.ids.getCenterId();
 
     String header = proto.getHeader();
-    if (header != null)
+    if (header != null && header.length() > 0)
       ncfile.addAttribute(null, new Attribute("WMO Header", header));
 
     makeObsRecord(bufrConfig);

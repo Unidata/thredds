@@ -57,7 +57,7 @@ public class NcepTable {
       this.cat = cat;
       this.subcat = subcat;
       this.value = value.trim();
-      System.out.printf(" %3d %3d: %s%n", cat, subcat, value);
+      //System.out.printf(" %3d %3d: %s%n", cat, subcat, value);
     }
   }
 

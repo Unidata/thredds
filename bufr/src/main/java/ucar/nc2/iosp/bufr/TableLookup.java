@@ -47,7 +47,7 @@ import java.io.IOException;
 @Immutable
 public class TableLookup {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableLookup.class);
-  static private final boolean showErrors = true;
+  static private final boolean showErrors = false;
 
   /////////////////////////////////////////
   private final TableB localTableB;
@@ -139,7 +139,7 @@ public class TableLookup {
     }
 
     if (b == null && showErrors)
-      System.out.printf(" TableLookup cant find Table B descriptor = %s in tables %s, %s mode=%s%n", Descriptor.makeString(fxy),
+      log.warn(" TableLookup cant find Table B descriptor = {} in tables {}, {} mode={}", Descriptor.makeString(fxy),
               getLocalTableBName(), getWmoTableBName(), mode);
     return b;
   }

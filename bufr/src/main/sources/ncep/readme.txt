@@ -26,6 +26,6 @@ http://www.nco.ncep.noaa.gov/pmb/codes/
 
 8/22/2013
 
-download bufrtab.XXX,txtx from http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/fix/
+download bufrtab.XXX.txt from http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/fix/
 
 these are NCEP mnuemonic tables with data subcategory names in them

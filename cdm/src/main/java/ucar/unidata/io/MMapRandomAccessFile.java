@@ -41,7 +41,7 @@ import java.nio.MappedByteBuffer;
  * Limited to 2G size. Not currently used - NOT UP TO DATE DO NOT USE
  * @author john
  */
-class MMapRandomAccessFile extends RandomAccessFile {
+public class MMapRandomAccessFile extends RandomAccessFile {
 
   private MappedByteBuffer source;
 
@@ -51,11 +51,11 @@ class MMapRandomAccessFile extends RandomAccessFile {
     * @param mode the open mode
     * @throws java.io.IOException on error
     */
-  MMapRandomAccessFile(String location, String mode ) throws IOException {
+  public MMapRandomAccessFile(String location, String mode) throws IOException {
     super(location, mode, 1);
     FileChannel channel = file.getChannel();
     source = channel.map( readonly ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, (long) 0, channel.size());
-    channel.close();
+    //channel.close();
 
     bufferStart = 0;
 	  dataSize = (int) channel.size();
@@ -71,16 +71,6 @@ class MMapRandomAccessFile extends RandomAccessFile {
       source.force();
       bufferModified = false;
     }
-  }
-
-  public void close() throws IOException {
-    if (fileCache != null) {
-      fileCache.release(this);
-      return;
-    }
-
-    if (!readonly) flush();
-    source = null;
   }
 
   public long length( ) {

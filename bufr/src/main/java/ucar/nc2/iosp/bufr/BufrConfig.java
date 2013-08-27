@@ -6,8 +6,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
 import ucar.nc2.constants.FeatureType;
-//import ucar.nc2.dataset.NetcdfDataset;
-//import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.BufrField;
 import ucar.nc2.ft.point.bufr.StandardFields;
@@ -44,7 +42,6 @@ public class BufrConfig {
   private StandardFields.StandardFieldsFromMessage standardFields;
   private FieldConverter rootConverter;
   private int messHash = 0;
-  //private int nmess = 0;
   private FeatureType featureType;
   private Map<String, BufrStation> map;
   private long start = Long.MAX_VALUE;
@@ -118,6 +115,10 @@ public class BufrConfig {
 
   public long getEnd() {
     return end;
+  }
+
+  public long getNobs() {
+    return countObs;
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -242,23 +243,6 @@ public class BufrConfig {
   static private class FakeNetcdfFile extends NetcdfFile {
   }
 
-  private void processSeq(RandomAccessFile raf, Message m) throws IOException {
-    BufrConfig config = BufrConfig.openFromMessage(raf, m, null);
-    Construct2 construct = new Construct2(m, config, new FakeNetcdfFile());
-
-    // read all the messages
-    ArrayStructure data;
-    if (!m.dds.isCompressed()) {
-      MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-      data = reader.readEntireMessage(construct.getObsStructure(), m, m, raf, null);
-    } else {
-      MessageCompressedDataReader reader = new MessageCompressedDataReader();
-      data = reader.readEntireMessage(construct.getObsStructure(), m, m, raf, null);
-    }
-
-    processSeq(data.getStructureDataIterator(), rootConverter, true);
-  }
-
   private CalendarDate today = CalendarDate.present();
   private void processSeq(StructureDataIterator sdataIter, FieldConverter parent, boolean isTop) throws IOException {
      try {
@@ -328,6 +312,20 @@ public class BufrConfig {
     public int count = 1;
 
     void read(FieldConverter parent, StructureData sdata) {
+      extract.extract(sdata);
+
+      setName( extract.getStationId());
+      setLatitude( extract.getFieldValueD( BufrCdmIndexProto.FldType.lat));
+      setLongitude( extract.getFieldValueD( BufrCdmIndexProto.FldType.lon));
+      if (extract.hasField(BufrCdmIndexProto.FldType.stationDesc))
+        setDescription( extract.getFieldValueS( BufrCdmIndexProto.FldType.stationDesc));
+      if (extract.hasField(BufrCdmIndexProto.FldType.wmoId))
+        setWmoId( extract.getFieldValueS( BufrCdmIndexProto.FldType.wmoId));
+      if (extract.hasField(BufrCdmIndexProto.FldType.heightOfStation))
+        setAltitude( extract.getFieldValueD( BufrCdmIndexProto.FldType.heightOfStation));
+    }
+
+    /* void read(FieldConverter parent, StructureData sdata) {
       int count = 0;
       List<FieldConverter> flds = parent.getChildren(); // asssume these track exactly the members
       for (StructureMembers.Member m : sdata.getMembers()) {
@@ -336,7 +334,7 @@ public class BufrConfig {
 
         switch (fld.getType()) {
           case stationId:
-            setName(readString(sdata, m));
+            setName( readString(sdata, m));
             break;
           case stationDesc:
             setDescription(sdata.getScalarString(m));
@@ -364,11 +362,11 @@ public class BufrConfig {
       if (m.getDataType().isString())
         return sdata.getScalarString(m);
       else if (m.getDataType().isIntegral())
-        return Integer.toString(sdata.getScalarInt(m));
+        return Integer.toString(sdata.convertScalarInt(m));
       else if (m.getDataType().isNumeric())
         return Double.toString(sdata.convertScalarDouble(m));
       else return "type "+ m.getDataType();
-    }
+    }  */
 
     @Override
     public boolean equals(Object o) {
@@ -543,8 +541,7 @@ public class BufrConfig {
       if (!isSeq) return null;
       if (max == 0) return BufrCdmIndexProto.FldAction.remove;
       if (max < 2) return BufrCdmIndexProto.FldAction.asMissing;
-      if (max == min) return BufrCdmIndexProto.FldAction.asArray;
-      else return null;
+      else return BufrCdmIndexProto.FldAction.asArray;
     }
 
     void show(Formatter f, Indent indent, int index) {

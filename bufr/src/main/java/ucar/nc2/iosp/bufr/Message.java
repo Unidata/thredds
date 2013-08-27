@@ -150,9 +150,8 @@ public class Message {
    * Get the root of the DataDescriptor tree.
    *
    * @return root DataDescriptor
-   * @throws IOException on read error
    */
-  public DataDescriptor getRootDataDescriptor() throws IOException {
+  public DataDescriptor getRootDataDescriptor() {
     if (root == null)
       root = new DataDescriptorTreeConstructor().factory(lookup, dds);
     return root;
@@ -288,12 +287,17 @@ public class Message {
    */
   public int hashCode() {
     int result = 17;
-    result += 37 * result + dds.getDataDescriptors().hashCode();
-    result += 37 * result + ids.getCenterId();
+    result += 37 * result + getDDShashcode();
+    // result += 37 * result + ids.getCenterId();
     //result += 37 * result + ids.getSubCenter_id();
     result += 37 * result + ids.getCategory();
     result += 37 * result + ids.getSubCategory();
     return result;
+  }
+
+  public int getDDShashcode() {
+    root = getRootDataDescriptor();
+    return root.hashCode2();
   }
 
   /**
@@ -321,7 +325,7 @@ public class Message {
     lookup.showMissingFields(dds.getDataDescriptors(), out);
   }
 
-  public void dump(Formatter out) throws IOException {
+  public void dump(Formatter out) { // throws IOException {
 
     int listHash = dds.getDataDescriptors().hashCode();
     out.format(" BUFR edition %d time= %s wmoHeader=%s hash=[0x%x] listHash=[0x%x] (%d) %n",

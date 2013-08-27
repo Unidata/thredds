@@ -198,7 +198,7 @@ public class BufrCdmIndexPanel extends JPanel {
     if (parent.getFldsList() == null) return;
     parentBean.children = new ArrayList<FieldBean>();
     for (BufrCdmIndexProto.Field child : parent.getFldsList()) {
-      FieldBean childBean = new FieldBean(parent, child);
+      FieldBean childBean = new FieldBean(parentBean, child);
       flds.add(childBean);
       parentBean.children.add(childBean);
       addFields(child, childBean, flds);
@@ -269,7 +269,8 @@ public class BufrCdmIndexPanel extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////////
   public class FieldBean implements BufrField {
-    BufrCdmIndexProto.Field parent, child;
+    FieldBean parent;
+    BufrCdmIndexProto.Field child;
     List<FieldBean> children;
     BufrCdmIndexProto.FldAction act;
     BufrCdmIndexProto.FldType type;
@@ -285,13 +286,22 @@ public class BufrCdmIndexPanel extends JPanel {
     public FieldBean() {
     }
 
-    public FieldBean(BufrCdmIndexProto.Field parent, BufrCdmIndexProto.Field child) {
+    public FieldBean(FieldBean parent, BufrCdmIndexProto.Field child) {
       this.parent = parent;
       this.child = child;
     }
 
     public String getParent() {
-      return parent.getName();
+      if (parent == null) return null;
+      Formatter f = new Formatter();
+      FieldBean a = parent;
+      while (a != null) {
+        a = a.parent;
+        if (a != null && !a.getName().isEmpty())
+          f.format("../");
+      }
+      f.format("%s", parent.getName());
+      return f.toString();
     }
 
     @Override

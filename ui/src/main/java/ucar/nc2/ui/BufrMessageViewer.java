@@ -41,6 +41,7 @@ import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CancelTask;
+import ucar.util.GoogleDiff;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -208,15 +209,13 @@ public class BufrMessageViewer extends JPanel {
         try {
           setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
           setObs(mb.m);
-        } catch (IOException e1) {
+        } catch (Exception e1) {
           JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         ddsTable.setBeans(beanList);
       }
     });
-
-    /////////////////////////
 
     obsTable = new BeanTableSorted(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
     obsTable.addListSelectionListener(new ListSelectionListener() {
@@ -225,14 +224,14 @@ public class BufrMessageViewer extends JPanel {
       }
     });
 
-    //////////////////////////////
-
     ddsTable = new BeanTableSorted(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
     ddsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
       }
     });
+
+   ////////////////////////////////////////////////////////////
 
     ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(messageTable.getJTable(), "Options");
     varPopup.addAction("Show DDS", new AbstractAction() {
@@ -268,6 +267,7 @@ public class BufrMessageViewer extends JPanel {
         }
       }
     });
+
     varPopup.addAction("Data Table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
@@ -409,6 +409,17 @@ public class BufrMessageViewer extends JPanel {
         infoWindow.show();
       }
     });
+
+      varPopup.addAction("Compare DDS", new AbstractAction() {
+         public void actionPerformed(ActionEvent e) {
+           List list = messageTable.getSelectedBeans();
+           for (Object beano : list) {
+             MessageBean bean = (MessageBean) beano;
+             showDDS(bean.m);
+           }
+         }
+       });
+
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -559,6 +570,57 @@ public class BufrMessageViewer extends JPanel {
       e1.printStackTrace();
     }
   }
+
+
+ /*  private void compare(Message m1, Message m2, Formatter f) {
+    Formatter f1 = new Formatter();
+    Formatter f2 = new Formatter();
+    m1.dump(f1);
+    m1.dump(f2);
+
+    TextHistoryPane ta = new TextHistoryPane();
+    IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), ta);
+    info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+    ta.appendLine(f.toString());
+    ta.gotoTop();
+    info.show();
+  }  */
+
+  private void showDDS(Message m1) {
+    Formatter f1 = new Formatter();
+    m1.dump(f1);
+    TextHistoryPane ta = new TextHistoryPane();
+    IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), ta);
+    info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+    ta.appendLine(f1.toString());
+    ta.gotoTop();
+    info.show();
+  }
+
+  /* private void compare2(Message m1, Message m2, Formatter f) {
+    Formatter f1 = new Formatter();
+    Formatter f2 = new Formatter();
+      m1.dump(f1);
+      m1.dump(f2);
+    GoogleDiff diff = new GoogleDiff();
+    List<GoogleDiff.Diff> result = diff.diff_main(f1.toString(), f2.toString());
+    for (GoogleDiff.Diff d : result)
+      f.format("%s%n", d);
+    //DataDescriptor root1 = m1.getRootDataDescriptor();
+    //DataDescriptor root2 = m1.getRootDataDescriptor();
+    //compare(root1.getSubKeys(), root2.getSubKeys(), f);
+  }
+
+  private void compare(List<DataDescriptor> dds1, List<DataDescriptor> dds2, Formatter f) throws IOException {
+
+    int count = 0;
+    for (DataDescriptor sub1 : dds1) {
+      DataDescriptor sub2 = dds2.get(count);
+
+    }
+  } */
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public void save() {
     messageTable.saveState(false);
@@ -931,6 +993,35 @@ public class BufrMessageViewer extends JPanel {
     }
 
 
+  }
+
+  public static void main(String[] args) throws IOException {
+    RandomAccessFile raf1 = new RandomAccessFile("G:/ldm/distinct/8.bufr", "r");
+    RandomAccessFile raf2 = new RandomAccessFile("G:/ldm/distinct/9.bufr", "r");
+    MessageScanner scan1 = new MessageScanner(raf1);
+    MessageScanner scan2 = new MessageScanner(raf2);
+    Message m1 = scan1.getFirstDataMessage();
+    Message m2 = scan2.getFirstDataMessage();
+    raf1.close();
+    raf2.close();
+
+    Formatter f1 = new Formatter();
+    Formatter f2 = new Formatter();
+
+    m1.dump(f1);
+    m2.dump(f2);
+
+    System.out.printf("%s%n", f1);
+    System.out.printf("==========================%n");
+    System.out.printf("%s%n", f2);
+    System.out.printf("==========================%n");
+
+
+    GoogleDiff diff = new GoogleDiff();
+    LinkedList<GoogleDiff.Diff> result = diff.diff_main(f1.toString(), f2.toString());
+    diff.diff_cleanupSemantic(result);
+    for (GoogleDiff.Diff d : result)
+      System.out.printf("%s%n", d);
   }
 
 }

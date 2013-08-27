@@ -332,16 +332,17 @@ public class MessageCompressedDataReader {
 
       // all other fields
 
+      StructureMembers.Member member = null;
       IndexIterator iter = null;
       ArrayStructure dataDpi = null; // if iter is missing - for the dpi case
       if (req.map != null) {
-        StructureMembers.Member m = req.map.get(dkey);
-        if (m == null)
+        member = req.map.get(dkey);
+        if (member == null)
           System.out.printf("HEY missing member %s%n", dkey);
-        iter = (IndexIterator) m.getDataObject();
+        iter = (IndexIterator) member.getDataObject();
         if (iter == null) {
           //System.out.printf("HEY missing iter %s%n", dkey);
-          dataDpi = (ArrayStructure) m.getDataArray();
+          dataDpi = (ArrayStructure) member.getDataArray();
         }
       }
 

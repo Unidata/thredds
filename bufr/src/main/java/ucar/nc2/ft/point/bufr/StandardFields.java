@@ -51,6 +51,8 @@ public class StandardFields {
     addField("0-7-1", BufrCdmIndexProto.FldType.heightOfStation);
 
      // third choice
+    addField("0-1-62", BufrCdmIndexProto.FldType.stationId);
+    addField("0-1-63", BufrCdmIndexProto.FldType.stationId);
     addField("0-7-2", BufrCdmIndexProto.FldType.height);
     addField("0-7-10", BufrCdmIndexProto.FldType.height);
     addField("0-7-7", BufrCdmIndexProto.FldType.height);
@@ -66,9 +68,9 @@ public class StandardFields {
     addField("0-7-7", BufrCdmIndexProto.FldType.heightAboveStation);
 
     // locals
-    Map<String, BufrCdmIndexProto.FldType> ncep = new HashMap<String, BufrCdmIndexProto.FldType>(10);
+    /* Map<String, BufrCdmIndexProto.FldType> ncep = new HashMap<String, BufrCdmIndexProto.FldType>(10);
     ncep.put("0-1-198", BufrCdmIndexProto.FldType.stationId);
-    locals.put(7, ncep);
+    locals.put(7, ncep); */
 
     Map<String, BufrCdmIndexProto.FldType> uu = new HashMap<String, BufrCdmIndexProto.FldType>(10);
     uu.put("0-1-194", BufrCdmIndexProto.FldType.stationId);
@@ -160,6 +162,8 @@ public class StandardFields {
     }
 
     public boolean hasStation() {
+      if (typeMap.get(BufrCdmIndexProto.FldType.lat) == null) return false;
+      if (typeMap.get(BufrCdmIndexProto.FldType.lon) == null) return false;
       if (typeMap.get(BufrCdmIndexProto.FldType.stationId) != null) return true;
       if (typeMap.get(BufrCdmIndexProto.FldType.wmoId) != null) return true;
       return false;
@@ -169,8 +173,8 @@ public class StandardFields {
       if (typeMap.get(BufrCdmIndexProto.FldType.year) == null) return false;
       if (typeMap.get(BufrCdmIndexProto.FldType.month) == null) return false;
       if (typeMap.get(BufrCdmIndexProto.FldType.day) == null && typeMap.get(BufrCdmIndexProto.FldType.doy) == null) return false;
-      if (typeMap.get(BufrCdmIndexProto.FldType.hour) == null) return false;  // LOOK could assume 0:0 ??
-      if (typeMap.get(BufrCdmIndexProto.FldType.minute) == null) return false;
+      //if (typeMap.get(BufrCdmIndexProto.FldType.hour) == null) return false;  // LOOK could assume 0:0 ??
+      //if (typeMap.get(BufrCdmIndexProto.FldType.minute) == null) return false;
       return true;
     }
 
@@ -199,14 +203,23 @@ public class StandardFields {
       String valueS;
       int value = -1;
       double valueD = Double.NaN;
-      double scale;
+      double scale = 1.0;
+      double offset = 0.0;
+      boolean hasScale;
 
       private Field(TypeAndOrder tao, Variable v) {
         this.tao = tao;
         this.memberName = v.getShortName();
         Attribute att = v.findAttribute("scale_factor");
-        if (att != null && !att.isString())
+        if (att != null && !att.isString()) {
           scale = att.getNumericValue().doubleValue();
+          hasScale = true;
+        }
+        att = v.findAttribute("add_offset");
+        if (att != null && !att.isString()) {
+          offset = att.getNumericValue().doubleValue();
+          hasScale = true;
+        }
       }
     }
 
@@ -242,9 +255,10 @@ public class StandardFields {
         DataType dtype = m.getDataType();
         if (dtype.isString())
           fld.valueS = sdata.getScalarString(m).trim();
-        else if (dtype.isIntegral())
+        else if (dtype.isIntegral()) {
           fld.value = sdata.convertScalarInt(m);
-        else if (dtype.isNumeric())
+          fld.valueD = fld.value;
+        } else if (dtype.isNumeric())
           fld.valueD = sdata.convertScalarDouble(m);
       }
     }
@@ -260,7 +274,11 @@ public class StandardFields {
 
     public String getFieldValueS(BufrCdmIndexProto.FldType type) {
       Field fld = map.get(type);
-      return (fld == null) ? null : fld.valueS;
+      if (fld == null) return null;
+      if (fld.valueS != null) return fld.valueS;
+      if (fld.value != -1) return Integer.toString(fld.value);
+      if (!Double.isNaN(fld.valueD)) return Double.toString(fld.valueD);
+      return null;
     }
 
     public int getFieldValue(BufrCdmIndexProto.FldType type) {
@@ -270,7 +288,10 @@ public class StandardFields {
 
     public double getFieldValueD(BufrCdmIndexProto.FldType type) {
       Field fld = map.get(type);
-      return (fld == null) ? Double.NaN : fld.valueD;
+      if  (fld == null) return Double.NaN;
+      if (fld.hasScale)
+        return fld.valueD * fld.scale + fld.offset;
+      return fld.valueD;
     }
 
     public String getStationId() {
@@ -297,6 +318,7 @@ public class StandardFields {
         if (fld.scale != 0) {
           sec = (int) (sec * fld.scale);  // throw away msecs
         }
+        if (sec < 0 || sec > 59) sec = 0;
       }
 
       if (hasField(BufrCdmIndexProto.FldType.month) && hasField(BufrCdmIndexProto.FldType.day)) {

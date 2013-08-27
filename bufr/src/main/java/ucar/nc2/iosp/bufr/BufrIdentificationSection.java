@@ -121,7 +121,7 @@ public class BufrIdentificationSection {
     master_table = raf.read();
 
     if (is.getBufrEdition() < 4) {
-      if (length < 17) throw new IOException("Invalid BUFR message");
+      if (length < 17) throw new IOException("Invalid BUFR message on "+raf.getLocation());
 
       if (is.getBufrEdition() == 2) {
         subcenter_id = 255;
@@ -209,7 +209,7 @@ public class BufrIdentificationSection {
 
       // local table version octet 15
       local_table_version = raf.read();
-      //	    octets 16-22 (reference time of forecast)
+      // octets 16-22 (reference time of forecast)
 
       // Octet 16-17 is the 4-digit year
       year = BufrNumbers.int2(raf);
@@ -272,7 +272,8 @@ public class BufrIdentificationSection {
    * @return referenceTime
    */
   public final CalendarDate getReferenceTime() {
-    return CalendarDate.of(null, year, month, day, hour, minute, second);
+    int sec = (second < 0 || second > 59) ? 0 : second;
+    return CalendarDate.of(null, year, month, day, hour, minute, sec);
   }
 
   public final int getCategory() {

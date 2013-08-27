@@ -3429,10 +3429,18 @@ public final class BufrCdmIndexProto {
     // required uint64 start = 4;
     /**
      * <code>required uint64 start = 4;</code>
+     *
+     * <pre>
+     * msecs since epoch
+     * </pre>
      */
     boolean hasStart();
     /**
      * <code>required uint64 start = 4;</code>
+     *
+     * <pre>
+     * msecs since epoch
+     * </pre>
      */
     long getStart();
 
@@ -3445,6 +3453,16 @@ public final class BufrCdmIndexProto {
      * <code>required uint64 end = 5;</code>
      */
     long getEnd();
+
+    // required uint64 nobs = 6;
+    /**
+     * <code>required uint64 nobs = 6;</code>
+     */
+    boolean hasNobs();
+    /**
+     * <code>required uint64 nobs = 6;</code>
+     */
+    long getNobs();
   }
   /**
    * Protobuf type {@code bufrCdmIndex.BufrIndex}
@@ -3531,6 +3549,11 @@ public final class BufrCdmIndexProto {
             case 40: {
               bitField0_ |= 0x00000008;
               end_ = input.readUInt64();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000010;
+              nobs_ = input.readUInt64();
               break;
             }
           }
@@ -3682,12 +3705,20 @@ public final class BufrCdmIndexProto {
     private long start_;
     /**
      * <code>required uint64 start = 4;</code>
+     *
+     * <pre>
+     * msecs since epoch
+     * </pre>
      */
     public boolean hasStart() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
      * <code>required uint64 start = 4;</code>
+     *
+     * <pre>
+     * msecs since epoch
+     * </pre>
      */
     public long getStart() {
       return start_;
@@ -3709,12 +3740,29 @@ public final class BufrCdmIndexProto {
       return end_;
     }
 
+    // required uint64 nobs = 6;
+    public static final int NOBS_FIELD_NUMBER = 6;
+    private long nobs_;
+    /**
+     * <code>required uint64 nobs = 6;</code>
+     */
+    public boolean hasNobs() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>required uint64 nobs = 6;</code>
+     */
+    public long getNobs() {
+      return nobs_;
+    }
+
     private void initFields() {
       filename_ = "";
       stations_ = java.util.Collections.emptyList();
       root_ = ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.getDefaultInstance();
       start_ = 0L;
       end_ = 0L;
+      nobs_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3734,6 +3782,10 @@ public final class BufrCdmIndexProto {
         return false;
       }
       if (!hasEnd()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasNobs()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -3769,6 +3821,9 @@ public final class BufrCdmIndexProto {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeUInt64(5, end_);
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeUInt64(6, nobs_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -3797,6 +3852,10 @@ public final class BufrCdmIndexProto {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(5, end_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(6, nobs_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3934,6 +3993,8 @@ public final class BufrCdmIndexProto {
         bitField0_ = (bitField0_ & ~0x00000008);
         end_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000010);
+        nobs_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -3991,6 +4052,10 @@ public final class BufrCdmIndexProto {
           to_bitField0_ |= 0x00000008;
         }
         result.end_ = end_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.nobs_ = nobs_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4047,6 +4112,9 @@ public final class BufrCdmIndexProto {
         if (other.hasEnd()) {
           setEnd(other.getEnd());
         }
+        if (other.hasNobs()) {
+          setNobs(other.getNobs());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -4065,6 +4133,10 @@ public final class BufrCdmIndexProto {
           return false;
         }
         if (!hasEnd()) {
+          
+          return false;
+        }
+        if (!hasNobs()) {
           
           return false;
         }
@@ -4535,18 +4607,30 @@ public final class BufrCdmIndexProto {
       private long start_ ;
       /**
        * <code>required uint64 start = 4;</code>
+       *
+       * <pre>
+       * msecs since epoch
+       * </pre>
        */
       public boolean hasStart() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
        * <code>required uint64 start = 4;</code>
+       *
+       * <pre>
+       * msecs since epoch
+       * </pre>
        */
       public long getStart() {
         return start_;
       }
       /**
        * <code>required uint64 start = 4;</code>
+       *
+       * <pre>
+       * msecs since epoch
+       * </pre>
        */
       public Builder setStart(long value) {
         bitField0_ |= 0x00000008;
@@ -4556,6 +4640,10 @@ public final class BufrCdmIndexProto {
       }
       /**
        * <code>required uint64 start = 4;</code>
+       *
+       * <pre>
+       * msecs since epoch
+       * </pre>
        */
       public Builder clearStart() {
         bitField0_ = (bitField0_ & ~0x00000008);
@@ -4593,6 +4681,39 @@ public final class BufrCdmIndexProto {
       public Builder clearEnd() {
         bitField0_ = (bitField0_ & ~0x00000010);
         end_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // required uint64 nobs = 6;
+      private long nobs_ ;
+      /**
+       * <code>required uint64 nobs = 6;</code>
+       */
+      public boolean hasNobs() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>required uint64 nobs = 6;</code>
+       */
+      public long getNobs() {
+        return nobs_;
+      }
+      /**
+       * <code>required uint64 nobs = 6;</code>
+       */
+      public Builder setNobs(long value) {
+        bitField0_ |= 0x00000020;
+        nobs_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 nobs = 6;</code>
+       */
+      public Builder clearNobs() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        nobs_ = 0L;
         onChanged();
         return this;
       }
@@ -4642,19 +4763,20 @@ public final class BufrCdmIndexProto {
       "type\030\005 \001(\0162\025.bufrCdmIndex.FldType\022\013\n\003min" +
       "\030\006 \001(\r\022\013\n\003max\030\007 \001(\r\022\014\n\004desc\030\010 \001(\t\022\r\n\005uni" +
       "ts\030\t \001(\t\022\r\n\005scale\030\n \002(\005\022\021\n\treference\030\013 \002",
-      "(\005\022\020\n\010bitWidth\030\014 \002(\005\"\205\001\n\tBufrIndex\022\020\n\010fi" +
+      "(\005\022\020\n\010bitWidth\030\014 \002(\005\"\223\001\n\tBufrIndex\022\020\n\010fi" +
       "lename\030\001 \002(\t\022\'\n\010stations\030\002 \003(\0132\025.bufrCdm" +
       "Index.Station\022!\n\004root\030\003 \002(\0132\023.bufrCdmInd" +
-      "ex.Field\022\r\n\005start\030\004 \002(\004\022\013\n\003end\030\005 \002(\004*I\n\t" +
-      "FldAction\022\010\n\004none\020\001\022\n\n\006remove\020\002\022\r\n\tasMis" +
-      "sing\020\003\022\013\n\007asArray\020\004\022\n\n\006concat\020\005*\354\001\n\007FldT" +
-      "ype\022\007\n\003lat\020\001\022\007\n\003lon\020\002\022\n\n\006height\020\003\022\026\n\022hei" +
-      "ghtAboveStation\020\004\022\023\n\017heightOfStation\020\005\022\r" +
-      "\n\tstationId\020\n\022\017\n\013stationDesc\020\013\022\t\n\005wmoId\020" +
-      "\014\022\014\n\010wmoBlock\020\r\022\010\n\004year\020\017\022\t\n\005month\020\020\022\007\n\003",
-      "day\020\021\022\010\n\004hour\020\022\022\n\n\006minute\020\023\022\007\n\003sec\020\024\022\007\n\003" +
-      "doy\020\025\022\014\n\010timeIncr\020\026\022\t\n\005incrS\020\027B+\n\026ucar.n" +
-      "c2.ft.point.bufrB\021BufrCdmIndexProto"
+      "ex.Field\022\r\n\005start\030\004 \002(\004\022\013\n\003end\030\005 \002(\004\022\014\n\004" +
+      "nobs\030\006 \002(\004*I\n\tFldAction\022\010\n\004none\020\001\022\n\n\006rem" +
+      "ove\020\002\022\r\n\tasMissing\020\003\022\013\n\007asArray\020\004\022\n\n\006con" +
+      "cat\020\005*\354\001\n\007FldType\022\007\n\003lat\020\001\022\007\n\003lon\020\002\022\n\n\006h" +
+      "eight\020\003\022\026\n\022heightAboveStation\020\004\022\023\n\017heigh" +
+      "tOfStation\020\005\022\r\n\tstationId\020\n\022\017\n\013stationDe" +
+      "sc\020\013\022\t\n\005wmoId\020\014\022\014\n\010wmoBlock\020\r\022\010\n\004year\020\017\022",
+      "\t\n\005month\020\020\022\007\n\003day\020\021\022\010\n\004hour\020\022\022\n\n\006minute\020" +
+      "\023\022\007\n\003sec\020\024\022\007\n\003doy\020\025\022\014\n\010timeIncr\020\026\022\t\n\005inc" +
+      "rS\020\027B+\n\026ucar.nc2.ft.point.bufrB\021BufrCdmI" +
+      "ndexProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4678,7 +4800,7 @@ public final class BufrCdmIndexProto {
           internal_static_bufrCdmIndex_BufrIndex_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_bufrCdmIndex_BufrIndex_descriptor,
-              new java.lang.String[] { "Filename", "Stations", "Root", "Start", "End", });
+              new java.lang.String[] { "Filename", "Stations", "Root", "Start", "End", "Nobs", });
           return null;
         }
       };

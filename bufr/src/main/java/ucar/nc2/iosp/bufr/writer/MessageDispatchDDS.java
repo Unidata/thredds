@@ -1,7 +1,42 @@
+/*
+ * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ *
+ *  Portions of this software were developed by the Unidata Program at the
+ *  University Corporation for Atmospheric Research.
+ *
+ *  Access and use of this software shall impose the following obligations
+ *  and understandings on the user. The user is granted the right, without
+ *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  this software, and any derivative works thereof, and its supporting
+ *  documentation for any purpose whatsoever, provided that this entire
+ *  notice appears in all copies of the software, derivative works and
+ *  supporting documentation.  Further, UCAR requests that the user credit
+ *  UCAR/Unidata in any publications that result from the use of this
+ *  software or in any product that includes this software. The names UCAR
+ *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  to endorse or promote any products or commercial entity unless specific
+ *  written permission is obtained from UCAR/Unidata. The user also
+ *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  any support, consulting, training or assistance of any kind with regard
+ *  to the use, operation and performance of this software nor to provide
+ *  the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
 package ucar.nc2.iosp.bufr.writer;
 
+import ucar.nc2.iosp.bufr.BufrTableLookup;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 
 import java.io.*;
 import java.util.*;
@@ -41,8 +76,11 @@ public class MessageDispatchDDS {
   boolean showMatch = false;
   boolean showBad = false;
   boolean showConfig = false;
-  boolean showResults = true;
-  boolean useSubdirs = false;
+
+  boolean dayRollover = true;
+  boolean useCatSubdirs = true;
+  boolean useHeader = false;
+
   boolean writeIndex = false;
   boolean writeSamples = false;
 
@@ -102,6 +140,10 @@ public class MessageDispatchDDS {
     this.inputFilenameOut = inputFilenameOut;
   }
 
+  void resetBufrTableMessages() {
+    bufrTableMessages = new ArrayList<Message>();
+  }
+
   void dispatch(Message m) throws IOException {
     total_msgs++;
     total_bytes += m.getRawBytes().length;
@@ -114,7 +156,7 @@ public class MessageDispatchDDS {
       return;
     }
 
-    // find the message type, based on dds
+    // find the message type, based on message hashcode
     MessType matched = typeMap.get(m.hashCode());
     boolean newOne = false;
 
@@ -171,7 +213,7 @@ public class MessageDispatchDDS {
         }
       }
 
-      if (showBad) System.out.println("bad <" + m.getHeader() + ">");
+      if (showBad) logger.warn("bad <" + m.getHeader() + ">");
       badCount++;
       badBytes += m.getRawBytes().length + m.getHeader().length();
     }
@@ -190,7 +232,7 @@ public class MessageDispatchDDS {
     }
   }
 
-  void exit() {
+  void exit(Formatter out) {
     try {
       for (MessageWriter writer : writers.values())
         writer.close();
@@ -202,14 +244,13 @@ public class MessageDispatchDDS {
       if (sampleWbc != null) sampleWbc.close();
       if (allWbc != null) allWbc.close();
 
-      Formatter out = new Formatter(System.out);
-      Formatter cfg =  (inputFilenameOut != null) ? new Formatter(new FileOutputStream(inputFilenameOut)) : null;
+      Formatter cfg = (inputFilenameOut != null) ? new Formatter(new FileOutputStream(inputFilenameOut)) : null;
 
-      if (showResults) out.format("\n===============================================\n");
+      if (out != null) out.format("\n===============================================\n");
 
       int avg_msg = (total_msgs == 0) ? 0 : (int) (total_bytes / total_msgs);
       int avg_obs = (total_msgs == 0) ? 0 : (total_obs / total_msgs);
-      if (showResults) {
+      if (out != null) {
         out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n",
                 total_msgs, total_obs, total_bytes, avg_msg, avg_obs);
         out.format("matched=%d types=%d bad=%d badTypes=%d badBytes=%d ignored=%d failWrite=%d %n",
@@ -222,7 +263,7 @@ public class MessageDispatchDDS {
         Collections.sort(mtypes, new MessTypeSorter());
         for (MessType mtype : mtypes) {
           if (mtype.proto == null) {
-            if (showResults) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
+            if (out != null) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
             cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f %n",
                     mtype.hash, mtype.fileout, mtype.name, mtype.index,
                     mtype.count, mtype.countObs, mtype.countBytes / 1000);
@@ -230,14 +271,14 @@ public class MessageDispatchDDS {
           }
           Message m = mtype.proto;
           boolean hasBadMessages = badHashSet.contains(m.hashCode()); // did we find any messages that fail bit count ??
-          if (showResults) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
+          if (out != null) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
           cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f, %5s, %5s, %d, %s, %s, %s, %s%n",
                   mtype.hash, mtype.fileout, mtype.name, mtype.index,
                   mtype.count, mtype.countObs, mtype.countBytes / 1000,
                   m.isTablesComplete(), !hasBadMessages, mtype.nbad,
                   m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.is.getBufrEdition(), m.getLookup().getCategoryNo());
         }
-        if (showResults) out.format("\n");
+        if (out != null) out.format("\n");
         cfg.close();
       }
 
@@ -289,18 +330,23 @@ public class MessageDispatchDDS {
       this.proto = proto;
       this.hash = proto.hashCode();
 
-      this.name = extractName(proto.getHeader());
-      if (this.name == null) this.name = Integer.toHexString(this.hash);
-      Integer nameCount = nameMap.get(this.name);
-      if (nameCount != null) {
-        nameCount++;
-        nameMap.put(this.name, nameCount); // increment this name counter
-        this.name = name + "-" + nameCount;  // form a new one to avoid filename collision
+      if (useHeader) {
+        this.name = extractName(proto.getHeader());
+        if (this.name == null) this.name = Integer.toHexString(this.hash);
+        Integer nameCount = nameMap.get(this.name);
+        if (nameCount != null) {
+          nameCount++;
+          nameMap.put(this.name, nameCount); // increment this name counter
+          this.name = name + "-" + nameCount;  // form a new one to avoid filename collision
+        }
+        nameMap.put(this.name, 0);
+
+      } else {
+        this.name = Integer.toHexString(this.hash);
       }
-      nameMap.put(this.name, 0);
 
       this.fileout = name;
-      System.out.println(" add new MessType <" + name + "> fileout= " + fileout);
+      if (showConfig) System.out.println(" add new MessType <" + name + "> fileout= " + fileout);
     }
 
     String extractName(String header) {
@@ -309,34 +355,35 @@ public class MessageDispatchDDS {
     }
 
     boolean scheduleWrite(Message m) throws IOException {
-      String writerName;
-      Calendar cal = null;
-
-      if (useSubdirs) {
-        CalendarDate cd = m.ids.getReferenceTime();
-        int day = cd.getDayOfMonth();
-        writerName = fileout + "-" + day;
-      } else {
-        writerName = fileout;
-      }
+      CalendarDate cd = m.ids.getReferenceTime();
+      String writerName = (dayRollover) ? fileout+"."+CalendarDateFormatter.toDateString(cd) : fileout;
 
       // fetch or create the MessageWriter
       MessageWriter writer = writers.get(writerName);
       if (writer == null) {
         try {
-          File file;
+          File file2write;
 
-          if (useSubdirs) {
-            File dir = new File(dispatchDir, fileout);
-            dir.mkdirs();
-            String date = cal.get( Calendar.YEAR)+"-"+(1+cal.get( Calendar.MONTH))+"-"+cal.get( Calendar.DAY_OF_MONTH);
-            file = new File(dir, fileout+"-"+date+  ".bufr");
+          if (useCatSubdirs) {
+            BufrTableLookup lookup = m.getLookup();
+            //String centerDir = "Center-"+lookup.getCenter()+"."+lookup.getSubCenter();
+            //File dir1 = new File(dispatchDir, centerDir);
+            //if (!dir1.exists() && !dir1.mkdirs()) logger.warn("Failed to make "+dir1.getPath());
+            String catDir = "Category-"+lookup.getCategory()+"."+lookup.getSubCategory();
+            File dir2 = new File(dispatchDir, catDir);
+            if (!dir2.exists() && !dir2.mkdirs()) logger.warn("Failed to make "+dir2.getPath());
+            String filename = (dayRollover) ? fileout+"."+CalendarDateFormatter.toDateString(cd) : fileout;
+            file2write = new File(dir2, filename+".bufr");
+
+            System.out.printf("Start %s internalTableMessages=%d%n   %s%n   %s%n", file2write, bufrTableMessages.size(), lookup.getCenterName(), lookup.getCategoryFullName());
 
           } else {
-            file = new File(dispatchDir, writerName + ".bufr");
+            file2write = new File(dispatchDir, writerName + ".bufr");
           }
 
-          writer = new MessageWriter(file, fileno, bufrTableMessages);
+          writer = new MessageWriter(file2write, fileno, bufrTableMessages);
+          System.out.printf("Start %s internalTableMessages=%d%n", file2write, bufrTableMessages.size());
+
           writers.put(writerName, writer);
           fileno++;
 

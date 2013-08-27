@@ -77,6 +77,7 @@ public class BufrCdmIndex {
       indexBuilder.setRoot(root);
       indexBuilder.setStart(config.getStart());
       indexBuilder.setEnd(config.getEnd());
+      indexBuilder.setNobs(config.getNobs());
 
       Map<String,BufrConfig.BufrStation> smaps = config.getStationMap();
       if (smaps != null) {
@@ -122,6 +123,7 @@ public class BufrCdmIndex {
       indexBuilder.setRoot( rootf);
       indexBuilder.setStart(index.start);
       indexBuilder.setEnd(index.end);
+      indexBuilder.setNobs(index.nobs);
 
       if (index.stations != null) {
         for (BufrCdmIndexProto.Station s : index.stations) {
@@ -206,6 +208,7 @@ public class BufrCdmIndex {
   public BufrCdmIndexProto.Field root;
   public List<BufrCdmIndexProto.Station> stations;
   public long start, end;
+  public long nobs;
 
   protected boolean readIndex(RandomAccessFile raf) throws IOException {
     this.idxFilename = raf.getLocation();
@@ -242,6 +245,7 @@ public class BufrCdmIndex {
       stations = proto.getStationsList();
       start = proto.getStart();
       end = proto.getEnd();
+      nobs = proto.getNobs();
 
       //showProtoRoot(root);
 
@@ -265,8 +269,16 @@ public class BufrCdmIndex {
     f.format("BufrCdmIndex %n");
     f.format("  idxFilename=%s%n", idxFilename);
     f.format("  bufrFilename=%s%n", bufrFilename);
-    f.format("  start=%s%n", CalendarDate.of(start));
-    f.format("  end=%s%n", CalendarDate.of(end));
+    f.format("  dates=[%s,%s]%n", CalendarDate.of(start), CalendarDate.of(end));
+    f.format("  nobs=%s%n", nobs);
+    if (stations != null)  {
+      f.format("  # stations=%d%n", stations.size());
+      int count = 0;
+      for (BufrCdmIndexProto.Station s : stations)
+        count += s.getCount();
+      f.format("  # stations obs=%d%n", count);
+    }
+
   }
 
 }

@@ -362,4 +362,37 @@ public class DataDescriptor {
   public int getTotalBits() { return total_nbits; }
   public boolean isVarLength() { return isVarLength; }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  // LOOK need different hashCode, reader assumes using object id
+  public boolean equals2(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    DataDescriptor that = (DataDescriptor) o;
+
+    if (fxy != that.fxy) return false;
+    if (replication != that.replication) return false;
+    if (type != that.type) return false;
+    if (subKeys != null ? !subKeys.equals(that.subKeys) : that.subKeys != null) return false;
+
+    return true;
+  }
+
+  public int hashCode2() {
+    int result = (int) fxy;
+    result = 31 * result + type;
+    result = 31 * result + getListHash();
+    result = 31 * result + replication;
+    return result;
+  }
+
+  // has to use hashCode2, so cant use list.hashCode()
+  private int getListHash() {
+    if (subKeys == null) return 0;
+    int result = 1;
+    for (DataDescriptor e : subKeys)
+      result = 31*result + (e==null ? 0 : e.hashCode2());
+    return result;
+  }
+
 }

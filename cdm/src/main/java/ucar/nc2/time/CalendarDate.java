@@ -44,6 +44,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
     else
       base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC  */
 
+
     DateTime dt = new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, base);
     if (!Calendar.isDefaultChronology(cal)) dt = dt.withChronology(Calendar.getChronology(cal));
     dt = dt.withZone(DateTimeZone.UTC);

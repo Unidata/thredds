@@ -1611,6 +1611,23 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
+   * Add optional String attribute to a group.
+   *
+   * @param parent add to this group. If group is null, use root group
+   * @param name attribute name, may not be null
+   * @param value attribute value, may be null, in which case, do not addd
+   * @return the attribute that was added
+   */
+  public Attribute addAttribute(Group parent, String name, String value) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    if (value == null) return null;
+    if (parent == null) parent = rootGroup;
+    Attribute att = new Attribute(name, value);
+    parent.addAttribute(att);
+    return att;
+  }
+
+  /**
    * Add a group to the parent group.
    *
    * @param parent add to this group. If group is null, use root group

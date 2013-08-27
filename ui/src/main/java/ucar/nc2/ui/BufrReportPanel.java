@@ -4,6 +4,7 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.MessageScanner;
+import ucar.nc2.iosp.bufr.writer.BufrSplitter2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
@@ -21,7 +22,7 @@ import java.util.*;
 public class BufrReportPanel extends ReportPanel {
 
   public static enum Report {
-    checkHash,
+    checkHash, bufrSplitter
   }
 
   public BufrReportPanel(PreferencesExt prefs, JPanel buttPanel) {
@@ -49,10 +50,13 @@ public class BufrReportPanel extends ReportPanel {
     } else {
 
       switch (which) {
-        case checkHash:
-          doCheckHash(f, dcm, useIndex);
+        case bufrSplitter:
+          doBufrSplitter(f, dcm, useIndex);
           break;
-      }
+        case checkHash:
+           doCheckHash(f, dcm, useIndex);
+           break;
+       }
     }
 
     reportPane.setText(f.toString());
@@ -154,6 +158,35 @@ public class BufrReportPanel extends ReportPanel {
               Integer.toHexString(m.dds.getDataDescriptors().hashCode()),
               m.getLookup().getCategoryFullName(), m.getLookup().getCenterNo());
     }
+  }
 
+    ///////////////////////////////////////////////
+
+  private void doBufrSplitter(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+    long start = System.currentTimeMillis();
+    String dirName = dcm.getRoot() +"/split"; // LOOK temp kludge
+
+    f.format("BufrSplitter on files in collection %s, write to %s%n", dcm, dirName);
+    BufrSplitter2 splitter = new BufrSplitter2(dirName, f);
+
+    for (MFile mfile : dcm.getFiles()) {
+      String path = mfile.getPath();
+      if (path.endsWith(".ncx")) continue;
+      f.format("%n %s%n", path);
+      System.out.printf(" BufrSplitter on %s%n", path);
+      long start2 = System.currentTimeMillis();
+      try {
+        splitter.execute(path);
+        long took2 = System.currentTimeMillis() - start2;
+        System.out.printf("  %s took %s msecs%n", path, took2);
+
+      } catch (Throwable t) {
+        System.out.printf("FAIL on %s%n", mfile.getPath());
+        t.printStackTrace();
+      }
+    }
+    splitter.exit();
+    long took = (System.currentTimeMillis() - start) /1000;
+    System.out.printf("That took %s secs%n", took);
   }
 }

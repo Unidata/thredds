@@ -33,70 +33,67 @@
 
 package ucar.nc2.iosp.bufr.writer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import ucar.nc2.iosp.bufr.*;
+import ucar.unidata.io.MMapRandomAccessFile;
+import ucar.unidata.io.RandomAccessFile;
 
-import ucar.nc2.iosp.bufr.Message;
+import java.io.File;
+import java.io.IOException;
+import java.util.Formatter;
 
 /**
- * Encapsolates writing BUFR message to one particular file.
+ * Read BUFR files and split them.
+ * Currently only files.
  *
  * @author caron
- * @since 6/12/13
+ * @since 8/26/13
  */
-public class MessageWriter { // implements Callable<IndexerTask> {
-  //private static String rootDir = "./";
-  //static void setRootDir( String _rootDir) {
-  //  rootDir = _rootDir;
-  //}
+public class BufrSplitter2 {
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BufrSplitter2.class);
+    private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes());
 
-  private final WritableByteChannel wbc;
-  private final FileOutputStream fos;
-  private final String name;
-  private final short fileno;
+    File dirOut;
+    MessageDispatchDDS dispatcher;
+    Formatter out;
+    int total_msgs = 0;
 
-  private final AtomicBoolean isScheduled = new AtomicBoolean(false);
-  private long lastModified;
+    public BufrSplitter2(String dirName, Formatter out) throws IOException {
+      this.out = out;
+      dirOut = new File(dirName);
+      if (dirOut.exists() && !dirOut.isDirectory())  {
+        throw new IllegalArgumentException(dirOut+" must be a directory");
+      } else if (!dirOut.exists()) {
+        if (!dirOut.mkdirs())
+          throw new IllegalArgumentException(dirOut+" filed to create");
+      }
+      dispatcher = new MessageDispatchDDS(null, dirOut);
+    }
 
-  /**
-   *
-   * @param file    Write to this file
-   * @param fileno  not used
-   * @param bufrTableMessages list of BUFR messages containing tables; written first
-   * @throws IOException
-   */
-  MessageWriter(File file, short fileno, List<Message> bufrTableMessages) throws IOException {
-    this.fileno = fileno;
-    fos = new FileOutputStream(file, true); // append
-    wbc = fos.getChannel();
-    name = file.getPath();
+    // LOOK - needs to be a directory, or maybe an MFILE collection
+    public void execute(String filename) throws IOException {
+      RandomAccessFile mraf = new RandomAccessFile(filename, "r");
+      MessageScanner scanner = new MessageScanner( mraf);
 
-    for (Message m : bufrTableMessages)
-      write(m);
-  }
+      while(scanner.hasNext()) {
+        Message m = scanner.next();
+        if (m == null) continue;
+        total_msgs++;
+        if (m.getNumberDatasets() == 0) continue;
 
+        // LOOK check on tables complete etc ??
 
-  public void write(Message m) throws IOException {
-    wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
-    wbc.write(ByteBuffer.wrap(m.getRawBytes()));
-    lastModified = System.currentTimeMillis();
-    isScheduled.getAndSet(false);
-  }
+        m.setRawBytes(scanner.getMessageBytes(m));
 
-  // last time the file was written to
-  public long getLastModified() { return lastModified; }
+        // decide what to do with the message
+        dispatcher.dispatch(m);
+        }
 
-  void close() throws IOException {
-    if (wbc != null)
-      wbc.close();
-    if (fos != null)
-      fos.close();
-  }
+      mraf.close();
+      dispatcher.resetBufrTableMessages();
+    }
+
+    public void exit() {
+      dispatcher.exit(out);
+    }
 
 }
-

@@ -60,7 +60,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   static public final String centerId = "BUFR:centerId";
 
   // debugging
-  static private boolean debugIter = true;
+  static private boolean debugIter = false;
   static private boolean debugOpen = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -329,13 +329,9 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   public String getDetailInfo() {
     Formatter ff = new Formatter();
     ff.format("%s", super.getDetailInfo());
-    try {
-      protoMessage.dump(ff);
-      ff.format("%n");
-      config.show(ff);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    protoMessage.dump(ff);
+    ff.format("%n");
+    config.show(ff);
     return ff.toString();
   }
 

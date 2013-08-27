@@ -2,10 +2,7 @@ package ucar.nc2.ft.point.bufr;
 
 import org.jdom2.Element;
 import ucar.ma2.*;
-import ucar.nc2.Attribute;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
@@ -63,6 +60,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
       processSeq((Structure) ncd.findVariable(BufrIosp2.obsRecord), parent);
     }  */
+
 
     File indexFile = BufrCdmIndex.calcIndexFile(ncd.getLocation());
     BufrCdmIndex index = BufrCdmIndex.readIndex(indexFile.getPath());
@@ -317,7 +315,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
             Structure s = (Structure) v;
             for (Variable child : s.getVariables()) {
               result.add(child);
-              vars.put(child.getShortName(), (VariableDS) child); // tracj ones we may have to create missing values for
+              vars.put(child.getShortName(), (VariableDS) child); // track ones we may have to create missing values for
             }
             continue;
           }

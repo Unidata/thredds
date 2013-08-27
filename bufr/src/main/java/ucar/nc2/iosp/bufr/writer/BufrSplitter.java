@@ -1,6 +1,40 @@
+/*
+ * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ *
+ *  Portions of this software were developed by the Unidata Program at the
+ *  University Corporation for Atmospheric Research.
+ *
+ *  Access and use of this software shall impose the following obligations
+ *  and understandings on the user. The user is granted the right, without
+ *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  this software, and any derivative works thereof, and its supporting
+ *  documentation for any purpose whatsoever, provided that this entire
+ *  notice appears in all copies of the software, derivative works and
+ *  supporting documentation.  Further, UCAR requests that the user credit
+ *  UCAR/Unidata in any publications that result from the use of this
+ *  software or in any product that includes this software. The names UCAR
+ *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  to endorse or promote any products or commercial entity unless specific
+ *  written permission is obtained from UCAR/Unidata. The user also
+ *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  any support, consulting, training or assistance of any kind with regard
+ *  to the use, operation and performance of this software nor to provide
+ *  the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
 package ucar.nc2.iosp.bufr.writer;
 
 import com.lexicalscope.jewel.cli.CliFactory;
+import com.lexicalscope.jewel.cli.HelpRequestedException;
 import com.lexicalscope.jewel.cli.Option;
 import ucar.nc2.iosp.bufr.*;
 import ucar.unidata.io.InMemoryRandomAccessFile;
@@ -10,43 +44,46 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Formatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Reads BUFR files and splits them into seperate files based on DDS hash
+ * Reads BUFR files and splits them into separate files based on Message.hashCode()
  *
  * @author caron
  * @since 6/12/13
  */
 public class BufrSplitter {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BufrSplitter.class);
   private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes());
 
-  Options options;
   File dirOut;
   MessageDispatchDDS dispatcher;
+  Formatter out;
 
-  public BufrSplitter(Options options) throws IOException {
-    this.options = options;
-    printOptions(options);
-
-    dirOut = new File(options.getDirOut());
+  public BufrSplitter(String dirName, Formatter out) throws IOException {
+    this.out = out;
+    dirOut = new File(dirName);
     if (dirOut.exists() && !dirOut.isDirectory())  {
       throw new IllegalArgumentException(dirOut+" must be a directory");
     } else if (!dirOut.exists()) {
       if (!dirOut.mkdirs())
         throw new IllegalArgumentException(dirOut+" filed to create");
     }
-
     dispatcher = new MessageDispatchDDS(null, dirOut);
   }
 
-  void execute() throws IOException {
-    File input = new File(options.getFileSpec());
-    System.out.printf("Input %s length=%d%n", input.getPath(), input.length());
+  // LOOK - needs to be a directory, or maybe an MFILE collection
+  public void execute(String filename) throws IOException {
+    File input = new File(filename);
+    out.format("BufrSplitter on %s length=%d%n", input.getPath(), input.length());
     InputStream is = new FileInputStream(input);
     processStream(is);
-    dispatcher.exit();
     is.close();
+  }
+
+  public void exit() {
+    dispatcher.exit(out);
   }
 
   //////////////////////////////////////////////////////
@@ -71,7 +108,7 @@ public class BufrSplitter {
    *
    * @param b
    * @param is
-   * @return here in the buffer we got to
+   * @return pos in the buffer we got to
    * @throws IOException
    */
   private int processBuffer(Buffer b, InputStream is) throws IOException {
@@ -97,7 +134,7 @@ public class BufrSplitter {
       int b2 = (b.buff[matchPos + 5] & 0xff);
       int b3 = (b.buff[matchPos + 6] & 0xff);
       int messLen = b1 << 16 | b2 << 8 | b3;
-      // System.out.println("match at=" + matchPos + " len= " + messLen);
+      System.out.println("match at=" + matchPos + " len= " + messLen);
 
       // create a task for this message
       //int headerLen = matchPos - start;
@@ -112,7 +149,7 @@ public class BufrSplitter {
 
         // read the rest of the message
         if (!readBuffer(is, task.mess, task.have, task.len - task.have)) {
-          System.out.println("Failed to read remaining BUFR message");
+          logger.warn("Failed to read remaining BUFR message");
           break;
         }
 
@@ -212,7 +249,7 @@ public class BufrSplitter {
     BufrDataSection dataSection = new BufrDataSection(dataPos, dataLength);
 
     if ((is.getBufrEdition() > 4) || (is.getBufrEdition() < 2)) {
-      System.out.println("Edition " + is.getBufrEdition() + " is not supported");
+      logger.warn("Edition " + is.getBufrEdition() + " is not supported");
       bad_msgs++;
       return null;
     }
@@ -304,22 +341,33 @@ public class BufrSplitter {
   ///////////////////////////////////////////////////////////////////////////
 
   public interface Options {
-      @Option String getFileSpec();
-      @Option String getDirOut();
+     @Option String getFileSpec();
+     @Option String getDirOut();
+
+     @Option(helpRequest = true)
+     boolean getHelp();
    }
 
   void printOptions(Options opt) {
     System.out.printf("Options are ok:%n");
-    System.out.printf(" fileSpec= %s%n", options.getFileSpec());
-    System.out.printf(" dirOut= %s%n", options.getDirOut());
+    System.out.printf(" fileSpec= %s%n", opt.getFileSpec());
+    System.out.printf(" dirOut= %s%n", opt.getDirOut());
   }
 
   public static void main(String[] args) {
     try {
-      //Options options = CliFactory.parseArguments(Options.class, "--fileSpec", "E:/data/work/manross/gdas.adpupa.t00z.20120603.bufr.le", "--dirOut", "E:/data/work/manross/split_adpupa" );
-      Options options = CliFactory.parseArguments(Options.class, "--fileSpec", "E:/data/work/manross/gdas.adpsfc.t00z.20120603.bufr.le", "--dirOut", "E:/data/work/manross/split_adpsfc" );
-      BufrSplitter splitter = new BufrSplitter(options);
-      splitter.execute();
+      Options options;
+      if (args == null) {
+         options = CliFactory.parseArguments(Options.class, "--fileSpec", "E:/data/work/manross/gdas.adpsfc.t00z.20120603.bufr.le", "--dirOut", "E:/data/work/manross/split_adpsfc" );
+      } else {
+        options = CliFactory.parseArguments(Options.class, args);
+      }
+      BufrSplitter splitter = new BufrSplitter(options.getDirOut(), new Formatter(System.out));
+      splitter.execute(options.getFileSpec());
+      splitter.exit();
+
+    } catch (HelpRequestedException e) {
+      System.out.printf("BufrSpitter: %s%n", e.getMessage());
 
     } catch (Exception e) {
       e.printStackTrace();

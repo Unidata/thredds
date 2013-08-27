@@ -78,7 +78,7 @@ public class MessageScanner {
   private byte[] header;
   private long startPos = 0;
   private long lastPos = 0;
-  private boolean debug = false;
+  private boolean debug = true;
 
   private EmbeddedTable embedTable = null;
 
@@ -123,7 +123,7 @@ public class MessageScanner {
       raf.seek(startPos);
       raf.read(header);
     }
-    if (debug && countMsgs % 100 == 0) System.out.println(" hasNext "+more+" at "+startPos+" lastPos "+ lastPos+" msg "+countMsgs);
+    if (debug && countMsgs % 100 == 0) System.out.printf("%d ", countMsgs);
     return more;
   }
 
@@ -164,7 +164,7 @@ public class MessageScanner {
       raf.seek(dataPos + dataLength);
       for (int i = 0; i < 3; i++) {
         if (raf.read() != 55) {
-          log.warn("Missing End of BUFR message at pos=" + ending + " header= " + cleanup(header));
+          log.warn("Missing End of BUFR message at pos= {} header= {} file= {}", ending, cleanup(header), raf.getLocation());
           return null;
         }
       }
@@ -172,10 +172,10 @@ public class MessageScanner {
       if (raf.read() != 55) {
         raf.seek(dataPos + dataLength-1); // see if byte before is a '7'
         if (raf.read() != 55) {
-          log.warn("Missing End of BUFR message at pos=" +ending+ " header= " + cleanup(header)+" edition= "+is.getBufrEdition());
+          log.warn("Missing End of BUFR message at pos= {} header= {} edition=() file= {}", ending, cleanup(header), is.getBufrEdition(), raf.getLocation());
           return null;
         } else {
-          log.warn("End of BUFR message off-by-one at pos= " +ending+ " header= " + cleanup(header)+" edition= "+is.getBufrEdition());
+          log.info("End of BUFR message off-by-one at pos= {} header= {} edition=() file= {}", ending, cleanup(header), is.getBufrEdition(), raf.getLocation());
           lastPos--;
         }
       }
@@ -226,7 +226,7 @@ public class MessageScanner {
 
   public byte[] getMessageBytes(Message m) throws IOException {
     long startPos = m.getStartPos();
-    int length = (int) m.is.getBufrLength();
+    int length = m.is.getBufrLength();
     byte[] result = new byte[length];
 
     raf.seek(startPos);

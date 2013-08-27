@@ -98,7 +98,7 @@ public class BufrTableLookup {
     return getMasterTableId() + "." + getMasterTableVersion() + "." + getLocalTableVersion();
   }
 
-  public String getCategoryFullName() throws IOException {
+  public String getCategoryFullName() { // throws IOException {
     String catName = getCategoryName();
     String subcatName = getSubCategoryName();
 
@@ -108,7 +108,7 @@ public class BufrTableLookup {
       return getCategoryNo() + "="+ catName;
   }
 
-  public String getSubCategoryName() throws IOException {
+  public String getSubCategoryName() { // throws IOException {
     String subcatName = null;
     if (center == 7)
       subcatName = NcepTable.getDataSubcategory(getCategory(), getSubCategory());
