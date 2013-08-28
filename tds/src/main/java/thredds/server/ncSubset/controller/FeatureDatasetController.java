@@ -44,22 +44,31 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import thredds.server.config.TdsContext;
 import thredds.server.ncSubset.NCSSPointDataStream;
 import thredds.server.ncSubset.NCSSPointDataStreamFactory;
-import thredds.server.ncSubset.dataservice.DatasetService;
+import thredds.server.ncSubset.dataservice.FeatureDatasetService;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.util.IO;
 
 /**
  * @author mhermida
@@ -74,7 +83,7 @@ public class FeatureDatasetController {
 	protected static final String servletPath = "/ncss_new/";
 	
 	@Autowired
-	DatasetService datasetService;
+	FeatureDatasetService datasetService;
 	
 	@Autowired
 	TdsContext tdsContext;
@@ -82,7 +91,6 @@ public class FeatureDatasetController {
 	/**
 	 * 
 	 * Handles ncss point data requests for GRID and STATION feature datasets.
-	 * 
 	 * 
 	 * @param req
 	 * @param res
@@ -92,8 +100,8 @@ public class FeatureDatasetController {
 	 * @throws ParseException 
 	 */
 	@RequestMapping("**")				
-	public void streamPointData(HttpServletRequest req,
-			HttpServletResponse res, @Valid PointDataRequestParamsBean params, BindingResult  validationResult) throws IOException, UnsupportedResponseFormatException, NcssException, ParseException, InvalidRangeException{
+	void streamPointData(HttpServletRequest req,
+			HttpServletResponse res, @Valid PointDataRequestParamsBean params, BindingResult  validationResult) throws IOException, NcssException, ParseException, InvalidRangeException{
 		
 		if( validationResult.hasErrors() ){
 			handleValidationErrorsResponse(res, HttpServletResponse.SC_BAD_REQUEST, validationResult );
@@ -116,6 +124,94 @@ public class FeatureDatasetController {
 		}					
 	}
 	
+	/**
+	 * Grid requests on grid datasets
+	 * @param params
+	 * @param validationResult
+	 * @param response
+	 * @throws NcssException 
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "**", params = {"!latitude", "!longitude", "!subset"})
+	void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult validationResult, HttpServletResponse response, HttpServletRequest request) throws NcssException, IOException{
+
+	    if (validationResult.hasErrors()) {
+	        handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult);
+	      } else {
+	      	
+	        //Supported formats are netcdf3 (default) and netcdf4 (if available)
+	    	SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.GRID_REQUEST);  
+	        NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
+	        
+	        if( sf.equals(SupportedFormat.NETCDF4) ){
+	      	  version = NetcdfFileWriter.Version.netcdf4;
+	        }
+	        
+	        String pathInfo = getDatasetPath(request);
+			
+	        FeatureDataset fd = datasetService.findDatasetByPath(request, response, pathInfo);
+	        
+	        if(fd.getFeatureType() != FeatureType.GRID){
+	        	//This is bad, really bad...
+	        	//Send 400? 
+	        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	        }
+	        
+	        GridDataset gridDataset = (GridDataset) fd;
+	        
+	        
+//	        checkRequestedVars(gridDataset, params);
+//
+//	        if (isSpatialSubset(params)) {
+//	          spatialSubset(params, version);
+//	        } else {
+//	          coordinatesSubset(params, response, version);
+//	        }
+//
+//	        //Headers...
+//	        httpHeaders.set("Content-Type", sf.getResponseContentType() );
+//	        setResponseHeaders(response, httpHeaders);
+//	        IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);
+//	        response.flushBuffer();
+//	        response.getOutputStream().close();
+//	        response.setStatus(HttpServletResponse.SC_OK);
+	        
+	        gridDataset.close();
+	        
+	      }		
+		
+	}
+	
+	/**
+	 * Grid requests on feature point datasets
+	 * @param params
+	 * @param validationResult
+	 * @param response
+	 * @throws IOException 
+	 * @throws NcssException 
+	 * @throws InvalidRangeException 
+	 * @throws ParseException 
+	 */
+	/*@RequestMapping(value = "**", params = {"!latitude", "!longitude", "subset=bb"})
+	void getPointFeatureSubset(@Valid PointDataRequestParamsBean params, BindingResult validationResult, HttpServletResponse response, HttpServletRequest request) throws IOException, NcssException, ParseException, InvalidRangeException{
+
+		String pathInfo = getDatasetPath(request);
+        FeatureDataset fd = datasetService.findDatasetByPath(request, response, pathInfo);
+        
+        if(fd.getFeatureType() != FeatureType.STATION){
+        	//This is bad, really bad...
+        	//Send 400? 
+        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        
+        SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST );
+        
+		NCSSPointDataStream pds =   NCSSPointDataStreamFactory.getDataStreamer(fd.getFeatureType(), tdsContext, sf);
+		pds.pointDataStream(request, response, fd, pathInfo, params, sf);
+		
+	}*/	
+	
+	
 	private String getDatasetPath(HttpServletRequest req){
 		
 		String servletPath = req.getServletPath();
@@ -128,7 +224,7 @@ public class FeatureDatasetController {
 		return servletPath.substring(FeatureDatasetController.servletPath.length() , servletPath.length());
 	}
 	
-	protected void handleValidationErrorsResponse(HttpServletResponse response, int status, BindingResult  validationResult){
+	private void handleValidationErrorsResponse(HttpServletResponse response, int status, BindingResult  validationResult){
 		
 		List<ObjectError> errors = validationResult.getAllErrors();
 		response.setStatus(status);
@@ -150,6 +246,14 @@ public class FeatureDatasetController {
 			log.error(ioe.getMessage()); 
 		}	
 		
+	}
+	
+	//Exception handlers
+	@ExceptionHandler(NcssException.class)
+	public ResponseEntity<String> handle(NcssException ncsse ){
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>( "NetCDF Subset Service exception handled : "+ncsse.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
 	}	
 
 }

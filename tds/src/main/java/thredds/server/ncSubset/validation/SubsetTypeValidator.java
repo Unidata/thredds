@@ -62,7 +62,7 @@ public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstr
 		
 		// if no stn param is provided ignore all the others, it must be a point request
 		// if stn == all --> all stations		
-		if( params.getStn() == null ){
+		if( params.getSubset() == null ){
 			
 			if( params.getLatitude() == null || params.getLongitude() == null){
 				isValid = false;
@@ -73,19 +73,26 @@ public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstr
 			
 		}
 		
-		if( params.getStn() != null && !params.getStn().equals("stn") && !params.getStn().equals("all")  ){
+		if( params.getSubset() != null && !params.getSubset().equals("stn") && !params.getSubset().equals("all") && !params.getSubset().equals("bb")  ){
 			isValid = false;
 			constraintValidatorContext
 			.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror}")
 			.addConstraintViolation();			
 		}		
 		
-		if( params.getStn() != null && params.getStn().equals("stn") && params.getStns() == null ){
+		if( params.getSubset() != null && params.getSubset().equals("stn") && params.getStns() == null ){
 			isValid = false;
 			constraintValidatorContext
 			.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror.no_stns_param}")
 			.addConstraintViolation();			
 		}
+		
+		if( params.getSubset() != null && params.getSubset().equals("bb") && (params.getNorth()  == null || params.getSouth() == null || params.getEast() == null || params.getWest() == null  )){
+			isValid = false;
+			constraintValidatorContext
+			.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror.no_bounding_box}")
+			.addConstraintViolation();			
+		}		
 		
 		
 		return isValid;

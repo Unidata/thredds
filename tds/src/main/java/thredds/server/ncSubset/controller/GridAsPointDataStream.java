@@ -72,6 +72,7 @@ import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 
 /**
@@ -99,11 +100,11 @@ public class GridAsPointDataStream implements NCSSPointDataStream {
 		//Checking request format...			
 		//SupportedFormat sf = getSupportedFormat(queryParams, SupportedOperation.POINT_REQUEST  );
 		GridDataset gridDataset =(GridDataset) fd;					
-		LatLonPoint point = queryParams.getLatLonPoint(); //Check if the point is within boundaries!!
+		LatLonPoint point = new LatLonPointImpl(queryParams.getLatitude(), queryParams.getLongitude()); //Check if the point is within boundaries!!
 		checkRequestedVars(gridDataset,  queryParams);
 		Map<String, List<String>> groupVars= groupVarsByVertLevels(gridDataset, queryParams);
 								
-		if( !isPointWithinBoundaries(gridDataset, queryParams.getLatLonPoint(), groupVars ) ){			
+		if( !isPointWithinBoundaries(gridDataset, point, groupVars ) ){			
 			throw  new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data. "+
 					"Data Bounding Box = " + gridDataset.getBoundingBox().toString2());
 		}			

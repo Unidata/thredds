@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import thredds.server.ncSubset.NCSSPointDataStream;
 import thredds.server.ncSubset.exception.DateUnitException;
+import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
@@ -77,7 +78,7 @@ public class StationPointDataStream implements NCSSPointDataStream {
 	@Override
 	public void pointDataStream(HttpServletRequest req,
 			HttpServletResponse res, FeatureDataset fd, String requestPathInfo,
-			PointDataRequestParamsBean queryParams, SupportedFormat format) throws IOException, VariableNotContainedInDatasetException, UnsupportedOperationException, OutOfBoundariesException, TimeOutOfWindowException, ParseException, DateUnitException, InvalidRangeException {
+			PointDataRequestParamsBean queryParams, SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException {
 		
 		FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
 		

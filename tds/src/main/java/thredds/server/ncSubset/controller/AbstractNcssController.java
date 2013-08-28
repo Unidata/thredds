@@ -55,6 +55,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.LastModified;
 
+import thredds.catalog.InvService;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
@@ -80,8 +81,8 @@ public abstract class AbstractNcssController implements LastModified{
 	
 	protected static final String NETCDF_FORMAT_NAME = "NETCDF";
 	
-	protected static final String servletPath = "/ncss/grid";
-	
+	protected static final String servletPath = InvService.ncss.getBase().substring("/thredds".length(), InvService.ncss.getBase().length()-1);
+		
 	protected static final String servletCachePath = "/cache/ncss";
 	
 	//The interceptor sets these properties 

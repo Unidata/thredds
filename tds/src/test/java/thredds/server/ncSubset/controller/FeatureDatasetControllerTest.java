@@ -55,7 +55,7 @@ import thredds.mock.web.MockTdsContextLoader;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-public class DatasetControllerTest {
+public class FeatureDatasetControllerTest {
 	
 	@Autowired
 	private WebApplicationContext wac;
@@ -70,8 +70,8 @@ public class DatasetControllerTest {
 	
 	@Test
 	public void getClosestStationData() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr")
-				.servletPath("/ncss_new/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("longitude", "-105.203").param("latitude", "40.019")
 				.param("accept", "csv")
 				.param("time","2013-08-25 06:00:00Z")
@@ -83,12 +83,12 @@ public class DatasetControllerTest {
 	
 	@Test
 	public void getStationListData() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr")
-				.servletPath("/ncss_new/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("longitude", "-105.203").param("latitude", "40.019")
 				.param("accept", "csv")
 				.param("time","2013-08-25 06:00:00Z")
-				.param("stn", "stn")
+				.param("subset", "stn")
 				.param("stns", "BJC,LEST")
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 		
@@ -98,15 +98,47 @@ public class DatasetControllerTest {
 	
 	@Test
 	public void getDataForTimeRange() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr")
-				.servletPath("/ncss_new/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("longitude", "-105.203").param("latitude", "40.019")
 				.param("accept", "netcdf")
 				.param("time_start","2013-08-25T06:00:00Z")
 				.param("time_end","2013-08-26T06:00:00Z")
-				.param("stn", "stn")
+				.param("subset", "stn")
 				.param("stns", "BJC,DEN")
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
+		
+		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
+		
+	}	
+	
+	@Test
+	public void getGridSubsetOnGridDataset() throws Exception{						
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+				.servletPath("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+				.param("accept", "netcdf")
+				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground")
+				.param("time_start","2013-08-25T06:00:00Z")
+				.param("time_end","2013-08-26T06:00:00Z");
+		
+		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
+		
+	}	
+	
+	
+	@Test
+	public void getGridSubsetOnStationDataset() throws Exception{						
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.param("accept", "netcdf")
+				.param("var", "air_temperature", "dew_point_temperature")
+				.param("subset", "bb")
+				.param("north", "43.0")
+				.param("south", "38.0")
+				.param("west", "-107.0")
+				.param("east", "-103.0")
+				.param("time_start","2013-08-25T06:00:00Z")
+				.param("time_end","2013-08-26T06:00:00Z");
 		
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
 		

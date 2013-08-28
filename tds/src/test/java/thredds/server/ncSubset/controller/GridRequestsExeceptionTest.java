@@ -68,7 +68,7 @@ public class GridRequestsExeceptionTest {
 	//private GridDataRequestParamsBean params;	
 	//private BindingResult validationResult;
 	private MockHttpServletResponse response ;
-	private String pathInfo="testFeatureCollection/Test_Feature_Collection_best.ncd";
+	private String pathInfo="testGridFeatureCollection/Test_Feature_Collection_best.ncd";
 	
 	@Before
 	public void setUp() throws IOException{

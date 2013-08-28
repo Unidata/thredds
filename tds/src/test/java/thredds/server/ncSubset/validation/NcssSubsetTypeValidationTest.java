@@ -99,7 +99,7 @@ public class NcssSubsetTypeValidationTest {
 	public void testNcssInvalidSubsetTypeMissingStns(){
 		
 		PointDataRequestParamsBean params = new PointDataRequestParamsBean();
-		params.setStn("stn");		
+		params.setSubset("stn");		
 		params.setVar( Arrays.asList("var1", "var2") );
 		params.setAccept("text/csv");
 		params.setTime("2012-03-27T00:00:00Z");
@@ -115,7 +115,7 @@ public class NcssSubsetTypeValidationTest {
 	public void testNcssInvalidSubsetWrongSubsetType(){
 		
 		PointDataRequestParamsBean params = new PointDataRequestParamsBean();
-		params.setStn("wrong");		
+		params.setSubset("wrong");		
 		params.setVar( Arrays.asList("var1", "var2") );
 		params.setAccept("text/csv");
 		params.setTime("2012-03-27T00:00:00Z");
@@ -124,6 +124,26 @@ public class NcssSubsetTypeValidationTest {
 		Set<ConstraintViolation<PointDataRequestParamsBean>> constraintViolations = validator.validate(params);
 		assertEquals(1 , constraintViolations.size());
 		assertEquals("Wrong subset type", constraintViolations.iterator().next().getMessage());		
+		
+	}
+	
+	@Test
+	public void testNcssBBSubsetType(){
+		
+		PointDataRequestParamsBean params = new PointDataRequestParamsBean();
+		params.setSubset("bb");
+		params.setNorth(43.0);
+		params.setSouth(38.0);
+		params.setWest(-107.0);
+		params.setEast(-102.0);
+		params.setVar( Arrays.asList("var1", "var2") );
+		params.setAccept("text/csv");
+		params.setTime("2012-03-27T00:00:00Z");
+				
+		
+		Set<ConstraintViolation<PointDataRequestParamsBean>> constraintViolations = validator.validate(params);
+		assertEquals(0 , constraintViolations.size());
+		//assertEquals("Wrong subset type", constraintViolations.iterator().next().getMessage());		
 		
 	}	
 

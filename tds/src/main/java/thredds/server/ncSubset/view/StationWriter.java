@@ -37,16 +37,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import thredds.server.ncSubset.exception.NcssException;
+import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import ucar.ma2.Array;
@@ -73,7 +75,6 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
-import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -125,12 +126,12 @@ public class StationWriter {
 
   ////////////////////////////////////////////////////////////////
   // writing
-  public File writeNetcdf(SupportedFormat format) throws IOException, ParseException {
+  public File writeNetcdf(SupportedFormat format) throws IOException, ParseException, NcssException {
     WriterNetcdf w = (WriterNetcdf) write(null, format);
     return w.netcdfResult;
   }
 
-  public Writer write(HttpServletResponse res, SupportedFormat format) throws IOException, ParseException {
+  public Writer write(HttpServletResponse res, SupportedFormat format) throws IOException, ParseException, NcssException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
     //counter.limit = 150;
@@ -193,14 +194,14 @@ public class StationWriter {
     // spatial: all, bb, point, stns
     PointFeatureCollection pfc = null;
     //Subsetting type
-    String stn = qb.getStn();
+    String stn = qb.getSubset();
     if(stn != null){
     	if( stn.equals("all") ){
     		pfc = sfc.flatten(null,  wantRange);
     	
     	}else if( stn.equals("bb") ){    		
-    	
-    		pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
+    		LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast())  );
+    		pfc = sfc.flatten(llrect, wantRange);
     		
     	}else if(stn.equals("stn")){
     		// stns
@@ -210,7 +211,7 @@ public class StationWriter {
     }else{    
     	//stn=null --> means request is point, want closest to lat,lon
     	// point
-    	Station closestStation = findClosestStation(qb.getLatLonPoint() );
+    	Station closestStation = findClosestStation(new LatLonPointImpl( qb.getLatitude(), qb.getLongitude() ));
     	List<String> stnList = new ArrayList<String>();
     	stnList.add(closestStation.getName());
     	//useFc = sfc.subset(stn);
@@ -221,18 +222,37 @@ public class StationWriter {
     //Wanted vars
     // restrict to these variables
     List<? extends VariableSimpleIF> dataVars = fd.getDataVariables();
-                
+      
+    Map<String, VariableSimpleIF> dataVarsMap = new HashMap<String, VariableSimpleIF>(); 
+    for(VariableSimpleIF v : dataVars ){
+    	dataVarsMap.put(v.getShortName(), v);
+    }
+    
     List<String> varNames = qb.getVar();
-    if ((varNames == null) || (varNames.size() == 0)) {
+    
+    //if ((varNames == null) || (varNames.size() == 0) || varNames.equals("all")) {
+    if (varNames.equals("all")) {
       wantVars = new ArrayList<VariableSimpleIF>(dataVars);
     } else {
-      wantVars = new ArrayList<VariableSimpleIF>();
-      for (VariableSimpleIF v : dataVars) {
-        if (varNames.contains(v.getShortName())) // LOOK N**2
-          wantVars.add(v);
-      }
+    	List<String> allVars = new ArrayList<String>( dataVarsMap.keySet());
+    	wantVars = new ArrayList<VariableSimpleIF>();
+    	for(String v : varNames){
+    		if( allVars.contains(v) ){
+    			VariableSimpleIF var = dataVarsMap.get(v);
+    			wantVars.add(var);
+    		}else{
+    			throw new VariableNotContainedInDatasetException("Variable: "+v+" is not contained in the requested dataset");
+    		}
+    	}
+    	    	
+//      for (VariableSimpleIF v : dataVars) {
+//        if (varNames.contains(v.getShortName())) // LOOK N**2
+//          wantVars.add(v);        
+//      }
     }    
     
+ 
+		
     
 
     Action act = w.getAction();
@@ -493,205 +513,7 @@ public class StationWriter {
 
   }
 
-  ////////////////////////////////////////////////////////
-  // scanning station collection
 
-  /* scan data for the list of stations, in order
-  // records that pass the dateRange and predicate match are acted on
-  private void scanStations(Dataset ds, List<String> stns, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
-    StringBuilder sbuff = new StringBuilder();
-
-    StationObsDataset sod = ds.get();
-    if (debug) System.out.println("scanStations open " + ds.filename);
-    if (null == sod) {
-      log.info("Cant open " + ds.filename + "; " + sbuff);
-      return;
-    }
-
-    for (String stn : stns) {
-      Station s = sod.getStation(stn);
-      if (s == null) {
-        log.warn("Cant find station " + s);
-        continue;
-      }
-      if (debugDetail) System.out.println("stn " + s.getName());
-
-
-      DataIterator iter = sod.getDataIterator(s);
-      while (iter.hasNext()) {
-        StationObsDatatype sobs = (StationObsDatatype) iter.nextData();
-
-        // date filter
-        if (null != range) {
-          Date obs = sobs.getObservationTimeAsDate();
-          if (!range.included(obs))
-            continue;
-        }
-
-        // general predicate filter
-        StructureData sdata = sobs.getData();
-        if ((p == null) || p.match(sdata)) {
-          a.act(sod, sobs, sdata);
-          limit.matches++;
-        }
-
-        limit.count++;
-        if (limit.count > limit.limit) break;
-      }
-    }
-
-  } */
-
-  // scan all data in the file, first eliminate any that dont pass the predicate
-  // for each station, track the closest record to the given time
-  /* then act on those
-  private void scanAll(Dataset ds, DateType time, Predicate p, Action a, Limit limit) throws IOException {
-    StringBuilder sbuff = new StringBuilder();
-
-    HashMap<Station, StationDataTracker> map = new HashMap<Station, StationDataTracker>();
-    long wantTime = time.getDate().getTime();
-
-    StationObsDataset sod = ds.get();
-    if (debug) System.out.println("scanAll open " + ds.filename);
-    if (null == sod) {
-      log.info("Cant open " + ds.filename + "; " + sbuff);
-      return;
-    }
-
-    DataIterator iter = sod.getDataIterator(0);
-    while (iter.hasNext()) {
-      StationObsDatatype sobs = (StationObsDatatype) iter.nextData();
-
-      // general predicate filter
-      if (p != null) {
-        StructureData sdata = sobs.getData();
-        if (!p.match(sdata))
-          continue;
-      }
-
-      // find closest time for this station
-      long obsTime = sobs.getObservationTimeAsDate().getTime();
-      long diff = Math.abs(obsTime - wantTime);
-
-      Station s = sobs.getStation();
-      StationDataTracker track = map.get(s);
-      if (track == null) {
-        map.put(s, new StationDataTracker(sobs, diff));
-      } else {
-        if (diff < track.timeDiff) {
-          track.sobs = sobs;
-          track.timeDiff = diff;
-        }
-      }
-    }
-
-    for (Station s : map.keySet()) {
-      StationDataTracker track = map.get(s);
-      a.act(sod, track.sobs, track.sobs.getData());
-      limit.matches++;
-
-      limit.count++;
-      if (limit.count > limit.limit) break;
-    }
-
-  }
-
-  private class StationDataTracker {
-    StationObsDatatype sobs;
-    long timeDiff = Long.MAX_VALUE;
-
-    StationDataTracker(StationObsDatatype sobs, long timeDiff) {
-      this.sobs = sobs;
-      this.timeDiff = timeDiff;
-    }
-  }
-
-
-  // scan data for the list of stations, in order
-  // eliminate records  that dont pass the predicate
-  // for each station, track the closest record to the given time, then act on those
-  private void scanStations(Dataset ds, List<String> stns, DateType time, Predicate p, Action a, Limit limit) throws IOException {
-    StringBuilder sbuff = new StringBuilder();
-
-    StationObsDataset sod = ds.get();
-    if (null == sod) {
-      log.info("Cant open " + ds.filename + "; " + sbuff);
-      return;
-    }
-
-    long wantTime = time.getDate().getTime();
-
-    for (String stn : stns) {
-      Station s = sod.getStation(stn);
-      if (s == null) {
-        log.warn("Cant find station " + s);
-        continue;
-      }
-
-      StationObsDatatype sobsBest = null;
-      long timeDiff = Long.MAX_VALUE;
-
-      // loop through all data for this station, take the obs with time closest
-      DataIterator iter = sod.getDataIterator(s);
-      while (iter.hasNext()) {
-        StationObsDatatype sobs = (StationObsDatatype) iter.nextData();
-
-        // general predicate filter
-        if (p != null) {
-          StructureData sdata = sobs.getData();
-          if (!p.match(sdata))
-            continue;
-        }
-
-        long obsTime = sobs.getObservationTimeAsDate().getTime();
-        long diff = Math.abs(obsTime - wantTime);
-        if (diff < timeDiff) {
-          sobsBest = sobs;
-          timeDiff = diff;
-        }
-      }
-
-      if (sobsBest != null) {
-        a.act(sod, sobsBest, sobsBest.getData());
-        limit.matches++;
-      }
-
-      limit.count++;
-      if (limit.count > limit.limit) break;
-    }
-
-  }  */
-
-  ////////////////////////////////////////////////////////////////
-  /* date filter
-
-  private List<Dataset> filterDataset(DateRange range) {
-    if (range == null)
-      return datasetList;
-
-    List<Dataset> result = new ArrayList<Dataset>();
-    for (Dataset ds : datasetList) {
-      if (range.intersects(ds.time_start, ds.time_end))
-        result.add(ds);
-    }
-    return result;
-  }
-
-  Dataset filterDataset(DateType want) {
-    if (want.isPresent())
-      return datasetList.get(datasetList.size() - 1);
-
-    Date time = want.getDate();
-    for (Dataset ds : datasetList) {
-      if (time.before(ds.time_end) && time.after(ds.time_start)) {
-        return ds;
-      }
-      if (time.equals(ds.time_end) || time.equals(ds.time_start)) {
-        return ds;
-      }
-    }
-    return null;
-  }  */
 
   private interface Predicate {
     boolean match(StructureData sdata);
@@ -737,10 +559,12 @@ public class StationWriter {
       cfWriter = new WriterCFStationCollection(version, netcdfResult.getAbsolutePath(), atts);
 
       // verify SpatialSelection has some stations
-      if (qb.getStn().equals("bb") ) {
-        wantStations = sfc.getStations(qb.getLatLonRect());
+      if (qb.getSubset().equals("bb") ) {
+  		LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast())  );
+  		wantStations = sfc.getStations( llrect );
+        //wantStations = sfc.getStations(qb.getLatLonRect());
 
-      } else if (qb.getStn().equals("stns")) {
+      } else if (qb.getSubset().equals("stns")) {
         List<String> stnNames = qb.getStns();
         wantStations = sfc.getStations(stnNames);
 

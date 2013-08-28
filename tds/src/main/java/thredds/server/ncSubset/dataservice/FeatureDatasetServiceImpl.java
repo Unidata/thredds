@@ -33,17 +33,72 @@
 package thredds.server.ncSubset.dataservice;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Formatter;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Service;
+
+import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.servlet.DatasetHandler;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 /**
  * @author mhermida
  *
  */
-public interface DatasetService {
+@Service
+public class FeatureDatasetServiceImpl implements FeatureDatasetService {
+	
+	/* (non-Javadoc)
+	 * @see thredds.server.ncSubset.dataservice.DatasetService#findDatasetByByPath(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.String)
+	 */
+	@Override
+	public FeatureDataset findDatasetByPath(HttpServletRequest req,
+			HttpServletResponse res, String datasetPath) throws IOException {
+		
+		FeatureType type = null;
+		FeatureDataset fd = null;
+		InvDatasetFeatureCollection ftCollection =  DatasetHandler.getFeatureCollection(req, res, datasetPath);
+		
+		if(ftCollection != null){			
+			type = ftCollection.getDataType();
+			if(type == FeatureType.GRID){			
+				GridDataset gds = DatasetHandler.openGridDataset(req, res, datasetPath);
+				//builds a FeatureDataset from an TypedDataset 
+				fd = new ucar.nc2.dt.grid.GridDataset( new NetcdfDataset(  gds.getNetcdfFile() ));
+			}
+			
+			if(type == FeatureType.STATION ){			
+				 fd = ftCollection.getFeatureDatasetPoint();
+			}			
+			
+		}else{
+			//Try as file?
+		    NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, datasetPath);
+		    Set<Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(Enhance.CoordSystems, Enhance.ConvertEnums));
+			if (ncfile != null) {
+				//Wrap it into a FeatureDataset
+				fd = FeatureDatasetFactoryManager.wrap(
+						FeatureType.ANY,                  // will check FeatureType below if needed...
+						NetcdfDataset.wrap(ncfile, enhance),
+						null,
+						new Formatter( res.getOutputStream() ));       // better way to do this?
+			}
+		}	
+								
+		return fd;
 
-	public FeatureDataset findDatasetByPath(HttpServletRequest req, HttpServletResponse res, String path) throws IOException;
+	}
+	
 }

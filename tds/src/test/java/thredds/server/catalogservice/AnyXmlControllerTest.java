@@ -29,8 +29,8 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest{
 	
 	public void showCommandTest() throws Exception{
 		
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testTdsScan/catalog.xml");
-		request.setServletPath("/testTdsScan/catalog.xml");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testGridScan/catalog.xml");
+		request.setServletPath("/testGridScan/catalog.xml");
         MockHttpServletResponse response = new MockHttpServletResponse();
 		
         ModelAndView mv =anyXmlController.handleRequest(request, response);        
@@ -49,10 +49,10 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest{
 		// htmlView= null
 		// verbose = null
 		// command null and a providing a datasetId becomes in a subset command  		
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testFeatureCollection/catalog.xml");
-		request.setServletPath("/testFeatureCollection/catalog.xml");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testGridFeatureCollection/catalog.xml");
+		request.setServletPath("/testGridFeatureCollection/catalog.xml");
 		//request.setParameter("command", "subset");
-		request.setParameter("dataset", "testFeatureCollection/Test_Feature_Collection_best.ncd");
+		request.setParameter("dataset", "testGridFeatureCollection/Test_Feature_Collection_best.ncd");
         MockHttpServletResponse response = new MockHttpServletResponse();
 		
         ModelAndView mv =anyXmlController.handleRequest(request, response);        
@@ -68,8 +68,8 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest{
 		// datasetId= null
 		// htmlView= null
 		// verbose = null 		
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testFeatureCollection/catalog.xml");
-		request.setServletPath("/testFeatureCollection/catalog.xml");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testGridFeatureCollection/catalog.xml");
+		request.setServletPath("/testGridFeatureCollection/catalog.xml");
 		request.setParameter("datasetId", "FMRC/NCEP/SREF");		
 		request.setParameter("command", "validate");
 		

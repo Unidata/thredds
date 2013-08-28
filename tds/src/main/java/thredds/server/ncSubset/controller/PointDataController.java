@@ -1,8 +1,6 @@
 package thredds.server.ncSubset.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +23,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
@@ -44,6 +40,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 
 @Controller
@@ -67,12 +64,13 @@ class PointDataController extends AbstractNcssDataRequestController{
 			//Checking request format...			
 			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.POINT_REQUEST  );			
 
-			LatLonPoint point = params.getLatLonPoint(); //Check if the point is within boundaries!!
-
+			//LatLonPoint point = params.getLatLonPoint(); //Check if the point is within boundaries!!
+			LatLonPoint point = new LatLonPointImpl( params.getLatitude(), params.getLongitude() ); //Check if the point is within boundaries!!
+			
 			checkRequestedVars(gridDataset,  params);
 			Map<String, List<String>> groupVars= groupVarsByVertLevels(gridDataset, params);
 
-			if( !isPointWithinBoundaries(params.getLatLonPoint(), groupVars ) ){			
+			if( !isPointWithinBoundaries(point, groupVars ) ){			
 				throw  new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data. "+
 						"Data Bounding Box = " + getGridDataset().getBoundingBox().toString2());
 			}			

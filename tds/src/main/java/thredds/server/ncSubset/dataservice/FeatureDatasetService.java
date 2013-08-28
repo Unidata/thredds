@@ -37,48 +37,13 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.stereotype.Service;
-
-import thredds.catalog.InvDatasetFeatureCollection;
-import thredds.servlet.DatasetHandler;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetPoint;
 
 /**
  * @author mhermida
  *
  */
-@Service
-public class DatasetServiceImpl implements DatasetService {
-	
-	/* (non-Javadoc)
-	 * @see thredds.server.ncSubset.dataservice.DatasetService#findDatasetByByPath(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.String)
-	 */
-	@Override
-	public FeatureDataset findDatasetByPath(HttpServletRequest req,
-			HttpServletResponse res, String datasetPath) throws IOException {
-		
-		InvDatasetFeatureCollection ftCollection =  DatasetHandler.getFeatureCollection(req, res, datasetPath);
-		
-		FeatureType type = ftCollection.getDataType();
-				
-		if(type == FeatureType.GRID){			
-			GridDataset gds = DatasetHandler.openGridDataset(req, res, datasetPath);
-			//builds a FeatureDataset from an TypedDataset 
-			ucar.nc2.dt.grid.GridDataset dtGds = new ucar.nc2.dt.grid.GridDataset( new NetcdfDataset(  gds.getNetcdfFile() ));
-			return dtGds;
-		}
-		
-		if(type == FeatureType.STATION ){			
-			 FeatureDatasetPoint fdp = ftCollection.getFeatureDatasetPoint();
-			 return fdp;
-		}		
-		
-		return null;
+public interface FeatureDatasetService {
 
-	}
-	
+	public FeatureDataset findDatasetByPath(HttpServletRequest req, HttpServletResponse res, String path) throws IOException;
 }
