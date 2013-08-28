@@ -26,8 +26,8 @@
   <p>The NetCDF Subset Service uses HTTP GET with key-value pairs (KVP). The service interface tries to follow <a href="#REST">REST design</a>, as well as <a href="https://developers.google.com/kml/">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
   <p>Currently both Grids and Station data can be used with this service. See:</p>
   <ul>
-    <li><a href="StationDataSubsetService.html">NetCDF Subset Service for Point Data</a></li>
-    <li><a href="GridDataSubsetService.html">NetCDF Subset Service for Gridded Data</a></li>
+    <li><a href="../../../../../archive/src/docs/web/thredds/tech/interfaceSpec/StationDataSubsetService.html">NetCDF Subset Service for Point Data</a></li>
+    <li><a href="../../../../../archive/src/docs/web/thredds/tech/interfaceSpec/GridDataSubsetService.html">NetCDF Subset Service for Gridded Data</a></li>
   </ul>
   <p>&nbsp;</p>
   <h2><strong><a name="Common"></a> Subsetting Parameters (summary) </strong></h2>
@@ -174,13 +174,13 @@
   <p>A Station Observation Dataset is a collection of time series of observations at named locations called <em>stations</em>. </p>
   <p>The dataset is described by a <em><strong>stationObsDataset</strong></em> document, which in turn points to the list of valid stations   in a seperate <em><strong>stationCollection</strong></em> document. The stationCollection document can be quite large, and caching on the client (eg using the <em>If-Modified-Since</em> header) is an important optimization. </p>
   <ul>
-    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml"><strong>stationObsDataset</strong></a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
-    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml"><strong>stationCollection</strong></a> document (<a href="metars/stations.xml">offline</a> example) </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml"><strong>stationObsDataset</strong></a> document (<a href="../../../../../archive/src/docs/web/thredds/tech/interfaceSpec/metars/stationObsDataset.xml">offline</a> example) </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml"><strong>stationCollection</strong></a> document (<a href="../../../../../archive/src/docs/web/thredds/tech/interfaceSpec/metars/stations.xml">offline</a> example) </li>
   </ul>
   <h3>Grid Dataset</h3>
   <p>A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical and time coordinates. Grid data points next to each other in index space are next to each other in coordinate space. </p>
   <ul>
-    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/grid/fmrc/NCEP/GFS/CONUS_80km/NCEP-GFS-CONUS_80km_best.ncd/dataset.xml"><strong>gridDataset</strong></a> document (<a href="grids/gridDataset.xml">offline</a> example) </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/grid/fmrc/NCEP/GFS/CONUS_80km/NCEP-GFS-CONUS_80km_best.ncd/dataset.xml"><strong>gridDataset</strong></a> document (<a href="../../../../../archive/src/docs/web/thredds/tech/interfaceSpec/grids/gridDataset.xml">offline</a> example) </li>
   </ul>
   <hr>
   <div class="div4">
@@ -222,7 +222,7 @@
   <hr>
   <h2><a name="REST"></a>REST Design </h2>
   <h3>1. What are the resources/URIs?</h3>
-  <p>The resources are THREDDS datasets. The resource URIs can be discovered in a <a href="../TDS.html#Catalogs">THREDDS catalog</a>, by looking for datasets that use the <strong>NetcdfSubset</strong> Service type. Generally these resource URLs look like: </p>
+  <p>The resources are THREDDS datasets. The resource URIs can be discovered in a <a href="../../../../../archive/src/docs/web/thredds/tech/TDS.html#Catalogs">THREDDS catalog</a>, by looking for datasets that use the <strong>NetcdfSubset</strong> Service type. Generally these resource URLs look like: </p>
   <blockquote>  
     <p><strong> http://servername:8080/thredds/ncss/{path/dataset}</strong> </p>
     <p><strong>http://servername:8080/thredds/ncss/grid/{path/dataset}</strong></p>
