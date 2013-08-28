@@ -38,6 +38,7 @@ import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -50,7 +51,7 @@ public class TestReadRecord extends TestCase {
   public void testNC3ReadRecordV3mode() {
 
     try {
-      NetcdfFile nc = TestLocalNC2.openFile("testWriteRecord.nc");
+      NetcdfFile nc = TestDir.openFileLocal("testWriteRecord.nc");
 
       /* Get the value of the global attribute named "title" */
       String title = nc.findAttValueIgnoreCase(null, "title", "N/A");
@@ -142,7 +143,7 @@ public class TestReadRecord extends TestCase {
 
   public void testNC3ReadRecordN4mode() {
     try {
-      NetcdfFile nc = TestLocalNC2.openFile("testWriteRecord.nc");
+      NetcdfFile nc = TestDir.openFileLocal("testWriteRecord.nc");
       nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
       /* Get the value of the global attribute named "title" */
@@ -246,7 +247,7 @@ public class TestReadRecord extends TestCase {
 
 
   public void testDatasetAddRecord() throws InvalidRangeException, IOException {
-    NetcdfDataset nc = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testWriteRecord.nc", NetcdfDataset.getDefaultEnhanceMode(),
+    NetcdfDataset nc = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", NetcdfDataset.getDefaultEnhanceMode(),
         -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // record variable
@@ -284,7 +285,7 @@ public class TestReadRecord extends TestCase {
   }
 
   public void testDatasetAddRecordAfter() throws InvalidRangeException, IOException {
-    NetcdfDataset nc = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testWriteRecord.nc");
+    NetcdfDataset nc = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc");
     assert (Boolean) nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // record variable
@@ -321,7 +322,7 @@ public class TestReadRecord extends TestCase {
   }
 
   public void testNC3ReadRecordStrided() throws InvalidRangeException, IOException {
-    NetcdfFile nc = TestLocalNC2.openFile("testWriteRecord.nc");
+    NetcdfFile nc = TestDir.openFileLocal("testWriteRecord.nc");
     nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // record variable

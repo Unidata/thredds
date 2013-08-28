@@ -97,7 +97,7 @@ import javax.swing.event.*;
 public class CatalogChooser extends JPanel {
   private static final String HDIVIDER = "HSplit_Divider";
   private static final String FILECHOOSER_DEFAULTDIR = "FileChooserDefaultDir";
-  private ucar.util.prefs.PreferencesExt prefs;
+  private PreferencesExt prefs;
 
   private EventListenerList listenerList = new EventListenerList();
   private String eventType = null;
@@ -133,7 +133,7 @@ public class CatalogChooser extends JPanel {
    * @param showOpenButton  show the "open" button.
    * @param showFileChooser show a FileChooser (must have showComboChooser true)
    */
-  public CatalogChooser(ucar.util.prefs.PreferencesExt prefs, boolean showComboChooser,
+  public CatalogChooser(PreferencesExt prefs, boolean showComboChooser,
                         boolean showOpenButton, boolean showFileChooser) {
     this.prefs = prefs;
 

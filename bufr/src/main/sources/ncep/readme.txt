@@ -15,3 +15,11 @@ Hi John,
 I have an ASCII version of our local Table B - see ftp://ftp.nco.ncep.noaa.gov/dmqab/jator/BUFR_tables/bufrtab.TableB_LOC_0_7_1
 
 I haven't had a chance to generate a corresponding local Table D yet, so at this point Dennis's HTML page is the best documentation we have for that.
+
+6/6/2013
+Kevin Manross shows me tables at
+http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/fix/
+
+also see:
+
+http://www.nco.ncep.noaa.gov/pmb/codes/

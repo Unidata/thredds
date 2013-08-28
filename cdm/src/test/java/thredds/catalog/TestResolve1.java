@@ -33,6 +33,11 @@
 package thredds.catalog;
 
 import junit.framework.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
+
+import java.io.IOException;
 import java.util.*;
 
 /** Test reletive URL resolution. */
@@ -124,6 +129,36 @@ public class TestResolve1 extends TestCase {
       }
     }
     return null;
+  }
+
+  /*
+  06-14 15:47:41.002: I/System.out(873): Invalid catalog from Resolver
+  <http://thredds.ucar.edu/thredds/catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml>
+
+  06-14 15:47:41.002: I/System.out(873): ----Catalog Validation
+  06-14 15:47:41.012: I/System.out(873): **Fatal:  InvCatalogFactory.readXML failed
+  06-14 15:47:41.012: I/System.out(873):  Exception= java.io.IOException
+  Couldn't open http://thredds.ucar.edu/thredds/catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml
+
+  06-14 15:47:41.012: I/System.out(873):  fatalMessages=
+  06-14 15:47:41.012: I/System.out(873):  errMessages=
+  06-14 15:47:41.012: I/System.out(873):  warnMessages=
+   */
+  public static void main(String[] args) throws IOException {
+    String remoteDataset =
+            "thredds:resolve:http://thredds.ucar.edu/thredds/catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml";
+    try {
+      NetcdfFile ncd = NetcdfDataset.openFile(remoteDataset, null);
+      List<Attribute> globalAttrs = ncd.getGlobalAttributes();
+      String testMessage = "";
+      for (Attribute attr : globalAttrs) {
+        testMessage = testMessage + "\n" + attr;
+      }
+      ncd.close();
+      System.out.println(testMessage);
+    } catch (IOException e) {
+      System.out.println(e.getMessage());
+    }
   }
 
 }

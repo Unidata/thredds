@@ -2,9 +2,7 @@ package ucar.nc2.ui;
 
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
-import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.ui.widget.*;
-import ucar.grib.grib2.ParameterTable;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -71,13 +69,13 @@ public class GribWmoCodesPanel extends JPanel {
       }
     });
 
-    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to 4.2 table", false);
+    /* AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to 4.2 table", false);
     compareButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         compareToCurrent();
       }
     });
-    buttPanel.add(compareButton);
+    buttPanel.add(compareButton);  */
 
     AbstractButton compare2Button = BAMutil.makeButtcon("Select", "Compare to standard WMO table", false);
     compare2Button.addActionListener(new ActionListener() {
@@ -230,7 +228,7 @@ public class GribWmoCodesPanel extends JPanel {
 
 
   private boolean showSame = false, showCase = false, showUnknown = false;
-  private void compareToCurrent() {
+  /* private void compareToCurrent() {
     int total = 0;
     int nsame = 0;
     int nsameIgn = 0;
@@ -276,7 +274,7 @@ public class GribWmoCodesPanel extends JPanel {
     f.format("%nTotal=%d same=%d sameIgnoreCase=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknownCount);
     compareTA.setText(f.toString());
     infoWindow.show();
-  }
+  } */
 
   private void compareToStandardWMO() {
     int total = 0;

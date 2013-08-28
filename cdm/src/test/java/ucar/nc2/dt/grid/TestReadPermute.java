@@ -36,6 +36,7 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 
@@ -46,7 +47,7 @@ public class TestReadPermute extends TestCase {
   public void testReadPermute() {
     try {
 
-      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestLocal.cdmTestDataDir+"permuteTest.nc");
+      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestDir.cdmLocalTestDataDir+"permuteTest.nc");
 
       doRead4(dataset, "tzyx");
       doRead4(dataset, "tzxy");

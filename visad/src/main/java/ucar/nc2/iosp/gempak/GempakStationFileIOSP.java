@@ -63,7 +63,7 @@ import java.util.StringTokenizer;
 /**
  * An IOSP for Gempak Station (SF,SN) data.
  *
- * @author Unidata Java Development Team
+ * @author dmurray
  */
 public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
 

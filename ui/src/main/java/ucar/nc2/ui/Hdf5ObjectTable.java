@@ -34,7 +34,6 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.Attribute;
-import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;

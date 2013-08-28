@@ -11,7 +11,7 @@
 <pre> <em>java -Xmx1g -classpath netcdfAll-4.3.jar ucar.nc2.NCdumpW Q:/cdmUnitTest/ncml/nc/test_7.nc</em></pre>
 <hr />
 <h2>ncdump<a name="ncdump" id="ncdump"></a></h2>
-<p>Approximate  functionality to <em>ncdump</em> c utility, but with different arguments.</p>
+<p>Dump the contents of the Similar   functionality to the <em><a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/ncdump.html">ncdump</a></em> utility program. By default, just the header (ncdump -h) is output. This application works on any CDM file, not just netCDF files.</p>
 <pre><em><strong>  </strong>java -Xmx1g -classpath netcdfAll-4.3.jar <strong>ucar.nc2.NCdumpW</strong> filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</em></pre>
 <p>where:</p>
 <ul>
@@ -20,12 +20,12 @@
   <li><em>-ncml</em> : show  NcML (default)</li>
   <li><em>-c </em> : show data for coordinate variables only </li>
   <li><em> -vall</em> : show data for  all variables</li>
-  <li><em>-v varName1;varName2;..</em> : show data for these variables, using long names with ';' seperators</li>
+  <li><em>-v varName1;varName2;..</em> : show data for these variables, use variable's full names (including groups if present)</li>
   <li><em>-v varName(0:1,:,12)</em>  : show data for a section of this variable only, using F90 section specificiation</li>
 </ul>
 <hr />
 <h2>nccopy<a name="nccopy" id="nccopy"></a></h2>
-<p>Copy a CDM dataset to a    netcdf-3 (default) or netcdf-4 format. Datasets using features from the extended model require netcdf-4.</p>
+<p>Copy a CDM dataset to a    netCDF-3 (default) or netCDF-4 format. Datasets using features from the extended model require netCDF-4.</p>
 <pre><em><strong> </strong>java -Xmx1g -classpath netcdfAll-4.3.jar <strong>ucar.nc2.dataset.NetcdfDataset -in &lt;fileIn&gt; -out &lt;fileOut&gt; [-isLargeFile] [-netcdf4]</strong></em></pre>
 <p>where:</p>
 <ul>
@@ -56,7 +56,7 @@
 </ul>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document  was last updated Nov 2012
+<img src="../nc.gif" alt="" width="64" height="64" /> This document  was last updated July 2013
 </address>
 <p></p>
 <p>&nbsp;</p>

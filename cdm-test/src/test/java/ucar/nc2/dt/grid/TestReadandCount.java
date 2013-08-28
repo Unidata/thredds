@@ -178,23 +178,20 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"mars/","temp_air_01082000.ncml", 1, 1, 4, 1); // uses GDV
   }
 
+  // test readding as a stream. theres no file location to be reletive to
   public void utestReadNcMLInputStream() throws Exception {
-    String ncmlLoc = "file:C:\\data\\work\\margolis\\test.ncml";
+    String ncmlLoc = "file:G:/work/jasmin/snpp.ncml";
     GridDataset fullDataset = GridDataset.open( ncmlLoc);
     System.out.printf("full size= %d%n", fullDataset.getGrids().size());
 
-    // real ncml through a InputStream.
+    // read ncml through a InputStream.
     String ncml =
-      "<?xml version='1.0' encoding='UTF-8'?>\n" +
-      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-      "  <variable name='time'>\n" +
-      "    <attribute name='ncmlAdded' value='timeAtt'/>\n" +
-      "  </variable>\n" +
-      "  <aggregation dimName='time' type='joinExisting'>\n" +
-      "    <netcdf location='file:C:\\data\\work\\margolis\\f_0000000.nc'/>\n" +
-      "    <netcdf location='file:C:\\data\\work\\margolis\\f_0032400.nc'/>\n" +
-      "  </aggregation>\n" +
-      "</netcdf>";
+       "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n" +
+        "<aggregation type=\"union\">\n" +
+        "    <netcdf location=\"file:G:/work/jasmin/SVM01_npp_d20120120_t0531354_e0532596_b01189_c20120120120033631216_noaa_ops.h5\" />\n" +
+        "    <netcdf location=\"file:G:/work/jasmin/GMTCO_npp_d20120120_t0531354_e0532596_b01189_c20120120115420527613_noaa_ops.h5\" />\n" +
+        "  </aggregation>\n" +
+        "</netcdf>";
     NetcdfDataset aggregatedDataset = NcMLReader.readNcML( new ByteArrayInputStream(ncml.getBytes()), null );
     GridDataset emptyDataset = new GridDataset( aggregatedDataset );
     System.out.printf("empty= %s%n", emptyDataset.getGrids().size());

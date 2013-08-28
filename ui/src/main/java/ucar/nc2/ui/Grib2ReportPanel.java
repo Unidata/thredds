@@ -693,10 +693,10 @@ public class Grib2ReportPanel extends JPanel {
       }
       processId.count(pds.getGenProcessId());
 
-      if (pds.getLevelScale() > 127) {
+      if (pds.getLevelScale1() > 127) {
         if (Grib2Utils.isLevelUsed(pds.getLevelType1())) {
-          f.format(" LevelScale > 127: %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), pds.getLevelScale());
-          levelScale.count(pds.getLevelScale());
+          f.format(" LevelScale > 127: %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), pds.getLevelScale1());
+          levelScale.count(pds.getLevelScale1());
         }
       }
     }

@@ -33,6 +33,8 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import ucar.unidata.test.util.TestDir;
+
 import java.io.*;
 
 /**
@@ -57,7 +59,7 @@ public class TestLongOffset extends TestCase  {
   }
 
   public void testReadLongOffset() throws IOException {
-    NetcdfFile ncfile = TestLocalNC2.openFile( "longOffset.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal("longOffset.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     NCdump.print(ncfile, "-vall", out, null);
@@ -65,7 +67,7 @@ public class TestLongOffset extends TestCase  {
   }
 
   public void testReadLongOffsetV3mode() throws IOException {
-    NetcdfFile ncfile = TestLocalNC2.openFile( "longOffset.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal( "longOffset.nc");
 
     NCdump.print(ncfile, "-vall", out, null);
     ncfile.close();

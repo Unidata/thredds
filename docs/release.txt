@@ -1,0 +1,187 @@
+========================================
+Building with gradle (4.4+)
+
+1. checkout from git
+
+2. configure gradle
+
+add a file gradle.properties to $userHome/.gradle  directory, with these properties:
+
+  keystore=/share/idv/.keystore-2012
+  keystoreAlias=<alias>
+  keystorePassword=<password>
+  webdir=W:/content/software/netcdf-java/v4.3/
+  ftpdir=V:/pub/netcdf-java/v4.3
+
+where:
+
+ first 3 are for signing jars
+ next 2 are locations for releasing cdm jars
+ (the values can all be fake until you get to step 4, but keys must be defined)
+
+3. build from command line. this will download current gradle, skipping tests:
+
+    gradlew clean build -x test
+
+   to run tests:
+
+    gradlew test --continue
+
+4. build from intellij (problems with 12.1, apparently will be improved in v13)
+
+4.1 upgrade intellij Project
+
+  File > Settings
+  Gradle
+
+  - enter $thredds/build.gradle into box
+  - accept all the defaults
+
+  A JetGradle left side tab will now appear
+
+4.2 new intellij project
+
+  1) File > Import Project
+
+    - navigate entry box to $thredds/build.gradle
+    - accept all the defaults
+    - a .idea directory is added under $thredds
+
+  2) add git root to project
+
+     File > Settings
+     Version Control - add $thredds to git root
+
+
+--------------------------
+08/05/2013
+
+1) install gradle
+
+Download latest gradle from gradle.org. Currently at 1.7-rc-2
+Unzip into your chosen directory.
+Add env variable GRADLE_HOME = gradle top directory
+Add GRADLE_HOME/bin directory to your path
+test from command line: "gradle -version"
+
+2) configure gradle
+
+add a file gradle.properties to $userHome/.gradle  directory, with these properties:
+
+  keystore=/share/idv/.keystore-2012
+  keystoreAlias=<alias>
+  keystorePassword=<password>
+  webdir=W:/content/software/netcdf-java/v4.3/
+  ftpdir=V:/pub/netcdf-java/v4.3
+
+where:
+
+first 3 are for signing jars
+next 2 are locations for releasing cdm jars
+(the values can all be fake until you get to step 4, but keys must be defined)
+
+3) building
+
+cd $THREDDS
+gradle clean install -x test
+
+first time, you will see gradle pull down maven artifacts into its repository in $userHome/.gradle/cache
+
+3) release
+
+
+========================================
+Making a release for CDM/TDS with jenkins
+12/18/2012
+edited 8/1/2013
+
+1. Jenkins
+  - Go to CDM/TDS project's configuration page
+      - Click on the 3rd "advanced" button from the top
+      - For the "Checkout/merge to local branch (optional)" option, give the branch name for the next version, eg "target-{next}"
+      - "Save" the changes
+  - Click on "Perform maven release"
+      - Click on "Schedule Maven Release Build"
+  - Build is done
+      - Check logs for success (or any problems)
+      - If the local branch is not specified, you will get the following error
+        "Detecting the current branch failed: fatal: ref HEAD is not a symbolic ref"
+
+2. Check that all went well:
+    - gitHub has new release tag, eg "v{release}"
+    - gitHub has new branch, eg "target-{next}"
+    - Check release artifacts are in artifacts.unidata.ucar.edu, eg http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
+
+3. Jenkins
+   -  Go back to the CMD/TDS project's configuration page
+    - Update "Branches to build" to new branch, eg "target-{next}"
+    - Clear "Checkout/merge to local branch (optional)" value
+    - Save
+
+4. Git
+  - checkout new release tag, eg "v{release}" created by Jenkins/Maven build (NOT target-{release})
+      git fetch origin
+      git checkout v{release}
+  - this branch will have version {release}, not {release}-SNAPSHOT in the maven poms
+  - create a temporary local branch (temp15) based on new release tag, "v{release}"
+      git checkout -b temp15
+  - push temporary branch to unidata/master
+      git push origin temp15:master (seemed to work, even though intellij says "push rejected ??)
+  - switch to master branch
+      git fetch origin
+      git checkout master
+  - clean up (delete) any old branches
+    git branch -d temp15
+
+5. put thredds.war on conan ftp
+  - cd /web/ftp/pub/thredds/4.3
+  - mkdir {release}
+  - from http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
+     download tds-{release}.war tds-{release}.war.md5 tds-{release}.sha1 to /web/ftp/pub/thredds/4.3/{release}
+     rename to thredds.war, thredds.war.md5 and thredds.war.sha1
+  - move /web/ftp/pub/thredds/4.3/current to point to /web/ftp/pub/thredds/4.3/{release}
+     rm current
+     ln -s {release} current
+
+6. put tdm.jar, netcdfAll.jar onto conan ftp
+  - build it
+    cd {github/thredds}
+    mvn clean install
+    cp {github/thredds}/tdm/build/tdm-{release}.jar /web/ftp/pub/thredds/4.3/current/tdm-4.3.jar
+    cp {github/thredds}/ui/target/netcdfAll-{release}.jar to /web/ftp/pub/netcdf-java/v4.3
+
+7. CDM has additional targets that are handled by gradle builds
+  - make sure you have correct gradle.properties in ~home/.gradle/
+  - cd {github/thredds}
+  1. make supporting libraries
+      gradle clean build -x test
+  2. release cdm javadocs to conan:/content/software/netcdf-java/v4.3/javadoc
+      gradle -p cdm releaseDocs
+  3. release all javadocs to conan:/content/software/netcdf-java/v4.3/javadocAll
+      gradle -p ui releaseDocs
+  4. release webstart to conan:/content/software/netcdf-java/v4.3/webstart
+     release ToolsUI.jar to conan:/pub/netcdf-java/v4.3/
+      gradle -p ui releaseCdm
+  5. release ncIdv.jar to conan:/pub/netcdf-java/v4.3/
+      gradle -p ncIdv releaseCdm
+  6. (kludge)
+      mvn clean install
+      copy ui/target/netcdfAll-{release}.jar to /web/ftp/pub/netcdf-java/v4.3
+
+8. update links on conan
+  - in /web/ftp/pub/netcdf-java/v4.3:
+     rm toolsUI-4.3.jar netcdfAll-4.3.jar ncIdv-4.3.jar
+     ln -s toolsUI-{release}.jar toolsUI-4.3.jar
+     ln -s netcdfAll-{release}.jar netcdfAll-4.3.jar
+     ln -s ncIdv-4.3.14.jar ncIdv-4.3.jar
+
+9. update Unidata download page(s)
+  - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
+    modify conan:/content/downloads/thredds/toc.xml as needed
+  - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
+    modify conan:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
+
+10. if you need to do any changes to web pages, do it on the next branch (eg target-{next})
+
+
+

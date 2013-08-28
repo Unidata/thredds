@@ -107,7 +107,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   // IOSPs are loaded by reflection
   static {
-      // Make sure RC gets loaded
+    // Make sure RC gets loaded
     RC.initialize();
 
     try {
@@ -115,6 +115,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
+    // LOOK can we just load Grib through the ServiceLoader ??
     try {
       registerIOProvider("ucar.nc2.grib.grib2.Grib2Iosp");
     } catch (Throwable e) {
@@ -136,7 +137,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      Class iosp = NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.BufrIosp");
+      Class iosp = NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.BufrIosp2");
       registerIOProvider(iosp);
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load resource: " + e);
@@ -196,7 +197,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-        try {
+    try {
       registerIOProvider("ucar.nc2.iosp.noaa.Ghcnm2");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
@@ -288,37 +289,36 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws ClassCastException     if class doesnt implement IOServiceProvider interface.
    */
   static public void registerIOProvider(Class iospClass)
-	throws IllegalAccessException, InstantiationException {
-    registerIOProvider(iospClass,false);
+          throws IllegalAccessException, InstantiationException {
+    registerIOProvider(iospClass, false);
   }
 
   /**
    * Register an IOServiceProvider. A new instance will be created when one of its files is opened.
    *
    * @param iospClass Class that implements IOServiceProvider.
-   * @param last true=>insert at the end of the list; otherwise front
+   * @param last      true=>insert at the end of the list; otherwise front
    * @throws IllegalAccessException if class is not accessible.
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException     if class doesnt implement IOServiceProvider interface.
    */
   static public void registerIOProvider(Class iospClass, boolean last)
-	throws IllegalAccessException, InstantiationException {
+          throws IllegalAccessException, InstantiationException {
     IOServiceProvider spi;
     spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
     if (userLoads && !last)
-	registeredProviders.add(0, spi);  // put user stuff first
+      registeredProviders.add(0, spi);  // put user stuff first
     else registeredProviders.add(spi);
   }
-  
+
   /**
    * See if a specific IOServiceProvider is registered
    *
    * @param iospClass Class for which to search
    */
-  static public boolean iospRegistered(Class iospClass)
-  {
-    for(IOServiceProvider spi: registeredProviders) {
-	if(spi.getClass() == iospClass) return true;
+  static public boolean iospRegistered(Class iospClass) {
+    for (IOServiceProvider spi : registeredProviders) {
+      if (spi.getClass() == iospClass) return true;
     }
     return false;
   }
@@ -448,10 +448,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       return true;
     } else {
       Iterator<IOServiceProvider> iterator = ServiceLoader.load(IOServiceProvider.class).iterator();
-      while(iterator.hasNext()) {
-          if (iterator.next().isValidFile(raf)) {
-              return true;
-          }
+      while (iterator.hasNext()) {
+        if (iterator.next().isValidFile(raf)) {
+          return true;
+        }
       }
       for (IOServiceProvider registeredSpi : registeredProviders) {
         if (registeredSpi.isValidFile(raf))
@@ -639,7 +639,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
         if (ze != null) {
           in = zin;
           copy(in, fout, 100000);
-          if (debugCompress) System.out.println("unzipped " + filename + " entry " + ze.getName() + " to " + uncompressedFile);
+          if (debugCompress)
+            System.out.println("unzipped " + filename + " entry " + ze.getName() + " to " + uncompressedFile);
         }
 
       } else if (suffix.equalsIgnoreCase("bz2")) {
@@ -764,19 +765,19 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
       // look for dynamically loaded IOSPs
       Iterator<IOServiceProvider> iterator = ServiceLoader.load(ucar.nc2.iosp.IOServiceProvider.class).iterator();
-      while(iterator.hasNext()) {
-          IOServiceProvider currentSpi = iterator.next();
-          if (currentSpi.isValidFile(raf)) {
-             Class c = currentSpi.getClass();
-            try {
-                spi = (IOServiceProvider) c.newInstance();
-            } catch (InstantiationException e) {
-                throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor."); // shouldnt happen
-            } catch (IllegalAccessException e) {
-                throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage()); // shouldnt happen
-            }
-            break;
+      while (iterator.hasNext()) {
+        IOServiceProvider currentSpi = iterator.next();
+        if (currentSpi.isValidFile(raf)) {
+          Class c = currentSpi.getClass();
+          try {
+            spi = (IOServiceProvider) c.newInstance();
+          } catch (InstantiationException e) {
+            throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor."); // shouldnt happen
+          } catch (IllegalAccessException e) {
+            throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage()); // shouldnt happen
           }
+          break;
+        }
       }
 
       // look for registered providers
@@ -1016,7 +1017,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       vars = fullNameEscaped.substring(pos + 1);
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
-        String token = NetcdfFile.makeNameUnescaped( stoke.nextToken()) ;
+        String token = NetcdfFile.makeNameUnescaped(stoke.nextToken());
         g = g.findGroup(token);
         if (g == null) return null;
       }
@@ -1026,7 +1027,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
     if (snames.size() == 0) return null;
 
-    String varShortName = NetcdfFile.makeNameUnescaped(snames.get(0)) ;
+    String varShortName = NetcdfFile.makeNameUnescaped(snames.get(0));
     Variable v = g.findVariable(varShortName);
     if (v == null) return null;
 
@@ -1039,7 +1040,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
     return v;
   }
-  
+
   public Variable findVariableByAttribute(Group g, String attName, String attValue) {
     if (g == null) g = getRootGroup();
     for (Variable v : variables) {
@@ -1161,24 +1162,24 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
 
     int posAtt = fullNameEscaped.indexOf('@');
-    if (posAtt < 0 || posAtt >= fullNameEscaped.length()-1)
+    if (posAtt < 0 || posAtt >= fullNameEscaped.length() - 1)
       return null;
     if (posAtt == 0) {
       return findGlobalAttribute(fullNameEscaped.substring(1));
     }
 
     String path = fullNameEscaped.substring(0, posAtt);
-    String attName = fullNameEscaped.substring(posAtt+1);
+    String attName = fullNameEscaped.substring(posAtt + 1);
 
-     // find the group
+    // find the group
     Group g = rootGroup;
     int pos = path.lastIndexOf('/');
-    String varName = (pos > 0 && pos < path.length()-1) ?  path.substring(pos + 1) : null;
+    String varName = (pos > 0 && pos < path.length() - 1) ? path.substring(pos + 1) : null;
     if (pos >= 0) {
       String groups = path.substring(0, pos);
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
-        String token = NetcdfFile.makeNameUnescaped( stoke.nextToken());
+        String token = NetcdfFile.makeNameUnescaped(stoke.nextToken());
         g = g.findGroup(token);
         if (g == null) return null;
       }
@@ -1204,7 +1205,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     return v.findAttribute(attName);
   }
-
 
 
   /**
@@ -1267,6 +1267,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
 
   //////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * CDL representation of Netcdf header info, non strict
    */
@@ -1319,7 +1320,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   protected void writeCDL(Formatter f, Indent indent, boolean strict) {
     toStringStart(f, indent, strict);
-    f.format("%s}%n",indent);
+    f.format("%s}%n", indent);
   }
 
   protected void toStringStart(Formatter f, Indent indent, boolean strict) {
@@ -1568,8 +1569,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /**
    * Open an existing netcdf file (read only) , but dont do nuttin else
    *
-   * @param spi        use this IOServiceProvider instance
-   * @param location   location of data
+   * @param spi      use this IOServiceProvider instance
+   * @param location location of data
    */
   protected NetcdfFile(IOServiceProvider spi, String location) {
     this.spi = spi;
@@ -1869,8 +1870,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     variables = new ArrayList<Variable>();
     gattributes = new ArrayList<Attribute>();
     dimensions = new ArrayList<Dimension>();
-    if(rootGroup == null)
-        rootGroup = makeRootGroup(); //  only make the root group once
+    if (rootGroup == null)
+      rootGroup = makeRootGroup(); //  only make the root group once
     // addedRecordStructure = false;
   }
 
@@ -2272,7 +2273,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   // reservedFullName defines the characters that must be escaped
   // when a short name is inserted into a full name
-  static public final String reservedFullName = ".\\"; 
+  static public final String reservedFullName = ".\\";
 
   // reservedSectionSpec defines the characters that must be escaped
   // when a short name is inserted into a section specification.
@@ -2343,7 +2344,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /**
    * Given a CDMNode, create its full name with
    * appropriate backslash escaping.
-   * Warning: do not use for a section spec.   
+   * Warning: do not use for a section spec.
    *
    * @param v the cdm node
    * @return full name
@@ -2367,14 +2368,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Given a CDMNode, create its full name  with
    * appropriate backslash escaping of the specified characters.
    *
-   * @param node the cdm node
+   * @param node          the cdm node
    * @param reservedChars the set of characters to escape
    * @return full name
    */
   static protected String makeFullName(CDMNode node, String reservedChars) {
     Group parent = node.getParentGroup();
-    if(((parent == null) || parent.isRoot())
-       && !node.isMemberOfStructure()) // common case?
+    if (((parent == null) || parent.isRoot())
+            && !node.isMemberOfStructure()) // common case?
       return EscapeStrings.backslashEscape(node.getShortName(), reservedChars);
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent, reservedChars);
@@ -2383,15 +2384,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   static private void appendGroupName(StringBuilder sbuff, Group g, String reserved) {
-    if(g == null) return;
-    if(g.getParentGroup() == null) return;
+    if (g == null) return;
+    if (g.getParentGroup() == null) return;
     appendGroupName(sbuff, g.getParentGroup(), reserved);
-    sbuff.append( EscapeStrings.backslashEscape(g.getShortName(), reserved));
+    sbuff.append(EscapeStrings.backslashEscape(g.getShortName(), reserved));
     sbuff.append("/");
   }
 
   static private void appendStructureName(StringBuilder sbuff, CDMNode n, String reserved) {
-    if(n.isMemberOfStructure()) {
+    if (n.isMemberOfStructure()) {
       appendStructureName(sbuff, n.getParentStructure(), reserved);
       sbuff.append(".");
     }
@@ -2400,20 +2401,18 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   /**
    * Create a synthetic full name from a group plus a string
-   * 
+   *
    * @param parent parent group
-   * @param name synthetic name string
+   * @param name   synthetic name string
    * @return synthetic name
    */
-  protected String makeFullNameWithString(Group parent, String name)
-  {
+  protected String makeFullNameWithString(Group parent, String name) {
     name = makeValidPathName(name); // escape for use in full name  
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent, null);
     sbuff.append(name);
     return sbuff.toString();
   }
-
 
 
   /**

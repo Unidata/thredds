@@ -544,7 +544,7 @@ public class ServiceNameInheritanceTest
     assertEquals( "dir/file2.nc", access.getUrlPath() );
     assertEquals( "wcs", access.getServiceBuilder().getName() );
     assertEquals( ServiceType.WCS, access.getServiceBuilder().getType() );
-    assertEquals( "/thredds/wcs/", access.getServiceBuilder().getBaseUri().toString() );
+    assertEquals("/thredds/wcs/wcs/", access.getServiceBuilder().getBaseUri().toString() );
   }
 
   private static DatasetBuilder assertGetDatasetOne( CatalogBuilder catBuilder ) {

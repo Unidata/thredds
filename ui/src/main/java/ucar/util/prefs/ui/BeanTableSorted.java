@@ -33,7 +33,9 @@
 
 package ucar.util.prefs.ui;
 
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+
+import java.beans.BeanInfo;
 
 /**
  * BeanTableSorted adds sorting functionality to a BeanTable.
@@ -62,6 +64,17 @@ public class BeanTableSorted extends BeanTable {
     this( bc, pstore, canAddDelete, header, tooltip, null);
   }
 
+  public BeanTableSorted( Class bc, PreferencesExt pstore, String header, String tooltip, BeanInfo info) {
+    super( bc, pstore, header, tooltip, info);
+
+    sortedModel = new TableSorter(model);
+    jtable.setModel( sortedModel);
+    sortedModel.setTableHeader(jtable.getTableHeader());
+
+    restoreState();
+  }
+
+
   /**
    * Constructor
    * @param bc           bean class
@@ -71,14 +84,14 @@ public class BeanTableSorted extends BeanTable {
    * @param tooltip      optional tooltip label
    * @param bean         needed for inner classes to call reflected methods on
    */
-  public BeanTableSorted( Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip, Object bean) {
+  public BeanTableSorted(Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip, Object bean) {
     super( bc, pstore, canAddDelete, header, tooltip, bean);
 
     sortedModel = new TableSorter(model);
     jtable.setModel( sortedModel);
     sortedModel.setTableHeader(jtable.getTableHeader());
 
-    restoreState(); // ??
+    restoreState();
   }
 
   protected int modelIndex(int viewIndex) {

@@ -412,7 +412,8 @@ public class ArrayStructureBB extends ArrayStructure {
         result[0] = (String) ho;
         return result;
       } else {
-        throw new IllegalArgumentException("String Type has " + ho + ", on heap");
+        throw new IllegalArgumentException("Expected a String, but found an object of type  " + ho.getClass().getName() + ", on heap for "+
+          " member "+m.getName());
       }
     }
 

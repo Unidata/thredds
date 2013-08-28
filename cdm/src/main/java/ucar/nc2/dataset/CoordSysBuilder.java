@@ -130,8 +130,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static { // wont get loaded unless explicitly called
     // ours
     registerConvention(_Coordinate.Convention, CoordSysBuilder.class, null);
-    registerConvention("BUFR/CDM", BUFRConvention.class, null);
-
     registerConvention("CF-1.", CF1Convention.class, new ConventionNameOk() {
       public boolean isMatch(String convName, String wantName) {
         if (convName.startsWith(wantName)) return true;
@@ -324,6 +322,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @see ucar.nc2.dataset.NetcdfDataset#enhance
    */
   static public CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (convName == null)
@@ -331,8 +330,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     if (convName != null)
       convName = convName.trim();
 
+    // look for ncml first
     if (convName != null) {
-      // look for ncml first
       String convNcML = ncmlHash.get(convName);
       if (convNcML != null) {
         CoordSysBuilder csb = new CoordSysBuilder();
@@ -341,10 +340,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       }
     }
 
-    // now look for Convention parsing class
+    // look for registered conventions using convention name
     Class convClass = null;
     if (convName != null) {
-      // now look for Convention parsing class
       convClass = matchConvention(convName);
 
       // now look for comma or semicolon or / delimited list
@@ -366,7 +364,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     }
 
     // look for ones that dont use Convention attribute, in order added.
-    // call isMine() using reflection.
+    // call static isMine() using reflection.
     if (convClass == null) {
       for (Convention conv : conventionList) {
         Class c = conv.convClass;
@@ -387,30 +385,54 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         } catch (Exception ex) {
           log.error("ERROR: Class " + c.getName() + " Exception invoking isMine method\n" + ex);
         }
-      } // iterator
-    } // convClass is null
-
-    // no convention class found, use the default
-    boolean usingDefault = (convClass == null);
-    if (usingDefault)
-      convClass = DefaultConvention.class;
-
-    // get an instance of that class
-    CoordSysBuilderIF builder;
-    try {
-      builder = (CoordSysBuilderIF) convClass.newInstance();
-    } catch (Exception e) {
-      log.error("failed on CoordSysBuilderIF for " + convClass.getName(), e);
-      return null;
+      }
     }
 
-    if (usingDefault) {
-      builder.addUserAdvice("No CoordSysBuilder found - using Default Conventions.\n");
+    // use service loader mechanism
+    // call static isMine() using reflection.
+    CoordSysBuilderIF builder = null;
+    if (convClass == null) {
+      for (CoordSysBuilderIF csb : ServiceLoader.load(CoordSysBuilderIF.class)) {
+
+        Class c = csb.getClass();
+        Method m;
+        try {
+           m = c.getMethod("isMine", new Class[]{NetcdfFile.class});
+         } catch (NoSuchMethodException ex) {
+           continue;
+         }
+
+         try {
+           Boolean result = (Boolean) m.invoke(null, new Object[]{ds});
+           if (result) {
+             builder = csb;
+             convClass = c;
+             break;
+           }
+         } catch (Exception ex) {
+           log.error("ERROR: Class " + c.getName() + " Exception invoking isMine method\n" + ex);
+         }
+      }
+
+    }
+
+    // if no convention class found, use the default
+    if (convClass == null)
+      convClass = DefaultConvention.class;
+
+    if (builder == null) {
+      // get an instance of the class
+      try {
+        builder = (CoordSysBuilderIF) convClass.newInstance();
+      } catch (Exception e) {
+        log.error("failed on CoordSysBuilderIF for " + convClass.getName(), e);
+        return null;
+      }
     }
 
     if (convName == null)
       builder.addUserAdvice("No 'Conventions' global attribute.\n");
-    else if (usingDefault)
+    else if (convClass == DefaultConvention.class)
       builder.addUserAdvice("No CoordSysBuilder is defined for Conventions= '"+convName+"'\n");
     else
       builder.setConventionUsed(convClass.getName());
@@ -441,22 +463,27 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   protected boolean debug = false;
 
+  @Override
   public void setConventionUsed(String convName) {
     this.conventionName = convName;
   }
 
+  @Override
   public String getConventionUsed() {
     return conventionName;
   }
 
+  @Override
   public void addUserAdvice(String advice) {
     userAdvice.format("%s", advice);
   }
 
+  @Override
   public String getParseInfo() {
     return parseInfo.toString();
   }
 
+  @Override
   public String getUserAdvice() {
     return userAdvice.toString();
   }
@@ -464,6 +491,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // subclasses can override any of these routines
 
+  @Override
   public void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException { }
 
   /**
@@ -484,6 +512,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    *
    * @param ncDataset modify this dataset
    */
+  @Override
   public void buildCoordinateSystems(NetcdfDataset ncDataset) {
     // put status info into parseInfo that can be shown to someone trying to debug this process
     parseInfo.format("Parsing with Convention = %s\n", conventionName);

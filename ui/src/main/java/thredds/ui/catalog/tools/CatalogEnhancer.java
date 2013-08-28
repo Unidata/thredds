@@ -45,7 +45,7 @@ import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.DateType;
 import thredds.catalog.dl.*;
 
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 import ucar.nc2.ui.widget.*;
 

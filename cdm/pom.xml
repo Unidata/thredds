@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.18</version>
+    <version>4.4.0-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
   <!-- groupId>edu.ucar</groupId-->
-  <artifactId>netcdf</artifactId>
+  <artifactId>cdm</artifactId>
+
   <packaging>jar</packaging>
-  <name>NetCDF-Java Library</name>
+  <name>CDM core library</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
     as well as to many other types of scientific data formats.
@@ -70,12 +72,6 @@
       <artifactId>jcip-annotations</artifactId>
     </dependency>
 
-    <!-- jni -->
-    <dependency>
-     	<groupId>com.sun.jna</groupId>
-     	<artifactId>jna</artifactId>
-     </dependency>
-
     <!-- Required for reading THREDDS files. -->
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
@@ -92,12 +88,6 @@
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
-    </dependency>
-
-    <!-- Required for using aggregations. -->
-    <dependency>
-      <artifactId>je</artifactId>
-      <groupId>com.sleepycat</groupId>
     </dependency>
 
     <dependency>
@@ -135,9 +125,6 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <excludes>
-            <!-- exclude>thredds/logs/**</exclude -->
-            <exclude>ucar/nc2/dataset/grid/**</exclude>
-            <!--exclude>ucar/nc2/jni/**</exclude -->
             <exclude>ucar/nc2/util/reflect/**</exclude>
           </excludes>
 
@@ -150,7 +137,7 @@
         <configuration>
           <skip>${skipTests}</skip>
           <testFailureIgnore>true</testFailureIgnore>
-	  <argLine>-Dfile.encoding=UTF-8</argLine>
+          <argLine>-Dfile.encoding=UTF-8</argLine>
         </configuration>
       </plugin>
 
@@ -170,7 +157,8 @@
             <configuration>
               <includes>
                 <include>ucar/unidata/test/**</include>
-                <include>ucar/nc2/util/**</include>    <!-- makes the nc2/util/memory/build.xml ant tasks redundant -->
+                <include>ucar/nc2/util/**</include>
+                <!-- makes the nc2/util/memory/build.xml ant tasks redundant -->
                 <include>ucar/nc2/TestLocal.*</include>
               </includes>
             </configuration>

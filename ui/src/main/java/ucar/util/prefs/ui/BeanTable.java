@@ -34,7 +34,8 @@
 package ucar.util.prefs.ui;
 
 import ucar.nc2.ui.widget.MultilineTooltip;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -93,6 +94,14 @@ public class BeanTable extends JPanel {
   public BeanTable( Class bc, PreferencesExt pstore, boolean canAddDelete) {
     this( bc, pstore, canAddDelete, null, null, null);
   }
+
+  public BeanTable( Class bc, PreferencesExt pstore, String header, String tooltip, BeanInfo info) {
+    this.beanClass = bc;
+    this.store = pstore;
+    model = new TableBeanModelInfo( info);
+    init(header, tooltip);
+  }
+
   /**
    *  Constructor.
    * @param bc JavaBean class
@@ -109,6 +118,48 @@ public class BeanTable extends JPanel {
 
     beans = (store != null) ? (ArrayList<Object>) store.getBean("beanList", new ArrayList()) : new ArrayList<Object>();
     model = new TableBeanModel( beanClass);
+    init(header, tooltip);
+
+    if (canAddDelete) {
+        // button panel
+      JPanel buttPanel = new JPanel();
+      JButton newButton = new JButton("New");
+      buttPanel.add(newButton, null);
+      JButton deleteButton = new JButton("Delete");
+      buttPanel.add(deleteButton, null);
+
+      add(buttPanel, BorderLayout.SOUTH);
+
+        // button listeners
+      newButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          try {
+            Object bean = beanClass.newInstance();
+            addBean( bean);
+          } catch ( Exception e) {
+            e.printStackTrace();
+          }
+
+        }
+      });
+
+      deleteButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (JOptionPane.showConfirmDialog(null, "Do you want to delete all selected records",
+            "Delete Records", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+              return;
+
+          for (Object o : getSelectedBeans()) {
+            beans.remove(o);
+          }
+          model.fireTableDataChanged();
+        }
+      });
+    }
+
+  }
+
+  private void init(String header, String tooltip) {
     jtable = new JTable(model);
     //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
     jtable.setAutoResizeMode( JTable.AUTO_RESIZE_NEXT_COLUMN);
@@ -148,43 +199,6 @@ public class BeanTable extends JPanel {
         headerLabel = new JLabel(header, SwingConstants.CENTER);
       }
       add(headerLabel, BorderLayout.NORTH);
-    }
-
-    if (canAddDelete) {
-        // button panel
-      JPanel buttPanel = new JPanel();
-      JButton newButton = new JButton("New");
-      buttPanel.add(newButton, null);
-      JButton deleteButton = new JButton("Delete");
-      buttPanel.add(deleteButton, null);
-
-      add(buttPanel, BorderLayout.SOUTH);
-
-        // button listeners
-      newButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          try {
-            Object bean = beanClass.newInstance();
-            addBean( bean);
-          } catch ( Exception e) {
-            e.printStackTrace();
-          }
-
-        }
-      });
-
-      deleteButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (JOptionPane.showConfirmDialog(null, "Do you want to delete all selected records",
-            "Delete Records", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
-              return;
-
-          for (Object o : getSelectedBeans()) {
-            beans.remove(o);
-          }
-          model.fireTableDataChanged();
-        }
-      });
     }
 
     // event management
@@ -331,6 +345,10 @@ public class BeanTable extends JPanel {
     this.beans = beans;
     model.fireTableDataChanged(); // this should make the jtable update
     revalidate();  // LOOK soemtimes it doesnt, try this
+  }
+
+  public void clearBeans() {
+    setBeans(new ArrayList());
   }
 
   public List getBeans( ) { return beans; }
@@ -531,8 +549,12 @@ public class BeanTable extends JPanel {
 
   /** Does the reflection on the bean objects */
   protected class TableBeanModel extends AbstractTableModel {
-    private List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
-    private boolean[] used;
+    protected List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
+    protected boolean[] used;
+
+    protected TableBeanModel() {
+
+    }
 
     protected TableBeanModel( Class beanClass) {
 
@@ -795,6 +817,20 @@ public class BeanTable extends JPanel {
     }
 
   }
+
+  protected class TableBeanModelInfo extends TableBeanModel {
+
+    protected TableBeanModelInfo( BeanInfo info) {
+      PropertyDescriptor[] pds = info.getPropertyDescriptors();
+      for (PropertyDescriptor pd : pds) {
+        if (pd.getReadMethod() != null) {
+          properties.add(pd);
+        }
+      }
+      used = new boolean[ properties.size()];
+    }
+  }
+
 
   protected class HeaderRenderer implements TableCellRenderer {
     protected int modelIdx;

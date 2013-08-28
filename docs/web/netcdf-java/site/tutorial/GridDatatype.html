@@ -4,28 +4,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>Grid Feature Type</title>
-<style type="text/css">
-pre {
-	font-size: 9pt;
-	padding: 10px;
-	background-color: #E7E7E7;
-	border: 1px solid #CFCFCF;
-	width: 85%;
-}
-code {
-	font-size: 11pt;
-}
-dl {
-) .style1 {
-font-style: italic
-}
-.style2 {
-	font-weight: bold
-}
-</style>
+   <link rel="stylesheet" href="../cdm.css" type="text/css" />
 </head>
 <body bgcolor="#FFFFFF">
 <h1>Tutorial: The Grid Feature Type </h1>
+<hr>
 <h3>Scientific Feature Types</h3>
 <p>The Common Data Model<em><strong> Scientific Feature Type layer</strong></em> adds another layer of functionality on top of NetcdfDataset, by specializing in various kinds of data that are common in earth science. The abstract concepts and concrete classes are continually evolving, and we have concentrated on, for obvious reasons, the types of datasets and data that Unidata is  most familiar with, mainly from the atmospheric and ocean sciences. </p>
 <p> All Scientific Feature Types have <strong>georeferencing coordinate systems</strong>, from which a location in real physical space and time can be found, usually with reference to the Earth. Each adds special <em>data subsetting</em> methods which cannot be done efficiently or at all in the general case of NetcdfDataset objects. </p>
@@ -38,16 +21,18 @@ font-style: italic
 <h3>&nbsp;</h3>
 <h3>Opening a GridDataset</h3>
 <p >The most general way to open a <strong>GridDataset</strong> is to use the <strong>FeatureDatasetFactoryManager</strong> class. This allows third parties to plug-in alternative implementations of <strong>GridDataset</strong> at runtime. For example: </p>
-<pre ><span class="style2"><strong> </strong></span>     Formatter errlog = new Formatter();
-      FeatureDataset fdataset = FeatureDatasetFactoryManager.open(FeatureType.GRID, location, null, errlog);
-      if (fdataset == null) {
-        System.out.printf("**failed on %s %n --> %s %n", location, errlog);
-        return;
-      }
+<pre >
+  Formatter errlog = new Formatter();
+  FeatureDataset fdataset = FeatureDatasetFactoryManager.open(FeatureType.GRID, location, null, errlog);
+  if (fdataset == null) {
+    log.error("**failed on {} %n --> {} %n", location, errlog);
+    return null;
+  }
 
-      FeatureType ftype = fdataset.getFeatureType();
-      assert (ftype == FeatureType.GRID);
-      GridDataset gds = (GridDataset) fdataset;</pre>
+  FeatureType ftype = fdataset.getFeatureType();
+  assert (ftype == FeatureType.GRID);
+  GridDataset gds = (GridDataset) fdataset;
+</pre>
 <p >If you know that the file you are opening is a GridDataset, you can call directly:</p>
 <pre >       GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(location);</pre>
 <h3 >Using a GridDataset</h3>
@@ -110,12 +95,12 @@ Array data = grid.readDataSlice(timeIndex, levelIndex, -1, -1);</pre>
 </pre>
 <h3 >Using ToolsUI to look at Grids</h3>
 <p >You can use ToolsUI <strong>FeatureTypes/Grids</strong> Tab to view Grid Datasets.  This consists of 3 tables that show the Grid DataTypes, the Grid Coordinate systems, and the Coordinate Axes, eg: </p>
-<p ><img src="gridUI.png" width="1105" height="695"></p>
+<p ><img src="images/gridUI.png" width="1105" height="695"></p>
 <p >Use the <img src="redrawButton.jpg" width="31" height="29"> button to display the grids in the Grid Viewer. </p>
-<p ><img src="gridView.png" width="1256" height="827"> </p>
+<p ><img src="images/gridView.png" width="1256" height="827"> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document was last updated Jan 2012
+<img src="../nc.gif" width="64" height="64"> This document was last updated July 2013
 </address>
 </body>
 </html>

@@ -47,6 +47,7 @@ import ucar.unidata.geoloc.Station;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
@@ -56,22 +57,22 @@ import javax.swing.event.EventListenerList;
 
 /**
  * A Swing widget for THREDDS clients to choose a station and/or a region from navigatable map.
- * <p>
+ * <p/>
  * Typically a user listens for property change events:
- *  <pre>
+ * <pre>
  *   stationRegionDateChooser.addPropertyChangeListener( new PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("Station")) {
-            selectedStation = (Station) e.getNewValue();
-            ...
-          }
-          else if (e.getPropertyName().equals("GeoRegion")) {
-            geoRegion = (ProjectionRect) e.getNewValue();
-            ...
-          }
-        }
-      });
-   </pre>
+ * public void propertyChange(java.beans.PropertyChangeEvent e) {
+ * if (e.getPropertyName().equals("Station")) {
+ * selectedStation = (Station) e.getNewValue();
+ * ...
+ * }
+ * else if (e.getPropertyName().equals("GeoRegion")) {
+ * geoRegion = (ProjectionRect) e.getNewValue();
+ * ...
+ * }
+ * }
+ * });
+ * </pre>
  *
  * @author caron
  * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
@@ -96,7 +97,7 @@ public class StationRegionDateChooser extends NPController {
 
   // date
   private RangeDateSelector dateSelector;
-  private IndependentDialog  dateWindow;
+  private IndependentDialog dateWindow;
   private AbstractAction dateAction;
 
   // prefs
@@ -123,9 +124,10 @@ public class StationRegionDateChooser extends NPController {
 
   /**
    * Constructor
-   * @param regionSelect allow selecting a region
+   *
+   * @param regionSelect  allow selecting a region
    * @param stationSelect allow selecting a station
-   * @param dateSelect allow selecting a date range
+   * @param dateSelect    allow selecting a date range
    */
   public StationRegionDateChooser(boolean stationSelect, boolean regionSelect, boolean dateSelect) {
     super();
@@ -134,28 +136,28 @@ public class StationRegionDateChooser extends NPController {
     this.stationSelect = stationSelect;
     this.dateSelect = dateSelect;
 
-    np.setGeoSelectionMode( regionSelect && geoSelectionMode);
+    np.setGeoSelectionMode(regionSelect && geoSelectionMode);
     // setGeoBounds( np.getMapArea());
 
     if (stationSelect) {
       stnRender = new StationRenderer();
-      addRenderer( stnRender);
+      addRenderer(stnRender);
 
       // get Pick events from the navigated panel: mouse click
-      np.addPickEventListener( new PickEventListener() {
+      np.addPickEventListener(new PickEventListener() {
         public void actionPerformed(PickEvent e) {
-          selectedStation = stnRender.pick(e.getLocation());
+          selectedStation = stnRender.pick(e.getLocationPoint());
           if (selectedStation != null) {
             redraw();
             firePropertyChangeEvent(selectedStation, "Station");
-            actionSource.fireActionValueEvent( ActionSourceListener.SELECTED, selectedStation);
+            actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedStation);
           }
         }
       });
 
 
       // get mouse motion events
-      np.addMouseMotionListener( new MouseMotionAdapter() {
+      np.addMouseMotionListener(new MouseMotionAdapter() {
         public void mouseMoved(MouseEvent e) {
           Point p = e.getPoint();
           StationRenderer.StationUI sui = stnRender.isOnStation(p);
@@ -168,34 +170,33 @@ public class StationRegionDateChooser extends NPController {
             sbuff.append("\n");
             if (null != s.getDescription())
               sbuff.append(s.getDescription()).append("\n");
-            sbuff.append( LatLonPointImpl.latToString(s.getLatitude(), 4));
+            sbuff.append(LatLonPointImpl.latToString(s.getLatitude(), 4));
             sbuff.append(" ");
-            sbuff.append( LatLonPointImpl.lonToString(s.getLongitude(), 4));
+            sbuff.append(LatLonPointImpl.lonToString(s.getLongitude(), 4));
             sbuff.append(" ");
             double alt = s.getAltitude();
             if (!Double.isNaN(alt)) {
-              sbuff.append( ucar.unidata.util.Format.d(alt,0));
+              sbuff.append(ucar.unidata.util.Format.d(alt, 0));
               sbuff.append(" m");
             }
 
             popupInfo.show(sbuff.toString(), p, StationRegionDateChooser.this, s);
-          }
-          else
+          } else
             popupInfo.hide();
         }
       });
 
       // get mouse exit events
-      np.addMouseListener( new MouseAdapter() {
+      np.addMouseListener(new MouseAdapter() {
         public void mouseExited(MouseEvent e) {
           popupInfo.hide();
         }
       });
 
-        // station was selected
+      // station was selected
       actionSource = new ActionSourceListener("station") {
-        public void actionPerformed( ActionValueEvent e) {
-          if (debugEvent) System.out.println(" StationdatasetChooser: actionSource event "+e);
+        public void actionPerformed(ActionValueEvent e) {
+          if (debugEvent) System.out.println(" StationdatasetChooser: actionSource event " + e);
           selectedStation = (ucar.unidata.geoloc.Station) e.getValue();
           redraw();
         }
@@ -203,24 +204,24 @@ public class StationRegionDateChooser extends NPController {
     }
 
     if (regionSelect) {
-      double defArea = 1.0/8; // default area is 1/4 total
+      double defArea = 1.0 / 8; // default area is 1/4 total
       LatLonRect llbb = np.getProjectionImpl().getDefaultMapAreaLL();
       LatLonPointImpl left = llbb.getLowerLeftPoint();
       LatLonPointImpl right = llbb.getUpperRightPoint();
       double centerLon = llbb.getCenterLon();
       double width = llbb.getWidth();
-      double centerLat = (right.getLatitude() + left.getLatitude())/2;
+      double centerLat = (right.getLatitude() + left.getLatitude()) / 2;
       double height = right.getLatitude() - left.getLatitude();
-      right = new LatLonPointImpl( centerLat + height*defArea, centerLon + width*defArea);
-      left = new LatLonPointImpl( centerLat - height*defArea, centerLon - width*defArea);
-      LatLonRect selected =  new LatLonRect( left, right);
-      setGeoSelection( selected);
+      right = new LatLonPointImpl(centerLat + height * defArea, centerLon + width * defArea);
+      left = new LatLonPointImpl(centerLat - height * defArea, centerLon - width * defArea);
+      LatLonRect selected = new LatLonRect(left, right);
+      setGeoSelection(selected);
 
       // get GeoSelectionEvents from the navigated panel
-      np.addGeoSelectionListener( new GeoSelectionListener() {
+      np.addGeoSelectionListener(new GeoSelectionListener() {
         public void actionPerformed(GeoSelectionEvent e) {
-          setGeoSelection( e.getProjectionRect());
-          if (debugEvent) System.out.println("GeoSelectionEvent="+geoSelection);
+          setGeoSelection(e.getProjectionRect());
+          if (debugEvent) System.out.println("GeoSelectionEvent=" + geoSelection);
           firePropertyChangeEvent(geoSelection, "GeoRegion");
           redraw();
         }
@@ -242,13 +243,15 @@ public class StationRegionDateChooser extends NPController {
           dateWindow.setVisible(true);
         }
       };
-      BAMutil.setActionProperties( dateAction, "selectDate", "select date range", false, 'D', -1);
+      BAMutil.setActionProperties(dateAction, "selectDate", "select date range", false, 'D', -1);
     }
 
     makeMyUI();
   }
 
-  protected void makeUI() { } // override superclass
+  protected void makeUI() {
+  } // override superclass
+
   private void makeMyUI() {
 
     AbstractAction incrFontAction = new AbstractAction() {
@@ -257,7 +260,7 @@ public class StationRegionDateChooser extends NPController {
         redraw();
       }
     };
-    BAMutil.setActionProperties( incrFontAction, "FontIncr", "increase font size", false, 'I', -1);
+    BAMutil.setActionProperties(incrFontAction, "FontIncr", "increase font size", false, 'I', -1);
 
     AbstractAction decrFontAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -265,7 +268,7 @@ public class StationRegionDateChooser extends NPController {
         redraw();
       }
     };
-    BAMutil.setActionProperties( decrFontAction, "FontDecr", "decrease font size", false, 'D', -1);
+    BAMutil.setActionProperties(decrFontAction, "FontDecr", "decrease font size", false, 'D', -1);
 
     JCheckBox declutCB = new JCheckBox("Declutter", true);
     declutCB.addActionListener(new ActionListener() {
@@ -275,18 +278,18 @@ public class StationRegionDateChooser extends NPController {
     });
 
     AbstractAction bbAction = new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         geoSelectionMode = !geoSelectionMode;
-         np.setGeoSelectionMode( geoSelectionMode);
-         redraw();
-       }
-     };
-     BAMutil.setActionProperties( bbAction, "geoselect", "select geo region", true, 'B', -1);
-     bbAction.putValue(BAMutil.STATE, geoSelectionMode ? Boolean.TRUE : Boolean.FALSE );
+      public void actionPerformed(ActionEvent e) {
+        geoSelectionMode = !geoSelectionMode;
+        np.setGeoSelectionMode(geoSelectionMode);
+        redraw();
+      }
+    };
+    BAMutil.setActionProperties(bbAction, "geoselect", "select geo region", true, 'B', -1);
+    bbAction.putValue(BAMutil.STATE, geoSelectionMode ? Boolean.TRUE : Boolean.FALSE);
 
-     // the fields use a PrefPanel
+    // the fields use a PrefPanel
     if (regionSelect) {
-      minmaxPP = new PrefPanel( null, null);
+      minmaxPP = new PrefPanel(null, null);
       minLonField = minmaxPP.addDoubleField("minLon", "minLon", geoSelection.getMinX(), nfracDig, 0, 0, null);
       maxLonField = minmaxPP.addDoubleField("maxLon", "maxLon", geoSelection.getMaxX(), nfracDig, 2, 0, null);
       minLatField = minmaxPP.addDoubleField("minLat", "minLat", geoSelection.getMinY(), nfracDig, 4, 0, null);
@@ -300,13 +303,12 @@ public class StationRegionDateChooser extends NPController {
           double minLat = minLatField.getDouble();
           double maxLon = maxLonField.getDouble();
           double maxLat = maxLatField.getDouble();
-          LatLonRect llbb = new LatLonRect( new LatLonPointImpl(minLat, minLon),
-                                           new LatLonPointImpl(maxLat, maxLon));
-          setGeoSelection( llbb);
+          LatLonRect llbb = new LatLonRect(new LatLonPointImpl(minLat, minLon),
+                  new LatLonPointImpl(maxLat, maxLon));
+          setGeoSelection(llbb);
           redraw();
         }
       });
-
 
 
     }
@@ -315,13 +317,13 @@ public class StationRegionDateChooser extends NPController {
     setLayout(new BorderLayout());
 
     if (stationSelect) {
-      BAMutil.addActionToContainer( toolPanel, incrFontAction);
-      BAMutil.addActionToContainer( toolPanel, decrFontAction);
+      BAMutil.addActionToContainer(toolPanel, incrFontAction);
+      BAMutil.addActionToContainer(toolPanel, decrFontAction);
       toolPanel.add(declutCB);
     }
 
-    if (regionSelect) BAMutil.addActionToContainer( toolPanel, bbAction);
-    if (dateSelect) BAMutil.addActionToContainer( toolPanel, dateAction);
+    if (regionSelect) BAMutil.addActionToContainer(toolPanel, bbAction);
+    if (dateSelect) BAMutil.addActionToContainer(toolPanel, dateAction);
 
     JPanel upperPanel = new JPanel(new BorderLayout());
     if (regionSelect) upperPanel.add(minmaxPP, BorderLayout.NORTH);
@@ -341,27 +343,28 @@ public class StationRegionDateChooser extends NPController {
   /**
    * Add a PropertyChangeListener. Throws a PropertyChangeEvent:
    * <ul>
-   *   <li>propertyName = "Station", getNewValue() = Station
-   *   <li>propertyName =  "GeoRegion", getNewValue() = ProjectionRect
+   * <li>propertyName = "Station", getNewValue() = Station
+   * <li>propertyName =  "GeoRegion", getNewValue() = ProjectionRect
    * </ul>
    */
-  public void addPropertyChangeListener( PropertyChangeListener l) {
+  public void addPropertyChangeListener(PropertyChangeListener l) {
     listenerList.add(PropertyChangeListener.class, l);
   }
 
   /**
    * Remove a PropertyChangeEvent Listener.
    */
-  public void removePropertyChangeListener( PropertyChangeListener l) {
+  public void removePropertyChangeListener(PropertyChangeListener l) {
     listenerList.remove(PropertyChangeListener.class, l);
   }
 
   /**
    * Add an action to the toolbar.
+   *
    * @param act add this action
    */
   public void addToolbarAction(AbstractAction act) {
-    BAMutil.addActionToContainer( toolPanel, act);
+    BAMutil.addActionToContainer(toolPanel, act);
   }
 
   // Notify all listeners that have registered interest for
@@ -373,62 +376,78 @@ public class StationRegionDateChooser extends NPController {
     PropertyChangeEvent event = null;
     Object[] listeners = listenerList.getListenerList();
     // Process the listeners last to first
-    for (int i = listeners.length-2; i>=0; i-=2) {
+    for (int i = listeners.length - 2; i >= 0; i -= 2) {
       if (listeners[i] == PropertyChangeListener.class) {
         if (event == null) // Lazily create the event:
           event = new PropertyChangeEvent(this, propertyName, null, newValue);
         // send event
-        ((PropertyChangeListener)listeners[i+1]).propertyChange(event);
+        ((PropertyChangeListener) listeners[i + 1]).propertyChange(event);
       }
     }
   }
 
-  public void addActionValueListener( ActionValueListener l) { actionSource.addActionValueListener(l); }
-  public void removeActionValueListener( ActionValueListener l) { actionSource.removeActionValueListener(l); }
+  public void addActionValueListener(ActionValueListener l) {
+    actionSource.addActionValueListener(l);
+  }
 
-    // better way to do event management
-  public ActionSourceListener getActionSourceListener() { return actionSource; }
+  public void removeActionValueListener(ActionValueListener l) {
+    actionSource.removeActionValueListener(l);
+  }
+
+  // better way to do event management
+  public ActionSourceListener getActionSourceListener() {
+    return actionSource;
+  }
 
   public void setMapArea(ProjectionRect ma) {
-    np.getProjectionImpl().setDefaultMapArea( ma);
+    np.getProjectionImpl().setDefaultMapArea(ma);
     //np.setMapArea(ma);
   }
 
   /**
    * Set the list of Stations.
+   *
    * @param stns list of Station
    */
   public void setStations(java.util.List stns) {
-    stnRender.setStations( stns);
+    stnRender.setStations(stns);
     redraw(true);
   }
 
   /**
    * Looks for the station with givemn id. If found, makes it current. Redraws.
+   *
    * @param id must match stationIF.getID().
    */
-  public void setSelectedStation( String id) {
-    stnRender.setSelectedStation( id);
+  public void setSelectedStation(String id) {
+    stnRender.setSelectedStation(id);
     selectedStation = stnRender.getSelectedStation();
-    np.setLatLonCenterMapArea( selectedStation.getLatitude(), selectedStation.getLongitude());
+    np.setLatLonCenterMapArea(selectedStation.getLatitude(), selectedStation.getLongitude());
     redraw();
   }
 
   /**
    * Get currently selected station, or null if none.
+   *
    * @return selected station
    */
-  public ucar.unidata.geoloc.Station getSelectedStation( ) { return selectedStation; }
+  public ucar.unidata.geoloc.Station getSelectedStation() {
+    return selectedStation;
+  }
 
 
   /**
    * Access to the navigated panel.
-   * @return  navigated panel object
+   *
+   * @return navigated panel object
    */
-  public NavigatedPanel getNavigatedPanel() { return np; }
+  public NavigatedPanel getNavigatedPanel() {
+    return np;
+  }
 
   /**
-   *  Change the state of decluttering
+   * Change the state of decluttering
+   *
    * @param declut if true, declutter
    */
   public void setDeclutter(boolean declut) {
@@ -438,37 +457,41 @@ public class StationRegionDateChooser extends NPController {
 
   /**
    * Get the state of the declutter flag.
+   *
    * @return the state of the declutter flag.
    */
-  public boolean getDeclutter() { return stnRender.getDeclutter(); }
+  public boolean getDeclutter() {
+    return stnRender.getDeclutter();
+  }
 
 
   /**
-   *  Redraw the graphics on the screen.
+   * Redraw the graphics on the screen.
    */
   protected void redraw() {
     long tstart = System.currentTimeMillis();
 
     java.awt.Graphics2D gNP = np.getBufferedImageGraphics();
     if (gNP == null) // panel not drawn on screen yet
-        return;
+      return;
 
-      // clear it
+    // clear it
     gNP.setBackground(np.getBackgroundColor());
     java.awt.Rectangle r = gNP.getClipBounds();
     gNP.clearRect(r.x, r.y, r.width, r.height);
 
     if (regionSelect && geoSelectionMode) {
-      if (geoSelection != null) drawBB( gNP, geoSelection, Color.cyan);
-      if (geoBounds != null) drawBB( gNP, geoBounds, null);
+      if (geoSelection != null) drawBB(gNP, geoSelection, Color.cyan);
+      if (geoBounds != null) drawBB(gNP, geoBounds, null);
       // System.out.println("GeoRegionChooser.redraw geoBounds= "+geoBounds);
 
       if (geoSelection != null) {
         // gNP.setColor( Color.orange);
         Navigation navigate = np.getNavigation();
         double handleSize = RubberbandRectangleHandles.handleSizePixels / navigate.getPixPerWorld();
-        RubberbandRectangleHandles.drawHandledRect( gNP, geoSelection, handleSize);
-        if (debug) System.out.println("GeoRegionChooser.drawHandledRect="+handleSize+" = "+geoSelection);
+        Rectangle2D rect = new Rectangle2D.Double(geoSelection.getX(), geoSelection.getY(), geoSelection.getWidth(), geoSelection.getHeight());
+        RubberbandRectangleHandles.drawHandledRect(gNP, rect, handleSize);
+        if (debug) System.out.println("GeoRegionChooser.drawHandledRect=" + handleSize + " = " + geoSelection);
       }
     }
 
@@ -480,39 +503,44 @@ public class StationRegionDateChooser extends NPController {
 
     if (debug) {
       long tend = System.currentTimeMillis();
-      System.out.println("StationRegionDateChooser draw time = "+ (tend - tstart)/1000.0+ " secs");
+      System.out.println("StationRegionDateChooser draw time = " + (tend - tstart) / 1000.0 + " secs");
     }
 
     // copy buffer to the screen
     np.repaint();
   }
 
-   private void drawBB(java.awt.Graphics2D g, ProjectionRect bb, Color fillColor) {
-    if ( null != fillColor) {
+  private void drawBB(java.awt.Graphics2D g, ProjectionRect bb, Color fillColor) {
+    Rectangle2D rect = new Rectangle2D.Double(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
+    if (null != fillColor) {
       g.setColor(fillColor);
-      g.fill(bb);
+      g.fill(rect);
     }
     g.setColor(outlineColor);
-    g.draw(bb);
+    g.draw(rect);
   }
+
   private boolean debug = false;
 
-  public void setGeoBounds( LatLonRect llbb) {
-    np.setMapArea( llbb);
-    geoBounds = np.getProjectionImpl().latLonToProjBB( llbb);
-    np.getProjectionImpl().setDefaultMapArea( geoBounds);
-    setGeoSelection( geoBounds);
+  public void setGeoBounds(LatLonRect llbb) {
+    np.setMapArea(llbb);
+    geoBounds = np.getProjectionImpl().latLonToProjBB(llbb);
+    np.getProjectionImpl().setDefaultMapArea(geoBounds);
+    setGeoSelection(geoBounds);
   }
-  public void setGeoBounds( ProjectionRect bb) {
-    geoBounds = new ProjectionRect( bb);
-    np.setMapArea( bb);
-    np.getProjectionImpl().setDefaultMapArea( geoBounds);
+
+  public void setGeoBounds(ProjectionRect bb) {
+    geoBounds = new ProjectionRect(bb);
+    np.setMapArea(bb);
+    np.getProjectionImpl().setDefaultMapArea(geoBounds);
   }
-  public void setGeoSelection( LatLonRect llbb) {
-    np.setGeoSelection( llbb);
-    setGeoSelection( np.getGeoSelection());
+
+  public void setGeoSelection(LatLonRect llbb) {
+    np.setGeoSelection(llbb);
+    setGeoSelection(np.getGeoSelection());
   }
-  public void setGeoSelection( ProjectionRect bb) {
+
+  public void setGeoSelection(ProjectionRect bb) {
     geoSelection = bb;
     if (minLonField != null) {
       minLonField.setDouble(geoSelection.getMinX());
@@ -520,33 +548,42 @@ public class StationRegionDateChooser extends NPController {
       maxLonField.setDouble(geoSelection.getMaxX());
       maxLatField.setDouble(geoSelection.getMaxY());
     }
-    np.setGeoSelection( geoSelection);
+    np.setGeoSelection(geoSelection);
   }
 
-  public LatLonRect getGeoSelectionLL() { return np.getGeoSelectionLL(); }
-  public ProjectionRect getGeoSelection() { return np.getGeoSelection(); }
-  public boolean getGeoSelectionMode() { return geoSelectionMode; }
+  public LatLonRect getGeoSelectionLL() {
+    return np.getGeoSelectionLL();
+  }
+
+  public ProjectionRect getGeoSelection() {
+    return np.getGeoSelection();
+  }
+
+  public boolean getGeoSelectionMode() {
+    return geoSelectionMode;
+  }
 
   public DateRange getDateRange() {
     if (!dateSelect || !dateWindow.isShowing() || !dateSelector.isEnabled())
       return null;
     return dateSelector.getDateRange();
   }
-                                                                                                          
-  public void setDateRange( DateRange range) {
-    dateSelector.setDateRange( range);
+
+  public void setDateRange(DateRange range) {
+    dateSelector.setDateRange(range);
   }
 
 
-  /** Wrap this in a JDialog component.
+  /**
+   * Wrap this in a JDialog component.
    *
-   * @param parent      JFrame (application) or JApplet (applet) or null
-   * @param title       dialog window title
-   * @param modal     is modal
+   * @param parent JFrame (application) or JApplet (applet) or null
+   * @param title  dialog window title
+   * @param modal  is modal
    * @return the JDialog widget
    */
-  public JDialog makeDialog( RootPaneContainer parent, String title, boolean modal) {
-    return new Dialog( parent, title, modal);
+  public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {
+    return new Dialog(parent, title, modal);
   }
 
   private class Dialog extends JDialog {
@@ -555,10 +592,10 @@ public class StationRegionDateChooser extends NPController {
       super(parent instanceof Frame ? (Frame) parent : null, title, modal);
 
       // L&F may change
-      UIManager.addPropertyChangeListener( new PropertyChangeListener() {
-        public void propertyChange( PropertyChangeEvent e) {
+      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI( StationRegionDateChooser.Dialog.this);
+            SwingUtilities.updateComponentTreeUI(StationRegionDateChooser.Dialog.this);
         }
       });
 
@@ -572,18 +609,18 @@ public class StationRegionDateChooser extends NPController {
       });
       buttPanel.add(dismissButton, null);
 
-     // add it to contentPane
+      // add it to contentPane
       Container cp = getContentPane();
       cp.setLayout(new BorderLayout());
-      cp.add( StationRegionDateChooser.this, BorderLayout.CENTER);
-      cp.add( buttPanel, BorderLayout.SOUTH);
+      cp.add(StationRegionDateChooser.this, BorderLayout.CENTER);
+      cp.add(buttPanel, BorderLayout.SOUTH);
       pack();
     }
   }
 
   public static void main(String[] args) {
     StationRegionDateChooser slm = new StationRegionDateChooser();
-    slm.setBounds( new Rectangle( 10, 10, 400, 200));
+    slm.setBounds(new Rectangle(10, 10, 400, 200));
 
     JFrame frame = new JFrame("StationRegionChooser Test");
     frame.addWindowListener(new WindowAdapter() {

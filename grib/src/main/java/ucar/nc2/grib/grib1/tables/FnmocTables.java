@@ -35,8 +35,8 @@ package ucar.nc2.grib.grib1.tables;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribLevelType;
+import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.VertCoord;
 
 import java.io.IOException;
@@ -146,7 +146,7 @@ public class FnmocTables extends Grib1Customizer {
   @Override
   public String getLevelDescription(int code) {
     GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelDescription(code) : lt.getDatum();
+    return (lt == null) ? super.getLevelDescription(code) : lt.getDesc();
   }
 
   @Override
@@ -183,6 +183,14 @@ public class FnmocTables extends Grib1Customizer {
   }
 
   /*
+      <entry>
+      <grib1Id>222</grib1Id>
+      <fnmocId>mid_cld</fnmocId>
+      <name>mid_cld</name>
+      <description>middle cloud layer</description>
+      <status>deprecated</status>
+    </entry>
+
   <fnmocTable>
     <entry>
       <grib1Id>001</grib1Id>
@@ -214,6 +222,7 @@ public class FnmocTables extends Grib1Customizer {
         String desc = elem1.getChildText("description");
         String abbrev = elem1.getChildText("name");
         String units = elem1.getChildText("units");
+        if (units == null) units = makeUnits(code);
         String datum = elem1.getChildText("datum");
         boolean isLayer = elem1.getChild("isLayer") != null;
         boolean isPositiveUp = elem1.getChild("isPositiveUp")  != null;
@@ -236,6 +245,13 @@ public class FnmocTables extends Grib1Customizer {
         is.close();
       } catch (IOException e) {
       }
+    }
+  }
+
+  private String makeUnits(int code) {
+    switch (code) {
+      case 219: return "Pa";
+      default: return "";
     }
   }
 

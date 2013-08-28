@@ -254,7 +254,7 @@ public class Grib2Rectilyser {
 
     Set<EnsCoord.Coord> coords = new HashSet<EnsCoord.Coord>();
     for (Record r : vb.atomList) {
-      Grib2Pds pds = r.gr.getPDS();
+      Grib2Pds.PdsEnsemble pds = (Grib2Pds.PdsEnsemble) r.gr.getPDS();
       r.ecCoord = new EnsCoord.Coord(pds.getPerturbationType(), pds.getPerturbationNumber());
       coords.add(r.ecCoord);
     }

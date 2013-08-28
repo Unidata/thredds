@@ -44,6 +44,7 @@ import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.IO;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Class Description.
@@ -125,7 +126,7 @@ public class TestWriteMiscProblems extends TestCase {
 
   public void testRemove() throws IOException, InvalidRangeException {
     try {
-      String inName = TestLocal.cdmTestDataDir + "testWrite.nc";
+      String inName = TestDir.cdmLocalTestDataDir + "testWrite.nc";
       String outName = TestLocal.temporaryDataDir + "testRemove.nc";
 
       NetcdfDataset ncd = NetcdfDataset.acquireDataset(inName, null);
@@ -151,7 +152,7 @@ public class TestWriteMiscProblems extends TestCase {
 
 
   public void testRedefine() throws IOException, InvalidRangeException {
-    String org = TestLocal.cdmTestDataDir + "testWriteRecord.nc";
+    String org = TestDir.cdmLocalTestDataDir + "testWriteRecord.nc";
     String path = TestLocal.temporaryDataDir + "testWriteRecordRedefine.nc";
     File orgFile = new File(org);
     File newFile = new File(path);

@@ -1,0 +1,54 @@
+apply plugin: 'shadow'
+import org.gradle.api.plugins.shadow.transformers.AppendingTransformer
+
+dependencies {
+  compile project(':cdm')
+  compile (project(':grib')) { transitive = false } // jsoup
+  compile project(':tdcommon')
+
+  compile group: 'org.springframework', name: 'spring-context', version: springVersion
+  compile group: 'org.springframework', name: 'spring-beans', version: springVersion
+
+  runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
+  runtime group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4jVersion
+}
+
+shadow {
+  outputFile = file("${destinationDir }/tdms-${version}.jar")
+  stats = true
+
+  exclude 'com/sleepycat/**'
+  exclude 'net/sf/**'
+  exclude 'org/quartz/**'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.RSA'
+  exclude 'META-INF/NOTICE'
+  exclude 'META-INF/LICENSE'
+  exclude 'META-INF/*.txt'
+  exclude 'META-INF/*.xml'
+
+  artifactSet {
+      exclude 'commons-logging:commons-logging:*'
+  }
+
+  jar {
+    manifest {
+      attributes 'Main-Class': 'thredds.tdm.TdmRunner'
+    }
+  }
+
+  transformer(AppendingTransformer) {
+      resource = 'META-INF/spring.handlers'
+   }
+   transformer(AppendingTransformer) {
+      resource = 'META-INF/spring.schemas'
+   }
+}
+
+task showClasspath << {
+   buildscript.configurations.classpath.each { println it }
+}
+
+task showMeCache << {
+  configurations.compile.each { println it }
+}

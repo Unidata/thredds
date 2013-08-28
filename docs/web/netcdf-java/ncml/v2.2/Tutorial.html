@@ -134,7 +134,7 @@ Note that the name of the dataset is the name of the NcML file, not the referenc
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;C:/temp/example1.nc&quot;&gt;</pre>
 <p>This form is useful in aggregations but not for much else.</p>
 
-<h2>Exercise 3. Read in metadata from existing NetCDF file and modify:</h2>
+<h2>Exercise 3. Read in metadata from existing NetCDF file and modify<a name="modify"></a>:</h2>
 
 <p>In this example, we read in all of the metadata from the referenced dataset, and modify it
     through elements in the NcML.</p>
@@ -228,9 +228,7 @@ Note that the name of the dataset is the name of the NcML file, not the referenc
 
 <p>You can generate a NetCDF-3 file from an NcML file, and the equivalent binary NetCDF file will be created with all
     the original data copied to it. Since the binary data is taken from the original file, this is an efficient way to
-    make a copy, even for large files. </p>
-
-<p>In the ToolsUI <strong>NcML Tab</strong>, bring up an NcML file that doesn't have any mistakes in it. Generate a
+    make a copy, even for large files. In the ToolsUI <strong>NcML Tab</strong>, bring up an NcML file that doesn't have any mistakes in it. Generate a
     NetCDF-3 file from the NcML <img src="images/WriteNetcdf.jpg" alt="" width="32" height="32">, saving it to some new
     and uniquely named file. Now bring up that file in the ToolsUI <strong>Viewer Tab</strong> and examine it. It should
     be identical to the NcML file that generated it.</p>
@@ -238,9 +236,11 @@ Note that the name of the dataset is the name of the NcML file, not the referenc
 <p>This feature works as long as you are using only netCDF-3 compatible features (aka netCDF classic model). In practice
     this mostly means no Structures or Groups. Strings are ok, and are converted to type char. The equivalent Java code
     to do this is: </p>
-<pre>    NetcdfDataset ncd = NcMLReader.readNcML (ncml_filename, null);<br>    NetcdfFile ncdnew = <strong>ucar.nc2.FileWriter.writeToFile</strong>(ncd, fileout_name, true);
-    ncd.close();
-    ncdnew.close();
+<pre>NetcdfDataset ncfileIn = NcMLReader.readNcML (ncml_filename, null);
+FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, locationOut, NetcdfFileWriter.Version.netcdf3, null);
+NetcdfFile ncfileOut = writer.write(null);
+ncfileOut.close();
+ncfileIn.close();
 </pre>
 <p>See also: <a href="AnnotatedSchema4.html">Annotated NcML Schema</a></p>
 
@@ -248,7 +248,7 @@ Note that the name of the dataset is the name of the NcML file, not the referenc
 <hr WIDTH="100%">
 <address>
     <img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John
-    Caron</a> and was last updated Nov 2010
+    Caron</a> and was last updated July 2013
 </address>
 <p>&nbsp;</p>
 </body>

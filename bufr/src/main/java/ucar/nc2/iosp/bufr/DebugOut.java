@@ -37,7 +37,7 @@ import ucar.nc2.util.Indent;
 import java.util.Formatter;
 
 /**
- * Describe
+ * Helper class for debugging BUFR descriptors
  *
  * @author caron
  * @since Nov 16, 2009

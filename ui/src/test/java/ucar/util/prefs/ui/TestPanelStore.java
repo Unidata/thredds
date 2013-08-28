@@ -35,6 +35,8 @@ package ucar.util.prefs.ui;
 
 import junit.framework.*;
 import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 
 import java.awt.event.*;
 import java.util.*;

@@ -33,8 +33,9 @@
  */
 package ucar.util.prefs.ui;
 
-import org.junit.Test;
 import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 
 import java.beans.*;
 

@@ -72,17 +72,17 @@ public class CF1Convention extends CSMConvention {
   /**
    * Get which CF version this is, ie CF-1.x
    * @param hasName extract from convention name or list of names
-   * @return version, or 0 if not CF
+   * @return version, or -1 if not CF
    */
   public static int getVersion(String hasName) {
     int result = extractVersion(hasName);
-    if (result > 0) return result;
+    if (result >= 0) return result;
     List<String> names = breakupConventionNames(hasName);
     for (String name : names) {
       result = extractVersion(name);
-      if (result > 0) return result;
+      if (result >= 0) return result;
     }
-    return 0;
+    return -1;
   }
 
   private static int extractVersion(String hasName) {
@@ -91,7 +91,7 @@ public class CF1Convention extends CSMConvention {
     try {
       return Integer.parseInt(versionS);
     } catch (Exception e) {
-      return 0;
+      return -1;
     }
   }
 

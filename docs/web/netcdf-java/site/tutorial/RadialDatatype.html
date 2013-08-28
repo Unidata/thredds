@@ -4,9 +4,11 @@
   <meta http-equiv="Content-Type"
  content="text/html; charset=iso-8859-1">
   <title>The Radial Datatype</title>
+     <link rel="stylesheet" href="../cdm.css" type="text/css" />
+
 </head>
 <body>
-<h1>Tutorial: The Radial Scientific Datatype</h1>
+<h1>Tutorial: The Radial Scientific Feature Type</h1>
 <h3>The Radial Datatype</h3>
 <p><em><strong>Radial Datatype</strong></em> uses polar coordinates
 (elevation, azimuth, distance) to describe the location of its points
@@ -34,22 +36,20 @@ interface classes, found in the <strong>ucar.nc2.dt</strong> package: </p>
 <p><img src="../images/Radial.png" height="399" width="303"></p>
 <h3>&nbsp;</h3>
 <h3>Opening and using a RadialDatasetSweep</h3>
-<p class="MsoNormal"><span style=""><span style=""><span style=""> <strong>ucar.nc2.dt.RadialDatasetSweep
-</strong>is an interface, we use the concrete class from the package </span></span></span><span
- style=""><span style=""><span style=""><o:p><span style=""><span
- style=""><span style=""><strong>ucar.nc2.dt.radial</strong> to open a
-Radial Dataset:</span></span></span></o:p></span></span></span></p>
-<pre class="MsoNormal"><span style=""><span class="CODE"><span style="">&nbsp; </span><strong></strong></span></span><span
- style=""><span class="CODE"><span style=""></span>RadialDatasetSweep</span></span><span
- style=""><span class="CODE"><strong> </strong></span></span><span
- style=""><span class="CODE">rds</span></span><span style=""><span
- class="CODE"><strong> = </strong></span></span><span style=""><span
- class="CODE"><span style=""></span>(RadialDatasetSweep)</span></span><span
- style=""><span class="CODE"><strong> TypedDatasetFactory.open(thredds.catalog.DataType.RADIAL, fileIn, null, new StringBuffer())</strong><o:p></o:p></span></span><span
- style=""><span style=""><span style=""><o:p></o:p></span></span></span><span
- style=""><span style=""><span style=""><span
- style="font-size: 9pt; font-family: &quot;Courier New&quot;;"><o:p></o:p></span></span></span></span></pre>
-<p class="MsoNormal"><span style=""><span style=""><span style="">A <b>TypedDatasetFactory</b>
+<p>The general way to open a RadialDataset is to use FeatureDatasetFactoryManager</p>
+<pre >
+  Formatter errlog = new Formatter();
+  FeatureDataset fdataset = FeatureDatasetFactoryManager.open(FeatureType.RADIAL, location, null, errlog);
+  if (fdataset == null) {
+    log.error("**failed on {} %n --> {} %n", location, errlog);
+    return null;
+  }
+
+  FeatureType ftype = fdataset.getFeatureType();
+  assert (ftype == FeatureType.RADIAL);
+  RadialDatasetSweep radialDataset = (RadialDatasetSweep) fdataset;
+</pre>
+<p class="MsoNormal"><span style=""><span style=""><span style=""> <b>TypedDatasetFactory</b>
 wraps three RadialDatasetSweep classes: <strong>ucar.nc2.dt.radial.Nids2Dataset</strong>,
 <strong>ucar.nc2.dt.radial.LevelII2Dataset</strong>, and <strong>ucar.nc2.dt.radial.Dorade2Dataset</strong>.
 It opens a radial dataset with an appropriate class, and can be
@@ -67,72 +67,64 @@ handle the data variable at the sweep level, inside each sweep, <i>getRadialNumb
 radial)</i>, <i>getTime(int radial)</i>, and<i> readData(int radial)</i>
 returns all information associated with the radial object. <br>
 </span></span></span></p>
-<h3>Example of Retrieving data from a RadialDataset</h3>
-<p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/* radar information */<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; String
-stationID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = rds.getRadarID();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-String stationName&nbsp;&nbsp;&nbsp; = rds.getRadarName();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-boolean isVolume&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = rds.isVolume();</p>
-<p class="MsoNormal">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; /* radial variable */<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-RadialDatasetSweep.RadialVariable varRef =
-rds.getDataVariable("Reflectivity");<br>
-</p>
-<p class="MsoNormal">&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp; List&nbsp; rvars = rds.getDataVariables();<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Iterator iter
-= rvars.iterator();</p>
-<p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/* information at sweep level */<br>
-&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; RadialDatasetSweep.Sweep
-sw = varRef.getSweep(i);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; float me
-= sw.getMeanElevation();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; int nrays
-= sw.getRadialNumber();</p>
-<p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/* data variable at radial level */<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for (int j
-= 0; j &lt; nrays; j++) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-float azi = sw.getAzimuth(j);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-int ngates = sw.getGateNumber(); <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-float ele = sw.getElevation(i);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-float [] d = sw.readData(i);<br>
-</p>
-<p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-}<br>
-&nbsp;&nbsp; <br>
-<span style=""><span style=""><span style=""><span
- style="font-size: 9pt; font-family: &quot;Courier New&quot;;"><o:p></o:p></span></span></span></span><span
- style=""><span style=""><span style=""><span class="CODE"><span
- style="font-size: 8pt;"><o:p></o:p></span></span></span></span></span><span
- style=""><span style=""><span style=""><o:p></o:p></span></span></span></p>
-<p class="MsoNormal"><span style=""><span style=""><span style=""><o:p></o:p></span></span></span></p>
+<h3>Example of Retrieving information from a RadialDataset</h3>
+<pre>
+  private void showInfo(RadialDatasetSweep rds, String varName, Formatter f) {
+    f.format("Radial Dataset %s%n", rds.getLocation());
+
+      /* radar information */
+    String stationID = rds.getRadarID();
+    String stationName = rds.getRadarName();
+    boolean isVolume = rds.isVolume();
+    f.format("  stationName = %s%n", stationName);
+    f.format("  isVolume = %s%n", isVolume);
+
+      /* radial variable */
+    RadialDatasetSweep.RadialVariable v = (RadialDatasetSweep.RadialVariable) rds.getDataVariable(varName);
+    f.format("  info for variable = %s%n", varName);
+    f.format("  number of sweeps = %d%n", v.getNumSweeps());
+
+    // loop over sweeps
+    for (int sweep = 0; sweep < v.getNumSweeps(); sweep++) {
+      RadialDatasetSweep.Sweep sw = v.getSweep(sweep);
+      float me = sw.getMeanElevation();
+      int nrays = sw.getRadialNumber();
+      int ngates = sw.getGateNumber();
+      f.format("    %d : elev=%f nrays=%d ngates=%d%n", sweep, me, nrays, ngates);
+
+      try {
+        for (int j = 0; j < nrays; j++) {
+          float azi = sw.getAzimuth(j);
+          float ele = sw.getElevation(j);
+          float[] data = sw.readData(j);
+          f.format("      %d : azimuth=%f elev=%f data len=%d%n", j, azi, ele, data.length);
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+ </pre>
 <h3 class="MsoNormal">Using ToolsUI to look at Radial Dataset</h3>
-<p class="MsoNormal">You can use ToolsUI <strong>Radial</strong> Tab
-to view Radial Datasets. This consists of 2 tables that show the Radial
-DataTypes, and information of 9 radial sweeps associated with the
-radial variable Reflectivity. </p>
-<img alt="toolUI view" src="tooluiRadial.png"
- style="width: 1033px; height: 522px;">
-<p class="MsoNormal">You can also use ToolsUI NCDump Tab to view the
-netCDF structure of a Radial Dataset.<br>
+<p class="MsoNormal">You can use ToolsUI <strong>FeatureTypes/Radial</strong> Tab
+to view Radial Datasets. The top table lists  the RadialVariables in the dataset, and selecting one of these shows the Sweeps that are contained by that variable.</p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal"><img src="images/TuiRadial.png" width="1086" height="701"><br>
 </p>
-<p class="MsoNormal"><span style=""><span style=""><span style=""><o:p>Use
+<p class="MsoNormal"><span style=""><span style=""><span style="">
+  <o:p>Like all CDM datasets, you can also use ToolsUI Viewer Tab to view the
+netCDF structure of a Radial Dataset:<br>
+<br>
+<img src="images/TuiViewerRadialDataset.png" width="1086" height="701"><br>
+<br>
+<br>
+Use
 the IDVto display the Radial Dataset of a level II product, showing 3D
 sweep of elevation angle 0.5 degree:<br>
 <br>
 </o:p></span></span></span></p>
 <p class="MsoNormal"><span style=""><span style=""><span style=""><o:p><img
- alt="3DSweep" src="IDV3DSweep.png" style="width: 912px; height: 614px;"><br>
+ alt="3DSweep" src="images/IDV3DSweep.png" style="width: 912px; height: 614px;"><br>
 </o:p></span></span></span></p>
 <p class="MsoNormal"><span style=""><span style=""><span style=""><o:p><br>
 and volume image of Reflectivity which is composed of 9 elevation
@@ -140,8 +132,16 @@ sweeps:<br>
 <br>
 </o:p></span></span></span></p>
 <p class="MsoNormal"><span style=""><span style=""><span style=""><o:p><img
- alt="IDV volume" src="IDVVolume.png"
+ alt="IDV volume" src="images/IDVVolume.png"
  style="width: 912px; height: 614px;"><br>
 </o:p></span></span></span></p>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" alt="" width="64" height="64"> This document was last updated July 2013
+</address>
+<p class="MsoNormal"><span style=""><span style=""><span style="">
+  <o:p><br>
+  </o:p>
+</span></span></span></p>
 </body>
 </html>

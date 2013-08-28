@@ -33,7 +33,8 @@
 
 package ucar.nc2.ui.grid;
 
-import thredds.wcs.v1_0_0_1.GetCapabilities;
+import thredds.wcs.Request;
+import thredds.wcs.v1_0_0_1.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
@@ -47,11 +48,9 @@ import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.ProjectionImpl;
-import thredds.wcs.v1_0_0_1.WcsException;
-import thredds.wcs.v1_0_0_1.DescribeCoverage;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -122,10 +121,10 @@ public class GeoGridTable extends JPanel {
           List<String> coverageIdList = Collections.singletonList(vb.getName());
           try {
             DescribeCoverage descCov =
-                    ((thredds.wcs.v1_0_0_1.DescribeCoverageBuilder)
-                            thredds.wcs.v1_0_0_1.WcsRequestBuilder
+                    ((DescribeCoverageBuilder)
+                            WcsRequestBuilder
                                     .newWcsRequestBuilder("1.0.0",
-                                            thredds.wcs.Request.Operation.DescribeCoverage,
+                                            Request.Operation.DescribeCoverage,
                                             gridDataset, ""))
                             .setCoverageIdList(coverageIdList)
                             .buildDescribeCoverage();
@@ -194,10 +193,10 @@ public class GeoGridTable extends JPanel {
             return;
           }
           GetCapabilities getCap =
-                  ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
-                          thredds.wcs.v1_0_0_1.WcsRequestBuilder
+                  ((GetCapabilitiesBuilder)
+                          WcsRequestBuilder
                                   .newWcsRequestBuilder("1.0.0",
-                                          thredds.wcs.Request.Operation.GetCapabilities,
+                                          Request.Operation.GetCapabilities,
                                           gridDataset, ""))
                           .setServerUri(gdUri)
                           .setSection(GetCapabilities.Section.All)

@@ -43,7 +43,7 @@ import java.io.PrintStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import thredds.filesystem.CacheManager;
+//import thredds.filesystem.CacheManager;
 import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -55,11 +55,20 @@ import ucar.unidata.io.RandomAccessFile;
  * @since Jan 15, 2009
  */
 public class DebugCommands {
+  private String version, builddate;
 
   public DebugCommands() {
     makeGeneralActions();
     makeDebugActions();
     makeCacheActions();
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  public void setBuilddate(String builddate) {
+    this.builddate = builddate;
   }
 
   protected void makeCacheActions() {
@@ -181,14 +190,14 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("showMFileCache", "Show MFile Directory Cache") {
+    /* act = new DebugHandler.Action("showMFileCache", "Show MFile Directory Cache") {
       public void doAction(DebugHandler.Event e) {
         Formatter f = new Formatter(e.pw);
         f.format("MFile Directory Cache %n %s %n", CacheManager.show("directories"));
         e.pw.flush();
       }
     };
-    debugHandler.addAction(act);
+    debugHandler.addAction(act); */
 
   }
 
@@ -232,7 +241,8 @@ public class DebugCommands {
     act = new DebugHandler.Action("showVersion", "Show Build Version") {
       public void doAction(DebugHandler.Event e) {
         try {
-          IO.copyFile(ServletUtil.getRootPath() + "/docs/README.txt", e.pw);
+          e.pw.println("version= "+version);
+          e.pw.println("build date= "+builddate);
         } catch (Exception ioe) {
           e.pw.println(ioe.getMessage());
         }

@@ -35,6 +35,7 @@ package ucar.nc2;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class TestReadSection extends TestCase {
   }
 
   public void testReadVariableSection() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("temperature")));
@@ -105,7 +106,7 @@ public class TestReadSection extends TestCase {
 
 
   public void testReadVariableSection2() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("temperature")));

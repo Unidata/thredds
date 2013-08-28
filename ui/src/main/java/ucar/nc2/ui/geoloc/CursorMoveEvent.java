@@ -32,6 +32,9 @@
  */
 package ucar.nc2.ui.geoloc;
 
+import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.geoloc.ProjectionPointImpl;
+
 import java.awt.geom.Point2D;
 
 /**
@@ -39,12 +42,19 @@ import java.awt.geom.Point2D;
  * @author John Caron
  */
 public class CursorMoveEvent extends java.util.EventObject {
-  private Point2D world;
+  private ProjectionPoint world;
 
-  public CursorMoveEvent(Object source, Point2D world) {
+  public CursorMoveEvent(Object source, ProjectionPoint world) {
     super(source);
     this.world = world;
   }
-  public Point2D getLocation() { return world; }
+
+  public CursorMoveEvent(Object source, Point2D location) {
+    super(source);
+    this.world = new ProjectionPointImpl(location.getX(), location.getY());
+  }
+
+  public Point2D getLocationPoint() { return new Point2D.Double(world.getX(), world.getY()); }
+  public ProjectionPoint getLocation() { return world; }
 }
 

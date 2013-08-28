@@ -40,7 +40,7 @@ import java.util.Formatter;
  * @author caron
  * @since Jul 4, 2008
  */
-public class BitCounterCompressed {
+public class BitCounterCompressed implements BitCounter {
 
   private final DataDescriptor dkey; // the field to count
   private final int nrows;           // number of (obs) in the compression
@@ -127,5 +127,9 @@ public class BitCounterCompressed {
     }
   }
 
+  @Override
+  public int getNumberRows() {
+    return nrows;
+  }
 }
 

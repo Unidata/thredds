@@ -38,6 +38,7 @@ import ucar.ma2.Range;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 
 /**
  *  from (WUB-664639) (Didier Earith)
@@ -45,7 +46,7 @@ import junit.framework.TestCase;
  * @author caron
  */
 public class TestSectionFillValue extends TestCase {
-  private String filename = TestLocal.cdmTestDataDir +"standardVar.nc";
+  private String filename = TestDir.cdmLocalTestDataDir +"standardVar.nc";
 
   public TestSectionFillValue( String name) {
     super(name);

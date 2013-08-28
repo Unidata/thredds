@@ -1,29 +1,21 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Netcdf Java Tutorial</title>
-<style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
-code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;}
-</style>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Netcdf Java Tutorial</title>
 </head>
 <body>
 <h1>NetCDF Java Tutorial
 </h1>
-<h3> 1. Overview of the Common Data Model and API </h3>
-<blockquote>
-  <p>Overview (<a href="CDMoverview.ppt">ppt</a>) </p>
-</blockquote>
-<h3> 2. Working with CDM files</h3>
+<h3> 1. Overview</h3>
+<ul>
+  <li>The <a href="../CDM/index.html">Common Data Model</a></li>
+  <li><a href="../reference/Git.html">Building from Source</a></li>
+</ul>
+<h3> 2. Working with CDM datasets</h3>
 <ul>
   <li> <a href="NetcdfFile.html">NetcdfFile</a>: reading CDM files</li>
   <li><a href="NetcdfDataset.html">NetcdfDataset</a>: enhanced files, coordinate systems</li>
-  <li><a href="NetcdfWriteable.html">NetcdfFileWriteable</a>: writing netCDF-3 Files</li>
-</ul>
-<h3>3. Programming with the NetCDF Java library</h3>
-<ul>
-  <li>NetCDF Java library: <a href="http://www.unidata.ucar.edu/software/netcdf-java/">website</a></li>
-  <li><a href="buildFromSource.html">Building from source</a></li>
+  <li><a href="NetcdfWriteable.html">NetcdfFileWriteable</a>: writing netCDF-3 Files (CDM 4.2)</li>
+  <li><a href="NetcdfWriting.html">Writing netCDF files</a>: writing netCDF-3 and netCDF-4 Files (CDM 4.3+)</li>
 </ul>
 <h3> 3. NcML</h3>
 <ul>
@@ -32,10 +24,9 @@ dl {margin: 10px 5px 5px 15px;}
 </ul>
 <h3>4. Writing an I/O Service Provider<a name="IOSP"></a></h3>
 <ul>
-  <li><a href="IOSPoverview.html">Implementing an IOSP : Overview</a></li>
+  <li><a href="IOSPoverview4.html">Implementing an IOSP : Overview</a></li>
   <li><a href="IOSPexample1.html">Example</a>: Lightning data</li>
   <li><a href="IospDmsp.html">Example</a>: DMSP data</li>
-  <li><a href="IospRadar.html">Example</a>: Radar data</li>
   <li><a href="IOSPdetails.html">IOSP details</a></li>
   <li><a href="IOSPbackground.html">Other Classes Needed when writing an IOSP</a> </li>
 </ul>
@@ -45,19 +36,23 @@ dl {margin: 10px 5px 5px 15px;}
   <li><a href="CoordSysBuilder.html">Writing a Coordinate System Builder</a>: recognizing Coordinate Systems.</li>
   <li><a href="CoordTransBuilder.html">Writing a Coordinate Transform</a>: implementing Projections and Vertical Transforms</li>
 </ul>
-<h3>6. Scientific Datatypes</h3>
+<h3>6. Scientific Feature Types</h3>
 <ul>
-  <li><a href="GridDatatype.html">Grid Datatype</a></li>
+  <li><a href="../reference/FeatureDatasets/Overview.html">Feature Dataset Overview</a></li>
+  <li><a href="GridDatatype.html">Grid Datasets</a></li>
   <li><a href="RadialDatatype.html">Radial Datatype</a></li>
-  <li><a href="PointDatatype.html">Point/Station/Trajectory</a> Datatypes</li>
-  <li><a href="PointDatasetImpl.html">Writing a Datatype implementation</a>: Point/Station/Trajectory, Radar files, etc.</li>
+  <li><a href="../reference/FeatureDatasets/PointFeatures.html">Point Feature Datasets</a> (aka Discrete Sampling Geometry datasets)</li>
 </ul>
 <h3>7. Runtime Loading </h3>
-  <li><a href="../reference/RuntimeLoading.html">Runtime Loading Summary </a></li>
-</ul>
+  <ul>
+    <li><a href="../reference/RuntimeLoading.html">Runtime Loading Summary </a></li>
+  </ul>
 <h3>8. Reference</h3>
 <ul>
-  <li><a href="../reference/index.html">Reference Docs</a> </li>
+  <li><a href="../reference/index.html">Reference Docs</a></li>
 </ul>
-<p>&nbsp; </p>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" alt="" width="64" height="64"> This document was last updated July 2013
+</address>
 </body></html>

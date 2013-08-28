@@ -35,7 +35,7 @@ package ucar.nc2.grib.grib2.table;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.grib.GribResourceReader;
+import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribTables;

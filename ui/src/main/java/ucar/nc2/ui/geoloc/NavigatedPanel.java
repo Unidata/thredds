@@ -498,7 +498,9 @@ public class NavigatedPanel extends JPanel {
     g2.setTransform( navigate.getTransform());
     g2.setStroke(new BasicStroke(0.0f));      // default stroke size is one pixel
     g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-    g2.setClip( boundingBox);                 // normalized coord system, because transform is applied
+    Rectangle2D hr = new Rectangle2D.Double();
+    hr.setRect(boundingBox.getX(), boundingBox.getY(), boundingBox.getWidth(), boundingBox.getHeight());
+    g2.setClip( hr);                 // normalized coord system, because transform is applied
     g2.setBackground( backColor);
 
     return g2;

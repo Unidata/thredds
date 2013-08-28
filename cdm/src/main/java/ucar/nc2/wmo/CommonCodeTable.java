@@ -120,10 +120,12 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
                                                     // code                            value                       code2                  value2
     C12("Subcenters",             12,2, new String[]{"CodeFigure_OriginatingCentres", "Name_OriginatingCentres_en", "CodeFigure_SubCentres", "Name_SubCentres_en"}),
     C13("Data sub-categories",    13,2, new String[]{"CodeFigure_DataCategories", "Name_DataCategories_en", "CodeFigure_InternationalDataSubcategories", "Name_InternationalDataSubcategories_en"}),
+    C14("Atmospheric chemical or physical constituent type",14,2, new String[]{"CodeFigure", "ChemicalFormula", null, "Meaning_en"}),
     ;
 
     String name;
-    String[] elems;
+    String[] elems; // type 1: 0 = code, 1 = code2 (may be null), 2 = value
+                    // type 2: 0 = code1, 1 = comment , 2 = code3 (may be null), 3 = value
     int num, type; // type 1 = 1 code, type 2 = 2 codes
     String num0;
     Table(String name, int num, int type, String[] elems) {
@@ -297,7 +299,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
           String line = elem.getChildTextNormalize("No");
           String code = elem.getChildTextNormalize(elems[0]);
           String value = elem.getChildTextNormalize(elems[1]);
-          String code2 = elem.getChildTextNormalize(elems[2]);
+          String code2 = (elems[2] == null) ? null : elem.getChildTextNormalize(elems[2]);
           String value2 = elem.getChildTextNormalize(elems[3]);
           Element statusElem = elem.getChild("Status");
           String status = (statusElem == null) ? null : statusElem.getTextNormalize();

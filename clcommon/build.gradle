@@ -1,0 +1,11 @@
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'clcommon'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+  compile 'com.sleepycat:je:4.0.92'
+  testCompile project(':cdm').sourceSets.test.output
+}

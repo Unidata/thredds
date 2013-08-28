@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <beans xmlns="http://www.springframework.org/schema/beans"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:util="http://www.springframework.org/schema/util"
-		xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <bean id="debugController" class="thredds.server.root.DebugController">
     <property name="tdsContext" ref="tdsContext"/>
@@ -60,7 +57,20 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
+  <!-- tell spring that tds.properties gets read in first and overrides anything else -->
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    <property name="locations">
+      <list>
+        <value>classpath:thredds/server/tds.properties</value>
+      </list>
+    </property>
+  </bean>
+
   <!-- A Singleton class to populate the Debug methods in DebugHandler -->
-  <bean class="thredds.servlet.DebugCommands"/>
+  <bean class="thredds.servlet.DebugCommands">
+    <property name="version" value="${tds.version}" />
+    <property name="builddate" value="${tds.version.builddate}" />
+  </bean>
 
 </beans>

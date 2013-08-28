@@ -36,6 +36,7 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 
@@ -46,7 +47,7 @@ public class TestGridRanks extends TestCase {
 
   public void testWrite() throws Exception {
     NetcdfFileWriteable ncfile = new NetcdfFileWriteable();
-    ncfile.setName(TestLocal.cdmTestDataDir+"rankTest.nc");
+    ncfile.setName(TestDir.cdmLocalTestDataDir+"rankTest.nc");
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);
@@ -219,7 +220,7 @@ public class TestGridRanks extends TestCase {
 
   //////////////////////////////////////////////
   public void testRead() throws Exception {
-      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestLocal.cdmTestDataDir+"rankTest.nc");
+      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestDir.cdmLocalTestDataDir+"rankTest.nc");
 
       doRead4(dataset, "full4");
       doRead4(dataset, "withZ1");

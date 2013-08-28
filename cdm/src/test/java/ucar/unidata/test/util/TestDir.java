@@ -57,24 +57,19 @@ public class TestDir {
     // Check for system property
     String testdataDirPath = System.getProperty( testdataDirPropName );
 
-    if (testdataDirPath == null )
-    {
+    if (testdataDirPath == null ) {
       // Get user property.
       File userHomeDirFile = new File( System.getProperty( "user.home" ) );
       File userThreddsPropsFile = new File( userHomeDirFile, threddsPropFileName );
-      if ( userThreddsPropsFile.exists() && userThreddsPropsFile.canRead() )
-      {
+      if ( userThreddsPropsFile.exists() && userThreddsPropsFile.canRead() ) {
         Properties userThreddsProps = new Properties();
-        try
-        {
+        try {
           userThreddsProps.load( new FileInputStream( userThreddsPropsFile ) );
         }
-        catch ( IOException e )
-        {
+        catch ( IOException e ) {
           System.out.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
         }
-        if ( userThreddsProps != null && ! userThreddsProps.isEmpty() )
-        {
+        if ( userThreddsProps != null && ! userThreddsProps.isEmpty() ) {
           if ( testdataDirPath == null )
             testdataDirPath = userThreddsProps.getProperty( testdataDirPropName );
         }
@@ -82,8 +77,7 @@ public class TestDir {
     }
 
     // Use default paths if needed.
-    if ( testdataDirPath == null )
-    {
+    if ( testdataDirPath == null ) {
       System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/share/testdata/\"." );
       testdataDirPath = "/share/testdata/";
     }
@@ -94,16 +88,13 @@ public class TestDir {
     cdmUnitTestDir = testdataDirPath + "cdmUnitTest/";
 
     File file = new File( cdmUnitTestDir );
-    if ( ! file.exists() || !file.isDirectory() )
-    {
+    if ( ! file.exists() || !file.isDirectory() ) {
       System.out.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
     }
 
     File tmpDataDir = new File(temporaryLocalDataDir);
-    if ( ! tmpDataDir.exists() )
-    {
-      if ( ! tmpDataDir.mkdirs() )
-      {
+    if ( ! tmpDataDir.exists() ) {
+      if ( ! tmpDataDir.mkdirs() ) {
         System.out.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
       }
     }
@@ -117,7 +108,40 @@ public class TestDir {
         " MB");
   }
 
-    ////////////////////////////////////////////////
+  // from testLocal
+
+  private static boolean dumpFile = false;
+
+  public static NetcdfFile open( String filename) {
+    try {
+      System.out.println("**** Open "+filename);
+      NetcdfFile ncfile = NetcdfFile.open(filename, null);
+      if (dumpFile) System.out.println("open "+ncfile);
+      return ncfile;
+
+    } catch (java.io.IOException e) {
+
+      try {
+        File absf = new File(filename);
+        System.out.printf("abs path of %s == %s%n", filename, absf.getCanonicalPath());
+      } catch (IOException ioe) {
+        e.printStackTrace();
+      }
+      File pwd = new File (".");
+      System.out.printf("pwd = %s%n", pwd.getAbsolutePath());
+      System.out.println(" fail = "+e);
+      e.printStackTrace();
+      assert false;
+      return null;
+    }
+  }
+
+  public static NetcdfFile openFileLocal( String filename) {
+    return open( TestDir.cdmLocalTestDataDir +filename);
+  }
+
+
+  ////////////////////////////////////////////////
 
   public interface Act {
     /**

@@ -36,6 +36,7 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 
@@ -46,7 +47,7 @@ public class TestGridRank2 extends TestCase {
 
   public void testWrite() throws Exception {
     NetcdfFileWriteable ncfile = new NetcdfFileWriteable();
-    ncfile.setName(TestLocal.cdmTestDataDir+"rankTest2.nc");
+    ncfile.setName(TestDir.cdmLocalTestDataDir+"rankTest2.nc");
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);
@@ -205,7 +206,7 @@ public class TestGridRank2 extends TestCase {
   public void testRead() {
     try {
 
-      ucar.nc2.dt.grid.GridDataset ds = GridDataset.open( TestLocal.cdmTestDataDir+"rankTest2.nc");
+      ucar.nc2.dt.grid.GridDataset ds = GridDataset.open( TestDir.cdmLocalTestDataDir+"rankTest2.nc");
       //System.out.println("dataset= "+ds.getInfo());
       GeoGrid gg = ds.findGridByName("badTime");
       assert (ds.findGridByName("badTime") == null);

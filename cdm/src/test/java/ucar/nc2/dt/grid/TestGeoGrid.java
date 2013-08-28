@@ -37,6 +37,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 
@@ -45,7 +46,7 @@ import java.io.*;
 public class TestGeoGrid extends TestCase {
 
   public void testSubset() throws Exception {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestLocal.cdmTestDataDir+"rankTest.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmLocalTestDataDir+"rankTest.nc");
 
     GeoGrid grid = dataset.findGridByName("full4");
     assert null != grid;

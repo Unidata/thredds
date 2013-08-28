@@ -474,12 +474,6 @@
 
   <!-- catalog services -->
 
-  <servlet>
-    <servlet-name>ForecastModelRunInventory</servlet-name>
-    <servlet-class>thredds.servlet.FmrcInventoryServlet</servlet-class>
-    <load-on-startup>6</load-on-startup>
-  </servlet>
-
   <!-- Setup for the CatalogAnnotate servlet. (Attach extra info to a catalog.
   <servlet>
     <servlet-name>CatalogAnnotate</servlet-name>

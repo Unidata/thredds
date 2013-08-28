@@ -38,7 +38,6 @@ import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;

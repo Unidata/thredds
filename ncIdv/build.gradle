@@ -1,4 +1,4 @@
-apply plugin: 'fatjar'
+apply plugin: 'shadow'
 
 dependencies {
   compile project(':cdm')
@@ -10,40 +10,54 @@ dependencies {
   compile (project(':visad')) {   // eliminate original visad.jar
     transitive = false
   }
-  runtime ('org.slf4j:slf4j-jdk14:1.6.4')
+
+  runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
+  runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
+
 }
 
 jar {
   manifest {
-    attributes 'Implementation-Title': 'toolsUI'
+    attributes 'Implementation-Title': 'ncIdv'
   }
 }
 
 //////////////////////////////////////////////////////////
 
 ext {
-  ncIdvJar = 'ncIdv-'+version+'.jar'
+  ncIdvJar = 'ncIdvs-'+version+'.jar'
   webstartWorkingDir = "build/signed"
   webstartDir = webdir + "webstart"
 }
 
-fatJar {  // does not inherit from parent jar
-  archiveName = ncIdvJar
-  manifest {
-    attributes 'Implementation-Title': ncIdvJar,
-     'Implementation-Version': version,
-     'Implementation-Vendor': 'UCAR/Unidata',
-     'Implementation-Vendor-Id': 'edu.ucar',
-     'Built-On': new Date().format('yyyyMMdd.HHmm')
-  }
-  exclude 'DATE'    // crap from other packages
-  exclude 'JDOM*'
-  exclude '*.html'
+shadow {
+  outputFile = file("${destinationDir}/${ncIdvJar}")
+  stats = true
+
+  exclude 'AUTHORS'    // crap from other packages
+  exclude 'DATE'
+  exclude 'LICENCE'
+  exclude 'LICENSE'
+  exclude 'NOTICE'
+  exclude '*.txt'
+  exclude '*.xml'
+  exclude 'META-INF/DEPENDENCIES'
+  exclude 'META-INF/LICENSE'
+  exclude 'META-INF/NOTICE'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.RSA'
   exclude 'META-INF/*.txt'
   exclude 'META-INF/*.xml'
-  exclude 'nom/**'
+
   exclude 'edu/wisc/**'
+  exclude 'nom/**'
   exclude 'visad/**'
+
+  artifactSet {
+    exclude 'commons-logging:commons-logging:*'
+    exclude 'net.sf.ehcache:ehcache:*'
+  }
+
 }
 
 /* following properties should be in gradle.properties:
@@ -53,18 +67,11 @@ fatJar {  // does not inherit from parent jar
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
-task releaseCdm(dependsOn: ['fatJar']) << {
+task releaseCdm(dependsOn: ['shadow']) << {
   println "copy " + ncIdvJar + " to " + ftpdir
   copy { // does not give error message
-    from 'build/libs/' + ncIdvJar
+    from ${destinationDir} + ncIdvJar
     into ftpdir
   }
 }
 
-///////////////////////////////////////////////////////
-
-task showDependencies << {
-  for (file in configurations.runtime.resolve()) {
-     println " " + file
-   }
-}

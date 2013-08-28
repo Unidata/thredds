@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.*;
@@ -48,7 +49,7 @@ public class TestStructureArray extends TestCase {
 
   NetcdfFile ncfile;
   protected void setUp() throws Exception {
-    ncfile = TestLocalNC2.open(TestLocal.cdmTestDataDir +"testStructures.nc");
+    ncfile = TestDir.openFileLocal("testStructures.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
   protected void tearDown() throws Exception {

@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.18</version>
+    <version>4.4.0-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
@@ -21,7 +21,11 @@
   <dependencies>
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>netcdf</artifactId>
+      <artifactId>cdm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>clcommon</artifactId>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
@@ -33,11 +37,20 @@
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
+      <artifactId>netcdf4</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
       <artifactId>opendap</artifactId>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>visadCdm</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.sleepycat</groupId>
@@ -113,7 +126,7 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>netcdf</artifactId>
+      <artifactId>cdm</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

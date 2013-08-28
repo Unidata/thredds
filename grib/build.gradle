@@ -7,4 +7,5 @@ jar {
 dependencies {
   compile project(':cdm')
   compile 'org.jsoup:jsoup:1.6.1'
+  testCompile project(':cdm').sourceSets.test.output
 }

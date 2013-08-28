@@ -36,9 +36,7 @@ import ucar.unidata.util.Parameter;
 
 /**
  * Projective geometry transformations from (lat,lon) to (x,y) on
- * a projective cartesian surface. We use the java.awt.geom 2D classes
- * to represent the coordinates on the projective plane.
- *
+ * a projective cartesian surface.
  * @author John Caron
  */
 

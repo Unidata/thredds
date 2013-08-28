@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.18</version>
+    <version>4.4.0-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
@@ -38,12 +38,7 @@
   <dependencies>
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>netcdf</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
+      <artifactId>cdm</artifactId>
     </dependency>
 
     <dependency>
@@ -68,7 +63,7 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>netcdf</artifactId>
+      <artifactId>cdm</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

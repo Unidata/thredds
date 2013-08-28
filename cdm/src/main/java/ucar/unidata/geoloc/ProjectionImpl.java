@@ -351,7 +351,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    */
   public void setDefaultMapArea(ProjectionRect bb) {
     if (bb == null) return;
-    defaultMapArea = (ProjectionRect) bb.clone();
+    defaultMapArea = new ProjectionRect(bb);
   }
 
   //////// convenience routines

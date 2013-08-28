@@ -480,7 +480,7 @@ public class GridController {
       // get Move events from the vertPanel
     vertPanel.getDrawArea().addCursorMoveEventListener( new CursorMoveEventListener() {
       public void actionPerformed(CursorMoveEvent e) {
-        Point2D loc = e.getLocation();
+        Point2D loc = e.getLocationPoint();
         posLabel.setText(renderGrid.getYZpositionStr(loc));
         dataValueLabel.setText(renderGrid.getYZvalueStr(loc));
       }

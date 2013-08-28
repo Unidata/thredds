@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui.widget;
 
+import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.ui.Debug;
 
@@ -57,7 +58,7 @@ import javax.swing.text.html.*;
 
 public class HtmlBrowser extends JPanel {
   static private EditorKit kit = JEditorPane.createEditorKitForContentType("text/html");
-  private ucar.util.prefs.PreferencesExt prefs;
+  private PreferencesExt prefs;
   private RootPaneContainer parent = null;
 
   private EventListenerList listenerList = new EventListenerList();

@@ -39,7 +39,7 @@ import ucar.nc2.ui.point.TrajectoryRegionDateChooser;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 
 import java.awt.BorderLayout;

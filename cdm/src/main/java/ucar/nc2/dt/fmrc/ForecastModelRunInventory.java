@@ -43,10 +43,7 @@ import org.jdom2.input.SAXBuilder;
 import java.io.*;
 import java.util.*;
 
-import ucar.ma2.InvalidRangeException;
-
 import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.constants._Coordinate;
@@ -54,8 +51,8 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.grid.GridServiceProvider;
+// import ucar.nc2.iosp.IOServiceProvider;
+//import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.Variable;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
@@ -133,7 +130,7 @@ public class ForecastModelRunInventory {
       DateFormatter df = new DateFormatter();
       this.runTime = df.toDateTimeStringISO(runDate);
     }
-    getIosp();
+    //getIosp();
 
     // add each variable
     for (GridDatatype gg : gds.getGrids()) {
@@ -141,7 +138,7 @@ public class ForecastModelRunInventory {
       Grid grid = new Grid(gg.getFullName());
       VariableEnhanced ve = gg.getVariable();
       Variable v = ve.getOriginalVariable();   // LOOK why original variable ??
-      addMissing(v, gcs, grid);
+      //addMissing(v, gcs, grid);
 
       // LOOK: Note this assumes a dense coordinate system
       CoordinateAxis1D axis = gcs.getTimeAxis1D();
@@ -153,7 +150,7 @@ public class ForecastModelRunInventory {
 
       CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
       if (eaxis != null) {
-        int[] einfo = getEnsInfo(  v );
+        int[] einfo = null; // getEnsInfo(  v );
         grid.ec = getEnsCoordinate(eaxis, einfo );
       }
 
@@ -253,7 +250,7 @@ public class ForecastModelRunInventory {
 
   //////////////////////////////////////////////////////////
 
-  // Grib files are collections of 2D horizontal arrays.
+  /* Grib files are collections of 2D horizontal arrays.
   // LOOK: breaking encapsolation !!!
 
   private void getIosp() {
@@ -310,7 +307,7 @@ public class ForecastModelRunInventory {
     //if (gribIosp == null) return null;
     //int[] info = gribIosp.ensembleInfo(v);
     return null;
-  }
+  }  */
 
   /////////////////////////////////////////////////////////////////////////
 

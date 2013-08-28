@@ -14,6 +14,8 @@
           <xsd:element name="explicit"/>
         </xsd:choice>
 
+        <xsd:element name="iospParam" minOccurs="0" />
+
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
           <xsd:element ref="group"/>
           <xsd:element ref="dimension"/>

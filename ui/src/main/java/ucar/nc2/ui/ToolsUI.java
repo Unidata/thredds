@@ -49,7 +49,6 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
-import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
@@ -62,7 +61,6 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.ncml.Aggregation;
-import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dataset.*;
 
 import ucar.nc2.geotiff.GeoTiff;
@@ -76,7 +74,8 @@ import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.util.*;
 
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.*;
 
 import thredds.inventory.MController;
@@ -110,7 +109,7 @@ public class ToolsUI extends JPanel {
   static private final String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
   static private boolean debugListen = false;
 
-  private ucar.util.prefs.PreferencesExt mainPrefs;
+  private PreferencesExt mainPrefs;
 
   // UI
   private AggPanel aggPanel;
@@ -180,7 +179,7 @@ public class ToolsUI extends JPanel {
   private boolean debug = false, debugTab = false, debugCB = false;
 
 
-  public ToolsUI(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) {
+  public ToolsUI(PreferencesExt prefs, JFrame parentFrame) {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
@@ -887,7 +886,6 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);
-    GribServiceProvider.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
     ucar.nc2.FileWriter.setDebugFlags(debugFlags);
@@ -1991,11 +1989,6 @@ public class ToolsUI extends JPanel {
     NetcdfDataset ds = null;
     CoordSysTable coordSysTable;
 
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
-
     void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
@@ -2005,10 +1998,6 @@ public class ToolsUI extends JPanel {
       super(p, "dataset:", true, false);
       coordSysTable = new CoordSysTable(prefs, buttPanel);
       add(coordSysTable, BorderLayout.CENTER);
-
-      defComboBox = new JComboBox(FmrcDefinition.getDefinitionFiles());
-      defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
-      defWindow.setLocationRelativeTo(defButt);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
       infoButton.addActionListener(new ActionListener() {
@@ -2065,19 +2054,6 @@ public class ToolsUI extends JPanel {
       }
 
       Object spiObject = null;
-      if (useDefinition) {
-        String currentDef = (String) defComboBox.getSelectedItem();
-        if (currentDef != null) {
-          FmrcDefinition fmrc_def = new FmrcDefinition();
-          try {
-            fmrc_def.readDefinitionXML(currentDef);
-            spiObject = fmrc_def;
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);
@@ -2536,6 +2512,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.Grib2CollectionPanel gribTable;
 
     void closeOpenFiles() throws IOException {
+      gribTable.closeOpenFiles();
     }
 
     Grib2CollectionPanel(PreferencesExt p) {
@@ -5730,7 +5707,7 @@ public class ToolsUI extends JPanel {
     String version;
     try {
       InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README");
-      if (is == null) return "4.3.18";
+      if (is == null) return "4.4.0";
 // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
       StringBuilder sbuff = new StringBuilder();
@@ -5906,7 +5883,7 @@ public class ToolsUI extends JPanel {
     }
 
     if (!configRead) {
-      String filename = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
+      String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
       File f = new File(filename);
       if (f.exists()) {
         try {
@@ -5923,9 +5900,22 @@ public class ToolsUI extends JPanel {
 
     // prefs storage
     try {
-      String prefStore = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
-      store = ucar.util.prefs.XMLStore.createFromFile(prefStore, null);
+      // 4.4
+      String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
+      File prefs44 = new File(prefStore);
+
+      if (!prefs44.exists()) { // if 4.4 doesnt exist, see if 4.3 exists
+        String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
+        File prefs43 = new File(prefStoreBack);
+        if (prefs43.exists()) { // make a copy of it
+          IO.copyFile(prefs43, prefs44);
+        }
+      }
+
+      // open 4.4 version, create it if doesnt exist
+      store = XMLStore.createFromFile(prefStore, null);
       prefs = store.getPreferences();
+
       Debug.setStore(prefs.node("Debug"));
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed " + e);
@@ -5938,7 +5928,13 @@ public class ToolsUI extends JPanel {
     DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
     //cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
     //DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
-    thredds.inventory.CollectionManagerAbstract.enableMetadataManager();    // bdb for metadata
+
+    try {
+      //thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
+      //thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
+    } catch (Exception e) {
+      log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
+    }
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));

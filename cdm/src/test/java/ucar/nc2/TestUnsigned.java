@@ -33,22 +33,15 @@
 
 package ucar.nc2;
 
-import ucar.ma2.Index;
+import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.unidata.test.util.TestDir;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.*;
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
-
-import junit.framework.TestCase;
 
 /**
  * Test that adding _Unsigned attribute in NcML works correctly
@@ -56,14 +49,11 @@ import junit.framework.TestCase;
  * @author caron
  * @since Aug 7, 2008
  */
-public class TestUnsigned extends TestCase {
+public class TestUnsigned {
 
-  public TestUnsigned( String name) {
-    super(name);
-  }
-
+  @Test
   public void testSigned() throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testWrite.nc");
+    NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWrite.nc");
 
     Variable v = null;
     assert(null != (v = ncfile.findVariable("bvar")));
@@ -81,8 +71,9 @@ public class TestUnsigned extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testUnsigned() throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testUnsignedByte.ncml");
+    NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testUnsignedByte.ncml");
 
     Variable v = null;
     assert(null != (v = ncfile.findVariable("bvar")));
@@ -99,9 +90,10 @@ public class TestUnsigned extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testUnsignedWrap() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestLocal.cdmTestDataDir +"testWrite.nc'>\n" +
+        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestDir.cdmLocalTestDataDir +"testWrite.nc'>\n" +
         "  <variable name='bvar' shape='lat' type='byte'>\n" +
         "    <attribute name='_Unsigned' value='true' />\n" +
         "    <attribute name='scale_factor' type='float' value='2.0' />\n" +
@@ -124,56 +116,6 @@ public class TestUnsigned extends TestCase {
     assert !hasSigned;
 
     ncd.close();
-  }
-
-  public static byte[] convert(String srcPath, double a, double b) throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(srcPath);
-    try {
-      Variable v = ncfile.findVariable("image1/image_data");
-      Array array = v.read();
-
-      int[] cmap = new int[256]; // palette
-      cmap[0] = 0x00FFFFFF; // transparent and white
-      for (int i = 1; i != 256; i++) {
-        // 1 to 255 renders as (almost) white to black
-        cmap[i] = 0xFF000000 | ((0xFF - i) * 0x010101);
-      }
-      IndexColorModel colorModel = new IndexColorModel(8,
-              cmap.length, cmap, 0, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-
-      int[] shape = array.getShape();
-      BufferedImage bi = new BufferedImage(shape[1], shape[0],BufferedImage.TYPE_BYTE_INDEXED, colorModel);
-
-      Index index = array.getIndex();
-      for (int y = 0; y < shape[0]; y++) {
-        for (int x = 0; x < shape[1]; x++) {
-          index.set(y, x);
-
-          byte bval = array.getByte(index);
-          double dval = v.isUnsigned() ? (double) DataType.unsignedByteToShort(bval) : (double) bval;
-
-          //double dval = array.getDouble(index);
-          // Fix for NetCDF returning all values larger than 127 as (value - 256):
-          //if (dval < -1) {
-          //  dval += 256;
-          //}
-          int pval = (int) Math.round(a * dval + b);
-          pval = Math.min(Math.max(pval, 0), 255);
-          bi.getRaster().setSample(x, y, 0, pval);
-        }
-      }
-
-      ByteArrayOutputStream os = new ByteArrayOutputStream();
-      ImageIO.write(bi, "png", os);
-      return os.toByteArray();
-
-    } finally {
-      ncfile.close();
-    }
-  }
-
-  public static void main(String args[]) throws IOException {
-    convert("C:/data/test/RAD_NL25_PCP_NA_200808070810.h5", 1.0, 0.0);
   }
 
 }

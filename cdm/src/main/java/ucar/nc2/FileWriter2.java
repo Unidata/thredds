@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import ucar.ma2.*;
-import ucar.nc2.jni.netcdf.Nc4Chunking;
-import ucar.nc2.jni.netcdf.Nc4ChunkingStrategyImpl;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.CancelTaskImpl;
 

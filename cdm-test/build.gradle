@@ -1,0 +1,16 @@
+
+dependencies {
+  compile project(':cdm')
+  compile project(':clcommon')
+  compile project(':bufr')
+  compile project(':grib')
+  compile project(':netcdf4')
+  compile (project(':opendap'))  { // eliminate servlet
+      transitive = false
+    }
+  compile (project(':visad'))
+  testCompile project(':cdm').sourceSets.test.output
+}
+
+
+

@@ -4,11 +4,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>Building Coordinate Systems</title>
-<style type="text/css">
+   <link rel="stylesheet" href="../cdm.css" type="text/css" /> 
+   <style type="text/css">
 <!--
-.style1 {font-style: italic}
+.style1 {font-weight: bold}
 -->
-</style>
+   </style>
 </head>
 
 <body>
@@ -87,22 +88,23 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 </pre>
 <p>The <strong>NcMLReader.wrapNcMLresource() </strong>looks for the NcML document by calling <strong>Class.getResource()</strong>. The example NcML file might look like:</p>
 <pre>
-&lt;?xml version='1.0' encoding='UTF-8'?&gt;<br>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
-<pre> &lt;attribute name=&quot;Conventions&quot; value=&quot;ATDRadar&quot;/&gt;</pre>
-<pre> &lt;variable name=&quot;latitude&quot;&gt;
+&lt;?xml version='1.0' encoding='UTF-8'?&gt;<br>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+ &lt;attribute name=&quot;Conventions&quot; value=&quot;ATDRadar&quot;/&gt;
+  &lt;variable name=&quot;latitude&quot;&gt;
   &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Lat&quot; /&gt;
- &lt;/variable&gt;</pre>
-<pre> &lt;variable name=&quot;longitude&quot;&gt;
+ &lt;/variable&gt;
+  &lt;variable name=&quot;longitude&quot;&gt;
   &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Lon&quot; /&gt;
- &lt;/variable&gt;</pre>
-<pre> &lt;variable name=&quot;altitude&quot;&gt;
+ &lt;/variable&gt;
+  &lt;variable name=&quot;altitude&quot;&gt;
   &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Height&quot; /&gt;
   &lt;attribute name=&quot;_CoordinateZisPositive&quot; value=&quot;up&quot; /&gt;
- &lt;/variable&gt;</pre>
-<pre> &lt;variable name=&quot;time&quot;&gt;
+ &lt;/variable&gt;
+  &lt;variable name=&quot;time&quot;&gt;
   &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
- &lt;/variable&gt;</pre>
-<pre>&lt;/netcdf&gt;</pre>
+ &lt;/variable&gt;
+&lt;/netcdf&gt;
+</pre>
 <p>The NcML adds the appropriate <strong>_CoordinateAxisType</strong> attribute  to existing Coordinate Axes. Because the data variables all use  coordinate variables, implicit Coordinate System objects are created and assigned. There is no need for Coordinate Transforms because all the coordinates are reference coordinates (lat, lon, height). <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">Here</a> is complete info on NcML. </p>
 <p>If all you need to do is wrap the dataset in NcML, and the dataset already has a <strong>Convention</strong> attribute in it (before it is wrapped), then you can simply register the NcML directly, without having to write any code. For this, you use:</p>
 <pre><strong> CoordSysBuilder.registerNcML( String conventionName, String ncmlLocation);</strong></pre>
@@ -112,33 +114,36 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 <p>creates a new coordinate axis variable, and gives it evenly spaced values. You can also enumerate the values:</p>
 <pre>  &lt;values&gt;90.0 88.3 72.6 66.9&lt;/values&gt;</pre>
 <p>When the values must be computed, then you need to do this programatically, for example:</p>
-<pre> protected void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {<br>    this.conventionName = &quot;Zebra&quot;;<br><strong>(1)</strong> NcMLReader.wrapNcMLresource( ds, CoordSysBuilder.resourcesDir+&quot;Zebra.ncml&quot;, cancelTask);
+<pre> protected void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    this.conventionName = &quot;Zebra&quot;;
+(1) NcMLReader.wrapNcMLresource( ds, CoordSysBuilder.resourcesDir+&quot;Zebra.ncml&quot;, cancelTask);
 
     // the time coord var is created in the NcML
     // set its values = base_time + time_offset(time)
     Dimension timeDim = ds.findDimension(&quot;time&quot;);
     Variable base_time = ds.findVariable(&quot;base_time&quot;);
     Variable time_offset = ds.findVariable(&quot;time_offset&quot;);
-<strong>(2)</strong> Variable time = ds.findVariable(&quot;time&quot;);</pre>
-<pre>    Attribute att = base_time.findAttribute(&quot;units&quot;);
+(2) Variable time = ds.findVariable(&quot;time&quot;);
+    Attribute att = base_time.findAttribute(&quot;units&quot;);
     String units = (att != null) ? att.getStringValue() : &quot;seconds since 1970-01-01 00:00 UTC&quot;;
-<strong>(3)</strong> time.addAttribute( new Attribute(&quot;units&quot;, units));</pre>
-<pre>    Array data;
+(3) time.addAttribute( new Attribute(&quot;units&quot;, units));
+
+    Array data;
     try {
-<strong>(4)</strong>  double baseValue = base_time.readScalarDouble();</pre>
-<pre><strong>(5)</strong>  data = time_offset.read();
-     IndexIterator iter = data.getIndexIterator();
-     while (iter.hasNext()) {
-<strong>(6)</strong>    iter.setDoubleCurrent( iter.getDoubleNext() + baseValue);
-<strong>(7)</strong>    if ((cancelTask != null) &amp;&amp; cancelTask.isCancel()) return;
-     }</pre>
-<pre>    } catch (java.io.IOException ioe) {
-<strong>(8)</strong>  parseInfo.append(&quot;ZebraConvention failed to create time Coord Axis for &quot;+ ds.getLocation()+&quot;\n&quot;+ioe+&quot;\n&quot;);
+(4)   double baseValue = base_time.readScalarDouble();
+(5)   data = time_offset.read();
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext()) {
+(6)     iter.setDoubleCurrent( iter.getDoubleNext() + baseValue);
+(7)     if ((cancelTask != null) &amp;&amp; cancelTask.isCancel()) return;
+      }
+     } catch (java.io.IOException ioe) {
+(8)  parseInfo.append(&quot;ZebraConvention failed to create time Coord Axis for &quot;+ ds.getLocation()+&quot;\n&quot;+ioe+&quot;\n&quot;);
      return;
-    }</pre>
-<pre><strong>(9)</strong> time.setCachedData( data, true);
-<strong>(10)</strong>ds.finish();
- }</pre>
+    }
+(9) time.setCachedData( data, true);
+(10)ds.finish();
+}</pre>
 <ol>
   <li>Its  convenient to wrap the dataset in NcML, even when you also have to do some programming. For one thing, you can change the NcML file without recompiling.</p>
   </li>
@@ -154,41 +159,46 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 </ol>
 <h3>Identifying Coordinate Axis Types</h3>
 <p>Another simple case to handle is when you are using Coordinate Variables for all  data variables. Coordinate Variables are 1D variables with the same name as their dimension, which encode the coordinate values for that dimension. In that case, you only need to identify the Coordinate Axes types, which you do by overriding thye <strong>getAxisType()</strong> method. This will pass in all variables that have been identified as coordinate axes, and your job is to return theier AxisType, if they have one: </p>
-<pre>protected AxisType getAxisType( NetcdfDataset ncDataset, VariableEnhanced v) {</pre>
-<pre> String unit = v.getUnitsString();
- if (unit == null)
-   return null;</pre>
-<pre> if( unit.equalsIgnoreCase(&quot;degrees_east&quot;) ||
+<pre>
+protected AxisType getAxisType( NetcdfDataset ncDataset, VariableEnhanced v) {
+  String unit = v.getUnitsString();
+  if (unit == null)
+    return null;
+  if ( unit.equalsIgnoreCase(&quot;degrees_east&quot;) ||
    unit.equalsIgnoreCase(&quot;degrees_E&quot;) ||
    unit.equalsIgnoreCase(&quot;degreesE&quot;) ||
    unit.equalsIgnoreCase(&quot;degree_east&quot;) ||
    unit.equalsIgnoreCase(&quot;degree_E&quot;) ||
    unit.equalsIgnoreCase(&quot;degreeE&quot;))
-     return AxisType.Lon;</pre>
-<pre> if ( unit.equalsIgnoreCase(&quot;degrees_north&quot;) ||
-   unit.equalsIgnoreCase(&quot;degrees_N&quot;) ||
-   unit.equalsIgnoreCase(&quot;degreesN&quot;) ||
-   unit.equalsIgnoreCase(&quot;degree_north&quot;) ||
-   unit.equalsIgnoreCase(&quot;degree_N&quot;) ||
-   unit.equalsIgnoreCase(&quot;degreeN&quot;))
-     return AxisType.Lat;</pre>
-<pre> if (SimpleUnit.isDateUnit(unit) || SimpleUnit.isTimeUnit(unit))
-   return AxisType.Time;</pre>
-<pre> // look for other z coordinate
- if (SimpleUnit.isCompatible(&quot;m&quot;, unit))
-   return AxisType.Height;
- if (SimpleUnit.isCompatible(&quot;mbar&quot;, unit))
-   return AxisType.Pressure;
- if (unit.equalsIgnoreCase(&quot;level&quot;) || unit.equalsIgnoreCase(&quot;layer&quot;) || unit.equalsIgnoreCase(&quot;sigma_level&quot;))
-   return AxisType.GeoZ;</pre>
-<pre> String positive = ncDataset.findAttValueIgnoreCase((Variable) v, &quot;positive&quot;, null);
- if (positive != null) {
-   if (SimpleUnit.isCompatible(&quot;m&quot;, unit))
-     return AxisType.Height;
-   else
-     return AxisType.GeoZ;
- }</pre>
-<pre> return null;
+     return AxisType.Lon;
+  
+  if ( unit.equalsIgnoreCase(&quot;degrees_north&quot;) ||
+    unit.equalsIgnoreCase(&quot;degrees_N&quot;) ||
+    unit.equalsIgnoreCase(&quot;degreesN&quot;) ||
+    unit.equalsIgnoreCase(&quot;degree_north&quot;) ||
+    unit.equalsIgnoreCase(&quot;degree_N&quot;) ||
+    unit.equalsIgnoreCase(&quot;degreeN&quot;))
+      return AxisType.Lat;
+      
+  if (SimpleUnit.isDateUnit(unit) || SimpleUnit.isTimeUnit(unit))
+    return AxisType.Time;
+ 
+    // look for other z coordinate
+  if (SimpleUnit.isCompatible(&quot;m&quot;, unit))
+    return AxisType.Height;
+  if (SimpleUnit.isCompatible(&quot;mbar&quot;, unit))
+    return AxisType.Pressure;
+  if (unit.equalsIgnoreCase(&quot;level&quot;) || unit.equalsIgnoreCase(&quot;layer&quot;) || unit.equalsIgnoreCase(&quot;sigma_level&quot;))
+    return AxisType.GeoZ;
+   
+  String positive = ncDataset.findAttValueIgnoreCase((Variable) v, &quot;positive&quot;, null);
+  if (positive != null) {
+    if (SimpleUnit.isCompatible(&quot;m&quot;, unit))
+      return AxisType.Height;
+    else
+      return AxisType.GeoZ;
+  }
+  return null;
 }</pre>
 <h3><a name="CoordTrans"></a>Creating Coordinate Transformations</h3>
 <p>A more complex task is to create Coordinate Transforms, which map your coordinates to reference coordinates, such as lat/lon. A Coordinate Transform is typically represented by a <em><strong>Coordinate Transform Variable</strong></em>, which may be a dummy variable (ie has no data in it),  and whose attributes document the meaning and specify any needed parameters for it. You can create arbitrary transforms by  creating <strong>ucar.nc2.dataset.</strong><strong>CoordinateTransform</strong> objects, which your code will have access to when it opens a NetcdfDataset. </p>
@@ -196,7 +206,7 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 <p>For this lesson, we will concentrate on what your CoordSysBuilder  needs to do to use an existing standard or user written Projection or VerticalTransform class. </p>
 <p>You can create the Coordinate Transform objects yourself, by overriding the <strong>makeCoordinateTransforms</strong>() and <strong>assignCoordinateTransforms</strong>() methods in CoordSysBuilder. Much easier is to  use the existing machinery and create a <em><strong>Coordinate Transform Variable </strong></em>which represents the parameters of the transform in a  way recognized by a <strong>CoordTransBuilder </strong>class.</p>
 <p>Here is an example of one way to do that: </p>
-<pre> public void <strong>augmentDataset</strong>( NetcdfDataset ds, CancelTask cancelTask) throws IOException {<br>
+<pre> public void <strong>augmentDataset</strong>( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
    // read global parameters
 <strong>1) </strong>double lat_origin = findAttributeDouble( ds, &quot;LAT0&quot;);
    double lon_origin = findAttributeDouble( ds, &quot;LON0&quot;);
@@ -211,11 +221,10 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
    
 <strong>3) </strong>v.addAttribute( new Attribute(_Coordinate.TransformType, TransformType.Projection.toString());
 <strong>4) </strong>v.addAttribute( new Attribute(_Coordinate.AxisTypes, &quot;GeoX GeoY&quot;);
-</pre>
-<pre> // fake data
+   // fake data
 <strong>5)</strong> Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {}, new char[] {' '});
-   v.setCachedData(data, true);</pre>
-<pre><strong>6) </strong>ds.addVariable(v);
+   v.setCachedData(data, true);
+<strong>6) </strong>ds.addVariable(v);
    ds.finish();
 }
 </pre>
@@ -244,8 +253,7 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 
 <strong>4) </strong>VariableDS v = <strong>makeCoordinateTransformVariable</strong>(ds, projCT);
 <strong>5) </strong>v.addAttribute( new Attribute(_Coordinate.AxisTypes, &quot;GeoX GeoY&quot;));
-</pre>
-<pre><strong>6) </strong>ds.addVariable(v);
+<strong>6) </strong>ds.addVariable(v);
    ds.finish();
 }
 </pre>
@@ -268,14 +276,14 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 </ol>
 <p>The <strong>augmentDataset()</strong> method is where subclasses should modify the underlying dataset.</p>
 <p>The <strong>buildCoordinateSystems</strong>() method is where CoordSysBuilder constructs the Coordinate Systems and adds them to the dataset. In some special cases, the subclass may need to override some of the methods that are called by <strong>buildCoordinateSystems</strong>. </p>
-<pre>protected void buildCoordinateSystems( NetcdfDataset ncDataset) {<br>  // put status info into parseInfo to be shown to someone trying to debug this process<br>  parseInfo.append(&quot;Parsing with Convention = &quot;+conventionName+&quot;\n&quot;);</pre>
-<pre>  // Bookeeping info for each variable is kept in the VarProcess inner class
+<pre>protected void buildCoordinateSystems( NetcdfDataset ncDataset) {<br>  // put status info into parseInfo to be shown to someone trying to debug this process<br>  parseInfo.append(&quot;Parsing with Convention = &quot;+conventionName+&quot;\n&quot;);
+  // Bookeeping info for each variable is kept in the VarProcess inner class
   List vars = ncDataset.getVariables();
   for (int i = 0; i &lt; vars.size(); i++) {
     VariableEnhanced v = (VariableEnhanced) vars.get(i);
     varList.add( new VarProcess(ncDataset, v));
-  }</pre>
-<pre>  // identify which variables are coordinate axes
+  }
+    // identify which variables are coordinate axes
   <strong>findCoordinateAxes</strong>( ncDataset);
   
   // identify which variables are used to describe coordinate system
@@ -288,23 +296,28 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
   <strong>makeCoordinateAxes</strong>( ncDataset);
 
   // make Coordinate Systems for all Coordinate Systems Variables
-  <strong>makeCoordinateSystems</strong>( ncDataset);</pre>
-<pre>  // assign explicit CoordinateSystem objects to variables
-  <strong>assignExplicitCoordinateSystems</strong>( ncDataset);</pre>
-<pre>  // assign implicit CoordinateSystem objects to variables
-  <strong>makeCoordinateSystemsImplicit</strong>( ncDataset);</pre>
-<pre>  // optionally assign implicit CoordinateSystem objects to variables that dont have one yet
+  <strong>makeCoordinateSystems</strong>( ncDataset);
+    
+  // assign explicit CoordinateSystem objects to variables
+  <strong>assignExplicitCoordinateSystems</strong>( ncDataset);
+    
+  // assign implicit CoordinateSystem objects to variables
+  <strong>makeCoordinateSystemsImplicit</strong>( ncDataset);
+    
+  // optionally assign implicit CoordinateSystem objects to variables that dont have one yet
   if (useMaximalCoordSys)
-    <strong>makeCoordinateSystemsMaximal</strong>( ncDataset);</pre>
-<pre>  // make Coordinate Transforms
-  <strong>makeCoordinateTransforms</strong>( ncDataset);</pre>
-<pre>  // assign Coordinate Transforms
+    <strong>makeCoordinateSystemsMaximal</strong>( ncDataset);
+     
+   // make Coordinate Transforms
+  <strong>makeCoordinateTransforms</strong>( ncDataset);
+   
+  // assign Coordinate Transforms
   <strong>assignCoordinateTransforms</strong>( ncDataset);
 }</pre>
 <p>To work at this level, you will need to study the source code of <strong>CoordSysBuilder</strong>, and existing subclasses in the <strong>ucar.nc2.dataset.conv</strong> package. As a subclass, you will have access to the list of VarProcess objects, which wrap each variable in the Dataset, and keep track of various information about them. </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 21, 2006
+<img src="../nc.gif" width="64" height="64"> This document was last updated July 20113
 </address>
 <p>&nbsp;</p>
 </body>

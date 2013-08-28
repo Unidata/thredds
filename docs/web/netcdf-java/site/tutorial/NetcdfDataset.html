@@ -4,6 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>NetcdfDataset Tutorial</title>
+   <link rel="stylesheet" href="../cdm.css" type="text/css" />
 </head>
 
 <body>
@@ -31,9 +32,10 @@
 </pre>
 <p class="MsoBodyTextIndent"><span style="">NetcdfDataset.openFile does the follwing<span style="">:</span></span></p>
 <ul>
-  <li>Opens an OPeNDAP remote dataset, if the location is a URL that starts with <strong>http:</strong> or <strong>dods:</strong> </li>
-  <li>Opens a THREDDS dataset, if the location starts with <strong>thredds:&lt;catalog&gt;#&lt;datasetId&gt;</strong></li>
-  <li>Opens an NcML dataset, if the location ends with <strong>.xml</strong> or <strong>.ncml</strong> </li>
+  <li>Opens an OPeNDAP remote dataset, if the location is a URL that starts with <strong>http:</strong> , <strong>dods:</strong> or <strong>dap4:</strong> (version 4.4+)</li>
+  <li>Opens a <a href="../stream/CdmRemote.html">CdmRemote</a>  dataset, if the location is a URL that starts with <strong>cdmremote: </strong></li>
+  <li>Opens a THREDDS dataset, if the location look like <strong>thredds:&lt;catalog&gt;#&lt;datasetId&gt;</strong></li>
+  <li>Opens an NcML dataset, if the location ends with <strong>.xml</strong> or <strong>.ncml</strong> , or its a URL starting with <strong>ncmdl:</strong>  (version 4.4+)</li>
   <li>Otherwise, it calls <span class="MsoBodyTextIndent"><strong>NetcdfFile.open</strong></span>, which handles local file or <a href="NetcdfFile.html#HTTP">HTTP access</a> to any CDM file.</li>
 </ul>
 <h3 class="MsoNormal">Using <span class="MsoBodyTextIndent"><span style=""><span style=""><span style=""><b><i>NetcdfDataset.openDataset</i></b> </span></span></span></span>to open an enhanced <span style=""><span style=""><span style=""><span style=""><span style=""><a>NetcdfDataset</a></span></span></span></span></span> </h3>
@@ -59,57 +61,39 @@
  <pre><b>   unpacked_data_value = packed_data_value * scale_factor + add_offs</b><strong>et</strong></pre>
 usually the packed data type is byte or short, and the unpacked type is float or double, so the data type of the packed data Variable is promoted to float or double.
 <p>Missing data is indicated by the <strong>valid_min</strong>, <strong>valid_max</strong>, <strong>valid_range</strong>, <strong>missing_value</strong> or <strong>_FillValue</strong> attributes. When a Variable has any of these attributes, the <strong>VariableDS.hasMissing()</strong> method returns true. You can test for missing values with the <strong>VariableDS.isMissing( value) </strong>method. </p>
-<p>To open a NetcdfDataset in enhanced mode, toggle the enhance button <img src="enhanceButton.jpg" width="31" height="32"> on the ToolsUI Viewer tab to ON. </p>
+<p>To open a NetcdfDataset in enhanced mode, toggle the enhance button <img src="images/enhanceButton.jpg" width="31" height="32"> on the ToolsUI Viewer tab to ON. </p>
 <h3> Coordinate Systems </h3>
 <p>NetcdfDataset will try to identify the Coordinate Systems in the dataset by calling a CoordSystemBuilder class that knows how to interpret the Conventions for that dataset. The information is placed in Coordinate objects that follow this abstract model (see the javadoc for the specifics): </p>
 <p>:<img src="../images/CoordSys.png" width="610" height="341"></p>
-<p>To write your Coordinate System Builder, see <a href="CoordSysBuilder.html">here</a>. Currently we have CoordSysBuilders for the following Conventions:</p>
-<ul>
-  <li>ADAS</li>
-  <li>ATDRadar</li>
-  <li>AWIPS</li>
-  <li>AWIPS satellite</li>
-  <li> CF-1.0</li>
-  <li>COARDS</li>
-  <li>CSM (outdated - use CF) </li>
-  <li>EpicInsitu</li>
-  <li>GDV (default)</li>
-  <li>GIEF</li>
-  <li>IFPS</li>
-  <li>M3IO</li>
-  <li>MADIS</li>
-  <li>NUWG</li>
-  <li>WRF</li>
-  <li><a href="../reference/CoordinateAttributes.html">_Coordinate</a> </li>
-</ul>
+<p>To write your Coordinate System Builder, see <a href="CoordSysBuilder.html">here</a>. To see the list of CoordinateBuilder classes, look at the source code in the<strong> ucar.nc2.dataset.conv</strong> package.</p>
 <p>When writing netCDF files, we recommend using the <a href="http://cf-pcmdi.llnl.gov/">Climate and Forcast (CF) Convention</a> if possible. When an IOSP reads in a non-netCDF file, it should choose a Convention to use to encode the Coordinate Systems. </p>
 <h3>Using ToolsUI </h3>
 <p>You can use ToolsUI <strong>CoordSys</strong> Tab to view the Coordinate Systems that have been constructued. This consists of 3 tables that show the data variables, the coordinate systems, and the coordinate axes. </p>
-<p><img src="TUIcoordSys.jpg" width="1046" height="587"></p>
+<p><img src="images/TUIcoordSys.jpg" width="1046" height="587"></p>
 <hr>
-<h2>Advanced Use of NetcdfDataset</h2>
+<h2>Advanced Use of NetcdfDataset (version 4.2+)</h2>
 <p>The following is applicable to version 4  of the Netcdf-Java library. Netcdf-Java version 2.2 effectively has only two enhance modes, <strong>All</strong> and <strong>None</strong>. </p>
-<h3><a name="enhance"></a>NetcdfDataset.EnhanceMode </h3>
-<p>The kind of enhancements made when a NetcdfDataset is opened is controlled by <strong>NetcdfDataset.EnhanceMode</strong>, an enumerated type with these possible values:</p>
+<h3><a name="enhance"></a>NetcdfDataset.Enhance </h3>
+<p>The kind of enhancements made when a NetcdfDataset is opened is described by <strong>NetcdfDataset.Enhance</strong>, an enumerated type with these possible values:</p>
 <ul>
-  <li> <strong>All</strong> : process scale/offset/missing attributes and add coordinate systems</li>
-  <li> <strong>ScaleMissing</strong> : just process scale/offset/missing attributes</li>
-  <li> <strong>ScaleMissingDefer</strong> : caclulate scale/offset/missing info, but dont automatically convert data </li>
-  <li> <strong>CoordSystem</strong> : just add coordinate systems</li>
-  <li> <strong>AllDefer</strong> : process scale/offset/missing attributes (but dont automatically convert data) and add coordinate systems</li>
-  <li><strong>None</strong> : no enhancements</li>
+  <li> <strong>ScaleMissing</strong> :  process scale/offset/missing attributes, and convert data</li>
+  <li> <strong>ScaleMissingDefer</strong> : calculate scale/offset/missing info, but dont automatically convert data. </li>
+  <li> <strong>CoordSystems</strong> : just add coordinate systems</li>
+  <li><strong>ConvertEnums</strong>: convert enums to Strings</li>
 </ul>
-<p>This allows you to choose to 1) add coordinate systems or not, and 2) process scale/offset/missing attributes or not, and 3) if you do process scale/offset/missing attributes, convert the Variable and its data automatically or manually. </p>
-<p>When using the <strong>All</strong> or <strong>ScaleMissing</strong> enhance mode, scale/offset/missing attributes are processed when the dataset is opened, and the datatype of a Variable is promoted if necessary to match the unpacked data type. When data is read, the data is automatically converted. </p>
-<p>For performance-sensitive applications, you may want control over when to convert data. When using the <strong>AllDefer</strong> or <strong>ScaleMissingDefer</strong> enhance mode, the  scale/offset/missing attributes are processed when the dataset is opened, but no Variable type promotion is done, and data is not automatically converted when read. After reading data, you can convert the entire Array with <em>VariableEnhanced.convertArray(Array data)</em>, or convert single values with the <em>convertScaleOffsetMissing</em> methods, eg <em>VariableEnhanced.convertScaleOffsetMissing(byte value)</em>.</p>
-<p>When <strong>CoordSystem</strong>, <strong>All</strong>, or<strong> AllDefer</strong> enhance mode is used,  <em>CoordSysBuilder</em>  is called to populate the coordinate system objects in the NetcdfDataset when the dataset is opened.</p>
-<p>The simplest factory method, <em>NetcdfDataset.openDataset( location)</em>, uses the <em><strong>default enhance mode</strong></em>. Other factory methods with a boolean enhance parameter, such as <em>NetcdfDataset.openDataset(String location, boolean enhance, CancelTask cancelTask)</em> use the default enhance mode if <em>enhance</em> is true, and <strong>EnhanceMode</strong>.<strong>None</strong> if <em>enhance</em> is false. Other classes, such as GridDataset, also use the default enhance mode. The default enhance mode is by default set to <strong>EnhanceMode.All, </strong>and can be changed through   <strong>NetcdfDataset.setDefaultEnhanceMode(NetcdfDataset.EnhanceMode mode)</strong>.</p>
+<p>When using the<strong> ScaleMissing</strong> enhance mode, scale/offset/missing attributes are processed when the dataset is opened, and the datatype of a Variable is promoted if necessary to match the unpacked data type. Data is automatically converted when  read. </p>
+<p>When using the<strong> ScaleMissingDefer</strong> enhance mode, scale/offset/missing attributes are processed when the dataset is opened, but the datatype of a Variable is NOT promoted, and data is not converted. After reading data, you can convert the entire Array with <em>VariableEnhanced.convertArray(Array data)</em>, or convert single values with the <em>convertScaleOffsetMissing</em> methods, eg <em>VariableEnhanced.convertScaleOffsetMissing(byte value)</em>. </p>
+<p>When using <strong>CoordSystems</strong><strong> </strong>enhance mode, <em>CoordSysBuilder</em> is called to populate the coordinate system objects in the NetcdfDataset when the dataset is opened.</p>
+<p>When using <strong>ConvertEnums</strong> enhance mode,  Variables of type <strong>enum</strong> are promoted to String types and data is automatically converted using the EnumTypedef objectss, which are maps of the stored integer values to String values.</p>
+<p>The enhancement of a dataset can be controlled by passing in a Set of Enhance to <strong>NetcdfDataset</strong>.openDataset(). The default enhance mode is</p>
+<pre> Set&lt;Enhance&gt; EnhanceAll = Collections.unmodifiableSet(EnumSet.of(<strong>Enhance.ScaleMissing, Enhance.CoordSystems, Enhance.ConvertEnums</strong>));</pre>
+<p>and can be changed through <strong>NetcdfDataset.setDefaultEnhanceMode(Set&lt;Enhance&gt; mode)</strong>.</p>
+<p>The simplest factory method, <em>NetcdfDataset.openDataset( location)</em>, uses the <em><strong>default enhance mode</strong></em>. Other factory methods with a boolean enhance parameter, such as <em>NetcdfDataset.openDataset(String location, boolean enhance, CancelTask cancelTask)</em> use the default enhance mode if <em>enhance</em> is true, and <strong>EnhanceMode</strong>.<strong>None</strong> if <em>enhance</em> is false. Other classes, such as GridDataset, also use the default enhance mode. </p>
 <h3>Advanced options when opening </h3>
 <p>The most general factory method for opening NetcdfDataset allows one to explicitly set the EnhanceMode:</p>
-<pre><strong>  NetcdfDataset openDataset(String location, EnhanceMode enhanceMode, int buffer_size, CancelTask cancelTask, Object spiObject); </strong></pre>
-<p>One can also set the buffer size used for reading data, and pass an arbitrary object to the IOServiceProvider that handles the dataset. These parameters correspond to the ones in the similar factory method for NetcdfFile:</p>
-<pre><strong>  NetcdfFile openFile(String location, int buffer_size, CancelTask cancelTask, Object spiObject); 
- </strong></pre>
+<pre><strong>NetcdfDataset openDataset(String location, Set&lt;Enhance&gt; enhanceMode, int buffer_size, CancelTask cancelTask, Object spiObject);<br></strong></pre>
+<p>One can also set the buffer size used for reading data, pass in a CancelTask object to allow user cancelling, and pass an arbitrary object to the IOServiceProvider that handles the dataset. These last 3 parameters correspond to the ones in the similar factory method for NetcdfFile:</p>
+<pre><strong>  NetcdfFile openFile(String location, int buffer_size, CancelTask cancelTask, Object spiObject); </strong></pre>
 <h3>Caching NetcdfDataset and NetcdfFile</h3>
 <p>Advanced applications like servers might want to enable the caching  of NetcdfDataset and NetcdfFile objects in memory, for performance. Caching is safe to use in a multithreaded environment such as a servlet container like Tomcat. Caching keeps resources such as  file handles open, and so cache sizes should be carefully considered. </p>
 <p>To enable caching, you must first call</p>
@@ -134,7 +118,7 @@ usually the packed data type is byte or short, and the unpacked type is float or
 <p class="MsoNormal" style="text-indent: 20.25pt;"></p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document was last updated on June 5, 2008
+<img src="../nc.gif" width="64" height="64"> This document was last updated on July 2013
 </address>
 <p>&nbsp;</p>
 </body>

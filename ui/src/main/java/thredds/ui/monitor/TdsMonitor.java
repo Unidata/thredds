@@ -74,7 +74,7 @@ public class TdsMonitor extends JPanel {
   private static PreferencesExt prefs;
   private static XMLStore store;
 
-  private ucar.util.prefs.PreferencesExt mainPrefs;
+  private PreferencesExt mainPrefs;
   private JTabbedPane tabbedPane;
   private ManagePanel managePanel;
   private AccessLogPanel accessLogPanel;
@@ -88,7 +88,7 @@ public class TdsMonitor extends JPanel {
   //private HTTPSession session;
   // private CredentialsProvider provider;
 
-  public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
+  public TdsMonitor(PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
@@ -566,8 +566,8 @@ public class TdsMonitor extends JPanel {
 
     // prefs storage
     try {
-      String prefStore = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "TdsMonitor.xml");
-      store = ucar.util.prefs.XMLStore.createFromFile(prefStore, null);
+      String prefStore = XMLStore.makeStandardFilename(".unidata", "TdsMonitor.xml");
+      store = XMLStore.createFromFile(prefStore, null);
       prefs = store.getPreferences();
       Debug.setStore(prefs.node("Debug"));
     } catch (IOException e) {

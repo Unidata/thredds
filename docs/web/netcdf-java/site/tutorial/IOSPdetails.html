@@ -3,16 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>IOSP Details</title>
-<style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
-code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;}
-.style1 {font-weight: bold}
-</style>
+   <link rel="stylesheet" href="../cdm.css" type="text/css" />
 </head>
 
 <body>
 <h1><img src="../netcdfBig.gif" width="100" height="55" />Writing an IOSP : Details</h1>
+<hr />
 <h2>Registering an IOSP</h2>
 <p><strong>IOSPs</strong> are loaded by registering them with  the <strong>NetcdfFile</strong> class:</p>
 <pre><span class="style1"><strong> </strong>  ucar.nc2.NetcdfFile.registerIOProvider(Class iospClass) throws IllegalAccessException, InstantiationException;
@@ -191,8 +187,7 @@ dl {margin: 10px 5px 5px 15px;}
 }
 </pre>
  <p>The <strong>setSPobject</strong>() and <strong>getSPobject</strong>() methods on the Variable are for the exclusive use of the IOSP. Use them in any way you need. </p>
- <h2><br>
-  The close() method</h2>
+ <h2>  The close() method</h2>
 <pre>  // Close the file.
   public void <strong>close</strong>() throws IOException;
 </pre>
@@ -203,10 +198,9 @@ dl {margin: 10px 5px 5px 15px;}
 <p>Adding <a href="../CDM/index.html">Coordinate System</a> information is the single most useful thing you can do to your datasets, to make them accessible to other programmers. As the IOSP writer, you are in the best position to understand the data in the file and correctly interpret it. You should, in fact, understand what the Coordinate Systems are at the same time you are deciding what the Dimension, Variables, and Attribute objects are.</p>
 <p>Since there is no CoordinateSystem object directly stored in a netCDF file,  CoordinateSystem information is encoded using a <em><a href="http://www.unidata.ucar.edu/software/netcdf/conventions.html">Convention</a></em> for adding Attributes, naming Variables and Dimensions, etc. in a standard way. The simplest and most direct way to add Coordinate Systems is to use the CDM <a href="CoordinateAttributes.html">_Coordinate Attribute Conventions</a>.  Another approach is to follow an existing Convention, in particular the <a href="http://www.cfconventions.org/">CF Convention</a> is an increasingly important one for gridded model data, and work is being done to make it applicable to other kinds of data. </p>
 <p>When a client opens your file through the NetcdfFile interface, they see exactly what Dimension, Variables, and Attribute objects you have populated the NetcdfFile object with, no more and no less. When a client uses the NetcdfDataset interface in <em>enhanced</em> mode, the Coordinate System information is parsed by a <a href="CoordSysBuilder.html"><em>CoordSysBuilder</em></a> object, and Coordinate Axis, Coordinate System, and Coordinate Transform objects are created and made available through the NetcdfDataset API. In some cases, new Variables, Dimensions and Attributes may be created. Its very important that the IOSP writer follow an existing Convention and ensure that the Coordinate System information is correctly interpreted, particularly if you want to take advantage of the capabilities of the CDM Scientific Datatype Layer, such as serving the data through <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/WCS.html">WCS</a> or the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/NetcdfSubsetService.html">Netcdf Subset Service</a>. </p>
-<p>&nbsp;</p>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Feb  2011
+<img src="../nc.gif" width="64" height="64" /> This document was last updated July 2013
 </address>
 <p>&nbsp; </p>
 </body>

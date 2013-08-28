@@ -284,10 +284,9 @@ public class RadarDayCollection implements Serializable {
       RadarDayCollection rdc = (RadarDayCollection) in.readObject();
       in.close();
       return rdc;
-    } catch (IOException ex) {
-      ex.printStackTrace();
-    } catch (ClassNotFoundException ex) {
-      ex.printStackTrace();
+    } catch (Exception ex) {
+      log.error("RadarDayCollection reading "+sfile, ex) ;
+
     } finally {
       if (in != null) {
         try {

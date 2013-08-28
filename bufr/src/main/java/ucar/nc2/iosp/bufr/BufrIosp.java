@@ -52,6 +52,7 @@ import java.util.*;
  * @author caron
  */
 public class BufrIosp extends AbstractIOServiceProvider {
+  static final String TIME_NAME = "time";
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp.class);
   static public final String obsRecord = "obs";
   static final String obsIndex = "obsRecordIndex";
@@ -266,7 +267,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     if (as instanceof ArrayStructureBB) {
       ArrayStructureBB asbb = (ArrayStructureBB) as;
-      StructureMembers.Member m = asbb.findMember( ConstructNC.TIME_NAME);
+      StructureMembers.Member m = asbb.findMember( TIME_NAME);
       StructureDataIterator iter = as.getStructureDataIterator();
       try {
         int recno = 0;
@@ -289,7 +290,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       } finally {
         iter.finish();
       }
-      StructureMembers.Member m = as.findMember(ConstructNC.TIME_NAME);
+      StructureMembers.Member m = as.findMember(TIME_NAME);
       m.setDataArray(timeData);
     }
   }

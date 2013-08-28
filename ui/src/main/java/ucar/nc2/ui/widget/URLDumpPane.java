@@ -38,7 +38,8 @@ import ucar.nc2.util.net.HTTPSession;
 import org.apache.commons.httpclient.Header;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.*;
 
 import java.awt.*;

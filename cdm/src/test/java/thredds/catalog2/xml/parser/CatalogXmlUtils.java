@@ -1,7 +1,6 @@
 package thredds.catalog2.xml.parser;
 
 import thredds.catalog2.builder.*;
-import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
 import thredds.catalog2.xml.writer.ThreddsXmlWriter;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterFactory;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
@@ -10,7 +9,6 @@ import thredds.catalog.ServiceType;
 
 import java.util.List;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.io.StringReader;
 
 import static org.junit.Assert.*;
@@ -149,7 +147,7 @@ public class CatalogXmlUtils
     serviceBldr = serviceBldrs.get( 1);
     assertEquals( serviceBldr.getName(), "wcs" );
     assertEquals( serviceBldr.getType(), ServiceType.WCS );
-    assertEquals( serviceBldr.getBaseUri().toString(), "/thredds/wcs/" );
+    assertEquals( serviceBldr.getBaseUri().toString(), "/thredds/wcs/wcs/");
 
     serviceBldr = serviceBldrs.get( 2);
     assertEquals( serviceBldr.getName(), "wms" );

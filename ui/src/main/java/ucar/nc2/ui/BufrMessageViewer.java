@@ -35,6 +35,7 @@ package ucar.nc2.ui;
 
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.CancelTask;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -43,7 +44,6 @@ import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.*;
-import ucar.nc2.units.DateFormatter;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
 
@@ -83,20 +83,60 @@ public class BufrMessageViewer extends JPanel {
   private StructureTable dataTable;
   private IndependentWindow dataWindow;
   private FileManager fileChooser;
-  private DateFormatter df = new DateFormatter();
-  private boolean seperateWindow = false, doRead = false;
+  private boolean seperateWindow = false;
 
   public BufrMessageViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    AbstractButton showButt = BAMutil.makeButtcon("addCoords", "Read Data", false);
+    AbstractButton tableButt = BAMutil.makeButtcon("Structure", "Data Table", false);
+    tableButt.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          NetcdfDataset ncd = makeBufrDataset() ;
+          Variable v = ncd.findVariable(BufrIosp.obsRecord);
+          if ((v != null) && (v instanceof Structure)) {
+            if (dataTable == null) makeDataTable();
+            dataTable.setStructure((Structure) v);
+            dataWindow.show();
+          }
+        } catch (Exception ex) {
+          JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
+          ex.printStackTrace();
+        }
+      }
+    });
+    buttPanel.add(tableButt);
+
+    AbstractButton configButt = BAMutil.makeButtcon("Dump", "Make BufrConfig", false);
+    configButt.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (raf == null) return;
+        try {
+          BufrConfig config = BufrConfig.openFromBufrFile(raf, true);
+          Formatter out = new Formatter();
+          config.show(out);
+          infoTA2.setText(out.toString());
+
+        } catch (Exception ex) {
+          ex.printStackTrace();
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+          ex.printStackTrace(new PrintStream(bos));
+          infoTA2.setText(bos.toString());
+        }
+        infoTA2.gotoTop();
+        infoWindow2.show();
+      }
+    });
+    buttPanel.add(configButt);
+
+    AbstractButton showButt = BAMutil.makeButtcon("GetAll", "Read All Data", false);
     showButt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        List<Object> obs = messageTable.getBeans();
-        for (Object ob : obs) {
-          MessageBean mb = (MessageBean) ob;
-          mb.read();
-        }
+        Formatter f = new Formatter();
+        readData(f);
+        infoTA2.setText(f.toString());
+        infoTA2.gotoTop();
+        infoWindow2.show();
       }
     });
     buttPanel.add(showButt);
@@ -104,12 +144,30 @@ public class BufrMessageViewer extends JPanel {
     AbstractAction seperateWindowAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        seperateWindow = state.booleanValue();
+        seperateWindow = state;
       }
     };
-    BAMutil.setActionProperties(seperateWindowAction, "addCoords", "seperate DDS window", true, 'C', -1);
-    seperateWindowAction.putValue(BAMutil.STATE, new Boolean(seperateWindow));
+    BAMutil.setActionProperties(seperateWindowAction, "DrawVert", "seperate DDS window", true, 'C', -1);
+    seperateWindowAction.putValue(BAMutil.STATE, Boolean.valueOf(seperateWindow));
     BAMutil.addActionToContainer(buttPanel, seperateWindowAction);
+
+    AbstractButton distinctDdsButt = BAMutil.makeButtcon("dd", "Dump distinct DDS", false);
+    distinctDdsButt.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        dumpDDS();
+      }
+    });
+    buttPanel.add(distinctDdsButt);
+
+    AbstractButton distinctMessButt = BAMutil.makeButtcon("Import", "Write distinct messages", false);
+    distinctMessButt.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        writeAll();
+      }
+    });
+    buttPanel.add(distinctMessButt);
+
+    ///////////////////////////////////////
 
     messageTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
     messageTable.addListSelectionListener(new ListSelectionListener() {
@@ -131,12 +189,16 @@ public class BufrMessageViewer extends JPanel {
       }
     });
 
+    /////////////////////////
+
     obsTable = new BeanTableSorted(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
     obsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         ObsBean csb = (ObsBean) obsTable.getSelectedBean();
       }
     });
+
+    //////////////////////////////
 
     ddsTable = new BeanTableSorted(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
     ddsTable.addListSelectionListener(new ListSelectionListener() {
@@ -184,7 +246,7 @@ public class BufrMessageViewer extends JPanel {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         if (mb == null) return;
         try {
-          NetcdfDataset ncd = getBufrMessageAsDataset(mb.m);
+          NetcdfDataset ncd = makeBufrMessageAsDataset(mb.m);
           Variable v = ncd.findVariable(BufrIosp.obsRecord);
           if ((v != null) && (v instanceof Structure)) {
             if (dataTable == null) makeDataTable();
@@ -197,6 +259,14 @@ public class BufrMessageViewer extends JPanel {
           JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
           ex.printStackTrace();
         }
+      }
+    });
+
+    varPopup.addAction("BitCount", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        if (mb == null) return;
+        mb.checkBits();
       }
     });
 
@@ -246,14 +316,6 @@ public class BufrMessageViewer extends JPanel {
       }
     });
 
-    varPopup.addAction("BitCount", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-        if (mb == null) return;
-        mb.checkBits();
-      }
-    });
-
     varPopup.addAction("Write Message", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
@@ -281,7 +343,9 @@ public class BufrMessageViewer extends JPanel {
           File file = new File(filename);
           FileOutputStream fos = new FileOutputStream(file);
           WritableByteChannel wbc = fos.getChannel();
-          wbc.write(ByteBuffer.wrap(mb.m.getHeader().getBytes()));
+          String headerS = mb.m.getHeader();
+          if (headerS != null)
+            wbc.write(ByteBuffer.wrap(headerS.getBytes()));
 
           byte[] raw = scan.getMessageBytes(mb.m);
           wbc.write(ByteBuffer.wrap(raw));
@@ -295,18 +359,6 @@ public class BufrMessageViewer extends JPanel {
       }
     });
 
-    varPopup.addAction("Dump distinct DDS", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        dumpDDS();
-      }
-    });
-
-    varPopup.addAction("Write all distinct messages", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        writeAll();
-      }
-    });
-
     varPopup.addAction("Show XML", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
@@ -317,7 +369,7 @@ public class BufrMessageViewer extends JPanel {
         try {
           infoTA.clear();
 
-          NetcdfDataset ncd = getBufrMessageAsDataset(mb.m);
+          NetcdfDataset ncd = makeBufrMessageAsDataset(mb.m);
           new Bufr2Xml(m, ncd, out, true);
           infoTA.setText(out.toString());
 
@@ -388,7 +440,9 @@ public class BufrMessageViewer extends JPanel {
         File file = new File(dirName + "/" + header + ".bufr");
         FileOutputStream fos = new FileOutputStream(file);
         WritableByteChannel wbc = fos.getChannel();
-        wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
+        String headerS = m.getHeader();
+        if (headerS != null)
+          wbc.write(ByteBuffer.wrap(headerS.getBytes()));
         byte[] raw = scan.getMessageBytes(m);
         wbc.write(ByteBuffer.wrap(raw));
         wbc.close();
@@ -402,10 +456,28 @@ public class BufrMessageViewer extends JPanel {
     }
   }
 
+  private void readData(Formatter f) {
+    List<MessageBean> beans = messageTable.getBeans();
+    int count = 0;
+    try {
+      for (MessageBean bean : beans) {
+        bean.read();
+        count++;
+      }
+      f.format("Read %d messages", count);
+
+    } catch (Exception e) {
+       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+       e.printStackTrace(new PrintStream(bos));
+       f.format("%s", bos.toString());
+    }
+  }
+
   private void dumpDDS() {
     List<MessageBean> beans = messageTable.getBeans();
     HashMap<Integer, Message> map = new HashMap<Integer, Message>(2 * beans.size());
 
+    // unique DDS
     for (MessageBean mb : beans) {
       map.put(mb.m.hashCode(), mb.m);
     }
@@ -471,10 +543,17 @@ public class BufrMessageViewer extends JPanel {
     ddsTable.setBeans(new ArrayList());
   }
 
-  private NetcdfDataset getBufrMessageAsDataset(Message m) throws IOException {
-    BufrIosp iosp = new BufrIosp();
+  private NetcdfDataset makeBufrMessageAsDataset(Message m) throws IOException {
+    BufrIosp2 iosp = new BufrIosp2();
     BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
     iosp.open(raf, ncfile, m);
+    return new NetcdfDataset(ncfile);
+  }
+
+  private NetcdfDataset makeBufrDataset() throws IOException {
+    BufrIosp2 iosp = new BufrIosp2();
+    BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
+    iosp.open(raf, ncfile, (CancelTask) null);
     return new NetcdfDataset(ncfile);
   }
 
@@ -497,7 +576,7 @@ public class BufrMessageViewer extends JPanel {
 
     java.util.List<ObsBean> beanList = new ArrayList<ObsBean>();
     try {
-      NetcdfDataset ncd = getBufrMessageAsDataset(m);
+      NetcdfDataset ncd = makeBufrMessageAsDataset(m);
       Variable v = ncd.findVariable(BufrIosp.obsRecord);
       if ((v != null) && (v instanceof Structure)) {
         Structure obs = (Structure) v;
@@ -562,8 +641,7 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getHash() {
-      return Integer.toHexString(m.dds.getDataDescriptors().hashCode());
-      // return Integer.toHexString(m.hashCode());
+      return Integer.toHexString(m.hashCode());
     }
 
     public String getCompress() {
@@ -628,7 +706,7 @@ public class BufrMessageViewer extends JPanel {
 
     private void read() {
       try {
-        NetcdfDataset ncd = getBufrMessageAsDataset(m);
+        NetcdfDataset ncd = makeBufrMessageAsDataset(m);
         SequenceDS v = (SequenceDS) ncd.findVariable(BufrIosp.obsRecord);
         StructureDataIterator iter = v.getStructureIterator(-1);
         try {

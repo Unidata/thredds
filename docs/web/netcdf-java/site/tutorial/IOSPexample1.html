@@ -4,11 +4,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>IOSP Example 1</title>
+   <link rel="stylesheet" href="../cdm.css" type="text/css" />
 </head>
 
 <body>
 <h1><img src="../netcdfBig.gif" width="100" height="55">Writing an IOSP : Example 1 </h1>
-<p>We will work on an example<a href="lightningData.txt"> lightning data</a> test file, which looks like:</p>
+<hr>
+<p>We will work on an example<a href="files/lightningData.txt"> lightning data</a> test file, which looks like:</p>
 <blockquote>
   <pre>USPLN-LIGHTNING,2006-10-23T18:01:00,2006-10-23T18:01:00
 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,1
@@ -43,32 +45,35 @@
 </ol>
 <h3> public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;</h3>
 <p>In this method, we have to add all the Variable, Attributes and Dimensions to the empty NetcdfFile object. The Dimensions have to have the actual lengths in them, so we need to find out how many strike records there are. Since these are variable length records, we have no choice but to read through the entire file. So we start with creating a private method to do so. We will ignore the occasional header records, and place each strike into a Strike object: </p>
-<pre> private int <strong>readAllData</strong>(RandomAccessFile raf) throws IOException, NumberFormatException, ParseException {<br>   ArrayList records = new ArrayList();</pre>
-<pre>1) java.text.SimpleDateFormat isoDateTimeFormat = <strong>new java.text.SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;)</strong>;
-   isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone(&quot;GMT&quot;));</pre>
-<pre>2) <strong>raf.seek(0)</strong>;
+<pre> private int <strong>readAllData</strong>(RandomAccessFile raf) throws IOException, NumberFormatException, ParseException {
+   ArrayList records = new ArrayList();
+1) java.text.SimpleDateFormat isoDateTimeFormat = <strong>new java.text.SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;)</strong>;
+   isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone(&quot;GMT&quot;));
+2) <strong>raf.seek(0)</strong>;
    while (true) {
      String line = <strong>raf.readLine()</strong>;
 3)   if (line == null) break;
-4)   if (line.startsWith(MAGIC)) continue;</pre>
-<pre>5)   StringTokenizer stoker = <strong>new StringTokenizer( line, &quot;,\r\n&quot;)</strong>;
+4)   if (line.startsWith(MAGIC)) continue;
+5)   StringTokenizer stoker = <strong>new StringTokenizer( line, &quot;,\r\n&quot;)</strong>;
      while (stoker.hasMoreTokens()) {
 6)     Date d = isoDateTimeFormat.parse(stoker.nextToken());
        double lat = Double.parseDouble(stoker.nextToken());
        double lon = Double.parseDouble(stoker.nextToken());
        double amp = Double.parseDouble(stoker.nextToken());
-       int nstrikes = Integer.parseInt(stoker.nextToken());</pre>
-<pre>7)     Strike s = <strong>new Strike(d, lat, lon, amp, nstrikes)</strong>;
+       int nstrikes = Integer.parseInt(stoker.nextToken());
+7)     Strike s = <strong>new Strike(d, lat, lon, amp, nstrikes)</strong>;
        records.add( s);
      }
-   }</pre>
-<pre>8) <strong>return</strong> records.size();
- }</pre>
-<pre> private class Strike {
+   }
+8) <strong>return</strong> records.size();
+ }
+ 
+ private class Strike {
    int d;
    double lat, lon, amp;
-   int n;</pre>
-<pre>   Strike( Date d, double lat, double lon, double amp, int n ) {
+   int n;
+   
+   Strike( Date d, double lat, double lon, double amp, int n ) {
 9)  this.d = (int) (<strong>d.getTime()</strong> / 1000);
     this.lat = lat;
     this.lon = lon;
@@ -89,54 +94,62 @@
 </ol>
 <h3>Creating the Dimension, Variable, and Attribute objects </h3>
 <p>Now we can create the necessary objects:</p>
-<pre>1) int n;
+<pre>
+ public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+1) int n;
    try {
     n = <strong>readAllData</strong>(raf);
    } catch (ParseException e) {
 2)  throw new IOException(&quot;bad data&quot;);
    }
-</pre>
-<pre>3) Dimension recordDim = <strong>new Dimension(&quot;record&quot;, n, true)</strong>;
-   ncfile.<strong>addDimension</strong>( null, recordDim);</pre>
-<pre>4) Variable date = <strong>new Variable(ncfile, null, null, &quot;date&quot;)</strong>;
+
+3) Dimension recordDim = <strong>new Dimension(&quot;record&quot;, n, true)</strong>;
+   ncfile.<strong>addDimension</strong>( null, recordDim);
+
+4) Variable date = <strong>new Variable(ncfile, null, null, &quot;date&quot;)</strong>;
    date.<strong>setDimensions</strong>(&quot;record&quot;);
    date.<strong>setDataType</strong>(DataType.INT);
    String timeUnit = &quot;seconds since 1970-01-01 00:00:00&quot;;
    date.<strong>addAttribute</strong>( new Attribute(&quot;long_name&quot;, &quot;date of strike&quot;));
    date.<strong>addAttribute</strong>( new Attribute(&quot;units&quot;, timeUnit));
-   ncfile.<strong>addVariable</strong>( null, date);</pre>
-<pre>5) Variable lat = new Variable(ncfile, null, null, &quot;lat&quot;);
+   ncfile.<strong>addVariable</strong>( null, date);
+
+5) Variable lat = new Variable(ncfile, null, null, &quot;lat&quot;);
    lat.setDimensions(&quot;record&quot;);
    lat.setDataType(DataType.DOUBLE);
    lat.addAttribute( new Attribute(&quot;long_name&quot;, &quot;latitude&quot;));
    lat.addAttribute( new Attribute(&quot;units&quot;, &quot;degrees_north&quot;));
-   ncfile.addVariable( null, lat);</pre>
-<pre>   Variable lon = new Variable(ncfile, null, null, &quot;lon&quot;);
+   ncfile.addVariable( null, lat);
+
+   Variable lon = new Variable(ncfile, null, null, &quot;lon&quot;);
    lon.setDimensions(&quot;record&quot;);
    lon.setDataType(DataType.DOUBLE);
    lon.addAttribute( new Attribute(&quot;long_name&quot;, &quot;longitude&quot;));
    lon.addAttribute( new Attribute(&quot;units&quot;, &quot;degrees_east&quot;));
-   ncfile.addVariable( null, lon);</pre>
-<pre>   Variable amp = new Variable(ncfile, null, null, &quot;strikeAmplitude&quot;);
+   ncfile.addVariable( null, lon);
+
+   Variable amp = new Variable(ncfile, null, null, &quot;strikeAmplitude&quot;);
    amp.setDimensions(&quot;record&quot;);
    amp.setDataType(DataType.DOUBLE);
    amp.addAttribute( new Attribute(&quot;long_name&quot;, &quot;amplitude of strike&quot;));
    amp.addAttribute( new Attribute(&quot;units&quot;, &quot;kAmps&quot;));
    amp.addAttribute( new Attribute(&quot;missing_value&quot;, new Double(999)));
-   ncfile.addVariable( null, amp);</pre>
-<pre>   Variable nstrokes = new Variable(ncfile, null, null, &quot;strokeCount&quot;);
+   ncfile.addVariable( null, amp);
+
+   Variable nstrokes = new Variable(ncfile, null, null, &quot;strokeCount&quot;);
    nstrokes.setDimensions(&quot;record&quot;);
    nstrokes.setDataType(DataType.INT);
    nstrokes.addAttribute( new Attribute(&quot;long_name&quot;, &quot;number of strokes per flash&quot;));
    nstrokes.addAttribute( new Attribute(&quot;units&quot;, &quot;&quot;));
-   ncfile.addVariable( null, nstrokes);</pre>
-<pre>6) ncfile.addAttribute(null, new Attribute(&quot;title&quot;, &quot;USPN Lightning Data&quot;));
-   ncfile.addAttribute(null, new Attribute(&quot;history&quot;,&quot;Read directly by Netcdf Java IOSP&quot;));</pre>
-<pre>7) <strong>ncfile.finish()</strong>;
+   ncfile.addVariable( null, nstrokes);
+6) ncfile.addAttribute(null, new Attribute(&quot;title&quot;, &quot;USPN Lightning Data&quot;));
+   ncfile.addAttribute(null, new Attribute(&quot;history&quot;,&quot;Read directly by Netcdf Java IOSP&quot;));
+
+7) <strong>ncfile.finish()</strong>;
   }</pre>
 <ol>
   <li>Read through the data, find out how many records there are.</li>
-  <li>Not really a very robust way to handle this, it would maybe be better to  discard individual malformed lines.</li>
+  <li>Not really a very robust way to handle this, it would maybe be better to discard individual malformed lines.</li>
   <li>Create a <strong>Dimension</strong> named <em>record</em>, of length n. Add it to the file. </li>
   <li>Create a Variable named <em>date. </em>It has the single dimension named <em>record</em>. To be udunits compatible, we have decided to encode it as <em>seconds since 1970-01-01 00:00:00</em>, which we set as the units. We make it an <em>integer</em> data type.</li>
   <li>Similarly we go through and add the other Variables, adding <em>units</em> and <em>long_name</em> attributes, etc.</li>
@@ -145,26 +158,31 @@
 </ol>
 <h3>Reading the data</h3>
 <p> At this point we need to figure out how to implement the <strong>read</strong>() methods. Since we have no Structures, we can ignore <strong>readNestedData</strong>(). Of course, you are probably saying &quot;we already read the data, are we just going to throw it away?&quot;.  So for now, lets suppose that we have decided that these are always small enough files that we can safely read the entire data into memory. This allows us to create the data arrays during the open and cache them in the Variable. The additional code looks like:</p>
-<pre><br>1)private  <strong>ArrayInt.D1 dateArray</strong>;<br>  private  ArrayDouble.D1 latArray;<br>  private  ArrayDouble.D1 lonArray;<br>  private  ArrayDouble.D1 ampArray;<br>  private  ArrayInt.D1 nstrokesArray;
-</pre>
-<pre>  private int <strong>readAllData</strong>(RandomAccessFile raf) throws IOException, NumberFormatException, ParseException {<br>   ArrayList records = new ArrayList();</pre>
-<pre>   // Creating the Strike records same as above ....</pre>
-<pre>   int n = records.size();
+<pre>
+1)private  <strong>ArrayInt.D1 dateArray</strong>;<br>  private  ArrayDouble.D1 latArray;<br>  private  ArrayDouble.D1 lonArray;
+  private  ArrayDouble.D1 ampArray;
+  private  ArrayInt.D1 nstrokesArray;
+  
+  private int <strong>readAllData</strong>(RandomAccessFile raf) throws IOException, NumberFormatException, ParseException {
+   ArrayList records = new ArrayList();
+   // Creating the Strike records same as above ....
+   int n = records.size();
    int[] shape = new int[] {n};
 2) <strong>dateArray = (ArrayInt.D1) Array.factory(DataType.INT, shape)</strong>;
    latArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, shape);
    lonArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, shape);
    ampArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, shape);
-   nstrokesArray = (ArrayInt.D1) Array.factory(DataType.INT, shape);</pre>
-<pre>3) for (int i = 0; i &lt; records.size(); i++) {
+   nstrokesArray = (ArrayInt.D1) Array.factory(DataType.INT, shape);
+   
+3) for (int i = 0; i &lt; records.size(); i++) {
     Strike strike = (Strike) records.get(i);
     <strong>dateArray.set(i, strike.d)</strong>;
     latArray.set(i, strike.lat);
     lonArray.set(i, strike.lon);
     ampArray.set(i, strike.amp);
     nstrokesArray.set(i, strike.n);
-   }</pre>
-<pre>4) return n;
+   }
+4) return n;
  }</pre>
 <ol>
   <li>Create some <em>instance fields</em> to hold the data, one for each netCDF <strong>Variable</strong> object. </li>
@@ -245,19 +263,13 @@
   <li>We add some global attributes identifying the <em>Convention</em>, the <em>datatype</em>, and which dimension to use to find the observations. </li>
   <li>The Point data type also requires that the time range and lat/lon bounding box be specified as shown in global attributes.</li>
 </ol>
-<p>We now have not only a working IOSP, but a PointObsDataset that can be displayed and georeferenced! Working source code for this example is <a href="UspLightning1.java">here</a>. Modify the main program to point to the <a href="lightningData.txt">data file</a>, and try running it. Note that you need to <a href="../reference/RuntimeLoading.html">load your class at runtime</a>, for example by calling: </p>
-<pre>   NetcdfFile.registerIOProvider(UspLightning.class); 
-   
-     
- </pre>
-<pre>&nbsp; </pre>
-<pre>&nbsp; </pre>
-<p> <br> 
-</p>
-<pre>&nbsp;
-     
- </pre>
-<pre>&nbsp; </pre>
-<pre>&nbsp; </pre>
+<p>We now have not only a working IOSP, but a PointObsDataset that can be displayed and georeferenced! Working source code for this example is <a href="files/UspLightning1.java">here</a>. Modify the main program to point to the <a href="files/lightningData.txt">data file</a>, and try running it. Note that you need to <a href="../reference/RuntimeLoading.html">load your class at runtime</a>, for example by calling: </p>
+<pre>   NetcdfFile.registerIOProvider(UspLightning.class);     
+</pre>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" alt="" width="64" height="64"> This document was last updated July 2013
+</address>
+<p>&nbsp;</p>
 </body>
 </html>

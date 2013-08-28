@@ -32,12 +32,8 @@
  */
 package ucar.nc2;
 
-import junit.framework.*;
-import junit.extensions.TestSetup;
 
 import java.io.File;
-
-import ucar.unidata.io.RandomAccessFile;
 
 /**
  * TestSuite that runs all nj22 unit tests using only local (to svn tree) files.
@@ -50,7 +46,7 @@ public class TestLocal {
   /**
    * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
    */
-  public static String cdmTestDataDir = "src/test/data/";
+  public static String cdmTestDataDir = "cdm/src/test/data/";
 
   /**
    * Temporary data directory (for writing temporary data).
@@ -60,10 +56,8 @@ public class TestLocal {
   // Make sure the temp data dir is created.
   static {
     File tmpDataDir = new File( temporaryDataDir);
-    if ( ! tmpDataDir.exists() )
-    {
-      if ( ! tmpDataDir.mkdirs() )
-      {
+    if ( ! tmpDataDir.exists() ) {
+      if ( ! tmpDataDir.mkdirs() ) {
         System.out.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
       }
     }

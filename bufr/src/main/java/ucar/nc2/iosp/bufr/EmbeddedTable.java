@@ -46,7 +46,8 @@ import java.util.List;
 
 /**
  * BUFR allows you to encode a BUFR table in BUFR.
- * LOOK: may be NCEP specific ? if table is embedded, all entries must be from it
+ * if table is embedded, all entries must be from it
+ * LOOK: may be NCEP specific ?
  *
  * @author John
  * @since 8/11/11
@@ -77,19 +78,9 @@ public class EmbeddedTable {
   }
 
   private void read2() throws IOException {
-    Message proto = null;
-    //System.out.printf("Reading from %s%n", raf.getLocation());
-
-    int countObs = 0;
-    for (Message m : messages) {
-      if (proto == null) proto = m;
-      int n = m.getNumberDatasets();
-      countObs += n;
-      //System.out.printf("  num datasets = %d%n", n);
-    }
-
-    // this fills the netcdf object
-    ConstructNC construct = new ConstructNC(proto, countObs, new FakeNetcdfFile());
+    Message proto = messages.get(0);
+    BufrConfig config = BufrConfig.openFromMessage(raf, proto, null);
+    Construct2 construct = new Construct2(proto, config, new FakeNetcdfFile());
 
     seq2 = (Structure) construct.recordStructure.findVariable("seq2");
     seq3 = (Structure) construct.recordStructure.findVariable("seq3");

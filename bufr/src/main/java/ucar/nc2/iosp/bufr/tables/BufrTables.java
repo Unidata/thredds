@@ -140,6 +140,7 @@ import ucar.unidata.util.StringUtil2;
  */
 
 public class BufrTables {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrTables.class);
 
   public enum Mode {
     wmoOnly,        // wmo entries only found from wmo table
@@ -153,9 +154,7 @@ public class BufrTables {
 
   static final String RESOURCE_PATH = "/resources/bufrTables/";
   private static final String canonicalLookup = "resource:" + RESOURCE_PATH + "local/tablelookup.csv";
-  private static final String version14 = "wmo.v14";
-
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrTables.class);
+  private static final int latestVersion = 19;
 
   private static final boolean debugTable = false;
   private static final boolean showTables = false;
@@ -396,7 +395,7 @@ public class BufrTables {
   static public TableB getWmoTableBlatest() {
     if (latestWmoB == null) {
       try {
-        latestWmoB = getWmoTableB(16);
+        latestWmoB = getWmoTableB(latestVersion);
       } catch (IOException ioe) {
         log.error("Cant open latest WMO ", ioe);
         throw new RuntimeException(ioe);
@@ -409,7 +408,9 @@ public class BufrTables {
     return getWmoTableB(ids.getMasterTableVersion());
   }
 
-  static public TableB getWmoTableBold(int version) throws IOException {
+  /*
+    // private static final String version14 = "wmo.v14";
+    static public TableB getWmoTableBold(int version) throws IOException {
     String version13 = "wmo.v13.composite";
     String tableName = (version == 14) ? version14 : version13;
     TableB tb = tablesB.get(tableName);
@@ -432,7 +433,7 @@ public class BufrTables {
     }
 
     return result;
-  }
+  } */
 
   static public TableB getWmoTableB(int version) throws IOException {
     TableConfig tc = matchTableConfig(0, 0, version, 0, -1);
@@ -883,7 +884,7 @@ public class BufrTables {
   static public TableD getWmoTableDlatest() {
     if (latestWmoD == null) {
       try {
-        latestWmoD = getWmoTableD(16);
+        latestWmoD = getWmoTableD(latestVersion);
       } catch (IOException ioe) {
         log.error("Cant open latest WMO ", ioe);
         throw new RuntimeException(ioe);

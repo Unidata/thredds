@@ -40,7 +40,7 @@ import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.DateRange;
 
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;

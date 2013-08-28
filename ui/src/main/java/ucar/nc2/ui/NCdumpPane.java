@@ -34,9 +34,9 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.dt.image.ImageArrayAdapter;
+import ucar.nc2.dt.image.image.ImageArrayAdapter;
 import ucar.nc2.ui.widget.*;
-import ucar.util.prefs.*;
+import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 
 import ucar.nc2.ui.image.ImageViewPanel;
