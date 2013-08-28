@@ -1,14 +1,15 @@
-
 <h3>Restrict the permissions in <code>${tomcat_home}</code></h3>
 <ol>
-<li>Change the user/group ownership <code>${tomcat_home}</code> to the <code>tomcat</code> user and <code>tomcat</code> group: </li>
+  <li>Change the user/group ownership <code>${tomcat_home}</code> to the <code>tomcat</code> user and <code>tomcat</code> group:</li>
 <pre>
 <b>#</b> cd /opt
 <b>#</b> chown -R tomcat:tomcat apache-tomcat-7.0.42
 <b>#</b> ls -ld  *tomcat*
-drwxr-xr-x  9 <b>tomcat  tomcat</b>  4096 Jul 15 16:03 apache-tomcat-7.0.42
+drwxr-xr-x  9 <b>tomcat tomcat</b>  4096 Jul 15 16:03 apache-tomcat-7.0.42
 </pre>
-<li>Change the user/ownership of the <code>${tomcat_home}/conf</code> directory to be owned by the <code>root</code> user, have a group of <code>tomcat</code> and have a permission of user/group read only:</li>
+  <li>Change the user/ownership of the <code>${tomcat_home}/conf</code> directory to be owned by the <code>root</code> user, have a group of <code>tomcat</code>
+    and have a permission of user/group read only:
+  </li>
 
 <pre>
 <b>#</b> cd /opt/tomcat
@@ -36,7 +37,9 @@ total 92
 -r--r----- 1 root    tomcat 51835 Feb  2 12:06 web.xml
 </pre>
 
-<li>Change the user/ownership of the <code>${tomcat_home}/bin</code> and <code>${tomcat_home}/lib</code> directories to be owned by the <code>root</code> user and have a group of <code>tomcat</code>:</li>
+  <li>Change the user/ownership of the <code>${tomcat_home}/bin</code> and <code>${tomcat_home}/lib</code> directories to be owned by the <code>root</code> user
+    and have a group of <code>tomcat</code>:
+  </li>
 <pre>
 <b>#</b> chown -R root:tomcat lib
 <b>#</b> chown -R root:tomcat bin

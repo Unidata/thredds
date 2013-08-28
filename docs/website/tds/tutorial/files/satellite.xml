@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server" version="1.0.2">
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+         name="THREDDS-IDD OPeNDAP Data Server" version="1.0.2">
   <service name="all" serviceType="Compound" base="">
-    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
     <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
-    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
     <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
   </service>
   <service name="all2" serviceType="Compound" base="">
-    <service name="ncdods2" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="ncdods2" serviceType="OPENDAP" base="/thredds/dodsC/"/>
     <service name="wcs2" serviceType="WCS" base="/thredds/wcs/"/>
     <service name="wms2" serviceType="WMS" base="/thredds/wms/"/>
     <service name="ncss2" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
@@ -19,7 +20,7 @@
     <service name="uddc2" serviceType="UDDC" base="/thredds/uddc/"/>
     <service name="iso2" serviceType="ISO" base="/thredds/iso/"/>
   </service>
-  <service name="latest" serviceType="Resolver" base="" />
+  <service name="latest" serviceType="Resolver" base=""/>
   <dataset name="Satellite Data">
     <metadata inherited="true">
       <serviceName>all</serviceName>
@@ -27,7 +28,7 @@
       <documentation type="rights">Freely available</documentation>
       <publisher>
         <name vocabulary="DIF">UCAR/UNIDATA</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </publisher>
     </metadata>
 
@@ -35,12 +36,14 @@
       <metadata inherited="true">
         <dataType>Grid</dataType>
         <dataFormat>GINI</dataFormat>
-        <documentation xlink:href="http://www.unidata.ucar.edu/data/satellite_data_2.html" xlink:title="Satellite Data Available Through Unidata " />
-        <documentation xlink:href="http://www.nesdis.noaa.gov/satellites.html" xlink:title="NESDIS Satellite page" />
-        <documentation type="summary">National Environmental Satellite, Data, And Information Service (NESDIS) Geostationary Operational Environmental Satellites (GOES) Data is remapped to standard projections.</documentation>
+        <documentation xlink:href="http://www.unidata.ucar.edu/data/satellite_data_2.html" xlink:title="Satellite Data Available Through Unidata "/>
+        <documentation xlink:href="http://www.nesdis.noaa.gov/satellites.html" xlink:title="NESDIS Satellite page"/>
+        <documentation type="summary">National Environmental Satellite, Data, And Information Service (NESDIS) Geostationary Operational Environmental
+          Satellites (GOES) Data is remapped to standard projections.
+        </documentation>
         <creator>
           <name>NOAA/NESDIS</name>
-          <contact url="http://www.nesdis.noaa.gov/satellites.html" email="http://www.nesdis.noaa.gov/contact.html" />
+          <contact url="http://www.nesdis.noaa.gov/satellites.html" email="http://www.nesdis.noaa.gov/contact.html"/>
         </creator>
         <timeCoverage>
           <end>present</end>
@@ -49,7 +52,8 @@
       </metadata>
 
       <dataset name="3.9">
-        <datasetScan name="WEST-CONUS_4km" ID="SSEC/IDD-Satellite/3.9/WEST-CONUS_4km" path="satellite/3.9/WEST-CONUS_4km" location="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/">
+        <datasetScan name="WEST-CONUS_4km" ID="SSEC/IDD-Satellite/3.9/WEST-CONUS_4km" path="satellite/3.9/WEST-CONUS_4km"
+                     location="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/">
           <filter>
             <include wildcard="*.gini"/>
           </filter>
@@ -59,29 +63,33 @@
           <serviceName>all2</serviceName>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
             <aggregation dimName="time" type="joinExisting">
-              <scan dateFormatMark="WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm" location="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/" suffix=".gini" />
+              <scan dateFormatMark="WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm" location="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/" suffix=".gini"/>
             </aggregation>
           </netcdf>
         </dataset>
-        <datasetScan name="PR-REGIONAL_4km" ID="SSEC/IDD-Satellite/3.9/PR-REGIONAL_4km" path="satellite/3.9/PR-REGIONAL_4km" location="/data/ldm/pub/native/satellite/3.9/PR-REGIONAL_4km/">
-           <filter>
-            <include wildcard="*.gini"/>
-          </filter>
-          <addDatasetSize/>
-        </datasetScan>
-        <datasetScan name="HI-REGIONAL_4km" ID="SSEC/IDD-Satellite/3.9/HI-REGIONAL_4km" path="satellite/3.9/HI-REGIONAL_4km" location="/data/ldm/pub/native/satellite/3.9/HI-REGIONAL_4km/">
-           <filter>
-            <include wildcard="*.gini"/>
-          </filter>
-          <addDatasetSize/>
-        </datasetScan>
-        <datasetScan name="EAST-CONUS_4km" ID="SSEC/IDD-Satellite/3.9/EAST-CONUS_4km" path="satellite/3.9/EAST-CONUS_4km" location="/data/ldm/pub/native/satellite/3.9/EAST-CONUS_4km/" >
+        <datasetScan name="PR-REGIONAL_4km" ID="SSEC/IDD-Satellite/3.9/PR-REGIONAL_4km" path="satellite/3.9/PR-REGIONAL_4km"
+                     location="/data/ldm/pub/native/satellite/3.9/PR-REGIONAL_4km/">
           <filter>
             <include wildcard="*.gini"/>
           </filter>
           <addDatasetSize/>
         </datasetScan>
-        <datasetScan name="AK-REGIONAL_8km" ID="SSEC/IDD-Satellite/3.9/AK-REGIONAL_8km" path="satellite/3.9/AK-REGIONAL_8km" location="/data/ldm/pub/native/satellite/3.9/AK-REGIONAL_8km/">
+        <datasetScan name="HI-REGIONAL_4km" ID="SSEC/IDD-Satellite/3.9/HI-REGIONAL_4km" path="satellite/3.9/HI-REGIONAL_4km"
+                     location="/data/ldm/pub/native/satellite/3.9/HI-REGIONAL_4km/">
+          <filter>
+            <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+        </datasetScan>
+        <datasetScan name="EAST-CONUS_4km" ID="SSEC/IDD-Satellite/3.9/EAST-CONUS_4km" path="satellite/3.9/EAST-CONUS_4km"
+                     location="/data/ldm/pub/native/satellite/3.9/EAST-CONUS_4km/">
+          <filter>
+            <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+        </datasetScan>
+        <datasetScan name="AK-REGIONAL_8km" ID="SSEC/IDD-Satellite/3.9/AK-REGIONAL_8km" path="satellite/3.9/AK-REGIONAL_8km"
+                     location="/data/ldm/pub/native/satellite/3.9/AK-REGIONAL_8km/">
           <filter>
             <include wildcard="*.gini"/>
           </filter>
@@ -89,18 +97,18 @@
         </datasetScan>
       </dataset>
 
-      <datasetScan name="12.0" ID="SSEC/IDD-Satellite/12.0" path="satellite/12.0" location="/data/ldm/pub/native/satellite/12.0/" >
-          <filter>
-            <include wildcard="*.gini"/>
-          </filter>
-          <addDatasetSize/>
+      <datasetScan name="12.0" ID="SSEC/IDD-Satellite/12.0" path="satellite/12.0" location="/data/ldm/pub/native/satellite/12.0/">
+        <filter>
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
       </datasetScan>
 
-      <datasetScan name="13.3" ID="SSEC/IDD-Satellite/13.3" path="satellite/13.3" location="/data/ldm/pub/native/satellite/13.3/" >
-         <filter>
-            <include wildcard="*.gini"/>
-          </filter>
-          <addDatasetSize/>
+      <datasetScan name="13.3" ID="SSEC/IDD-Satellite/13.3" path="satellite/13.3" location="/data/ldm/pub/native/satellite/13.3/">
+        <filter>
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
       </datasetScan>
 
       <datasetScan name="Cloud Top Pressure" ID="SSEC/IDD-Satellite/CTP" path="satellite/CTP" location="/data/ldm/pub/native/satellite/CTP/">
@@ -127,10 +135,10 @@
           </variables>
         </metadata>
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
 
       <datasetScan name="Infrared" ID="SSEC/IDD-Satellite/IR" path="satellite/IR" location="/data/ldm/pub/native/satellite/IR/">
         <timeCoverage>
@@ -160,11 +168,11 @@
           </variables>
         </metadata>
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
 
-       </datasetScan>
+      </datasetScan>
 
       <datasetScan name="Lifted Index" ID="SSEC/IDD-Satellite/LI" path="satellite/LI" location="/data/ldm/pub/native/satellite/LI/">
         <metadata inherited="true">
@@ -190,12 +198,12 @@
           </variables>
         </metadata>
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
 
-      <datasetScan name="Precipitable Water" ID="SSEC/IDD-Satellite/PW" path="satellite/PW" location="/data/ldm/pub/native/satellite/PW/" >
+      <datasetScan name="Precipitable Water" ID="SSEC/IDD-Satellite/PW" path="satellite/PW" location="/data/ldm/pub/native/satellite/PW/">
         <metadata inherited="true">
           <geospatialCoverage>
             <northsouth>
@@ -219,61 +227,61 @@
           </variables>
         </metadata>
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
 
-      <datasetScan name="SOUND-3.98" ID="SSEC/IDD-Satellite/SOUND-3.98" path="satellite/SOUND-3.98" location="/data/ldm/pub/native/satellite/SOUND-3.98/" >
+      <datasetScan name="SOUND-3.98" ID="SSEC/IDD-Satellite/SOUND-3.98" path="satellite/SOUND-3.98" location="/data/ldm/pub/native/satellite/SOUND-3.98/">
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
-      <datasetScan name="SOUND-4.45" ID="SSEC/IDD-Satellite/SOUND-4.45" path="satellite/SOUND-4.45" location="/data/ldm/pub/native/satellite/SOUND-4.45/" >
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
+      <datasetScan name="SOUND-4.45" ID="SSEC/IDD-Satellite/SOUND-4.45" path="satellite/SOUND-4.45" location="/data/ldm/pub/native/satellite/SOUND-4.45/">
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
-       <datasetScan name="SOUND-6.51" ID="SSEC/IDD-Satellite/SOUND-6.51" path="satellite/SOUND-6.51" location="/data/ldm/pub/native/satellite/SOUND-6.51/" >
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
+      <datasetScan name="SOUND-6.51" ID="SSEC/IDD-Satellite/SOUND-6.51" path="satellite/SOUND-6.51" location="/data/ldm/pub/native/satellite/SOUND-6.51/">
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
-       <datasetScan name="SOUND-7.02" ID="SSEC/IDD-Satellite/SOUND-7.02" path="satellite/SOUND-7.02" location="/data/ldm/pub/native/satellite/SOUND-7.02/" >
-         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
-       <datasetScan name="SOUND-7.43" ID="SSEC/IDD-Satellite/SOUND-7.43" path="satellite/SOUND-7.43" location="/data/ldm/pub/native/satellite/SOUND-7.43/" >
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
+      <datasetScan name="SOUND-7.02" ID="SSEC/IDD-Satellite/SOUND-7.02" path="satellite/SOUND-7.02" location="/data/ldm/pub/native/satellite/SOUND-7.02/">
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
-       <datasetScan name="SOUND-11.03" ID="SSEC/IDD-Satellite/SOUND-11.03" path="satellite/SOUND-11.03" location="/data/ldm/pub/native/satellite/SOUND-11.03/" >
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
+      <datasetScan name="SOUND-7.43" ID="SSEC/IDD-Satellite/SOUND-7.43" path="satellite/SOUND-7.43" location="/data/ldm/pub/native/satellite/SOUND-7.43/">
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
-       <datasetScan name="SOUND-14.06" ID="SSEC/IDD-Satellite/SOUND-14.06" path="satellite/SOUND-14.06" location="/data/ldm/pub/native/satellite/SOUND-14.06/" >
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
+      <datasetScan name="SOUND-11.03" ID="SSEC/IDD-Satellite/SOUND-11.03" path="satellite/SOUND-11.03" location="/data/ldm/pub/native/satellite/SOUND-11.03/">
         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
-       <datasetScan name="SOUND-VIS" ID="SSEC/IDD-Satellite/SOUND-VIS" path="satellite/SOUND-VIS" location="/data/ldm/pub/native/satellite/SOUND-VIS/" >
-         <filter>
-           <include wildcard="*.gini"/>
-         </filter>
-         <addDatasetSize/>
-       </datasetScan>
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
+      <datasetScan name="SOUND-14.06" ID="SSEC/IDD-Satellite/SOUND-14.06" path="satellite/SOUND-14.06" location="/data/ldm/pub/native/satellite/SOUND-14.06/">
+        <filter>
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
+      <datasetScan name="SOUND-VIS" ID="SSEC/IDD-Satellite/SOUND-VIS" path="satellite/SOUND-VIS" location="/data/ldm/pub/native/satellite/SOUND-VIS/">
+        <filter>
+          <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
+      </datasetScan>
 
-       <dataset name="Surface Skin Temperature">
+      <dataset name="Surface Skin Temperature">
         <metadata inherited="true">
           <geospatialCoverage>
             <northsouth>
@@ -296,9 +304,10 @@
             <variable name="SFC_T" vocabulary_name="" units="N/A">Surface Skin Temperature</variable>
           </variables>
         </metadata>
-        <datasetScan name="SUPER-NATIONAL_1km" ID="SSEC/IDD-Satellite/SFC-T/SUPER-NATIONAL_1km" path="satellite/SFC-T/SUPER-NATIONAL_1km" location="/data/ldm/pub/native/satellite/SFC-T/SUPER-NATIONAL_1km/" >
+        <datasetScan name="SUPER-NATIONAL_1km" ID="SSEC/IDD-Satellite/SFC-T/SUPER-NATIONAL_1km" path="satellite/SFC-T/SUPER-NATIONAL_1km"
+                     location="/data/ldm/pub/native/satellite/SFC-T/SUPER-NATIONAL_1km/">
           <filter>
-           <include wildcard="*.gini"/>
+            <include wildcard="*.gini"/>
           </filter>
           <addDatasetSize/>
         </datasetScan>
@@ -307,7 +316,8 @@
           <serviceName>all2</serviceName>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
             <aggregation dimName="time" type="joinExisting">
-              <scan dateFormatMark="SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm" location="/data/ldm/pub/native/satellite/SFC-T/SUPER-NATIONAL_1km/" suffix=".gini" />
+              <scan dateFormatMark="SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm" location="/data/ldm/pub/native/satellite/SFC-T/SUPER-NATIONAL_1km/"
+                    suffix=".gini"/>
             </aggregation>
           </netcdf>
         </dataset>
@@ -338,7 +348,7 @@
           </variables>
         </metadata>
         <filter>
-           <include wildcard="*.gini"/>
+          <include wildcard="*.gini"/>
         </filter>
         <addDatasetSize/>
       </datasetScan>
@@ -366,12 +376,12 @@
             <variable name="IR_WV" vocabulary_name="" units="N/A">Imager 6.7/6.5 micron IR (WV)</variable>
           </variables>
         </metadata>
-         <filter>
-           <include wildcard="*.gini"/>
+        <filter>
+          <include wildcard="*.gini"/>
         </filter>
         <addDatasetSize/>
       </datasetScan>
-      
+
     </dataset>
   </dataset>
 </catalog>

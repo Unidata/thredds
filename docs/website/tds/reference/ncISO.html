@@ -2,13 +2,13 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  
+
   <title>TDS and ncISO: Metadata Services</title>
-  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+  <link href="../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 
-<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75">TDS and ncISO: Metadata Services</h1>
+<h1>TDS and ncISO: Metadata Services</h1>
 <hr>
 
 <p>The TDS distribution (as of TDS 4.2.4) includes the
@@ -22,15 +22,18 @@
   <li><strong>NCML</strong>: an NcML representation of the dataset's structure and metadata;</li>
   <li><strong>ISO</strong>: an ISO 19115 metadata representation of the dataset; and</li>
   <li><strong>UDDC</strong>: an evaluation of how well the metadata contained in the dataset conforms to the
-    <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html">
+    <a href="../../netcdf-java/metadata/DataDiscoveryAttConvention.html">
       NetCDF Attribute Convention for Data Discovery (NACDD)</a> (also see the
     <a href="https://geo-ide.noaa.gov/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery">
-      NOAA/NGDC page on NACDD</a>).</li>
+      NOAA/NGDC page on NACDD</a>).
+  </li>
 </ul>
 
 <h2>Enabling ncISO Services</h2>
+
 <p>NOTE: The following <strong>applies to TDS 4.2.8+</strong>. For versions 4.2.4 through 4.2.7, see the
-  "Enabling ncISO Services - pre-4.2.8" section <a href="../../tds4.2/reference/ncISO.html#pre-4.2.8"> in TDS 4.2 reference</a>.</p>
+  "Enabling ncISO Services - pre-4.2.8" section <a href="../reference/ncISO.html#pre-4.2.8"> in TDS 4.2 reference</a>.</p>
+
 <p>
   In TDS 4.2.8 on, the ncISO services are disabled by default and can be enabled for locally served
   datasets by including the following in the threddsConfig.xml file:

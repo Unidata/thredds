@@ -16,7 +16,7 @@
 <ul>
   <li><a href="#strange">I have a strange problem and I need help figuring out whats going on!</a></li>
   <li><a href="#restart">I made changes to my catalog and restarted tomcat but nothing changes!</a></li>
-  <li><a href="#repository">I'm building my own maven project and want to use your jar files.  Where is the Unidata Repository?</a></li>
+  <li><a href="#repository">I'm building my own maven project and want to use your jar files. Where is the Unidata Repository?</a></li>
 </ul>
 <h2>Catalogs</h2>
 <ul>
@@ -28,7 +28,8 @@
   <li><a href="#throttleRequests">How do I keep client requests from overwhelming my server?</a></li>
   <li><a href="#tooManyFilesOpen">Can aggregations of many files cause "too many files open" problems?</a></li>
   <li><a href="#nonHttpStatusCodes">What do the non-HTTP status codes in the <code>threddsServlet.log</code> files mean?</a></li>
-  <li><a href="#inconsistentArrayLength">I'm seeing the error "Inconsistent array length read: 538976288 !=  1668244581' when I open the dataset in the IDV. Why?</a></li>
+  <li><a href="#inconsistentArrayLength">I'm seeing the error "Inconsistent array length read: 538976288 != 1668244581' when I open the dataset in the IDV.
+    Why?</a></li>
   <li><a href="#javaUtilPrefs">Why am I getting lots of
     <code>java.util.prefs.BackingStoreException</code> warning messages?</a></li>
   <li><a href="#proxyServerAndGeneratedURLs">My TDS server is behind a proxy server.
@@ -37,8 +38,9 @@
   <li><a href="#JoinExisting">I have modified my configuration of a JoinExisting Aggregation dataset,
     but nothing has changed.</a></li>
   <li><a href="#wmsLimitedCRS">What happened to the long list of CRSs in my WMS GetCapabilities documents?</a></li>
-  <li><a href="#forms">Why are  TDS web forms not working?</a></li>
-  <li><a href="#catalogCaching">What does the TDS do at startup to read the configuration catalogs? What gets cached? Does it have a way to know a referenced catalog is unchanged? When do referenced catalogs get scanned?</a></li>
+  <li><a href="#forms">Why are TDS web forms not working?</a></li>
+  <li><a href="#catalogCaching">What does the TDS do at startup to read the configuration catalogs? What gets cached? Does it have a way to know a referenced
+    catalog is unchanged? When do referenced catalogs get scanned?</a></li>
   <li><a href="#antDeployTask">Why do I get a message that "class org.apache.catalina.ant.DeployTask
     cannot be found" when I try to build the TDS from source using Ant?</a></li>
 </ul>
@@ -50,7 +52,7 @@
 <ul>
   <li><a href="#contentCreate">ERROR - TdsContext.init(): Content directory does not exist and could not be created</a></li>
   <li><a href="#rh5SymLinksAndContent">Why does the TDS fail to deploy in the Tomcat provided with RedHat 5 or 6?</a></li>
-  <li>What does this error mean:  
+  <li>What does this error mean:
     <ul>
       <li><a href="#listenerStart">SEVERE: Error listenerStart</a>
       </li>
@@ -64,7 +66,8 @@
 <h2>Tomcat</h2>
 <ul>
   <li><a href="#permGenOutOfMemoryError">I'm getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></li>
-  <li><a href="#shutdownUnstoppedThreads">During shutdown I'm getting messages about threads (ThreadLocal) having to be shut down to prevent memory leaks. Whats up?</a></li>
+  <li><a href="#shutdownUnstoppedThreads">During shutdown I'm getting messages about threads (ThreadLocal) having to be shut down to prevent memory leaks. Whats
+    up?</a></li>
   <li><a href="#whoIsAccessing">Who is accessing my server?</a></li>
   <li><a href="#preventAccess">How can I prevent someone from accessing my server?</a></li>
   <li><a href="#controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></li>
@@ -74,19 +77,23 @@
 
 <hr width="100%">
 <h2>General</h2>
+
 <p><strong>Q: <a name="strange"></a>I have a strange problem and I need help figuring out whats going on!</strong></p>
+
 <p>A: Here is what we need from you in order to deal with hard problems:</p>
 <ol>
   <li>Run the latest stable release. Sorry, we dont have the resources to keep older versions running, so we need to deal with just the latest code.</li>
   <li>Get a clean set of logs that capture the problem:
     <ol>
-      <li>Stop the tomcat server. </li>
+      <li>Stop the tomcat server.</li>
       <li>Install the latest release if needed.</li>
       <li>Remove all files from <em>{tomcat}/logs </em>and<em> {tomcat}/content/thredds/logs</em></li>
       <li>Restart the server</li>
       <li>Make the problem happen</li>
-      <li>Zip up everything in  <em>{tomcat}/logs</em> and      <em>{tomcat}/content/thredds/logs</em>.</li>
-      <li>Send the logs and a detailed description of what you do to make the problem happen, and what the problem looks like. If it took a while to get the problem to happen, note what time it happened so that we can correlate with the logs.</li>
+      <li>Zip up everything in <em>{tomcat}/logs</em> and <em>{tomcat}/content/thredds/logs</em>.</li>
+      <li>Send the logs and a detailed description of what you do to make the problem happen, and what the problem looks like. If it took a while to get the
+        problem to happen, note what time it happened so that we can correlate with the logs.
+      </li>
     </ol>
   </li>
 </ol>
@@ -100,26 +107,28 @@
   </li>
   <li>make sure tomcat really gets stopped:
     <ol>
-      <li><em>ps -ef | grep java </em>to find the process id </li>
+      <li><em>ps -ef | grep java </em>to find the process id</li>
       <li><em>kill &lt;pid&gt; </em>or<em> kill -9 &lt;pid&gt;</em></li>
-      <li><em>ps -ef | grep java</em> to verify that the process goes away. </li>
+      <li><em>ps -ef | grep java</em> to verify that the process goes away.</li>
     </ol>
-   </li>
-   <li>
-   Restart tomcat: 
-     <ol>
-       <li><em>sh ./startup.sh
-         </em></li>
-       <li>Check <strong>catalina.out</strong> that tomcat started correctly</li>
-       <li><em>ps -ef | grep java</em> to verify that theer is a new tomcat process.</li>
-     </ol>
-   </li>
+  </li>
+  <li>
+    Restart tomcat:
+    <ol>
+      <li><em>sh ./startup.sh
+      </em></li>
+      <li>Check <strong>catalina.out</strong> that tomcat started correctly</li>
+      <li><em>ps -ef | grep java</em> to verify that theer is a new tomcat process.</li>
+    </ol>
+  </li>
 </ol>
 
 <hr width="50%" align="left">
 
-<p><strong>Q: <a name="repository"></a>I'm building my own maven project and want to use your jar files.  Where is the Unidata Repository?</strong></p>
-<p>A: In order to configure your maven project correctly, you need to edit your pom.xml file to reflect the location of Unidata's repository.  To do this, you need to add the following pom snippet to your pom.xml file:</p>
+<p><strong>Q: <a name="repository"></a>I'm building my own maven project and want to use your jar files. Where is the Unidata Repository?</strong></p>
+
+<p>A: In order to configure your maven project correctly, you need to edit your pom.xml file to reflect the location of Unidata's repository. To do this, you
+  need to add the following pom snippet to your pom.xml file:</p>
 
 &lt;distributionManagement&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;repository&gt;<br>
@@ -130,13 +139,21 @@
 &lt;/distributionManagement&gt;<br>
 
 <p>
-Alternatively, you can configure your settings.xml file to reflect the repository location.  Information on doing either is located here:<p>
+  Alternatively, you can configure your settings.xml file to reflect the repository location. Information on doing either is located here:
 
-&nbsp;&nbsp;<a href="http://maven.apache.org/pom.html#Repositories">Maven Repository information</a><p>
+<p>
 
-and here:<p>
+  &nbsp;&nbsp;<a href="http://maven.apache.org/pom.html#Repositories">Maven Repository information</a>
 
-&nbsp;&nbsp;<a href="http://maven.apache.org/settings.html">Maven Settings information</a><p>
+<p>
+
+  and here:
+
+<p>
+
+  &nbsp;&nbsp;<a href="http://maven.apache.org/settings.html">Maven Settings information</a>
+
+<p>
 
 <hr width="100%">
 
@@ -144,13 +161,19 @@ and here:<p>
 
 <p><strong>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? </strong><br>
 </p>
-<p>A: Heres the general idea in the <a href="tutorial/BasicConfig.html">tutorial</a> and the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM library, you can call </p>
+
+<p>A: Heres the general idea in the <a href="tutorial/BasicConfig.html">tutorial</a> and the
+  <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM
+  library, you can call </p>
 <pre>InvAccess.getUrlPath()</pre>
 
 <hr width="50%" align="left">
 
 <p><strong><a name="extraDataset"></a>Q: How do I eliminate the extra dataset when using a Catalog Reference?</strong></p>
-<p>Make the name of the catalogRef the same as the &quot;top&quot; dataset in the referenced catalog. In the following example the name is &quot;&quot;<strong>New Point Data</strong>&quot;.</p>
+
+<p>Make the name of the catalogRef the same as the &quot;top&quot; dataset in the referenced catalog. In the following example the name is &quot;&quot;<strong>New
+  Point Data</strong>&quot;.</p>
+
 <p>In the referencing catalog:</p>
 <pre> &lt;catalogRef xlink:href=&quot;idd/newPointObs.xml&quot; xlink:title=&quot;<strong>New Point Data</strong>&quot; name=&quot;&quot; /&gt;
 </pre>
@@ -172,11 +195,11 @@ and here:<p>
 
 <blockquote>
   <p>There is currently no per-client resource throttle, unfortunately, but we are aware
-    of the  need for that. Any given request is single-threaded, so can't hog too
+    of the need for that. Any given request is single-threaded, so can't hog too
     many resources. One can limit the size of opendap responses, which tends to be the
     main problem on some servers. See the
     <a href="./reference/ThreddsConfigXMLFile.html#opendap">OPeNDAP section</a>
-    of the threddsConfig.xml page for details.  </p>
+    of the threddsConfig.xml page for details. </p>
 </blockquote>
 
 <hr width="50%" align="left">
@@ -186,6 +209,7 @@ and here:<p>
 <blockquote>
   <p>Aggregations only open one file at a time, and then close it, so this can't cause
     "too many file" problems.</p>
+
   <p>If you have "too many open files" errors, then either theres a file leak (which we
     would like to know about), or you have your file cache limit set too high relative
     to your OS file handle limit.</p>
@@ -204,7 +228,8 @@ and here:<p>
 
 <hr width="50%" align="left">
 
-<h4>Q: <a name="inconsistentArrayLength">I'm seeing the error "Inconsistent array length read: 538976288 !=  1668244581' when I open the dataset in the IDV. Why?</a></h4>
+<h4>Q: <a name="inconsistentArrayLength">I'm seeing the error "Inconsistent array length read: 538976288 != 1668244581' when I open the dataset in the IDV.
+  Why?</a></h4>
 <blockquote>
   <p>The error "Inconsistent array length read" only tells you that there was an error on
     the server in the middle of responding to an OPeNDAP request. You then must look in
@@ -225,7 +250,8 @@ WARNING: Couldn't flush system prefs: java.util.prefs.BackingStoreException: /et
 </pre>
 
   <p>You can get rid of these messages by setting the "java.util.prefs.systemRoot"
-    system property to a location that is writable by the user that Tomcat runs under.  </p>
+    system property to a location that is writable by the user that Tomcat runs under. </p>
+
   <p>Here is what we do on our servers:</p>
   <ul>
     <li>Create a directory at <code>${tomcat_home}/content/thredds/javaUtilPrefs/.systemPrefs</code>, e.g.,
@@ -238,7 +264,8 @@ mkdir javaUtilPrefs/.usermPrefs
 </pre>
     </li>
     <li>Make sure that the<code>.systemPrefs</code> and <code>.userPrefs</code> directories are writable by the user under which
-      Tomcat runs</li>
+      Tomcat runs
+    </li>
     <li>
       Add the following to <code>JAVA_OPTS</code>
       in the <code>${tomcat_home}/bin/setenv.sh</code> file:
@@ -249,7 +276,8 @@ mkdir javaUtilPrefs/.usermPrefs
   <p>If you are interested in more details of the problem, here are two useful links:</p>
   <ul>
     <li>Sun bug # <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4751177">4751177</a>
-      ("Preferences storage placed unavailable to non-root users")</li>
+      ("Preferences storage placed unavailable to non-root users")
+    </li>
     <li>"<a href="http://allaboutbalance.com/articles/disableprefs/">Disabling Sun's Java 1.4.x Preferences Subsystem</a>"</li>
   </ul>
   <p>We have this TDS issue in our bug tracking system and plan to address it.</p>
@@ -276,11 +304,11 @@ mkdir javaUtilPrefs/.usermPrefs
 <hr width="50%" align="left">
 <h4><a name="JoinExisting"></a>Q: I have modified my configuration of a JoinExisting Aggregation dataset, but nothing has changed.</h4>
 <blockquote>
-  <p>The files and coordinates in a JoinExisting Aggregations are cached, and   in some circumstances
-    won't get updated. The default location for the   cache is <strong>${tomcat_home}/content/thredds/cache/agg/</strong>
+  <p>The files and coordinates in a JoinExisting Aggregations are cached, and in some circumstances
+    won't get updated. The default location for the cache is <strong>${tomcat_home}/content/thredds/cache/agg/</strong>
     unless you change it in the <a href="reference/ThreddsConfigXMLFile.html#AggregationCache">threddsConfig.xml</a>
     file. Go to that directory, there will be files with the name of the cached dataset(s). Delete
-    the file for the dataset that needs updating and restart Tomcat.  </p>
+    the file for the dataset that needs updating and restart Tomcat. </p>
 </blockquote>
 
 <hr width="50%" align="left">
@@ -288,11 +316,12 @@ mkdir javaUtilPrefs/.usermPrefs
 <blockquote>
   <p>In TDS 4.1, each WMS GetCapabilities document listed 100s of available CRS. This made for very
     large GetCapabilities documents. As of TDS 4.2, this list is limited to a select few CRSs. We
-    hope to make this list configurable in a future release.  </p>
+    hope to make this list configurable in a future release. </p>
+
   <p>In the mean time if you need a CRS that isn't listed, try specifying it in the GetMap request.
     The underlying library that handles CRS (<a href="http://www.geotoolkit.org/">Geotoolkit</a>)
     still supports a large number of CRS and the TDS WMS should still support any of those CRS
-    when requested.  </p>
+    when requested. </p>
 </blockquote>
 
 <hr width="50%" align="left">
@@ -302,8 +331,13 @@ mkdir javaUtilPrefs/.usermPrefs
   <p>Look in {$TOMCAT}/logs/localhost.logs for error messages like:</p>
   <pre>     SEVERE: Servlet.service() for servlet GridSubsetService threw exception
    javax.xml.transform.TransformerFactoryConfigurationError: Provider net.sf.saxon.TransformerFactoryImpl not found</pre>
-  <p>If you find these, the likely problem is that another webapp running in the same Tomcat container has set the XSLT parser with      javax.xml.transform.TransformerFactory, which is global for the JVM. The above example shows that the Saxon parser has been set, but is not being found by the TDS. We saw this happening with the OOSTethys webapp. </p>
-  <p>The solution is to move the other webapp to its own Tomcat instance, or to move the required jar (eg saxon.jar) into Tomcat's lib directory, where it is available to all webapps. TDS does very simple XSLT to create its web forms, so its likely that it can work with any decent XSLT library. By default it uses the JDK's built-in XSLT library.</p>
+  <p>If you find these, the likely problem is that another webapp running in the same Tomcat container has set the XSLT parser with
+    javax.xml.transform.TransformerFactory, which is global for the JVM. The above example shows that the Saxon parser has been set, but is not being found by
+    the TDS. We saw this happening with the OOSTethys webapp. </p>
+
+  <p>The solution is to move the other webapp to its own Tomcat instance, or to move the required jar (eg saxon.jar) into Tomcat's lib directory, where it is
+    available to all webapps. TDS does very simple XSLT to create its web forms, so its likely that it can work with any decent XSLT library. By default it uses
+    the JDK's built-in XSLT library.</p>
 </blockquote>
 
 <hr width="50%" align="left">
@@ -312,7 +346,9 @@ mkdir javaUtilPrefs/.usermPrefs
   read the configuration catalogs? What gets cached? Does it have a way to know a referenced
   catalog is unchanged? When do referenced catalogs get scanned?</strong></p>
 <blockquote>
-  <p> The TDS reads in all the config catalogs at startup. It caches   all of them, and uses the "expires" attribute on the catalog to decide   if/when it needs to re-read a catalog.&nbsp; It must read all catalogs,   including catalogRefs, because it has to know what the possible dataset   URLs are, and there is no contract that a client has to read a catalog   before accessing the dataset. </p>
+  <p> The TDS reads in all the config catalogs at startup. It caches all of them, and uses the "expires" attribute on the catalog to decide if/when it needs to
+    re-read a catalog.&nbsp; It must read all catalogs, including catalogRefs, because it has to know what the possible dataset URLs are, and there is no
+    contract that a client has to read a catalog before accessing the dataset. </p>
 </blockquote>
 
 <hr width="50%" align="left">
@@ -321,8 +357,9 @@ mkdir javaUtilPrefs/.usermPrefs
   "class org.apache.catalina.ant.DeployTask cannot be found" when I try to build the TDS from
   source using Ant?</strong></p>
 <blockquote>
-  <p> <strong>Note:</strong> Ant builds are not supported in TDS 4.3, and <code>build.xml</code> is removed from the repository as of version 4.3.16
+  <p><strong>Note:</strong> Ant builds are not supported in TDS 4.3, and <code>build.xml</code> is removed from the repository as of version 4.3.16
   </p>
+
   <p>The TDS <code>build.xml</code> file uses several external Ant tasks defined in the
     <code>catalina-ant.jar</code> file. For TDS 4.2.5 and before, you need to have the
     <code>catalina-ant.jar</code> file in the <code>lib/</code> directory of your Ant installation.
@@ -331,24 +368,34 @@ mkdir javaUtilPrefs/.usermPrefs
   <pre>../tds/build.xml:730: taskdef class org.apache.catalina.ant.DeployTask cannot be found</pre>
   <p>You can find the <code>catalina-ant.jar</code> file in the <code>lib/</code> directory of a
     Tomcat distribution.</p>
+
   <p>For TDS 4.2.6 and above, you should not see this problem as the <code>build.xml</code> file
-    directly references a copy of the <code>catalina-ant.jar</code> file.  </p>
-  <p>For TDS 4.3 and above, building with ant  is no longer supported. <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/SourceCodeBuild.html">Build with maven</a> instead.</p>
+    directly references a copy of the <code>catalina-ant.jar</code> file. </p>
+
+  <p>For TDS 4.3 and above, building with ant is no longer supported. <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/SourceCodeBuild.html">Build
+    with maven</a> instead.</p>
 </blockquote>
 
 <hr width="100%">
 
 <h2>Caching</h2>
-<p><strong>Q: We use <a name="compressed"></a> compressed netcdf files and the very first access to them are quite slow, although  subsequent accesses are much   faster, then become slow again after a while. I   can see that TDS uncompress these files to the cdm cache  directory, but then they must get deleted.  Is there a way to keep them in the cache  permanently? </strong><br>
+
+<p><strong>Q: We use <a name="compressed"></a> compressed netcdf files and the very first access to them are quite slow, although subsequent accesses are much
+  faster, then become slow again after a while. I can see that TDS uncompress these files to the cdm cache directory, but then they must get deleted. Is there a
+  way to keep them in the cache permanently? </strong><br>
 </p>
 <blockquote>
-  <p>Esentially this is a tradeoff between storage spaceand the time to decompress. I assume you dont want to   store the files uncompressed, so you have to pay the price of that. To control how these files are cached, see <a href="reference/ThreddsConfigXMLFile.html#DiskCache">CDM library Disk cache</a>. I would suggest that you use:<br>
-</p>
+  <p>Esentially this is a tradeoff between storage spaceand the time to decompress. I assume you dont want to store the files uncompressed, so you have to pay
+    the price of that. To control how these files are cached, see <a href="reference/ThreddsConfigXMLFile.html#DiskCache">CDM library Disk cache</a>. I would
+    suggest that you use:<br>
+  </p>
 </blockquote>
 <pre> &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;true&lt;/alwaysUse&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;</pre>
 <blockquote>
-  <p>    and choose <strong>maxSize</strong> carefully. 
-  The   trick is to make <strong>maxSize</strong> big enough to keep the "working set"   uncompressed, i.e. if there is a reletively small "hot" set of files that   get accessed a lot, you want to give enough cache space to keep them   uncompressed in the cache. Monitor the cache directory closely to see what files stay uncompressed, and how old they are, and modify <strong>maxSize</strong> as needed.<br>
+  <p> and choose <strong>maxSize</strong> carefully.
+    The trick is to make <strong>maxSize</strong> big enough to keep the "working set" uncompressed, i.e. if there is a reletively small "hot" set of files that
+    get accessed a lot, you want to give enough cache space to keep them uncompressed in the cache. Monitor the cache directory closely to see what files stay
+    uncompressed, and how old they are, and modify <strong>maxSize</strong> as needed.<br>
   </p>
 </blockquote>
 
@@ -394,7 +441,8 @@ SEVERE: Context [/thredds] startup failed due to previous errors
     <li>Give the TDS an absolute path to the desired location for the <code>content</code> directory by setting the
       <strong>tds.content.root.path</strong> system property with a command-line argument (e.g.,
       "<code>-Dtds.content.root.path=/some/absolute/path</code>"). More information is available
-      <a href="reference/ConfigDirectory.html#moveLocation">here</a>.</li>
+      <a href="reference/ConfigDirectory.html#moveLocation">here</a>.
+    </li>
   </ol>
 </blockquote>
 
@@ -413,9 +461,11 @@ SEVERE: Context [/thredds] startup failed due to previous errors
 
 <hr width="50%" align="left">
 
-<p><strong><a name="listenerStart" id="listenerStart"></a> Q: On starting up TDS, I get the error &quot;SEVERE: Error listenerStart&quot; and &quot;SEVERE: Context [/thredds] startup failed due to previous errors&quot;, and TDS wont start.</strong></p>
-<ul><li>
-  <p>Startup output looks something like:</p>
+<p><strong><a name="listenerStart" id="listenerStart"></a> Q: On starting up TDS, I get the error &quot;SEVERE: Error listenerStart&quot; and &quot;SEVERE:
+  Context [/thredds] startup failed due to previous errors&quot;, and TDS wont start.</strong></p>
+<ul>
+  <li>
+    <p>Startup output looks something like:</p>
   <pre>1)
 
 log4j:WARN No appenders could be found for logger (org.apache.commons.digester.Digester.sax).
@@ -438,7 +488,9 @@ Jul 11, 2011 2:22:12 PM org.apache.catalina.core.StandardContext start SEVERE: C
   <ol>
     <li>Harmless log4j warnings. Someday we'll figure out how to get rid of it.</li>
     <li>Various initialization info messages</li>
-    <li>This is the problem, but it doesnt actually contain enough information to know whats going on. It usually means theres an error in how you set up Tomcat.</li>
+    <li>This is the problem, but it doesnt actually contain enough information to know whats going on. It usually means theres an error in how you set up
+      Tomcat.
+    </li>
   </ol>
 </blockquote>
 
@@ -455,74 +507,86 @@ Jul 11, 2011 2:22:12 PM org.apache.catalina.core.StandardContext start SEVERE: C
 <h2>Tomcat</h2>
 
 <h4>Q: <a name="permGenOutOfMemoryError">Im getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></h4>
-  <blockquote>
-    <p>If you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into "<strong>java.lang.OutOfMemoryError: PermGen space</strong>". This is a known bug in  JDK/Tomcat. The only thing to do is to stop and restart Tomcat. </p>
-    <p>You can increase PermGen using this JVM option:     </p>
-    <p><strong>-XX:MaxPermSize=180m    </strong></p>
-    <p>On
-the JDK1.6 -server JVM, the default seems to be 64m. However, with
-enough redeploys , you will eventually run out of PermGen space no
-matter what your <strong>MaxPermSize</strong> setting is. We have
-gotten into the habit of restarting tomcat on our production server
-whenever we redeploy. Lots of redeploys only happen on our test server.</p>
-    <p>Resources:</p>
-    <ul>
-      <li><a href="http://blogs.sun.com/fkieviet/entry/classloader_leaks_the_dreaded_java">"Classloader leaks" (sun blog)</a> (2006-10-16)</li>
-      <li>"<a href="http://my.opera.com/karmazilla/blog/2007/09/29/return-of-the-permgen">Return of the PermGen</a>" (2007-09-29)</li>
-      <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/15/permgen-strikes-back">PermGen Strikes Back</a>" (2007-03-15)</li>
-      <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/13/good-riddance-permgen-outofmemoryerror">Good Riddance PermGen OutOfMemoryError</a>" (2007-03-13)</li>
-    </ul>
-  </blockquote>
+<blockquote>
+  <p>If you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into "<strong>java.lang.OutOfMemoryError:
+    PermGen space</strong>". This is a known bug in JDK/Tomcat. The only thing to do is to stop and restart Tomcat. </p>
+
+  <p>You can increase PermGen using this JVM option: </p>
+
+  <p><strong>-XX:MaxPermSize=180m </strong></p>
+
+  <p>On
+    the JDK1.6 -server JVM, the default seems to be 64m. However, with
+    enough redeploys , you will eventually run out of PermGen space no
+    matter what your <strong>MaxPermSize</strong> setting is. We have
+    gotten into the habit of restarting tomcat on our production server
+    whenever we redeploy. Lots of redeploys only happen on our test server.</p>
+
+  <p>Resources:</p>
+  <ul>
+    <li><a href="http://blogs.sun.com/fkieviet/entry/classloader_leaks_the_dreaded_java">"Classloader leaks" (sun blog)</a> (2006-10-16)</li>
+    <li>"<a href="http://my.opera.com/karmazilla/blog/2007/09/29/return-of-the-permgen">Return of the PermGen</a>" (2007-09-29)</li>
+    <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/15/permgen-strikes-back">PermGen Strikes Back</a>" (2007-03-15)</li>
+    <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/13/good-riddance-permgen-outofmemoryerror">Good Riddance PermGen OutOfMemoryError</a>"
+      (2007-03-13)
+    </li>
+  </ul>
+</blockquote>
 
 <hr width="50%" align="left">
 
-<h4>Q: <a name="shutdownUnstoppedThreads">During shutdown I'm getting messages about threads (ThreadLocal) having to be shut down to prevent memory leaks. Whats up?</a></h4>
+<h4>Q: <a name="shutdownUnstoppedThreads">During shutdown I'm getting messages about threads (ThreadLocal) having to be shut down to prevent memory leaks. Whats
+  up?</a></h4>
 
-  <blockquote>
-    <p>Tomcat memory leak detection code started logging these messages as of Tomcat 6.0.24. From
-      various posts (see Spring Forum:
-        <a href="http://forum.springsource.org/showpost.php?p=282738&postcount=3">
-          "ThreadLocal forcefully removed" comment #3</a> e.g.)
-      it appears that these messages are not a problem but instead a matter of Tomcat finding these
-      objects before they get garbage collected.    </p>
-    <p>Here are a number of related links:</p>
-    <ul>
-      <li>Spring Forum: <a href="http://forum.springsource.org/showthread.php?p=282738#post282738">"ThreadLocal forcefully removed"</a>.
-        Comment #3 provides an answer to the post.      </li>
-      <li><a href="http://wiki.apache.org/tomcat/MemoryLeakProtection">Tomcat Memory Leak Prevention page</a>
-        (in particular, see the <a href="http://wiki.apache.org/tomcat/MemoryLeakProtection#customThreadLocal">"Custom ThreadLocal" section</a>)      </li>
-      <li>A Tomcat 7 issue on <a href="https://issues.apache.org/bugzilla/show_bug.cgi?id=%2049159">
-        "Improving ThreadLocal memory leak clean-up"</a>      </li>
-    </ul>
-    <p>NOTE: We will monitor the status of this Tomcat issue. For now, we do not consider this a
-      TDS bug and will not be working to fix this issue in TDS.</p>
-  </blockquote>
+<blockquote>
+  <p>Tomcat memory leak detection code started logging these messages as of Tomcat 6.0.24. From
+    various posts (see Spring Forum:
+    <a href="http://forum.springsource.org/showpost.php?p=282738&postcount=3">
+      "ThreadLocal forcefully removed" comment #3</a> e.g.)
+    it appears that these messages are not a problem but instead a matter of Tomcat finding these
+    objects before they get garbage collected. </p>
 
-<hr width="50%" align="left">
-
-  <h4>Q: <a name="whoIsAccessing">Who is accessing my server?</a> </h4>
-  <blockquote>
-    <p>When you examine the TDS access logs, you can see who is accessing the TDS by IP address. Use <strong>nslookup &lt;ip address&gt;</strong> to find out the host name. </p>
-  </blockquote>
+  <p>Here are a number of related links:</p>
+  <ul>
+    <li>Spring Forum: <a href="http://forum.springsource.org/showthread.php?p=282738#post282738">"ThreadLocal forcefully removed"</a>.
+      Comment #3 provides an answer to the post.
+    </li>
+    <li><a href="http://wiki.apache.org/tomcat/MemoryLeakProtection">Tomcat Memory Leak Prevention page</a>
+      (in particular, see the <a href="http://wiki.apache.org/tomcat/MemoryLeakProtection#customThreadLocal">"Custom ThreadLocal" section</a>)
+    </li>
+    <li>A Tomcat 7 issue on <a href="https://issues.apache.org/bugzilla/show_bug.cgi?id=%2049159">
+      "Improving ThreadLocal memory leak clean-up"</a></li>
+  </ul>
+  <p>NOTE: We will monitor the status of this Tomcat issue. For now, we do not consider this a
+    TDS bug and will not be working to fix this issue in TDS.</p>
+</blockquote>
 
 <hr width="50%" align="left">
 
-  <h4>Q: <a name="controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></h4>
-  <blockquote>
-    <p>Well-behaved web crawlers are supposed to look for a <strong>robots.txt</strong>
-file on the server and follow its instructions. To set up a robots.txt
-file that excludes web crawlers from crawling your server, follow <a href="./reference/Performance.html#robots">these directions</a>. </p>
-  </blockquote>
+<h4>Q: <a name="whoIsAccessing">Who is accessing my server?</a></h4>
+<blockquote>
+  <p>When you examine the TDS access logs, you can see who is accessing the TDS by IP address. Use <strong>nslookup &lt;ip address&gt;</strong> to find out the
+    host name. </p>
+</blockquote>
 
 <hr width="50%" align="left">
 
-<h4>Q: <a name="preventAccess">How can I prevent someone from accessing my server?</a> </h4>
+<h4>Q: <a name="controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></h4>
+<blockquote>
+  <p>Well-behaved web crawlers are supposed to look for a <strong>robots.txt</strong>
+    file on the server and follow its instructions. To set up a robots.txt
+    file that excludes web crawlers from crawling your server, follow <a href="./reference/Performance.html#robots">these directions</a>. </p>
+</blockquote>
+
+<hr width="50%" align="left">
+
+<h4>Q: <a name="preventAccess">How can I prevent someone from accessing my server?</a></h4>
 <blockquote>
   <p>If your server is being overwhelmed by requests from a particular user/computer, it is best to exclude
     them using their IP address rather than their hostname (this avoids having to perform a DNS lookup for
     each request). To do so, edit the <strong>${tomcat_home}/conf/server.xml</strong> file and find the
     "localhost" <strong>Host</strong> element. Add a RemoteAddrValve <strong>Valve</strong> element as
-    follows:  </p>
+    follows: </p>
 
   <blockquote>
   <pre>
@@ -546,38 +610,38 @@ deny="18\.83\.0\.150,128\.100\.34\.99,128\.117\.140\..*"
 
 <hr width="50%" align="left">
 
-  <h4>Q: <a name="removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></h4>
-  <blockquote>
-    <p>Its
-recommended to remove autodetection of changes while Tomcat is
-running, for performance reasons. In a production environment, its
-better to explicitly redeploy the application: </p>
+<h4>Q: <a name="removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></h4>
+<blockquote>
+  <p>Its
+    recommended to remove autodetection of changes while Tomcat is
+    running, for performance reasons. In a production environment, its
+    better to explicitly redeploy the application: </p>
     <pre>   &lt;Host name="localhost" appBase="webapps" unpackWARs="true" <strong>autoDeploy="false"</strong>
      xmlValidation="false" xmlNamespaceAware="false"&gt;
    ...
   &lt;/Host&gt;</pre>
-  </blockquote>
+</blockquote>
 
 <hr width="50%" align="left">
 
-  <h4>Q: <a name="howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></h4>
-  <blockquote>
-    <p>Unless you are using Tomcat with the Apache server, comment out this line in <strong>server.xml:</strong> </p>
+<h4>Q: <a name="howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></h4>
+<blockquote>
+  <p>Unless you are using Tomcat with the Apache server, comment out this line in <strong>server.xml:</strong></p>
     <pre>  &lt;Connector port="8009" enableLookups="false" redirectPort="8443" protocol="AJP/1.3" /&gt;<br>
     </pre>
 </blockquote>
 
-  <hr>
+<hr>
 <h2>Tomcat Resources</h2>
 <ul>
-    <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ (Apache site)</a> </li>
-    <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/index.html">Tomcat  documentation</a></li>
+  <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ (Apache site)</a></li>
+  <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/index.html">Tomcat documentation</a></li>
   <li><a href="http://www.coreservlets.com/Apache-Tomcat-Tutorial/">coreservlets.com tutorial</a></li>
-  </ul>
+</ul>
 
 <hr>
 <address>
-<img src="../images/thread.png" alt="THREDDS" height="108" width="110">
+  <img src="../images/thread.png" alt="THREDDS" height="108" width="110">
   This document is maintained by Unidata and was last updated May 2013.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

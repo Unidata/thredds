@@ -4,10 +4,10 @@
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
   <title>TDS Reference: Configuration Directory</title>
-  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+  <link href="../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-<h1><img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67">TDS Configuration Directory</h1>
+<h1>TDS Configuration Directory</h1>
 <hr>
 
 <p>
@@ -22,45 +22,49 @@
   modifications and additions to the TDS configuration should be made in this directory. Do not
   place files containing passwords or anything else with security issues in this directory.
   Typically you will only be adding and modifying catalogs and configuration files.</p>
-<p>When there are many catalogs, you may want to keep them in seperate subdirectories of the  TDS configuration directory. This is recommended practice. However, do not use a subdirectory <strong>content/thredds/catalog</strong>, as <strong>catalog</strong> is a reserved word in this context.</p>
+
+<p>When there are many catalogs, you may want to keep them in seperate subdirectories of the TDS configuration directory. This is recommended practice. However,
+  do not use a subdirectory <strong>content/thredds/catalog</strong>, as <strong>catalog</strong> is a reserved word in this context.</p>
+
 <h2><a name="content"></a>Content of Configuration Directory</h2>
-  <p>
-    When the TDS is first deployed, the TDS configuration directory looks like:
-  </p>
-  <ul>
-    <li><code>${tomcat_home}/content/thredds/</code>
-      <ul>
-        <li><code>catalog.xml </code> - the main TDS configuration catalog
-          (root catalog for TDS configuration)
-        </li>
-        <li><code>enhancedCatalog.xml</code> - an example catalog [Note: It
-          is referenced from <code>catalog.xml</code>.]
-        </li>
-        <li><code>threddsConfig.xml</code> - configuration
-          file for allowing non-default services, configuring caching, etc
-          (<a href="ThreddsConfigXMLFile.html">more detailed information</a>).
-        </li>
-        <li><code>logs/</code>
-          <ul>
-            <li><code>catalogInit.log</code> - log file for messages generated while reading TDS
-              configuration catalogs during TDS initialization and reinitialization.
-            </li>
-            <li><code>threddsServlet.log</code> - TDS error log file.</li>
-          </ul>
-        </li>
-        <li><code>cache/</code> - various cache directories
-          <ul>
-            <li><code>agg/</code></li>
-            <li><code>cdm/</code></li>
-            <li><code>collection/</code></li>
-            <li><code>ehcache/</code></li>
-            <li><code>ncss/</code></li>
-            <li><code>wcs/</code></li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-  </ul>
+
+<p>
+  When the TDS is first deployed, the TDS configuration directory looks like:
+</p>
+<ul>
+  <li><code>${tomcat_home}/content/thredds/</code>
+    <ul>
+      <li><code>catalog.xml </code> - the main TDS configuration catalog
+        (root catalog for TDS configuration)
+      </li>
+      <li><code>enhancedCatalog.xml</code> - an example catalog [Note: It
+        is referenced from <code>catalog.xml</code>.]
+      </li>
+      <li><code>threddsConfig.xml</code> - configuration
+        file for allowing non-default services, configuring caching, etc
+        (<a href="ThreddsConfigXMLFile.html">more detailed information</a>).
+      </li>
+      <li><code>logs/</code>
+        <ul>
+          <li><code>catalogInit.log</code> - log file for messages generated while reading TDS
+            configuration catalogs during TDS initialization and reinitialization.
+          </li>
+          <li><code>threddsServlet.log</code> - TDS error log file.</li>
+        </ul>
+      </li>
+      <li><code>cache/</code> - various cache directories
+        <ul>
+          <li><code>agg/</code></li>
+          <li><code>cdm/</code></li>
+          <li><code>collection/</code></li>
+          <li><code>ehcache/</code></li>
+          <li><code>ncss/</code></li>
+          <li><code>wcs/</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
 
 <hr width="100%">
 <h2><a name="moveLocation"></a>Changing the Location of the Configuration Directory</h2>
@@ -98,10 +102,10 @@
 <p>
   and change the value of "<code>tds.content.root.path</code>" there.
 </p>
-     
+
 <hr width="100%">
 <address>
-  <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
+  <img alt="THREDDS" src="../thread.png" height="108" width="110">
   This document is maintained by Unidata and was last updated July 2011.
   Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.

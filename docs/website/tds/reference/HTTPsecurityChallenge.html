@@ -1,13 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
+    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>HTTP Security Challenge</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>HTTP Security Challenge</title>
+  <link href="../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
-<h1><img src="../../images/unidataLogo.png" width="75" height="75" align="middle"> HTTP Security Challenge Messages Example </h1>
+<h1>HTTP Security Challenge Messages Example </h1>
 <hr>
 <p><strong>1. A request is made to a restricted access, in this case from a web browser:</strong></p>
 <pre><strong>GET /thredds/dodsC/restrict/testData.nc.html </strong>HTTP/1.1
@@ -20,7 +21,7 @@
    Keep-Alive: 300
    Connection: keep-alive
 </pre>
-<p><strong>  The response is a redirection to a special URL, given in the Location header. Notice that a session Cookie is also sent. </strong></p>
+<p><strong> The response is a redirection to a special URL, given in the Location header. Notice that a session Cookie is also sent. </strong></p>
 <pre>HTTP/1.x <strong>302 Moved Temporarily</strong>
    Server: Apache-Coyote/1.1
    Last-Modified: Tue, 30 Jan 2007 17:29:35 GMT
@@ -42,7 +43,7 @@
    Connection: keep-alive
    Cookie: JSESSIONID=77421EB5C6EEA0BD2AA59BE8A0950F33
 </pre>
-<p>  <strong>Because SSL is on, a second redirect happens to an HTTPS URL. This is part of the Tomcat managed authentication. </strong></p>
+<p><strong>Because SSL is on, a second redirect happens to an HTTPS URL. This is part of the Tomcat managed authentication. </strong></p>
 <pre>HTTP/1.x <strong>302 Moved Temporarily</strong>
    Server: Apache-Coyote/1.1
    Pragma: No-cache
@@ -52,7 +53,7 @@
    Content-Length: 0
    Date: Wed, 04 Apr 2007 00:27:14 GMT
 </pre>
-<p><strong>  3. The client again follows the redirect:</strong></p>
+<p><strong> 3. The client again follows the redirect:</strong></p>
 <pre>GET <strong>/thredds/restrictedAccess/tiggeData </strong>HTTP/1.1
    Host: <strong>motherlode.ucar.edu:9443</strong>
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11
@@ -63,7 +64,8 @@
    Keep-Alive: 300
    Connection: keep-alive
    Cookie: JSESSIONID=77421EB5C6EEA0BD2AA59BE8A0950F33; </pre>
-<p><strong>  The reponse is the HTTP Security challenge. The WWW-Authenticate header indicates its using BASIC authentication for the Realm THREDDS Data Server. BASIC is safe because we are using SSL. </strong></p>
+<p><strong> The reponse is the HTTP Security challenge. The WWW-Authenticate header indicates its using BASIC authentication for the Realm THREDDS Data Server.
+  BASIC is safe because we are using SSL. </strong></p>
 <pre>HTTP/1.x <strong>401 Unauthorized</strong>
    Server: Apache-Coyote/1.1
    Pragma: No-cache
@@ -74,7 +76,8 @@
    Content-Length: 954
    Date: Wed, 04 Apr 2007 00:27:19 GMT
 </pre>
-<p><strong>  4. At this point, the client must know how to obtain the proper username/password, and base64 encode it into the Authorization header, and repeat the request: </strong></p>
+<p><strong> 4. At this point, the client must know how to obtain the proper username/password, and base64 encode it into the Authorization header, and repeat
+  the request: </strong></p>
 <pre>GET <strong>/thredds/restrictedAccess/tiggeData</strong> HTTP/1.1
    Host: <strong>motherlode.ucar.edu:9443</strong>
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11
@@ -86,7 +89,8 @@
    Connection: keep-alive
    Cookie: JSESSIONID=77421EB5C6EEA0BD2AA59BE8A0950F33
    <strong>Authorization</strong>: <strong>Basic dGlnZ2VEYXRhOnRpZ2dl</strong></pre>
-<p><strong>If the server authenticates the user, and the user is authorized to access the resource, then it is redirected back to the original URL: </strong></p>
+<p><strong>If the server authenticates the user, and the user is authorized to access the resource, then it is redirected back to the original URL: </strong>
+</p>
 <pre>HTTP/1.x <strong>302 Moved Temporarily</strong>
    Server: Apache-Coyote/1.1
    Pragma: No-cache
@@ -107,7 +111,8 @@
    Content-Length: 954
    Date: Wed, 04 Apr 2007 00:27:32 GMT</pre>
 <p><strong><br>
-  5. The client follows the redirect, and we're back where we started from (compare 1), except that the server now has created a  session for this user, pointed to by the Session Cookie (which the client has been sending all along)</strong></p>
+  5. The client follows the redirect, and we're back where we started from (compare 1), except that the server now has created a session for this user, pointed
+  to by the Session Cookie (which the client has been sending all along)</strong></p>
 <pre>GET <strong>/thredds/dodsC/restrict/testData.nc.html</strong> HTTP/1.1
    Host: <strong>motherlode.ucar.edu:9080</strong>
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11
@@ -145,13 +150,13 @@
    Content-Description: dods_ascii
    Content-Type: text/plain
    Transfer-Encoding: chunked
-   Date: Wed, 04 Apr 2007 00:56:23 GMT <strong>  </strong></pre>
+   Date: Wed, 04 Apr 2007 00:56:23 GMT <strong> </strong></pre>
 <hr width="100%">
 <address>
-    <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
-    This document is maintained by Unidata and was last updated April 3, 2007.
-    Send comments to
-    <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+  <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
+  This document is maintained by Unidata and was last updated April 3, 2007.
+  Send comments to
+  <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body>
 </html>

@@ -2,18 +2,19 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  
+
   <title>TDS Web Map Service (WMS)</title>
-  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+  <link href="../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 
-<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"> TDS Web Map Service (WMS)</h1>
+<h1>TDS Web Map Service (WMS)</h1>
 <hr>
 
 <p>The TDS WMS implementation uses the <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/">ncWMS software</a>
-  developed by Jon Blower (Reading E-Science Center at the University of Reading). 
+  developed by Jon Blower (Reading E-Science Center at the University of Reading).
 </p>
+
 <p>It supports <a href="http://www.opengeospatial.org/">OGC</a> Web Map Service
   (<a href="http://www.opengeospatial.org/standards/wms">WMS</a>) versions 1.3.0 and 1.1.1.
 </p>
@@ -25,10 +26,12 @@
   <li>The NetCDF-Java Common Data Model must be able to identify the coordinates
     system used. Check this by opening in the Grid Panel of the
     <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">ToolsUI</a>
-    application. There should be one or more variables shown as a GeoGrid.</li>
+    application. There should be one or more variables shown as a GeoGrid.
+  </li>
 </ol>
 
 <h2>Enabling and Using WMS</h2>
+
 <p>By default the WMS service is disabled in the TDS. It can be enabled for locally
   served datasets by including the following in the <code>threddsConfig.xml</code> file:
 </p>
@@ -147,7 +150,7 @@ http://servername:8080/thredds/wms?<strong>dataset=http://las.pfeg.noaa.gov/cgi-
 
 <hr width="100%">
 <address>
-  <img src="../../images/thread.png" alt="THREDDS" height="108" width="110">
+  <img src="../thread.png" alt="THREDDS" height="108" width="110">
   This document is maintained by Unidata and was last updated June 2009. Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

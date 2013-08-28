@@ -11,17 +11,24 @@
 
 <hr>
 <h3>New Features </h3>
-<ul><li> <a href="reference/collections/FeatureCollections.html">FeatureCollection</a> type=GRIB&nbsp;</li>
-  <li>  Non-Julian <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/CalendarDateTime.html">Calendars</a> are supported</li>
-  <li> CF 1.6 discrete sampling (aka point observations)&nbsp;<a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/CFpointImplement.html">supported</a></li>
-  <li>Netcdf-4 files can be written if netCDF4 C library is <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html">installed</a> (alpha testing).</li>
-  <li>NetCDF Subset Service  <a href="../interfaceSpec/NetcdfSubsetService_4_3.html">improved</a></li>
+<ul>
+  <li><a href="reference/collections/FeatureCollections.html">FeatureCollection</a> type=GRIB&nbsp;</li>
+  <li> Non-Julian <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/CalendarDateTime.html">Calendars</a> are supported</li>
+  <li> CF 1.6 discrete sampling (aka point
+    observations)&nbsp;<a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/CFpointImplement.html">supported</a></li>
+  <li>Netcdf-4 files can be written if netCDF4 C library is
+    <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html">installed</a> (alpha testing).
+  </li>
+  <li>NetCDF Subset Service <a href="../interfaceSpec/NetcdfSubsetService_4_3.html">improved</a></li>
   <li>GRIB-1 and GRIB-2 complete <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html">rewrite</a>&nbsp;</li>
   <li>Latest tables from WMO: BUFR, GRIB2, Common Codes&nbsp;</li>
 </ul>
 <h3>TDS 4.3 Dataset Access Changes</h3>
 <ul>
-  <li>Upgrades to the way GRIB variables are named, as well as changes to the main Unidata TDS access URLs, will require <a href="AccessChangesTds4.3.html">modifications</a> to software designed to access data from a TDS. This includes various scripts used to interface with the TDS hosted at Unidata and elsewhere (running TDS 4.3).</li>
+  <li>Upgrades to the way GRIB variables are named, as well as changes to the main Unidata TDS access URLs, will require <a href="AccessChangesTds4.3.html">modifications</a>
+    to software designed to access data from a TDS. This includes various scripts used to interface with the TDS hosted at Unidata and elsewhere (running TDS
+    4.3).
+  </li>
 </ul>
 <h3>Release Engineering</h3>
 <ul>
@@ -32,13 +39,19 @@
 </ul>
 <h3>Configuration Changes</h3>
 <ul>
-  <li>The <strong>datasetFmrc</strong> element should be <a href="reference/collections/FmrcCollection.html">migrated</a> to a <strong>featureCollection</strong> type=FMRC.</li>
-  <li>Stop using NCML or FMRC aggregations on GRIB files. Only  <strong>featureCollection</strong> type=GRIB&nbsp;should be used. <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html">Details</a>.</li>
-  <li>If you are loading GRIB tables at runtime, you must make some <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html">changes</a>.</li>
+  <li>The <strong>datasetFmrc</strong> element should be <a href="reference/collections/FmrcCollection.html">migrated</a> to a
+    <strong>featureCollection</strong> type=FMRC.
+  </li>
+  <li>Stop using NCML or FMRC aggregations on GRIB files. Only <strong>featureCollection</strong> type=GRIB&nbsp;should be used.
+    <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html">Details</a>.
+  </li>
+  <li>If you are loading GRIB tables at runtime, you must make some
+    <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html">changes</a>.
+  </li>
   <li>If WMS is enabled, update the <strong>wmsConfig.xml</strong> file:
-  <ul>
-  <li>The document type definition is now external and points to: <a href="http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd">http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd</a><br />
-  So, the internal document type declaration has to be changed from:
+    <ul>
+      <li>The document type definition is now external and points to: <a href="http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd">http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd</a><br/>
+        So, the internal document type declaration has to be changed from:
   <pre>
 &lt;!DOCTYPE wmsConfig [
 
@@ -73,14 +86,15 @@
 &lt;!ELEMENT logScaling (#PCDATA)&gt;
 ]&gt;  
   </pre>
-  
-  to:
+
+        to:
   <pre>
   &lt;!DOCTYPE wmsConfig SYSTEM "http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd"&gt;  
   </pre>
-  </li>
-  <li>
-   WMS supports interval times in the capabilities documents and for setting up this feature that a new configuration tag has to be added into the defaults section:<br/>  
+      </li>
+      <li>
+        WMS supports interval times in the capabilities documents and for setting up this feature that a new configuration tag has to be added into the defaults
+        section:<br/>
   	<pre>  	
     &lt;defaults&gt;
     	&lt;!-- The global defaults. All elements are mandatory --&gt;
@@ -92,17 +106,17 @@
         &lt;intervalTime&gt;false&lt;/intervalTime&gt;
     &lt;/defaults&gt;
   	</pre>
-  	</li>
-  	<li>A valid wmsConfig.xml is available for reference in the ${tomcat.home}/webapps/thredds/WEB-INF/altContent/startup directory</li>
-  	</ul> 
+      </li>
+      <li>A valid wmsConfig.xml is available for reference in the ${tomcat.home}/webapps/thredds/WEB-INF/altContent/startup directory</li>
+    </ul>
   </li>
 </ul>
 <hr>
 
 <address>
-<img src="../images/thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-last updated Dec 2012. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
-support</a>.
+  <img src="../images/thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
+  last updated Dec 2012. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  support</a>.
 </address>
 
 </body>

@@ -1,0 +1,404 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0100)http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/GribFeatureCollectionTutorial.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <title>GRIB Feature Collection</title>
+   
+   <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/img/favicon.ico" type="image/x-icon">
+   <link rel="stylesheet" href="./GRIBFeatureCollectionTutorial_files/upc.css" type="text/css" media="screen, handheld">
+   <link rel="stylesheet" href="./GRIBFeatureCollectionTutorial_files/print_upc.css" type="text/css" media="print">
+
+
+   <meta name="google-site-verification" content="-1uQ4qWE169SCZ89TolvuauHYBwWz8zL4PI_OFB9Ue0">
+
+   <script type="text/javascript" async="" src="./GRIBFeatureCollectionTutorial_files/ga.js"></script><script type="text/javascript" src="./GRIBFeatureCollectionTutorial_files/login_cookie_detect.js"></script>
+   <script type="text/javascript" src="./GRIBFeatureCollectionTutorial_files/last_mod.js"></script>
+
+   <!-- jQuery -->
+   <script type="text/javascript" src="./GRIBFeatureCollectionTutorial_files/jquery-latest.min.js"></script>
+
+   <!-- site-wide jquery functions -->
+   <script type="text/javascript" src="./GRIBFeatureCollectionTutorial_files/upc.js"></script>
+
+   <!-- tool tips -->
+   <script type="text/javascript" src="./GRIBFeatureCollectionTutorial_files/jquery.bt.min.js"></script>
+   <script type="text/javascript" src="./GRIBFeatureCollectionTutorial_files/tooltip.js"></script>
+
+
+
+
+   <link rel="stylesheet" href="./GRIBFeatureCollectionTutorial_files/tutorial2.css" type="text/css"> 
+   <script type="text/javascript" src="./GRIBFeatureCollectionTutorial_files/workshopNav.js"></script>
+ <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-4025628-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+  <body>       <header> 
+     <!-- unidata header -->
+     <div id="header">
+
+      <!-- banner -->
+      <div id="banner">
+
+       <div id="banner_logo">
+         <a href="http://www.unidata.ucar.edu/" class="noicon"><img src="./GRIBFeatureCollectionTutorial_files/uniLogo.png" alt="Unidata"></a>
+       </div> <!-- end banner_logo -->
+
+       <!-- banner links -->
+       <div id="bannerlinks">
+        <div id="icons">
+         <a href="https://www.facebook.com/Unidata" class="noicon"><img src="./GRIBFeatureCollectionTutorial_files/facebook.png" alt="facebook"></a>
+         <a href="http://twitter.com/unidata" class="noicon"><img src="./GRIBFeatureCollectionTutorial_files/twitter.png" alt="twitter"></a>
+         <a href="http://www.unidata.ucar.edu/blogs/news/feed/entries/atom" class="noicon"><img src="./GRIBFeatureCollectionTutorial_files/rss.png" alt="RSS"></a>
+        </div> <!-- end icons -->
+        <div class="loginLinks">
+
+
+<a href="http://www.unidata.ucar.edu/account/login.jsp">Login</a> | <a href="http://www.unidata.ucar.edu/account/account.jsp">Register</a>
+
+
+
+</div>
+        <noscript>
+          &lt;a href="/account/account.jsp"&gt;My Account&lt;/a&gt;
+        </noscript>
+       </div> <!-- end bannerlinks -->
+       <div id="banner_title">
+        <h1><a href="http://www.unidata.ucar.edu/">Unidata</a></h1>
+       </div>
+       <div id="banner_mission">
+        providing innovative data services and tools to transform the conduct of geoscience
+       </div>
+      </div> <!-- end banner -->
+
+
+      <!-- horizontal navigation menu -->
+      <div id="navspace">
+
+       <nav> 
+        <ul id="nav">
+         <li class="top"><a href="http://www.unidata.ucar.edu/data/" id="data" class="top_link"><span class="down">Data</span></a>
+          <ul class="sub_l">
+           <li><b>Available Data Types</b></li>
+           <li><a href="http://www.unidata.ucar.edu/data/index.html#model">Forecast Model Output</a></li>
+           <li><a href="http://www.unidata.ucar.edu/data/index.html#satellite">Satellite Data</a></li>
+           <li><a href="http://www.unidata.ucar.edu/data/index.html#radar">Radar Data</a></li>
+           <li><a href="http://www.unidata.ucar.edu/data/index.html#lightning">Lightning Data</a></li>
+           <li><a href="http://www.unidata.ucar.edu/data/index.html#profiler">Wind Profiler Data</a></li>
+           <li><a href="http://www.unidata.ucar.edu/data/index.html#acars">Aircraft-Borne (ACARS)</a></li>
+           <li><a href="http://www.unidata.ucar.edu/data/index.html#suominet">GPS Meteo. Data (SuomiNet)</a></li>
+           <li><a href="http://www.unidata.ucar.edu/data/index.html#text">Textual Weather Bulletins</a></li>
+           <li><b>Data Resources</b></li>
+           <li><a href="http://www.unidata.ucar.edu/data/DataFlow.html">Data Usage Guide</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/ldm/ldm-current/basics/feedtypes/">LDM Feedtypes</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/idd/rtstats/">IDD Operational Status</a></li>
+           <li><a href="http://www.unidata.ucar.edu/data/index.html#archived">Archived Data Access</a></li>
+          </ul>
+         </li>
+
+         <li class="top"><a href="http://www.unidata.ucar.edu/software/" id="software" class="top_link"><span class="down">Software</span></a>
+          <ul class="sub">
+           <li><b>Display &amp; Analysis</b></li>
+           <li><a href="http://www.unidata.ucar.edu/software/awips2/">AWIPS II</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/gempak/">GEMPAK</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/idv/">IDV</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/mcidas">McIDAS</a></li>
+           <li><b>Data Access &amp; Management</b></li>
+           <li><a href="http://www.unidata.ucar.edu/software/ldm/">LDM</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/mcidas/mcidd/">LDM-McIDAS Decoders</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/decoders/">NetCDF Decoders  <span class="deprecatedSmall">[DEPRECATED]</span></a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/">NetCDF Java</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/netcdf-perl/">NetCDF Perl <span class="deprecatedSmall">[DEPRECATED]</span></a> </li>
+           <li><a href="http://www.unidata.ucar.edu/software/rosetta/">Rosetta</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/tds/">THREDDS Data Server</a></li>
+           <li><a href="http://www.unidata.ucar.edu/software/udunits/">UDUNITS</a></li>
+          </ul>
+         </li>
+
+         <li class="top"><a href="http://www.unidata.ucar.edu/downloads/" id="downloads" class="top_link"><span class="down">Downloads</span></a>
+          <ul class="sub">
+           <li><b>Download Software</b></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/gempak/">GEMPAK</a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/idv/">IDV</a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/mcidas/">McIDAS</a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/ldm/">LDM</a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/ldm-mcidas/">LDM-McIDAS Decoders</a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/netcdf/">NetCDF</a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/decoders/">NetCDF Decoders  <span class="deprecatedSmall">[DEPRECATED]</span></a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/netcdf/">NetCDF Java</a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/netcdf-perl/">NetCDF Perl <span class="deprecatedSmall">[DEPRECATED]</span></a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/thredds/">THREDDS Data Server</a></li>
+           <li><a href="http://www.unidata.ucar.edu/downloads/udunits/">UDUNITS</a></li>
+           <li><b>Terms &amp; Conditions</b></li>
+           <li><a href="http://www.unidata.ucar.edu/legal/participation.html">Provision of Software</a></li>
+          </ul>
+         </li>
+
+         <li class="top"><a href="http://www.unidata.ucar.edu/support/" id="support" class="top_link"><span class="down">Support</span></a>
+          <ul class="sub">
+           <li><b>Support Resources</b></li>
+           <li><a href="http://www.unidata.ucar.edu/support/index.html#docs">Documentation</a></li>
+           <li><a href="http://www.unidata.ucar.edu/support/index.html#training">Training Tutorials</a></li>
+           <li><a href="http://www.unidata.ucar.edu/support/index.html#mailinglists">Mailing Lists</a></li>
+           <li><a href="http://www.unidata.ucar.edu/support/index.html#archives">Support Archives</a></li>
+           <li><b>Submit a Request</b></li>
+           <li><a href="http://www.unidata.ucar.edu/support/index.html#process">Suggested Support Process</a></li>
+           <li><a href="http://www.unidata.ucar.edu/support/index.html#request">Email-Based</a></li>
+           <li><a href="http://www.unidata.ucar.edu/support/requestSupport.jsp">Web-Based</a></li>
+           <li><b>Terms &amp; Conditions</b></li>
+           <li><a href="http://www.unidata.ucar.edu/support/index.html#conditions">Obtaining Support</a></li>
+           <li><a href="http://www.unidata.ucar.edu/account/account.jsp">Register as a User</a></li>
+          </ul>
+         </li>
+
+         <li class="top"><a href="http://www.unidata.ucar.edu/community/" id="community" class="top_link"><span class="down">Community</span></a>
+          <ul class="sub">
+           <li><b>Outreach &amp; Opportunities</b></li>
+           <li><a href="http://www.unidata.ucar.edu/community/index.html#unidatanews">News from Unidata</a></li>
+           <li><a href="http://www.unidata.ucar.edu/events/">Unidata Events</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/index.html#communitynews">News from the Community</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/index.html#opportunities">Job Opportunities</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/desouza/">DeSouza Award</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/equipaward/">Equipment Awards</a></li>
+           <li><b>We Are Community Driven</b></li>
+           <li><a href="http://www.unidata.ucar.edu/community/Participating_Institutions.html">Participating Institutions</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/">Collaborations</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/index.html#ed_resources">Education Resources</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/sitehighlight/">Software &amp; Data in Use</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/index.html#participate">How to Participate</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/index.html#acknowledge">Acknowledging Unidata</a></li>
+           <li><b>Governance</b></li>
+           <li><a href="http://www.unidata.ucar.edu/committees/polcom/">Policy Committee</a></li>
+           <li><a href="http://www.unidata.ucar.edu/committees/usercom/">Users Committee</a></li>
+           <li><b>Publications &amp; Resources</b></li>
+           <li><a href="http://www.unidata.ucar.edu/publications/bibliography/bibliography.html">Bibliography</a></li>
+           <li><a href="http://www.unidata.ucar.edu/publications/acronyms/glossary.html">Glossary of Terms</a></li>
+          </ul>
+         </li>
+
+
+         <li class="top"><a href="http://www.unidata.ucar.edu/projects/" id="projects" class="top_link"><span class="down">Projects</span></a>
+          <ul class="sub">
+           <li><b>Current Projects</b></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#acadis">ACADIS</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#casestudies">Case Studies</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#cdm">Common Data Model</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#conduit">CONDUIT</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#galeon">GALEON</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#geon">GEON IDV</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#google">Google Africa Initiative</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#gridpsec">GRIDSPEC</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#hydro">HYDRO-NEXRAD</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#idd">Internet Data Distribution</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#libcf">LibCF</a></li>   
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#mcidas-v">McIDAS-V</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#ncmp">Data Intercomparisons</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#ngldm">Next-Generation LDM</a></li>
+           <li><a href="http://www.unidata.ucar.edu/projects/index.html#opuls">OPULS</a></li>         
+          </ul>
+         </li>
+
+         <li class="top"><a href="http://www.unidata.ucar.edu/blogs/news/" id="newsmenu" class="top_link"><span class="down">News</span></a>
+          <ul class="sub">
+           <li><b>News from Unidata</b></li>
+           <li><a href="http://www.unidata.ucar.edu/blogs/news/">News from Unidata</a></li>
+           <li><a href="http://www.unidata.ucar.edu/events/">Unidata Events</a></li>
+           <li><b>News from the Community</b></li>
+           <li><a href="http://www.unidata.ucar.edu/community/index.html#communitynews">News From the Community</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/index.html#opportunities">Community Jobs</a></li>
+           <li><b>News Archives</b></li>
+           <li><a href="http://www.unidata.ucar.edu/news/archives/#eletters">Archived CommunitE-letters</a></li>
+           <li><a href="http://www.unidata.ucar.edu/news/archives/#news">Archived News Releases</a></li>
+          </ul>
+         </li>
+
+
+         <li class="top"><a href="http://www.unidata.ucar.edu/events/" id="eventsmenu" class="top_link"><span class="down">Events</span></a>
+          <ul class="sub">
+           <li><b>Unidata Events</b></li>
+           <li><a href="http://www.unidata.ucar.edu/events/">Calendar of Events</a></li>
+           <li><a href="http://www.unidata.ucar.edu/community/seminars/">Seminar Series</a></li>
+           <li><a href="http://www.unidata.ucar.edu/events/index.html#conferences">Conferences &amp; Meetings</a></li>
+           <li><b>Unidata Workshops</b></li>
+           <li><a href="http://www.unidata.ucar.edu/events/index.html#training">Training Workshops</a></li>
+           <li><a href="http://www.unidata.ucar.edu/events/index.html#triennial">Triennial Workshops</a></li>
+           <li><a href="http://www.unidata.ucar.edu/events/index.html#regional">Regional Workshops</a></li>
+           <li><a href="http://www.unidata.ucar.edu/events/index.html#datawk">Data Workshops</a></li>
+          </ul>
+         </li>
+
+         <li class="top"><a href="http://www.unidata.ucar.edu/about/" id="about" class="top_link"><span class="down">About Us</span></a>
+          <ul class="sub">
+           <li><b>The Unidata Program</b></li>
+           <li><a href="http://www.unidata.ucar.edu/about/index.html#overview">Overview of Unidata</a></li>
+           <li><a href="http://www.unidata.ucar.edu/about/index.html#reports">Highlights &amp; Reports</a></li>
+           <li><a href="http://www.unidata.ucar.edu/publications/leaflet/Leaflet.pdf">Unidata Leaflet</a></li>
+           <li><a href="http://www.unidata.ucar.edu/publications/directorspage/">Unidata Director's Page</a></li>
+           <li><b>Our Organization</b></li>
+           <li><a href="http://www.unidata.ucar.edu/about/OrgChart-Groups.pdf">Working Groups</a></li>
+           <li><a href="http://www.unidata.ucar.edu/about/OrgChart-ReportingStructure.pdf">Reporting Structure</a></li>
+           <li><a href="http://www.unidata.ucar.edu/about/index.html#staff">Staff Listing</a></li>
+           <li><b>Contact Unidata</b></li>
+           <li><a href="http://www.unidata.ucar.edu/about/index.html#contact">Contact Information</a></li>
+           <li><a href="http://www.unidata.ucar.edu/about/index.html#visit">Visit Unidata</a></li>
+          </ul>
+         </li>
+        </ul>
+       </nav> 
+
+
+       <!-- search -->
+       <div id="search">
+        <form name="google" action="http://www.unidata.ucar.edu/googleresults.jsp">
+         <input type="hidden" name="hq" value="site:www.unidata.ucar.edu">
+         <input type="hidden" name="cx" value="008424664622949020059:afj38jxaljc">
+         <input type="hidden" name="cof" value="FORID:9">
+         <input type="hidden" name="ie" value="UTF-8">
+         <input type="text" id="searchInput" name="q" maxlength="255" class="unidatasearch">
+         <input type="image" src="./GRIBFeatureCollectionTutorial_files/search.png" alt="Search" class="unidatasearchsubmit">
+        </form>
+ 
+       </div>  <!-- end search -->
+      </div> <!-- end navspace -->
+     </div> <!-- end header -->
+    </header> 
+ 
+    <!-- page container -->
+    <div id="container"><ul id="breadcrumbs" "=""><li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tutorial/workshop2013.html">2013 TDS Workshop Home</a></li><li>GRIB Feature Collection</li></ul>
+
+  <h1>GRIB Feature Collection Tutorial</h1>
+  
+   <div id="section">
+    <h2><a>GRIB Feature Collection</a></h2>
+    <div id="note" class="info">
+     <h4>For more information</h4>
+     <ul>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/CollectionSpecification.html">Collection specification</a></li>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/FeatureCollections.html">Feature Collections Reference </a></li>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/GribCollections.html">GRIB Collection Reference</a></li>
+     </ul>
+    </div>
+    <p>The featureCollection element is a way to tell the TDS to serve collections of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used mostly for <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/GridDatatype.html">gridded data</a> whose time and spatial coordinates are recognized by the CDM software stack. In this tutorial, we will work with featureCollection for collections of GRIB files.</p>
+    <div id="expanded" class="exercise">
+     <h3>Creating a GRIB Feature Collection</h3>
+     <p>Download <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/files/catalogGribfc.xml">catalogGribfc.xml</a>, place it in<strong> ${tomcat_home}/content/thredds</strong> directory
+    and add a catalogRef to it from your main catalog. Heres the first feature collection in it:</p>
+
+     <pre> 
+1)&lt;featureCollection name="FNL" featureType="GRIB" path="gribfc/LocalFNLCollection"&gt;
+2) &lt;metadata inherited="true"&gt;
+3)   &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;
+4)   &lt;serviceName&gt;all&lt;/serviceName&gt;
+     &lt;documentation type="summary"&gt;LOCAL FNL's TO TEST TIME PARTITION&lt;/documentation&gt;
+   &lt;/metadata&gt;
+
+5)   &lt;collection name="LOCAL_FNL"
+        spec="/machine/tds/tutorial/fnl/**/fnl_.*_00_c$"
+6)      timePartition="1 month"
+7)      dateFormatMark="#fnl_#yyyyMMdd_HH" /&gt;
+8) &lt;update startup="true"/&gt;
+&lt;/featureCollection&gt;</pre>
+     <ol>
+      <li>A THREDDS featureCollection is defined, of type GRIB. All contained datasets will all have a <em>path</em> starting with <strong>gribfc/LocalFNLCollection</strong>.</li>
+      <li>All the metadata contained here will be inherited by the contained datasets. </li>
+      <li>You must define a dataFormat element with contenet GRIB-1 or GRIB-2.</li>
+      <li>All services are defined in a compound service type called all.</li>
+      <li>The collection of files is defined, using a <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/tutorial/fnl</strong> will be scanned for files with names that match the regular expression <strong>fnl_.*_00_c$</strong></li>
+      <li>The collection will be split into a time partition by month.</li>
+      <li>A date will be extracted from the filename by matching the characters after<strong> fnl_</strong> with <strong>yyyyMMdd_HH</strong>. An example filename is<strong> fnl_20100104_12_00_c</strong>, so the date will be year <strong>2010</strong>, month <strong>01</strong>, day <strong>04</strong> and hour <strong>12</strong>.</li>
+      <li>Read in the collection when the TDS starts up.</li>
+     </ol>
+     <p>The resulting web page looks like:</p>
+     <p><img src="./GRIBFeatureCollectionTutorial_files/gribfc1.png" width="783" height="418"></p>
+     <p>The TDS has created a number of datasets out of the GRIB collection, and made them available through the catalog interface. There are datasets for each monthly partition of the data, as well as a "Best Timeseries" that combines all the data into a single logical dataset. If you open a monthly partition:</p>
+     <p><img src="./GRIBFeatureCollectionTutorial_files/gribfc3.png" width="803" height="329"></p>
+     <p>You see that it has a "Best Timeseries" collection dataset as well as listing the individual files in the collection:</p>
+     <p><img src="./GRIBFeatureCollectionTutorial_files/gribfc4.png" width="803" height="748"></p>
+     <p>All of these datasets have an HTML page that looks more or less like this:</p>
+     <p><img src="./GRIBFeatureCollectionTutorial_files/gribfc2.png" width="803" height="785"></p>
+    </div>
+    
+  <div id="expanded" class="exercise">
+    <h3>GRIB Feature Collection with multiple GDS</h3>
+     <p>The second feature collection in <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
+
+     <pre>1)&lt;featureCollection name="ECMWF Data" featureType="GRIB" path="gribfc/ecmwf"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;<br>      &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;/metadata&gt;<br>2)  &lt;collection name="ECMWF_GNERA" spec="<strong>/machine/tds/tutorial/ecmwf/ECMWF_GNERA_d000..20121001$</strong>" dateFormatMark="#.#yyyyMMdd"/&gt;<br>3)  &lt;gribConfig&gt;<br>      <strong>&lt;gdsName hash='1562665966' groupName='domain1'/&gt;<br>     &lt;gdsName hash='-104750013' groupName='domain2'/&gt;</strong><br>    &lt;/gribConfig&gt;<br>  &lt;/featureCollection&gt;</pre>
+    <ol>
+      <li>A THREDDS featureCollection is defined, of type GRIB. All contained datasets will all have a <em>path</em> starting with <strong>gribfc/ecmwf</strong>.</li>
+      <li>The collection of files is defined, using a <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/tutorial/ecmwf</strong> will be scanned for files with names that match the regular expression <strong>ECMWF_GNERA_d000..20121001</strong>$<strong>. </strong> A date will be extracted from the filename by matching the characters after<strong> the "." </strong> with <strong>yyyyMMdd</strong>. An example filename is<strong> ECMWF_GNERA_d0001.20121001</strong>, so the date will be year <strong>2012</strong>, month <strong>10</strong>, day <strong>01</strong>.</li>
+      <li>A  configuration element that is specific to GRIB collections. In this case we are changing the name of the group by matching the GDS hash code. </li>
+      </ol>
+     
+     <p>Open up the ToolsUI <strong>IOSP/GRIB1/Grib1Collection</strong> tab, and enter "<strong>/work/tds/tutorial/ecmwf/ECMWF_GNERA_d000..20121001</strong>$" into the collection spec, you will see something like:</p>
+    <p><img src="./GRIBFeatureCollectionTutorial_files/gribfc11.png" width="983" height="721"></p>
+     <p>The bottom table shows that there are two distinct GDS in this collection. The column marked "hash" shows the GDS hash code that you use in the TDS configuration table. Click the first Info button ("generate gds xml") to genetat XML that you can modify:</p>
+     <p><img src="./GRIBFeatureCollectionTutorial_files/gribfc12.png" width="500" height="300"></p>
+     <p>After making the modifications in the TDS config catalog, the  resulting HTML view is:</p>
+    <p><img src="./GRIBFeatureCollectionTutorial_files/gribfc10.png" width="938" height="457"></p>
+  </div>
+  
+    <div id="expanded" class="exercise">
+    <h3>GRIB Feature Collection with spurious GDS</h3>
+     <p>The third feature collection in <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
+
+     <pre>1)&lt;featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB" path="gribfc/ndfd"&gt;<br>    &lt;metadata inherited="true"&gt;<br>2)    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>    &lt;/metadata&gt;<br>3)  &lt;collection spec="<strong>/machine/tds/tutorial/ndfd/.*grib2$</strong>" dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm" /&gt;<br>4)  &lt;gribConfig&gt;<br>      <strong>&lt;gdsHash from="-2121584860" to="28944332"/&gt;</strong><br>    &lt;/gribConfig&gt;<br>  &lt;/featureCollection&gt;<br>  &lt;/featureCollection&gt;</pre>
+     <ol>
+      <li>A THREDDS featureCollection is defined, of type GRIB. All contained datasets will all have a <em>path</em> starting with <strong>gribfc/ndfd</strong>.</li>
+      <li>Make sure you specify GRIB-2 dataFormat, or else nothing will work.</li>
+      <li> Subdirectories of<strong> /machine/tds/tutorial/ndfd</strong> will be scanned for files with names that end with grib2<strong>. </strong> A date will be extracted from the filename by matching the characters after the<strong> "NDFD_CONUS_5km_conduit_" </strong> with <strong>yyyyMMdd_HHmm</strong>. An example filename is<strong> NDFD_CONUS_5km_conduit_20120124_2000.grib2</strong>, so the date will be year <strong>2012</strong>, month <strong>01</strong>, day <strong>24, </strong>hour<strong> 20, </strong>minute<strong> 00</strong>.</li>
+      <li>A  configuration element that is specific to GRIB collections. In this case we are combining records with GDS  hashcode -2121584860 into GDS 28944332. </li>
+      </ol>
+     <p>Open up the ToolsUI <strong>IOSP/GRIB2/Grib2Collection</strong> tab, and enter the  "<strong>/work/tds/tutorial/ndfd/.*grib2$</strong>" into the collection spec, you will see something like:</p>
+     <p><img src="./GRIBFeatureCollectionTutorial_files/gribfc20.png" width="1270" height="732"></p>
+     <p>The bottom table shows that there are two distinct GDS in this collection. The column marked "hash" shows the GDS hash code that you use in the TDS configuration table. However, both GDS have the same <strong>nx</strong> and <strong>ny</strong>, which is a bit suspicious. Select both GDS, then right click on them and select "compare GDS" to get this:</p>
+     <p><img src="./GRIBFeatureCollectionTutorial_files/gribfc21.png" width="438" height="450"></p>
+     <p>This compares the x and y coordinates of the two GDS. These are displaced by <strong>-.367 </strong>and<strong> .300 km</strong>, respectively. If you open this dataset up in the coordinate system tab, you will see that the x,y grid spacing is 5 km. Its possible that some of these variables are displaced 3/10 km, and its possible that there is a error in generating these GRIB records, and that in fact all of the variables should be on the same grid. If the latter, then the gdsConfig element in the TDS config catalog above will fix the problem.</p>
+    </div>
+      
+  </div> <!-- end section -->
+
+  
+      <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. &nbsp; Last updated: July 24, 2013</p><ul id="breadcrumbs" "=""><li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tutorial/workshop2013.html">2013 TDS Workshop Home</a></li><li>GRIB Feature Collection</li></ul></div> <!-- end container -->
+        <footer>
+     <!-- unidata footer -->
+     <div id="footer"> 
+      <div id="bottom_navspace">
+       <ul id="leftfootermenu">
+        <li> <a href="http://www.unidata.ucar.edu/about/index.html#contact">Contact Us</a></li>
+       </ul>
+
+       <ul id="rightfootermenu">
+        <li> <a href="http://www2.ucar.edu/terms-of-use">Terms of Use</a></li>
+        <li> <a href="http://www2.ucar.edu/privacy-policy">Privacy Policy</a></li>
+        <li> <a href="http://www.unidata.ucar.edu/legal/participation.html">Participation Policy</a></li>
+       </ul>
+      </div> <!-- end bottom_navspace -->
+
+      <div id="affil">
+       <div id="logos">
+        <a href="http://www.ucp.ucar.edu/" class="noicon"><img src="./GRIBFeatureCollectionTutorial_files/ucp.gif" alt="UCP"></a>
+        <a href="http://www.nsf.gov/" class="noicon"><img src="./GRIBFeatureCollectionTutorial_files/nsf.gif" alt="NSF"></a>
+       </div> <!-- end logos -->
+       <div id="affilText">
+        The <a href="http://www.unidata.ucar.edu/">Unidata Program Center</a> is a member of the <a href="http://www.ucp.ucar.edu/">UCAR Community Programs</a>, is managed by the <a href="http://www.ucar.edu/">University Corporation for Atmospheric Research</a>, and is funded by the <a href="http://www.nsf.gov/">National Science Foundation</a>.
+       </div> <!-- end text -->
+      </div> <!-- end affil -->
+     </div> <!-- end footer -->
+    </footer>
+
+
+
+
+
+
+
+
+ 
+</body></html>

@@ -13,16 +13,16 @@
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
     <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
   </service>
-  
+
   <dataset name="FMRC Example for tutorial">
     <featureCollection name="BOM" featureType="FMRC" harvest="true" path="BOM">
       <metadata inherited="true">
-         <serviceName>fmrcServices</serviceName>
-          <dataFormat>netCDF</dataFormat>
-         <documentation type="summary">Example BOM</documentation>
+        <serviceName>fmrcServices</serviceName>
+        <dataFormat>netCDF</dataFormat>
+        <documentation type="summary">Example BOM</documentation>
       </metadata>
 
-      <collection spec="/tds2012data/fmrc/bom/**/ocean_fc_#yyyMMdd#.*\.nc$" />
+      <collection spec="/tds2012data/fmrc/bom/**/ocean_fc_#yyyMMdd#.*\.nc$"/>
     </featureCollection>
   </dataset>
 
