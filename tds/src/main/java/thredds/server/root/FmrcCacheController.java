@@ -32,17 +32,21 @@
 
 package thredds.server.root;
 
+import java.io.PrintWriter;
+import java.util.Formatter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+
 import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DebugHandler;
 import ucar.unidata.util.StringUtil2;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.util.Formatter;
 
 /**
  * Show Fmrc Collection cache
@@ -50,7 +54,11 @@ import java.util.Formatter;
  * @author caron
  * @since Apr 19, 2010
  */
-public class FmrcCacheController extends AbstractController {
+//public class FmrcCacheController extends AbstractController {
+	
+@Controller
+@RequestMapping("/admin")
+public class FmrcCacheController{
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
   private static final String PATH = "/admin/fmrcCache";
   private static final String COLLECTION = "collection";
@@ -60,6 +68,7 @@ public class FmrcCacheController extends AbstractController {
   private final TdsContext tdsContext;
   private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
 
+  @Autowired
   FmrcCacheController( TdsContext _tdsContext) {
     this.tdsContext = _tdsContext;
 
@@ -89,6 +98,7 @@ public class FmrcCacheController extends AbstractController {
     debugHandler.addAction(act);
   }
 
+  @RequestMapping(value={"/fmrcCache", "/fmrcCache/*"})
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
     String path = req.getPathInfo();
     if (path == null) path = "";

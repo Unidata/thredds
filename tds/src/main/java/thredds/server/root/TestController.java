@@ -32,26 +32,33 @@
 
 package thredds.server.root;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-import thredds.servlet.ServletUtil;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import thredds.servlet.ServletUtil;
+
 /**
- * Describe
- *
+ * Prints and returns request details.
+ * Use only for testing and debugging purposes
+ * 
  * @author caron
  * @since 7/5/11
  */
-public class TestController extends AbstractController {
+//@Controller
+public class TestController {
 
-  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	//@RequestMapping(value="/test/**")
+	public @ResponseBody String getRequestDetails(HttpServletRequest req,	HttpServletResponse res) throws Exception {
 
-    String path = req.getPathInfo();
-    if (path == null) path = "";
-    System.out.printf("%s%n", ServletUtil.showRequestDetail(null, req));
-    return null;
-  }
+		String path = req.getPathInfo();
+		if (path == null)
+			path = "";
+		String requestDetails = ServletUtil.showRequestDetail(null, req);
+		System.out.printf("%s%n", requestDetails);
+		return requestDetails;
+	}
 }

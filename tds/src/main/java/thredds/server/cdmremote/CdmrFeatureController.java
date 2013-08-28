@@ -71,10 +71,13 @@ import ucar.unidata.util.StringUtil2;
  * Controller for CdmrFeature service.
  * At the moment, only handles station time series
  *
+ * @Deprecatred deprecated in favor of CdmrfController
+ *
  * @author caron
  * @since May 28, 2009
  *  
  */
+@Deprecated
 public class CdmrFeatureController extends AbstractCommandController { // implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrFeatureController.class);
   private static boolean debug = false, showTime = false, showReq = false;
