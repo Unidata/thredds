@@ -1,25 +1,32 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>CDM Remote</title>
-<style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
-code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;)
-.style1 {font-style: italic}
-</style>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>CDM Remote</title>
+  <link href="../../cdm.css" rel="stylesheet" type="text/css"/>
+
 </head>
 
 <body>
 <h1>CDM Remote Web Service (Experimental)</h1>
-<p>CDM Remote is an experimental web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the  NetcdfFile and FeatureDataset  levels of the CDM API, so there are two levels of services: </p>
+
+<p>CDM Remote is an experimental web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using
+  <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
+  two levels of services: </p>
 <ol>
-  <li><em><strong>CdmRemote</strong> </em>provides  index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the full CDM data model.</li>
-  <li><em><strong>CdmrFeature</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and Unidata's experimental <em>NetCDF Subset Service (NCSS)</em>. Currently (version 4.2) it provides a remote API for <strong><em>Point</em></strong> and <strong><em>StationTimeSeries</em></strong> Feature Datasets.</li>
+  <li><em><strong>CdmRemote</strong> </em>provides index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong>
+    provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the
+    full CDM data model.
+  </li>
+  <li><em><strong>CdmrFeature</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and Unidata's
+    experimental <em>NetCDF Subset Service (NCSS)</em>. Currently (version 4.2) it provides a remote API for <strong><em>Point</em></strong> and <strong><em>StationTimeSeries</em></strong>
+    Feature Datasets.
+  </li>
 </ol>
-<p>The CDM Remote services and protocol are  experimental and should not be used outside of the CDM stack for now.</p>
+<p>The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.</p>
+
 <h2><a name="cdmremote" id="cdmremote"></a>CdmRemote Protocol (Data Access and Coordinate Systems) </h2>
+
 <p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
 <pre>  <strong>req</strong>=( <strong>CDL</strong> | <strong>NcML</strong> | <strong>capabilities</strong> | <strong>header</strong> | <strong>data</strong>)
   <strong>var</strong>=vars
@@ -37,10 +44,10 @@ where:
   end := INTEGER
 </pre>
 <ul>
-  <li>Request parameter values  are case-insensitive</li>
+  <li>Request parameter values are case-insensitive</li>
   <li>The var parameter is only used for data requests (req=data)</li>
-  <li>The variable names are case-sensitive and must be <a href="../CDM/Identifiers.html#cdmremote">backslash-escaped</a></li>
-  <li>Nonterminals are in lower case, terminals are in upper case, literals are in single quotes. </li>
+  <li>The variable names are case-sensitive and must be <a href="../../CDM/Identifiers.html#cdmremote">backslash-escaped</a></li>
+  <li>Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.</li>
   <li>Optional components are enclosed between square braces '[' and ']'.</li>
 </ul>
 <p>Example service requests are:</p>
@@ -50,7 +57,7 @@ where:
     <th width="383" scope="col">Response</th>
   </tr>
   <tr>
-    <td><p> http://server:8080/thredds/cdmremote/data.nc?<strong>req=CDL</strong> </p></td>
+    <td><p> http://server:8080/thredds/cdmremote/data.nc?<strong>req=CDL</strong></p></td>
     <td> dataset CDL</td>
   </tr>
   <tr>
@@ -71,19 +78,24 @@ where:
   </tr>
 </table>
 <ul>
-  <li>Data request  uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</li>
-  <li> Variable names are case-sensitive and must be <a href="../CDM/Identifiers.html#cdmremote">backslash-escaped</a></li>
+  <li>Data request uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</li>
+  <li> Variable names are case-sensitive and must be <a href="../../CDM/Identifiers.html#cdmremote">backslash-escaped</a></li>
   <li>Capabilities response indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. TBD.</li>
   <li>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong>.</li>
 </ul>
 <h3>Client implementation</h3>
-<p><strong>ucar.nc2.stream.CdmRemote</strong> is a subclass of NetcdfFile which provides  index subsetting on remote CDM datasets. <strong>NetcdfDataset.openOrAcquireFile()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>new</strong> <strong>CdmRemote(url)</strong> if found. The url must be an endpoint for a cdmremote service.</p>
+
+<p><strong>ucar.nc2.stream.CdmRemote</strong> is a subclass of NetcdfFile which provides index subsetting on remote CDM datasets. <strong>NetcdfDataset.openOrAcquireFile()</strong>
+  looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>new</strong> <strong>CdmRemote(url)</strong> if found. The url must be an endpoint
+  for a cdmremote service.</p>
 <ul>
   <li>upon opening, <strong>req=header</strong> is called and the NetcdfFile objects are read from the response</li>
   <li>when data is requested, and the data is not already stored (immediate mode). then <strong>req=data</strong> is called</li>
 </ul>
 <p></p>
+
 <h2><strong><a name="cdmrfeature" id="cdmrfeature"></a>CdmrFeature</strong> Protocol (Point Feature API) </h2>
+
 <p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
 <pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form | stations</strong>)
   <strong>accept= </strong>(<strong>csv</strong> | <strong>xml</strong> | <strong>ncstream</strong> | <strong>netcdf</strong> )
@@ -106,7 +118,8 @@ where:
   <li> literals are in bold</li>
 </ul>
 <h3>PointDataset</h3>
-<p>Possible requests  are:</p>
+
+<p>Possible requests are:</p>
 <pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form</strong>)</pre>
 <p>Example service requests are:</p>
 <table width="1160" border="1">
@@ -146,10 +159,12 @@ where:
     <td>get data for listed variables</td>
   </tr>
 </table>
-<ul><li>data requests return an unordered list of observation as StructureData</li>
+<ul>
+  <li>data requests return an unordered list of observation as StructureData</li>
   <li>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
 </ul>
 <h3>StationTimeSeries</h3>
+
 <p>Possible query parameters are:</p>
 <pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form | stations</strong>)</pre>
 <p>Example service requests are:</p>
@@ -195,12 +210,15 @@ where:
     <td>get data for station list</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>
+      http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong>
+    </td>
     <td>pointFeatureList message</td>
     <td>get data in bounding box</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>var=Temp,lat,lon&amp;</strong><strong>stn=KDEN</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>var=Temp,lat,lon&amp;</strong><strong>stn=KDEN</strong>
+    </td>
     <td>pointFeatureList message</td>
     <td>get data for listed variables</td>
   </tr>
@@ -215,18 +233,28 @@ where:
   <li><strong>stationList ncstream vs XML message</strong></li>
 </ul>
 <h3>Client implementation</h3>
-<p><strong>ucar.nc2.stream.CdmRemoteFeatureDataset.factory()</strong> makes an HTTP request to <em><strong>endpoint+&quot;?req=capabilities&quot;</strong></em> to obtain the GetCapabilities XML document. This document describes what feature type(s) the dataset supports, which determines what are the valid requests, along with the endpoints for those feature types, which may be different than the original endpoint.</p>
-<p><strong>FeatureDatasetFactoryManager.open()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>CdmRemoteFeatureDataset.factory(url)</strong> if found. <strong>ThreddsDataFactory.openFeatureDataset()</strong> looks for catalog InvDatasets with <em><strong>featureType.isPointFeatureType() </strong></em>and <em><strong>ServiceType.CdmRemote</strong></em>, and if found, calls <strong>CdmRemoteFeatureDataset.factory()</strong>.</p>
+
+<p><strong>ucar.nc2.stream.CdmRemoteFeatureDataset.factory()</strong> makes an HTTP request to <em><strong>endpoint+&quot;?req=capabilities&quot;</strong></em>
+  to obtain the GetCapabilities XML document. This document describes what feature type(s) the dataset supports, which determines what are the valid requests,
+  along with the endpoints for those feature types, which may be different than the original endpoint.</p>
+
+<p><strong>FeatureDatasetFactoryManager.open()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>CdmRemoteFeatureDataset.factory(url)</strong>
+  if found. <strong>ThreddsDataFactory.openFeatureDataset()</strong> looks for catalog InvDatasets with
+  <em><strong>featureType.isPointFeatureType() </strong></em>and <em><strong>ServiceType.CdmRemote</strong></em>, and if found, calls <strong>CdmRemoteFeatureDataset.factory()</strong>.
+</p>
+
 <h2> GetCapabilities XML document</h2>
+
 <p>This is an ad-hoc format (for now), example:</p>
 <pre id="line1">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;capabilities location=&quot;http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome&quot;&gt;
-  &lt;featureDataset type=&quot;station&quot; url=&quot;http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome/station&quot; /&gt;<br />  &lt;variable name=&quot;record.air_pressure_at_sea_level&quot; type=&quot;float&quot;&gt;<br />    &lt;attribute name=&quot;long_name&quot; value=&quot;Air pressure at sea level&quot; /&gt;<br />    &lt;attribute name=&quot;standard_name&quot; value=&quot;air_pressure_at_sea_level&quot; /&gt;<br />    &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot; /&gt;<br />    &lt;attribute name=&quot;units&quot; value=&quot;hectoPascal&quot; /&gt;<br />  &lt;/variable&gt;<br />  &lt;variable name=&quot;record.air_temperature&quot; type=&quot;float&quot;&gt;<br />    &lt;attribute name=&quot;long_name&quot; value=&quot;Air temperature at 2 meters&quot; /&gt;<br />    &lt;attribute name=&quot;standard_name&quot; value=&quot;air_temperature&quot; /&gt;<br />    &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot; /&gt;<br />    &lt;attribute name=&quot;units&quot; value=&quot;Celsius&quot; /&gt;<br />  &lt;/variable&gt;<br />  ...
-<br />  &lt;LatLonBox&gt;<br />    &lt;west&gt;-180.0000&lt;/west&gt;<br />    &lt;east&gt;180.0000&lt;/east&gt;<br />    &lt;south&gt;-90.0000&lt;/south&gt;<br />    &lt;north&gt;82.5199&lt;/north&gt;<br />  &lt;/LatLonBox&gt;<br />  &lt;AcceptList&gt;<br />    &lt;accept&gt;raw&lt;/accept&gt;<br />    &lt;accept&gt;xml&lt;/accept&gt;<br />    &lt;accept&gt;csv&lt;/accept&gt;<br />    &lt;accept&gt;netcdf&lt;/accept&gt;<br />    &lt;accept&gt;ncstream&lt;/accept&gt;<br />  &lt;/AcceptList&gt;<br />&lt;/capabilities&gt;</pre>
+  &lt;featureDataset type=&quot;station&quot; url=&quot;http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome/station&quot; /&gt;<br/>  &lt;variable name=&quot;record.air_pressure_at_sea_level&quot; type=&quot;float&quot;&gt;<br/>    &lt;attribute name=&quot;long_name&quot; value=&quot;Air pressure at sea level&quot; /&gt;<br/>    &lt;attribute name=&quot;standard_name&quot; value=&quot;air_pressure_at_sea_level&quot; /&gt;<br/>    &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot; /&gt;<br/>    &lt;attribute name=&quot;units&quot; value=&quot;hectoPascal&quot; /&gt;<br/>  &lt;/variable&gt;<br/>  &lt;variable name=&quot;record.air_temperature&quot; type=&quot;float&quot;&gt;<br/>    &lt;attribute name=&quot;long_name&quot; value=&quot;Air temperature at 2 meters&quot; /&gt;<br/>    &lt;attribute name=&quot;standard_name&quot; value=&quot;air_temperature&quot; /&gt;<br/>    &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot; /&gt;<br/>    &lt;attribute name=&quot;units&quot; value=&quot;Celsius&quot; /&gt;<br/>  &lt;/variable&gt;<br/>  ...
+<br/>  &lt;LatLonBox&gt;<br/>    &lt;west&gt;-180.0000&lt;/west&gt;<br/>    &lt;east&gt;180.0000&lt;/east&gt;<br/>    &lt;south&gt;-90.0000&lt;/south&gt;<br/>    &lt;north&gt;82.5199&lt;/north&gt;<br/>  &lt;/LatLonBox&gt;<br/>  &lt;AcceptList&gt;<br/>    &lt;accept&gt;raw&lt;/accept&gt;<br/>    &lt;accept&gt;xml&lt;/accept&gt;<br/>    &lt;accept&gt;csv&lt;/accept&gt;<br/>    &lt;accept&gt;netcdf&lt;/accept&gt;<br/>    &lt;accept&gt;ncstream&lt;/accept&gt;<br/>  &lt;/AcceptList&gt;<br/>&lt;/capabilities&gt;</pre>
 
 <p>&nbsp;</p>
-<hr width="100%" />
+<hr width="100%"/>
 <h2>PointStream Grammer</h2>
+
 <p>An <em><strong>pointstream</strong></em> is a sequence of one or more messages:</p>
 <pre>   pointstream = {message}
    message = stationListMessage | pointFeatureListMessage | errorMessage | endMessage
@@ -245,29 +273,32 @@ where:
    // 8 byte constants
 
    MAGIC_StationList            =  0fe, 0xec, 0xce, 0xda 
-   MAGIC_PointFeatureCollection =  0xfi, 0xec, 0xce, 0xba <br />
-   MAGIC_PointFeature           =  0xab, 0xec, 0xce, 0xba <br />   MAGIC_END                    =  0xed, 0xed, 0xde, 0xde<br />
-   MAGIC_ERR                    =  0xab, 0xad, 0xba, 0xda <br />
+   MAGIC_PointFeatureCollection =  0xfi, 0xec, 0xce, 0xba <br/>
+   MAGIC_PointFeature           =  0xab, 0xec, 0xce, 0xba <br/>   MAGIC_END                    =  0xed, 0xed, 0xde, 0xde<br/>
+   MAGIC_ERR                    =  0xab, 0xad, 0xba, 0xda <br/>
 </pre>
 <p>The protobuf messages are defined by </p>
 <ul>
   <li><strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
 </ul>
 <p></p>
-<hr width="100%" />
+<hr width="100%"/>
 <h2>Current notes on motherlode dev</h2>
 <ul>
-  <li>List of cdm datasets: <a href="http://motherlode.ucar.edu:8081/thredds/cdmremoteCatalog.xml">http://motherlode.ucar.edu:8081/thredds/cdmremoteCatalog.xml</a></li>
+  <li>List of cdm datasets:
+    <a href="http://thredds.ucar.edu/thredds/idd/newPointObs.html">http://thredds.ucar.edu/thredds/idd/newPointObs.html</a></li>
 </ul>
 <h3>Nov-11-2010</h3>
-<p>1) web.xml has a <strong>org.springframework.web.servlet.DispatcherServlet</strong> cdmRemote with a mapping:<br />
+
+<p>1) web.xml has a <strong>org.springframework.web.servlet.DispatcherServlet</strong> cdmRemote with a mapping:<br/>
 </p>
 <pre>
  &lt;servlet-mapping&gt;
    &lt;servlet-name&gt;<strong>cdmRemote</strong>&lt;/servlet-name&gt;
    &lt;url-pattern&gt;/cdmremote/*&lt;/url-pattern&gt;
  &lt;/servlet-mapping&gt;</pre>
-<p>2) Temporarily, we have the configuration of the datasets  in <strong>thredds\tds\src\main\webapp\WEB-INF\cdmRemote-servlet.xml</strong>: which configures the collectionController. We will replacce this with pure catalog configuration in 4.2+. This is now being shown in serverStartup.log<br />
+<p>2) Temporarily, we have the configuration of the datasets in <strong>thredds\tds\src\main\webapp\WEB-INF\cdmRemote-servlet.xml</strong>: which configures the
+  collectionController. We will replacce this with pure catalog configuration in 4.2+. This is now being shown in serverStartup.log<br/>
 </p>
 <pre> &lt;bean id=&quot;collectionManager&quot; class=&quot;thredds.server.cdmremote.CollectionManager&quot;&gt;
  &lt;property name=&quot;collections&quot;&gt;
@@ -292,7 +323,7 @@ where:
  &lt;/bean&gt;
 
 etc</pre>
-<p>This is now being shown in serverStartup.log:  </p>
+<p>This is now being shown in serverStartup.log: </p>
 
 <pre>serverStartup: CdmRemoteController collections
    /idd/metar/gempak == /data/ldm/gempak/surface/#yyyyMMdd#_sao.gem
@@ -311,7 +342,7 @@ eg:
  http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/bufr/quickScat
  http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal
  http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome?req=form</pre>
-<p><strong>3) The default output is the dataset description: should be getCapabilities ????</strong><br />
+<p><strong>3) The default output is the dataset description: should be getCapabilities ????</strong><br/>
 </p>
 <pre>
 FeatureDataset on location= http://localhost:8080/thredds/cdmremote/local/metars/collection
@@ -336,7 +367,8 @@ FeatureCollection 0
 
 
 </pre>
-<p>  4) In ToolsUI, FeatureType/PointFeature Tab:</p>
+<p> 4) In ToolsUI, FeatureType/PointFeature Tab:</p>
+
 <p><strong>cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection </strong></p>
 <pre>&nbsp;
 FeatureDataset on location= cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
@@ -397,15 +429,17 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
  sent 481 features to 20V 
  
 <strong>
-(check to see what the strategy is for stations: coomplete scan or ??)</strong>
+  (check to see what the strategy is for stations: coomplete scan or ??)</strong>
 
 </pre>
 <p>5) <strong>cdmremoteCatalog.xml </strong>defines datasets for the collections we have working so far.</p>
+
 <p><br>
 </p>
-<hr width="100%" />
+<hr width="100%"/>
 <address>
-<img src="../../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2011
+  <img src="../../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
+  updated July 2011
 </address>
 <p>&nbsp;</p>
 </body>

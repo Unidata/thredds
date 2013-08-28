@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>CDM BUFR Tables</title>
-<link href="../../cdm.css" rel="stylesheet" type="text/css"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>CDM BUFR Tables</title>
+  <link href="../../cdm.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
-<h1> BUFR  Table Handling in CDM</h1>
-<hr width="100%" />
+<h1> BUFR Table Handling in CDM</h1>
+<hr width="100%"/>
 <h3>Standard table mapping</h3>
-<p>A <em>standard table</em> is a BUFR parameter table that is automatically used by the CDM.  A <em>standard table map</em> is an association of a standard table with a center/subcenter/version id. The CDM internally loads one table map located in<strong> bufr.jar </strong>at<strong> /resources/bufrTables/local/tablelookup.csv</strong>. It is a csv (comma seperated value) format:</p>
+
+<p>A <em>standard table</em> is a BUFR parameter table that is automatically used by the CDM. A <em>standard table map</em> is an association of a standard
+  table with a center/subcenter/version id. The CDM internally loads one table map located in<strong> bufr.jar </strong>at<strong>
+    /resources/bufrTables/local/tablelookup.csv</strong>. It is a csv (comma seperated value) format:</p>
 <pre>#
 # BUFR TableLookup
 #
@@ -51,25 +54,34 @@
    NCEP.any, 7,   -1,       -1,    -1,    -1, resource:/resources/bufrTables/local/ncep/ncep.B07.local.csv, wmo_csv, resource:/resources/bufrTables/local/ncep/ncep.B4L-007-013-D.diff, mel_bufr
 ... </pre>
 <ol>
-  <li>Each row contains the <strong>center id, subcenter id, master table version, </strong>and<strong> local table version</strong>. These are use to look for a match on the BUFR record. The first exact match is used. </li>
-  <li>If there is no exact match, then a wildcard match is used, where a &quot;-1&quot;  matches any id. The first wildcard match is used. </li>
-  <li>When a match is made, the given path to a BUFR<strong> table B </strong>and a BUFR <strong>table D</strong> is used. Various table formats are available, given by the <strong>format.</strong>.</li>
+  <li>Each row contains the <strong>center id, subcenter id, master table version, </strong>and<strong> local table version</strong>. These are use to look for
+    a match on the BUFR record. The first exact match is used.
+  </li>
+  <li>If there is no exact match, then a wildcard match is used, where a &quot;-1&quot; matches any id. The first wildcard match is used.</li>
+  <li>When a match is made, the given path to a BUFR<strong> table B </strong>and a BUFR <strong>table D</strong> is used. Various table formats are available,
+    given by the <strong>format.</strong>.
+  </li>
   <li>NCEP uses a matching scheme that may depend on the <strong>data category</strong>.</li>
   <li>The mode has the following meaning:
     <ol>
-      <li><strong>wmoOnly</strong>:  wmo entries (x &lt; 48 &amp;&amp; y &lt; 192) can only be taken from wmo table (center = 0)</li>
+      <li><strong>wmoOnly</strong>: wmo entries (x &lt; 48 &amp;&amp; y &lt; 192) can only be taken from wmo table (center = 0)</li>
       <li><strong>wmoLocal</strong>: if wmo entries not found in wmo table, look in local table</li>
       <li><strong>localWmo</strong>: look in local table first, then wmo table</li>
     </ol>
   </li>
 </ol>
 <h3>Adding a user-defined standard table map</h3>
-<p>A user can programmatically add another lookup table by calling ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile(). It must be in the same csv format as above. It will be searched first.</p>
-<p>This can also be done through the<a href="../reference/RuntimeLoading.html"> runtime configuration</a> XML file.</p>
+
+<p>A user can programmatically add another lookup table by calling ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile(). It must be in the same csv format as
+  above. It will be searched first.</p>
+
+<p>This can also be done through the<a href="../RuntimeLoading.html"> runtime configuration</a> XML file.</p>
+
 <p>&nbsp;</p>
-<hr width="100%" />
+<hr width="100%"/>
 <address>
-<img src="../../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated March, 2013
+  <img src="../../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
+  updated March, 2013
 </address>
 </body>
 </html>

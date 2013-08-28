@@ -1,15 +1,21 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
+    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Untitled Document</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>Untitled Document</title>
+  <link href="../cdm.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
 <h3>4. Subset a variable's data</h3>
-<p>In this <a href="examples/dataset/subsetAwips.xml">example xml</a>, we use <em> <strong>logicalView</strong></em> elements to define new variables (<em>T-FHAG, T-MandatoryLevels, </em>and<em> T-BoundaryLayers</em>) whose data are subsets of an existing variable (named <em><strong>t</strong></em> in the file). We do this because the original file has 3 vertical coordinates munged together in the levels_25 dimension, and we want to break that into 3 seperate variables.</p>
-<p>The locicalView element currrently has only one attribute <em><strong>section </strong></em>whose value defines the data section, according to these rules:</p>
+
+<p>In this <a href="examples/dataset/subsetAwips.xml">example xml</a>, we use <em> <strong>logicalView</strong></em> elements to define new variables (<em>T-FHAG,
+  T-MandatoryLevels, </em>and<em> T-BoundaryLayers</em>) whose data are subsets of an existing variable (named <em><strong>t</strong></em> in the file). We do
+  this because the original file has 3 vertical coordinates munged together in the levels_25 dimension, and we want to break that into 3 seperate variables.</p>
+
+<p>The locicalView element currrently has only one attribute <em><strong>section </strong></em>whose value defines the data section, according to these rules:
+</p>
 <ul>
   <li>to select all of a dimension, use as asterisk (*)</li>
   <li>to select one slice, just use the value of the index</li>
@@ -76,6 +82,7 @@
    
 &lt;/netcdf&gt;
  </pre>
-<p>NB: This example is taken from the infamous AWIPS formatted netCDF files, and is a good example of using the logicalView element. If you have to work with AWIPS files, the dataset convention parsing code will do all the hard work, so you do not need to use NcML to break up the variables yourself. </p>
+<p>NB: This example is taken from the infamous AWIPS formatted netCDF files, and is a good example of using the logicalView element. If you have to work with
+  AWIPS files, the dataset convention parsing code will do all the hard work, so you do not need to use NcML to break up the variables yourself. </p>
 </body>
 </html>

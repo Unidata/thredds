@@ -1,27 +1,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>CF encoding</title>
-<style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
-code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;)
-.style1 {font-style: italic}
-</style>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+  <title>CF encoding</title>
+  <link href="../../cdm.css" rel="stylesheet" type="text/css"/>
+
 </head>
 
 <body>
 <h1>CF encoding of Point Observation Datasets</h1>
+
 <h3>CDM table notation</h3>
-<p><strong><em>CDM table notation</em></strong> expresses the data structures for point features in a  way that reflects the data layout on disk, as well as the relationship of index  space to coordinate space, which we call the <em>connectedness</em> of the feature type. The following are the CDM table  notation rules, which we explain further in the examples below.</p>
+
+<p><strong><em>CDM table notation</em></strong> expresses the data structures for point features in a way that reflects the data layout on disk, as well as the
+  relationship of index space to coordinate space, which we call the <em>connectedness</em> of the feature type. The following are the CDM table notation rules,
+  which we explain further in the examples below.</p>
 <ul type="disc">
   <li>A <em>feature</em> is represented as a structure.</li>
-  <li>A <em>table</em> is a collection of structures of the same type. The size of the table may       be fixed or variable length.</li>
+  <li>A <em>table</em> is a collection of structures of the same type. The size of the table may be fixed or variable length.</li>
   <li>A <em>feature type</em> is represented as nested tables of specific form.</li>
-  <li>Both <em>coordinates</em> and <em>data variables</em> can be at any       level of the nesting.</li>
-  <li>A coordinate in an inner table is connected; a       coordinate in the outermost table is unconnected.</li>
-  <li>A constant coordinate can be factored out to the       top level. This is logically <em>joined</em> to a nested table with the same       dimension.</li>
+  <li>Both <em>coordinates</em> and <em>data variables</em> can be at any level of the nesting.</li>
+  <li>A coordinate in an inner table is connected; a coordinate in the outermost table is unconnected.</li>
+  <li>A constant coordinate can be factored out to the top level. This is logically <em>joined</em> to a nested table with the same dimension.</li>
   <li>A <em>feature collection</em> is an unconnected collection of a specific feature type.</li>
 </ul>
 <h4>CDL notation:</h4>
@@ -36,6 +36,7 @@ variables:
   float data2(sample);
 </pre>
 <h4>CDM Structure notation:</h4>
+
 <p>Variables with a common outer dimension can be grouped into a <em>structure</em>:</p>
 <pre>dimensions:
   sample = 300;
@@ -197,10 +198,14 @@ Table {
 } station(station); </pre>
 <p>We use an<em> index join</em> to add the time coordinate to the observation.</p>
 <h4>SQL notation:</h4>
+
 <p>No way to effectively factor out time coordinate, must store redundantly in the obs table</p>
+
 <h3>Variable number of times for each station</h3>
 <h4>CDL:</h4>
-<p>The 2D data arrays data(station, time) are flattened into a 1D arrays: data(obs). This is a way to efficiently store <em>ragged arrays</em>, ie non-rectangular arrays.</p>
+
+<p>The 2D data arrays data(station, time) are flattened into a 1D arrays: data(obs). This is a way to efficiently store <em>ragged arrays</em>, ie
+  non-rectangular arrays.</p>
 <pre>dimensions:
   station = 15;
   obs = 287;
@@ -212,7 +217,8 @@ variables:
   float data1(obs);
   float data2(obs);
   int station_index(obs);</pre>
-<p>The <em>station_index</em> variable is added to associate each observation with a station, using the station dimension index. The index here acts as a primary key for the station. The observations can be stored in any order.</p>
+<p>The <em>station_index</em> variable is added to associate each observation with a station, using the station dimension index. The index here acts as a
+  primary key for the station. The observations can be stored in any order.</p>
 <pre>dimensions:
   station = 15;
   obs = 287;
@@ -225,12 +231,14 @@ variables:
   float data1(obs);
   float data2(obs);
 </pre>
-<p>The <em>obs_count</em> variable is added to associate each observation with a station. All obs between rowStart(s) and rowStart(s+1) belong to station s, where      </p>
+<p>The <em>obs_count</em> variable is added to associate each observation with a station. All obs between rowStart(s) and rowStart(s+1) belong to station s,
+  where </p>
 <ul>
-  <li>rowStart(stn) = 0 if stn = 0 </li>
-  <li>rowStart(stn) = rowStart(stn-1) + <em>obs_count</em>(stn-1) if i &gt; 0 </li>
+  <li>rowStart(stn) = 0 if stn = 0</li>
+  <li>rowStart(stn) = rowStart(stn-1) + <em>obs_count</em>(stn-1) if i &gt; 0</li>
 </ul>
-<p>The advantage of this approach is performance for getting all the observations for one station: the data for each station are stored contiguously, and can be found by reading obs_count(station) instead of station_index(obs).</p>
+<p>The advantage of this approach is performance for getting all the observations for one station: the data for each station are stored contiguously, and can be
+  found by reading obs_count(station) instead of station_index(obs).</p>
 <h4>CDM Nested Table:</h4>
 <pre>dimensions:
   station = 15;
@@ -243,11 +251,13 @@ Table {
 } station(station); </pre>
 <p>The (*) means a variable number. The notation is independent of the various ways that the ragged arrays might be stored.</p>
 <h4>SQL notation:</h4>
+
 <p>SQL tables always have a variable length number of rows.</p>
 <h4></h4>
+
 <h2>Design Goals</h2>
 <ul>
-  <li>categorize point data into small number of  types</li>
+  <li>categorize point data into small number of types</li>
   <li>accept current practices for storing point data (as much as possible without too much complication)</li>
   <li>allow storing multiple features in one file</li>
   <li>allow variable length features</li>
@@ -255,12 +265,12 @@ Table {
   <li>enable generic software to read files</li>
 </ul>
 <p>&nbsp;</p>
-<hr width="100%" />
+<hr width="100%"/>
 <h3>Standard Names</h3>
 <ul>
   <li>ragged_rowSize</li>
   <li>ragged_parentIndex</li>
-  <li>station_id </li>
+  <li>station_id</li>
   <li>station_desc</li>
   <li>station_altitude // how does this play with z(z) ?? look at z units ??</li>
   <li>station_wmoid</li>
@@ -272,9 +282,10 @@ Table {
 <ul>
   <li>stationTable.limit</li>
 </ul>
-<hr width="100%" />
+<hr width="100%"/>
 <address>
-<img src="../../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 29, 2009
+  <img src="../../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
+  updated on Sep 29, 2009
 </address>
 </body>
 </html>

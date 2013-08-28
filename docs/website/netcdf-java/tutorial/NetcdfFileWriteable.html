@@ -1,17 +1,24 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
+    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>NetcdfFileWriteable Tutorial</title>
-   <link rel="stylesheet" href="../cdm.css" type="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>NetcdfFileWriteable Tutorial</title>
+  <link rel="stylesheet" href="../cdm.css" type="text/css"/>
 </head>
 
 <body>
-<h1><span style=""><span style=""><span style=""><span style=""><span style=""><a> Tutorial: Working with NetcdfFileWriteable</a></span></span></span></span></span><span style=""><span style=""><span style=""><o:p></o:p></span></span></span></h1>
-<p><span style=""><span style=""><span style=""><b><i>NetcdfFileWriteable</i></b> allows you to create new netCDF-3 files and to write data to new or existing <span style=""><span style=""><span style="">netCDF-3 files</span></span></span>.</span></span></span></p>
-<p>This calss is deprecated in CDM 4.3+. Use <a href="NetcdfWriter.html">NetcdfWriter</a> instead.</p>
-<h3 class="MsoNormal">Creating a new <span style=""><span style=""><span style=""><span style=""><span style=""><a></a><span style=""><span style=""><span style="">netCDF-3 file</span></span></span></span></span></span></span></span> </h3>
+<h1><a> Tutorial: Working with
+  NetcdfFileWriteable</a></h1>
+<p>
+  <b><i>NetcdfFileWriteable</i></b> allows you to create new netCDF-3 files and to write data to new or existing netCDF-3 files.
+</p>
+
+<p>This class is deprecated in CDM 4.3+. Use <a href="NetcdfWriter.html">NetcdfWriter</a> instead.</p>
+
+<h3 class="MsoNormal">Creating a new
+  <a></a>netCDF-3 file
+</h3>
 <pre class="MsoNormal">   String filename = &quot;testWrite.nc&quot;;<br><strong>1)</strong> NetcdfFileWriteable ncfile = <strong>NetcdfFileWriteable</strong>.<strong>createNew</strong>(filename, false);</pre>
 <pre>   // add dimensions
 <strong>2)</strong> Dimension latDim = ncfile.<strong>addDimension</strong>(&quot;lat&quot;, 64);
@@ -55,21 +62,31 @@
    }
 </pre>
 <ol>
-  <li>Create new netcdf-3 file with the given filename, with  <em>fill = false</em>. Seting <em>fill = true</em> causes everything to be written twice: first with the fill value, then with the data values. If you know you will write all the data, you dont need to use fill. If you don't know if all the data will be written, turning fill on ensures that any values not written will have the fill value. Otherwise those values will be undefined: possibly zero, or possibly garbage. </li>
-  <li>Create two <strong>Dimensions</strong>, named <em>lat</em> and <em>lon</em>, of lengths 64 and 128 respectively, and add them to the file. </li>
-  <li>Create a list consisting of the two Dimension, and create a <strong>Variable</strong> named <em>temperature</em>, of type <strong>double</strong>, with shape (lat, lon)  .</li>
-  <li>Add an <strong>Attribute</strong> to the <em>temperature</em> Variable, with name <em>units</em> and value <em>K</em>.  </li>
-  <li>Create a 1D <strong>Array</strong> of length 3, whose values are {1,2,3}. Attributes can be scalars or 1D arrays of any type and length. </li>
-  <li>Add an attribute  to the <em>temperature</em> Variable, with name scale and value (1,2,3).</li>
-  <li>Create a   Variable named <em>svar</em> of type <em>character</em> with length 80. </li>
+  <li>Create new netcdf-3 file with the given filename, with <em>fill = false</em>. Seting <em>fill = true</em> causes everything to be written twice: first
+    with the fill value, then with the data values. If you know you will write all the data, you dont need to use fill. If you don't know if all the data will
+    be written, turning fill on ensures that any values not written will have the fill value. Otherwise those values will be undefined: possibly zero, or
+    possibly garbage.
+  </li>
+  <li>Create two <strong>Dimensions</strong>, named <em>lat</em> and <em>lon</em>, of lengths 64 and 128 respectively, and add them to the file.</li>
+  <li>Create a list consisting of the two Dimension, and create a <strong>Variable</strong> named <em>temperature</em>, of type <strong>double</strong>, with
+    shape (lat, lon) .
+  </li>
+  <li>Add an <strong>Attribute</strong> to the <em>temperature</em> Variable, with name <em>units</em> and value <em>K</em>.</li>
+  <li>Create a 1D <strong>Array</strong> of length 3, whose values are {1,2,3}. Attributes can be scalars or 1D arrays of any type and length.</li>
+  <li>Add an attribute to the <em>temperature</em> Variable, with name scale and value (1,2,3).</li>
+  <li>Create a Variable named <em>svar</em> of type <em>character</em> with length 80.</li>
   <li>Create a 2D Variable named <em>names</em> of type <em>character</em> with shape (3,80).</li>
-  <li> Create a   scalar Variable named <em>scalar</em> of type <em>double</em>. Note that the empty ArrayList means that it is a scalar, ie has no Dimensions.</li>
-  <li>Create various global Attributes of different types. </li>
-  <li>Create the file. At this point the (empty) file will be written to disk, and the metadata (Dimensions, Variables and Atributes) is fixed and cannot be changed or added.</li>
+  <li> Create a scalar Variable named <em>scalar</em> of type <em>double</em>. Note that the empty ArrayList means that it is a scalar, ie has no Dimensions.
+  </li>
+  <li>Create various global Attributes of different types.</li>
+  <li>Create the file. At this point the (empty) file will be written to disk, and the metadata (Dimensions, Variables and Atributes) is fixed and cannot be
+    changed or added.
+  </li>
   <li>The <strong>ncfile.getLocation()</strong> method will return the filename. <br>
   </li>
 </ol>
 <h3 class="MsoNormal">Writing data to a new or existing file</h3>
+
 <p class="MsoNormal">You can now start writing data to the new file. Or you can open an existing file for example: </p>
 <pre class="MsoNormal">  NetcdfFileWriteable ncfile = <strong>NetcdfFileWriteable.openExisting</strong>(location, fill);</pre>
 <p class="MsoNormal">In both cases the data writing is the same, for example: </p>
@@ -125,15 +142,20 @@
 <ol>
   <li>Much of the work of writing is constructing the data Arrays. Here we create a 2D Array of shape (lat, lon) and fill it with some values.</li>
   <li>A newly created Java integer array is guarenteed to be initialized to zeros.</li>
-  <li>We write the data to the <em>temperature</em> Variable, with <strong>origin</strong> all zeros. The <strong>shape</strong> is taken from the data Array.</li>
-  <li> The <strong>ArrayChar</strong> class has special methods to make it convenient to work with Strings. Note that we use the <em>type and rank specific constructor</em> <strong>ArrayChar.D1</strong>. The <strong>setString</strong>(String val) method is for rank one ArrayChar objects. </li>
-  <li>Write the data. Since we dont pass in an origin parameter, it is assumed to be all zeroes. </li>
-  <li> The <strong>setString</strong>(int index, String val) method is for rank two ArrayChar objects. </li>
-  <li>Working with  <em>type and rank specific </em>Array objects provides convenient <strong>set</strong>() methods. Here, we have a rank-0 (scalar) double Array, whose set() methods sets the scalar value.</li>
-  <li> You must close the file when you are done, else you risk not writing the data to disk. <span class="MsoNormal"><strong>NetcdfFileWriteable</strong></span>.flush() will flush to disk without closing. <br>
+  <li>We write the data to the <em>temperature</em> Variable, with <strong>origin</strong> all zeros. The <strong>shape</strong> is taken from the data Array.
   </li>
+  <li> The <strong>ArrayChar</strong> class has special methods to make it convenient to work with Strings. Note that we use the <em>type and rank specific
+    constructor</em> <strong>ArrayChar.D1</strong>. The <strong>setString</strong>(String val) method is for rank one ArrayChar objects.
+  </li>
+  <li>Write the data. Since we dont pass in an origin parameter, it is assumed to be all zeroes.</li>
+  <li> The <strong>setString</strong>(int index, String val) method is for rank two ArrayChar objects.</li>
+  <li>Working with <em>type and rank specific </em>Array objects provides convenient <strong>set</strong>() methods. Here, we have a rank-0 (scalar) double
+    Array, whose set() methods sets the scalar value.
+  </li>
+  <li> You must close the file when you are done, else you risk not writing the data to disk.
+    <strong>NetcdfFileWriteable</strong>.flush() will flush to disk without closing. <br>
 </ol>
-<h3><span class="MsoNormal"><a name="RecordAtaTime"></a>Writing data one record at a time along the record dimension </span></h3>
+<h3><a name="RecordAtaTime"></a>Writing data one record at a time along the record dimension </h3>
 <pre>public void testWriteRecordAtaTime() throws IOException, InvalidRangeException {
 <br>   NetcdfFileWriteable writeableFile = NetcdfFileWriteable.createNew(fileName);</pre>
 <pre>   // define dimensions, including unlimited
@@ -197,29 +219,35 @@
   writeableFile.close();
 }</pre>
 <ol>
-  <li>Define the dimensions, variables, and attributes. Note the use of <strong>NetcdfFileWriteable.addUnlimitedDimension()</strong> to add a <em>record</em> dimension. </li>
+  <li>Define the dimensions, variables, and attributes. Note the use of <strong>NetcdfFileWriteable.addUnlimitedDimension()</strong> to add a <em>record</em>
+    dimension.
+  </li>
   <li>Write the non-record variables</li>
-  <li>Create the arrays to hold the data. Note that the outer dimension has shape of 1, since we will write only one record at a time. </li>
+  <li>Create the arrays to hold the data. Note that the outer dimension has shape of 1, since we will write only one record at a time.</li>
   <li>Loop over the unlimited (record) dimension. Each loop will write one record.</li>
   <li>Set the data for this record, using three different ways to fill the data arrays. In all cases the first dimension has index = 0.
     <ol>
-      <li><strong>Array.setInt(Index ima, int value)</strong> : <em>timeData.getIndex()</em> returns an Index initialized to zero. </li>
+      <li><strong>Array.setInt(Index ima, int value)</strong> : <em>timeData.getIndex()</em> returns an Index initialized to zero.</li>
       <li><strong>Array.setInt(Index ima, int value)</strong> : <em>ima.set(0, lat, lon)</em> explicitly sets the dimension indices</li>
-      <li><strong>ArrayDouble.D3.set(int i, int j, int k, double value): </strong>by using a type and rank specific Array class (ArrayDouble.D3), we don't need to use an <em>Index</em> object.</li>
+      <li><strong>ArrayDouble.D3.set(int i, int j, int k, double value): </strong>by using a type and rank specific Array class (ArrayDouble.D3), we don't need
+        to use an <em>Index</em> object.
+      </li>
     </ol>
   </li>
-  <li>Set the origin to the current record number. The other dimensions have origin 0. </li>
-  <li>Write the data at the specified origin.  <br>
+  <li>Set the origin to the current record number. The other dimensions have origin 0.</li>
+  <li>Write the data at the specified origin. <br>
     <br>
   </li>
 </ol>
 <h3 class="MsoNormal">Creating a file from NcML<br>
 </h3>
-<p class="MsoNormal">A useful approach is to create your file using NcML (java library) or CDL (using ncgen program), and then populate the data variables with a program. </p>
+
+<p class="MsoNormal">A useful approach is to create your file using NcML (java library) or CDL (using ncgen program), and then populate the data variables with
+  a program. </p>
 
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" alt="" width="64" height="64"> This document was last updated on July 2013
+  <img src="../nc.gif" alt="" width="64" height="64"> This document was last updated on July 2013
 </address>
 <p>&nbsp;</p>
 </body>

@@ -2,12 +2,12 @@
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 
   <variable name="time" type="int">
-     <attribute name="units" value="months since 2000-6-16 6:00"/>
-     <attribute name="_CoordinateAxisType" value="Time" />
-     <values>0 1 2</values>
+    <attribute name="units" value="months since 2000-6-16 6:00"/>
+    <attribute name="_CoordinateAxisType" value="Time"/>
+    <values>0 1 2</values>
   </variable>
 
-  <aggregation  dimName="time" type="joinNew">
+  <aggregation dimName="time" type="joinNew">
     <variableAgg name="T"/>
     <netcdf location="time0.nc"/>
     <netcdf location="time1.nc"/>

@@ -1,26 +1,29 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>NcML Cookbook</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>NcML Cookbook</title>
+  <link href="../cdm.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
 <h1>NcML Cookbook Examples</h1>
+
 <h2> General</h2>
-<p><strong>Rename the variable <em>lflx</em> to <em>LavaFlow</em>:</strong><br />
+
+<p><strong>Rename the variable <em>lflx</em> to <em>LavaFlow</em>:</strong><br/>
 </p>
 <pre>
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br />&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;nc/cldc.mean.nc&quot;&gt;<br />  &lt;variable name=&quot;LavaFlow&quot; orgName=&quot;lflx&quot; /&gt;<br />  ...<br />&lt;/netcdf&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br/>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;nc/cldc.mean.nc&quot;&gt;<br/>  &lt;variable name=&quot;LavaFlow&quot; orgName=&quot;lflx&quot; /&gt;<br/>  ...<br/>&lt;/netcdf&gt;
 </pre>
 
-<p><strong><a name="remove" id="remove"></a> Remove the variable <em>LavaFlow</em></strong> from the dataset.<br />
+<p><strong><a name="remove" id="remove"></a> Remove the variable <em>LavaFlow</em></strong> from the dataset.<br/>
 </p>
 <pre>
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br />&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;nc/cldc.mean.nc&quot;&gt;<br />  &lt;remove name=&quot;LavaFlow&quot; type=&quot;variable&quot; /&gt;<br />&lt;/netcdf&gt;</pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br/>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;nc/cldc.mean.nc&quot;&gt;<br/>  &lt;remove name=&quot;LavaFlow&quot; type=&quot;variable&quot; /&gt;<br/>&lt;/netcdf&gt;
 </pre>
 
-<p><strong>Rename a nested variable in a group:</strong><br />
+<p><strong>Rename a nested variable in a group:</strong><br/>
 </p>
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -38,9 +41,11 @@
 </pre>
 
 <h2>Union Aggregation</h2>
-<p><strong>Create union of datasets <em>cldc.mean.nc</em> and <em>lflx.mean.nc</em> located in the directory <em>nc</em> reletive to where the NcML file is found:</strong></p>
+
+<p><strong>Create union of datasets <em>cldc.mean.nc</em> and <em>lflx.mean.nc</em> located in the directory <em>nc</em> relative to where the NcML file is
+  found:</strong></p>
 <pre>
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br />&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;     
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br/>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
  &lt;attribute name=&quot;title&quot; type=&quot;string&quot; value=&quot;Union cldc and lflx&quot;/&gt;
  &lt;aggregation type=&quot;union&quot;&gt;
    &lt;netcdf location=&quot;nc/cldc.mean.nc&quot;/&gt;
@@ -50,12 +55,15 @@
 </pre>
 <p><strong>Create union of all datasets ending in <em>mean.nc</em> located in the directory <em>nc</em> reletive to where the NcML file is found:</strong><br>
 </p>
-<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br />&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;     
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br/>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;attribute name=&quot;title&quot; type=&quot;string&quot; value=&quot;Union all mean.nc files&quot;/&gt;
-  &lt;aggregation type=&quot;union&quot;&gt;<br />    &lt;scan location=&quot;file:src/test/data/ncml/nc/&quot; suffix=&quot;mean.nc&quot;/&gt; <br />  &lt;/aggregation&gt;
+  &lt;aggregation type=&quot;union&quot;&gt;<br/>    &lt;scan location=&quot;file:src/test/data/ncml/nc/&quot; suffix=&quot;mean.nc&quot;/&gt; <br/>  &lt;/aggregation&gt;
 &lt;/netcdf&gt;</pre>
-<p>See <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/DatasetUrls.html#NcmlScan">Dataset URLS</a> for more information on the location attribute.</p>
+<p>See <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/DatasetUrls.html#NcmlScan">Dataset URLS</a> for more information on the location
+  attribute.</p>
+
 <h2>JoinNew Aggregation</h2>
+
 <p><strong>Name each dataset in a netcdf element and assign coordinate values there</strong>:<br>
 </p>
 <pre>
@@ -71,7 +79,7 @@
    &lt;netcdf location=&quot;file:src/test/data/ncml/nc/time2.nc&quot; coordValue=&quot;99&quot;/&gt;
  &lt;/aggregation&gt;
 &lt;/netcdf&gt;</pre>
-<p><strong>Assign coordinate values in the coordinate variable:</strong><br />
+<p><strong>Assign coordinate values in the coordinate variable:</strong><br/>
 </p>
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -87,7 +95,8 @@
    &lt;netcdf location=&quot;file:src/test/data/ncml/nc/time2.nc&quot;/&gt;
  &lt;/aggregation&gt;
 &lt;/netcdf&gt;</pre>
-<p><strong>Assign coordinate values to unknown number of datasets.</strong> You dont have to know the number of files found in the scan, but they must be evenly spaced, and they must be in alphabetic order.</p>
+<p><strong>Assign coordinate values to unknown number of datasets.</strong> You dont have to know the number of files found in the scan, but they must be evenly
+  spaced, and they must be in alphabetic order.</p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
 <pre> &lt;variable name=&quot;time&quot; type=&quot;int&quot; shape=&quot;time&quot;&gt;
@@ -101,7 +110,8 @@
  &lt;/aggregation&gt;
 &lt;/netcdf&gt;
 </pre>
-<p><strong>Scan directory, assign date coordinate value from filename</strong>. The date coordinate must be derivable from the filename, using the <a href="Aggregation.html#dateFormatMark">dateFormatMark</a> attribute.<br>
+<p><strong>Scan directory, assign date coordinate value from filename</strong>. The date coordinate must be derivable from the filename, using the
+  <a href="Aggregation.html#dateFormatMark">dateFormatMark</a> attribute.<br>
 </p>
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -113,7 +123,9 @@
 &lt;/netcdf&gt; 
 </pre>
 <h2>JoinExisting Aggregation</h2>
-<p><strong>Name each dataset in a netcdf element and read coordinate values from the files</strong>. A coordinate variable named <em>time</em> must exist in each file.<br />
+
+<p><strong>Name each dataset in a netcdf element and read coordinate values from the files</strong>. A coordinate variable named <em>time</em> must exist in
+  each file.<br/>
 </p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
@@ -123,7 +135,7 @@
  &lt;/aggregation&gt;
    
 &lt;/netcdf&gt;</pre>
-<p><strong>Name each dataset in a netcdf element and assign coordinate values explicitly</strong>. Overrides existing coordinate variable, if any. <br />
+<p><strong>Name each dataset in a netcdf element and assign coordinate values explicitly</strong>. Overrides existing coordinate variable, if any. <br/>
 </p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
@@ -142,33 +154,39 @@
 
 
 </pre>
-<p><strong>Scan directory, assign date coordinate value from filename</strong>. Each file must have exactly one time slice. The date coordinate must be derivable from the filename, using the <a href="Aggregation.html#dateFormatMark">dateFormatMark</a> attribute.<br />
+<p><strong>Scan directory, assign date coordinate value from filename</strong>. Each file must have exactly one time slice. The date coordinate must be
+  derivable from the filename, using the <a href="Aggregation.html#dateFormatMark">dateFormatMark</a> attribute.<br/>
 </p>
-<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br />&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;<br />    &lt;scan dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; location=&quot;src/test/data/ncml/nc/cg/&quot; suffix=&quot;.nc&quot; subdirs=&quot;false&quot; /&gt;
-  &lt;/aggregation&gt;<br />&lt;/netcdf&gt;
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br/>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;<br/>    &lt;scan dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; location=&quot;src/test/data/ncml/nc/cg/&quot; suffix=&quot;.nc&quot; subdirs=&quot;false&quot; /&gt;
+  &lt;/aggregation&gt;<br/>&lt;/netcdf&gt;
 
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br />&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br /> &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; timeUnitsChange=&quot;true&quot;&gt; <br />  &lt;netcdf location=&quot;20060925_0600.nc&quot; ncoords=&quot;2&quot;/&gt;<br />  &lt;netcdf location=&quot;20060925_1200.nc&quot; ncoords=&quot;2&quot;/&gt;<br />  &lt;netcdf location=&quot;20060925_1800.nc&quot; ncoords=&quot;2&quot;/&gt;<br />  &lt;netcdf location=&quot;20060926_0000.nc&quot; ncoords=&quot;2&quot;/&gt;<br /> &lt;/aggregation&gt;<br />&lt;/netcdf&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br/>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/> &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; timeUnitsChange=&quot;true&quot;&gt; <br/>  &lt;netcdf location=&quot;20060925_0600.nc&quot; ncoords=&quot;2&quot;/&gt;<br/>  &lt;netcdf location=&quot;20060925_1200.nc&quot; ncoords=&quot;2&quot;/&gt;<br/>  &lt;netcdf location=&quot;20060925_1800.nc&quot; ncoords=&quot;2&quot;/&gt;<br/>  &lt;netcdf location=&quot;20060926_0000.nc&quot; ncoords=&quot;2&quot;/&gt;<br/> &lt;/aggregation&gt;<br/>&lt;/netcdf&gt;
 
 </pre>
-<p><strong>Name each dataset in a netcdf element and read coordinate values from the files, whose units change. </strong>Add the timeUnitsChange attribute. Also works for Fmrc.<br />
+<p><strong>Name each dataset in a netcdf element and read coordinate values from the files, whose units change. </strong>Add the timeUnitsChange attribute. Also
+  works for Fmrc.<br/>
 </p>
 <pre>
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br />&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br /> &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; timeUnitsChange=&quot;true&quot;&gt; <br />  &lt;netcdf location=&quot;20060925_0600.nc&quot; ncoords=&quot;2&quot;/&gt;<br />  &lt;netcdf location=&quot;20060925_1200.nc&quot; ncoords=&quot;2&quot;/&gt;<br />  &lt;netcdf location=&quot;20060925_1800.nc&quot; ncoords=&quot;2&quot;/&gt;<br />  &lt;netcdf location=&quot;20060926_0000.nc&quot; ncoords=&quot;2&quot;/&gt;<br /> &lt;/aggregation&gt;<br />&lt;/netcdf&gt; </pre>
-<hr />
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br/>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/> &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; timeUnitsChange=&quot;true&quot;&gt; <br/>  &lt;netcdf location=&quot;20060925_0600.nc&quot; ncoords=&quot;2&quot;/&gt;<br/>  &lt;netcdf location=&quot;20060925_1200.nc&quot; ncoords=&quot;2&quot;/&gt;<br/>  &lt;netcdf location=&quot;20060925_1800.nc&quot; ncoords=&quot;2&quot;/&gt;<br/>  &lt;netcdf location=&quot;20060926_0000.nc&quot; ncoords=&quot;2&quot;/&gt;<br/> &lt;/aggregation&gt;<br/>&lt;/netcdf&gt; </pre>
+<hr/>
 <h2>New Features in Netcdf-Java 4.0</h2>
+
 <h3><a name="Promote" id="Promote"></a> Global Attributes to Variables (OuterDimension Aggregations only: JoinExisting, JoinNew, Fmrc)</h3>
-<p>The value(s) of the attribute in each file are placed into the named Variable. In the following, the Variable is given a different name (&quot;<em>times</em>&quot;) than the global attribute (&quot;<em>time_coverage_end</em>&quot;):<br />
+
+<p>The value(s) of the attribute in each file are placed into the named Variable. In the following, the Variable is given a different name (&quot;<em>times</em>&quot;)
+  than the global attribute (&quot;<em>time_coverage_end</em>&quot;):<br/>
 </p>
-<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br />&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; recheckEvery=&quot;4 sec&quot;&gt;<br />    &lt;promoteGlobalAttribute name=&quot;times&quot; orgName=&quot;time_coverage_end&quot; /&gt;<br />    &lt;scan dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; location=&quot;src/test/data/ncml/nc/cg/&quot; suffix=&quot;.nc&quot; subdirs=&quot;false&quot; /&gt;<br />  &lt;/aggregation&gt;<br />&lt;/netcdf&gt;<br /></pre>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br/>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; recheckEvery=&quot;4 sec&quot;&gt;<br/>    &lt;promoteGlobalAttribute name=&quot;times&quot; orgName=&quot;time_coverage_end&quot; /&gt;<br/>    &lt;scan dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; location=&quot;src/test/data/ncml/nc/cg/&quot; suffix=&quot;.nc&quot; subdirs=&quot;false&quot; /&gt;<br/>  &lt;/aggregation&gt;<br/>&lt;/netcdf&gt;<br/></pre>
 <p> Each file has a global attribute of type String:</p>
 <pre> :time_coverage_end = &quot;2006-06-07T13:00:00Z&quot;;</pre>
-<p>In the aggregation dataset,  a  String variable is created using the aggregation dimension:</p>
+<p>In the aggregation dataset, a String variable is created using the aggregation dimension:</p>
 <pre>  String times(time=3);
   data:
    &quot;2006-06-07T12:00:00Z&quot;,   &quot;2006-06-07T13:00:00Z&quot;,   &quot;2006-06-07T14:00:00Z&quot;</pre>
-<hr width="100%" />
+<hr width="100%"/>
 <address>
-<img src="nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on November 2009
+  <img src="nc.gif" alt="" width="64" height="64" alt=""/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated
+  on November 2009
 </address>
 </body>
 </html>

@@ -20,31 +20,31 @@
   <attribute name="version" type="double" value="1.0"/>
 
   <!-- Global Attributes for Dataset Discovery -->
-  <attribute name="Metadata_Conventions" type="String" value="Unidata Dataset Discovery v1.0" />
+  <attribute name="Metadata_Conventions" type="String" value="Unidata Dataset Discovery v1.0"/>
   <attribute name="title" type="String"
              value="Sea Surface Temperature Analysis Model"/>
   <attribute name="summary" type="String"
              value="NCEP SST Global 5.0 x 2.5 degree model data"/>
   <attribute name="keywords" type="String"
-             value="EARTH SCIENCE > Oceans > Ocean Temperature > Sea Surface Temperature" />
+             value="EARTH SCIENCE > Oceans > Ocean Temperature > Sea Surface Temperature"/>
   <attribute name="keywords_vocabulary" type="String"
-             value="GCMD Science Keywords" />
-  <attribute name="id" type="String" value="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20050922_0000.nc" />
-  <attribute name="naming_authority" type="String" value="edu.ucar.unidata" />
-  <attribute name="cdm_data_type" type="String" value="Grid" />
-  <attribute name="date_created" type="String" value="2005-09-22T00:00" />
-  <attribute name="creator_name" type="String" value="NOAA/NWS/NCEP" />
-  <attribute name="creator_url" type="String" value="" />
-  <attribute name="creator_email" type="String" value="" />
-  <attribute name="geospatial_lat_min" type="String" value="-90.0" />
-  <attribute name="geospatial_lat_max" type="String" value="90.0" />
+             value="GCMD Science Keywords"/>
+  <attribute name="id" type="String" value="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20050922_0000.nc"/>
+  <attribute name="naming_authority" type="String" value="edu.ucar.unidata"/>
+  <attribute name="cdm_data_type" type="String" value="Grid"/>
+  <attribute name="date_created" type="String" value="2005-09-22T00:00"/>
+  <attribute name="creator_name" type="String" value="NOAA/NWS/NCEP"/>
+  <attribute name="creator_url" type="String" value=""/>
+  <attribute name="creator_email" type="String" value=""/>
+  <attribute name="geospatial_lat_min" type="String" value="-90.0"/>
+  <attribute name="geospatial_lat_max" type="String" value="90.0"/>
   <attribute name="geospatial_lon_min" type="String" value="-180.0"/>
   <attribute name="geospatial_lon_max" type="String" value="180.0"/>
   <attribute name="geospatial_vertical_min" type="String" value="0.0"/>
   <attribute name="geospatial_vertical_max" type="String" value="0.0"/>
   <attribute name="time_coverage_start" type="String" value="2005-09-22T00:00"/>
   <attribute name="time_coverage_duration" type="String" value="0.0"/>
-  <attribute name="license" type="String" value="Freely available" />
+  <attribute name="license" type="String" value="Freely available"/>
 
   <!-- end - Global Attributes for Dataset Discovery -->
 

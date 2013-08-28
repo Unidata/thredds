@@ -116,11 +116,11 @@ these are long-range detections.
     return got.equals(MAGIC);
   }
 
-  private  ArrayInt.D1 dateArray;
-  private  ArrayDouble.D1 latArray;
-  private  ArrayDouble.D1 lonArray;
-  private  ArrayDouble.D1 ampArray;
-  private  ArrayInt.D1 nstrokesArray;
+  private ArrayInt.D1 dateArray;
+  private ArrayDouble.D1 latArray;
+  private ArrayDouble.D1 lonArray;
+  private ArrayDouble.D1 ampArray;
+  private ArrayInt.D1 nstrokesArray;
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     int n;
@@ -134,63 +134,63 @@ these are long-range detections.
     raf.close();
 
     Dimension recordDim = new Dimension("record", n, true);
-    ncfile.addDimension( null, recordDim);
+    ncfile.addDimension(null, recordDim);
 
     Variable date = new Variable(ncfile, null, null, "date");
     date.setDimensions("record");
     date.setDataType(DataType.INT);
     String timeUnit = "seconds since 1970-01-01 00:00:00";
-    date.addAttribute( new Attribute("long_name", "date of strike"));
-    date.addAttribute( new Attribute("units", timeUnit));
-    date.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+    date.addAttribute(new Attribute("long_name", "date of strike"));
+    date.addAttribute(new Attribute("units", timeUnit));
+    date.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     date.setCachedData(dateArray, false);
-    ncfile.addVariable( null, date);
+    ncfile.addVariable(null, date);
 
     Variable lat = new Variable(ncfile, null, null, "lat");
     lat.setDimensions("record");
     lat.setDataType(DataType.DOUBLE);
-    lat.addAttribute( new Attribute("long_name", "latitude"));
-    lat.addAttribute( new Attribute("units", "degrees_north"));
-    lat.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+    lat.addAttribute(new Attribute("long_name", "latitude"));
+    lat.addAttribute(new Attribute("units", "degrees_north"));
+    lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     lat.setCachedData(latArray, false);
-    ncfile.addVariable( null, lat);
+    ncfile.addVariable(null, lat);
 
     Variable lon = new Variable(ncfile, null, null, "lon");
     lon.setDimensions("record");
     lon.setDataType(DataType.DOUBLE);
-    lon.addAttribute( new Attribute("long_name", "longitude"));
-    lon.addAttribute( new Attribute("units", "degrees_east"));
-    lon.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+    lon.addAttribute(new Attribute("long_name", "longitude"));
+    lon.addAttribute(new Attribute("units", "degrees_east"));
+    lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     lon.setCachedData(lonArray, false);
-    ncfile.addVariable( null, lon);
+    ncfile.addVariable(null, lon);
 
     Variable amp = new Variable(ncfile, null, null, "strikeAmplitude");
     amp.setDimensions("record");
     amp.setDataType(DataType.DOUBLE);
-    amp.addAttribute( new Attribute("long_name", "amplitude of strike"));
-    amp.addAttribute( new Attribute("units", "kAmps"));
-    amp.addAttribute( new Attribute("missing_value", new Double(999)));
+    amp.addAttribute(new Attribute("long_name", "amplitude of strike"));
+    amp.addAttribute(new Attribute("units", "kAmps"));
+    amp.addAttribute(new Attribute("missing_value", new Double(999)));
     amp.setCachedData(ampArray, false);
-    ncfile.addVariable( null, amp);
+    ncfile.addVariable(null, amp);
 
     Variable nstrokes = new Variable(ncfile, null, null, "strokeCount");
     nstrokes.setDimensions("record");
     nstrokes.setDataType(DataType.INT);
-    nstrokes.addAttribute( new Attribute("long_name", "number of strokes per flash"));
-    nstrokes.addAttribute( new Attribute("units", ""));
+    nstrokes.addAttribute(new Attribute("long_name", "number of strokes per flash"));
+    nstrokes.addAttribute(new Attribute("units", ""));
     nstrokes.setCachedData(nstrokesArray, false);
-    ncfile.addVariable( null, nstrokes);
+    ncfile.addVariable(null, nstrokes);
 
     ncfile.addAttribute(null, new Attribute("title", "USPN Lightning Data"));
-    ncfile.addAttribute(null, new Attribute("history","Read directly by Netcdf Java IOSP"));
+    ncfile.addAttribute(null, new Attribute("history", "Read directly by Netcdf Java IOSP"));
 
-    ncfile.addAttribute(null, new Attribute("Conventions","Unidata Observation Dataset v1.0"));
-    ncfile.addAttribute(null, new Attribute("cdm_data_type","Point"));
-    ncfile.addAttribute(null, new Attribute("observationDimension","record"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "Unidata Observation Dataset v1.0"));
+    ncfile.addAttribute(null, new Attribute("cdm_data_type", "Point"));
+    ncfile.addAttribute(null, new Attribute("observationDimension", "record"));
 
     MAMath.MinMax mm = MAMath.getMinMax(dateArray);
-    ncfile.addAttribute(null, new Attribute("time_coverage_start", ((int)mm.min) +" "+timeUnit));
-    ncfile.addAttribute(null, new Attribute("time_coverage_end", ((int)mm.max) +" "+timeUnit));
+    ncfile.addAttribute(null, new Attribute("time_coverage_start", ((int) mm.min) + " " + timeUnit));
+    ncfile.addAttribute(null, new Attribute("time_coverage_end", ((int) mm.max) + " " + timeUnit));
 
     mm = MAMath.getMinMax(latArray);
     ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Double(mm.min)));
@@ -219,7 +219,7 @@ these are long-range detections.
       if (line == null) break;
       if (line.startsWith(MAGIC)) continue;
 
-      StringTokenizer stoker = new StringTokenizer( line, ",\r\n");
+      StringTokenizer stoker = new StringTokenizer(line, ",\r\n");
       while (stoker.hasMoreTokens()) {
         Date d = isoDateTimeFormat.parse(stoker.nextToken());
         double lat = Double.parseDouble(stoker.nextToken());
@@ -229,18 +229,18 @@ these are long-range detections.
         int nstrikes = Integer.parseInt(tok);
 
         Strike s = new Strike(d, lat, lon, amp, nstrikes);
-        records.add( s);
+        records.add(s);
         if (count < 10)
-          System.out.println(count+" "+ isoDateTimeFormat.format(d)+" "+s);
+          System.out.println(count + " " + isoDateTimeFormat.format(d) + " " + s);
       }
 
       count++;
     }
 
-    System.out.println("processed "+count+" records");
+    System.out.println("processed " + count + " records");
 
     int n = records.size();
-    int[] shape = new int[] {n};
+    int[] shape = new int[]{n};
     dateArray = (ArrayInt.D1) Array.factory(DataType.INT, shape);
     latArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, shape);
     lonArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, shape);
@@ -264,7 +264,7 @@ these are long-range detections.
     double lat, lon, amp;
     int n;
 
-    Strike( Date d, double lat, double lon, double amp, int n ) {
+    Strike(Date d, double lat, double lon, double amp, int n) {
       this.d = (int) (d.getTime() / 1000);
       this.lat = lat;
       this.lon = lon;
@@ -273,7 +273,7 @@ these are long-range detections.
     }
 
     public String toString() {
-      return lat+" "+lon+" "+amp+" "+n;
+      return lat + " " + lon + " " + amp + " " + n;
     }
 
   }
@@ -315,7 +315,7 @@ these are long-range detections.
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException {
     NetcdfFile.registerIOProvider(UspLightning1.class);
     NetcdfFile ncfile = NetcdfFile.open("R:/testdata/lightning/uspln/uspln_20061023.18");
-    System.out.println("ncfile = \n"+ncfile);
+    System.out.println("ncfile = \n" + ncfile);
   }
 
 }
