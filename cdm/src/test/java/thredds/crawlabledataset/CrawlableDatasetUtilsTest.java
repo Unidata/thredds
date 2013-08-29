@@ -7,13 +7,15 @@ public class CrawlableDatasetUtilsTest {
 
   @Test
   public void checkNullEmptyPath() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( null);
+    String path = null;
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertFalse( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertFalse( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
 
-    pathSegments = CrawlableDatasetUtils.getPathSegments( "");
+    path = "";
+    pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertFalse( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
-    assertFalse( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
+    assertFalse( CrawlableDatasetUtils.isValidRelativePath(pathSegments));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -30,9 +32,11 @@ public class CrawlableDatasetUtilsTest {
 
   @Test
   public void checkSlashOnly() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "/");
-    assertFalse( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
+    String path = "/";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
+    assertTrue( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertFalse( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
+    assertEquals("Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -43,9 +47,11 @@ public class CrawlableDatasetUtilsTest {
 
   @Test
   public void checkSingleSegmentRelative() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "a");
+    String path = "a";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments(path);
     assertFalse( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
-    assertTrue( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
+    assertTrue(CrawlableDatasetUtils.isValidRelativePath(pathSegments));
+    assertEquals("Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -56,54 +62,67 @@ public class CrawlableDatasetUtilsTest {
 
   @Test
   public void checkTwoSegmentsRelative() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "a/b");
+    String path = "a/b";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertFalse( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
-    assertTrue( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
-    assertEquals( "b", CrawlableDatasetUtils.stepDownRelativePath(pathSegments));
+    assertTrue(CrawlableDatasetUtils.isValidRelativePath(pathSegments));
+    assertEquals("b", CrawlableDatasetUtils.stepDownRelativePath(pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test
   public void checkThreeSegmentsRelative() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "a/b/c");
+    String path = "a/b/c";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertFalse( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertTrue( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
-    assertEquals( "b/c", CrawlableDatasetUtils.stepDownRelativePath(pathSegments));
+    assertEquals( "b/c", CrawlableDatasetUtils.stepDownRelativePath( pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test
   public void checkFourSegmentsRelative() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "a/b/c/d");
+    String path = "a/b/c/d";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertFalse( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertTrue( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
-    assertEquals( "b/c/d", CrawlableDatasetUtils.stepDownRelativePath(pathSegments));
+    assertEquals( "b/c/d", CrawlableDatasetUtils.stepDownRelativePath( pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test
   public void checkFourSegmentsRelativeWithTrailingSlash() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "a/b/c/d/");
+    String path = "a/b/c/d/";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertFalse( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertTrue( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
-    assertEquals( "b/c/d", CrawlableDatasetUtils.stepDownRelativePath(pathSegments));
+    assertEquals( "b/c/d", CrawlableDatasetUtils.stepDownRelativePath( pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test
   public void checkSingleSegmentAbsolute() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "/a");
+    String path = "/a";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertTrue( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertFalse( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void checkStepDownFromSingleSegmentAbsolute() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "/a");
+    String path = "/a";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     CrawlableDatasetUtils.stepDownRelativePath( pathSegments);
   }
 
   @Test
   public void checkSingleSegmentAbsoluteWithTrailingSlash() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "/a/");
+    String path = "/a/";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertTrue( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertFalse( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -114,10 +133,12 @@ public class CrawlableDatasetUtilsTest {
 
   @Test
   public void checkTwoSegmentsAbsolute() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "/a/b");
+    String path = "/a/b";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertTrue( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertFalse( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
     //assertEquals( "b", CrawlableDatasetUtils.stepDownRelativePath(pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -128,22 +149,34 @@ public class CrawlableDatasetUtilsTest {
 
   @Test
   public void checkThreeSegmentsAbsolute() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "/a/b/c");
+    String path = "/a/b/c";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertTrue( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertFalse( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test
   public void checkFourSegmentsAbsolute() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "/a/b/c/d");
+    String path = "/a/b/c/d";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertTrue( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertFalse( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
   }
 
   @Test
   public void checkFourSegmentsAbsoluteWithTrailingSlash() {
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( "/a/b/c/d/");
+    String path = "/a/b/c/d/";
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( path);
     assertTrue( CrawlableDatasetUtils.isValidAbsolutePath( pathSegments));
     assertFalse( CrawlableDatasetUtils.isValidRelativePath( pathSegments));
+    assertEquals( "Reformulated path", removeAnyTrailingSlash( path), CrawlableDatasetUtils.getPath(pathSegments));
+  }
+
+  private static String removeAnyTrailingSlash( String path) {
+    if ( path == null || path.length() < 2 || ! path.endsWith( "/"))
+      return path;
+    return path.substring( 0, path.length() - 1 );
   }
 }

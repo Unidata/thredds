@@ -21,16 +21,44 @@ public class CrawlableDatasetUtils {
    * @param path the path to split.
    * @return String[] containing path segments, as per String.split("/").
    */
-  public static String[] getPathSegments(String path) {
+  public static String[] getPathSegments( String path) {
     return (path == null ? "" : path).split("/");
   }
 
+  public static String getPath( String[] pathSegments ) {
+    if ( pathSegments == null )
+      return "";
+
+    int start = 0;
+    StringBuilder sb = new StringBuilder();
+    if ( isValidAbsolutePath(pathSegments)) {
+      if ( pathSegments.length == 0 )
+        return "/";
+      sb.append( "/").append( pathSegments[1]);
+      start = 2;
+    } else if ( isValidRelativePath( pathSegments)) {
+      sb.append( pathSegments[0]);
+      start = 1;
+      if ( pathSegments.length == 1 ) return pathSegments[0];
+    } else {
+      throw new IllegalArgumentException( String.format( "Path segment array [%s] not valid path.", toStringForPathSegments( pathSegments)));
+    }
+    for ( int i = start; i < pathSegments.length; i++ ) {
+      sb.append( "/").append( pathSegments[ i]);
+    }
+    return sb.toString();
+  }
+
   public static boolean isValidAbsolutePath(String[] pathSegments) {
+    if ( pathSegments == null )
+      return false;
+    if ( pathSegments.length == 0 )
+      return true; // Root path ("/")
     return pathSegments.length > 1 && pathSegments[0].isEmpty();
   }
 
   public static boolean isValidRelativePath(String[] pathSegments) {
-    return pathSegments.length > 0 && !pathSegments[0].isEmpty();
+    return pathSegments != null && pathSegments.length > 0 && !pathSegments[0].isEmpty();
   }
 
   /**
@@ -53,6 +81,23 @@ public class CrawlableDatasetUtils {
       sb.append( pathSegments[i]).append("/");
     }
     sb.append( pathSegments[pathSegments.length - 1]);
+    return sb.toString();
+  }
+
+  public static String toStringForPathSegments( String[] pathSegments ) {
+    StringBuilder sb = new StringBuilder();
+    if ( isValidAbsolutePath( pathSegments)) {
+      sb.append( "Absolute: ");
+    } else if ( isValidRelativePath( pathSegments)) {
+      sb.append( "Relative: ");
+    } else {
+      sb.append( "Invalid: ");
+      if ( pathSegments == null )
+        return sb.append( "null").toString();
+    }
+    for ( String curPathSegment : pathSegments ) {
+      sb.append( "[").append( curPathSegment).append("]");
+    }
     return sb.toString();
   }
 
