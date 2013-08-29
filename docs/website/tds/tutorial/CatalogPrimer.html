@@ -196,12 +196,12 @@
            xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.2"&gt;
     &lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
     &lt;dataset name="TDS Tutorial: example 2"&gt;
-      &lt;metadata <b>inherited</b>="true"&gt;
-<b>1)</b>       &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
+      &lt;metadata <strong>inherited</strong>="true"&gt;
+<strong>1)</strong>       &lt;serviceName&gt;<strong>odap</strong>&lt;/serviceName&gt;
       &lt;/metadata&gt;
-<b>2)</b>    &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
-<b>2)</b>    &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
-<b>2)</b>    &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
+<strong>2)</strong>    &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
+<strong>2)</strong>    &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
+<strong>2)</strong>    &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
       &lt;catalogRef xlink:title="My Other Catalog"
                   xlink:href="myOtherCatalog.xml" /&gt;
       &lt;catalogRef xlink:title="Far Away Univ catalog"
@@ -209,10 +209,10 @@
     &lt;/dataset&gt;
   &lt;/catalog&gt;</pre>
 <ol>
-  <li>The serviceName element is <b>inherited</b> by each child dataset from
-    the containing dataset (direct datasets, <b>NOT</b> the catalogRef's).
+  <li>The serviceName element is <strong>inherited</strong> by each child dataset from
+    the containing dataset (direct datasets, <strong>NOT</strong> the catalogRef's).
   </li>
-  <li>These three child datasets all inherit the <b>odap</b> serviceName element.</li>
+  <li>These three child datasets all inherit the <strong>odap</strong> serviceName element.</li>
 </ol>
 <h3>Constructing an access URL</h3>
 

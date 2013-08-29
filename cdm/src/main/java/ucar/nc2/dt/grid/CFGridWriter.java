@@ -62,6 +62,7 @@ import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategyGrib;
 import ucar.nc2.time.CalendarDateRange;
@@ -728,10 +729,13 @@ public class CFGridWriter {
 			writer.addGroupAttribute(null, att);
 		}
 
-		writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.0"));
+    Attribute att = gds.findGlobalAttributeIgnoreCase(CDM.CONVENTIONS);
+    if (att == null || !att.getStringValue().startsWith("CF-"))  // preserve previous version of CF Convention if it exists
+		  writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.0"));
+
 		writer.addGroupAttribute(null, new Attribute("History",
-				"Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
-						"Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
+				"Translated to CF-1.0 Conventions by Netcdf-Java CDM (CFGridWriter)\n" +
+						"Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + CalendarDate.present()));
 	}
 
 	private void addCFAnnotations(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, List<String> gridList, NetcdfDataset ncd,

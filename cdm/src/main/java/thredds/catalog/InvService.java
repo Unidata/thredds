@@ -51,10 +51,13 @@ public class InvService {
   public static final InvService opendap = new InvService("opendap", ServiceType.OPENDAP.toString(), "/thredds/dodsC/", "", "");
   public static final InvService wcs = new InvService("wcs", ServiceType.WCS.toString(), "/thredds/wcs/", "", "");
   public static final InvService wms = new InvService("wms", ServiceType.WMS.toString(), "/thredds/wms/", "", "");
+
   //NGDC addition 5/10/2011
   public static final InvService ncml = new InvService("ncml", ServiceType.NCML.toString(), "/thredds/ncml/", "", "");
   public static final InvService uddc = new InvService("uddc", ServiceType.UDDC.toString(), "/thredds/uddc/", "", "");
   public static final InvService iso = new InvService("iso", ServiceType.ISO.toString(), "/thredds/iso/", "", "");
+  public static final InvService ncJSON  = new InvService("ncjason", ServiceType.ncJSON.toString(), "/thredds/ncjason/", "", "");
+  public static final InvService h5Service  = new InvService("h5service", ServiceType.H5Service.toString(), "/thredds/h5service/", "", "");
 
   //////////////////////////////////
   private String name;

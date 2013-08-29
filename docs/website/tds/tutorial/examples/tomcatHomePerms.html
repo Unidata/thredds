@@ -2,18 +2,18 @@
 <ol>
   <li>Change the user/group ownership <code>${tomcat_home}</code> to the <code>tomcat</code> user and <code>tomcat</code> group:</li>
 <pre>
-<b>#</b> cd /opt
-<b>#</b> chown -R tomcat:tomcat apache-tomcat-7.0.42
-<b>#</b> ls -ld  *tomcat*
-drwxr-xr-x  9 <b>tomcat tomcat</b>  4096 Jul 15 16:03 apache-tomcat-7.0.42
+<strong>#</strong> cd /opt
+<strong>#</strong> chown -R tomcat:tomcat apache-tomcat-7.0.42
+<strong>#</strong> ls -ld  *tomcat*
+drwxr-xr-x  9 <strong>tomcat tomcat</strong>  4096 Jul 15 16:03 apache-tomcat-7.0.42
 </pre>
   <li>Change the user/ownership of the <code>${tomcat_home}/conf</code> directory to be owned by the <code>root</code> user, have a group of <code>tomcat</code>
     and have a permission of user/group read only:
   </li>
 
 <pre>
-<b>#</b> cd /opt/tomcat
-<b>#</b> ls -l
+<strong>#</strong> cd /opt/tomcat
+<strong>#</strong> ls -l
 total 92
 drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:05 bin
 drwxr-xr-x 2 tomcat  tomcat  4096 Jul 18 12:18 conf
@@ -23,9 +23,9 @@ drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:03 temp
 drwxr-xr-x 7 tomcat  tomcat  4096 Jul 15 16:04 webapps
 drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
 
-<b>#</b> chown -R root:tomcat conf
-<b>#</b> chmod -R 440 conf/*
-<b>#</b> ls -l conf
+<strong>#</strong> chown -R root:tomcat conf
+<strong>#</strong> chmod -R 440 conf/*
+<strong>#</strong> ls -l conf
 total 92
 -r--r----- 1 root    tomcat  9978 Feb  2 12:06 catalina.policy
 -r--r----- 1 root    tomcat  3713 Feb  2 12:06 catalina.properties
@@ -41,9 +41,9 @@ total 92
     and have a group of <code>tomcat</code>:
   </li>
 <pre>
-<b>#</b> chown -R root:tomcat lib
-<b>#</b> chown -R root:tomcat bin
-<b>#</b> ls -l
+<strong>#</strong> chown -R root:tomcat lib
+<strong>#</strong> chown -R root:tomcat bin
+<strong>#</strong> ls -l
 total 92
 drwxr-xr-x 2 root    tomcat  4096 Jul 15 16:05 bin
 drwxr-xr-x 2 root    tomcat  4096 Jul 18 12:18 conf

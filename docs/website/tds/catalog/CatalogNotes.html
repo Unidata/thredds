@@ -43,11 +43,11 @@
 <ul>
   <li> Rethink the &lt;catalog&gt;&lt;dataset/&gt;&lt;/catalog&gt; structure and it's interaction with catalogRef elements. Spec says
     <!--indent-->
-    "<b>The
+    "<strong>The
       dataset chooser software should seamlessly present a catalogRef to the
       user, for example by eliminating the referenced catalog's top-level
       dataset in its presentation of the catalog when its name matches the
-      title of the catalogRef title attribute.</b>"
+      title of the catalogRef title attribute.</strong>"
     <!--/indent-->
     But the TDV seems to always remove the top-level dataset even if names
     don't match (but changes from the "catalogRef.xlink:title" to the
@@ -142,13 +142,13 @@
 <p>How about for 0.7 we have services and compound services but a
   dataset has an access method only when it contains an access element? </p>
 
-<h3><b>Benno's suggestions</b></h3>
+<h3><strong>Benno's suggestions</strong></h3>
 
 <p>http://iridl.ldeo.columbia.edu/dochelp/topics/MIRROR/suggestions.html</p>
 
 <h3>Dataset names</h3>
 
-<p><i>Benno</i>: Allow specification of both a name and a long_name. Most of the
+<p><em>Benno</em>: Allow specification of both a name and a long_name. Most of the
   THREDDS catalogs being generated are ill-suited to language-based clients. I
   of course have
   rewritten my code to handle the awkward names, but it seems pretty silly seeing
@@ -162,13 +162,13 @@
 
 <h3>Coherency</h3>
 
-<p><i>Jeff</i>: For example, say Raj is putting together a catalog that holds
+<p><em>Jeff</em>: For example, say Raj is putting together a catalog that holds
   data for labs in a met. class.One of the entries is a set of 5 radar images.
   Each of those images is a url but Raj wants to define the set of 5 as a cohesive
   set. He does not want the students to see all 5 time urls in the catalog chooser,
   rather he just wants to see a link.</p>
 
-<p><i>John</i>: In a catalog, we started off having "collections", but
+<p><em>John</em>: In a catalog, we started off having "collections", but
   the distinction betweeen collection and dataset was blurry, so we decided to
   just call everything a dataset. A dataset can have a URL, can have nested datasets,
   or both. The idea is that it would have its own URL if it was "cohesive",
@@ -183,9 +183,9 @@
   Aggregation Server (AS) faced a similar question. Your use case probably corresponds
   to this AS use case:</p>
 <blockquote>
-  <p><i>The JoinNew aggregation type "joins" variables along a new
+  <p><em>The JoinNew aggregation type "joins" variables along a new
     dimension. The dimension and a coordinate variable is created and values for
-    the coordinates are specified in the aggregation element.</i></p>
+    the coordinates are specified in the aggregation element.</em></p>
 </blockquote>
 <p>The other AS use cases are "Union" and "JoinExisting".
   The main issue of JoinNew is to identify the coordinate variables of the new
@@ -202,7 +202,7 @@
 
 <p>What other kinds of coherency might there be? </p>
 
-<p><i>Ethan</i>: Jeff and I were just talking about this in the hallway. The similarity
+<p><em>Ethan</em>: Jeff and I were just talking about this in the hallway. The similarity
   between a cohesive dataset collection and the agg types came to mind for me
   as well. A few<br>
   use cases that come to mind:</p>
@@ -232,7 +232,7 @@
 
 <h2>Other</h2>
 <ul>
-  <li><b>XML character encoding</b>. Benno is using &amp;ecirc; and &amp;eacute;
+  <li><strong>XML character encoding</strong>. Benno is using &amp;ecirc; and &amp;eacute;
     What is the right way to handle this?
     <ul>
       <li> use the predefined "entity references" for the following
@@ -250,14 +250,14 @@
       </li>
     </ul>
   </li>
-  <li><b>DataType optional</b>, what should TDV do? Benno not using.</li>
-  <li><b>Client handling of multiple services for the same dataset.</b> Do you
+  <li><strong>DataType optional</strong>, what should TDV do? Benno not using.</li>
+  <li><strong>Client handling of multiple services for the same dataset.</strong> Do you
     present a choice to the user? Then you need a way to distinguish the choices
     to present to the user. Do we just use the ServiceType, or should we add a
     human-readable name to the service for display&nbsp; to the user? How does
     DODS deal with this vis-a-vis translator services?
   </li>
-  <li><b>Clients are not able to deal with all ServiceTypes.</b> We should provide
+  <li><strong>Clients are not able to deal with all ServiceTypes.</strong> We should provide
     the functionality that a client specifies what ServiceTypes it can handle,
     and the choice selector should eliminate the ones that it cannot. Looking
     ahead to a Catalog Server, this evolves into a filtering operation on ServiceType.
@@ -269,31 +269,31 @@ Catalogs have to unambiguously specify a dataset. This means that there
 must be enough info and a set of clear rules on how to access the dataset.
 These will be specific to each service-protocol.
 <ul>
-  <li><b>DODS</b>: construct the dataset URL</li>
+  <li><strong>DODS</strong>: construct the dataset URL</li>
   <ul>
-    <li> &nbsp;<i>url = serverBase + datasetPath + (".dds" | ".das")</i></li>
+    <li> &nbsp;<em>url = serverBase + datasetPath + (".dds" | ".das")</em></li>
     <li> But if you want to use a constraint expression (CE), you need a more
       sophisticated rule:
     </li>
     <ul>
-      <li> 1) <i>url = serverBase + datasetPath</i></li>
-      <li><i>2) if "?" exists, then insert (".dds" | ".das") just before the
-        "?" else append it</i></li>
+      <li> 1) <em>url = serverBase + datasetPath</em></li>
+      <li><em>2) if "?" exists, then insert (".dds" | ".das") just before the
+        "?" else append it</em></li>
     </ul>
-    <li> Proposal: add a "suffix" attribute to the service element: <i>url = serverBase
-      + datasetPath + serverSuffix + (".dds&gt;" | ".das")</i></li>
+    <li> Proposal: add a "suffix" attribute to the service element: <em>url = serverBase
+      + datasetPath + serverSuffix + (".dds&gt;" | ".das")</em></li>
   </ul>
-  <li><b>ADDE<i>: </i></b>construct the dataset URL</li>
+  <li><strong>ADDE<em>: </em></strong>construct the dataset URL</li>
   <ul>
-    <li> &nbsp;<i>url = serverBase +&nbsp; "/imagedata?" + datasetPath</i></li>
-    <li> optionally use "accessPath" info from the datasetDesc:&nbsp; <i>url =
-      serverBase + "/imagedata?" + datasetPath + accessPath1 + accessPath2 + ...</i></li>
+    <li> &nbsp;<em>url = serverBase +&nbsp; "/imagedata?" + datasetPath</em></li>
+    <li> optionally use "accessPath" info from the datasetDesc:&nbsp; <em>url =
+      serverBase + "/imagedata?" + datasetPath + accessPath1 + accessPath2 + ...</em></li>
   </ul>
-  <li><b>NetCDF:<i> </i></b>construct the dataset URL, no mods are needed</li>
+  <li><strong>NetCDF:<em> </em></strong>construct the dataset URL, no mods are needed</li>
   <ul>
-    <li> &nbsp;<i>url = serverBase + datasetPath</i></li>
+    <li> &nbsp;<em>url = serverBase + datasetPath</em></li>
   </ul>
-  <li><b>Others TBD</b></li>
+  <li><strong>Others TBD</strong></li>
 </ul>
 
 </body>

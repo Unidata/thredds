@@ -5,7 +5,7 @@
 
   <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code>manager</code> application:</p>
 <pre>
-<b>$</b> vi ${tomcat_home}/webapps/manager/WEB-INF/web.xml
+<strong>$</strong> vi ${tomcat_home}/webapps/manager/WEB-INF/web.xml
 </pre>
 
 
@@ -77,9 +77,9 @@
   &lt;auth-constraint&gt;
      &lt;role-name&gt;manager-gui&lt;/role-name&gt;
   &lt;/auth-constraint&gt;
-    <b>&lt;user-data-constraint&gt;
+    <strong>&lt;user-data-constraint&gt;
       &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-      &lt;/user-data-constraint&gt;</b>
+      &lt;/user-data-constraint&gt;</strong>
 &lt;/security-constraint&gt;
 &lt;security-constraint&gt;
   &lt;web-resource-collection&gt;
@@ -91,9 +91,9 @@
   &lt;auth-constraint&gt;
      &lt;role-name&gt;manager-script&lt;/role-name&gt;
   &lt;/auth-constraint&gt;
-   <b> &lt;user-data-constraint&gt;
+   <strong> &lt;user-data-constraint&gt;
      &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-     &lt;/user-data-constraint&gt;</b>
+     &lt;/user-data-constraint&gt;</strong>
 &lt;/security-constraint&gt;
 &lt;security-constraint&gt;
   &lt;web-resource-collection&gt;
@@ -103,9 +103,9 @@
   &lt;auth-constraint&gt;
      &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
   &lt;/auth-constraint&gt;
-   <b> &lt;user-data-constraint&gt;
+   <strong> &lt;user-data-constraint&gt;
      &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-     &lt;/user-data-constraint&gt;</b>
+     &lt;/user-data-constraint&gt;</strong>
 &lt;/security-constraint&gt;
 &lt;security-constraint&gt;
   &lt;web-resource-collection&gt;
@@ -118,9 +118,9 @@
      &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
      &lt;role-name&gt;manager-status&lt;/role-name&gt;
   &lt;/auth-constraint&gt;
-   <b> &lt;user-data-constraint&gt;
+   <strong> &lt;user-data-constraint&gt;
      &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-     &lt;/user-data-constraint&gt;</b>
+     &lt;/user-data-constraint&gt;</strong>
 &lt;/security-constraint&gt;
 
 </pre>

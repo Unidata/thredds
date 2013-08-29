@@ -18,11 +18,10 @@
   (LGPL).
 
 <p>The preferred place to ask questions, discuss problems and features and get support is in the NetCDF-Java email list, which you can subscribe to from
-  <a href="http://www.unidata.ucar.edu/support/mailinglist/mailing-list-form.html">this page</a>. Also you might want to
-  <a href="http://www.unidata.ucar.edu/search.jsp?netcdf-java">search</a> or
-  <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">browse</a> previous netCDF-Java support questions.
+  <a href="http://www.unidata.ucar.edu/support/index.html#subscribe">this page</a>. Also you might want to
+  <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">search or browse</a> previous netCDF-Java support questions.
 <hr>
-<h2>Overview<b></b></h2>
+<h2>Overview</h2>
 
 <p>The NetCDF-Java library implements a <a href="CDM/index.html">Common Data Model </a>(CDM), a generalization of the NetCDF, OpenDAP and HDF5 data models. The
   library is a prototype for the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language
@@ -108,8 +107,8 @@ mvn install</pre>
 <h3>Metadata:</h3>
 <ul>
   <li><a href="metadata/DataDiscoveryAttConvention.html">NetCDF Attribute Convention for Dataset Discovery</a></li>
-  <li><a href="https://geo-ide.noaa.gov/wiki/index.php?title=NcISO">NcISO:</a> generation of&nbsp;ISO 19115-2&nbsp;metadata
-    from&nbsp;NetCDF&nbsp;data sources.
+  <li><a href="https://geo-ide.noaa.gov/wiki/index.php?title=NcISO">NcISO:</a> generation of ISO 19115-2 metadata
+    from NetCDF data sources.  <a href="../tds/reference/ncISO.html">TDS implementation</a>
   </li>
 </ul>
 <h3>WebEx demo</h3>
@@ -130,7 +129,6 @@ mvn install</pre>
   <li>CF Convention Conformance Checking
     <ul>
       <li><a href="http://cf-pcmdi.llnl.gov/conformance/compliance-checker/">http://cf-pcmdi.llnl.gov/conformance/compliance-checker/</a>
-
       </li>
     </ul>
   </li>
@@ -142,7 +140,7 @@ mvn install</pre>
 
 <p>Working notes and documentation on the <strong><em>coordinate system</em></strong> layer of the CDM</p>
 <ul>
-  <li><a href="CDM/index.html#CoordinateSystems">Common Data Model (CDM) and Coordinate Systems</a></li>
+  <li><a href="CDM/index.html#CoordSys">Common Data Model (CDM) and Coordinate Systems</a></li>
   <li><a href="CDM/CoordinateSystemsNeeded.htm">Why we need Coordinate Systems</a></li>
   <li>_Coordinate Attribute Conventions (<a href="tutorial/CoordinateAttributes.html">examples</a>) (<a
       href="reference/CoordinateAttributes.html">reference</a>)
@@ -152,7 +150,7 @@ mvn install</pre>
 
 <p>Working notes and documents on the <em><strong>scientific feature type</strong></em> layer of the CDM</p>
 <ul>
-  <li><a href="../../thredds/tech/tds4.3/reference/collections/FeatureCollections.html">Feature Collections</a>
+  <li><a href="../tds/reference/collections/FeatureCollections.html">Feature Collections</a>
     (draft)
   </li>
   <li><a href="reference/FeatureDatasets/CFpointImplement.html">CDM implementation of CF discrete sampling features
@@ -197,7 +195,7 @@ mvn install</pre>
   </li>
   <li><a href="http://www.unidata.ucar.edu/software/idv/">Integrated Data Viewer</a> (Unidata)</li>
   <li><a href="http://www.ncdc.noaa.gov/oa/wct/"> NOAA's Weather and Climate Toolkit</a> (NOAA/NCDC)<a
-      href="http://www.ncdc.noaa.gov/oa/radar/jnx/"></a></li>
+      href="http://www.ncdc.noaa.gov/wct/"></a></li>
   <li><a href="http://ferret.pmel.noaa.gov/LAS">Live Access Server</a> from NOAA/OAR/PMEL (Pacific Marine
     Environmental Laboratory)
   </li>
@@ -236,7 +234,7 @@ mvn install</pre>
       href="http://www.unidata.ucar.edu/staff/caron/presentations/DataSummit2010.pptx">pptx</a>)
   </li>
   <li>Talk at netCDF workshop 2009 (<a
-      href="http://www.unidata.ucar.edu/software/netcdf-java/talks/NetCDFworkshop2009.ppt">ppt</a>)
+      href="http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2009.ppt">ppt</a>)
   </li>
   <li>Unidata public <a href="http://artifacts.unidata.ucar.edu/">Maven repository</a> for version 4.3</li>
   <li>Unidata public<a href="http://github.com/unidata"> GitHub repository</a> for version 4.3</li>
@@ -362,56 +360,43 @@ mvn install</pre>
       href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadocAll-4.0.jar"> jar file. </a>This is the javadoc
     for all packages and all methods except private. CAREFUL, some of this may change.
   </li>
-  <li><a href="transition4.html">Transitioning to version 4.0</a></li>
-  <li><a href="http://ulisse.pin.unifi.it:8080/archiva/browse/essi-unidata/netcdf-java/4.0.41">Maven repository</a>
+  <li><a href="https://artifacts.unidata.ucar.edu/content/groups/public/edu/ucar/">Maven repository</a>
   </li>
 </ul>
-<h3><strong><a name="v22"></a>Last version for Java 4.2 (2.2.20)</strong></h3>
+<h3><strong><a name="v22"></a>Last version for Java 4.2 (2.2.22)</strong></h3>
 <ul>
-  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.20.jar">minimal library</a> (<a
-      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.20.jar.MD5">MD5</a>) just reads netcdf-3
+  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.22.jar">minimal library</a> (<a
+      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.22.jar.MD5">MD5</a>) just reads netcdf-3
     (eventually netcdf-4) files.
   </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.20.jar">netCDF library</a> (<a
-      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.20.jar.MD5">MD5</a>) implements the full
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.22.jar">netCDF library</a> (<a
+      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.22.jar.MD5">MD5</a>) implements the full
     CDM model.
   </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfUI-2.2.20.jar">netcdfUI library</a> (<a
-      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfUI-2.2.20.jar.MD5">MD5</a>) includes the
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfUI-2.2.22.jar">netcdfUI library</a> (<a
+      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfUI-2.2.22.jar.MD5">MD5</a>) includes the
     netCDF library plus the user interface classes for the netCDF ToolsUI application.
   </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfAll-2.2.20.zip">complete zip file</a> (<a
-      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfAll-2.2.20.zip.MD5">MD5</a>) includes the
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfAll-2.2.22.zip">complete zip file</a> (<a
+      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfAll-2.2.22.zip.MD5">MD5</a>) includes the
     netcdfUI library plus all other jar files you might need.
   </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/toolsUI-2.2.20.jar">toolsUI.jar</a> (<a
-      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/toolsUI-2.2.20.jar.MD5">MD5</a>) is a nice fat jar
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/toolsUI-2.2.22.jar">toolsUI.jar</a> (<a
+      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/toolsUI-2.2.22.jar.MD5">MD5</a>) is a nice fat jar
     containing everything in a single jar. You can run the netCDF ToolsUI application directly from it.
   </li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/nc2.2.jar">nc2.2.jar</a> (<a
       href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/nc2.2.jar.MD5">MD5</a>), which you can use in the
     IDV.
   </li>
-  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncSrc-2.2.20.zip"> source code </a>(<a
-      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncSrc-2.2.20.zip.MD5">MD5</a>) (unzip and follow
+  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncSrc-2.2.22.zip"> source code </a>(<a
+      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncSrc-2.2.22.zip.MD5">MD5</a>) (unzip and follow
     the <a href="v2.2.20/README">README</a>)
   </li>
-  <li>Try out the<strong> 2.2.20</strong> library through the ToolsUI application: <a href="v2.2/webstart/index.html">launch
-    from webstart</a>.
-  </li>
-</ul>
-<ul>
-  <li><a href="v2.2.20/javadoc/index.html">Public javadoc</a>: This is the public interface.</li>
-  <li><a href="v2.2.20/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except
-    private. CAREFUL, some of this may change.
-  </li>
-  <li> User's documentation (incomplete): <a
-      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.doc">doc</a> <a
-      href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.pdf">pdf</a></li>
 </ul>
 <hr WIDTH="100%">
 <address>
-  <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document was last updated August 2013
+  <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0" alt=""></a> This document was last updated August 2013
 </address>
 
 </body>

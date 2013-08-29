@@ -28,18 +28,18 @@
   &lt;?xml version='1.0' encoding='UTF-8'?&gt;
   &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
            xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.2"&gt;
-<b>1)</b>  &lt;service name="<b>odap</b>" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
-<b>2)</b>  &lt;dataset name="TDS Tutorial: example 1"&gt;
-<b>3)</b>    &lt;dataset name="TDS Tutorial: example data 1" <b>urlPath="test/example1.nc"</b> &gt;
-        &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
+<strong>1)</strong>  &lt;service name="<strong>odap</strong>" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
+<strong>2)</strong>  &lt;dataset name="TDS Tutorial: example 1"&gt;
+<strong>3)</strong>    &lt;dataset name="TDS Tutorial: example data 1" <strong>urlPath="test/example1.nc"</strong> &gt;
+        &lt;serviceName&gt;<strong>odap</strong>&lt;/serviceName&gt;
       &lt;/dataset&gt;
       &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" &gt;
-        &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
+        &lt;serviceName&gt;<strong>odap</strong>&lt;/serviceName&gt;
       &lt;/dataset&gt;
       &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" &gt;
-        &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
+        &lt;serviceName&gt;<strong>odap</strong>&lt;/serviceName&gt;
       &lt;/dataset&gt;
-<b>4)</b>    &lt;catalogRef xlink:title="My Other Catalog"
+<strong>4)</strong>    &lt;catalogRef xlink:title="My Other Catalog"
                   xlink:href="myOtherCatalog.xml" /&gt;
       &lt;catalogRef xlink:title="Far Away Univ catalog"
                   xlink:href="http://www.farAwayU.edu/thredds/catalog.xml" /&gt;
@@ -49,13 +49,13 @@
   <div id="expanded" class="troubleshooting">
     <h4>Notes</h4>
 
-    <p><b>1)</b> The service element defines an OPeNDAP service and has the name "odap".</p>
+    <p><strong>1)</strong> The service element defines an OPeNDAP service and has the name "odap".</p>
 
-    <p><b>2)</b> The first dataset is a container dataset.</li>
+    <p><strong>2)</strong> The first dataset is a container dataset.</li>
 
-    <p><b>3)</b> Each child dataset has an access method due to its urlPath attribute and child serviceName element.</p>
+    <p><strong>3)</strong> Each child dataset has an access method due to its urlPath attribute and child serviceName element.</p>
 
-    <p><b>4)</b> The catalogRef elements link to a relative catalog and a remote catalog.</p>
+    <p><strong>4)</strong> The catalogRef elements link to a relative catalog and a remote catalog.</p>
   </div>
 </div>
 
@@ -69,12 +69,12 @@
            xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.2"&gt;
     &lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
     &lt;dataset name="TDS Tutorial: example 2"&gt;
-      &lt;metadata <b>inherited</b>="true"&gt;
-<b>1)</b>       &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
+      &lt;metadata <strong>inherited</strong>="true"&gt;
+<strong>1)</strong>       &lt;serviceName&gt;<strong>odap</strong>&lt;/serviceName&gt;
       &lt;/metadata&gt;
-<b>2)</b>    &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
-<b>2)</b>    &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
-<b>2)</b>    &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
+<strong>2)</strong>    &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
+<strong>2)</strong>    &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
+<strong>2)</strong>    &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
       &lt;catalogRef xlink:title="My Other Catalog"
                   xlink:href="myOtherCatalog.xml" /&gt;
       &lt;catalogRef xlink:title="Far Away Univ catalog"
@@ -86,10 +86,10 @@
   <div id="expanded" class="troubleshooting">
     <h4>Notes</h4>
 
-    <p><b>1)</b> The serviceName element is <b>inherited</b> by each child dataset from
-      the containing dataset (direct datasets, <b>NOT</b> the catalogRef's).</p>
+    <p><strong>1)</strong> The serviceName element is <strong>inherited</strong> by each child dataset from
+      the containing dataset (direct datasets, <strong>NOT</strong> the catalogRef's).</p>
 
-    <p><b>2)</b> These three child datasets all inherit the <b>odap</b> serviceName element.</p>
+    <p><strong>2)</strong> These three child datasets all inherit the <strong>odap</strong> serviceName element.</p>
   </div>
 </div>
 
@@ -97,18 +97,18 @@
   <h2><a name="CatURL">Constructing an access URL</a></h2>
   <ol>
     <li>Find the service element referenced by the dataset:
-      <pre>&lt;service name="odap" serviceType="OPENDAP" base="<b>/thredds/dodsC/</b>" /&gt;</pre>
+      <pre>&lt;service name="odap" serviceType="OPENDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre>
     </li>
     <li>Get the base URL of the service element:
       <pre>/thredds/dodsC/</pre>
     </li>
     <li>If it is a relative URL, use the catalog's URL:
-      <pre><b>http://hostname:port</b>/thredds/catalog.xml      <var>// Catalog URL</var></pre>
+      <pre><strong>http://hostname:port</strong>/thredds/catalog.xml      <var>// Catalog URL</var></pre>
       to resolve the base URL:
       <pre>http://hostname:port/thredds/dodsC/           <var>// Service base URL</var></pre>
     </li>
     <li>Find the urlPath attribute for the accessible dataset:
-      <pre>&lt;dataset name="TDS Tutorial: example data 3" urlPath="<b>test/example3.nc</b>" &gt;</pre>
+      <pre>&lt;dataset name="TDS Tutorial: example data 3" urlPath="<strong>test/example3.nc</strong>" &gt;</pre>
     </li>
     <li>Append the value of the urlPath attribute to the base service URL:
 <pre>

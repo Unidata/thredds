@@ -11,17 +11,17 @@
 <hr/>
 <h2>Overview</h2>
 
-<p>The <b>featureCollection</b> element is a way to tell the TDS to serve collections of
+<p>The <strong>featureCollection</strong> element is a way to tell the TDS to serve collections of
   <a href="../../../netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used for
   gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack. This allows the TDS to automatically create logical
   datasets composed of collections of files, and to allow subsetting in coordinate space on them, eg through the WMS, WCS, and Netcdf Subsetting Service.</p>
 
-<p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong>
+<p>The <strong>featureCollection</strong> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong>
   = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 also allows <strong>featureType</strong> =<em> GRIB</em>, which is used for collections of GRIB files.
   <em>Currently, one should <strong>only</strong> serve GRIB files with featureCollection=GRIB.</em></p>
 
-<p>The <b>featureCollection</b> element is a subtype of <strong>dataset</strong> element. It defines a<em> logical dataset</em> for the TDS. All of the elements
-  that can be used inside of a <strong>dataset</strong> element can be used inside of a <b>featureCollection</b> element.</p>
+<p>The <strong>featureCollection</strong> element is a subtype of <strong>dataset</strong> element. It defines a<em> logical dataset</em> for the TDS. All of the elements
+  that can be used inside of a <strong>dataset</strong> element can be used inside of a <strong>featureCollection</strong> element.</p>
 
 <p>A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance, and in
   managing collections that change. For high-performance servers, its better to let a background process manage indexing, and the THREDDS Data Manager

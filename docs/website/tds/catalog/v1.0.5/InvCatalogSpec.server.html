@@ -76,7 +76,7 @@
 </h3>
 <pre>  &lt;xsd:element name=&quot;datasetRoot&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>      &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>    &lt;/xsd:complexType&gt;<br/>  &lt;/xsd:element&gt;<br/>
 </pre>
-<p>The <i>datasetRoot</i> element associates a portion of a URL path with a directory on disk where the data files are stored. <br/>
+<p>The <em>datasetRoot</em> element associates a portion of a URL path with a directory on disk where the data files are stored. <br/>
 </p>
 
 <p>Example:<br/>
@@ -94,13 +94,13 @@
 
 <h3><a name="datasetScan_Element" id="datasetScan_Element"></a><em>The datasetScan</em> Element</h3>
 <pre>&lt;xsd:element name=&quot;datasetScan&quot; substitutionGroup=&quot;dataset&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:complexContent&gt;<br/>      &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br/>        &lt;xsd:sequence&gt;<br/>          &lt;xsd:element ref=&quot;filter&quot; minOccurs=&quot;0&quot; /&gt;<br/>          &lt;xsd:element ref=&quot;addID&quot; minOccurs=&quot;0&quot; /&gt;<br/>          &lt;xsd:element ref=&quot;namer&quot; minOccurs=&quot;0&quot; /&gt;<br/>          &lt;xsd:element ref=&quot;sort&quot; minOccurs=&quot;0&quot; /&gt;<br/>          &lt;xsd:element ref=&quot;addLatest&quot; minOccurs=&quot;0&quot; /&gt;<br/>          &lt;xsd:element ref=&quot;addProxies&quot; minOccurs=&quot;0&quot; /&gt;<br/>          &lt;xsd:element name=&quot;addDatasetSize&quot; minOccurs=&quot;0&quot; /&gt;<br/>          &lt;xsd:element ref=&quot;addTimeCoverage&quot; minOccurs=&quot;0&quot; /&gt;<br/>        &lt;/xsd:sequence&gt;<br/><br/>        &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>        &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot;/&gt;<br/>      &lt;/xsd:extension&gt;<br/>    &lt;/xsd:complexContent&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;</pre>
-<p>The <i>datasetScan</i> element generates nested THREDDS catalogs by scanning the directory named in the <i>location</i> attribute, and creating a
-  <em>dataset</em> for each file found, and a <em>catalogRef</em> for each subdirectory. The <i>path</i> attribute is used to create the URL for these files and
+<p>The <em>datasetScan</em> element generates nested THREDDS catalogs by scanning the directory named in the <em>location</em> attribute, and creating a
+  <em>dataset</em> for each file found, and a <em>catalogRef</em> for each subdirectory. The <em>path</em> attribute is used to create the URL for these files and
   catalogs. <br/>
 </p>
 
-<p>A <i>datasetScan</i> element is in the dataset substitutionGroup, so it can
-  be used wherever a <i><a href="../v1.0.2/InvCatalogSpec.html#dataset">dataset</a></i><a href="../v1.0.2/InvCatalogSpec.html"> element</a> can be used. It is
+<p>A <em>datasetScan</em> element is in the dataset substitutionGroup, so it can
+  be used wherever a <em><a href="../v1.0.2/InvCatalogSpec.html#dataset">dataset</a></em><a href="../v1.0.2/InvCatalogSpec.html"> element</a> can be used. It is
   an extension of a
   DatasetType, so any of dataset's nested elements and attributes can be
   used in it. This allows you to add enhanced metadata to a datasetScan.
@@ -108,14 +108,14 @@
 
 <p>Each generated catalog will include all datasets at the
   requested level of the given dataset collection location. Each
-  collection (directory) dataset will be included as a <i>catalogRef</i> element and each atomic (file) dataset will be included as a <i>dataset</i> element.
-  The name of the resulting <i>dataset</i> or <i>catalogRef</i> will be the name of the corresponding dataset. No metadata will be added other than that
-  contained in the <i>datasetScan</i> element which will be added as appropriate at the different level of
+  collection (directory) dataset will be included as a <em>catalogRef</em> element and each atomic (file) dataset will be included as a <em>dataset</em> element.
+  The name of the resulting <em>dataset</em> or <em>catalogRef</em> will be the name of the corresponding dataset. No metadata will be added other than that
+  contained in the <em>datasetScan</em> element which will be added as appropriate at the different level of
   the given dataset collection location depending on if it is inherited
   metadata or not.<br/>
 </p>
 
-<p>The <i>datasetScan</i> specific nested elements (<a href="#filter_Element">filter</a>, <a href="#addID_Element">addID</a>, <a href="#namer_Element">namer</a>,
+<p>The <em>datasetScan</em> specific nested elements (<a href="#filter_Element">filter</a>, <a href="#addID_Element">addID</a>, <a href="#namer_Element">namer</a>,
   <a href="#sort_Element">sort</a>, <a href="#addLatest_Element">addLatest</a>, <a href="#addProxies_Element">addProxies</a>, <a href="#addDatasetSizeElement">addDatasetSize</a>,
   and <a href="#addTimeCoverage_Element">addTimeCoverage</a>) can be used to modify the default behavior or add metadata.<br/>
 </p>
@@ -152,14 +152,14 @@
 </h3>
 <pre>&lt;xsd:element name=&quot;filter&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:choice&gt;<br/>      &lt;xsd:sequence minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br/>        &lt;xsd:element name=&quot;include&quot; type=&quot;FilterSelectorType&quot; minOccurs=&quot;0&quot;/&gt;<br/>        &lt;xsd:element name=&quot;exclude&quot; type=&quot;FilterSelectorType&quot; minOccurs=&quot;0&quot;/&gt;<br/>      &lt;/xsd:sequence&gt;<br/>    &lt;/xsd:choice&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;<br/><br/>&lt;xsd:complexType name=&quot;FilterSelectorType&quot;&gt;<br/>  &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot;/&gt;<br/>  &lt;xsd:attribute name=&quot;wildcard&quot; type=&quot;xsd:string&quot;/&gt;<br/>  &lt;xsd:attribute name=&quot;atomic&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>  &lt;xsd:attribute name=&quot;collection&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>&lt;/xsd:complexType&gt;<br/>
 </pre>
-<p>The <i>filter</i> element allows users to specify which datasets are
+<p>The <em>filter</em> element allows users to specify which datasets are
   to be included in the generated catalogs. A filter element can contain
-  any number of <i>include</i> and <i>exclude</i> elements. Each <i>include</i> or <i>exclude</i> element may contain either a <i>wildcard</i> or a
-  <i>regExp</i> attribute. If the given wildcard pattern or <a href="http://www.regular-expressions.info/">regular expression</a> matches a dataset name, that
+  any number of <em>include</em> and <em>exclude</em> elements. Each <em>include</em> or <em>exclude</em> element may contain either a <em>wildcard</em> or a
+  <em>regExp</em> attribute. If the given wildcard pattern or <a href="http://www.regular-expressions.info/">regular expression</a> matches a dataset name, that
   dataset is included or excluded as
   specified. By default, includes and excludes apply only to atomic
   datasets (regular files). You can specify that they apply to atomic
-  and/or collection datasets (directories) by using the <i>atomic</i> and <i>collection</i> attributes.<br/>
+  and/or collection datasets (directories) by using the <em>atomic</em> and <em>collection</em> attributes.<br/>
 </p>
 
 <p>Expanding on the above example: </p>
@@ -175,7 +175,7 @@ results in:<br/>
 </h3>
 <pre>&lt;xsd:element name=&quot;addID&quot; /&gt;<br/>
 </pre>
-<p>The <i>addID</i> element specifies that a datasetScan should add an <i>ID</i> attribute to each <i>dataset</i> element included in a resulting catalog.<br/>
+<p>The <em>addID</em> element specifies that a datasetScan should add an <em>ID</em> attribute to each <em>dataset</em> element included in a resulting catalog.<br/>
 </p>
 
 <p>The TDS adds ID attributes by default even if no addID element is
@@ -193,12 +193,12 @@ results in:<br/>
 </pre>
 <pre>&lt;xsd:complexType name=&quot;NamerSelectorType&quot;&gt;<br/>  &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot;/&gt;<br/>  &lt;xsd:attribute name=&quot;replaceString&quot; type=&quot;xsd:string&quot;/&gt;<br/>&lt;/xsd:complexType&gt;<br/>
 </pre>
-<p>The <i>namer</i> element specifies one or more methods for renaming resulting <i>dataset</i> and <i>catalogRef</i> elements. Currently, two methods for
+<p>The <em>namer</em> element specifies one or more methods for renaming resulting <em>dataset</em> and <em>catalogRef</em> elements. Currently, two methods for
   renaming are available. Both methods use <a href="http://www.regular-expressions.info/">regular expression</a> matching and
   <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing group</a> replacement to determine the new
-  name. The first method, specified by the <i>regExpOnName</i> element, does regular
-  expression matching on the dataset name. The second method, specified by the <i>regExpOnPath</i> element, does regular expression matching on the entire
-  dataset path. In either method, the <i>regExp</i> attribute contains the regular expression used in matching on the name or path and the <i>replaceString</i>
+  name. The first method, specified by the <em>regExpOnName</em> element, does regular
+  expression matching on the dataset name. The second method, specified by the <em>regExpOnPath</em> element, does regular expression matching on the entire
+  dataset path. In either method, the <em>regExp</em> attribute contains the regular expression used in matching on the name or path and the <em>replaceString</em>
   attribute contains the replacement string on which capturing group replacement is performed.<br/>
 </p>
 
@@ -240,22 +240,22 @@ So, when cataloged, this dataset would end up as something like this:<br/>
 </h3>
 <pre>&lt;xsd:element name=&quot;sort&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:choice&gt;<br/>      &lt;xsd:element name=&quot;lexigraphicByName&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;increasing&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>    &lt;/xsd:choice&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;<br/>
 </pre>
-<p>Without a <i>sort</i> element, datasets at each collection level are listed
-  in their &quot;natural&quot; order. The <i>sort</i> element specifies how to order&nbsp; those datasets. Currently, a <i>sort</i> element can only contain one
-  <i>lexigraphicByName</i> element which indicates that datasets should be ordered lexigraphically according to the dataset name. The <i>increasing</i>
-  attribute in the <i>lexigraphicByName</i> element indicates whether the datasets should in increasing or decreasing order.</p>
+<p>Without a <em>sort</em> element, datasets at each collection level are listed
+  in their &quot;natural&quot; order. The <em>sort</em> element specifies how to order&nbsp; those datasets. Currently, a <em>sort</em> element can only contain one
+  <em>lexigraphicByName</em> element which indicates that datasets should be ordered lexigraphically according to the dataset name. The <em>increasing</em>
+  attribute in the <em>lexigraphicByName</em> element indicates whether the datasets should in increasing or decreasing order.</p>
 
 <h3><a id="addLatest_Element"></a>addLatest Element<br/>
 </h3>
 <pre>&lt;xsd:element name=&quot;addLatest&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:sequence&gt;<br/>      &lt;xsd:element name=&quot;simpleLatest&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>    &lt;/xsd:sequence&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;<br/>
 </pre>
-<p>The <i>addLatest</i> element is deprecated in favor of the <i>addProxies</i> element.</p>
+<p>The <em>addLatest</em> element is deprecated in favor of the <em>addProxies</em> element.</p>
 
 <h3><a name="addProxies_Element" id="addProxies_Element"></a>addProxies Element<br/>
 </h3>
 <pre>&lt;xsd:element name=&quot;addProxies&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:sequence&gt;<br/>      &lt;xsd:element name=&quot;simpleLatest&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>      &lt;xsd:element name=&quot;latestComplete&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;lastModifiedLimit&quot; type=&quot;xsd:float&quot;/&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>    &lt;/xsd:sequence&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;<br/>
 </pre>
-<p>The <i>addProxies</i> element<strong></strong> provides a place for
+<p>The <em>addProxies</em> element<strong></strong> provides a place for
   describing proxy datasets to be added to each collection
   dataset under a datasetScan.<br/>
 </p>
@@ -263,10 +263,10 @@ So, when cataloged, this dataset would end up as something like this:<br/>
 <p>Currently, two types of proxy datasets
   are supported. They are both intended to proxy the &quot;latest&quot; dataset in
   the scanned collection. The first type of proxy dataset, specified by
-  the <i>simpleLatest</i> element, adds a dataset that proxies the existing dataset whose name is
+  the <em>simpleLatest</em> element, adds a dataset that proxies the existing dataset whose name is
   lexigraphically greatest. This dataset will be the &quot;latest&quot; if the
-  dataset name contains a timestamp. The <i>simpleLatest</i> element may contain a <i>name</i> attribute which is used as the name of the proxy dataset, the <i>serviceName</i>
-  attribute that references the <i>service</i> element that is to be referenced by the resulting proxy dataset, and the <i>top</i> attribute which indicates if
+  dataset name contains a timestamp. The <em>simpleLatest</em> element may contain a <em>name</em> attribute which is used as the name of the proxy dataset, the <em>serviceName</em>
+  attribute that references the <em>service</em> element that is to be referenced by the resulting proxy dataset, and the <em>top</em> attribute which indicates if
   the proxy dataset should appear at the top
   or bottom of the list of dataset in this collection. Default behavior
   in the TDS if any these attributes are missing is to name the dataset
@@ -274,9 +274,9 @@ So, when cataloged, this dataset would end up as something like this:<br/>
   the top of the collection.<br/>
 </p>
 
-<p>The second type of proxy dataset, specified by the <i>latestComplete</i> element, is the same as the simple latest except that it will exclude
+<p>The second type of proxy dataset, specified by the <em>latestComplete</em> element, is the same as the simple latest except that it will exclude
   any dataset that was last modified within the number of minutes
-  specified by the <i>lastModifedLimit</i> attribute. It must contain all the attributes allowed in the <i>simpleLatest</i> element plus the <i>lastModifiedLimit</i>
+  specified by the <em>lastModifedLimit</em> attribute. It must contain all the attributes allowed in the <em>simpleLatest</em> element plus the <em>lastModifiedLimit</em>
   attribute.<br/>
 </p>
 
@@ -286,15 +286,15 @@ So, when cataloged, this dataset would end up as something like this:<br/>
 </h3>
 <pre>  &lt;xsd:element name=&quot;addTimeCoverage&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:attribute name=&quot;datasetNameMatchPattern&quot; type=&quot;xsd:string&quot;/&gt;<br/>      &lt;xsd:attribute name=&quot;datasetPathMatchPattern&quot; type=&quot;xsd:string&quot;/&gt;<br/>      &lt;xsd:attribute name=&quot;startTimeSubstitutionPattern&quot; type=&quot;xsd:string&quot;/&gt;<br/>      &lt;xsd:attribute name=&quot;duration&quot; type=&quot;xsd:string&quot;/&gt;<br/>    &lt;/xsd:complexType&gt;<br/>  &lt;/xsd:element&gt;<br/>
 </pre>
-<p>The <i>addTimeCoverage</i> element indicatest that a THREDDS <i>timeCoverage</i> element should be added to each atomic dataset cataloged by the containing
-  <i>datasetScan</i> element and describes how to determine the time coverage for each datasets in the collection.<br/>
+<p>The <em>addTimeCoverage</em> element indicatest that a THREDDS <em>timeCoverage</em> element should be added to each atomic dataset cataloged by the containing
+  <em>datasetScan</em> element and describes how to determine the time coverage for each datasets in the collection.<br/>
 </p>
 
-<p>Currently, the <i>addTimeCoverage</i> element can only describe one method for determining the time coverage of a dataset. The&nbsp; <i>datasetNameMatchPattern</i>
+<p>Currently, the <em>addTimeCoverage</em> element can only describe one method for determining the time coverage of a dataset. The&nbsp; <em>datasetNameMatchPattern</em>
   attribute is used in a regular expression match on the dataset name. If
-  the match succeeds, a capturing group replacement is performed on the <i>startTimeSubstitutionPattern</i> attribute and the result is the start time string
-  (see the <i>namer</i> element description, <a href="#namer_Element">above</a>, for more on regular expressions and capturing groups). The time coverage
-  duration is given by the <i>duration</i> attribute.</p>
+  the match succeeds, a capturing group replacement is performed on the <em>startTimeSubstitutionPattern</em> attribute and the result is the start time string
+  (see the <em>namer</em> element description, <a href="#namer_Element">above</a>, for more on regular expressions and capturing groups). The time coverage
+  duration is given by the <em>duration</em> attribute.</p>
 
 <p>The <span style="font-style: italic;">datasetPathMatchPattern</span> attribute was added (2009-06-05, TDS 4.0) to allow matching on the
   entire dataset path instead of just the dataset name. The two match
@@ -312,7 +312,7 @@ So, when cataloged, this dataset would end up as something like this:<br/>
 </pre>
 <h3><a name="addDatasetSizeElement" id="addDatasetSizeElement"></a>addDatasetSizeElement</h3>
 <pre>  &lt;xsd:element name=&quot;addDatasetSize&quot; /&gt;</pre>
-<p>The addDatasetSize element indicates that file size metadata in the form of a <i>dataSize</i> element should be added to all atomic datasets.<br/>
+<p>The addDatasetSize element indicates that file size metadata in the form of a <em>dataSize</em> element should be added to all atomic datasets.<br/>
 </p>
 
 <p>An example is available in the <a href="../../reference/DatasetScan.html#Adding_Dataset_Size_Information">TDS datasetsScan documentation</a>.</p>

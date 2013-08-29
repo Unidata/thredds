@@ -18,22 +18,22 @@
 <h2><a name="Intro"><u>Introduction</u></a></h2>
 New public classes are introduced to the package ucar.nc2.util.net.
 These are
-<i>HTTPSession.java</i>,
-<i>HTTPMethod.java</i>,
-<i>HTTPMethodStream.java</i>,
-<i>HTTPException.java</i>,
-<i>HttpClientManager.java</i>,
+<em>HTTPSession.java</em>,
+<em>HTTPMethod.java</em>,
+<em>HTTPMethodStream.java</em>,
+<em>HTTPException.java</em>,
+<em>HttpClientManager.java</em>,
 These classes are intended to wrap various Apache httpclient-3 library
 classes so that (1) it will simplify use,
 and (2) it will be possible to later switch to, say,
 the Apache httpclient4 library.
 <p>
-  These classes support a form of <i>session</i>
+  These classes support a form of <em>session</em>
   semantics for Java network access. The notion of session
   is only loosely tied to the HTTP notion of session.
 
 <h3><a name="HTTPSession">HTTPSession and Session Semantics</a></h3>
-A session is encapsulated in an instance of the class <i>HTTPSession</i>.
+A session is encapsulated in an instance of the class <em>HTTPSession</em>.
 The encapsulation is with respect to a specific url.
 This means that once a session is specified, it is tied permanently
 to that url and <a href="#URLManagement">"compatible"</a> urls.
@@ -45,7 +45,7 @@ to that url and <a href="#URLManagement">"compatible"</a> urls.
 <p>
   It is possible to create a session with a null url, in which case,
   the session can be used generally.
-  For this, an <i>HTTPSession</i> constructor with no arguments is provided.
+  For this, an <em>HTTPSession</em> constructor with no arguments is provided.
   If used, then (1) the session is tied to no specific url,
   and (2) method creation must specify a url
   (see <a href="#HTTPMethod">HTTPMethod</a>).
@@ -53,12 +53,12 @@ to that url and <a href="#URLManagement">"compatible"</a> urls.
 <h3><a name="HTTPMethod">HTTPMethod</a></h3>
 This class encapsulates the information
 about a given method request and response.
-Its primary operation is <i>execute()</i>,
+Its primary operation is <em>execute()</em>,
 which causes a request to be sent to a server
 and a response obtained.
 <p>
-  The <i>HTTPMethod</i> class also operates as a factory for
-  creating <i>HTTPMethod</i> instances. To create a method
+  The <em>HTTPMethod</em> class also operates as a factory for
+  creating <em>HTTPMethod</em> instances. To create a method
   for doing an HTTP GET operation, for example, one would
   invoke this operation
 <pre>
@@ -80,7 +80,7 @@ It tracks the method to allow it to be
 closed when the stream hits eof or is explicitly closed.
 
 <h3><a name="HTTPException">HTTPException</a></h3>
-This class is a subclass of <i>java.io.IOException</i>.
+This class is a subclass of <em>java.io.IOException</em>.
 It is the exception for reporting errors out of the
 classes listed above.
 
@@ -98,7 +98,7 @@ actions. Its name begins with "Http" rather than
 String getUrlContentsAsString(String urlencoded, int maxKbytes)
 </pre>
     Make a request on the specified url and return its response
-    as a String of max length <i>maxKbytes</i>.
+    as a String of max length <em>maxKbytes</em>.
   <dt>Get the contents of URL and store in a file.
   <dd>
 <pre>
@@ -158,21 +158,21 @@ It is possible to specify a url in several places.
 
 <p>
   There are some exceptions to the prefix rule for
-  compatibility. Let <i>surl</i> be the session url and
-  <i>murl</i> be the url specified for the method. The
+  compatibility. Let <em>surl</em> be the session url and
+  <em>murl</em> be the url specified for the method. The
   following rule holds.
 <ul>
-  <li>If the <i>surl</i> does not
-    have a principal, then the <i>murl</i> without its principal
+  <li>If the <em>surl</em> does not
+    have a principal, then the <em>murl</em> without its principal
     is tested for compatibility.
     In effect, a missing principal
     acts like a wildcard.
     <p>
       Similarly, missing ports or paths
-      in the <i>surl</i> also act like wildcards.
+      in the <em>surl</em> also act like wildcards.
 </ul>
 <p>
-  Additionally, and for backward compatibility, if <i>surl</i>
+  Additionally, and for backward compatibility, if <em>surl</em>
   is null or is the empty string (""), then any other url is
   considered compatible.
 
@@ -318,7 +318,7 @@ public class Main
 </pre>
 
 <h2><a name="Credentials"><u>Authorization Credentials</u></a></h2>
-<i>HTTPSession</i>
+<em>HTTPSession</em>
 operates in conjunction with the new credentialing mechanisms
 to support better mechanisms for setting authorization credentials.
 <p>
@@ -337,20 +337,20 @@ to support better mechanisms for setting authorization credentials.
   Currently the following schemes are supported.
 
 <p>
-  <b>Basic</b>:
+  <strong>Basic</strong>:
   the HTTP Basic scheme based on clear-text user name and password.
 
 <p>
-  <b>Digest</b>:
+  <strong>Digest</strong>:
   the HTTP digest scheme based on encrypted user name and password.
 
 <p>
-  <b>NTLM</b>:
+  <strong>NTLM</strong>:
   the NTLM scheme is a Microsoft specific scheme. Support is provided,
   but has never been tested.
 
 <p>
-  <b>SSL</b>:
+  <strong>SSL</strong>:
   a scheme that uses a client-side key to authenticate the
   client to the server. The ssl scheme is usually part of an
   SSL connection where the server authenticates to the client
@@ -372,7 +372,7 @@ specifically, self-signed certificates.
 
 <h4>Setting Credentials</h4>
 There are four primary credentialling methods in
-<i>HTTPSession</i>:
+<em>HTTPSession</em>:
 <ol>
   <li> Insert an arbitrary entry into the auth store.
     Its signature is as follows.
@@ -392,7 +392,7 @@ static public void setGlobalCredentialsProvider(HTTPAuthScheme scheme, Credentia
 public void setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
 </pre>
   <li> Set the credentials on a per-session basis, using a client provided
-    instance of <i>Credentials</i>. This is only useful when the credentials
+    instance of <em>Credentials</em>. This is only useful when the credentials
     are unchanging.
     Its signature is as follows.
 <pre>
@@ -401,7 +401,7 @@ public void setCredentials(HTTPAuthScheme scheme, Credentials creds);
 
   <li> Set the credentials for all sessions
     using a client provided
-    instance of <i>Credentials</i>. This is only useful when the credentials
+    instance of <em>Credentials</em>. This is only useful when the credentials
     are unchanging.
     Its signature is as follows.
 <pre>
@@ -550,8 +550,8 @@ need to set the authentication programmatically.
           static void setGlobalCredentialsProvider(CredentialsProvider cp)
           <ul>
             <li> For Backward compatibility; this method will create a row
-              in <i>HTTPAuthStore</i> and an instance of
-              <i>HTTPCreds</i> supporting global authorization
+              in <em>HTTPAuthStore</em> and an instance of
+              <em>HTTPCreds</em> supporting global authorization
               using the specified credentials provider and the Basic scheme.
             <li> throws HTTPException
           </ul>
@@ -559,8 +559,8 @@ need to set the authentication programmatically.
           static void setCredentialsProvider(CredentialsProvider)
           <ul>
             <li> For Backward compatibility; this method will create a row
-              in <i>HTTPAuthStore</i> and an instance of
-              <i>HTTPCreds</i> supporting authorization for the session's url,
+              in <em>HTTPAuthStore</em> and an instance of
+              <em>HTTPCreds</em> supporting authorization for the session's url,
               using the specified credentials provider and the Basic scheme.
             <li> throws HTTPException
           </ul>
@@ -748,15 +748,15 @@ body in various forms.
 </ul>
 
 <h3><u><a name="HTTPMethodStream.API">HTTPMethodStream API</a></u></h3>
-This class subclasses <i>java.io.InputStream</i>
-and provides the <i>InputStream</i> interface.
+This class subclasses <em>java.io.InputStream</em>
+and provides the <em>InputStream</em> interface.
 In addition, if the stream is closed, then the
 underlying method is closed as well.
 
 <h3><u><a name="HTTPSSLProvider.API">HTTPSSLProvider API</a></u></h3>
-Since no existing <i>CredentialsProvider</i> implementation
+Since no existing <em>CredentialsProvider</em> implementation
 exists to support the SSL scheme,
-the <i>HTTPSSLProvider</i> class is provided for that purpose.
+the <em>HTTPSSLProvider</em> class is provided for that purpose.
 Its constructor requires arguments for
 the client side keystore plus password and the client side
 truststore plus password.

@@ -57,21 +57,21 @@
   assert (ftype == FeatureType.RADIAL);
   RadialDatasetSweep radialDataset = (RadialDatasetSweep) fdataset;
 </pre>
- <b>TypedDatasetFactory</b>
+ <strong>TypedDatasetFactory</strong>
 wraps three RadialDatasetSweep classes: <strong>ucar.nc2.dt.radial.Nids2Dataset</strong>,
 <strong>ucar.nc2.dt.radial.LevelII2Dataset</strong>, and <strong>ucar.nc2.dt.radial.Dorade2Dataset</strong>.
 It opens a radial dataset with an appropriate class, and can be
 extended to cover more radial products.
 If
-the radar is stationary, <i>isStationary() </i>returns true, and <i>getCommonOrigin()
-  </i> returns the earth location of radar. If the radar product has more
-than one sweep, <i>isVolume() </i> will return 1. The <i>getDataVariables</i>
-returns the list of variables, for each variable, <i>getNumSweeps()</i>,
-<i>getSweep(int sweepNum)</i>, and <i>readAllData()</i> is used to
-handle the data variable at the sweep level, inside each sweep, <i>getRadialNumber()</i>,
-<i>getGateNumber()</i>,
-<i>getElevation(int
-  radial)</i>, <i>getTime(int radial)</i>, and<i> readData(int radial)</i>
+the radar is stationary, <em>isStationary() </em>returns true, and <em>getCommonOrigin()
+  </em> returns the earth location of radar. If the radar product has more
+than one sweep, <em>isVolume() </em> will return 1. The <em>getDataVariables</em>
+returns the list of variables, for each variable, <em>getNumSweeps()</em>,
+<em>getSweep(int sweepNum)</em>, and <em>readAllData()</em> is used to
+handle the data variable at the sweep level, inside each sweep, <em>getRadialNumber()</em>,
+<em>getGateNumber()</em>,
+<em>getElevation(int
+  radial)</em>, <em>getTime(int radial)</em>, and<em> readData(int radial)</em>
 returns all information associated with the radial object. <br>
 </p>
 

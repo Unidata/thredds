@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h1><img src="../images/THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service Reference (TDS 4.2)</h1>
+<h1>NetCDF Subset Service Reference (TDS 4.2)</h1>
 <hr>
   <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
   <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:caron@unidata.ucar.edu">John Caron</a></em></p>
@@ -186,8 +186,8 @@
   <div class="div4">
     <h2><a name="Reference"></a>Reference</h2>
     <h3>W3C Time Duration<a name="W3Cduration"></a> </h3>
-    <p> The lexical representation for <b>duration</b> is the</a><a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a> extended format P<em>n</em>Y<em>n</em> M<em>n</em>DT<em>n</em>H <em>n</em>M<em>n</em>S, where <em>n</em>Y represents the number of years, <em>n</em>M the number of months, <em>n</em>D the number of days, 'T' is the date/time separator, <em>n</em>H the number of hours, <em>n</em>M the number of minutes and <em>n</em>S the number of seconds. The number of seconds can include decimal digits to arbitrary precision.</p>
-    <p> The values of the Year, Month, Day, Hour and Minutes components are not restricted but allow an arbitrary unsigned integer, i.e., an integer that conforms to the pattern <code>[0-9]+</code>.. Similarly, the value of the Seconds component allows an arbitrary unsigned decimal. Following <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>, at least one digit must follow the decimal point if it appears. That is, the value of the Seconds component must conform to the pattern <code>[0-9]+(\.[0-9]+)?</code>. Thus, the lexical representation of <b>duration</b> does not follow the alternative format of &sect; 5.5.3.2.1 of <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>.</p>
+    <p> The lexical representation for <strong>duration</strong> is the</a><a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a> extended format P<em>n</em>Y<em>n</em> M<em>n</em>DT<em>n</em>H <em>n</em>M<em>n</em>S, where <em>n</em>Y represents the number of years, <em>n</em>M the number of months, <em>n</em>D the number of days, 'T' is the date/time separator, <em>n</em>H the number of hours, <em>n</em>M the number of minutes and <em>n</em>S the number of seconds. The number of seconds can include decimal digits to arbitrary precision.</p>
+    <p> The values of the Year, Month, Day, Hour and Minutes components are not restricted but allow an arbitrary unsigned integer, i.e., an integer that conforms to the pattern <code>[0-9]+</code>.. Similarly, the value of the Seconds component allows an arbitrary unsigned decimal. Following <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>, at least one digit must follow the decimal point if it appears. That is, the value of the Seconds component must conform to the pattern <code>[0-9]+(\.[0-9]+)?</code>. Thus, the lexical representation of <strong>duration</strong> does not follow the alternative format of &sect; 5.5.3.2.1 of <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>.</p>
     <p> An optional preceding minus sign ('-') is allowed, to indicate a negative duration. If the sign is omitted a positive duration is indicated. See also <a href="http://www.w3.org/TR/xmlschema-2/#isoformats">ISO 8601 Date and Time Formats (&sect;D)</a>. </p>
     <p> For example, to indicate a duration of 1 year, 2 months, 3 days, 10 hours, and 30 minutes, one would write: <code>P1Y2M3DT10H30M</code>. One could also indicate a duration of minus 120 days as: <code>-P120D</code>. </p>
     <p> Reduced precision and truncated representations of this format are allowed provided they conform to the following: </p>
@@ -200,15 +200,15 @@
     <p>See XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#duration">duration</a> for full details. </p>
     <h3>W3C Dates<a name="W3Cdate" id="W3Cdate"></a></h3>
     <p> For our purposes, and ISO Date can be a dateTime or a date: </p>
-    <p><b>A dateTime</b> has the form: <code>'-'? yyyy '-' mm '-' dd 'T' hh ':' mm ':' ss ('.' s+)? (zzzzzz)?</code></p>
+    <p><strong>A dateTime</strong> has the form: <code>'-'? yyyy '-' mm '-' dd 'T' hh ':' mm ':' ss ('.' s+)? (zzzzzz)?</code></p>
     <p>where </p>
     <ul>
-      <li>'-'? <em>yyyy</em> is a four-or-more digit optionally negative-signed numeral that represents the year; if more than four digits, leading zeros are prohibited, and '0000' is prohibited (see the Note above <a href="http://www.w3.org/TR/xmlschema-2/#year-zero"> (&sect;3.2.7)</a>; also note that a plus sign is <b>not</b> permitted);</li>
+      <li>'-'? <em>yyyy</em> is a four-or-more digit optionally negative-signed numeral that represents the year; if more than four digits, leading zeros are prohibited, and '0000' is prohibited (see the Note above <a href="http://www.w3.org/TR/xmlschema-2/#year-zero"> (&sect;3.2.7)</a>; also note that a plus sign is <strong>not</strong> permitted);</li>
       <li>the remaining '-'s are separators between parts of the date portion;</li>
       <li>the first <em>mm</em> is a two-digit numeral that represents the month;</li>
       <li><em>dd</em> is a two-digit numeral that represents the day;</li>
       <li>'T' is a separator indicating that time-of-day follows;</li>
-      <li><em>hh</em> is a two-digit numeral that represents the hour; '24' is permitted if the minutes and seconds represented are zero, and the <b>dateTime</b> value so represented is the first instant of the following day (the hour property of a <b>dateTime</b> object in the <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-value-space"><span class="arrow">&middot;</span>value space<span class="arrow">&middot;</span></a> cannot have a value greater than 23);</li>
+      <li><em>hh</em> is a two-digit numeral that represents the hour; '24' is permitted if the minutes and seconds represented are zero, and the <strong>dateTime</strong> value so represented is the first instant of the following day (the hour property of a <strong>dateTime</strong> object in the <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-value-space"><span class="arrow">&middot;</span>value space<span class="arrow">&middot;</span></a> cannot have a value greater than 23);</li>
       <li>':' is a separator between parts of the time-of-day portion;</li>
       <li>the second <em>mm</em> is a two-digit numeral that represents the minute;</li>
       <li><em>ss</em> is a two-integer-digit numeral that represents the whole seconds;</li>
@@ -325,7 +325,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on March, 2012
+<img src="../thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on March, 2012
 </address>
 <p>&nbsp;
 </p>

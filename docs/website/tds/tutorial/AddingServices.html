@@ -65,8 +65,8 @@
 <pre>
 &lt;service name="grid" serviceType="Compound" base="" &gt;
     &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
-    <b>&lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;</b>
-    <b>&lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;</b>
+    <strong>&lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;</strong>
+    <strong>&lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;</strong>
     &lt;service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" /&gt;
     &lt;service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
 &lt;/service&gt;
@@ -85,9 +85,9 @@
     &lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;
     &lt;service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" /&gt;
     &lt;service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
-    <b>&lt;service name="ncml" serviceType="NCML" base="/thredds/ncml/" /&gt;</b>
-    <b>&lt;service name="uddc" serviceType="UDDC" base="/thredds/uddc/" /&gt;</b>
-    <b>&lt;service name="iso" serviceType="ISO" base="/thredds/iso/" /&gt;</b>
+    <strong>&lt;service name="ncml" serviceType="NCML" base="/thredds/ncml/" /&gt;</strong>
+    <strong>&lt;service name="uddc" serviceType="UDDC" base="/thredds/uddc/" /&gt;</strong>
+    <strong>&lt;service name="iso" serviceType="ISO" base="/thredds/iso/" /&gt;</strong>
 &lt;/service&gt;
 </pre>
 
@@ -97,8 +97,8 @@
     <ol>
       <li>Edit the TDS configuration file and allow WCS and WMS services as discussed above
 <pre>
-<b>$</b> cd ${tomcat_home}/content/thredds
-<b>$</b> vi threddsConfig.xml
+<strong>$</strong> cd ${tomcat_home}/content/thredds
+<strong>$</strong> vi threddsConfig.xml
 </pre>
         and add/replace the WCS and WMS elements (as described above)
 <pre>
@@ -110,7 +110,7 @@
 &lt;/WMS&gt;
 </pre>
       </li>
-      <li>Edit the <b>catalog.xml</b> file and add WCS and WMS services to the NAM dataset
+      <li>Edit the <strong>catalog.xml</strong> file and add WCS and WMS services to the NAM dataset
 <pre>
 &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;
 &lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;
@@ -118,9 +118,9 @@
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<b>$</b> cd ${tomcat_home}/bin
-<b>$</b> ./shutdown.sh
-<b>$</b> ./startup.sh
+<strong>$</strong> cd ${tomcat_home}/bin
+<strong>$</strong> ./shutdown.sh
+<strong>$</strong> ./startup.sh
 </pre>
       </li>
       <li>Test that WCS and WMS are working:
@@ -150,12 +150,12 @@
   <div id="expanded" class="exercise">
     <h3>Exercise: Add "Grid" DataType to the NAM Data</h3>
     <ol>
-      <li>Edit the <b>catalog.xml</b> file and add a Grid <code>dataType</code> element (as above) to the NAM dataset.</li>
+      <li>Edit the <strong>catalog.xml</strong> file and add a Grid <code>dataType</code> element (as above) to the NAM dataset.</li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<b>$</b> cd ${tomcat_home}/bin
-<b>$</b> ./shutdown.sh
-<b>$</b> ./startup.sh
+<strong>$</strong> cd ${tomcat_home}/bin
+<strong>$</strong> ./shutdown.sh
+<strong>$</strong> ./startup.sh
 </pre>
       </li>
       <li>Check the dataset pages for the IDV Viewer link.</li>
@@ -211,8 +211,8 @@
       </li>
       <li>Edit the wmsConfig.xml file
 <pre>
-<b>$</b> cd ${tomcat_home}/content/thredds
-<b>$</b> vi wmsConfig.xml
+<strong>$</strong> cd ${tomcat_home}/content/thredds
+<strong>$</strong> vi wmsConfig.xml
 </pre>
         and change the color scale range for the target parameter in the chosen dataset.
       </li>

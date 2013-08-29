@@ -61,7 +61,7 @@
       </ul>
 
 
-      <li><b>Warning!</b> It is important to carefully configure your proxy so that the existence of the proxy is transparent to the end-user/client. For
+      <li><strong>Warning!</strong> It is important to carefully configure your proxy so that the existence of the proxy is transparent to the end-user/client. For
         instance, when a web application (e.g., the TDS) on the backend server includes a <a href="#chgContextPath">self-referential URL</a> in some response
         content, it should use the proxy server's name and port rather than those of the backend server.
       </li>
@@ -105,7 +105,7 @@
   <div id="subsection">
     <h3><a name="chgContextPath"></a>Changing the TDS Context Path ( <code>/thredds</code> )</h3>
 
-    <p><b>We do not recommend</b> changing the TDS context path (the <code>
+    <p><strong>We do not recommend</strong> changing the TDS context path (the <code>
       <small>/thredds</small>
     </code> part of the URL path). However, if your network configuration requires that you use a different context path (e.g., <code>
       <small>/my/thredds</small>
@@ -133,7 +133,7 @@
         <small>thredds2.war</small>
       </code> before you deploy it to Tomcat.
       </p>
-      <p>If the desired context path is a <b>multi-level context path</b> (e.g., <code>
+      <p>If the desired context path is a <strong>multi-level context path</strong> (e.g., <code>
         <small>/my/thredds</small>
       </code>), you must use a pound sign ("#") in the <code>
         <small>.war</small>
@@ -148,7 +148,7 @@
 
         <p>The deployment descriptor (<code>
           <small>web.xml</small>
-        </code> file) is overwritten during deployment which means <i>this edit must be done every time the TDS is re-deployed</i>.
+        </code> file) is overwritten during deployment which means <em>this edit must be done every time the TDS is re-deployed</em>.
         </p>
       </div>
       <li>Edit the TDS <code>web.xml</code> file and change the value of the "ContextPath" parameter to match the desired context path.</li>
@@ -210,14 +210,14 @@
         <small>/thredds2</small>
       </code> would need to look similar to this:
       </p>
-      <pre>&lt;service name="odap" serviceType="OPeNDAP" base="<b>/thredds2/dodsC/</b>"/&gt;</pre>
+      <pre>&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/thredds2/dodsC/</strong>"/&gt;</pre>
 
       <p>And similarly, an OPeNDAP service element on a TDS with the context path of <code>
         <small>/my/thredds</small>
       </code> would need to look similar to this:
       </p>
 
-      <pre>&lt;service name="odap" serviceType="OPeNDAP" base="<b>/my/thredds/dodsC/</b>"/&gt;</pre>
+      <pre>&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/my/thredds/dodsC/</strong>"/&gt;</pre>
 
 
     </ol>

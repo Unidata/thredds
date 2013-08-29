@@ -62,7 +62,10 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     }  */
 
 
+    // must have an index file
     File indexFile = BufrCdmIndex.calcIndexFile(ncd.getLocation());
+    if (indexFile == null) return null;
+
     BufrCdmIndex index = BufrCdmIndex.readIndex(indexFile.getPath());
     return new BufrStationDataset(ncd, index);
   }

@@ -130,10 +130,10 @@ minutes.-->
 
 As of 4.3, the notion of a session has changed.
 A session is encapsulated in an instance of the class
-<i>HTTPSession</i>. See the Session.html document for more
+<em>HTTPSession</em>. See the Session.html document for more
 information.
 <p>
-  The session url in effect defines the <i>role</i>
+  The session url in effect defines the <em>role</em>
   of the client. It can specify a host, port, user, and a path.
   Entries in the client-side authorization database
   are keyed on the scheme (BASIC, DIGEST, etc) and the url.
@@ -142,7 +142,7 @@ information.
 <p>
   Servers that don't use sessions or other methods may require
   that the username/password be sent with every request.
-  This is handled automatically because <i>HTTPSession</i>
+  This is handled automatically because <em>HTTPSession</em>
   properly caches previously constructed credentials.
 
 <h3>Plugging in a CredentialsProvider<a name="CredentialProvider"></a></h3>
@@ -153,7 +153,7 @@ information.
       href="http://jakarta.apache.org/commons/httpclient/apidocs/index.htm">org.apache.commons.httpclient.auth.CredentialsProvider</a></strong>
   interface, which has one method:
 
-<pre>public <a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/Credentials.html" title="interface in org.apache.commons.httpclient">Credentials</a> <b>getCredentials</b>(<a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/auth/AuthScheme.html" title="interface in org.apache.commons.httpclient.auth">AuthScheme</a>&nbsp;scheme,
+<pre>public <a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/Credentials.html" title="interface in org.apache.commons.httpclient">Credentials</a> <strong>getCredentials</strong>(<a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/auth/AuthScheme.html" title="interface in org.apache.commons.httpclient.auth">AuthScheme</a>&nbsp;scheme,
                            String&nbsp;host,
                            int&nbsp;port,
                            boolean&nbsp;isproxy)
@@ -166,7 +166,7 @@ information.
   You can set the credentials provider globally for all requests
   or for a requests to specific urls.
   Globally for all requests means that the credentials provider will be used for all instances
-  of <i>HTTPSession</i>. An example of this would be as follows.
+  of <em>HTTPSession</em>. An example of this would be as follows.
 <pre>
 CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
 HTTPSession.setGlobalCredentialsProvider(provider);
@@ -196,15 +196,15 @@ Application, which is added to the HTTP User-Agent header,
 and allows servers to track which applications are accessing
 it.
 <p>
-  After initialization, you may invoke any of the <i>HttpClientManager</i>
+  After initialization, you may invoke any of the <em>HttpClientManager</em>
   static methods to perform common tasks.
-  Most of these methods have an instance of <i>HTTPSession</i>
+  Most of these methods have an instance of <em>HTTPSession</em>
   as an argument, but it is optional. If the value null is provided,
-  the <i>HttpClientManager</i> will create and destroy its own instances.
+  the <em>HttpClientManager</em> will create and destroy its own instances.
 
 <p>
   If you have an idea for additional common operations
-  for the <i>HttpClientManager</i> interface, feel free to send them
+  for the <em>HttpClientManager</em> interface, feel free to send them
   to Unidata support.
 
 <hr WIDTH="100%">

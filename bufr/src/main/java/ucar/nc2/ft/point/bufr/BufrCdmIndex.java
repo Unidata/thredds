@@ -26,10 +26,17 @@ public class BufrCdmIndex {
   public static File calcIndexFile(String bufrFilename ) {
     File bufrFile = new File(bufrFilename);
     String name = bufrFile.getName();
-    int pos = name.lastIndexOf('/');
-    if (pos < 0) pos = name.lastIndexOf('\\');
-    if (pos > 0) name = name.substring(pos + 1);
-    return new File(bufrFile.getParent(), name + BufrCdmIndex.NCX_IDX);
+    File result =  new File(bufrFile.getParent(), name + BufrCdmIndex.NCX_IDX);
+    if (result.exists()) return result;
+
+    int pos = name.indexOf('.');
+    if (pos > 0) {
+      name = name.substring(0, pos);
+      result =  new File(bufrFile.getParent(), name + BufrCdmIndex.NCX_IDX);
+      if (result.exists()) return result;
+    }
+
+    return null;
   }
 
   public static boolean writeIndex(String bufrFilename, BufrConfig config, File idxFile) throws IOException {

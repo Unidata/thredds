@@ -36,6 +36,7 @@ package ucar.nc2.ui;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.CFPointWriter;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.ui.point.PointController;
@@ -658,13 +659,13 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     } else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
-      setStations(stationCollection);
-      /* PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
+      PointFeatureCollection pfc = stationCollection.flatten(null, (CalendarDateRange) null);
+      PointFeatureIterator iter = pfc.getPointFeatureIterator(-1);
       List<PointFeature> obsList = new ArrayList<PointFeature>();
       int count = 0;
       while (iter.hasNext() && (count++ < maxCount))
-        obsList.add((PointFeature) iter.next());
-      setObservations(obsList);  */
+        obsList.add( iter.next());
+      setObservations(obsList);
 
     } else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationCollection = (StationProfileFeatureCollection) selectedCollection;

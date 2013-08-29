@@ -79,10 +79,10 @@
   ...  
 </pre>
 </blockquote>
-<p>A <strong>GridCoordSystem</strong> wraps a georeferencing coordinate system. It always has 1D or 2D <i>XHoriz</i> and <i>YHoriz</i> axes, and optionally 1D
-  vertical and 1D or 2D time axes. The XHoriz/YHoriz axes will be lat/lon if <i>isLatLon()</i> is true, otherwise they will be GeoX,GeoY with an appropriate
-  Projection. The <i>getBoundingBox()</i> method returns a bounding box from the XHoriz/YHoriz corner points. The <i>getLatLonBoundingBox() </i>method returns
-  the smallest lat/lon bounding box that contains <i>getBoundingBox()</i>. </p>
+<p>A <strong>GridCoordSystem</strong> wraps a georeferencing coordinate system. It always has 1D or 2D <em>XHoriz</em> and <em>YHoriz</em> axes, and optionally 1D
+  vertical and 1D or 2D time axes. The XHoriz/YHoriz axes will be lat/lon if <em>isLatLon()</em> is true, otherwise they will be GeoX,GeoY with an appropriate
+  Projection. The <em>getBoundingBox()</em> method returns a bounding box from the XHoriz/YHoriz corner points. The <em>getLatLonBoundingBox() </em>method returns
+  the smallest lat/lon bounding box that contains <em>getBoundingBox()</em>. </p>
 
 <p>You can use the <strong>GridCoordSystem</strong> to find the value of a grid a a specific lat, lon point:</p>
 <blockquote>
@@ -107,8 +107,8 @@
 <p>Most GridCoordSystems have a CoordinateAxis1DTime time coordinate. If so, you can get the list of dates from it.</p>
 
 <p>A <strong>GridDatatype</strong> is like a specialized Variable that explicitly handles X,Y,Z,T dimensions, which are put into canonical order: (t, z, y, x).
-  It has various convenience routines that expose methods from the <i>GridCoordSystem </i>and<i> VariableDS </i>objects<i>.</i> The main data access method is
-  <i>readDataSlice</i>, &nbsp;where you can fix an index on any Dimension, or use a -1 to get all the data in that Dimension. </p>
+  It has various convenience routines that expose methods from the <em>GridCoordSystem </em>and<em> VariableDS </em>objects<em>.</em> The main data access method is
+  <em>readDataSlice</em>, &nbsp;where you can fix an index on any Dimension, or use a -1 to get all the data in that Dimension. </p>
 <blockquote>
   <pre>
 // get 2D data at timeIndex, levelIndex

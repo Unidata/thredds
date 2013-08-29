@@ -8,7 +8,7 @@
 <body>
 <h1>Configuring TDS with DatasetFmrc</h1>
 <hr/>
-<p>The <b>datasetFmrc</b> element creates a <strong>Forecast Model Run Collection</strong> dataset. <br/>
+<p>The <strong>datasetFmrc</strong> element creates a <strong>Forecast Model Run Collection</strong> dataset. <br/>
 </p>
 <h2>Example</h2>
 <p>Here is a catalog containing a datasetFmrc element:</p>
@@ -39,7 +39,7 @@
   </li>
 </ol>
 <p>In the catalog that the TDS server sends to any client, the datasetScan element is shown as a <em><strong>catalog reference</strong></em>: </p>
-<pre>&lt;catalog name=&quot;Unidata Workshop 2006 - NCEP Model Data&quot; version=&quot;1.0.1&quot; <br/>    xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;<br/>    xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;&gt;<br/><br/>  &lt;service name=&quot;myserver&quot; serviceType=&quot;OpenDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;<strong></strong><br/>  &lt;<b>catalogRef</b> xlink:href=&quot;/thredds/catalog/ncep/catalog.xml&quot; xlink:title=&quot;NCEP Data&quot; name=&quot;&quot; /&gt;<br/>&lt;/catalog&gt; </pre>
+<pre>&lt;catalog name=&quot;Unidata Workshop 2006 - NCEP Model Data&quot; version=&quot;1.0.1&quot; <br/>    xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;<br/>    xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;&gt;<br/><br/>  &lt;service name=&quot;myserver&quot; serviceType=&quot;OpenDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;<strong></strong><br/>  &lt;<strong>catalogRef</strong> xlink:href=&quot;/thredds/catalog/ncep/catalog.xml&quot; xlink:title=&quot;NCEP Data&quot; name=&quot;&quot; /&gt;<br/>&lt;/catalog&gt; </pre>
 <p>The catalog will be generated dynamically on the server when requested, by scanning the server's directory <strong>/data/ldm/pub/native/grid/NCEP/</strong>.
   For example, if the directory looked like:</p>
 <pre><strong>/data/ldm/pub/native/grid/NCEP/<br/> GFS/<br/> CONUS_191km/<br/> GFS_CONUS_191km_20061107_0000.grib1<br/></strong><strong>

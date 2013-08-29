@@ -73,7 +73,7 @@
   <ul>
     <li>Misconfiguration of Tomcat can introduce vulnerabilities in security.</li>
     <li>The following recommendations should be considered "layers" of security: not completely effective by themselves, but more potent when combined.</li>
-    <li><i>This is not a complete laundry list of security fixes!</i> Please use it as a starting point when securing your server.</li>
+    <li><em>This is not a complete laundry list of security fixes!</em> Please use it as a starting point when securing your server.</li>
     <li>Suggestions below listed in random order (section ordering is not a representation of the section importance).</li>
   </ul>
 </div>
@@ -85,7 +85,7 @@
 
   <h3>Rationale</h3>
   <ul>
-    <li>Running the most current versions of software keeps your environment protected against <i>known</i>
+    <li>Running the most current versions of software keeps your environment protected against <em>known</em>
       <a href="http://www.securityfocus.com/vulnerabilities">security vulnerabilities</a>. This includes the JDK, Tomcat, the TDS and any other third-party
       libraries or software you run.
     </li>
@@ -135,9 +135,9 @@
       will run as the <code>root</code> user.
     </li>
     <li>If you choose to run the Tomcat process as the <code>root</code> user, and an attacker manages to exploit a weakness in Tomcat or something running in
-      <code>webapps/</code> to run arbitrary commands, <i>those commands will be run as the superuser</i>!
+      <code>webapps/</code> to run arbitrary commands, <em>those commands will be run as the superuser</em>!
     </li>
-    <li>We <i>strongly discourage</i> running Tomcat as the <code>root</code> user and recommend creating an unprivileged, dedicated user and group for running
+    <li>We <em>strongly discourage</em> running Tomcat as the <code>root</code> user and recommend creating an unprivileged, dedicated user and group for running
       the Tomcat process.
 
       <a id="tomcatUserAndGroup" class="example">
@@ -265,9 +265,9 @@
   <div id="note" class="info">
     <h4>CA-signed Certificates</h4>
 
-    <p>A self-signed certificate says to your users <i>"Trust me - I am who I say I am."</i></p>
+    <p>A self-signed certificate says to your users <em>"Trust me - I am who I say I am."</em></p>
 
-    <p>A certificate signed by a CA says, <i>"Trust me - the CA agrees I am who I say I am."</i></p>
+    <p>A certificate signed by a CA says, <em>"Trust me - the CA agrees I am who I say I am."</em></p>
   </div>
 
   <h3>SSL certificates</h3>
@@ -277,7 +277,7 @@
     </li>
     <li>The certificate can be used to verify that a public key belongs to an individual.</li>
     <li>The digital signature can be signed by a Certificate Authority (CA) or the certificate user (a self-signed certificate).</li>
-    <li>Unidata <i>highly recommends</i> the use of a certificate signed by a Certificate Authority (CA).</li>
+    <li>Unidata <em>highly recommends</em> the use of a certificate signed by a Certificate Authority (CA).</li>
     <li>Browser warnings for self-signed certificates can be very confusing to users and make them question the legitimacy of your web site.</li>
     <li>It's about trust: CA-signed certificates verify your identify to your users. If the traffic between your server and the client is intercepted, an
       attacker can inject their own self-signed cert in the place of yours and the visitor will likely not notice.
@@ -320,13 +320,13 @@
     <li>By convention, Tomcat and other servlet containers will read the web application deployment descriptors for initialization parameters and
       container-managed security constraints upon application deployment.
     </li>
-    <li><i>The TDS has been pre-configured to require that SSL encryption is enabled in order to access the both the
-      <a href="http://localhost:8080/thredds/admin/debug">TDS Remote Management Tool</a>, and the <a href="tdsMonitor.html">TdsMonitor Tool</a>.</i></li>
+    <li><em>The TDS has been pre-configured to require that SSL encryption is enabled in order to access the both the
+      <a href="http://localhost:8080/thredds/admin/debug">TDS Remote Management Tool</a>, and the <a href="tdsMonitor.html">TdsMonitor Tool</a>.</em></li>
     <p><code>web.xml</code> from the TDS Remote Management Tool:</p>
 
 <pre>
   &lt;!-- This allows "remote configuration":
-    <b>/thredds/admin/debug</b> gives access to various debug and status info.
+    <strong>/thredds/admin/debug</strong> gives access to various debug and status info.
     /thredds/admin/content/ -&gt; "{tomcat_home}/content/thredds/"
     /thredds/admin/root/ -&gt; "{tomcat_home}/webapps/thredds/" DISABLED
     /thredds/admin/dataDir/path -&gt; "{dataRoot(path)}/webapps/thredds/"  DISABLED
@@ -334,15 +334,15 @@
   &lt;security-constraint&gt;
     &lt;web-resource-collection&gt;
       &lt;web-resource-name&gt;sensitive read access&lt;/web-resource-name&gt;
-      <b>&lt;url-pattern&gt;/admin/*&lt;/url-pattern&gt;</b>
+      <strong>&lt;url-pattern&gt;/admin/*&lt;/url-pattern&gt;</strong>
       &lt;http-method&gt;GET&lt;/http-method&gt;
     &lt;/web-resource-collection&gt;
     &lt;auth-constraint&gt;
       &lt;role-name&gt;tdsConfig&lt;/role-name&gt;
     &lt;/auth-constraint&gt;
-    <b>&lt;user-data-constraint&gt;
+    <strong>&lt;user-data-constraint&gt;
       &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-      &lt;/user-data-constraint&gt;</b>
+      &lt;/user-data-constraint&gt;</strong>
   &lt;/security-constraint&gt;
 </pre>
 
@@ -409,7 +409,7 @@
     <li>Not enabled by default.</li>
     <li>Allows Tomcat administrators to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat.</li>
     <li>If exploited, an attacker can use the <code>manager</code> application to install programs on your server willy-nilly.</li>
-    <li>If you choose to enable the <code>manager</code> application, we <i>highly recommend</i> enabling digested passwords and SSL encryption for the <code>manager</code>.
+    <li>If you choose to enable the <code>manager</code> application, we <em>highly recommend</em> enabling digested passwords and SSL encryption for the <code>manager</code>.
     </li>
     <li>Restricting access to the <code>manager</code> application to a small subset of IP addressess or host names using a Tomcat valve, etc., is also a good
       idea.
@@ -451,7 +451,7 @@
 
   <h3>For running the TDS, keep in mind the following: </h3>
   <ul>
-    <li>Port 8080 should have unrestricted access <i>unless</i> you plan to proxy requests to Tomcat from and HTTP server.</li>
+    <li>Port 8080 should have unrestricted access <em>unless</em> you plan to proxy requests to Tomcat from and HTTP server.</li>
     <li>If you are using any of the TDS monitoring and debugging tools, or the Tomcat <code>manager</code> application, you must also open up port 8443.</li>
   </ul>
 
@@ -483,7 +483,7 @@
   <ul>
     <li>Use the Tomcat <code>RemoteHostValve</code> or <code>RemoteAddrValve</code> to restrict access to the TDS and/or other web applications.</li>
     <li>Configured in the Tomcat <code>conf/server.xml</code> file.</li>
-    <li>Valve declarations can be used to either <i>allow</i> or <i>deny</i> access to content.</li>
+    <li>Valve declarations can be used to either <em>allow</em> or <em>deny</em> access to content.</li>
     <li>Utilize the valves for adding an extra layer of security to the <code>manager</code> application to limit accessed to it from within a specific IP
       address range.
     </li>

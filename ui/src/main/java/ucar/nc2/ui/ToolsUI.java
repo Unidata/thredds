@@ -258,6 +258,9 @@ public class ToolsUI extends JPanel {
           int idx = iospTabPane.getSelectedIndex();
           String title = iospTabPane.getTitleAt(idx);
           makeComponent(iospTabPane, title);
+        } else if (c instanceof JTabbedPane) {
+          c.setVisible(false);
+          c.setVisible(true);
         }
       }
     });

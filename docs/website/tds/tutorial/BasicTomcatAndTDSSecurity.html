@@ -85,7 +85,7 @@
       </code>:
       </p>
 <pre>
-<b>$</b> vi tomcat-users.xml
+<strong>$</strong> vi tomcat-users.xml
 </pre>
       <p>The roles of &quot;manager-gui&quot;, &quot;manager-status&quot;, &quot;manager-script&quot;, and &quot;manager-jmx&quot; are pre-defined in Tomcat
         7.</p>
@@ -190,21 +190,21 @@
     </code> error:
     </p>
     <ul>
-      <li><b>The issue: </b> The "PermGen" error happens when the JVM runs out of memory in the permanent generation. (Default PermGen size differs among Sun
+      <li><strong>The issue: </strong> The "PermGen" error happens when the JVM runs out of memory in the permanent generation. (Default PermGen size differs among Sun
         JDK versions, but the upper limit is typically 64MB.)
       </li>
-      <li><b>The cause: </b> Objects in the permanent generation are never garbage collected. When redeploying your web application using the Tomcat <code>
+      <li><strong>The cause: </strong> Objects in the permanent generation are never garbage collected. When redeploying your web application using the Tomcat <code>
         <small>manager</small>
       </code> application, your WAR file is unpacked and parts of the class file definition are loaded into PermGen space, like string constants.
       </li>
-      <li><b>The symptom:</b> The PermGen error will manifest itself in a sluggish Tomcat <code>
+      <li><strong>The symptom:</strong> The PermGen error will manifest itself in a sluggish Tomcat <code>
         <small>manager</small>
       </code> application that never completes a task, and the <code>
         <small>java.lang.OutOfMemoryError: PermGen space failure</small>
       </code> error being displayed in <code>
         <small>${tomcat_home}/logs/catalina.out</small>
       </code></li>
-      <li><b>A temporary fix:</b> You can add the <code>
+      <li><strong>A temporary fix:</strong> You can add the <code>
         <small>-XX:MaxPermSize</small>
       </code> switch to <code>
         <small>$JAVA_OPTS</small>
@@ -301,7 +301,7 @@
       </code> with your favorite editor:
       </p>
 <pre>
-<b>$</b> vi server.xml
+<strong>$</strong> vi server.xml
 </pre>
       <p>Locate the <code>
         <small>UserDatabaseRealm</small>
@@ -315,10 +315,10 @@
      resources under the key "UserDatabase".  Any edits
      that are performed against this UserDatabase are immediately
      available for use by the Realm.  --&gt;
-<b>&lt;!--</b> 
+<strong>&lt;!--</strong>
 &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
        resourceName="UserDatabase"/&gt;
-<b>--&gt;</b>
+<strong>--&gt;</strong>
 &lt;!-- Define the default virtual host
      Note: XML Schema validation will not work with Xerces 2.2.
 --&gt;
@@ -351,8 +351,8 @@
       unpackWARs="true" autoDeploy="true"
       xmlValidation="false" xmlNamespaceAware="false"&gt;
 
-    <b>&lt;Realm className="org.apache.catalina.realm.MemoryRealm"
-      digest="SHA" /&gt;</b>
+    <strong>&lt;Realm className="org.apache.catalina.realm.MemoryRealm"
+      digest="SHA" /&gt;</strong>
 </pre>
       <li><a name="makeDigest"></a>Create a SHA encrypted version of your password.</li>
       <p>Tomcat provides a script (<code>
@@ -362,7 +362,7 @@
       </p>
 
 <pre>
-<b>$</b> /home/tds/apache-tomcat-6.0.32/bin/digest.sh -a SHA secret
+<strong>$</strong> /home/tds/apache-tomcat-6.0.32/bin/digest.sh -a SHA secret
 secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 </pre>
 
@@ -375,7 +375,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 <pre>
 &lt;tomcat-users&gt;
     &lt;role rolename="manager-gui"/&gt;
-    &lt;user username="admin" password="<b>e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4</b>" roles="manager-gui"/&gt;
+    &lt;user username="admin" password="<strong>e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4</strong>" roles="manager-gui"/&gt;
 &lt;/tomcat-users&gt;
 </pre>
       <li>Verify digest passwords have been successfully enabled in Tomcat.</li>
@@ -500,7 +500,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
     </p>
 
 <pre>
-<b>$</b> vi server.xml
+<strong>$</strong> vi server.xml
 </pre>
     <p>Locate the <code>
       <small>Java HTTP/1.1 Connector</small>
@@ -509,7 +509,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 <pre>
 &lt;Connector port="8080" protocol="HTTP/1.1"
               connectionTimeout="20000"
-              <b>redirectPort="8443"</b> /&gt;
+              <strong>redirectPort="8443"</strong> /&gt;
 </pre>
     <p>Find and uncomment the <code>
       <small>SSL HTTP/1.1 Connector</small>
@@ -529,7 +529,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 <pre>
 &lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
               maxThreads="150" scheme="https" secure="true"
-              clientAuth="false" sslProtocol="TLS" <b>keystoreFile="/home/tds/tds/apache-tomcat-6.0.32/conf/keystore"</b> /&gt;
+              clientAuth="false" sslProtocol="TLS" <strong>keystoreFile="/home/tds/tds/apache-tomcat-6.0.32/conf/keystore"</strong> /&gt;
 </pre>
 
     <p>Since we opted to not use the default <code>
@@ -539,7 +539,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 <pre>
 &lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
               maxThreads="150" scheme="https" secure="true"
-              clientAuth="false" sslProtocol="TLS" keystoreFile="/home/tds/tds/apache-tomcat-6.0.32/conf/keystore" <b>keystorePass="foobar"</b> /&gt;
+              clientAuth="false" sslProtocol="TLS" keystoreFile="/home/tds/tds/apache-tomcat-6.0.32/conf/keystore" <strong>keystorePass="foobar"</strong> /&gt;
 </pre>
 
 
@@ -557,8 +557,8 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
     <p>Restart Tomcat:</p>
 <pre>
-<b>$</b> ${tomcat_home}/bin/shutdown.sh
-<b>$</b> ${tomcat_home}/bin/startup.sh
+<strong>$</strong> ${tomcat_home}/bin/shutdown.sh
+<strong>$</strong> ${tomcat_home}/bin/startup.sh
 </pre>
 
     <p>Verify Tomcat is listening on port 8443 by running the <code>
@@ -567,7 +567,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
     </p>
 
 <pre>
-<b>$</b> netstat -an | grep tcp
+<strong>$</strong> netstat -an | grep tcp
 </pre>
     <div id="note" class="info">
       <h4><code>man netstat</code></h4>
@@ -580,7 +580,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
     <p><code>
       <small>netstat</small>
-    </code> (short for <b>net</b>work <b>stat</b>istics) is available on Unix, Unix-like, and Windows NT-based operating systems. It is a command-line tool that
+    </code> (short for <strong>net</strong>work <strong>stat</strong>istics) is available on Unix, Unix-like, and Windows NT-based operating systems. It is a command-line tool that
       displays:
     </p>
     <ul class="little">
@@ -592,7 +592,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
     <p>Look for the following in the output:</p>
 <pre>
-tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*                   LISTEN
+tcp        0      0 127.0.0.1:<strong>8443</strong>               0.0.0.0:*                   LISTEN
 </pre>
 
 
@@ -665,7 +665,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
       <small>${tomcat_home}/conf/server.xml</small>
     </code> or <code>
       <small>${tomcat_home}/conf/tomcat-users.xml</small>
-    </code>, did you explicitly specify that TDS remote management tool <i>must</i> be accessed via SSL?
+    </code>, did you explicitly specify that TDS remote management tool <em>must</em> be accessed via SSL?
     </p>
   </div>
 </div>
@@ -700,8 +700,8 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
     </code>, and view the file:
     </p>
 <pre>
-<b>$</b> cd /home/tds/tds/apache-tomcat-6.0.32/webapps/thredds
-<b>$</b> less WEB-INF/web.xml
+<strong>$</strong> cd /home/tds/tds/apache-tomcat-6.0.32/webapps/thredds
+<strong>$</strong> less WEB-INF/web.xml
 </pre>
     <li>Look for a reference to the TDS remote management tool's URL (<code>
       <small>/admin/debug</small>
@@ -711,7 +711,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 
 <pre>
   &lt;!-- This allows "remote configuration":
-    <b>/thredds/admin/debug</b> gives access to various debug and status info.
+    <strong>/thredds/admin/debug</strong> gives access to various debug and status info.
     /thredds/admin/content/ -&gt; "{tomcat_home}/content/thredds/"
     /thredds/admin/root/ -&gt; "{tomcat_home}/webapps/thredds/" DISABLED
     /thredds/admin/dataDir/path -&gt; "{dataRoot(path)}/webapps/thredds/"  DISABLED
@@ -719,16 +719,16 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
   &lt;security-constraint&gt;
     &lt;web-resource-collection&gt;
       &lt;web-resource-name&gt;sensitive read access&lt;/web-resource-name&gt;
-      <b>&lt;url-pattern&gt;/admin/*&lt;/url-pattern&gt;</b>
+      <strong>&lt;url-pattern&gt;/admin/*&lt;/url-pattern&gt;</strong>
       &lt;http-method&gt;GET&lt;/http-method&gt;
       &lt;!-- http-method&gt;PUT&lt;/http-method --&gt;
     &lt;/web-resource-collection&gt;
     &lt;auth-constraint&gt;
       &lt;role-name&gt;tdsConfig&lt;/role-name&gt;
     &lt;/auth-constraint&gt;
-    <b>&lt;user-data-constraint&gt;
+    <strong>&lt;user-data-constraint&gt;
       &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-      &lt;/user-data-constraint&gt;</b>
+      &lt;/user-data-constraint&gt;</strong>
   &lt;/security-constraint&gt;
 </pre>
 
@@ -786,7 +786,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
     </code> application:
     </p>
 <pre>
-<b>$</b> vi /home/tds/tds/apache-tomcat-6.0.32/webapps/manager/WEB-INF/web.xml
+<strong>$</strong> vi /home/tds/tds/apache-tomcat-6.0.32/webapps/manager/WEB-INF/web.xml
 </pre>
     <p>Locate the <code>
       <small>&lt;security-constraint&gt;</small>
@@ -874,9 +874,9 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
     &lt;auth-constraint&gt;
        &lt;role-name&gt;manager&lt;/role-name&gt;
     &lt;/auth-constraint&gt;
-   <b> &lt;user-data-constraint&gt;
+   <strong> &lt;user-data-constraint&gt;
      &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-     &lt;/user-data-constraint&gt;</b>
+     &lt;/user-data-constraint&gt;</strong>
   &lt;/security-constraint&gt;
 </pre>
     </ul>

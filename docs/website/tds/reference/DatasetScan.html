@@ -8,7 +8,7 @@
 <body>
 <h1>Configuring TDS with DatasetScan</h1>
 <hr>
-<p>The <b>datasetScan</b> element specifies the data locations that the
+<p>The <strong>datasetScan</strong> element specifies the data locations that the
   TDS will scan for datasets when generating catalogs. It also specifies
   which URLs will point to the data in those directories.<br>
 </p>
@@ -19,7 +19,7 @@
 <p>Here is a minimal catalog containing a datasetScan element:</p>
 
 
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<b>datasetScan</b> name="NCEP Data" <b>path</b>="ncep" <b>location</b>="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>  &lt;/<b>datasetScan</b> &gt;<br>&lt;/catalog&gt;</pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<strong>datasetScan</strong> name="NCEP Data" <strong>path</strong>="ncep" <strong>location</strong>="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>  &lt;/<strong>datasetScan</strong> &gt;<br>&lt;/catalog&gt;</pre>
 
 
 <p>The main points are:</p>
@@ -38,7 +38,7 @@
 <p>In the catalog that the TDS server sends to any client, the datasetScan element is shown as a <em><strong>catalog reference</strong></em>: </p>
 
 
-<pre>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<strong></strong><br>  &lt;<b>catalogRef</b> xlink:href="/thredds/catalog/ncep/catalog.xml" xlink:title="NCEP Data" name="" /&gt;<br>&lt;/catalog&gt; </pre>
+<pre>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<strong></strong><br>  &lt;<strong>catalogRef</strong> xlink:href="/thredds/catalog/ncep/catalog.xml" xlink:title="NCEP Data" name="" /&gt;<br>&lt;/catalog&gt; </pre>
 
 
 <p>The catalog will be generated dynamically on the server when requested, by scanning the server's directory <strong>/data/ldm/pub/native/grid/NCEP/</strong>.
@@ -50,11 +50,11 @@
   GFS_CONUS_191km_20061107_1200.grib1<br></strong><strong> CONUS_80km/<br> ...<br> ...<br> NAM/<br> ...<br> NDFD/<br> ...</strong><strong></strong><strong><br></strong></pre>
 
 
-<p>The result of a request for "<b>/thredds/catalog/ncep/catalog.xml</b>" might look like: </p>
+<p>The result of a request for "<strong>/thredds/catalog/ncep/catalog.xml</strong>" might look like: </p>
 
 
 <pre>&lt;catalog ...&gt;<br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;dataset name="NCEP Data"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>   &nbsp;&lt;/metadata&gt;<br>    &lt;catalogRef xlink:title="GFS" xlink:href="GFS/catalog.xml" name="" /&gt;<br>    &lt;catalogRef xlink:title="NAM" xlink:href="NAM/catalog.xml" name="" /&gt;<br>    &lt;catalogRef xlink:title="NDFD" xlink:href="NDFD/catalog.xml" name="" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
-<p>and for a "<b>/thredds/catalog/</b><b>ncep/GFS/CONUS_191km/catalog.xml</b>" request:<br>
+<p>and for a "<strong>/thredds/catalog/</strong><strong>ncep/GFS/CONUS_191km/catalog.xml</strong>" request:<br>
 </p>
 <pre>&lt;catalog ...&gt;<br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;dataset name="ncep/GFS/CONUS_191km"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>   &nbsp;&lt;/metadata&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1" /&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1.gbx"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1.gbx" /&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0600.grib1" /&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_1200.grib1" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
 
@@ -67,7 +67,7 @@
   <li>Files are turned into datasets, subdirectories are turned into nested catalogRef elements.</li>
   <li>All the catalog URLs are relative. If the original catalog URL is <strong>http://server:8080/thredds/catalog.xml </strong>then the first catalogRef
     xlink:href value of "/thredds/catalog/ncep/catalog.xml" resolves to<strong> http://server:8080/thredds/catalog/ncep/catalog.xml</strong>. From that catalog,
-    the catalogRef xlink:href value of "GFS/catalog.xml" resolves to <b>http://server:8080/thredds/catalog/ncep/GFS/catalog.xml</b>.
+    the catalogRef xlink:href value of "GFS/catalog.xml" resolves to <strong>http://server:8080/thredds/catalog/ncep/GFS/catalog.xml</strong>.
   </li>
   <li>The dataset access URLs are built from the service base attribute and the dataset urlPath attribute (see the
     <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec11.html#constructingURLs">THREDDS URL construction</a> documentation). So
@@ -101,8 +101,8 @@
 <h2><a name="Including_Only_the_Desired_Files"></a>Including Only the Desired Files</h2>
 
 
-<p>A <i>datasetScan</i> element can specify which files and directories it will include with a <i>filter</i> element (see
-  <a href="../../catalog/v1.0.2/InvCatalogSpec.server.html">spec</a>
+<p>A <em>datasetScan</em> element can specify which files and directories it will include with a <em>filter</em> element (see
+  <a href="../catalog/v1.0.2/InvCatalogSpec.server.html">spec</a>
   for more details). When no filter element is given, all files and
   directories are included in the generated catalog(s). Adding a <strong>filter</strong>
   element to your datasetScan element allows you to include (and/or exclude)
@@ -289,7 +289,7 @@ elements must point to an existing service.<br>
   &nbsp; </strong>&lt;dataset name="200406190916.nc" urlPath="200406190916.nc" /&gt;<strong><br></strong>  &lt;/dataset&gt;<br></pre>
 
 
-<p>More details are available in the <a href="../../catalog/v1.0.3/InvCatalogSpec.server.html#addProxies_Element">Server-side InvCatalog specification</a>
+<p>More details are available in the <a href="../catalog/v1.0.3/InvCatalogSpec.server.html#addProxies_Element">Server-side InvCatalog specification</a>
   document.</p>
 
 

@@ -75,12 +75,12 @@ netcdf lflx.mean.nc {
 }</pre>
 
 <p>The <strong>cldc</strong> variable will be read from <em>cldc.mean.nc</em>, while
-  the <b>lflx</b> variable will be read from <i>lflx.mean.nc. </i>All the other variables, dimensions, and attributes
+  the <strong>lflx</strong> variable will be read from <em>lflx.mean.nc. </em>All the other variables, dimensions, and attributes
   are taken from the first file that declares them.</p>
 
-<p><i>A <strong>Union</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and
+<p><em>A <strong>Union</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and
   variables) from the nested datasets in the order the nested datasets are listed. If an object with the same name
-  already exists, it is skipped. </i><strong><em>You need to pay close attention to dimensions and coordinate
+  already exists, it is skipped. </em><strong><em>You need to pay close attention to dimensions and coordinate
   variables, which must match exactly across nested files. </em></strong></p>
 
 <h2><a name="joinExisting"></a>Exercise 2: Aggregation on an existing dimension</h2>
@@ -90,8 +90,8 @@ netcdf lflx.mean.nc {
   Tab</strong>, open <strong>aggExisting.ncml</strong> and examine it:</p>
 
 <p>This NcML constructs a dataset by declaring &quot;time&quot; the <strong><em>aggregation
-  dimension</em></strong>. Any variable that has that dimension as its outer dimension is an <strong><i>aggregation
-  variable</i></strong>.
+  dimension</em></strong>. Any variable that has that dimension as its outer dimension is an <strong><em>aggregation
+  variable</em></strong>.
   The dimension must be the outer (slowest varying) dimension. There must be an existing coordinate variable named
   time. </p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;<strong>aggregation</strong> <strong>dimName=&quot;time&quot;</strong> type=&quot;<strong>joinExisting</strong>&quot;&gt;
@@ -149,15 +149,15 @@ netcdf feb.nc {
      <strong>int time(time=59);</strong>
  }</pre>
 <p>The variables <strong>P, T, </strong>and<strong> time</strong> are aggregation variables, because they have the
-  aggregation dimension as their first (outermost) dimension. The first 31 data values are taken from the file <i>jan.nc</i>
-  and the next 28 data values are taken from <i>feb.nc</i>. All the other variables, dimensions, and attributes are
+  aggregation dimension as their first (outermost) dimension. The first 31 data values are taken from the file <em>jan.nc</em>
+  and the next 28 data values are taken from <em>feb.nc</em>. All the other variables, dimensions, and attributes are
   taken from the first file that declares them.</p>
 
-<p><i>A <strong>JoinExisting</strong> dataset is constructed by transferring objects (dimensions, attributes, groups,
+<p><em>A <strong>JoinExisting</strong> dataset is constructed by transferring objects (dimensions, attributes, groups,
   and variables) from the nested datasets in the order the nested datasets are listed. All variables that use the
   aggregation dimension as their outer dimension are logically concatenated, in the order of the nested datasets.
   Variables that don't use the aggregation dimension are treated as in a Union dataset, i.e. skipped if one with that
-  name already exists.</i></p>
+  name already exists.</em></p>
 
 <h3>Specify number of coordinates</h3>
 
@@ -231,7 +231,7 @@ netcdf feb.nc {
 
 <p>The previous example &quot;joined&quot; variables along their existing outer dimension. Another common case is to
   aggregate variables by creating a new outer dimension. Each existing variable becomes one &quot;slice&quot; of the
-  compound variable (a <i>slice</i> holds the index of one dimension constant, e.g. <b>humidity(3,:,:,:)</b>). The
+  compound variable (a <em>slice</em> holds the index of one dimension constant, e.g. <strong>humidity(3,:,:,:)</strong>). The
   following NcML joins variables from three separate files into a single variable, by creating a new dimension of
   length 3:</p>
 
@@ -293,11 +293,11 @@ netcdf feb.nc {
   variable T now has time as its outer dimension. The data for T from the nested files are logically concatenated
   together.</p>
 
-<p><i>A <strong>JoinNew</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and
+<p><em>A <strong>JoinNew</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and
   variables) from the nested datasets in the order the nested datasets are listed. All variables that are listed as
   aggregation variables are logically concatenated along the new dimension, in the order of the nested datasets. A
   coordinate Variable is created for the new dimension. Non-aggregation variables are treated as in a Union dataset,
-  i.e. skipped if one of that name already exists.</i></p>
+  i.e. skipped if one of that name already exists.</em></p>
 
 <h3>Defining coordinates on a JoinNew aggregation </h3>
 
@@ -363,8 +363,8 @@ netcdf feb.nc {
     not</strong> use the old form <em><strong>&lt;dimension name=&quot;time&quot; length=&quot;0&quot;
     /&gt;</strong></em> as it will override the dimension created by the aggregation. </p>
 
-<p><i>For all aggregations, the aggregation element is processed first, so that the objects (dimensions, attributes,
-  groups, and variables) from the nested datasets exist and can be modified by other NcML elements.</i></p>
+<p><em>For all aggregations, the aggregation element is processed first, so that the objects (dimensions, attributes,
+  groups, and variables) from the nested datasets exist and can be modified by other NcML elements.</em></p>
 
 <h2><a name="scan"></a>Exercise 4: Aggregation by scanning a directory</h2>
 

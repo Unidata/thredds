@@ -32,11 +32,11 @@
 
 <h3>The Tomcat access log</h3>
 <ul>
-  <li>The access log records <i><b>all</b></i> requests processed by the server.</li>
+  <li>The access log records <em><strong>all</strong></em> requests processed by the server.</li>
   <li>As of Tomcat 7, enabled in Tomcat by default in <code>${tomcat_home}/conf/server.xml</code>.</li>
   <li>Information it contains is different from other logs in <code>${tomcat_home}/logs</code>.</li>
   <li>Used for monitoring who is using your server and as a way of obtaining "feedback" about the activity and performance of the server.</li>
-  <li><i>In order to use the <code><a href="tdsMonitor.html">TdsMonitor</a></code> tool, you will need to change the default configuration of the <code>AccessLogValve</code>.</i>
+  <li><em>In order to use the <code><a href="tdsMonitor.html">TdsMonitor</a></code> tool, you will need to change the default configuration of the <code>AccessLogValve</code>.</em>
   </li>
 </ul>
 
@@ -46,7 +46,7 @@
   <li>Modify the <code>prefix</code>, <code>suffix</code>, and <code>pattern</code> attributes of the <code>AccessLogValve</code> element.</li>
   <p>Using your favorite editor open <code>${tomcat_home}/conf/server.xml</code>:</li>
 <pre>
-<b>$</b> vi server.xml
+<strong>$</strong> vi server.xml
 </pre>
   <p>Locate the <code>AccessLogValve</code> contained in the <code>Host</code> element (should be near the bottom of the file):</p>
 
@@ -63,12 +63,12 @@
   &lt;Valve className="org.apache.catalina.authenticator.SingleSignOn" /&gt;
   --&gt;
 
-  <b>&lt;!-- Access log processes all example.
+  <strong>&lt;!-- Access log processes all example.
     Documentation at: /docs/config/valve.html
     Note: The pattern used is equivalent to using pattern="common" --&gt;
     &lt;Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
     prefix="localhost_access_log." suffix=".txt"
-    pattern="%h %l %u %t &quot;%r&quot; %s %b" /&gt;</b>
+    pattern="%h %l %u %t &quot;%r&quot; %s %b" /&gt;</strong>
 
 &lt;/Host&gt;
 </pre>
@@ -97,8 +97,8 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
   <li>Verify the changes to the access log have taken affect.</li>
   <p>Restart Tomcat and verify an access log has been generated in the <code>${tomcat_home}/logs/</code> directory:</li>
 <pre>
-<b>$</b> ls -l /home/tds/workshop/apache-tomcat-7.0.32/logs
-<b>-rw-r--r-- 1 tds workshop 0 Jul 24 12:25 access.2013-07-24.log</b>
+<strong>$</strong> ls -l /home/tds/workshop/apache-tomcat-7.0.32/logs
+<strong>-rw-r--r-- 1 tds workshop 0 Jul 24 12:25 access.2013-07-24.log</strong>
 -rw-r--r-- 1 tds workshop  4270 Jul 24 12:26 catalina.2013-07-24.log
 -rw-r--r-- 1 tds workshop 19095 Jul 24 12:26 catalina.out
 -rw-r--r-- 1 tds workshop     0 Jul 24 12:25 host-manager.2013-07-24.log
@@ -112,7 +112,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
 
 
 <p>The access log entry format we are using is almost identical to the standard <code>combined</code> logging format with an addition: the <code></small>
-  %D</code> which is used for documenting the <i>Time taken to process the request, in millis</i> will appear at the end of each log entry:</p>
+  %D</code> which is used for documenting the <em>Time taken to process the request, in millis</em> will appear at the end of each log entry:</p>
 
 <pre>
 pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"
@@ -258,10 +258,10 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
 <div id="note" class="reminder">
   <h4>Keep in Mind</h4>
 
-  <p>There are <b>two</b> locations of log files you will reference:</p>
+  <p>There are <strong>two</strong> locations of log files you will reference:</p>
   <ol class="little">
-    <li><code>${tomcat_home}/logs/</code> is where you go to look at <i>Tomcat-generated</i> log files; and</li>
-    <li>the TDS logging directory which is where you go to look at <i>TDS-generated</i> log files.</li>
+    <li><code>${tomcat_home}/logs/</code> is where you go to look at <em>Tomcat-generated</em> log files; and</li>
+    <li>the TDS logging directory which is where you go to look at <em>TDS-generated</em> log files.</li>
   </ol>
 </div>
 
@@ -330,19 +330,19 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
   <li>Look at the logging configurations for <code>threddsServlet.log</code>.</li>
   <p>Navigate to the unpacked <code>thredds</code> directory in <code>${tomcat_home}/webapps/WEB-INF</code>, and view the <code>log4j.xml</code>: </p>
 <pre>
-<b>$</b> cd /home/tds/workshop/apache-tomcat-7.0.32/webapps/thredds/WEB-INF
-<b>$</b> less log4j.xml
+<strong>$</strong> cd /home/tds/workshop/apache-tomcat-7.0.32/webapps/thredds/WEB-INF
+<strong>$</strong> less log4j.xml
 </pre>
   <p>The TDS uses the OpenSource Apache <code>Log4J</code> library (hence, the name of the file: <code>log4j.xml</code>). </p>
 
-  <p>Find the first <i>uncommented</i> <code>Appender</code> element with a name of <code>threddsServlet</code> and a class of <code>org.apache.log4j.DailyRollingFileAppender</code>,
+  <p>Find the first <em>uncommented</em> <code>Appender</code> element with a name of <code>threddsServlet</code> and a class of <code>org.apache.log4j.DailyRollingFileAppender</code>,
     and note the <code>ConversionPattern</code>: </p>
 <pre>
   &lt;appender name="threddsServlet" class="org.apache.log4j.DailyRollingFileAppender"&gt;
     &lt;param name="File" value="${tds.log.dir}/threddsServlet.log"/&gt;
     &lt;param name="DatePattern" value=".yyyy-MM-dd-HH"/&gt;
     &lt;layout class="org.apache.log4j.PatternLayout"&gt;
-      <b>&lt;param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/&gt;</b>
+      <strong>&lt;param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/&gt;</strong>
       &lt;!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/--&gt;
     &lt;/layout&gt;
   &lt;/appender&gt;     
@@ -436,8 +436,8 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
 <ul>
   <li>Each HTTP request (or transaction) handled by the TDS results in at least two log messages:</li>
   <ul style="margin-left: 60px">
-    <li> a message indicating the <b>start of the transaction</b>; and</li>
-    <li>a message indicating the <b>end of the transaction</b>.</li>
+    <li> a message indicating the <strong>start of the transaction</strong>; and</li>
+    <li>a message indicating the <strong>end of the transaction</strong>.</li>
   </ul>
   <li>Between the start and end messages, there may be other entries for this same request (e.g., <code>DEBUG</code>, <code>WARN</code>, <code>ERROR</code>,
     etc.).
@@ -459,7 +459,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
 </ul>
 <p>For example:</p>
 <pre>
-... Remote host: <b>128.117.140.75</b> - Request: "<b>GET /thredds/catalog.html HTTP/1.1</b>"
+... Remote host: <strong>128.117.140.75</strong> - Request: "<strong>GET /thredds/catalog.html HTTP/1.1</strong>"
 </pre>
 
 <h3>End of transaction</h3>
@@ -472,7 +472,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
 </ul>
 <p>For example:</p>
 <pre>
-... Request Completed - <b>200</b> - <b>3403</b> - <b>1</b>
+... Request Completed - <strong>200</strong> - <strong>3403</strong> - <strong>1</strong>
 </pre>
 <p>Most end of transaction messages include a status code that matches a standard HTTP status code. However, when the client breaks the
   connection or a request is forwarded to another TDS internal service, one of three TDS specific status codes are used:</p>
@@ -492,7 +492,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
 
 <p>Here is an example of some log messages from a request that resulted in error messages:</p>
 <pre>
-2013-07-22T09:21:02.229 -0600 [1114883517][ <b>7948911</b>] INFO  - threddsServlet - Remote host: 173.165.244.157 - Request: "GET /thredds/wms/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg-20130722/best2013-07-22T12:00:00Z?
+2013-07-22T09:21:02.229 -0600 [1114883517][ <strong>7948911</strong>] INFO  - threddsServlet - Remote host: 173.165.244.157 - Request: "GET /thredds/wms/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg-20130722/best2013-07-22T12:00:00Z?
 LAYERS=Temperature_isobaric&FORMAT=image%2Fpng&TRANSPARENT=TRUE&VERSION=1.3.0&STYLES=boxfill2Frainbow&COLOR
 SCALERANGE=270%2C315&ELEVATION=100000&EXCEPTIONS=INIMAGE&SERVICE=WMS&REQUEST=GetMap&TIME=2013-07-22T12%3A00
 %3A00.000Z&CRS=EPSG%3A3857&BBOX=-10644926.305625,5635549.220625,-10331840.237812,5948635.2884375&WIDTH=256&
@@ -517,7 +517,7 @@ HEIGHT=256 HTTP/1.1"
 
 2013-07-22T09:21:03.181 -0600 [1114884469][ 7948915] INFO  - threddsServlet - Request Completed - 200 - 525 - 7
 
-2013-07-22T09:21:03.190 -0600 [1114884478][ <b>7948911</b>] ERROR - thredds.server.wms.ThreddsWmsController - dispatchWmsRequest(): IOException: 
+2013-07-22T09:21:03.190 -0600 [1114884478][ <strong>7948911</strong>] ERROR - thredds.server.wms.ThreddsWmsController - dispatchWmsRequest(): IOException:
 java.io.IOException: java.lang.NullPointerException
         at thredds.server.wms.ThreddsScalarLayer.readHorizontalPoints(ThreddsScalarLayer.java:189)
         at uk.ac.rdg.resc.ncwms.controller.AbstractWmsController.readDataGrid(AbstractWmsController.java:1365)
@@ -535,7 +535,7 @@ Caused by: java.lang.NullPointerException
 
 2013-07-22T09:21:03.206 -0600 [1114884494][ 7948916] INFO  - threddsServlet - Request Completed - 200 - 1058 - 6
 
-2013-07-22T09:21:03.229 -0600 [1114884517][ <b>7948911</b>] INFO  - threddsServlet - Request Completed - 500 - -1 - 1000
+2013-07-22T09:21:03.229 -0600 [1114884517][ <strong>7948911</strong>] INFO  - threddsServlet - Request Completed - 500 - -1 - 1000
 </pre>
 
 <div id="note" class="reminder">
@@ -548,7 +548,7 @@ Caused by: java.lang.NullPointerException
 
 <p>
 <ul>
-  <li>the request ID (<b>7948911</b>) matches in all messages;</li>
+  <li>the request ID (<strong>7948911</strong>) matches in all messages;</li>
   <li>the ERROR message contains a stack trace; and</li>
   <li>the status code in the end of transaction message is <code>500 (Internal Server Error)</code> .</li>
 </ul>

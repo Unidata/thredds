@@ -65,6 +65,8 @@ public final class ServiceType {
   public final static ServiceType NCML = new ServiceType( "NCML" );
   public final static ServiceType UDDC = new ServiceType( "UDDC" );
   public final static ServiceType ISO = new ServiceType( "ISO" );
+  public final static ServiceType ncJSON  = new ServiceType( "ncJSON" );
+  public final static ServiceType H5Service = new ServiceType( "H5Service" );
 
   public final static ServiceType WebForm = new ServiceType( "WebForm" );
 

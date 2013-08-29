@@ -8,14 +8,14 @@
 <body>
 <h1>TDS Tutorial: Additional Security Configuration</h1>
 <hr>
-<p>We have compiled a list of a few additional step you should take to help secure Tomcat and your TDS server. <i>This is not a complete laundry list of
-  security fixes!</i> Please use it as a starting point when securing your server.</p>
+<p>We have compiled a list of a few additional step you should take to help secure Tomcat and your TDS server. <em>This is not a complete laundry list of
+  security fixes!</em> Please use it as a starting point when securing your server.</p>
 
 
 <dl>
   <dt>
   <h3>Keep Tomcat, Java and the TDS up-to-date</h3></dt>
-  <p>Running the most current versions of software keeps your environment protected against <i>known</i> <a href="http://www.securityfocus.com/vulnerabilities">security
+  <p>Running the most current versions of software keeps your environment protected against <em>known</em> <a href="http://www.securityfocus.com/vulnerabilities">security
     vulnerabilities</a>.</p>
 
   <p>Resources to help stay informed:</p>
@@ -68,7 +68,7 @@
   <dt>
   <h3>Denying access to the TDS by remote IP address or host</h3></dt>
   <p>Use the <code>RemoteHostValve</code> or <code>RemoteAddrValve</code> to restrict access to the TDS.
-    For example, the following <code>Valve</code> declarations show ways to either <i>allow</i> or <i>deny</i>
+    For example, the following <code>Valve</code> declarations show ways to either <em>allow</em> or <em>deny</em>
     access to content (note that the allow and deny values are comma separated lists of regular expressions):</p>
 
 <pre>
@@ -96,7 +96,7 @@
     the <code>manager</code> application if you were certain it would only need to be accessed from within
     a specific range of IP address.</p>
 
-  <p class="note"><i>Note</i>: These valves rely on incoming IP addresses or hostnames which are vulnerable
+  <p class="note"><em>Note</em>: These valves rely on incoming IP addresses or hostnames which are vulnerable
     to spoofing.</p>
 
   <p class="note">For more information, see the Tomcat
@@ -111,7 +111,7 @@
 
   <p>The TDS provides a basic and very restrictive <code>robots.txt</code> file for you to use:</p>
 <pre>
-<b>-bash-3.2$</b> less ${tomcat_home}/webapps/thredds/WEB-INF/initialContent/root/robots.txt
+<strong>-bash-3.2$</strong> less ${tomcat_home}/webapps/thredds/WEB-INF/initialContent/root/robots.txt
 # disallow everything
 User-agent: *
 Disallow: /
@@ -122,12 +122,12 @@ Disallow: /
   <p>To active the <code>robots.txt</code> file, you will need to move it to Tomcat's <code>DocumentRoot</code>: </p>
 
 <pre>
-<b>-bash-3.2$</b> cd  ${tomcat_home}/webapps/ROOT
-<b>-bash-3.2$</b> cp ${tomcat_home}/webapps/thredds/WEB-INF/initialContent/root/robots.txt .
+<strong>-bash-3.2$</strong> cd  ${tomcat_home}/webapps/ROOT
+<strong>-bash-3.2$</strong> cp ${tomcat_home}/webapps/thredds/WEB-INF/initialContent/root/robots.txt .
 </pre>
 
 
-  <p class="note"><i>Note</i>: not all crawlers obey the <code>robots.txt</code> file. </p>
+  <p class="note"><em>Note</em>: not all crawlers obey the <code>robots.txt</code> file. </p>
 
   <p class="note">For more information, see: <a href="http://www.robotstxt.org/robotstxt.html">http://www.robotstxt.org/robotstxt.html</a>.</p>
 </dl>
@@ -136,16 +136,16 @@ Disallow: /
   <dt>
   <h3>Running Tomcat as a user other than <code>root</code></h3></dt>
 
-  <p><b>Background info</b>: The JVM doesn't fork at all, nor does it support <code>setuid()</code> calls. The JVM (and therefore Tomcat) is one process. The
+  <p><strong>Background info</strong>: The JVM doesn't fork at all, nor does it support <code>setuid()</code> calls. The JVM (and therefore Tomcat) is one process. The
     JVM is a virtual machine with many threads under the same process. Because of OS constraints - all threads in the same process must run under the same user
     id. No thread may run as root unless they are all root. </p>
 
   <p>Hence, any programs run in Tomcat (TDS, <code>manager</code> application, other JSPs and servlets) will run as the <code>root</code> user.</p>
 
-  <p><b>The scenario</b>: Imagine an attacker who manages to exploit a weakness in Tomcat or something running in <code>webapps/</code> to run arbitrary
-    commands: <i>those commands will be run as the superuser</i>!</p>
+  <p><strong>The scenario</strong>: Imagine an attacker who manages to exploit a weakness in Tomcat or something running in <code>webapps/</code> to run arbitrary
+    commands: <em>those commands will be run as the superuser</em>!</p>
 
-  <p><b>The solution</b>: We strongly discourage running Tomcat as the <code>root</code> user and recommend creating a dedicated user and group for running the
+  <p><strong>The solution</strong>: We strongly discourage running Tomcat as the <code>root</code> user and recommend creating a dedicated user and group for running the
     Tomcat process. </p>
   <ul>
     <li>Creating the dedicated user and group for running Tomcat both called: <code>tomcat</code>. <code>/opt/tomcat</code> is the home directory of the <code>tomcat</code>
@@ -175,7 +175,7 @@ drwxr-xr-x 2 tomcat tomcat  4096 2008-10-28 16:45 temp
 drwxr-xr-x 7 tomcat tomcat  4096 2008-10-31 11:45 webapps
 drwxr-xr-x 3 tomcat tomcat  4096 2008-10-28 16:47 work
 </pre>
-    <p class="note"><i>Note</i>: the <code>tomcat</code> user and group should not have permission to write or execute in other directories outside of <code>${tomcat_home}</code>.
+    <p class="note"><em>Note</em>: the <code>tomcat</code> user and group should not have permission to write or execute in other directories outside of <code>${tomcat_home}</code>.
     </p>
 
 
@@ -194,7 +194,7 @@ su - tomcat -c /opt/tomcat/bin/startup.sh
   <h3>Blocking non-essential port access at the firewall</h3></dt>
   <p>Type the following in your terminal window:</p>
 <pre>
-<b>-bash-3.2$</b> telnet localhost 8005
+<strong>-bash-3.2$</strong> telnet localhost 8005
 </pre>
   <p>When prompted, issue Tomcat the shutdown command by typing <code>SHUTDOWN</code>:</p>
 <pre>
@@ -207,7 +207,7 @@ SHUTDOWN
 
 <pre>
 Connection to localhost closed by foreign host.
-<b>-bash-3.2$</b> ps -ef | grep tomcat
+<strong>-bash-3.2$</strong> ps -ef | grep tomcat
 thredds  21715 21682  0 14:02 pts/2    00:00:00 grep tomcat
 </pre>
 
@@ -220,7 +220,7 @@ thredds  21715 21682  0 14:02 pts/2    00:00:00 grep tomcat
   <p>Unless you are on a private network, you need a firewall to restrict who is allowed to access network ports. We recommend working with you systems/network
     administrator to block access to all non-essential ports at the firewall. For running the TDS, keep in mind the following: </p>
   <ul>
-    <li>Port 8080 should have unrestricted access <i>unless</i> you plan to proxy requests to Tomcat from and HTTP server.</li>
+    <li>Port 8080 should have unrestricted access <em>unless</em> you plan to proxy requests to Tomcat from and HTTP server.</li>
     <li>If you are allowing any remote management by using the TDS Remote Management Tool or the Tomcat <code>manager</code> application, you must also open up
       port 8443.
     </li>

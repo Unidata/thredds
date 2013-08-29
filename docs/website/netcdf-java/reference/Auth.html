@@ -29,10 +29,10 @@ the BASIC or DIGEST schemes will be used as a rule.
 <p>
   The primary new classes are
 <ul>
-  <li><i>HTTPAuthStore</i>
-  <li><i>HTTPAuthScheme</i>
-  <li><i>HTTPAuthProvider</i>
-  <li><i>HTTPSSLProvider</i>
+  <li><em>HTTPAuthStore</em>
+  <li><em>HTTPAuthScheme</em>
+  <li><em>HTTPAuthProvider</em>
+  <li><em>HTTPSSLProvider</em>
 </ul>
 <p>
   The goal of these new classes
@@ -101,23 +101,23 @@ a consistent set of credentials is provided everywhere within
 the operating system process.
 <p>
   This database is kept as class level object consisting of a set
-  of row instances of type <i>HTTPAuthStore.Entry</i>.
+  of row instances of type <em>HTTPAuthStore.Entry</em>.
   The <u>columns</u> of each entry are as follows.
 <ol>
   <li>
-    <u>scheme</u> of type <i>HTTPAuthScheme</i>
+    <u>scheme</u> of type <em>HTTPAuthScheme</em>
     (with a special instance acting as the wildcard ANY_SCHEME).
     <p>
       <li>
-        <u>url</u> of type <i>String</i>
+        <u>url</u> of type <em>String</em>
         (with a special instance acting as the wildcard ANY_URL).
         <p>
   <li>
     <u>creds</u> of type
-    <i>org.apache.commons.httpclient.auth.CredentialsProvider</i>.
+    <em>org.apache.commons.httpclient.auth.CredentialsProvider</em>.
 </ol>
 <p>
-  The <i>HTTPAuthStore</i>
+  The <em>HTTPAuthStore</em>
   <a href="#HTTPAuthStore.API">API</a>
   itself provides operations to insert and delete rows, and to search
   for rows matching specified criteria.
@@ -126,13 +126,13 @@ the operating system process.
 
 <h3><a name="HTTPSSLProvider">HTTPSSLProvider</a></h3>
 Note that any typical implementation of the
-<i>CredentialsProvider</i>
-interface may be used for an <i>HTTPAuthStore</i>
+<em>CredentialsProvider</em>
+interface may be used for an <em>HTTPAuthStore</em>
 database row.
 As a special case and when the scheme is SSL,
 then the user should use the
 provided
-<i>HTTPSSLProvider</i> <a href="#HTTPSSLProvider.API">class</a>
+<em>HTTPSSLProvider</em> <a href="#HTTPSSLProvider.API">class</a>
 for this field. Its constructor requires arguments for
 the client side keystore plus password and the client side
 truststore plus password.
@@ -160,21 +160,21 @@ The elements of the enum are as follows:
   associated passwords. The ANY value serves as a wildcard.
 
 <h3><a name="HTTPAuthProvider">HTTPAuthProvider</a></h3>
-The <i>HTTPAuthProvider</i> class implements the
-<i>org.apache.commons.httpclient.auth.CredentialsProvider</i>
-interface. It is used as a wrapper for the <i>HTTPAuthStore.Entry</i>
+The <em>HTTPAuthProvider</em> class implements the
+<em>org.apache.commons.httpclient.auth.CredentialsProvider</em>
+interface. It is used as a wrapper for the <em>HTTPAuthStore.Entry</em>
 <u>creds</u> field and manages accessing the auth store
 at the appropriate point to obtain the information
 needed for getting the proper credentials.
 <p>
   The constructor for
-  <i>HTTPAuthProvider</i>
+  <em>HTTPAuthProvider</em>
   takes a URL as an argument.
-  When the <i>getCredentials</i> method is invoked
-  the URL plus the <i>AuthScheme</i> argument
+  When the <em>getCredentials</em> method is invoked
+  the URL plus the <em>AuthScheme</em> argument
   are used to locate the most specific matching entry
   in the auth store database. This entry is then used
-  to properly invoke the correct <i>CredentialsProvider</i>
+  to properly invoke the correct <em>CredentialsProvider</em>
   instance.
 
 <h2><a name="url.match">URL Matching</a></h2>
@@ -202,14 +202,14 @@ The relevant methods are as follows.
   fields are straightforward.
 
 <p>
-  <u><b>WARNING</b></u>: Serialization of the <u>creds</u> field
+  <u><strong>WARNING</strong></u>: Serialization of the <u>creds</u> field
   is tricky because the instance may or may itself
-  be serializable. If it supports the <i>Serializable</i>
+  be serializable. If it supports the <em>Serializable</em>
   interface, then it will be serialized.
   If it does not implement that interface, then
-  the class of the <i>creds</i> field is serialized
+  the class of the <em>creds</em> field is serialized
   instead. This will be ok for essentially stateless
-  implementations of <i>CredentialsProvider</i>, but
+  implementations of <em>CredentialsProvider</em>, but
   otherwise will produce incorrect results.
 
 <h2><a name="Appendices"><u>Appendices: Authorization APIs</u></a></h2>
@@ -221,7 +221,7 @@ Other, minor methods, exist and the Javadoc should be consulted
 for those.
 
 <h4><u>Insert</u></h4>
-The single method takes an <i>HTTPAuthStore.Entry</i>
+The single method takes an <em>HTTPAuthStore.Entry</em>
 instance to insert into the auth store database.
 It returns false if the entry instance
 replaces an existing row, else returns true.
@@ -230,7 +230,7 @@ boolean insert(HTTPAuthStore.Entry entry);
 </pre>
 
 <h4><u>Remove</u></h4>
-The single method takes an <i>HTTPAuthStore.Entry</i>
+The single method takes an <em>HTTPAuthStore.Entry</em>
 instance to remove from the auth store database.
 It returns false if the entry instance
 is not in the current database, else returns true.
@@ -239,7 +239,7 @@ boolean remove(HTTPAuthStore.Entry entry);
 </pre>
 
 <h4><u>Search</u></h4>
-The single method takes an <i>HTTPAuthStore.Entry</i>
+The single method takes an <em>HTTPAuthStore.Entry</em>
 instance to serve as the pattern to search the auth store database.
 It returns an array of matching entries, which may be zero length.
 The returned list is ordered from most restrictive to least restrictive.
@@ -263,7 +263,7 @@ Entry[] search(HTTPAuthStore.Entry entry);
 </table>
 
 <h3><a name="HTTPAuthScheme.API">HTTPAuthScheme API</a></h3>
-The primary methods of <i>HTTPAuthScheme</i> enum
+The primary methods of <em>HTTPAuthScheme</em> enum
 are as follows.
 <ul>
   <li>public String getSchemeName() returns a canonical string representing
@@ -272,12 +272,12 @@ are as follows.
     returns an HTTPAuthScheme value given a string and returns null if there
     is no such value.
   <li>static public HTTPAuthScheme fromAuthScope(String name)
-    returns an HTTPAuthScheme value given a string from an <i>AuthScope</i>
+    returns an HTTPAuthScheme value given a string from an <em>AuthScope</em>
     instance and returns null if the name is not recognized.
 </ul>
 
 <h3><a name="HTTPAuthProvider.API">HTTPAuthProvider API</a></h3>
-The primary methods of the <i>HTTPAuthProvider</i> class
+The primary methods of the <em>HTTPAuthProvider</em> class
 are as follows.
 <ul>
   <li>public HTTPAuthProvider(String url) is the constructor
@@ -290,7 +290,7 @@ are as follows.
 </ul>
 
 <h3><a name="HTTPSSLProvider.API">HTTPSSLProvider API</a></h3>
-The primary methods of the <i>HTTPAuthProvider</i> class
+The primary methods of the <em>HTTPAuthProvider</em> class
 are as follows.
 <ul>
   <li>public HTTPSSLProvider(String keystore,String keypass,
@@ -315,10 +315,10 @@ are as follows.
     Backward compatibility is provided for
     the old handling of ESG keystore arguments
     using the java -D flags
-    <i>keystore</i>,
-    <i>keystorepassword</i>,
-    <i>truststore</i>, and
-    <i>truststorepassword</i>.
+    <em>keystore</em>,
+    <em>keystorepassword</em>,
+    <em>truststore</em>, and
+    <em>truststorepassword</em>.
 </ul>
 
 <h2><u>Author</u></h2>

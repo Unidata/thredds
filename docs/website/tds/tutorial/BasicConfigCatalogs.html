@@ -151,12 +151,12 @@ grib/
 ...
       &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-<b>1)</b>    &lt;datasetRoot path="<b>my/test</b>" location="/my/data/testdata/" /&gt;
+<strong>1)</strong>    &lt;datasetRoot path="<strong>my/test</strong>" location="/my/data/testdata/" /&gt;
 
-<b>2)</b>    &lt;dataset name="A Test Dataset" ID="testDataset" urlPath="<b>my/test</b>/testData.nc" &gt;
+<strong>2)</strong>    &lt;dataset name="A Test Dataset" ID="testDataset" urlPath="<strong>my/test</strong>/testData.nc" &gt;
         &lt;serviceName&gt;odap&lt;/serviceName&gt;
       &lt;/dataset&gt;
-<b>3)</b>    &lt;dataset name="A Test Dataset 2" ID="testDataset2" urlPath="<b>my/test</b>/grib/data1.grib2" &gt;
+<strong>3)</strong>    &lt;dataset name="A Test Dataset 2" ID="testDataset2" urlPath="<strong>my/test</strong>/grib/data1.grib2" &gt;
         &lt;serviceName&gt;odap&lt;/serviceName&gt;
       &lt;/dataset&gt;
 ...
@@ -166,8 +166,8 @@ grib/
     (2 &amp; 3) are</p>
 
 <pre>
-http://hostname:port/thredds/dodsC/<b>my/test</b>/testData.nc
-http://hostname:port/thredds/dodsC/<b>my/test</b>/grib/data1.grib2
+http://hostname:port/thredds/dodsC/<strong>my/test</strong>/testData.nc
+http://hostname:port/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2
 </pre>
 
   <p>When the server receives a request for one of the above URLs, it uses the URL path to look for a matching dataset root. In this case it finds the mapping
@@ -186,7 +186,7 @@ http://hostname:port/thredds/dodsC/<b>my/test</b>/grib/data1.grib2
       &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
       &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
-                   path="<b>my/test/all</b>" location="/my/data/testdata"&gt;
+                   path="<strong>my/test/all</strong>" location="/my/data/testdata"&gt;
         &lt;metadata inherited="true"&gt;
           &lt;serviceName&gt;odap&lt;/serviceName&gt;
         &lt;/metadata&gt;
@@ -200,7 +200,7 @@ http://hostname:port/thredds/dodsC/<b>my/test</b>/grib/data1.grib2
       &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
       &lt;catalogRef xlink:title="Test all files in a directory" ID="testDatasetScan"
-                  xlink:href="/thredds/catalog/<b>my/test/all</b>/catalog.xml" name="" /&gt;
+                  xlink:href="/thredds/catalog/<strong>my/test/all</strong>/catalog.xml" name="" /&gt;
 ...</pre>
 
   <p>The generation of the catalog referenced by the <code>catalogRef</code> element is deferred until a request is made for that catalog. When the catalog is
@@ -215,10 +215,10 @@ http://hostname:port/thredds/dodsC/<b>my/test</b>/grib/data1.grib2
         &lt;metadata inherited="true"&gt;
           &lt;serviceName&gt;odap&lt;/serviceName&gt;
         &lt;/metadata&gt;
-        &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<b>my/test/all</b>/afile.nc"&gt;
+        &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/afile.nc"&gt;
         &lt;dataset name="testData.nc" ID="testDatasetScan/testData.nc" 
-                 urlPath="<b>my/test/all</b>/testData.nc"&gt;
-        &lt;dataset name="junk.nc" ID="testDatasetScan/junk.nc" urlPath="<b>my/test/all</b>/junk.nc"&gt;
+                 urlPath="<strong>my/test/all</strong>/testData.nc"&gt;
+        &lt;dataset name="junk.nc" ID="testDatasetScan/junk.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;
 
         &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""
                       xlink:href="/thredds/catalog/<code>my/test/all</code>/grib/catalog.xml" /&gt;
@@ -238,9 +238,9 @@ http://hostname:port/thredds/dodsC/<b>my/test</b>/grib/data1.grib2
       <li>Take a look at the data (note: the filenames may be different):
 
 <pre>
-<b>$</b> ls /machine/tds/data/ldm
+<strong>$</strong> ls /machine/tds/data/ldm
 fsl  madis  nam_12km  suomi
-<b>$</b> ls /machine/tds/data/ldm/nam_12km
+<strong>$</strong> ls /machine/tds/data/ldm/nam_12km
 201307211800.grib2  201307220600.grib2  201307221800.grib2  201307230600.grib2
 201307220000.grib2  201307221200.grib2  201307230000.grib2  201307231200.grib2
 </pre>
@@ -248,14 +248,14 @@ fsl  madis  nam_12km  suomi
       </li>
       <li>Edit the main TDS configuration catalog:
 <pre>
-<b>$</b> cd ${tomcat_home}/content/thredds
-<b>$</b> vi catalog.xml         <var>// Use the editor of your choice</var>
+<strong>$</strong> cd ${tomcat_home}/content/thredds
+<strong>$</strong> vi catalog.xml         <var>// Use the editor of your choice</var>
 </pre>
       </li>
       <li>And add a <code>datasetScan</code> element for the NAM data:
 <pre>
-&lt;datasetScan name="<b>NCEP NAM 12km</b>" ID="<b>NAM_12km</b>"
-             path="<b>nam_12km</b>" location="<b>/machine/tds/data/ldm/nam_12km</b>"&gt;
+&lt;datasetScan name="<strong>NCEP NAM 12km</strong>" ID="<strong>NAM_12km</strong>"
+             path="<strong>nam_12km</strong>" location="<strong>/machine/tds/data/ldm/nam_12km</strong>"&gt;
   &lt;metadata inherited="true"&gt;
     &lt;serviceName&gt;odap&lt;/serviceName&gt;
   &lt;/metadata&gt;
@@ -264,9 +264,9 @@ fsl  madis  nam_12km  suomi
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<b>$</b> cd ${tomcat_home}/bin
-<b>$</b> ./shutdown.sh
-<b>$</b> ./startup.sh
+<strong>$</strong> cd ${tomcat_home}/bin
+<strong>$</strong> ./shutdown.sh
+<strong>$</strong> ./startup.sh
 </pre>
       </li>
       <li>Test that the new <code>datasetScan</code> is working:
@@ -286,14 +286,14 @@ fsl  madis  nam_12km  suomi
     <ol>
       <li>Take a look at the catalogInit.log:
 <pre>
-<b>$</b> cd ${tomcat_home}/content/thredds/logs
-<b>$</b> more catalogInit.log
+<strong>$</strong> cd ${tomcat_home}/content/thredds/logs
+<strong>$</strong> more catalogInit.log
 </pre>
       </li>
       <li>Take a look at the threddsServlet.log:
 <pre>
-<b>$</b> cd ${tomcat_home}/content/thredds/logs
-<b>$</b> more threddsServlet.log
+<strong>$</strong> cd ${tomcat_home}/content/thredds/logs
+<strong>$</strong> more threddsServlet.log
 </pre>
       </li>
     </ol>

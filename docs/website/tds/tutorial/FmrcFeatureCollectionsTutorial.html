@@ -23,10 +23,10 @@
     <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used mostly
     for <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/GridDatatype.html">gridded data</a> whose time and spatial coordinates are recognized
     by the CDM software stack. This allows the TDS to automatically create logical datasets composed of collections of files, particularly gridded model data
-    output, called <b>Forecast Model Run Collections (FMRC)</b>. </p>
+    output, called <strong>Forecast Model Run Collections (FMRC)</strong>. </p>
 
-  <p>A Forecast Model Run Collection is a collection of forecast model output. A special kind of aggregation, called an <b>FMRC Aggregation</b>, creates a
-    dataset that has two time coordinates, called the <b>run time </b>and the <b>forecast time</b>. This dataset can then be sliced up in various ways to create
+  <p>A Forecast Model Run Collection is a collection of forecast model output. A special kind of aggregation, called an <strong>FMRC Aggregation</strong>, creates a
+    dataset that has two time coordinates, called the <strong>run time </strong>and the <strong>forecast time</strong>. This dataset can then be sliced up in various ways to create
     1D time views of the model output. See this <a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf">poster</a> for a detailed
     example.</p>
 
@@ -144,11 +144,11 @@
    
       &lt;collection spec=&quot;/machine/tds/workshop/gfs/GFS_Global_2p5deg.*\.nc4$&quot; 
                   name=&quot;GFS_Global_2p5deg&quot;
-<b>1)</b>                recheckAfter=&quot;15 min&quot;
-<b>2)</b>                olderThan=&quot;5 min&quot;/&gt;
-<b>3)</b>    &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; trigger=&quot;allow&quot;/&gt;
-<b>4)</b>    &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
-<b>5)</b>    &lt;fmrcConfig datasetTypes=&quot;TwoD Best Runs ConstantForecasts ConstantOffsets Files&quot; /&gt;
+<strong>1)</strong>                recheckAfter=&quot;15 min&quot;
+<strong>2)</strong>                olderThan=&quot;5 min&quot;/&gt;
+<strong>3)</strong>    &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+<strong>4)</strong>    &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
+<strong>5)</strong>    &lt;fmrcConfig datasetTypes=&quot;TwoD Best Runs ConstantForecasts ConstantOffsets Files&quot; /&gt;
 
     &lt;/featureCollection&gt;
   &lt;/catalog&gt;
