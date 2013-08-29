@@ -143,11 +143,14 @@ public class CFPointWriter {
   /////////////////////////////////////////////////
 
   // attributes with these nams will not be copied to the output file
-  private static final String[] reservedAtts = new String[]{
+  private static final String[] reservedGAtts = new String[]{
           CDM.CONVENTIONS, CDM.LAT_MIN, CDM.LAT_MAX, CDM.LON_MIN, CDM.LON_MAX, CDM.TIME_START, CDM.TIME_END,
           _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3};
+  private static final String[] reservedVAtts = new String[]{
+           _Coordinate.AxisType};
 
-  private static final List<String> reservedAttsList = Arrays.asList(reservedAtts);
+  protected static final List<String> reservedGlobalAtts = Arrays.asList(reservedGAtts);
+  protected static final List<String> reservedVariableAtts = Arrays.asList(reservedVAtts);
 
   protected static final String recordDimName = "obs";
   protected static final String latName = "latitude";
@@ -195,7 +198,7 @@ public class CFPointWriter {
     writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     writer.addGroupAttribute(null, new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {
-      if (!reservedAttsList.contains(att.getShortName()))
+      if (!reservedGlobalAtts.contains(att.getShortName()))
         writer.addGroupAttribute(null, att);
     }
 

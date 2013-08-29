@@ -232,7 +232,8 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
-        newVar.addAttribute(att);
+        if (!reservedVariableAtts.contains(att.getShortName()))
+          newVar.addAttribute(att);
       }
       newVar.addAttribute(new Attribute(CF.COORDINATES, coordNames));
     }
