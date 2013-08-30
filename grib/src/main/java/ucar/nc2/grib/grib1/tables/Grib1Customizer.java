@@ -72,6 +72,7 @@ public class Grib1Customizer implements GribTables {
     else if (center == 9) return new NcepRfcTables(tables);
     else if (center == 57) return new AfwaTables(tables);
     else if (center == 58) return new FnmocTables(tables);
+    else if (center == 60) return new NcarTables(tables);
     else return new Grib1Customizer(center, tables);
   }
 
@@ -320,7 +321,8 @@ public class Grib1Customizer implements GribTables {
   @Override
   public String getLevelNameShort(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getAbbrev();
+    String result = (lt == null) ? "level"+levelType : lt.getAbbrev();
+    return  (result == null) ? "level"+levelType : result;
   }
 
   public String getLevelDescription(int levelType) {
@@ -375,7 +377,7 @@ public class Grib1Customizer implements GribTables {
 
     GribLevelType result = wmoTable3.get(code);
     if (result == null)
-      result = new GribLevelType(code, "unknown code "+code, null, false);
+      result = new GribLevelType(code, "unknownLayer"+code, null, "unknownLayer"+code, null, false, false);
     return result;
   }
 

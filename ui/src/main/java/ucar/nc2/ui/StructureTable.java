@@ -367,7 +367,8 @@ public class StructureTable extends JPanel {
   private StructureData getSelectedStructureData() {
     int viewIdx = jtable.getSelectedRow();
     if (viewIdx < 0) return null;
-    int modelIdx = viewIdx; // sortedModel.modelIndex( viewIdx); LOOK sort
+    // int modelIdx = viewIdx; // sortedModel.modelIndex( viewIdx); LOOK sort
+    int modelIdx = sortedModel.modelIndex( viewIdx);
     try {
       return dataModel.getStructureData(modelIdx);
     } catch (InvalidRangeException e) {

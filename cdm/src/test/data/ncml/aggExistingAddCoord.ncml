@@ -3,6 +3,7 @@
 
   <variable name="time" shape="time" type="int">
      <values start="0" increment="1" />
+     <attribute name="units" value="fake" />
  </variable>
 
 	<aggregation  dimName="time" type="joinExisting">

@@ -1,0 +1,31 @@
+Table D LOC |  0 | 7 |  1
+#
+# Local BUFR Table D, Master Table 0, Originating Center 7, Version 1
+# Generated: 2012/08/30 11:52:05
+#
+# NOTE: Where a local Table D sequence contains a standard Table B or Table D element,
+#       the definition corresponding to that element is left blank in this file, since
+#       the definition could vary depending on what version of the standard tables is
+#       used with that local sequence in a given BUFR message.
+#
+#========================================================================================================
+# F-XX-YYY | MNEMONIC   ;DCOD ; NAME           <-- sequence definition
+#          | F-XX-YYY > | NAME                 <-- element definition (first thru next-to-last)
+#          | F-XX-YYY   | NAME                 <-- element definition (last)
+#========================================================================================================
+
+  3-52-001 | BID        ;     ; Bulletin ID data
+           | 0-35-195 > | Channel sequence number
+           | 0-35-021 > | 
+           | 0-35-022 > | 
+           | 0-35-023 > | 
+           | 0-35-194   | Bulletin being monitored (BBB)
+
+  3-52-003 | RCPTIM     ;     ; Report receipt time data
+           | 0-08-202 > | Receipt time significance
+           | 0-04-200 > | Receipt year
+           | 0-04-201 > | Receipt month
+           | 0-04-202 > | Receipt day
+           | 0-04-203 > | Receipt hour
+           | 0-04-204   | Receipt minute
+END

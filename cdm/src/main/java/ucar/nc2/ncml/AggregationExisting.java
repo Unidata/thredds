@@ -81,11 +81,13 @@ public class AggregationExisting extends AggregationOuterDimension {
     CacheVar coordCacheVar = null;
     if (type != Aggregation.Type.joinExistingOne) {
       Variable tcv = typical.findVariable(dimName);
-      if (tcv == null)  {
-        // LOOK what to do; docs claim we can add the coord variable in the outer ncml
-        throw new IllegalArgumentException("AggregationExisting: no coordinate variable for agg dimension= "+dimName);
-      } else {
+      if (tcv != null)  {
         coordCacheVar = new CoordValueVar(dimName, tcv.getDataType(), tcv.getUnitsString());
+      } else {
+        // LOOK what to do; docs claim we can add the coord variable in the outer ncml, so make a fake one for now
+        VariableDS fake = new VariableDS(ncDataset, null, null, dimName, DataType.INT, dimName, null, null);
+        // fake.setValues(npts, 0, 1);
+        ncDataset.addVariable(null, fake);
       }
 
     } else {

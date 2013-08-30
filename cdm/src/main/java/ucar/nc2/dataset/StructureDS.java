@@ -366,22 +366,23 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   /* convert original structureData to one that conforms to this Structure */
 
-  protected StructureData convert(StructureData sdata, int recno) throws IOException {
-    if (!convertNeeded(sdata.getStructureMembers())) {
+  protected StructureData convert(StructureData orgData, int recno) throws IOException {
+    if (!convertNeeded(orgData.getStructureMembers())) {
       // name, info change only
-      convertMemberInfo(sdata.getStructureMembers());
-      return sdata;
+      convertMemberInfo(orgData.getStructureMembers());
+      return orgData;
     }
 
-    StructureMembers smResult = new StructureMembers(sdata.getStructureMembers());
+    // otherwise we create a new StructureData and convert to it. expensive
+    StructureMembers smResult = new StructureMembers(orgData.getStructureMembers());
     StructureDataW result = new StructureDataW(smResult);
 
-    for (StructureMembers.Member m : sdata.getMembers()) {
+    for (StructureMembers.Member m : orgData.getMembers()) {
       VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
-      if ((v2 == null) && (orgVar != null))
+      if ((v2 == null) && (orgVar != null))     // why ?
         v2 = findVariableFromOrgName(m.getName());
       if (v2 == null) {
-        findVariableFromOrgName(m.getName());
+        findVariableFromOrgName(m.getName());  // debug
         // log.warn("StructureDataDS.convert Cant find member " + m.getName());
         continue;
       }
@@ -389,7 +390,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
       if (v2 instanceof VariableDS) {
         VariableDS vds = (VariableDS) v2;
-        Array mdata = sdata.getArray(m);
+        Array mdata = orgData.getArray(m);
 
         if (vds.needConvert())
           mdata = vds.convert(mdata);
@@ -403,7 +404,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         // if (innerStruct.convertNeeded(null)) {
 
         if (innerStruct.getDataType() == DataType.SEQUENCE) {
-          Array a = sdata.getArray(m);
+          Array a = orgData.getArray(m);
 
           if (a instanceof ArrayObject.D1) { // LOOK when does this happen vs ArraySequence?
             ArrayObject.D1 seqArray = (ArrayObject.D1) a;
@@ -422,7 +423,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
           // non-Sequence Structures
         } else {
-          Array mdata = sdata.getArray(m);
+          Array mdata = orgData.getArray(m);
           mdata = innerStruct.convert(mdata, null);
           result.setMemberData(mResult, mdata);
         }
@@ -461,10 +462,11 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       if ((v == null) && (orgVar != null)) // may have been renamed
         v = (Variable) findVariableFromOrgName(m.getName());
 
-      if (v != null) // a section will have missing variables LOOK wrapperSm probbably wrong in that case
+      if (v != null) { // a section will have missing variables LOOK wrapperSm probably wrong in that case
         //  log.error("Cant find " + m.getName());
         //else
         m.setVariableInfo(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType());
+      }
 
       // nested structures
       if (v instanceof StructureDS) {
@@ -514,7 +516,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       this.orgSeq = orgSeq;
       this.nelems = orgSeq.getStructureDataCount();
 
-      // copay and convert the members
+      // copy and convert the members
       members = new StructureMembers(orgSeq.getStructureMembers());
       orgStruct.convertMemberInfo(members);
     }
