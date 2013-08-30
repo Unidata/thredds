@@ -229,7 +229,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider"); // only load if grib.jar is also present
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
       registerIOProvider("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
     } catch (Throwable e) {
@@ -247,7 +246,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider"); // only load if grib.jar is also present
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
       registerIOProvider("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
     } catch (Throwable e) {

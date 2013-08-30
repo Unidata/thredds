@@ -453,7 +453,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     private void buildStandardFile() {
         // Build station list
         List<GempakStation> stations = gemreader.getStations();
-        Trace.msg("GEMPAKSIOSP: now have " + stations.size() + " stations");
+        //Trace.msg("GEMPAKSIOSP: now have " + stations.size() + " stations");
         Dimension station = new Dimension("station", stations.size(), true);
         ncfile.addDimension(null, station);
         ncfile.addDimension(null, DIM_LEN8);
@@ -515,7 +515,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         // Build variable list (var(station,time))
         List<GempakStation> stations = gemreader.getStations();
         int                 numObs   = stations.size();
-        Trace.msg("GEMPAKSIOSP: now have " + numObs + " stations");
+        //Trace.msg("GEMPAKSIOSP: now have " + numObs + " stations");
         Dimension record = new Dimension("record", numObs, true,
                                          (numObs == 0), false);
         ncfile.addDimension(null, record);
