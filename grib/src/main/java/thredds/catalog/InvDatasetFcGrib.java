@@ -822,8 +822,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String[] paths = matchPath.split("/");
     if (paths.length < 1) return null;
 
-    if (paths.length == 2 && paths[0].equals(FILES))
-      return new DatasetParse(paths[1]); // case 7
+    if (paths.length >= 2  && paths[0].equals(FILES))
+        return new DatasetParse(matchPath.substring(paths[0].length()));  // case 7
 
     if (localState.timePartition == null) {
       boolean isBest = paths[0].equals(BEST_DATASET) || paths[0].equals(COLLECTION);

@@ -1,4 +1,4 @@
-<%@page contentType="application/vnd.ogc.wms_xml"%><%@page pageEncoding="UTF-8"%><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<%@page contentType="application/vnd.ogc.wms_xml" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="/WEB-INF/taglib/wms/wmsUtils" prefix="utils"%> <%-- tag library for useful utility functions --%>
 <%

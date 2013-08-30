@@ -60,7 +60,7 @@
  60:   255:    2:	local/wrf_amps.wrf</pre>
 </blockquote>
 <ol>
-  <li>Each row contains the center, subcenter and table version, and the table filename, with a colon (:) seperating the fields.</li>
+  <li>Each row contains the center, subcenter and table version, and the table filename, with a colon (:) separating the fields.</li>
   <li>The  center, subcenter and table ids are read from each GRIB record, and the list of tables is searched for a match. The first exact match is used. </li>
   <li>If there is no exact match, then a wildcard match is used, where a &quot;-1&quot; for the subcenter or version id matches any id. The first wildcard match is used. </li>
   <li>Center 0 is the WMO standard table, called the<strong><em> default table</em></strong>. It is set internally and cannot be overridden by the user.</li>
