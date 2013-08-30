@@ -127,7 +127,9 @@ public class VerticalStrideSubsettingTest {
 	public void setUp() throws IOException{
 		
 		
-		String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;
+		//String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;
+		String servletPath = FeatureDatasetController.servletPath + pathInfo;
+		
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 
 		Iterator<String> it = vars.iterator();

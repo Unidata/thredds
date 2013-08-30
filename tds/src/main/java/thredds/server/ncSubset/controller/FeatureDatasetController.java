@@ -32,10 +32,13 @@
  */
 package thredds.server.ncSubset.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -80,7 +83,9 @@ public class FeatureDatasetController {
 	
 	static private final Logger log = LoggerFactory.getLogger(FeatureDatasetController.class);
 	
-	protected static final String servletPath = "/ncss_new/";
+	protected static final String servletPath = "/ncss_new";
+	
+	protected static final String servletCachePath = "/cache/ncss";
 	
 	@Autowired
 	FeatureDatasetService datasetService;
@@ -117,10 +122,14 @@ public class FeatureDatasetController {
 				throw new UnsupportedOperationException("Feature Type not supported");
 			}
 				
-			FeatureType ft = fd.getFeatureType();
+			//FeatureType ft = fd.getFeatureType();			
 			//Create a point data streamer depending on the feature
-			NCSSPointDataStream pds =   NCSSPointDataStreamFactory.getDataStreamer(ft, tdsContext, format);
-			pds.pointDataStream(req, res, fd, datasetPath, params, format);
+			//res.setContentType(format.getResponseContentType());			
+			NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer( fd, params, format, res.getOutputStream());
+			
+			setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath ));			
+			pds.pointDataStream(res, fd, datasetPath, params, format);
+			
 		}					
 	}
 	
@@ -131,9 +140,11 @@ public class FeatureDatasetController {
 	 * @param response
 	 * @throws NcssException 
 	 * @throws IOException 
+	 * @throws ParseException 
+	 * @throws InvalidRangeException 
 	 */
 	@RequestMapping(value = "**", params = {"!latitude", "!longitude", "!subset"})
-	void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult validationResult, HttpServletResponse response, HttpServletRequest request) throws NcssException, IOException{
+	void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult validationResult, HttpServletResponse response, HttpServletRequest request) throws NcssException, IOException, InvalidRangeException, ParseException{
 
 	    if (validationResult.hasErrors()) {
 	        handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult);
@@ -153,65 +164,30 @@ public class FeatureDatasetController {
 	        
 	        if(fd.getFeatureType() != FeatureType.GRID){
 	        	//This is bad, really bad...
-	        	//Send 400? 
+	        	//Send 400
+	        	//throw exception...
 	        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	        }
 	        
-	        GridDataset gridDataset = (GridDataset) fd;
+	        GridDataset gridDataset = (GridDataset) fd;	        
+	        GridDataStream gds = GridDataStream.valueOf(gridDataset, pathInfo);
+	        File netcdfResult = gds.getResponseFile(request, response, params, version);
 	        
-	        
-//	        checkRequestedVars(gridDataset, params);
-//
-//	        if (isSpatialSubset(params)) {
-//	          spatialSubset(params, version);
-//	        } else {
-//	          coordinatesSubset(params, response, version);
-//	        }
-//
-//	        //Headers...
-//	        httpHeaders.set("Content-Type", sf.getResponseContentType() );
-//	        setResponseHeaders(response, httpHeaders);
-//	        IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);
-//	        response.flushBuffer();
-//	        response.getOutputStream().close();
-//	        response.setStatus(HttpServletResponse.SC_OK);
+	        //Headers...
+	        HttpHeaders httpHeaders = new HttpHeaders();
+	        httpHeaders.set("Content-Type", sf.getResponseContentType() );
+	        setResponseHeaders(response, httpHeaders);
+	        IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);
+	        response.flushBuffer();
+	        response.getOutputStream().close();
+	        response.setStatus(HttpServletResponse.SC_OK);
 	        
 	        gridDataset.close();
 	        
 	      }		
 		
 	}
-	
-	/**
-	 * Grid requests on feature point datasets
-	 * @param params
-	 * @param validationResult
-	 * @param response
-	 * @throws IOException 
-	 * @throws NcssException 
-	 * @throws InvalidRangeException 
-	 * @throws ParseException 
-	 */
-	/*@RequestMapping(value = "**", params = {"!latitude", "!longitude", "subset=bb"})
-	void getPointFeatureSubset(@Valid PointDataRequestParamsBean params, BindingResult validationResult, HttpServletResponse response, HttpServletRequest request) throws IOException, NcssException, ParseException, InvalidRangeException{
-
-		String pathInfo = getDatasetPath(request);
-        FeatureDataset fd = datasetService.findDatasetByPath(request, response, pathInfo);
-        
-        if(fd.getFeatureType() != FeatureType.STATION){
-        	//This is bad, really bad...
-        	//Send 400? 
-        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        
-        SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST );
-        
-		NCSSPointDataStream pds =   NCSSPointDataStreamFactory.getDataStreamer(fd.getFeatureType(), tdsContext, sf);
-		pds.pointDataStream(request, response, fd, pathInfo, params, sf);
-		
-	}*/	
-	
-	
+			
 	private String getDatasetPath(HttpServletRequest req){
 		
 		String servletPath = req.getServletPath();
@@ -246,6 +222,27 @@ public class FeatureDatasetController {
 			log.error(ioe.getMessage()); 
 		}	
 		
+	}
+	
+	private void setResponseHeaders(HttpServletResponse response, HttpHeaders httpHeaders){
+		
+		Set<String> keySet = httpHeaders.keySet();
+		Iterator<String> it = keySet.iterator();
+		while( it.hasNext() ){
+			String key = it.next();
+			if(httpHeaders.containsKey(key)){
+				response.setHeader(key, httpHeaders.get(key).get(0)  );
+			}		
+		}	
+	}
+		
+	
+	public static final String getNCSSServletPath(){
+		return FeatureDatasetController.servletPath; 
+	}
+	
+	public static final String getServletCachePath(){
+		return servletCachePath;
 	}
 	
 	//Exception handlers

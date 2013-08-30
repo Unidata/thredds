@@ -30,32 +30,30 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncSubset.controller;
-
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+package thredds.server.ncSubset.exception;
 
 /**
- * 
- * NCSS controllers map requests starting by "/ncss/grid" to the appropriate handler and store temp files in "/cache/ncss" (by default)
- * Test for ensuring that those values do not change in the AbstractNcssController
- * 
  * @author mhermida
  *
  */
-public class NcssServletPathTest {
+public class FeaturesNotFoundException extends NcssException {
+
+	private static final long serialVersionUID = 1L;
 	
-	private static String NCSS_SERVLET_PATH = "/ncss_new";
-	private static String NCSS_CACHE_PATH = "/cache/ncss";
-	
-	@Test
-	public void testServletPath(){
-		assertEquals(NCSS_SERVLET_PATH, FeatureDatasetController.getNCSSServletPath() );
+	/**
+	 * Creates an OutOfBoundariesException with a specific message
+	 * @param message
+	 */	
+	public FeaturesNotFoundException(String message){
+		super(message);
 	}
 	
-	@Test
-	public void testCachePath(){
-		assertEquals(NCSS_CACHE_PATH, FeatureDatasetController.getServletCachePath());
+	/**
+	 * Wraps an exception into an OutOfBoundariesException with a specific message 
+	 * @param message
+	 */		
+	public FeaturesNotFoundException(String message, Exception cause){
+		super(message, cause);
 	}	
-
+	
 }

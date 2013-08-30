@@ -32,12 +32,19 @@
  */
 package thredds.server.ncSubset;
 
-import thredds.server.config.TdsContext;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.ParseException;
+
 import thredds.server.ncSubset.controller.GridAsPointDataStream;
 import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.controller.StationPointDataStream;
+import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.util.DiskCache2;
 
 /**
  * @author mhermida
@@ -49,15 +56,21 @@ public final class NCSSPointDataStreamFactory {
 	 * @param ft
 	 * @param tdsContext
 	 * @return
+	 * @throws IOException 
+	 * @throws NcssException 
+	 * @throws ParseException 
 	 */
-	public static NCSSPointDataStream getDataStreamer(FeatureType ft,
-			TdsContext tdsContext, SupportedFormat format) {
-				
+	public static NCSSPointDataStream getDataStreamer(FeatureDataset fd, PointDataRequestParamsBean queryParams, 
+			 SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException {
+
+		FeatureType ft = fd.getFeatureType();
+		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
+		
 		if(ft == FeatureType.GRID){
-			return new GridAsPointDataStream(NcssDiskCache.getInstance().getDiskCache(), format); 
+			return new GridAsPointDataStream(diskCache, format, out); 
 		}
-		if(ft == FeatureType.STATION){
-			return new StationPointDataStream(NcssDiskCache.getInstance().getDiskCache(), format); 
+		if(ft == FeatureType.STATION){	
+			return StationPointDataStream.stationPointDataStreamFactory(fd, queryParams, diskCache, format, out);
 		}		
 		
 		return null;

@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 
 import thredds.server.ncSubset.controller.AbstractNcssController;
 import thredds.server.ncSubset.controller.NcssDiskCache;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapper;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapperFactory;
 import ucar.ma2.InvalidRangeException;
@@ -157,21 +158,19 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo){
 
     	//Set the response headers...
-//    	String filename = gridDataset.getLocationURI();
-//        int pos = filename.lastIndexOf("/");
-//        filename = filename.substring(pos + 1);
-//        if (!filename.endsWith(".nc"))
-//          filename = filename + ".nc";
-        
-       String fileName = getFileNameForResponse(version, pathInfo);
-                
-        String url = AbstractNcssController.buildCacheUrl(netcdfResult.getName());
-    	httpHeaders.set("Content-Location", url );
-    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+       String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);                
+       String url = AbstractNcssController.buildCacheUrl(netcdfResult.getName());
+       String contentType = SupportedFormat.NETCDF3.getResponseContentType();
+       if(version == NetcdfFileWriter.Version.netcdf4)
+    	   contentType = SupportedFormat.NETCDF4.getResponseContentType();
+       
+       httpHeaders.set("Content-Type", contentType);
+       httpHeaders.set("Content-Location", url );
+       httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 		
 	}
 	
-	private String getFileNameForResponse(NetcdfFileWriter.Version version, String pathInfo){
+	public static String getFileNameForResponse(NetcdfFileWriter.Version version, String pathInfo){
 
 		String fileExtension = ".nc";
 		

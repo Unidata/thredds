@@ -73,14 +73,14 @@ public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstr
 			
 		}
 		
-		if( params.getSubset() != null && !params.getSubset().equals("stn") && !params.getSubset().equals("all") && !params.getSubset().equals("bb")  ){
+		if( params.getSubset() != null && !params.getSubset().equals("stns") && !params.getSubset().equals("all") && !params.getSubset().equals("bb")  ){
 			isValid = false;
 			constraintValidatorContext
 			.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror}")
 			.addConstraintViolation();			
 		}		
 		
-		if( params.getSubset() != null && params.getSubset().equals("stn") && params.getStns() == null ){
+		if( params.getSubset() != null && params.getSubset().equals("stns") && params.getStns() == null ){
 			isValid = false;
 			constraintValidatorContext
 			.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror.no_stns_param}")

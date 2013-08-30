@@ -32,6 +32,8 @@
  */
 package thredds.server.ncSubset.controller;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,13 +42,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncSubset.exception.FeaturesNotFoundException;
+import thredds.server.ncSubset.format.SupportedFormat;
 
 /**
  * @author mhermida
@@ -77,7 +83,8 @@ public class FeatureDatasetControllerTest {
 				.param("time","2013-08-25 06:00:00Z")
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 		
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
+		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.CSV.getResponseContentType() )) ;;;
 		
 	}	
 	
@@ -85,14 +92,14 @@ public class FeatureDatasetControllerTest {
 	public void getStationListData() throws Exception{						
 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
-				.param("longitude", "-105.203").param("latitude", "40.019")
 				.param("accept", "csv")
 				.param("time","2013-08-25 06:00:00Z")
-				.param("subset", "stn")
+				.param("subset", "stns")
 				.param("stns", "BJC,LEST")
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 		
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
+		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())		
+			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.CSV.getResponseContentType() ));
 		
 	}
 	
@@ -100,15 +107,31 @@ public class FeatureDatasetControllerTest {
 	public void getDataForTimeRange() throws Exception{						
 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
-				.param("longitude", "-105.203").param("latitude", "40.019")
 				.param("accept", "netcdf")
 				.param("time_start","2013-08-25T06:00:00Z")
 				.param("time_end","2013-08-26T06:00:00Z")
-				.param("subset", "stn")
+				.param("subset", "stns")
 				.param("stns", "BJC,DEN")
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 		
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
+		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
+		.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() )) ;
+			
+		
+	}
+	
+	@Test
+	public void getGridAsPointSubset() throws Exception{						
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+				.servletPath("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+				.param("accept", "netcdf" )
+				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground")
+				.param("latitude", "40.019")
+				.param("longitude", "-105.293");
+		
+		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() )) ;
+		
 		
 	}	
 	
@@ -117,11 +140,10 @@ public class FeatureDatasetControllerTest {
 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
 				.servletPath("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
 				.param("accept", "netcdf")
-				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground")
-				.param("time_start","2013-08-25T06:00:00Z")
-				.param("time_end","2013-08-26T06:00:00Z");
+				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground");
 		
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
+		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() ));
 		
 	}	
 	
@@ -140,8 +162,44 @@ public class FeatureDatasetControllerTest {
 				.param("time_start","2013-08-25T06:00:00Z")
 				.param("time_end","2013-08-26T06:00:00Z");
 		
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
+		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() ));
+	}
+	
+	@Test
+	public void getAllStnsOnStationDataset() throws Exception{						
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.param("accept", "netcdf")
+				.param("subset", "stns")
+				.param("stns", "all")
+				.param("var", "air_temperature", "dew_point_temperature")
+				.param("time_start","2013-08-25T06:00:00Z")
+				.param("time_end","2013-08-26T06:00:00Z");
 		
+		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() ));
+		
+	}
+	
+	@Test
+	public void stationNotFoundStationDataset() throws Exception{						
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.param("accept", "netcdf")
+				.param("subset", "stns")
+				.param("stns", "mock_station")
+				.param("var", "air_temperature", "dew_point_temperature")
+				.param("time_start","2013-08-25T06:00:00Z")
+				.param("time_end","2013-08-26T06:00:00Z");
+		
+		this.mockMvc.perform( rb ).andExpect(new ResultMatcher(){
+			public void match(MvcResult result) throws Exception{
+				//result.getResponse().getContentAsByteArray()
+				Exception ex =  result.getResolvedException();
+				assertTrue( ex instanceof  FeaturesNotFoundException);
+			}
+		} );		
 	}	
 	
 }

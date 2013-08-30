@@ -47,6 +47,10 @@ enum SupportedOperation {
 	
 	public static SupportedFormat isSupportedFormat(String format, SupportedOperation operation) throws UnsupportedResponseFormatException{
 		
+		if(format == null || format.equals("")){
+			return operation.getDefaultFormat();
+		}
+		
 		List<SupportedFormat> supportedFormats = operation.getSupportedFormats();
 		
 		int len = supportedFormats.size();

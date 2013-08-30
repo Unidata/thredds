@@ -35,6 +35,7 @@ package thredds.server.ncSubset.view;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,25 +43,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+import thredds.server.ncSubset.controller.FeatureDatasetController;
+import thredds.server.ncSubset.exception.FeaturesNotFoundException;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
+import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.remote.PointStream;
@@ -72,9 +78,9 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
+import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -95,13 +101,10 @@ public class StationWriter {
 
   private final FeatureDatasetPoint fd;
   private final StationTimeSeriesFeatureCollection sfc;
-  //private final CdmRemoteQueryBean qb;
-  private final PointDataRequestParamsBean qb;
-  
+  private final PointDataRequestParamsBean qb; 
   private final CalendarDate start, end;
-
+  private StationWriter.Writer w;  
   private List<VariableSimpleIF> wantVars;
-  //private DateRange wantRange;
   private CalendarDateRange wantRange;
   private ucar.nc2.util.DiskCache2 diskCache;
 
@@ -111,27 +114,200 @@ public class StationWriter {
     this.sfc = sfc;
     this.qb = qb;
     this.diskCache = diskCache;
-
     start = fd.getCalendarDateStart();    
     end = fd.getCalendarDateEnd();
   }
 
-  private boolean contains(StationTimeSeriesFeatureCollection sfc, String[] stnNames) {
+  /*private boolean contains(StationTimeSeriesFeatureCollection sfc, String[] stnNames) {
     for (String name : stnNames) {
       if (sfc.getStation(name) != null) return true;
     }
     return false;
-  }
+  }*/
 
 
   ////////////////////////////////////////////////////////////////
   // writing
-  public File writeNetcdf(SupportedFormat format) throws IOException, ParseException, NcssException {
-    WriterNetcdf w = (WriterNetcdf) write(null, format);
+  /*public File writeNetcdf(SupportedFormat format) throws IOException, ParseException, NcssException {
+    //WriterNetcdf w = (WriterNetcdf) write(null, format);
+	  WriterNetcdf w = (WriterNetcdf) getWriterForFormat(null, format);
     return w.netcdfResult;
-  }
+  }*/
 
-  public Writer write(HttpServletResponse res, SupportedFormat format) throws IOException, ParseException, NcssException {
+  /// ------- new stuff for decoupling things ----///
+  
+  public static StationWriter stationWriterFactory(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointDataRequestParamsBean qb, ucar.nc2.util.DiskCache2 diskCache, OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException{
+
+	  StationWriter sw = new StationWriter(fd, sfc, qb, diskCache);
+	  sw.w = sw.getWriterForFormat(out, format );
+	  return sw;
+  }
+  
+  
+  private Writer getWriterForFormat(OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException {
+	 
+	    Writer w;
+	    
+	    switch(format){    
+	    	case XML:
+	    		w = new WriterXML(new PrintWriter(out));
+	    		break;
+	    	case CSV:
+	    		w = new WriterCSV(new PrintWriter(out));
+	    		break;
+	    	case NETCDF3:
+	    		w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf3, out);
+	    		break;
+	    	case NETCDF4:
+	    		w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf4, out);
+	    		break;
+		default:
+			log.error("Unknown result type = " + format.getFormatName());
+	        return null;    	    
+	    }
+	    
+	   return w; 
+  }
+  
+  
+  public HttpHeaders getHttpHeaders(FeatureDataset fd,
+			SupportedFormat format, String datasetPath){
+	  
+	  return w.getHttpHeaders(datasetPath);
+	  
+  }
+  
+  public void write() throws ParseException, IOException, VariableNotContainedInDatasetException, NcssException{
+	  
+	  Limit counter = new Limit();
+	    // for closest time, set wantRange to the time LOOK - do we need +- increment ??
+	    if (qb.getTime() != null ) { //Means we want just one single time
+	      CalendarDate  startR = CalendarDate.parseISOformat(null, qb.getTime() );      
+	      startR = startR.subtract(CalendarPeriod.Hour);
+	      CalendarDate endR = CalendarDate.parseISOformat(null, qb.getTime() );
+	      endR = endR.add(CalendarPeriod.Hour);
+	      //wantRange = new DateRange( new Date(startR.getMillis()), new Date(endR.getMillis()));
+	      wantRange = CalendarDateRange.of( new Date(startR.getMillis()), new Date(endR.getMillis()));
+	      
+	    }else{
+	    	//Time range: need to compute the time range from the params
+	    	if(qb.getTemporal() != null && qb.getTemporal().equals("all")){
+	    		//Full time range -->CHECK: wantRange=null means all range??? 
+	    		
+	    	}else{
+	    		if(qb.getTime_start() != null && qb.getTime_end() != null  ){
+	    			CalendarDate  startR = CalendarDate.parseISOformat(null, qb.getTime_start() );
+	    			CalendarDate  endR = CalendarDate.parseISOformat(null, qb.getTime_end() );
+	    			//wantRange = new DateRange( new Date(startR.getMillis()), new Date(endR.getMillis()));;
+	    			wantRange = CalendarDateRange.of( new Date(startR.getMillis()), new Date(endR.getMillis()));;
+	    		}else if(qb.getTime_start() != null && qb.getTime_duration() != null) {
+	    			CalendarDate  startR = CalendarDate.parseISOformat(null, qb.getTime_start() );
+	    			TimeDuration td = TimeDuration.parseW3CDuration(qb.getTime_duration());
+	    			//wantRange = new DateRange( new Date(startR.getMillis()), td);
+	    			wantRange = new CalendarDateRange(startR, (long)td.getValueInSeconds());
+	    		}else if(qb.getTime_end() != null && qb.getTime_duration() != null){
+	    			CalendarDate  endR = CalendarDate.parseISOformat(null, qb.getTime_end() );
+	    			TimeDuration td = TimeDuration.parseW3CDuration(qb.getTime_duration());
+	    			//wantRange = new DateRange(null, new DateType( qb.getTime_end(), null, null), td, null);
+	    			wantRange = new CalendarDateRange(endR, (long)td.getValueInSeconds() * (-1));
+	    		}
+	    	}
+	    	
+	    }
+
+	    // spatial: all, bb, point, stns
+	    PointFeatureCollection pfc = null;
+	    
+	    
+	    List<Station> stns = w.getStationsInSubset();
+	    
+	    if(stns.isEmpty())
+	    	throw new FeaturesNotFoundException("Features not found");
+	    	
+	    List<String> stations = new ArrayList<String>(); 
+	    for(Station st : stns)
+	    	stations.add(st.getName());
+	    
+	    pfc = sfc.flatten(stations, wantRange, null);
+	    
+	    /*
+	    //Subsetting type
+	    String stn = qb.getSubset();
+	    if(stn != null){
+	    	if( stn.equals("all") ){
+	    		pfc = sfc.flatten(null,  wantRange);
+	    	
+	    	}else if( stn.equals("bb") ){    		
+	    		LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast())  );
+	    		pfc = sfc.flatten(llrect, wantRange);
+	    		
+	    	}else if(stn.equals("stn")){
+	    		// stns
+	            List<String> wantStns = qb.getStns();
+	            pfc = sfc.flatten(wantStns, wantRange, null);
+	    	}
+	    }else{    
+	    	//stn=null --> means request is point, want closest to lat,lon
+	    	// point
+	    	Station closestStation = findClosestStation(new LatLonPointImpl( qb.getLatitude(), qb.getLongitude() ));
+	    	List<String> stnList = new ArrayList<String>();
+	    	stnList.add(closestStation.getName());
+	    	//useFc = sfc.subset(stn);
+	    	pfc = sfc.flatten(stnList, wantRange, null); 
+	    	
+	    }*/
+	    
+	    
+	    //Wanted vars
+	    // restrict to these variables
+	    List<? extends VariableSimpleIF> dataVars = fd.getDataVariables();
+	      
+	    Map<String, VariableSimpleIF> dataVarsMap = new HashMap<String, VariableSimpleIF>(); 
+	    for(VariableSimpleIF v : dataVars ){
+	    	dataVarsMap.put(v.getShortName(), v);
+	    }
+	    
+	    List<String> varNames = qb.getVar();
+	    
+	    //if ((varNames == null) || (varNames.size() == 0) || varNames.equals("all")) {
+	    if (varNames.equals("all")) {
+	      wantVars = new ArrayList<VariableSimpleIF>(dataVars);
+	    } else {
+	    	List<String> allVars = new ArrayList<String>( dataVarsMap.keySet());
+	    	wantVars = new ArrayList<VariableSimpleIF>();
+	    	for(String v : varNames){
+	    		if( allVars.contains(v) ){
+	    			VariableSimpleIF var = dataVarsMap.get(v);
+	    			wantVars.add(var);
+	    		}else{
+	    			throw new VariableNotContainedInDatasetException("Variable: "+v+" is not contained in the requested dataset");
+	    		}
+	    	}    	    	
+	    }    
+	    
+	    Action act = w.getAction();
+	    w.header();
+
+	    if (qb.getTime() != null) { 
+	          scanForClosestTime(pfc, new DateType(qb.getTime(), null, null) , null, act, counter);    
+
+	    } else {
+	      scan(pfc, wantRange, null, act, counter);
+	    }
+
+	    w.trailer();	  
+	  
+	  
+	  
+  } 
+  
+  
+  
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
+  
+  /*public Writer write_old(PrintWriter writer, SupportedFormat format) throws IOException, ParseException, NcssException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
     //counter.limit = 150;
@@ -140,10 +316,10 @@ public class StationWriter {
     
     switch(format){    
     	case XML:
-    		w = new WriterXML(res.getWriter());
+    		w = new WriterXML(writer);
     		break;
     	case CSV:
-    		w = new WriterCSV(res.getWriter());
+    		w = new WriterCSV(writer);
     		break;
     	case NETCDF3:
     		w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf3);
@@ -243,24 +419,13 @@ public class StationWriter {
     		}else{
     			throw new VariableNotContainedInDatasetException("Variable: "+v+" is not contained in the requested dataset");
     		}
-    	}
-    	    	
-//      for (VariableSimpleIF v : dataVars) {
-//        if (varNames.contains(v.getShortName())) // LOOK N**2
-//          wantVars.add(v);        
-//      }
+    	}    	    	
     }    
     
- 
-		
-    
-
     Action act = w.getAction();
     w.header();
 
-    //if (qb.getTemporalSelection() == CdmrfQueryBean.TemporalSelection.point) {
-    //  scanForClosestTime(pfc, qb.getTimePoint(), null, act, counter);
-    if (qb.getTime() != null) { //?? again
+    if (qb.getTime() != null) { 
           scanForClosestTime(pfc, new DateType(qb.getTime(), null, null) , null, act, counter);    
 
     } else {
@@ -283,48 +448,9 @@ public class StationWriter {
     }
 
     return w;
-  }
+  }*/
 
-  ///////////////////////////////////////
-  // station handling
-  private HashMap<String, Station> stationMap;
 
-  /*
-   * Determine if any of the given station names are actually in the dataset.
-   *
-   * @param stns List of station names
-   * @return true if list is empty, ie no names are in the actual station list
-   * @throws IOException if read error
-   */
-  private boolean isStationListEmpty(List<String> stns) throws IOException {
-    makeStationMap();
-    for (String stn : stns) {
-      if (stationMap.get(stn) != null) return false;
-    }
-    return true;
-  }
-
-  private List<Station> getStationList(String[] stnNames) throws IOException {
-    makeStationMap();
-
-    List<Station> result = new ArrayList<Station>(stnNames.length);
-    for (String s : stnNames) {
-      Station stn = stationMap.get(s);
-      if (stn != null)
-        result.add(stn);
-    }
-
-    return result;
-  }
-
-  private void makeStationMap() throws IOException {
-    if (null == stationMap) {
-      stationMap = new HashMap<String, Station>();
-      for (Station station : sfc.getStations()) {
-        stationMap.put(station.getName(), station);
-      }
-    }
-  }
 
   /*
    * Get the list of station names that are contained within the bounding box.
@@ -333,7 +459,7 @@ public class StationWriter {
    * @return list of station names contained within the bounding box
    * @throws IOException if read error
    */
-  public List<String> getStationNames(LatLonRect boundingBox) throws IOException {
+  /*private List<String> getStationNames(LatLonRect boundingBox) throws IOException {
     LatLonPointImpl latlonPt = new LatLonPointImpl();
     ArrayList<String> result = new ArrayList<String>();
     for (Station s : sfc.getStations()) {
@@ -344,7 +470,7 @@ public class StationWriter {
       }
     }
     return result;
-  }
+  }*/
 
   /*
    * Find the station closest to the specified point.
@@ -355,7 +481,7 @@ public class StationWriter {
    * @return name of station closest to the specified point
    * @throws IOException if read error
    */
-  public Station findClosestStation(LatLonPoint pt) throws IOException {
+  private Station findClosestStation(LatLonPoint pt) throws IOException {
     double lat = pt.getLatitude();
     double lon = pt.getLongitude();
     double cos = Math.cos(Math.toRadians(lat));
@@ -379,9 +505,9 @@ public class StationWriter {
 
   /////////////////////
 
-  public boolean intersect(DateRange dr) throws IOException {
+  /*private boolean intersect(DateRange dr) throws IOException {
     return dr.intersects(new Date(start.getMillis() ), new Date(end.getMillis()));
-  }
+  }*/
 
   ////////////////////////////////////////////////////////
   // scanning flattened collection
@@ -477,44 +603,6 @@ public class StationWriter {
   }
 
 
-  // scan StationTimeSeriesFeatureCollection, records that pass the DateRange and Predicate match are acted on, within limits
-  private void scan(StationTimeSeriesFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
-
-    while (collection.hasNext()) {
-      StationTimeSeriesFeature sf = collection.next();
-
-      while (sf.hasNext()) {
-        PointFeature pf = sf.next();
-
-        if (range != null) {
-          Date obsDate = pf.getObservationTimeAsDate();
-          if (!range.contains(obsDate)) continue;
-        }
-        limit.count++;
-
-        StructureData sdata = pf.getData();
-        if ((p == null) || p.match(sdata)) {
-          a.act(pf, sdata);
-          limit.matches++;
-        }
-
-        if (limit.matches > limit.limit) {
-          sf.finish();
-          break;
-        }
-        if (debugDetail && (limit.matches % 50 == 0)) System.out.println(" matches " + limit.matches);
-      }
-
-      if (limit.matches > limit.limit) {
-        collection.finish();
-        break;
-      }
-    }
-
-  }
-
-
-
   private interface Predicate {
     boolean match(StructureData sdata);
   }
@@ -529,56 +617,111 @@ public class StationWriter {
     int matches; // how want matched
   }
 
-  public abstract class Writer {
+  private abstract class Writer {
+	  
+	protected List<Station> wantStations = new ArrayList<Station>();
+	  
     abstract void header() throws IOException;
-
+  
     abstract Action getAction();
 
     abstract void trailer() throws IOException;
 
+    abstract HttpHeaders getHttpHeaders(String pathInfo);
+    
     java.io.PrintWriter writer;
     int count = 0;
 
     Writer(final java.io.PrintWriter writer) {
       this.writer = writer; // LOOK what about buffering?
     }
+    
+    protected List<Station> getStationsInSubset() throws IOException{
+    	
+        // verify SpatialSelection has some stations
+        if(qb.getSubset() != null){
+      	  if ( qb.getSubset().equals("bb") ) {
+      		  LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast())  );
+      		  wantStations = sfc.getStations( llrect );
+      		  //wantStations = sfc.getStations(qb.getLatLonRect());
+
+      	  } else if (qb.getSubset().equals("stns")) {
+      		  List<String> stnNames = qb.getStns();
+      		  
+      		  if(stnNames.get(0).equals("all") )
+      			  wantStations = sfc.getStations();
+      		  else
+      			  wantStations = sfc.getStations(stnNames);
+
+      	  }/* else {
+      		  wantStations = sfc.getStations();
+      	  }*/
+        }else{
+      	
+      	if( qb.getLatitude()!=null && qb.getLongitude() != null ){ //want closest  
+      		Station closestStation = findClosestStation(new LatLonPointImpl( qb.getLatitude(), qb.getLongitude() ));
+      		List<String> stnList = new ArrayList<String>();
+      		stnList.add(closestStation.getName());    	  
+      		wantStations = sfc.getStations(stnList);
+      	}else{//Want all
+      		wantStations = sfc.getStations();
+      	}	
+        }    	
+    	
+    	
+    	return wantStations;
+    }
+    
   }
 
-  class WriterNetcdf extends Writer {
+  private class WriterNetcdf extends Writer {
     File netcdfResult;
     WriterCFStationCollection cfWriter;
     boolean headerWritten = false;
-    private List<Station> wantStations;
+    //private List<Station> wantStations;
+    private NetcdfFileWriter.Version version;
+    private OutputStream out;
 
+    WriterNetcdf(NetcdfFileWriter.Version version, OutputStream out) throws IOException {
+    	this(version);
+    	this.out = out;    	
+    }
+    
     WriterNetcdf(NetcdfFileWriter.Version version) throws IOException {
       super(null);
-
+      this.version = version;
       netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
       atts.add(new Attribute(CDM.TITLE, "Extracted data from TDS using CDM remote subsetting"));
-      cfWriter = new WriterCFStationCollection(version, netcdfResult.getAbsolutePath(), atts);
-
-      // verify SpatialSelection has some stations
-      if (qb.getSubset().equals("bb") ) {
-  		LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast())  );
-  		wantStations = sfc.getStations( llrect );
-        //wantStations = sfc.getStations(qb.getLatLonRect());
-
-      } else if (qb.getSubset().equals("stns")) {
-        List<String> stnNames = qb.getStns();
-        wantStations = sfc.getStations(stnNames);
-
-      } else {
-        wantStations = sfc.getStations();
-      }
-
+      cfWriter = new WriterCFStationCollection(version, netcdfResult.getAbsolutePath(), atts);            
+      
     }
 
-    public void header() {
+    void header() {
     }
 
-    public void trailer() throws IOException {
+    void trailer() throws IOException {
       cfWriter.finish();
+      //Copy the file in to the OutputStream
+		try{			
+			IO.copyFileB(netcdfResult, out, 60000);			
+		}catch(IOException ioe){
+			log.error("Error copying result to the output stream", ioe);
+		}
+      
+    }
+    
+    HttpHeaders getHttpHeaders(String pathInfo){
+    	
+    	HttpHeaders httpHeaders = new HttpHeaders();
+    	//String pathInfo = fd.getTitle();
+    	String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
+        String url = NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getServletCachePath() + "/" + fileName;
+        httpHeaders.set("Content-Type", SupportedFormat.NETCDF3.getResponseContentType() );
+    	httpHeaders.set("Content-Location", url );
+    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");    	
+    	
+    	return httpHeaders;
     }
 
     Action getAction() {
@@ -592,7 +735,6 @@ public class StationWriter {
               log.error("WriterNetcdf.header", e);
             }
           }
-
           cfWriter.writeRecord(sfc.getStation(pf), pf, sdata);
           count++;
         }
@@ -608,14 +750,18 @@ public class StationWriter {
       out = os;
     }
 
-    public void header() throws IOException {
+    void header() throws IOException {
       // PointStream.writeMagic(out, PointStream.MessageType.Start);  // LOOK - not ncstream protocol
     }
 
-    public void trailer() throws IOException {
+    void trailer() throws IOException {
         PointStream.writeMagic(out, PointStream.MessageType.End);
         out.flush();
     }
+    
+    HttpHeaders getHttpHeaders(String pathInfo){
+    	return new HttpHeaders();
+    }    
 
     Action getAction() {
       return new Action() {
@@ -659,11 +805,15 @@ public class StationWriter {
       super(writer);
     }
 
-    public void header() {
+    void header() {
     }
 
-    public void trailer() {
+    void trailer() {
       writer.flush();
+    }
+    
+    public HttpHeaders getHttpHeaders(String pathInfo){
+    	return new HttpHeaders();
     }
 
     Action getAction() {
@@ -692,7 +842,7 @@ public class StationWriter {
       }
     }
 
-    public void header() {
+    void header() {
       try {
         staxWriter.writeStartDocument("UTF-8", "1.0");
         staxWriter.writeCharacters("\n");
@@ -707,7 +857,7 @@ public class StationWriter {
       //writer.println("<metarCollection dataset='"+datasetName+"'>\n");
     }
 
-    public void trailer() {
+    void trailer() {
       try {
         staxWriter.writeEndElement();
         staxWriter.writeCharacters("\n");
@@ -719,6 +869,12 @@ public class StationWriter {
       writer.flush();
     }
 
+    HttpHeaders getHttpHeaders(String pathInfo){
+    	HttpHeaders  httpHeaders = new HttpHeaders();
+    	httpHeaders.setContentType(MediaType.APPLICATION_XML );
+    	return httpHeaders;
+    }
+    
     Action getAction() {
       return new Action() {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
@@ -773,7 +929,7 @@ public class StationWriter {
       super(writer);
     }
 
-    public void header() {
+    void header() {
       writer.print("time,station,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
       for (VariableSimpleIF var : wantVars) {
         writer.print(",");
@@ -784,10 +940,16 @@ public class StationWriter {
       writer.println();
     }
 
-    public void trailer() {
+    void trailer() {
       writer.flush();
     }
 
+    HttpHeaders getHttpHeaders(String pathInfo){
+    	HttpHeaders  httpHeaders = new HttpHeaders();
+    	httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+    	return httpHeaders;
+    }
+    
     Action getAction() {
       return new Action() {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
@@ -813,10 +975,10 @@ public class StationWriter {
     }
   }
 
-  static public void main(String args[]) throws IOException {
-    //getFiles("R:/testdata2/station/ldm/metar/");
-    // StationObsCollection soc = new StationObsCollection("C:/data/metars/", false);
-  }
+//  static public void main(String args[]) throws IOException {
+//    //getFiles("R:/testdata2/station/ldm/metar/");
+//    // StationObsCollection soc = new StationObsCollection("C:/data/metars/", false);
+//  }
 
 }
 

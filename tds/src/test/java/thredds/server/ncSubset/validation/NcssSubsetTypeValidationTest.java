@@ -99,7 +99,7 @@ public class NcssSubsetTypeValidationTest {
 	public void testNcssInvalidSubsetTypeMissingStns(){
 		
 		PointDataRequestParamsBean params = new PointDataRequestParamsBean();
-		params.setSubset("stn");		
+		params.setSubset("stns");		
 		params.setVar( Arrays.asList("var1", "var2") );
 		params.setAccept("text/csv");
 		params.setTime("2012-03-27T00:00:00Z");

@@ -119,7 +119,8 @@ public class CoordinateSpaceSubsettingTest {
 	public void setUp() throws IOException{		
 		
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();		
-		String servletPath = AbstractNcssDataRequestController.servletPath + pathInfo;
+		//String servletPath = AbstractNcssDataRequestController.servletPath + pathInfo;
+		String servletPath = FeatureDatasetController.servletPath + pathInfo;
 				
 		Iterator<String> it = vars.iterator();
 		String varParamVal = it.next();

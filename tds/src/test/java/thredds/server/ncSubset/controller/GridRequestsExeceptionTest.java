@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -63,23 +64,30 @@ import ucar.nc2.dt.GridDataset;
 public class GridRequestsExeceptionTest {
 	
 	@Autowired
-	private GridDataController gridDataController;
+	private FeatureDatasetController featureDatasetController;
+	//private GridDataController gridDataController;
 	
 	//private GridDataRequestParamsBean params;	
 	//private BindingResult validationResult;
 	private MockHttpServletResponse response ;
-	private String pathInfo="testGridFeatureCollection/Test_Feature_Collection_best.ncd";
+	private MockHttpServletRequest request;
+	private String pathInfo="/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd";
 	
 	@Before
 	public void setUp() throws IOException{
 
-		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		gridDataController.setGridDataset(gds);
+		//GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
+		//gridDataController.setGridDataset(gds);
 		response = new MockHttpServletResponse();
+		request = new MockHttpServletRequest();
+		request.setPathInfo(pathInfo);
+		request.setServletPath(pathInfo);		
+		
 	}
 	
 	@Test(expected=RequestTooLargeException.class)
 	public void testRequestTooLargeException() throws Exception{
+			
 		GridDataRequestParamsBean params;
 		BindingResult validationResult;
 		params = new GridDataRequestParamsBean();		
@@ -89,8 +97,7 @@ public class GridRequestsExeceptionTest {
 		vars.add("Temperature");
 		params.setVar(vars);		
 		validationResult = new BeanPropertyBindingResult(params, "params");
-		gridDataController.getGridSubset(params, validationResult, response);
-		
+		featureDatasetController.getGridSubset(params, validationResult, response, request);
 	}
 	
 	@Test(expected=UnsupportedOperationException.class)
@@ -103,7 +110,8 @@ public class GridRequestsExeceptionTest {
 		params.setVar(vars);
 		params.setVertCoord(200.);
 		validationResult = new BeanPropertyBindingResult(params, "params");
-		gridDataController.getGridSubset(params, validationResult, response);		
+		featureDatasetController.getGridSubset(params, validationResult, response, request);
+		
 	}
 	
 	@Test(expected=TimeOutOfWindowException.class)
@@ -112,21 +120,23 @@ public class GridRequestsExeceptionTest {
 		BindingResult validationResult;
 		params = new GridDataRequestParamsBean();		
 		List<String> vars = new ArrayList<String>();
-		vars.add("all");
+		vars.add("Relative_humidity");
+		vars.add("Temperature");
 		params.setVar(vars);
 		params.setTime("2012-04-18T15:00:00Z");
 		params.setTime_window("PT1H");
 		validationResult = new BeanPropertyBindingResult(params, "params");
-		gridDataController.getGridSubset(params, validationResult, response);		
+		featureDatasetController.getGridSubset(params, validationResult, response, request);
+				
 	}	
 	
 	@After
 	public void tearDown() throws IOException{
 		
-		GridDataset gds = gridDataController.getGridDataset();
-		gds.close();		
-		gds = null;
-		gridDataController =null;
+		//GridDataset gds = gridDataController.getGridDataset();
+		//gds.close();		
+		//gds = null;
+		//gridDataController =null;
 		
 	}	
 

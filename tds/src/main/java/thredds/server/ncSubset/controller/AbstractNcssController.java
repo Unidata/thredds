@@ -239,8 +239,7 @@ public abstract class AbstractNcssController implements LastModified{
 			String key = it.next();
 			if(httpHeaders.containsKey(key)){
 				response.setHeader(key, httpHeaders.get(key).get(0)  );
-			}
-			
+			}		
 		}	
 	}
 	

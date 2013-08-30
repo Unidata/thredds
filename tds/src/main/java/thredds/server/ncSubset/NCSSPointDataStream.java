@@ -38,16 +38,13 @@ import java.text.ParseException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import thredds.server.ncSubset.exception.DateUnitException;
+import org.springframework.http.HttpHeaders;
+
 import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import thredds.server.ncSubset.exception.TimeOutOfWindowException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
-import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 
 /**
@@ -56,5 +53,14 @@ import ucar.nc2.ft.FeatureDataset;
  */
 public interface NCSSPointDataStream {
 
-	public void pointDataStream(HttpServletRequest req, HttpServletResponse res, FeatureDataset ft, String requestPathInfo, PointDataRequestParamsBean queryParams, SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException;
+	//public void pointDataStream(HttpServletRequest req, HttpServletResponse res, FeatureDataset ft, String requestPathInfo, PointDataRequestParamsBean queryParams, SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException;
+	public void pointDataStream( HttpServletResponse res, FeatureDataset ft, String requestPathInfo, PointDataRequestParamsBean queryParams, SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException;
+
+	/**
+	 * @param ft
+	 * @param format
+	 * @param datasetPath
+	 */
+	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format,
+			String datasetPath);
 }

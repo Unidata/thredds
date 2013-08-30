@@ -32,21 +32,21 @@
  */
 package thredds.server.ncSubset.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+
 import thredds.server.ncSubset.NCSSPointDataStream;
-import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import thredds.server.ncSubset.exception.TimeOutOfWindowException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
-import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.view.StationWriter;
@@ -56,61 +56,74 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.IO;
 
 /**
  * @author mhermida
- *
+ * 
  */
 public class StationPointDataStream implements NCSSPointDataStream {
 
+	static private final Logger log = LoggerFactory.getLogger(NCSSPointDataStream.class);
 	
-	private DiskCache2 diskCache = null; 
-	private SupportedFormat format;
+	//private DiskCache2 diskCache = null;
+	//private SupportedFormat format;
+	//private OutputStream out;
 	
-	public StationPointDataStream(DiskCache2 diskCache, SupportedFormat format){
-		this.diskCache = diskCache;
-		this.format = format;
+	private StationWriter stationWriter;
+
+	private StationPointDataStream(DiskCache2 diskCache, SupportedFormat format, OutputStream out, StationWriter stationWriter) {
+		//this.diskCache = diskCache;
+		//this.format = format;
+		//this.out = out;
+		this.stationWriter = stationWriter;
 	}
+
 	
-	/* (non-Javadoc)
-	 * @see thredds.server.ncSubset.NCSSPointDataStream#pointDataStream(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, ucar.nc2.constants.FeatureType, java.lang.String, thredds.server.ncSubset.params.ParamsBean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * thredds.server.ncSubset.NCSSPointDataStream#pointDataStream(javax.servlet
+	 * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+	 * ucar.nc2.constants.FeatureType, java.lang.String,
+	 * thredds.server.ncSubset.params.ParamsBean)
 	 */
 	@Override
-	public void pointDataStream(HttpServletRequest req,
-			HttpServletResponse res, FeatureDataset fd, String requestPathInfo,
-			PointDataRequestParamsBean queryParams, SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException {
+	public void pointDataStream(HttpServletResponse res, FeatureDataset fd, String requestPathInfo,
+			PointDataRequestParamsBean queryParams, SupportedFormat format)
+			throws IOException, ParseException, InvalidRangeException,
+			NcssException {
 		
-		FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
+		stationWriter.write();
 		
-	    List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
-	    StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
+	}
 
-	    StationWriter stationWriter = new StationWriter(fdp, sfc, queryParams, diskCache);
-	    
-	    	    
-//	    res.setContentType(qb.getResponseType().toString());
-//	    
-//	    // special handling for netcdf files
-//	    CdmrfQueryBean.ResponseType resType = qb.getResponseType();
-//	    if (resType == CdmrfQueryBean.ResponseType.netcdf) {
-//	      if (path.startsWith("/")) path = path.substring(1);
-//	      path = StringUtil2.replace(path, "/", "-");
-//	      res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
-//
-//	      File file = stationWriter.writeNetcdf();
-//	      //ServletUtil.returnFile(req, res, file, getContentType(qb));
-//	      ServletUtil.returnFile(req, res, file, "application/x-netcdf");
-//	      if (!file.delete()) {
-//	        log.warn("file delete failed =" + file.getPath());
-//	      }
-//	    }
-//
-//
-	    StationWriter.Writer w = stationWriter.write(res, format);
-		
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * thredds.server.ncSubset.NCSSPointDataStream#getResponseHeaders(ucar.nc2
+	 * .ft.FeatureDataset, thredds.server.ncSubset.format.SupportedFormat,
+	 * java.lang.String)
+	 */
+	@Override
+	public HttpHeaders getResponseHeaders(FeatureDataset fd,
+			SupportedFormat format, String datasetPath) {
+
+		return stationWriter.getHttpHeaders(fd, format, datasetPath);
 
 	}
-	
- 
+
+
+	public static StationPointDataStream stationPointDataStreamFactory(FeatureDataset fd, PointDataRequestParamsBean queryParams, DiskCache2 diskCache, SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException{
+
+		FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
+		List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
+		StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
+		StationWriter stationWriter = StationWriter.stationWriterFactory((FeatureDatasetPoint) fd, sfc, queryParams, diskCache, out, format);
+		
+		return new StationPointDataStream(diskCache, format, out, stationWriter);
+	} 
 
 }

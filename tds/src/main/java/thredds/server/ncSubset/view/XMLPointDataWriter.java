@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.util.NcssRequestUtils;
@@ -42,7 +43,8 @@ class XMLPointDataWriter implements PointDataWriter {
 	private Map<String,List<String>> allVars;	
 	private Map<String, GridAsPointDataset> gridAsPointDatasets=new HashMap<String, GridAsPointDataset>();	
 	private XMLStreamWriter xmlStreamWriter;
-
+	private HttpHeaders httpHeaders = new HttpHeaders(); 
+	
 	private XMLPointDataWriter(OutputStream os) {
 
 		xmlStreamWriter = createXMLStreamWriter(os);
@@ -463,7 +465,7 @@ class XMLPointDataWriter implements PointDataWriter {
 
 	@Override
 	public HttpHeaders getResponseHeaders(){
-		return new HttpHeaders();
+		return httpHeaders;
 	}	
 
 	private XMLStreamWriter createXMLStreamWriter(OutputStream os) {
@@ -483,6 +485,8 @@ class XMLPointDataWriter implements PointDataWriter {
 
 	@Override
 	public void setHTTPHeaders(GridDataset gds, String pathInfo){
+		
+		httpHeaders.setContentType(MediaType.APPLICATION_XML);
 
 	}
 
