@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class TestTimeCoordinates {
 
-  @Test
+  //@Test
   // Conventions = "CF-1.0, CW HDF, COARDS"
   public void testConventionsMultiple() throws IOException {
     //String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/demeter/MM_cnrm_129_red.ncml";
