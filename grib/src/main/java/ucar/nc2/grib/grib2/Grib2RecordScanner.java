@@ -291,8 +291,17 @@ public class Grib2RecordScanner {
         break;
     }
     return null;
-
   }
+
+  /* used by GempakGridReader
+  static public Grib2Record findRecord(RandomAccessFile raf, long startPos) throws IOException {
+    Grib2RecordScanner scanner = new Grib2RecordScanner(raf);
+    raf.seek(startPos);
+    if (scanner.hasNext()) {  // find GRIB header
+      return scanner.next();
+    }
+    return null;
+  }  */
 
   public static void main(String[] args) throws IOException {
     String filename = (args.length > 0 && args[0] != null) ? args[0] : "G:/work/carp/MSG1-SEVI-MSGCLTH-0100-0100-20050411004500.000000000Z-1058136.grb";

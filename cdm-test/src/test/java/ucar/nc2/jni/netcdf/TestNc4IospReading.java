@@ -105,7 +105,11 @@ public class TestNc4IospReading {
 
   // @Test
   public void problem() throws IOException {
-    String filename = "Q:/cdmUnitTest/formats/hdf5/npoess/GATRO-SATMR_npp_d20020906_t0409572_e0410270_b19646_c20090720223122943227_devl_int.h5";
+    //String filename = "Q:/cdmUnitTest/formats/hdf5/npoess/GATRO-SATMR_npp_d20020906_t0409572_e0410270_b19646_c20090720223122943227_devl_int.h5";
+    //String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\npoess\\ExampleFiles\\AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5";
+    //String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\npoess\\ExampleFiles\\GDNBF-VNCCO_NPP_d2003125_t101038_e10116_b9_c2005829162517_dev.h5";
+    String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\npoess\\ExampleFiles\\GIMFT-VIVIO_NPP_d2003125_t101038_e10116_b9_c2005829173243_dev.h5";
+    System.out.printf("***READ %s%n", filename);
     doCompare(filename, false, false, false);
   }
 
@@ -119,7 +123,11 @@ public class TestNc4IospReading {
 
   private class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
-      if (pathname.getName().startsWith("GATRO-SATMR_npp_")) return false; // temporary
+      /* java.io.IOException: -101: NetCDF: HDF error
+      	at ucar.nc2.jni.netcdf.Nc4Iosp._open(Nc4Iosp.java:243)
+      	at ucar.nc2.jni.netcdf.Nc4Iosp.open(Nc4Iosp.java:227) */
+      if (pathname.getPath().contains("npoess")) return false; // temporary
+      // if (pathname.getName().endsWith(".xml")) return false;
       return true;
     }
   }

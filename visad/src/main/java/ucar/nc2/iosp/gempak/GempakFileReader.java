@@ -1607,7 +1607,7 @@ public class GempakFileReader implements GempakConstants {
       return null;
     }
     // gotta subtract 1 because parts are 1 but List is 0 based
-    DMPart part = (DMPart) parts.get(iprt - 1);
+    DMPart part = parts.get(iprt - 1);
     // check for valid real data type
     if ((part.ktyprt != MDREAL) && (part.ktyprt != MDGRID)
             && (part.ktyprt != MDRPCK)) {

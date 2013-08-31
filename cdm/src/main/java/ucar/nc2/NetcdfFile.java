@@ -445,9 +445,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (N3header.isValidFile(raf)) {
       return true;
     } else {
-      Iterator<IOServiceProvider> iterator = ServiceLoader.load(IOServiceProvider.class).iterator();
+      Iterator<IOServiceProvider> iterator = ServiceLoader.load(IOServiceProvider.class).iterator(); // LOOK is this expensive ?
       while (iterator.hasNext()) {
-        if (iterator.next().isValidFile(raf)) {
+        IOServiceProvider iosp = iterator.next();
+        System.out.printf("ServiceLoader IOServiceProvider %s%n", iosp.getClass().getName());
+        if (iosp.isValidFile(raf)) {
           return true;
         }
       }
@@ -762,7 +764,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } else {
 
       // look for dynamically loaded IOSPs
-      Iterator<IOServiceProvider> iterator = ServiceLoader.load(ucar.nc2.iosp.IOServiceProvider.class).iterator();
+      Iterator<IOServiceProvider> iterator = ServiceLoader.load(ucar.nc2.iosp.IOServiceProvider.class).iterator(); // LOOK is this expensive ?
       while (iterator.hasNext()) {
         IOServiceProvider currentSpi = iterator.next();
         if (currentSpi.isValidFile(raf)) {

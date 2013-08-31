@@ -35,8 +35,8 @@
 package ucar.nc2.iosp.gempak;
 
 
-import ucar.grib.QuasiRegular;
-import ucar.grib.grib2.*;
+import ucar.nc2.grib.QuasiRegular;
+import ucar.nc2.grib.grib2.*;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;

@@ -52,6 +52,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * 
@@ -84,9 +85,9 @@ public class TestVerticalTransformWithUnitsConversion {
 	@Parameters
 	public static Collection<Object[]> data(){
 		Object[][] data = new Object[][]{
-				{"/share/testdata/cdmUnitTest/transforms/idv_sigma.ncml", "/share/testdata/cdmUnitTest/transforms/idv_sigma.nc", new LatLonPointImpl(52.85, 27.56), "VNK201302" }, //AtmosSigma
-				{"/share/testdata/cdmUnitTest/transforms/HybridSigmaPressure.nc", "/share/testdata/cdmUnitTest/transforms/HybridSigmaPressure.ncml", new LatLonPointImpl( 40.019, -105.293 ), "T"} ,    //HybridSigma with P
-				{"/share/testdata/cdmUnitTest/transforms/HIRLAMhybrid.ncml","/share/testdata/cdmUnitTest/transforms/HIRLAMhybrid_hPa.ncml", new LatLonPointImpl( 42.86, -8.55 ), "Relative_humidity_hybrid"}  //HybridSigma with AP
+				{TestDir.cdmUnitTestDir + "transforms/idv_sigma.ncml", "/share/testdata/cdmUnitTest/transforms/idv_sigma.nc", new LatLonPointImpl(52.85, 27.56), "VNK201302" }, //AtmosSigma
+				{TestDir.cdmUnitTestDir + "transforms/HybridSigmaPressure.nc", "/share/testdata/cdmUnitTest/transforms/HybridSigmaPressure.ncml", new LatLonPointImpl( 40.019, -105.293 ), "T"} ,    //HybridSigma with P
+				{TestDir.cdmUnitTestDir + "transforms/HIRLAMhybrid.ncml","/share/testdata/cdmUnitTest/transforms/HIRLAMhybrid_hPa.ncml", new LatLonPointImpl( 42.86, -8.55 ), "Relative_humidity_hybrid"}  //HybridSigma with AP
 		};
 		
 		

@@ -166,7 +166,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
    * @throws IOException problem reading the data
    */
   protected float[] _readData(GridRecord gr) throws IOException {
-    return gemreader.readGrid((GempakGridRecord) gr);
+    return gemreader.readGrid( gr);
   }
 
   /**

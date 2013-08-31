@@ -131,6 +131,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>edu.wisc.ssec</groupId>
+      <artifactId>visad</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

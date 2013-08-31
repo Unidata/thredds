@@ -303,6 +303,10 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
     // otherwise read it
     float[] data = _readData(record);
+    if (data == null) {
+      _readData(record); // debug
+      return;
+    }
 
     // LOOK can improve with System.copy ??
     for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {

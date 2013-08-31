@@ -38,21 +38,17 @@
 
 package ucar.nc2.iosp.gempak;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.io.File;
 
+import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
 
-public class TestReadingGempak extends TestCase {
+public class TestReadingGempak {
 
-  public TestReadingGempak(String name) {
-    super(name);
-  }
-
+  @Test
   public void testCompare() throws IOException {
     doAll(TestDir.cdmUnitTestDir + "formats/gempak");
   }
@@ -73,6 +69,7 @@ public class TestReadingGempak extends TestCase {
         System.out.printf(" iosp=%s ft=%s took =%d ms%n", iosp, ft, (System.currentTimeMillis() - start));
       } catch (Throwable t) {
         System.out.printf(" FAILED =%s%n", t.getMessage());
+        t.printStackTrace();
         if (ncfile != null) ncfile.close();
       }
     }

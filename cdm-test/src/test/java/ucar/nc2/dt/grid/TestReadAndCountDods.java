@@ -84,8 +84,8 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 74, 15, 17, 11);
   }
 
-  public void utestProblem() throws Exception {
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/surface/files/latest.xml", 54, 16, 18, 12);
+  public void testProblem() throws Exception {
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.xml", 133, -1, -1, 21);
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {

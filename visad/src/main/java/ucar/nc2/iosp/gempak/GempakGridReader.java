@@ -35,6 +35,7 @@
 package ucar.nc2.iosp.gempak;
 
 
+import ucar.nc2.grib.grib2.*;
 import ucar.nc2.iosp.grid.*;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -680,35 +681,72 @@ public class GempakGridReader extends GempakFileReader {
   private float[] unpackGrib2Data(int iiword, int lendat, int[] iarray, float[] rarray) throws IOException {
 
     long start = getOffset(iiword);
-    float[] data = null;
-
-    // GempakGrib2Data gemGrib2 = new GempakGrib2Data(rf);
-    // float[]         data     = gemGrib2.getData(start, 0);
-
-    // use reflection instead to decouple from the grib package
-    try {
-      Class c = this.getClass().getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakGrib2Data");
-      Constructor ctor = c.getConstructor(RandomAccessFile.class);
-      Object o = ctor.newInstance(rf);
-      Method m = c.getMethod("getData", long.class, long.class);
-      data = (float[]) m.invoke(o, start, 0);
-
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (InstantiationException e) {
-      e.printStackTrace();
-    }
+    rf.seek(start);
+    Grib2Record gr = makeGribRecord(rf, start);
+    float[] data = gr.readData(rf);
 
     if (((iarray[3] >> 6) & 1) == 0) {  // -y scanning - flip
       data = gb2_ornt(iarray[1], iarray[2], iarray[3], data);
     }
+
     return data;
+  }
+
+    // for GempakGridReader
+  private Grib2Record makeGribRecord(RandomAccessFile raf, long start) throws IOException {
+    Grib2SectionIndicator is = new Grib2SectionIndicator(start, 0, 0); // apparently not in GEMPAK file (!)
+
+    Grib2SectionIdentification ids = null;
+    Grib2SectionLocalUse lus = null;
+    Grib2SectionGridDefinition gds = null;
+    Grib2SectionProductDefinition pds = null;
+    Grib2SectionDataRepresentation drs = null;
+    Grib2SectionBitMap bms = null;
+    Grib2SectionData dataSection = null;
+
+    raf.seek(start);
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+
+    int secLength = raf.readInt();
+    if (secLength > 0) {
+      ids = new Grib2SectionIdentification(raf);
+    }
+
+    secLength = raf.readInt();
+    if (secLength > 0) {
+      lus = new Grib2SectionLocalUse(raf);
+    }
+
+    secLength = raf.readInt();
+    if (secLength > 0) {
+      gds = new Grib2SectionGridDefinition(raf);
+    }
+
+    secLength = raf.readInt();
+    if (secLength > 0) {
+      pds = new Grib2SectionProductDefinition(raf);
+    }
+
+    secLength = raf.readInt();
+    if (secLength > 0) {
+      drs = new Grib2SectionDataRepresentation(raf);
+    }
+
+    secLength = raf.readInt();
+    if (secLength > 0) {
+      bms = new Grib2SectionBitMap(raf);
+    }
+
+    secLength = raf.readInt();
+    if (secLength > 0) {
+      dataSection = new Grib2SectionData(raf);
+      if (dataSection.getMsgLength() > secLength)  // presumably corrupt
+        throw new IllegalStateException("Illegal Grib2SectionData Message Length");
+    }
+
+    // LOOK - not dealing with repeated records
+
+    return new Grib2Record(null, is, ids, lus, gds, pds, drs, bms, dataSection, false);
   }
 
     /**
