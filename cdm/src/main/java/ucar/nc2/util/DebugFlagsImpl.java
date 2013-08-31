@@ -47,6 +47,12 @@ public class DebugFlagsImpl implements DebugFlags {
   private Map<String,Boolean> map = new HashMap<String,Boolean>();
 
   /**
+   * All flags are off
+   */
+  public DebugFlagsImpl() {
+  }
+
+  /**
    * Constructor.
    * @param flagsOn space-separated list of flags to turn on.
    */

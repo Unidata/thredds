@@ -1,11 +1,16 @@
 package thredds.util;
 
-import org.apache.log4j.*;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
+import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.NullConfiguration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.util.StringUtil2;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,30 +45,55 @@ public class LoggerFactorySpecial implements LoggerFactory {
     }
   }
 
-  private static Map<String, Logger> map = new HashMap<String, Logger>();
+  private static Map<String, org.slf4j.Logger> map = new HashMap<String, org.slf4j.Logger>();
 
   @Override
-  public Logger getLogger(String name) {
+  public org.slf4j.Logger getLogger(String name) {
     name = StringUtil2.replace(name.trim(), ' ', "_");
-    Logger result = map.get(name);
+    org.slf4j.Logger result = map.get(name);
     if (result != null) return result;
 
     try {
       String fileName = dir + "/" + name + ".log";
+      String fileNamePattern = dir + "/" + name + "%i.log";
 
-      //create logger in log4j
-      Layout layout = new PatternLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n");
+      //create logger in log4j2
+      Configuration config = new NullConfiguration(); // ?? LOOK
+      Layout layout = PatternLayout.createLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n", config, null, null, "no");
 
-      RollingFileAppender app = new RollingFileAppender(layout, fileName);
-      app.setMaxBackupIndex(maxBackupIndex);
-      app.setMaximumFileSize(maxSize);
-      app.setFile(fileName);
-      app.activateOptions();
+      /* String fileName,
+         String filePattern,
+         String append,
+         String name,
+         String bufferedIO,
+         String immediateFlush,
+         TriggeringPolicy policy,
+         RolloverStrategy strategy,
+         Layout<S> layout,
+         Filter filter,
+         String suppress,
+         String advertise,
+         String advertiseURI,
+         Configuration config) */
+      RollingFileAppender app = RollingFileAppender.createAppender(fileName,
+              fileNamePattern,
+              "false",
+              name,
+              "true",
+              "false",
+              SizeBasedTriggeringPolicy.createPolicy(Long.toString(maxSize)),
+              DefaultRolloverStrategy.createStrategy(Integer.toString(maxBackupIndex), "0", "max", config),
+              layout,
+              null,
+              "true",
+              "false",
+              null,
+              config);
 
-      org.apache.log4j.Logger log4j = LogManager.getLogger(name);
+      org.apache.logging.log4j.core.Logger log4j = (org.apache.logging.log4j.core.Logger) LogManager.getLogger(name);
       log4j.addAppender(app);
       log4j.setLevel(level);
-      log4j.setAdditivity(false); // otherwise, it also gets sent to root logger (threddsServlet.log)
+      log4j.setAdditive(false); // otherwise, it also gets sent to root logger (threddsServlet.log)
 
       startupLog.info("LoggerFactorySpecial add logger= {} file= {}", name, fileName);
 
@@ -71,7 +101,7 @@ public class LoggerFactorySpecial implements LoggerFactory {
       map.put(name, result);
       return result;
 
-    } catch (IOException ioe) {
+    } catch (Throwable ioe) {
       startupLog.error("LoggerFactorySpecial failed on " + name, ioe);
 
       // standard slf4j - rely on external configuration

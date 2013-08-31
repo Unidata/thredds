@@ -1,7 +1,5 @@
 package edu.ucar.unidata.wmotables.service;
 
-import org.apache.log4j.Logger;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -20,7 +18,7 @@ import edu.ucar.unidata.wmotables.domain.Table;
 @Component
 public class TableValidator implements Validator {
 
-    protected static Logger logger = Logger.getLogger(TableValidator.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TableValidator.class);
 
     private String[] NAUGHTY_STRINGS = {"<script>", "../", "javascript", "::", "&quot;", "fromcharCode", "%3", "$#", "alert(", ".js", ".source", "\\", "scriptlet", ".css", "binding:", ".htc", "vbscript", "mocha:", "livescript:", "base64", "\00", "xss:", "%77", "0x", "IS NULL;", "1;", "; --", "1=1"}; 
     private String[] NAUGHTY_CHARS = {"<", ">", "`", "^", "|", "}", "{"}; 
@@ -41,7 +39,7 @@ public class TableValidator implements Validator {
      * Validates the user input contained in the Table object.
      * 
      * @param obj  The target object to validate.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */
     public void validate(Object obj, Errors errors) {
         Table table = (Table) obj;
@@ -57,7 +55,7 @@ public class TableValidator implements Validator {
      * Validates the size of the uploaded File.
      * 
      * @param file  The uploaded CommonsMultipartFile file.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */
     public void validateFileSize(CommonsMultipartFile file, Errors errors) {
         if (file.isEmpty()) {
@@ -74,7 +72,7 @@ public class TableValidator implements Validator {
      * Validates the content type of the uploaded File.
      * 
      * @param contentType  The content type of the uploaded file.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */
     public void validateFileType(String contentType, Errors errors) {
         pattern = Pattern.compile(CONTENT_TYPE_PATTERN);
@@ -89,7 +87,7 @@ public class TableValidator implements Validator {
      * Validates the user input for the title field.
      * 
      * @param input  The table input to validate.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */
     public void validateTitle(String input, Errors errors) {
         if (StringUtils.isBlank(input)) {
@@ -107,7 +105,7 @@ public class TableValidator implements Validator {
      * Validates the user input for the description field.
      * 
      * @param input  The table input to validate.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */
     public void validateDescription(String input, Errors errors) {
         if (StringUtils.isBlank(input)) {
@@ -125,7 +123,7 @@ public class TableValidator implements Validator {
      * Validates the user input for the local version field.
      * 
      * @param input  The table input to validate.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */    
     public void validateLocalVersion(int input, Errors errors) { 
         if (StringUtils.isBlank(new Integer(input).toString())) {
@@ -139,7 +137,7 @@ public class TableValidator implements Validator {
      * Validates the user input for the center field.
      * 
      * @param input  The user input to validate.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */    
     public void validateCenter(int input, Errors errors) {
         if (StringUtils.isBlank(new Integer(input).toString())) {
@@ -152,7 +150,7 @@ public class TableValidator implements Validator {
      * Validates the user input for the sub center field.
      * 
      * @param input  The user input to validate.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */    
     public void validateSubCenter(int input, Errors errors) {
         if (StringUtils.isBlank(new Integer(input).toString())) {
@@ -165,7 +163,7 @@ public class TableValidator implements Validator {
      * Validates the user input for the tableType field.
      * 
      * @param input  The table input to validate.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */    
     public void validateTableType(String input, Errors errors) { 
         List<String> tableTypesList = getTableTypes(); 
@@ -180,7 +178,7 @@ public class TableValidator implements Validator {
      * 
      * @param formField  The form field corresponding to the table input.
      * @param input  The table input to validate.
-     * @param error  Object in which to store any validation errors.
+     * @param errors  Object in which to store any validation errors.
      */
     public void validateInput(String formField, String input, Errors errors) {
         String badChar = checkForNaughtyChars(input);

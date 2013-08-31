@@ -76,6 +76,7 @@ public class TestH5read extends TestCase {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     NCdump.printArray(data, "primary_cloud", System.out, null);
     ncfile.close();
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   public void utestProblem() {

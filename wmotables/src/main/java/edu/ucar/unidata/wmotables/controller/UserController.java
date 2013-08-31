@@ -1,7 +1,5 @@
 package edu.ucar.unidata.wmotables.controller;
 
-import org.apache.log4j.Logger;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,8 +38,8 @@ import edu.ucar.unidata.wmotables.service.UserValidator;
 
 @Controller
 public class UserController implements HandlerExceptionResolver {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserController.class);
 
-    protected static Logger logger = Logger.getLogger(UserController.class);
     @Resource(name="userManager")
     private UserManager userManager;
     @Resource(name="tableManager")

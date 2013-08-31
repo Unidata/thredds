@@ -1,7 +1,5 @@
 package edu.ucar.unidata.wmotables.service;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,8 +21,7 @@ import edu.ucar.unidata.wmotables.repository.UserDao;
  * Service for processing User objects with respect to authentication and access control. 
  */
 public class UserDetailsServiceImpl implements UserDetailsService { 
-
-    protected static Logger logger = Logger.getLogger(UserDetailsServiceImpl.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
     public UserDao userDao;
 

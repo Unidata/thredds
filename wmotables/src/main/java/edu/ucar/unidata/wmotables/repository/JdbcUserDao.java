@@ -1,10 +1,6 @@
 package edu.ucar.unidata.wmotables.repository;
 
-import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -22,8 +18,8 @@ import edu.ucar.unidata.wmotables.domain.User;
  */
 
 public class JdbcUserDao extends JdbcDaoSupport implements UserDao {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(JdbcDaoSupport.class);
 
-    protected static Logger logger = Logger.getLogger(JdbcUserDao.class);
 
     private SimpleJdbcInsert insertActor;
 

@@ -1,7 +1,5 @@
 package edu.ucar.unidata.wmotables.service;
 
-import org.apache.log4j.Logger;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -26,9 +24,9 @@ import edu.ucar.unidata.wmotables.repository.TableDao;
  * Service for processing Table objects. 
  */
 public class TableManagerImpl implements TableManager {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TableManagerImpl.class);
 
     private TableDao tableDao;
-    protected static Logger logger = Logger.getLogger(TableManagerImpl.class);
     @Value("${wmotables.home}")
     private String wmotablesHome;
 

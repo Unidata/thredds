@@ -1,7 +1,5 @@
 package edu.ucar.unidata.wmotables.service;
 
-import org.apache.log4j.Logger;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Matcher;
@@ -15,8 +13,7 @@ import edu.ucar.unidata.wmotables.domain.User;
 
 @Component
 public class UserValidator implements Validator  {
-
-    protected static Logger logger = Logger.getLogger(UserValidator.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserValidator.class);
 
     private String[] NAUGHTY_STRINGS = {"<script>", "../", "javascript", "::", "&quot;", "fromcharCode", "%3", "$#", "alert(", ".js", ".source", "\\", "scriptlet", ".css", "binding:", ".htc", "vbscript", "mocha:", "livescript:", "base64", "\00", "xss:", "%77", "0x", "IS NULL;", "1;", "; --", "1=1"}; 
     private String[] NAUGHTY_CHARS = {"<", ">", "`", "^", "|", "}", "{"}; 

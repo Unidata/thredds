@@ -130,6 +130,7 @@ public class TestN4 extends TestCase {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     NCdumpW.printArray(data, "primary_cloud", new PrintWriter( System.out), null);
     ncfile.close();
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   public void testVlenStrings() throws IOException {

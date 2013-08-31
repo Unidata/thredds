@@ -69,6 +69,7 @@ public class TestOddTypes extends TestCase {
     assert odata.getElementType() == ByteBuffer.class;
     assert odata.getSize() == 20;
     ncfile.close();
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   public void testEnum() throws InvalidRangeException, IOException {
@@ -115,6 +116,7 @@ public class TestOddTypes extends TestCase {
     NCdump.printArray(data, "dset", System.out, null);
     System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
     ncfile.close();
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   // not supporting bitfield, poor documentation
@@ -122,6 +124,7 @@ public class TestOddTypes extends TestCase {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("samples/bitfield.h5");
     ncfile.close();
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   // attribute vlen String
@@ -130,6 +133,7 @@ public class TestOddTypes extends TestCase {
     NetcdfFile ncfile = TestH5.openH5("support/vlstra.h5");
     System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
     ncfile.close();
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
    public void testAttString() throws InvalidRangeException, IOException {
@@ -141,6 +145,7 @@ public class TestOddTypes extends TestCase {
   public void testCompoundString() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     TestH5read.readAllData(TestH5.testDir + "support/cstr.h5");
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   public void testCompoundEnum() throws IOException {
@@ -151,6 +156,7 @@ public class TestOddTypes extends TestCase {
     NCdump.printArray(data, "enum", System.out, null);
     System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
     ncfile.close();
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   public void misc() throws IOException {
@@ -160,6 +166,7 @@ public class TestOddTypes extends TestCase {
     NetcdfFile ncfile = TestH5.openH5("support/bitop.h5");
     System.out.println( "\n"+ncfile);
     ncfile.close();
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 
   public void testMisc() {

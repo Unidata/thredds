@@ -283,11 +283,22 @@
 
       <!-- logging -->
       <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
         <version>${log4j.version}</version>
       </dependency>
-      <dependency>  <!-- Adapts apache commons to slf4j, and so replaced commons-logging.jar -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>2.0-beta8</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>  <!-- Adapts apache commons to slf4j, and so replaces commons-logging.jar -->
          <groupId>org.slf4j</groupId>
          <artifactId>jcl-over-slf4j</artifactId>
          <version>${org.slf4j.version}</version>
@@ -301,12 +312,6 @@
       <dependency>  <!-- Should never be needed at compile time. -->
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-jdk14</artifactId>
-        <version>${org.slf4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>  <!-- Should never be needed at compile time. -->
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
         <version>${org.slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
@@ -896,7 +901,7 @@
     <org.jfree.jfreechart.version>1.0.14</org.jfree.jfreechart.version>
     <joda-time.version>2.2</joda-time.version>
     <junit.version>4.11</junit.version>
-    <log4j.version>1.2.17</log4j.version>
+    <log4j.version>2.0-beta8</log4j.version>
     <net.jcip.version>1.0</net.jcip.version>
     <net.sf.ehcache.version>2.6.2</net.sf.ehcache.version>
     <org.apache.tomcat.version>7.0.27</org.apache.tomcat.version>

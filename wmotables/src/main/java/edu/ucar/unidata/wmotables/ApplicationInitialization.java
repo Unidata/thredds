@@ -1,7 +1,5 @@
 package edu.ucar.unidata.wmotables;
 
-import org.apache.log4j.Logger;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -37,8 +35,7 @@ import javax.servlet.ServletException;
  * Done at application initialization
  */
 public class ApplicationInitialization implements ServletContextListener {
-
-    protected static Logger logger = Logger.getLogger(ApplicationInitialization.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ApplicationInitialization.class);
 
     private static final String DEFAULT_HOME = System.getProperty("catalina.base") + "/content/wmotables";
     private static final String DEFAULT_DATABASE = "derby";

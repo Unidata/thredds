@@ -158,4 +158,8 @@ public class UsageLog {
     long startTime = Long.parseLong(startTimeS);
     return endTime - startTime;
   }
+
+  public void add2map(String key, String value) {
+    MDC.put(key, value);
+  }
 }

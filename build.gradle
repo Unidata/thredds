@@ -14,7 +14,7 @@ subprojects {
   ext {
     jfreechartVersion = "1.0.14"
     junitVersion = "4.8.2"
-    log4jVersion = "1.2.17"
+    log4jVersion = "2.0-beta8"
     slf4jVersion = "1.7.5"
     springVersion = "3.2.3.RELEASE"
   }
