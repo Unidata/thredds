@@ -32,8 +32,6 @@
     </mvc:interceptor>
   </mvc:interceptors>  
   
-
-
   <!-- tell spring that tds.properties gets read in first and overrides anything else -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>

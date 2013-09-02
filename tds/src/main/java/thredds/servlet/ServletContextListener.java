@@ -32,41 +32,24 @@
  */
 package thredds.servlet;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSession;
 import javax.servlet.ServletContextEvent;
 
-
-import java.util.Date;
-
 /**
- * Listen for lifecycle events
- * @deprecated TDS now using {@link thredds.server.config.TdsConfigContextListener}.
+ * not used
  */
-public class ServletListener implements javax.servlet.ServletContextListener {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServletListener.class);
 
-  // ServletContextListener
+public class ServletContextListener implements javax.servlet.ServletContextListener {
+
+  @Override
   public void contextInitialized(ServletContextEvent event) {
-    System.out.println("+++ Thredds webapp contextInitialized");
-    javax.servlet.ServletContext context = event.getServletContext();
-    // ServletUtil.init Context(context);
+    String root = System.getProperty("tds.content.root.path");
+    System.out.printf("tds.content.root.path= %s%n", root);
+    System.setProperty("tds.log.dir", root+"/thredds/logs");
   }
 
-  public void contextDestroyed(ServletContextEvent event) {
-    //LogManager.shutdown();
-    System.out.println("+++ Thredds webapp contextDestroyed");
+  @Override
+  public void contextDestroyed(ServletContextEvent sce) {
+    //To change body of implemented methods use File | Settings | File Templates.
   }
 
-  // HttpSessionListener
-  public void sessionCreated(HttpSessionEvent e) {
-    if (log.isDebugEnabled()) log.debug("++ Session created "+e.getSession().getId());
-  }
-
-  public void sessionDestroyed(HttpSessionEvent e) {
-    HttpSession session = e.getSession();
-    Date created = new Date(session.getCreationTime());
-    Date last = new Date(session.getLastAccessedTime());
-    if (log.isDebugEnabled()) log.debug("++ Session deleted "+session.getId()+" created"+created+" lastAccessed"+last);
-  }
 }

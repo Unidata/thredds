@@ -209,7 +209,7 @@ public class DatasetRepository {
       catURI = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
-      startupLog.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
+      startupLog.error("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
 
@@ -220,7 +220,7 @@ public class DatasetRepository {
       ios = new FileInputStream(catalogFullPath);
       acat = factory.readXML(ios, catURI);
     } catch (Throwable t) {
-      startupLog.info("radarServer readCatalog(): Exception on catalog=" +
+      startupLog.error("radarServer readCatalog(): Exception on catalog=" +
           catalogFullPath + " " + t.getMessage()); //+"\n log="+cat.getLog(), t);
       return null;
     }
@@ -230,7 +230,7 @@ public class DatasetRepository {
           ios.close();
         }
         catch (IOException e) {
-          startupLog.info("radarServer readCatalog(): error closing" + catalogFullPath);
+          startupLog.warn("radarServer readCatalog(): error closing" + catalogFullPath);
         }
       }
     }

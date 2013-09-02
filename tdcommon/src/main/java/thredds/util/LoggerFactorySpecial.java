@@ -47,11 +47,67 @@ public class LoggerFactorySpecial implements LoggerFactory {
 
   private static Map<String, org.slf4j.Logger> map = new HashMap<String, org.slf4j.Logger>();
 
-  @Override
+  /* @Override
   public org.slf4j.Logger getLogger(String name) {
     name = StringUtil2.replace(name.trim(), ' ', "_");
     org.slf4j.Logger result = map.get(name);
     if (result != null) return result;
+
+    try {
+      org.apache.logging.log4j.core.Logger log4j = (org.apache.logging.log4j.core.Logger) LogManager.getLogger(name, new MyMessageFactory());
+      log4j.info( new MyMapMessage(name));
+      startupLog.info("LoggerFactorySpecial add logger= {}", name);
+
+      result = org.slf4j.LoggerFactory.getLogger(name); // get wrapper in slf4j
+      map.put(name, result);
+      return result;
+
+    } catch (Throwable ioe) {
+      startupLog.error("LoggerFactorySpecial failed on " + name, ioe);
+
+      // standard slf4j - rely on external configuration
+      return org.slf4j.LoggerFactory.getLogger(name);
+    }
+  }
+
+  private class MyMessageFactory implements MessageFactory {
+
+    @Override
+    public Message newMessage(Object o) {
+      return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Message newMessage(String s) {
+      return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Message newMessage(String s, Object... objects) {
+      return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+  }
+
+  /* <RollingFile name="fc" fileName="${tds.log.dir}/fc.${map:collectionName}.log" filePattern="${tds.log.dir}/fc.${map:collectionName}.%i.log">
+      <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="1 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="10"/>
+    </RollingFile>
+   *
+  private class MyMapMessage extends MapMessage {
+    MyMapMessage(String name) {
+      super();
+      put("collectionName", name);
+    }
+  }  */
+
+  public org.slf4j.Logger getLogger(String name) {
+    name = StringUtil2.replace(name.trim(), ' ', "_");
+    org.slf4j.Logger result = map.get(name);
+    if (result != null)
+      return result;
 
     try {
       String fileName = dir + "/" + name + ".log";
@@ -89,6 +145,7 @@ public class LoggerFactorySpecial implements LoggerFactory {
               "false",
               null,
               config);
+      app.start();
 
       org.apache.logging.log4j.core.Logger log4j = (org.apache.logging.log4j.core.Logger) LogManager.getLogger(name);
       log4j.addAppender(app);
@@ -108,5 +165,6 @@ public class LoggerFactorySpecial implements LoggerFactory {
       return org.slf4j.LoggerFactory.getLogger(name);
     }
   }
+
 }
 

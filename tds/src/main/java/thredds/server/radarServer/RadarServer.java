@@ -474,7 +474,7 @@ public class RadarServer extends AbstractServlet {
       catURI = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
-      logServerStartup.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
+      logServerStartup.error("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
 
@@ -485,8 +485,7 @@ public class RadarServer extends AbstractServlet {
       ios = new FileInputStream(catalogFullPath);
       acat = factory.readXML(ios, catURI);
     } catch (Throwable t) {
-      logServerStartup.error("radarServer readCatalog(): Exception on catalog=" +
-          catalogFullPath + " " + t.getMessage()); //+"\n log="+cat.getLog(), t);
+      logServerStartup.error("radarServer readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage()); //+"\n log="+cat.getLog(), t);
       return null;
     }
     finally {
@@ -495,7 +494,7 @@ public class RadarServer extends AbstractServlet {
           ios.close();
         }
         catch (IOException e) {
-          logServerStartup.info("radarServer readCatalog(): error closing" + catalogFullPath);
+          logServerStartup.warn("radarServer readCatalog(): error closing" + catalogFullPath);
         }
       }
     }

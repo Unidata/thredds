@@ -47,7 +47,7 @@ public class ApplicationInitialization implements ServletContextListener {
      * Find the application home (wmotables.home) and make sure it exists.  if not, create it.
      * Find out what database was selected for use and create the database if it doesn't exist.
      * 
-     * @param sce  The event class.
+     * @param servletContextEvent  The event class.
      */
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent)  {

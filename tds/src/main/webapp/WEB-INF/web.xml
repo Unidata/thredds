@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+      version="3.0">
   <display-name>THREDDS Data Server</display-name>
   <description>THREDDS Data Server</description>
 
@@ -224,7 +225,13 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
-  </context-param>   
+  </context-param>
+
+  <!-- needed for intelliJ startup; check if needed for regular waar -->
+  <listener>
+    <listener-class>org.apache.logging.log4j.core.web.Log4jServletContextListener</listener-class>
+  </listener>
+
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
@@ -232,6 +239,11 @@
   <listener>
     <listener-class>thredds.server.opendap.OpendapSessionAttributeListener</listener-class>
   </listener>
+
+  <!--
+https://issues.apache.org/jira/browse/LOG4J2-223
+
+Provided the Log4jContextListener is configured in web.xml shutdown now works fine with Tomcat 7 with revision 1484363. -->
 
   <!-- Some possible ways to deal with error handling. -->
   <!--

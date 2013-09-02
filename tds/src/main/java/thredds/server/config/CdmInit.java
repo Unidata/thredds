@@ -65,7 +65,6 @@ import ucar.nc2.util.log.LoggerFactory;
 
 /**
  * A Singleton class to initialize the CDM, instantiated by Spring.
- * Called from TdsConfigContextListener.
  *
  * @author caron
  * @since Feb 20, 2009

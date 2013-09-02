@@ -9,8 +9,8 @@ dependencies {
   compile group: 'org.springframework', name: 'spring-context', version: springVersion
   compile group: 'org.springframework', name: 'spring-beans', version: springVersion
 
-  runtime group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jversion
-  runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jversion
+  runtime group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
+  runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jVersion
   runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
 }
 

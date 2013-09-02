@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration monitorInterval="30">
+  <properties>
+    <property name="tds.content.root.path">../../content</property>
+    <property name="tds.log.dir">${sys:tds.content.root.path}/thredds/logs</property>
+  </properties>
+  
   <appenders>
 
     <File name="serverStartupAppender" fileName="${tds.log.dir}/serverStartup.log" append="false">
@@ -18,15 +23,15 @@
       <DefaultRolloverStrategy max="10"/>
     </RollingFile>
 
-    <RollingFile name="fc" fileName="${tds.log.dir}/fc.log" filePattern="${tds.log.dir}/fc.%i.log">
+    <!-- RollingFile name="fc" fileName="${tds.log.dir}/fc.$${map:collectionName}.log" filePattern="${tds.log.dir}/fc.$${map:collectionName}.%i.log">
       <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="1 MB"/>
       </Policies>
       <DefaultRolloverStrategy max="10"/>
-    </RollingFile>
+    </RollingFile -->
 
-    <RollingFile name="threddsServlet" fileName="${tds.log.dir}/threddsServlet.log" filePattern="${tds.log.dir}/threddsServlet.$${date:yyyy-MM-dd-HH}.log">
+    <RollingFile name="threddsServlet" fileName="${tds.log.dir}/threddsServlet.log" filePattern="${tds.log.dir}/threddsServlet.%d{yyyy-MM-dd-HH}.log">
       <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
       <Policies>
         <TimeBasedTriggeringPolicy/>
@@ -43,172 +48,131 @@
     </RollingFile>
 
     <Console name="consoleLogger" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %c - %m%n"/>
+      <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p %c: %m%n"/>
     </Console>
 
   </appenders>
 
   <loggers>
-    <logger name="cacheLogger" additivity="false">
-      <level value="INFO"/>
-      <appender-ref ref="cacheLog"/>
-    </logger>
 
-    <logger name="thredds.filesystem.CacheManager" additivity="false">
-      <level value="INFO"/>
-      <appender-ref ref="cacheLog"/>
-    </logger>
-
-    <logger name="thredds.servlet.DataRootHandler.catalogInit" additivity="false">
-      <level value="INFO"/>
-      <appender-ref ref="catalogInit"/>
-    </logger>
-
-    <logger name="thredds.catalog.parser" additivity="false">
-      <level value="INFO"/>
-      <appender-ref ref="catalogInit"/>
-    </logger>
-
-    <logger name="thredds.featurecollection.FeatureCollectionConfig" additivity="false">
-      <level value="INFO"/>
-      <appender-ref ref="catalogInit"/>
-    </logger>
-
-    <logger name="serverStartup" additivity="false">
-      <level value="INFO"/>
+    <logger name="serverStartup" level="info" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
+     <logger name="thredds.servlet.DataRootHandler.catalogInit" level="info" additivity="false">
+      <appender-ref ref="catalogInit"/>
+    </logger>
+
+    <logger name="thredds.catalog.parser" level="info" additivity="false">
+      <appender-ref ref="catalogInit"/>
+    </logger>
+
+    <logger name="thredds.featurecollection.FeatureCollectionConfig" level="info" additivity="false">
+      <appender-ref ref="catalogInit"/>
+    </logger>
+
+
+    <logger name="cacheLogger" level="info" additivity="false">
+      <appender-ref ref="cacheLog"/>
+    </logger>
+
+    <logger name="thredds.filesystem.CacheManager" level="info" additivity="false">
+      <appender-ref ref="cacheLog"/>
+    </logger>
+
+
     <!-- featureCollection debugging -->
-    <logger name="thredds.inventory.MFileCollectionManager" additivity="false">
-      <level value="INFO"/>
+    <logger name="thredds.inventory.MFileCollectionManager" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.inventory.CollectionUpdater" additivity="false">
-      <level value="INFO"/>
+    <logger name="thredds.inventory.CollectionUpdater" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.server.root.CollectionController" additivity="false">
-      <level value="INFO"/>
+    <logger name="thredds.server.root.CollectionController" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.grib" additivity="false">
-      <level value="INFO"/>
+    <logger name="ucar.nc2.grib" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.grib.grib1.Grib1CollectionBuilder" additivity="false">
-      <level value="INFO"/>
+    <logger name="ucar.nc2.grib.grib1.Grib1CollectionBuilder" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.grib.grib2.Grib2CollectionBuilder" additivity="false">
-      <level value="INFO"/>
+    <logger name="ucar.nc2.grib.grib2.Grib2CollectionBuilder" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.catalog.InvDatasetFeatureCollection" additivity="false">
-      <level value="INFO"/>
+    <logger name="thredds.catalog.InvDatasetFeatureCollection" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.catalog.InvDatasetFcGrib" additivity="false">
-      <level value="INFO"/>
+    <logger name="thredds.catalog.InvDatasetFcGrib" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="org.quartz" additivity="false">
-      <level value="WARN"/>
+    <logger name="org.quartz" level="warn" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
     <!-- fmrc debugging -->
-
-    <logger name="thredds.inventory.bdb.MetadataManager" additivity="false">
-      <level value="INFO"/>
+    <logger name="thredds.inventory.bdb.MetadataManager" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.ft.fmrc.Fmrc" additivity="false">
-      <level value="INFO"/>
+    <logger name="ucar.nc2.ft.fmrc.Fmrc" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.ft.fmrc.FmrcInv" additivity="false">
-      <level value="INFO"/>
+    <logger name="ucar.nc2.ft.fmrc.FmrcInv" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.ft.fmrc.FmrcInvLite" additivity="false">
-      <level value="INFO"/>
+    <logger name="ucar.nc2.ft.fmrc.FmrcInvLite" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.ft.fmrc.FmrcDataset" additivity="false">
-      <level value="INFO"/>
+    <logger name="ucar.nc2.ft.fmrc.FmrcDataset" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.ft.fmrc.GridDatasetInv" additivity="false">
-      <level value="INFO"/>
+    <logger name="ucar.nc2.ft.fmrc.GridDatasetInv" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.servlet.DataRootHandler.fcScan" additivity="false">
-      <level value="INFO"/>
+    <logger name="thredds.servlet.DataRootHandler.fcScan" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
-
     <!-- end fmrc debugging -->
 
-    <!-- All normal logging messages go to threddsServlet.log -->
-    <logger name="opendap" additivity="false">
-      <level value="INFO"/>
+     <!-- WMS stuff has routine higher level of messages -->
+    <logger name="uk.ac.rdg.resc.ncwms" level="warn" additivity="false">
       <appender-ref ref="threddsServlet"/>
     </logger>
 
-    <logger name="thredds" additivity="false">
-      <level value="INFO"/>
+    <logger name="thredds.server.wms.responses" level="warn" additivity="false">
       <appender-ref ref="threddsServlet"/>
     </logger>
 
-    <!-- WMS stuff has routine higher level of messages -->
-    <logger name="uk.ac.rdg.resc.ncwms" additivity="false">
-      <level value="WARN"/>
+    <logger name="thredds.server.metadata" level="warn" additivity="false">
       <appender-ref ref="threddsServlet"/>
     </logger>
 
-    <logger name="thredds.server.wms.responses" additivity="false">
-      <level value="WARN"/>
-      <appender-ref ref="threddsServlet"/>
-    </logger>
-
-    <logger name="thredds.server.wms" additivity="false">
-      <level value="INFO"/>
-      <appender-ref ref="threddsServlet"/>
-    </logger>
-
-    <logger name="thredds.server.metadata" additivity="false">
-      <level value="WARN"/>
-      <appender-ref ref="threddsServlet"/>
-    </logger>
-
-    <logger name="org.springframework.beans.factory" additivity="false">
-      <level value="ERROR"/>
+    <logger name="org.springframework.beans.factory" level="error" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <logger name="org.apache.log4j.xml" level="debug">
-      <appender-ref ref="A1"/>
+    <logger name="org.springframework" level="info" additivity="false">
+      <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <root>
-      <level value="INFO"/>
+    <!-- All normal logging messages go to threddsServlet.log -->
+    <root level="info" additivity="false">
       <appender-ref ref="threddsServlet"/>
-    </root>
+    </root>                                                                                       -
 
   </loggers>
 
