@@ -30,51 +30,96 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncSubset;
+package thredds.server.ncSubset.params;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.ParseException;
+import java.util.List;
 
-import thredds.server.ncSubset.controller.GridAsPointDataStream;
-import thredds.server.ncSubset.controller.NcssDiskCache;
-import thredds.server.ncSubset.controller.StationPointDataStream;
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.util.DiskCache2;
+import thredds.server.ncSubset.validation.BoundingBoxConstraint;
 
 /**
  * @author mhermida
  *
  */
-public final class NCSSPointDataStreamFactory {
+@BoundingBoxConstraint
+public class StationRequestParamsBean {
+	
+	//BBOX
+	public Double north;
+	public Double south;
+	public Double east;
+	public Double west;
+	
+	//STNS
+	public List<String> stn;
 
 	/**
-	 * @param ft
-	 * @param tdsContext
-	 * @return
-	 * @throws IOException 
-	 * @throws NcssException 
-	 * @throws ParseException 
+	 * @return the north
 	 */
-	public static NCSSPointDataStream getDataStreamer(FeatureDataset fd, PointDataRequestParamsBean queryParams, 
-			 SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException {
+	public Double getNorth() {
+		return north;
+	}
 
-		FeatureType ft = fd.getFeatureType();
-		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
-		
-		if(ft == FeatureType.GRID){
-			return new GridAsPointDataStream(diskCache, format, out); 
-		}
-		if(ft == FeatureType.STATION){	
-			return StationPointDataStream.stationPointDataStreamFactory(fd, queryParams, diskCache, format, out);
-		}		
-		
-		return null;
+	/**
+	 * @param north the north to set
+	 */
+	public void setNorth(Double north) {
+		this.north = north;
+	}
+
+	/**
+	 * @return the south
+	 */
+	public Double getSouth() {
+		return south;
+	}
+
+	/**
+	 * @param south the south to set
+	 */
+	public void setSouth(Double south) {
+		this.south = south;
+	}
+
+	/**
+	 * @return the east
+	 */
+	public Double getEast() {
+		return east;
+	}
+
+	/**
+	 * @param east the east to set
+	 */
+	public void setEast(Double east) {
+		this.east = east;
+	}
+
+	/**
+	 * @return the west
+	 */
+	public Double getWest() {
+		return west;
+	}
+
+	/**
+	 * @param west the west to set
+	 */
+	public void setWest(Double west) {
+		this.west = west;
+	}
+
+	/**
+	 * @return the stn
+	 */
+	public List<String> getStn() {
+		return stn;
+	}
+
+	/**
+	 * @param stn the stn to set
+	 */
+	public void setStn(List<String> stn) {
+		this.stn = stn;
 	}
 	
 }

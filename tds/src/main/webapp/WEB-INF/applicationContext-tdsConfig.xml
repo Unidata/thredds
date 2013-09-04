@@ -24,14 +24,6 @@
   <!--  bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /-->  
   <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
    
-  <!-- ncss interceptor -->
-  <mvc:interceptors>
-    <mvc:interceptor>
-      <mvc:mapping path="/ncss/grid/**"/>
-      <bean class="thredds.server.ncSubset.controller.NcssInterceptor"/>
-    </mvc:interceptor>
-  </mvc:interceptors>  
-  
   <!-- tell spring that tds.properties gets read in first and overrides anything else -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>

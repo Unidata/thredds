@@ -48,6 +48,7 @@ import org.springframework.http.HttpHeaders;
 import thredds.server.ncSubset.NCSSPointDataStream;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.view.StationWriter;
 import ucar.ma2.InvalidRangeException;
@@ -99,6 +100,7 @@ public class StationPointDataStream implements NCSSPointDataStream {
 		
 	}
 
+	
 	/*
 	 * (non-Javadoc)
 	 * 

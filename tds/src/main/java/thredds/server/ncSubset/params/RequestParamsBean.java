@@ -35,6 +35,19 @@ public class RequestParamsBean extends ParamsBean {
 	
 	private Double vertCoord;
 	
+	//@NotNull(message="north param may not be null")	
+	private Double north;
+	
+	//@NotNull(message="south param may not be null")	
+	private Double south;
+	
+	//@NotNull(message="east param may not be null")	
+	private Double east;
+	
+	//@NotNull(message="west param may not be null")	
+	private Double west;	
+	
+	
 	public List<String> getVar() {
 		return var;
 	}
@@ -97,6 +110,38 @@ public class RequestParamsBean extends ParamsBean {
 	}
 	public void setVertCoord(Double vertCoord) {
 		this.vertCoord = vertCoord;
+	}
+		
+	public Double getNorth() {
+		return north;
+	}
+
+	public void setNorth(Double north) {
+		this.north = north;
+	}
+
+	public Double getSouth() {
+		return south;
+	}
+
+	public void setSouth(Double south) {
+		this.south = south;
+	}
+
+	public Double getEast() {
+		return east;
+	}
+
+	public void setEast(Double east) {
+		this.east = east;
+	}
+
+	public Double getWest() {
+		return west;
+	}
+
+	public void setWest(Double west) {
+		this.west = west;
 	}	
 
 	/*public CalendarDateRange getCalendarDateRange() throws ParseException{

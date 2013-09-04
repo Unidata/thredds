@@ -30,51 +30,54 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncSubset;
+package thredds.server.ncSubset.controller;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.text.ParseException;
+import java.io.PrintWriter;
+import java.util.List;
 
-import thredds.server.ncSubset.controller.GridAsPointDataStream;
-import thredds.server.ncSubset.controller.NcssDiskCache;
-import thredds.server.ncSubset.controller.StationPointDataStream;
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.util.DiskCache2;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
 /**
  * @author mhermida
  *
  */
-public final class NCSSPointDataStreamFactory {
-
-	/**
-	 * @param ft
-	 * @param tdsContext
-	 * @return
-	 * @throws IOException 
-	 * @throws NcssException 
-	 * @throws ParseException 
-	 */
-	public static NCSSPointDataStream getDataStreamer(FeatureDataset fd, PointDataRequestParamsBean queryParams, 
-			 SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException {
-
-		FeatureType ft = fd.getFeatureType();
-		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
-		
-		if(ft == FeatureType.GRID){
-			return new GridAsPointDataStream(diskCache, format, out); 
-		}
-		if(ft == FeatureType.STATION){	
-			return StationPointDataStream.stationPointDataStreamFactory(fd, queryParams, diskCache, format, out);
-		}		
-		
-		return null;
-	}
+public class AbstractFeatureDatasetController {
 	
+	protected static final String servletPath = "/ncss";
+
+	protected static final String servletCachePath = "/cache/ncss";
+	
+	static private final Logger log = LoggerFactory.getLogger(AbstractFeatureDatasetController.class);
+	
+	protected void handleValidationErrorsResponse(HttpServletResponse response,
+			int status, BindingResult validationResult) {
+
+		List<ObjectError> errors = validationResult.getAllErrors();
+		response.setStatus(status);
+		// String responseStr="Validation errors: ";
+		StringBuffer responseStr = new StringBuffer();
+		responseStr.append("Validation errors: ");
+		for (ObjectError err : errors) {
+			responseStr.append(err.getDefaultMessage());
+			responseStr.append("  -- ");
+		}
+
+		try {
+
+			PrintWriter pw = response.getWriter();
+			pw.write(responseStr.toString());
+			pw.flush();
+
+		} catch (IOException ioe) {
+			log.error(ioe.getMessage());
+		}
+
+	}	
+
 }

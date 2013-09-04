@@ -30,51 +30,50 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncSubset;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.ParseException;
-
-import thredds.server.ncSubset.controller.GridAsPointDataStream;
-import thredds.server.ncSubset.controller.NcssDiskCache;
-import thredds.server.ncSubset.controller.StationPointDataStream;
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.util.DiskCache2;
+package thredds.server.ncSubset.params;
 
 /**
  * @author mhermida
  *
  */
-public final class NCSSPointDataStreamFactory {
+public final class RequestParamsAdapter {
+	
+	private RequestParamsAdapter(){}
 
 	/**
-	 * @param ft
-	 * @param tdsContext
+	 * 
+	 * Builds a valid PointDataRequestParamsBean from a GridDaRequestParamsBean for a bounding box request on a Point dataset.
+	 * 
+	 * @param gridRequestParams
 	 * @return
-	 * @throws IOException 
-	 * @throws NcssException 
-	 * @throws ParseException 
 	 */
-	public static NCSSPointDataStream getDataStreamer(FeatureDataset fd, PointDataRequestParamsBean queryParams, 
-			 SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException {
-
-		FeatureType ft = fd.getFeatureType();
-		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
+	public static PointDataRequestParamsBean adaptGridParamsToPoint(GridDataRequestParamsBean gridRequestParams){
 		
-		if(ft == FeatureType.GRID){
-			return new GridAsPointDataStream(diskCache, format, out); 
-		}
-		if(ft == FeatureType.STATION){	
-			return StationPointDataStream.stationPointDataStreamFactory(fd, queryParams, diskCache, format, out);
-		}		
+		PointDataRequestParamsBean pdr = new PointDataRequestParamsBean();
 		
-		return null;
+		//spatial params
+		pdr.setSubset("bb");
+		pdr.setNorth(gridRequestParams.getNorth());
+		pdr.setSouth(gridRequestParams.getSouth());
+		pdr.setEast(gridRequestParams.getEast());
+		pdr.setWest(gridRequestParams.getWest());
+		
+		//Vars
+		pdr.setVar(gridRequestParams.getVar());
+		
+		//Format
+		pdr.setAccept(gridRequestParams.getAccept());
+		
+		//Time params
+		pdr.setTemporal(gridRequestParams.getTemporal());
+		pdr.setTime(gridRequestParams.getTime());
+		pdr.setTime_duration(gridRequestParams.getTime_duration());
+		pdr.setTime_start(gridRequestParams.getTime_start());
+		pdr.setTime_end(gridRequestParams.getTime_end());		
+		pdr.setTime_window(gridRequestParams.getTime_window());
+		
+		pdr.setVertCoord(gridRequestParams.getVertCoord());
+		
+		return pdr;
 	}
-	
 }

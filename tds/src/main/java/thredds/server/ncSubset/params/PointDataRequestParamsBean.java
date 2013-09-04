@@ -16,14 +16,7 @@ public class PointDataRequestParamsBean extends RequestParamsBean {
 	//@NotNull(message="longitude param may not be null")
 	private Double longitude;
 			
-	private Double north;
-	
-	private Double south;
-	
-	private Double east;
-	
-	private Double west;
-	
+
 	//private Boolean point;
 	
 	//Spatial subsetting type. Must be: point (default), all, bb, stns
@@ -70,62 +63,6 @@ public class PointDataRequestParamsBean extends RequestParamsBean {
 		this.stns = stns;
 	}	
 	
-	/**
-	 * @return the north
-	 */
-	public Double getNorth() {
-		return north;
-	}
-
-	/**
-	 * @param north the north to set
-	 */
-	public void setNorth(Double north) {
-		this.north = north;
-	}
-
-	/**
-	 * @return the south
-	 */
-	public Double getSouth() {
-		return south;
-	}
-
-	/**
-	 * @param south the south to set
-	 */
-	public void setSouth(Double south) {
-		this.south = south;
-	}
-
-	/**
-	 * @return the east
-	 */
-	public Double getEast() {
-		return east;
-	}
-
-	/**
-	 * @param east the east to set
-	 */
-	public void setEast(Double east) {
-		this.east = east;
-	}
-
-	/**
-	 * @return the west
-	 */
-	public Double getWest() {
-		return west;
-	}
-
-	/**
-	 * @param west the west to set
-	 */
-	public void setWest(Double west) {
-		this.west = west;
-	}
-
 	//public LatLonPoint getLatLonPoint(){
 	//	return new LatLonPointImpl(latitude, longitude);
 	//}

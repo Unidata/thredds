@@ -35,16 +35,15 @@ package thredds.server.ncSubset;
 import java.io.IOException;
 import java.text.ParseException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpHeaders;
 
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 
 /**
@@ -53,8 +52,22 @@ import ucar.nc2.ft.FeatureDataset;
  */
 public interface NCSSPointDataStream {
 
-	//public void pointDataStream(HttpServletRequest req, HttpServletResponse res, FeatureDataset ft, String requestPathInfo, PointDataRequestParamsBean queryParams, SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException;
+	/**
+	 * 
+	 * Handles Point Data Request 
+	 * 
+	 * @param res
+	 * @param ft
+	 * @param requestPathInfo
+	 * @param queryParams
+	 * @param format
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws InvalidRangeException
+	 * @throws NcssException
+	 */
 	public void pointDataStream( HttpServletResponse res, FeatureDataset ft, String requestPathInfo, PointDataRequestParamsBean queryParams, SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException;
+	
 
 	/**
 	 * @param ft

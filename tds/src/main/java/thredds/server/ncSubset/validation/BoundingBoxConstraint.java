@@ -30,51 +30,37 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncSubset;
+package thredds.server.ncSubset.validation;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.ParseException;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import thredds.server.ncSubset.controller.GridAsPointDataStream;
-import thredds.server.ncSubset.controller.NcssDiskCache;
-import thredds.server.ncSubset.controller.StationPointDataStream;
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.util.DiskCache2;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
 /**
  * @author mhermida
  *
  */
-public final class NCSSPointDataStreamFactory {
-
-	/**
-	 * @param ft
-	 * @param tdsContext
-	 * @return
-	 * @throws IOException 
-	 * @throws NcssException 
-	 * @throws ParseException 
-	 */
-	public static NCSSPointDataStream getDataStreamer(FeatureDataset fd, PointDataRequestParamsBean queryParams, 
-			 SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException {
-
-		FeatureType ft = fd.getFeatureType();
-		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
+@Target({TYPE, METHOD, FIELD, ANNOTATION_TYPE})
+@Retention(RUNTIME)
+@Constraint(validatedBy=BoundingBoxValidator.class)
+@Documented
+public @interface BoundingBoxConstraint {
 		
-		if(ft == FeatureType.GRID){
-			return new GridAsPointDataStream(diskCache, format, out); 
-		}
-		if(ft == FeatureType.STATION){	
-			return StationPointDataStream.stationPointDataStreamFactory(fd, queryParams, diskCache, format, out);
-		}		
+	String message() default "{thredds.server.ncSubset.validation.wrong_bbox}";
 		
-		return null;
-	}
+	Class<?>[] groups() default {};
+		
+	Class<? extends Payload>[] payload() default {};	
+
+}	
 	
-}
+

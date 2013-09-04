@@ -27,7 +27,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   static private final InvService fileService = new InvService("fileService", ServiceType.COMPOUND.toString(), "", "", "");
   static {
     collectionService.addService( InvService.cdmrfeature);
-
+    collectionService.addService( InvService.ncss);
+    
     fileService.addService( InvService.cdmremote);
     fileService.addService( InvService.fileServer);
     fileService.addService( InvService.opendap);

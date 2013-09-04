@@ -30,51 +30,51 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncSubset;
+package thredds.server.ncSubset.validation;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.ParseException;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
-import thredds.server.ncSubset.controller.GridAsPointDataStream;
-import thredds.server.ncSubset.controller.NcssDiskCache;
-import thredds.server.ncSubset.controller.StationPointDataStream;
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.util.DiskCache2;
+import thredds.server.ncSubset.params.StationRequestParamsBean;
 
 /**
  * @author mhermida
  *
  */
-public final class NCSSPointDataStreamFactory {
+public class BoundingBoxValidator implements ConstraintValidator<BoundingBoxConstraint, StationRequestParamsBean>{
 
-	/**
-	 * @param ft
-	 * @param tdsContext
-	 * @return
-	 * @throws IOException 
-	 * @throws NcssException 
-	 * @throws ParseException 
+	/* (non-Javadoc)
+	 * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
 	 */
-	public static NCSSPointDataStream getDataStreamer(FeatureDataset fd, PointDataRequestParamsBean queryParams, 
-			 SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException {
-
-		FeatureType ft = fd.getFeatureType();
-		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
+	@Override
+	public void initialize(BoundingBoxConstraint arg0) {
+		// TODO Auto-generated method stub
 		
-		if(ft == FeatureType.GRID){
-			return new GridAsPointDataStream(diskCache, format, out); 
-		}
-		if(ft == FeatureType.STATION){	
-			return StationPointDataStream.stationPointDataStreamFactory(fd, queryParams, diskCache, format, out);
-		}		
-		
-		return null;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
+	 */
+	@Override
+	public boolean isValid(StationRequestParamsBean params,
+			ConstraintValidatorContext constraintValidatorContext) {
+		
+		constraintValidatorContext.disableDefaultConstraintViolation();
+		boolean isValid =true;
+		
+		//If one is not null, them all have to
+		if( params.getNorth() != null || params.getSouth() != null ||  params.getEast() != null || params.getWest() != null){
+			
+			if( params.getNorth() == null || params.getSouth() == null ||  params.getEast() == null || params.getWest() == null){
+				isValid = false;
+				constraintValidatorContext
+				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.wrong_bbox}")
+				.addConstraintViolation();				
+			}			
+			
+		}
+		
+		return isValid;
+	}
+
 }

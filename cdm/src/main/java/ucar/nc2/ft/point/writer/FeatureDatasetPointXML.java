@@ -160,8 +160,10 @@ public class FeatureDatasetPointXML {
     if (null != path) {
       rootElem.setAttribute("location", path);
       Element elem = new Element("featureDataset");
-      elem.setAttribute("type", fdp.getFeatureType().toString().toLowerCase());
-      elem.setAttribute("url", path + "/" + fdp.getFeatureType().toString().toLowerCase());
+      FeatureType ft = fdp.getFeatureType();
+      elem.setAttribute("type", ft.toString().toLowerCase());
+      String url = path.replace("dataset.xml", ft.toString().toLowerCase()+".xml");
+      elem.setAttribute("url", url);
       rootElem.addContent(elem);
     }
 
