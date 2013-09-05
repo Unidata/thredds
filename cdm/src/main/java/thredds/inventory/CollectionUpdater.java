@@ -172,7 +172,10 @@ public enum CollectionUpdater {
             .build();
 
     try {
-      scheduler.addJob(updateJob, false);
+      if(!scheduler.checkExists(updateJob.getKey())) 	
+      	scheduler.addJob(updateJob, false);
+      else    	  
+    	logger.warn("cronExecutor failed to schedule startup Job for " + config +". Another Job exists with that identification." ); 
     } catch (SchedulerException e) {
       logger.error("cronExecutor failed to schedule startup Job for " + config, e);
       return;
@@ -187,8 +190,11 @@ public enum CollectionUpdater {
               .build();
 
       try {
-        scheduler.scheduleJob(startupTrigger);
-        logger.info("Schedule startup scan {} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
+    	if(!scheduler.checkExists(startupTrigger.getJobKey() )){  
+    	   scheduler.scheduleJob(startupTrigger);
+           logger.info("Schedule startup scan {} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
+    	}else
+    		logger.warn("cronExecutor failed to schedule startup Job for " + config +". Another Job exists with that identification." );
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
@@ -203,9 +209,11 @@ public enum CollectionUpdater {
                 .build();
 
       try {
-        scheduler.scheduleJob(rescanTrigger);
-        logger.info("Schedule recurring scan for '{}' cronExpr={}", config.name, updateConfig.rescan);
-
+    	if(!scheduler.checkExists(rescanTrigger.getJobKey() )){  
+    		scheduler.scheduleJob(rescanTrigger);
+    		logger.info("Schedule recurring scan for '{}' cronExpr={}", config.name, updateConfig.rescan);
+    	}else
+    		logger.warn("cronExecutor failed to schedule cron Job for " + config +". Another Job exists with that identification." );
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule cron Job", e);
         // e.printStackTrace();
