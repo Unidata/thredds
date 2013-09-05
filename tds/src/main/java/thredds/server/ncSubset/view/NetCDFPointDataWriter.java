@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
-import thredds.server.ncSubset.controller.AbstractNcssController;
+import thredds.server.ncSubset.controller.GridDatasetSubsetter;
 import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapper;
@@ -26,7 +26,6 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -159,7 +158,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 
     	//Set the response headers...
        String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);                
-       String url = AbstractNcssController.buildCacheUrl(netcdfResult.getName());
+       String url = GridDatasetSubsetter.buildCacheUrl(netcdfResult.getName());
        String contentType = SupportedFormat.NETCDF3.getResponseContentType();
        if(version == NetcdfFileWriter.Version.netcdf4)
     	   contentType = SupportedFormat.NETCDF4.getResponseContentType();

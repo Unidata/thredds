@@ -127,16 +127,14 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
 						"Feature Type not supported");
 			}
 
-			// FeatureType ft = fd.getFeatureType();
-			// Create a point data streamer depending on the feature
-			// res.setContentType(format.getResponseContentType());
 			NCSSPointDataStream pds = NCSSPointDataStreamFactory
 					.getDataStreamer(fd, params, format, res.getOutputStream());
 
 			setResponseHeaders(res,
 					pds.getResponseHeaders(fd, format, datasetPath));
 			pds.pointDataStream(res, fd, datasetPath, params, format);
-
+			
+			fd.close();
 		}
 	}
 
@@ -208,6 +206,8 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
 				pds.pointDataStream(response, fd,pathInfo, pdr, sf);				
 				
 			}
+			
+			fd.close();		
 		}
 
 	}
@@ -242,13 +242,7 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
 		}
 	}
 
-	public static final String getNCSSServletPath() {
-		return FeatureDatasetController.servletPath;
-	}
 
-	public static final String getServletCachePath() {
-		return servletCachePath;
-	}
 
 	// Exception handlers
 	@ExceptionHandler(NcssException.class)

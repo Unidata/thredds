@@ -56,7 +56,7 @@ import ucar.nc2.time.CalendarDateRange;
 @RunWith(Parameterized.class)
 public class DefaultDateRangeTests {
 
-	private GridDataController gridDataController; 
+	//private GridDataController gridDataController; 
 	private RequestParamsBean requestParams;
 	
 	private long durationInSeconds;
@@ -92,16 +92,16 @@ public class DefaultDateRangeTests {
 		requestParams.setTime_duration(time_duration);
 	} 
 	
-	@Before
-	public void setUp(){
-		
-		gridDataController = new GridDataController();
-	} 
+//	@Before
+//	public void setUp(){
+//		
+//		gridDataController = new GridDataController();
+//	} 
 	
 	@Test
 	public void shouldGetPresent() throws ParseException{
 		
-		CalendarDateRange range= gridDataController.getRequestedDateRange(requestParams);
+		CalendarDateRange range= GridDatasetSubsetter.getRequestedDateRange(requestParams);
 		
 		//assertEquals(durationInSeconds, range.getDurationInSecs() );
 		//long duration =Math.abs( durationInSeconds - range.getDurationInSecs() );		

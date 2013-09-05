@@ -98,6 +98,8 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController{
 			res.setContentType("text/html; charset=UTF-8");
 		
 		writeResponse(strResponse, res);
+		
+		fd.close();
 	}
 	
 	
@@ -137,6 +139,9 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController{
 		
 			res.setContentType("text/xml; charset=iso-8859-1");
 			writeResponse(infoString, res);
+			
+			fd.close();
+			
 		}
 	}	
 	

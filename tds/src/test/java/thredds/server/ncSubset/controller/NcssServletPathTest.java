@@ -37,7 +37,7 @@ import org.junit.Test;
 
 /**
  * 
- * NCSS controllers map requests starting by "/ncss/grid" to the appropriate handler and store temp files in "/cache/ncss" (by default)
+ * NCSS controllers map requests starting by "/ncss" to the appropriate handler and store temp files in "/cache/ncss" (by default)
  * Test for ensuring that those values do not change in the AbstractNcssController
  * 
  * @author mhermida
@@ -45,17 +45,17 @@ import org.junit.Test;
  */
 public class NcssServletPathTest {
 	
-	private static String NCSS_SERVLET_PATH = "/ncss_new";
+	private static String NCSS_SERVLET_PATH = "/ncss";
 	private static String NCSS_CACHE_PATH = "/cache/ncss";
 	
 	@Test
 	public void testServletPath(){
-		assertEquals(NCSS_SERVLET_PATH, FeatureDatasetController.getNCSSServletPath() );
+		assertEquals(NCSS_SERVLET_PATH, AbstractFeatureDatasetController.getNCSSServletPath() );
 	}
 	
 	@Test
 	public void testCachePath(){
-		assertEquals(NCSS_CACHE_PATH, FeatureDatasetController.getServletCachePath());
+		assertEquals(NCSS_CACHE_PATH, AbstractFeatureDatasetController.getServletCachePath());
 	}	
 
 }

@@ -61,23 +61,18 @@ import ucar.nc2.dt.GridDataset;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-public class GridRequestsExeceptionTest {
+public class GridRequestsExceptionTest {
 	
 	@Autowired
 	private FeatureDatasetController featureDatasetController;
-	//private GridDataController gridDataController;
 	
-	//private GridDataRequestParamsBean params;	
-	//private BindingResult validationResult;
 	private MockHttpServletResponse response ;
 	private MockHttpServletRequest request;
-	private String pathInfo="/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd";
+	private String pathInfo="/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd";
 	
 	@Before
 	public void setUp() throws IOException{
 
-		//GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		//gridDataController.setGridDataset(gds);
 		response = new MockHttpServletResponse();
 		request = new MockHttpServletRequest();
 		request.setPathInfo(pathInfo);

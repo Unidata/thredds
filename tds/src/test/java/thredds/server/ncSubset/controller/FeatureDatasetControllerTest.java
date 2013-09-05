@@ -76,8 +76,8 @@ public class FeatureDatasetControllerTest {
 	
 	@Test
 	public void getClosestStationData() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
-				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("longitude", "-105.203").param("latitude", "40.019")
 				.param("accept", "csv")
 				.param("time","2013-08-25 06:00:00Z")
@@ -90,8 +90,8 @@ public class FeatureDatasetControllerTest {
 	
 	@Test
 	public void getStationListData() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
-				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("accept", "csv")
 				.param("time","2013-08-25 06:00:00Z")
 				.param("subset", "stns")
@@ -105,8 +105,8 @@ public class FeatureDatasetControllerTest {
 	
 	@Test
 	public void getDataForTimeRange() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
-				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("accept", "netcdf")
 				.param("time_start","2013-08-25T06:00:00Z")
 				.param("time_end","2013-08-26T06:00:00Z")
@@ -122,8 +122,8 @@ public class FeatureDatasetControllerTest {
 	
 	@Test
 	public void getGridAsPointSubset() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
-				.servletPath("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+				.servletPath("/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
 				.param("accept", "netcdf" )
 				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground")
 				.param("latitude", "40.019")
@@ -137,8 +137,8 @@ public class FeatureDatasetControllerTest {
 	
 	@Test
 	public void getGridSubsetOnGridDataset() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
-				.servletPath("/ncss_new/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+				.servletPath("/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
 				.param("accept", "netcdf")
 				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground");
 		
@@ -150,8 +150,8 @@ public class FeatureDatasetControllerTest {
 	
 	@Test
 	public void getGridSubsetOnStationDataset() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
-				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("accept", "netcdf")
 				.param("var", "air_temperature", "dew_point_temperature")
 				.param("subset", "bb")
@@ -168,8 +168,8 @@ public class FeatureDatasetControllerTest {
 	
 	@Test
 	public void getAllStnsOnStationDataset() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
-				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("accept", "netcdf")
 				.param("subset", "stns")
 				.param("stns", "all")
@@ -184,8 +184,8 @@ public class FeatureDatasetControllerTest {
 	
 	@Test
 	public void stationNotFoundStationDataset() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
-				.servletPath("/ncss_new/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+				.servletPath("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("accept", "netcdf")
 				.param("subset", "stns")
 				.param("stns", "mock_station")

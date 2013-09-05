@@ -63,7 +63,7 @@ import ucar.nc2.units.TimeDuration;
  * @author mhermida
  * 
  */
-abstract class GridDatasetSubsetter {
+public abstract class GridDatasetSubsetter {
 
 //	private GridDataset gds;
 //	private long maxFileDownloadSize;
@@ -120,30 +120,7 @@ abstract class GridDatasetSubsetter {
 
 		return sameVertCoord;
 	}
-	
-					
-	protected CalendarDateRange getRequestedDateRange(RequestParamsBean params) throws ParseException{
-		
-		if(params.getTime()!=null){			
-			CalendarDate date=null;			
-			if( params.getTime().equalsIgnoreCase("present") ){
-				date =CalendarDate.of(new Date());
-			}else{			
-				
-				//date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );	
-				date =  CalendarDateFormatter.isoStringToCalendarDate(null, params.getTime());
-			}						
-			return CalendarDateRange.of(date,date);		
-		}	
-		//We should have valid params here...
-		CalendarDateRange dates=null;
-		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null), new DateType(params.getTime_end(), null, null), new TimeDuration(params.getTime_duration()), null );		
-	    //dates = CalendarDateRange.of(dr);
-		dates = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()  );
-				
-		return dates;
-	}
-	
+						
 	protected Map<String, List<String>> groupVarsByVertLevels(GridDataset gds, PointDataRequestParamsBean params) throws VariableNotContainedInDatasetException{
 		String no_vert_levels ="no_vert_level";
 		List<String> vars = params.getVar();
@@ -236,6 +213,29 @@ abstract class GridDatasetSubsetter {
 		CalendarDateRange dateRange = getRequestedDateRange(params);		
 		return NcssRequestUtils.wantedDates(gap, dateRange, time_window );	
 	}	
+	
+	
+	public static final CalendarDateRange getRequestedDateRange(RequestParamsBean params) throws ParseException{
+		
+		if(params.getTime()!=null){			
+			CalendarDate date=null;			
+			if( params.getTime().equalsIgnoreCase("present") ){
+				date =CalendarDate.of(new Date());
+			}else{			
+				
+				//date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );	
+				date =  CalendarDateFormatter.isoStringToCalendarDate(null, params.getTime());
+			}						
+			return CalendarDateRange.of(date,date);		
+		}	
+		//We should have valid params here...
+		CalendarDateRange dates=null;
+		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null), new DateType(params.getTime_end(), null, null), new TimeDuration(params.getTime_duration()), null );		
+	    //dates = CalendarDateRange.of(dr);
+		dates = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()  );
+				
+		return dates;
+	}
 	
 	public static final String buildCacheUrl(String fileName){
 		 return NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getNCSSServletPath() + "/" + fileName;

@@ -78,6 +78,14 @@ public class AbstractFeatureDatasetController {
 			log.error(ioe.getMessage());
 		}
 
+	}
+	
+	public static final String getNCSSServletPath() {
+		return servletPath;
+	}
+
+	public static final String getServletCachePath() {
+		return servletCachePath;
 	}	
 
 }
