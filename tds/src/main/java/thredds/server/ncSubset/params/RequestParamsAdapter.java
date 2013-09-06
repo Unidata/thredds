@@ -47,7 +47,7 @@ public final class RequestParamsAdapter {
 	 * @param gridRequestParams
 	 * @return
 	 */
-	public static PointDataRequestParamsBean adaptGridParamsToPoint(GridDataRequestParamsBean gridRequestParams){
+	public static PointDataRequestParamsBean adaptGridParamsToPointParams(GridDataRequestParamsBean gridRequestParams){
 		
 		PointDataRequestParamsBean pdr = new PointDataRequestParamsBean();
 		

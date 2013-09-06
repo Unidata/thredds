@@ -52,16 +52,16 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	
 	//private List<VariableSimpleIF> wantedVars;
 	
-	private NetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream){
+	private NetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream, DiskCache2 diskCache){
 		
 		this.outputStream = outputStream;
 		this.version = version;
-		diskCache = NcssDiskCache.getInstance().getDiskCache();
+		this.diskCache = diskCache;
 		netcdfResult = diskCache.createUniqueFile("ncss", ".nc");		
 	}
 	
-	public static NetCDFPointDataWriter createNetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream){
-		return new NetCDFPointDataWriter(version, outputStream);
+	public static NetCDFPointDataWriter createNetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream, DiskCache2 diskCache){
+		return new NetCDFPointDataWriter(version, outputStream, diskCache);
 	}
 	
 	//public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {

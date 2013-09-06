@@ -3,6 +3,7 @@ package thredds.server.ncSubset.view;
 import java.io.OutputStream;
 
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.util.DiskCache2;
 
 public class NetCDF4PointDataWriterFactory implements PointDataWriterFactory {
 
@@ -22,8 +23,8 @@ public class NetCDF4PointDataWriterFactory implements PointDataWriterFactory {
 	} 
 		
 	@Override
-	public PointDataWriter createPointDataWriter( OutputStream os) {
-		return NetCDFPointDataWriter.createNetCDFPointDataWriter(version, os);
+	public PointDataWriter createPointDataWriter( OutputStream os, DiskCache2 diskCache) {
+		return NetCDFPointDataWriter.createNetCDFPointDataWriter(version, os, diskCache);
 	}
 	
 	public NetcdfFileWriter.Version getVersion(){

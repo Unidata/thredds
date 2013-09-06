@@ -18,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.util.NcssRequestUtils;
@@ -31,6 +32,7 @@ import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
@@ -89,7 +91,8 @@ public class PointDataWriterTest {
 		List<String> keys = new ArrayList<String>( vars.keySet());		
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );		
 		
-		pointDataWriter = AbstractPointDataWriterFactory.createPointDataWriterFactory(supportedFormat).createPointDataWriter(new ByteArrayOutputStream());
+		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
+		pointDataWriter = AbstractPointDataWriterFactory.createPointDataWriterFactory(supportedFormat).createPointDataWriter(new ByteArrayOutputStream(), diskCache);
 		
 		List<CalendarDate> dates = gridAsPointDataset.getDates();
 		Random rand = new Random();

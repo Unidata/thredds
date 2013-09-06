@@ -68,7 +68,7 @@ public final class NCSSPointDataStreamFactory {
 		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
 		
 		if(ft == FeatureType.GRID){
-			return new GridAsPointDataStream(diskCache, format, out); 
+			return GridAsPointDataStream.gridAsPointDataStreamFactory(diskCache, format, out); 
 		}
 		if(ft == FeatureType.STATION){	
 			return StationPointDataStream.stationPointDataStreamFactory(fd, queryParams, diskCache, format, out);

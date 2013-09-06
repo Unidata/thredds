@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
@@ -30,6 +31,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
@@ -75,8 +77,8 @@ public class StationCollectionStreamTest {
 		
 		List<String> keys = new ArrayList<String>( vars.keySet());		
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );		
-		
-		pointDataStream = PointDataStream.createPointDataStream(supportedFormat, new ByteArrayOutputStream());	
+		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
+		pointDataStream = PointDataStream.createPointDataStream(supportedFormat, new ByteArrayOutputStream(), diskCache);	
 		List<CalendarDate> dates = gridAsPointDataset.getDates();
 		Random rand = new Random();
 		int randInt =     rand.nextInt( dates.size());

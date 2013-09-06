@@ -40,7 +40,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpHeaders;
@@ -78,10 +77,10 @@ public class GridAsPointDataStream extends GridDatasetSubsetter implements NCSSP
 	
 	private PointDataStream pds;
 
-	public GridAsPointDataStream(DiskCache2 diskCache, SupportedFormat format, OutputStream out ){
+	private GridAsPointDataStream(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
 		this.diskCache = diskCache;
 		this.format = format;
-		pds = PointDataStream.createPointDataStream(format,  out);
+		pds = PointDataStream.createPointDataStream(format,  out, diskCache);
 	}
 
 	/* (non-Javadoc)
@@ -160,6 +159,9 @@ public class GridAsPointDataStream extends GridDatasetSubsetter implements NCSSP
 		return pds.getHttpHeaders((GridDataset)fd, datasetPath);
 	}
 
-
+	public static GridAsPointDataStream gridAsPointDataStreamFactory(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
+		
+		return new GridAsPointDataStream(diskCache, format, out);
+	}
 
 }

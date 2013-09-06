@@ -196,7 +196,7 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
 				SupportedFormat sf = SupportedOperation.isSupportedFormat(
 						params.getAccept(), SupportedOperation.POINT_REQUEST );
 												 
-				PointDataRequestParamsBean pdr =  RequestParamsAdapter.adaptGridParamsToPoint(params);
+				PointDataRequestParamsBean pdr =  RequestParamsAdapter.adaptGridParamsToPointParams(params);
 				
 				NCSSPointDataStream pds = NCSSPointDataStreamFactory
 						.getDataStreamer(fd, pdr, sf, response.getOutputStream());
