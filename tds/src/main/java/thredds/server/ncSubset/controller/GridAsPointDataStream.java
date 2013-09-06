@@ -156,7 +156,7 @@ public class GridAsPointDataStream extends GridDatasetSubsetter implements NCSSP
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format,
 			String datasetPath) {
 
-		return pds.getHttpHeaders((GridDataset)fd, datasetPath);
+		return pds.getHttpHeaders((GridDataset)fd, datasetPath, format.isStream() );
 	}
 
 	public static GridAsPointDataStream gridAsPointDataStreamFactory(DiskCache2 diskCache, SupportedFormat format, OutputStream out){

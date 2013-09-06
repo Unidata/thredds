@@ -149,12 +149,14 @@ public class StationWriter {
 	    Writer w;
 	    
 	    switch(format){    
-	    	case XML:
-	    		w = new WriterXML(new PrintWriter(out));
+	    	case XML_STREAM: case XML_FILE:
+	    		w = new WriterXML(new PrintWriter(out), format.isStream());
 	    		break;
-	    	case CSV:
-	    		w = new WriterCSV(new PrintWriter(out));
+	    		
+	    	case CSV_STREAM: case CSV_FILE:
+	    		w = new WriterCSV(new PrintWriter(out), format.isStream());
 	    		break;
+	    		
 	    	case NETCDF3:
 	    		w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf3, out);
 	    		break;
@@ -830,10 +832,13 @@ public class StationWriter {
   }
 
   class WriterXML extends Writer {
-    XMLStreamWriter staxWriter;
-
-    WriterXML(final java.io.PrintWriter writer) {
+	  
+    private XMLStreamWriter staxWriter;
+    private boolean isStream;
+    
+    WriterXML(final java.io.PrintWriter writer, boolean isStream) {
       super(writer);
+      this.isStream = isStream;
       XMLOutputFactory f = XMLOutputFactory.newInstance();
       try {
         staxWriter = f.createXMLStreamWriter(writer);
@@ -871,6 +876,12 @@ public class StationWriter {
 
     HttpHeaders getHttpHeaders(String pathInfo){
     	HttpHeaders  httpHeaders = new HttpHeaders();
+    	
+		if(!isStream){
+			httpHeaders.set("Content-Location", pathInfo );
+			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
+		}    	
+    	
     	httpHeaders.setContentType(MediaType.APPLICATION_XML );
     	return httpHeaders;
     }
@@ -925,8 +936,11 @@ public class StationWriter {
 
   class WriterCSV extends Writer {
 
-    WriterCSV(final java.io.PrintWriter writer) {
+	private boolean isStream;
+	  
+    WriterCSV(final java.io.PrintWriter writer, boolean isStream) {
       super(writer);
+      this.isStream = isStream;
     }
 
     void header() {
@@ -946,6 +960,12 @@ public class StationWriter {
 
     HttpHeaders getHttpHeaders(String pathInfo){
     	HttpHeaders  httpHeaders = new HttpHeaders();
+    	
+		if(!isStream){
+			httpHeaders.set("Content-Location", pathInfo );
+			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
+		}
+    	
     	httpHeaders.setContentType(MediaType.TEXT_PLAIN);
     	return httpHeaders;
     }

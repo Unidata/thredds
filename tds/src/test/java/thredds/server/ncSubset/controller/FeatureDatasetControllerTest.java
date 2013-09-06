@@ -84,7 +84,7 @@ public class FeatureDatasetControllerTest {
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 		
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.CSV.getResponseContentType() )) ;;;
+			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.CSV_STREAM.getResponseContentType() ));
 		
 	}	
 	
@@ -99,7 +99,7 @@ public class FeatureDatasetControllerTest {
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 		
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())		
-			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.CSV.getResponseContentType() ));
+			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.CSV_STREAM.getResponseContentType() ));
 		
 	}
 	

@@ -40,8 +40,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import thredds.server.ncSubset.exception.NcssException;
 
 /**
  * @author mhermida
@@ -79,6 +86,28 @@ public class AbstractFeatureDatasetController {
 		}
 
 	}
+	
+	// Exception handlers
+	@ExceptionHandler(NcssException.class)
+	public ResponseEntity<String> handle(NcssException ncsse) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>(
+				"NetCDF Subset Service exception handled : "
+						+ ncsse.getMessage(), responseHeaders,
+				HttpStatus.BAD_REQUEST);
+	}
+	
+	// Exception handlers
+	@ExceptionHandler(UnsupportedOperationException.class)
+	public ResponseEntity<String> handle(UnsupportedOperationException ex) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>(
+				"UnsupportedOperationException exception handled : "
+						+ ex.getMessage(), responseHeaders,
+				HttpStatus.BAD_REQUEST);
+	}	
 	
 	public static final String getNCSSServletPath() {
 		return servletPath;

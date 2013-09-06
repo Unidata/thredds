@@ -32,6 +32,7 @@
 package thredds.server.ncSubset.controller;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,8 +80,8 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController{
 	@Autowired
 	FeatureDatasetService datasetService;	
 	
-	@RequestMapping(value = { "/ncss/**/dataset.html", "/ncss/**/dataset.xml","/ncss/**/pointDataset.html" })
-	void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	@RequestMapping(value = { "/ncss/**/dataset.html", "/ncss/**/dataset.xml","/ncss/**/pointDataset.html" }, params={"!var"})
+	void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
 		
 		String datasetPath = getDatasetPath( req );		
@@ -88,8 +89,15 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController{
 		FeatureDataset fd = datasetService.findDatasetByPath(req, res,
 				requestPathInfo);
 		
+		if (fd == null) {
+			// FeatureDataset not supported!!!
+			throw new UnsupportedOperationException(
+					"Feature Type not supported");
+		}		
+		
 		String strResponse ="";
-		strResponse = ncssShowDatasetInfo.showForm( fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);		
+		strResponse = ncssShowDatasetInfo.showForm( fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
+					
 		res.setContentLength(strResponse.length());
 		
 		if (wantXML)
@@ -196,6 +204,7 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController{
 	 * @throws IOException
 	 */
 	private void  writeResponse(String responseStr, HttpServletResponse response) throws IOException{
+		
 		PrintWriter pw = response.getWriter();
 		pw.write(responseStr);
 		pw.flush();

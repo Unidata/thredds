@@ -109,9 +109,9 @@ public final class PointDataStream {
 		
 	}
 	
-	public final HttpHeaders getHttpHeaders(GridDataset gds, String pathInfo){
+	public final HttpHeaders getHttpHeaders(GridDataset gds, String pathInfo, Boolean isStream){
 		
-		pointDataWriter.setHTTPHeaders(gds, pathInfo);
+		pointDataWriter.setHTTPHeaders(gds, pathInfo, isStream);
 		return pointDataWriter.getResponseHeaders();
 	}
 	

@@ -242,17 +242,4 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
 		}
 	}
 
-
-
-	// Exception handlers
-	@ExceptionHandler(NcssException.class)
-	public ResponseEntity<String> handle(NcssException ncsse) {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<String>(
-				"NetCDF Subset Service exception handled : "
-						+ ncsse.getMessage(), responseHeaders,
-				HttpStatus.BAD_REQUEST);
-	}
-
 }

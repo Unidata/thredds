@@ -93,7 +93,7 @@ public class FeatureDatasetServiceImpl implements FeatureDatasetService {
 						FeatureType.ANY,                  // will check FeatureType below if needed...
 						NetcdfDataset.wrap(ncfile, enhance),
 						null,
-						new Formatter( res.getOutputStream() ));       // better way to do this?
+						new Formatter( System.err ));       // better way to do this?
 			}
 		}	
 								

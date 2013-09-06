@@ -13,7 +13,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 interface PointDataWriter {
 
-	void setHTTPHeaders(GridDataset gds, String pathInfo);
+	void setHTTPHeaders(GridDataset gds, String pathInfo, boolean isStream);
 	
 
 	boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord);

@@ -154,7 +154,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	
 	
 	@Override
-	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo){
+	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo, boolean isStream){
 
     	//Set the response headers...
        String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);                

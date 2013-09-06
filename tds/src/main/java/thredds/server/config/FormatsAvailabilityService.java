@@ -14,8 +14,10 @@ public final class FormatsAvailabilityService {
 	
 	static{
 		//Default availabiliy
-		formatsAvailability.put(SupportedFormat.XML , true);
-		formatsAvailability.put(SupportedFormat.CSV , true);
+		formatsAvailability.put(SupportedFormat.XML_FILE, true);
+		formatsAvailability.put(SupportedFormat.XML_STREAM, true);
+		formatsAvailability.put(SupportedFormat.CSV_FILE, true);
+		formatsAvailability.put(SupportedFormat.CSV_STREAM, true);
 		formatsAvailability.put(SupportedFormat.NETCDF3 , true);
 		formatsAvailability.put(SupportedFormat.NETCDF4 , false);
 		formatsAvailability.put(SupportedFormat.WKT , true);

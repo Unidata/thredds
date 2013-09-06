@@ -421,10 +421,15 @@ class CSVPointDataWriter implements PointDataWriter  {
 	}
 
 	@Override
-	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo){
+	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo, boolean isStream){
 
 		if(!headersSet){
 			httpHeaders = new HttpHeaders();
+			if(!isStream){
+				httpHeaders.set("Content-Location", pathInfo );
+				httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
+			}			
+			
 			httpHeaders.setContentType( MediaType.TEXT_PLAIN );
 		}
 		headersSet = true;
