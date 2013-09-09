@@ -58,7 +58,8 @@ public class GridAsPointRequestExceptionsTest {
 		
 		//String servletPath = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);		
 		
-		this.pathInfo = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);
+		//this.pathInfo = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);
+		this.pathInfo = FeatureDatasetController.getNCSSServletPath() +PathInfoParams.getPatInfo().get(0);
 	}
 	
 	

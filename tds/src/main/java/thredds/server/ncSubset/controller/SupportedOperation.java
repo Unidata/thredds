@@ -16,9 +16,9 @@ import thredds.server.ncSubset.format.SupportedFormat;
  */
 enum SupportedOperation {
 	
-	DATASET_INFO_REQUEST("Dataset info request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML })),SupportedFormat.XML),
+	DATASET_INFO_REQUEST("Dataset info request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML_FILE })),SupportedFormat.XML_FILE),
 	DATASET_BOUNDARIES_REQUEST("Dataset grid boundaries request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.JSON, SupportedFormat.WKT })),SupportedFormat.WKT),
-	POINT_REQUEST("Grid as Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML, SupportedFormat.CSV, SupportedFormat.NETCDF3, SupportedFormat.NETCDF4})),SupportedFormat.XML),
+	POINT_REQUEST("Grid as Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML_STREAM, SupportedFormat.XML_FILE, SupportedFormat.CSV_STREAM, SupportedFormat.CSV_FILE , SupportedFormat.NETCDF3, SupportedFormat.NETCDF4})),SupportedFormat.XML_STREAM),
 	GRID_REQUEST("Grid data request",Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.NETCDF3, SupportedFormat.NETCDF4})),SupportedFormat.NETCDF3);
 	
 	private final String operationName; 
@@ -46,6 +46,10 @@ enum SupportedOperation {
 	}
 	
 	public static SupportedFormat isSupportedFormat(String format, SupportedOperation operation) throws UnsupportedResponseFormatException{
+		
+		if(format == null || format.equals("")){
+			return operation.getDefaultFormat();
+		}
 		
 		List<SupportedFormat> supportedFormats = operation.getSupportedFormats();
 		

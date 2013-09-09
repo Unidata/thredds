@@ -37,7 +37,7 @@ public class NcssRequestParamsBeanTest {
 		params.setLatitude(42.04);
 		params.setLongitude(-105.0);		
 		params.setVar( Arrays.asList("var1", "var2") );
-		params.setPoint(true);
+		//params.setPoint(true);
 		params.setAccept("text/csv");
 		params.setTime_start("present");						
 		
@@ -54,7 +54,7 @@ public class NcssRequestParamsBeanTest {
 		params.setLatitude(42.04);
 		params.setLongitude(-105.0);		
 		params.setVar( Arrays.asList("var1", "var2") );
-		params.setPoint(true);
+		//params.setPoint(true);
 		params.setAccept("text/csv");
 		params.setTime("present");							
 		
@@ -71,7 +71,7 @@ public class NcssRequestParamsBeanTest {
 		params.setLatitude(42.04);
 		params.setLongitude(-105.0);		
 		params.setVar( Arrays.asList("var1", "var2") );
-		params.setPoint(true);
+		//params.setPoint(true);
 		params.setAccept("text/csv");
 		params.setTime("2012x0327");							
 		
@@ -88,7 +88,7 @@ public class NcssRequestParamsBeanTest {
 		params.setLatitude(42.04);
 		params.setLongitude(-105.0);		
 		params.setVar( Arrays.asList("var1", "var2") );
-		params.setPoint(true);
+		//params.setPoint(true);
 		params.setAccept("text/csv");
 		params.setTime_start("2012-03-27T00:00:00Z");
 		params.setTime_duration("fff");
@@ -107,7 +107,7 @@ public class NcssRequestParamsBeanTest {
 		params.setLatitude(42.04);
 		params.setLongitude(-105.0);		
 		params.setVar( Arrays.asList("var1", "var2") );
-		params.setPoint(true);
+		//params.setPoint(true);
 		params.setAccept("text/csv");
 		params.setTime("2012-03-27T00:00:00Z");
 		params.setTime_window("fff");
@@ -126,7 +126,7 @@ public class NcssRequestParamsBeanTest {
 		params.setLatitude(42.04);
 		params.setLongitude(-105.0);		
 		params.setVar( Arrays.asList("var1", "var2") );
-		params.setPoint(true);
+		//params.setPoint(true);
 		params.setTime_start("2012-03-27T00:00:00Z");
 		//params.setTime_start("2012-0-27T08:00:00+0200");
 		params.setTime_end("2012-03-28");

@@ -79,7 +79,8 @@ public class PointDataTest {
 	public void setUp() throws IOException{
 		
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();	
-		String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;		
+		//String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;		
+		String servletPath = FeatureDatasetController.servletPath+pathInfo;
 		
 		//Creates values for param var
 		Iterator<String> it = vars.iterator();

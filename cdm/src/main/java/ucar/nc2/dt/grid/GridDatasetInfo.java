@@ -321,7 +321,9 @@ public class GridDatasetInfo {
 		Element gridAsPoint = new Element("GridAsPoint");
 
 		gridAsPoint.addContent(new Element("accept").addContent("xml"));
+		gridAsPoint.addContent(new Element("accept").addContent("text/xml"));
 		gridAsPoint.addContent(new Element("accept").addContent("csv"));
+		gridAsPoint.addContent(new Element("accept").addContent("text/csv"));
 		gridAsPoint.addContent(new Element("accept").addContent("netcdf"));
 
 		//accept list for Grid requests

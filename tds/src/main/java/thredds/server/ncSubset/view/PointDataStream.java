@@ -2,7 +2,6 @@ package thredds.server.ncSubset.view;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
+import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.format.SupportedFormat;
@@ -19,11 +19,12 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
 
 public final class PointDataStream {
@@ -32,11 +33,11 @@ public final class PointDataStream {
 
 	private final PointDataWriter pointDataWriter;
 
-	private PointDataStream(SupportedFormat supportedFormat, OutputStream outputStream) {
-		
+	private PointDataStream(SupportedFormat supportedFormat, OutputStream outputStream, DiskCache2 diskCache) {
+				
 		this.pointDataWriter = AbstractPointDataWriterFactory
 				.createPointDataWriterFactory(supportedFormat)
-				.createPointDataWriter(outputStream);
+				.createPointDataWriter(outputStream, diskCache);
 	}
 
 	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, Map<String, List<String>> groupedVars, Double vertCoord) throws DateUnitException, UnsupportedOperationException, InvalidRangeException {
@@ -108,15 +109,15 @@ public final class PointDataStream {
 		
 	}
 	
-	public final HttpHeaders getHttpHeaders(GridDataset gds, String pathInfo){
+	public final HttpHeaders getHttpHeaders(GridDataset gds, String pathInfo, Boolean isStream){
 		
-		pointDataWriter.setHTTPHeaders(gds, pathInfo);
+		pointDataWriter.setHTTPHeaders(gds, pathInfo, isStream);
 		return pointDataWriter.getResponseHeaders();
 	}
 	
-	public static final PointDataStream createPointDataStream(SupportedFormat supportedFormat, OutputStream outputStream){
+	public static final PointDataStream createPointDataStream(SupportedFormat supportedFormat, OutputStream outputStream, DiskCache2 diskCache){
 		
-		return new PointDataStream(supportedFormat, outputStream);
+		return new PointDataStream(supportedFormat, outputStream, diskCache);
 		
-	} 
+	}	
 }

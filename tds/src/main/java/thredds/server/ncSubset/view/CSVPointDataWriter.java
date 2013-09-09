@@ -14,6 +14,7 @@ import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.InvalidRangeException;
@@ -420,21 +421,18 @@ class CSVPointDataWriter implements PointDataWriter  {
 	}
 
 	@Override
-	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo){
+	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo, boolean isStream){
 
 		if(!headersSet){
 			httpHeaders = new HttpHeaders();
-			//Set the response headers...
-			//			String filename = gridDataset.getLocationURI();
-			//			int pos = filename.lastIndexOf("/");
-			//			filename = filename.substring(pos + 1);
-			//			if (!filename.endsWith(".csv"))
-			//				filename = filename + ".csv";
-			//			
-			//			httpHeaders.set("Content-Location", filename );
-			//			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-			//			headersSet = true;
-		}	
+			if(!isStream){
+				httpHeaders.set("Content-Location", pathInfo );
+				httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
+			}			
+			
+			httpHeaders.setContentType( MediaType.TEXT_PLAIN );
+		}
+		headersSet = true;
 	}	
 
 }

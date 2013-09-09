@@ -13,8 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
-import thredds.server.ncSubset.controller.AbstractNcssController;
+import thredds.server.ncSubset.controller.GridDatasetSubsetter;
 import thredds.server.ncSubset.controller.NcssDiskCache;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapper;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapperFactory;
 import ucar.ma2.InvalidRangeException;
@@ -25,7 +26,6 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -52,16 +52,16 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	
 	//private List<VariableSimpleIF> wantedVars;
 	
-	private NetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream){
+	private NetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream, DiskCache2 diskCache){
 		
 		this.outputStream = outputStream;
 		this.version = version;
-		diskCache = NcssDiskCache.getInstance().getDiskCache();
+		this.diskCache = diskCache;
 		netcdfResult = diskCache.createUniqueFile("ncss", ".nc");		
 	}
 	
-	public static NetCDFPointDataWriter createNetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream){
-		return new NetCDFPointDataWriter(version, outputStream);
+	public static NetCDFPointDataWriter createNetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream, DiskCache2 diskCache){
+		return new NetCDFPointDataWriter(version, outputStream, diskCache);
 	}
 	
 	//public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
@@ -154,24 +154,22 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	
 	
 	@Override
-	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo){
+	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo, boolean isStream){
 
     	//Set the response headers...
-//    	String filename = gridDataset.getLocationURI();
-//        int pos = filename.lastIndexOf("/");
-//        filename = filename.substring(pos + 1);
-//        if (!filename.endsWith(".nc"))
-//          filename = filename + ".nc";
-        
-       String fileName = getFileNameForResponse(version, pathInfo);
-                
-        String url = AbstractNcssController.buildCacheUrl(netcdfResult.getName());
-    	httpHeaders.set("Content-Location", url );
-    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+       String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);                
+       String url = GridDatasetSubsetter.buildCacheUrl(netcdfResult.getName());
+       String contentType = SupportedFormat.NETCDF3.getResponseContentType();
+       if(version == NetcdfFileWriter.Version.netcdf4)
+    	   contentType = SupportedFormat.NETCDF4.getResponseContentType();
+       
+       httpHeaders.set("Content-Type", contentType);
+       httpHeaders.set("Content-Location", url );
+       httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 		
 	}
 	
-	private String getFileNameForResponse(NetcdfFileWriter.Version version, String pathInfo){
+	public static String getFileNameForResponse(NetcdfFileWriter.Version version, String pathInfo){
 
 		String fileExtension = ".nc";
 		

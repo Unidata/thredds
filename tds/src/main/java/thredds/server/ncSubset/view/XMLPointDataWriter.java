@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -17,23 +17,18 @@ import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
-import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.util.NcssRequestUtils;
-import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 class XMLPointDataWriter implements PointDataWriter {
 
@@ -42,7 +37,8 @@ class XMLPointDataWriter implements PointDataWriter {
 	private Map<String,List<String>> allVars;	
 	private Map<String, GridAsPointDataset> gridAsPointDatasets=new HashMap<String, GridAsPointDataset>();	
 	private XMLStreamWriter xmlStreamWriter;
-
+	private HttpHeaders httpHeaders = new HttpHeaders(); 
+	
 	private XMLPointDataWriter(OutputStream os) {
 
 		xmlStreamWriter = createXMLStreamWriter(os);
@@ -463,7 +459,7 @@ class XMLPointDataWriter implements PointDataWriter {
 
 	@Override
 	public HttpHeaders getResponseHeaders(){
-		return new HttpHeaders();
+		return httpHeaders;
 	}	
 
 	private XMLStreamWriter createXMLStreamWriter(OutputStream os) {
@@ -482,7 +478,16 @@ class XMLPointDataWriter implements PointDataWriter {
 	}
 
 	@Override
-	public void setHTTPHeaders(GridDataset gds, String pathInfo){
+	public void setHTTPHeaders(GridDataset gds, String pathInfo, boolean isStream){
+		
+		
+    	//Set the response headers...
+		if(!isStream){
+			httpHeaders.set("Content-Location", pathInfo );
+			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
+		}	
+		
+		httpHeaders.setContentType(MediaType.APPLICATION_XML);
 
 	}
 

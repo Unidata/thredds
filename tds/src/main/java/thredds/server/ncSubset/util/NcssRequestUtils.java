@@ -241,8 +241,19 @@ public final class NcssRequestUtils implements ApplicationContextAware{
 		
 	} 
 	
+	public static String nameFromPathInfo(String pathInfo){
+		
+		String[] pathInfoStr = pathInfo.split("/");
+		return pathInfoStr[pathInfoStr.length - 1];
+	}
 	
 	
+	/**
+	 * Makes the TdsContext available
+	 * 
+	 * @return TdsContext
+	 * 
+	 */
 	public static TdsContext getTdsContext(){
 		
 		return applicationContext.getBean(TdsContext.class);

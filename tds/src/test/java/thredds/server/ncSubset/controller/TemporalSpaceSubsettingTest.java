@@ -115,7 +115,8 @@ public class TemporalSpaceSubsettingTest {
 		lengthTimeDim = expectedLengthTimeDim;
 		pathInfo = pathInfoForTest;
 		
-		String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;
+		//String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;
+		String servletPath = FeatureDatasetController.servletPath+pathInfo;
 		
 		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath)
 				.param("accept", format.getAliases().get(0))

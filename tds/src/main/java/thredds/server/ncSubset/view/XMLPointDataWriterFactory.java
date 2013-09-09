@@ -2,6 +2,8 @@ package thredds.server.ncSubset.view;
 
 import java.io.OutputStream;
 
+import ucar.nc2.util.DiskCache2;
+
 class XMLPointDataWriterFactory implements PointDataWriterFactory {	
 
 	private static XMLPointDataWriterFactory INSTANCE;
@@ -19,7 +21,7 @@ class XMLPointDataWriterFactory implements PointDataWriterFactory {
 	}
 	
 	@Override
-	public PointDataWriter createPointDataWriter(OutputStream os) {
+	public PointDataWriter createPointDataWriter(OutputStream os, DiskCache2 diskCache ) {
 		
 		return XMLPointDataWriter.createXMLPointDataWriter(os);
 	}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
 
   <xsl:output method="html"/>
 
@@ -34,8 +34,12 @@
         <h1>CDM Remote Subset Service</h1>
         <h2>Station Dataset:
           <xsl:value-of select="capabilities/@location"/></h2>
+          <!-- 
         <em><a href="?req=capabilities">Dataset Description</a></em>
         <p><em><a href="?req=stations&amp;accept=xml">Station List</a></em></p>
+         -->
+		<em><a href="dataset.xml">Dataset Description</a></em>
+        <p><em><a href="station.xml">Station List</a></em></p>         
         <hr/>
 
         <form method="GET" action="{capabilities/attribute::location}">

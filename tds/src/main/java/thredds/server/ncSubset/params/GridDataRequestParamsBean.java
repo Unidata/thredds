@@ -2,22 +2,7 @@ package thredds.server.ncSubset.params;
 
 import javax.validation.constraints.NotNull;
 
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
-
 public class GridDataRequestParamsBean extends RequestParamsBean {
-	
-	//@NotNull(message="north param may not be null")	
-	private Double north;
-	
-	//@NotNull(message="south param may not be null")	
-	private Double south;
-	
-	//@NotNull(message="east param may not be null")	
-	private Double east;
-	
-	//@NotNull(message="west param may not be null")	
-	private Double west;
 	
 	
 	private Double minx;
@@ -39,38 +24,6 @@ public class GridDataRequestParamsBean extends RequestParamsBean {
 	private Integer timeStride = 1;
 	
 	private Integer vertStride=1;
-
-	public Double getNorth() {
-		return north;
-	}
-
-	public void setNorth(Double north) {
-		this.north = north;
-	}
-
-	public Double getSouth() {
-		return south;
-	}
-
-	public void setSouth(Double south) {
-		this.south = south;
-	}
-
-	public Double getEast() {
-		return east;
-	}
-
-	public void setEast(Double east) {
-		this.east = east;
-	}
-
-	public Double getWest() {
-		return west;
-	}
-
-	public void setWest(Double west) {
-		this.west = west;
-	}
 
 	public Double getMinx() {
 		return minx;

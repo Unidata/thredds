@@ -160,8 +160,10 @@ public class FeatureDatasetPointXML {
     if (null != path) {
       rootElem.setAttribute("location", path);
       Element elem = new Element("featureDataset");
-      elem.setAttribute("type", fdp.getFeatureType().toString().toLowerCase());
-      elem.setAttribute("url", path + "/" + fdp.getFeatureType().toString().toLowerCase());
+      FeatureType ft = fdp.getFeatureType();
+      elem.setAttribute("type", ft.toString().toLowerCase());
+      String url = path.replace("dataset.xml", ft.toString().toLowerCase()+".xml");
+      elem.setAttribute("url", url);
       rootElem.addContent(elem);
     }
 
@@ -193,9 +195,11 @@ public class FeatureDatasetPointXML {
     Element elem = new Element("AcceptList");
     //elem.addContent(new Element("accept").addContent("raw"));
     elem.addContent(new Element("accept").addContent("csv"));
+    elem.addContent(new Element("accept").addContent("text/csv"));
     elem.addContent(new Element("accept").addContent("xml"));
+    elem.addContent(new Element("accept").addContent("text/xml"));
     elem.addContent(new Element("accept").addContent("netcdf"));
-    elem.addContent(new Element("accept").addContent("ncstream"));
+    //elem.addContent(new Element("accept").addContent("ncstream"));
     rootElem.addContent(elem);
 
     return doc;
