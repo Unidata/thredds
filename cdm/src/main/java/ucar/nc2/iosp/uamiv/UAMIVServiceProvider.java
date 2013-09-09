@@ -11,6 +11,8 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
 import java.io.File;
+import java.util.HashSet;
+import java.util.Arrays;
 
 /**
  * Class for reading CAMx flavored uamiv files.
@@ -151,7 +153,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     raf.skipBytes(4); // Skip record pad
     String name = raf.readString(40); // read 40 name
     String note = raf.readString(240);
-    raf.skipBytes(4); // Skip dummy
+    int itzone = raf.readInt(); // Read the time zone
     int nspec = raf.readInt(); // Read number of species
     this.nspec = nspec; // internalize nspec
     int bdate = raf.readInt(); // get file start date
@@ -188,7 +190,8 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
 
     // Read second line of UAM-IV header
     raf.skipBytes(4); //Skip record pad
-    raf.skipBytes(8); //Skip 2 dummies
+    float plon = raf.readFloat(); // get polar longitude
+    float plat = raf.readFloat(); // get polar latitude
     int iutm = raf.readInt(); // get utm
     float xorg = raf.readFloat(); // get x origin in meters
     float yorg = raf.readFloat(); // get y origin in meters
@@ -197,7 +200,17 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     int nx = raf.readInt(); // get number of columns
     int ny = raf.readInt(); // get number of rows
     int nz = raf.readInt(); // get number of layers
-    raf.skipBytes(20); //Skip 5 dummies
+    // get projection number
+    //    (0: lat-lon;
+    //     1: Universal Transverse Mercator;
+    //     2: Lambert Conic Conformal;
+    //     3: Polar stereographic)
+    // These translate to IOAPI GDTYP3D values 1, 5, 2, and 6 respectively
+    int iproj = raf.readInt(); 
+    int istag = raf.readInt(); // Read stagger indicator
+    float tlat1 = raf.readFloat(); // Read true latitude 1
+    float tlat2 = raf.readFloat(); // Read true latitude 2
+    raf.skipBytes(4); //Skip 1 dummies
     raf.skipBytes(4); //Skip record pad
 
     // Read third line of UAM-IV header
@@ -264,6 +277,9 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     * simply the species name.  units is heuristically
     * determined from the name
     */
+    HashSet<String> AeroSpcs = new HashSet<String>(Arrays.asList( "PSO4", "PNO3", "PNH4", "PH2O", "SOPA", "SOPB",  "NA", "PCL", "POA", "PEC", "FPRM", "FCRS", "CPRM", "CCRS"));
+    HashSet<String> LULC = new HashSet<String>(Arrays.asList("WATER", "ICE", "LAKE", "ENEEDL", "EBROAD", "DNEEDL", "DBROAD", "TBROAD", "DDECID", "ESHRUB", "DSHRUB", "TSHRUB", "SGRASS", "LGRASS", "CROPS", "RICE", "SUGAR", "MAIZE", "COTTON", "ICROPS", "URBAN", "TUNDRA", "SWAMP", "DESERT", "MWOOD", "TFOREST"));
+    
     while (count < nspec) {
       String spc = spc_names[count++];
       Variable temp = ncfile.addVariable(null, spc, DataType.FLOAT, "TSTEP LAY ROW COL");
@@ -280,26 +296,41 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
         temp.addAttribute(new Attribute(CDM.UNITS, "m"));
       } else if (spc.equals(CLDWATER) || spc.equals(PRECIP) || spc.equals(RAIN)) {
         temp.addAttribute(new Attribute(CDM.UNITS, "g/m**3"));
-      } else if (spc.equals(CLDOD)) {
+      } else if (spc.equals(CLDOD) || spc.equals("CLOUDOD")) {
         temp.addAttribute(new Attribute(CDM.UNITS, "none"));
-      } else if (spc.startsWith("SOA") ||
-              spc.equals("PSO4") ||
-              spc.equals("PNO3") ||
-              spc.equals("PNH4") ||
-              spc.equals("PH2O") ||
-              spc.equals("SOPA") ||
-              spc.equals("SOPB") ||
-              spc.equals("NA") ||
-              spc.equals("PCL") ||
-              spc.equals("POA") ||
-              spc.equals("PEC") ||
-              spc.equals("FPRM") ||
-              spc.equals("FCRS") ||
-              spc.equals("CPRM") ||
-              spc.equals("CCRS")) {
-        temp.addAttribute(new Attribute(CDM.UNITS, "ug/m**3"));
+      } else if (spc.equals("SNOWCOVER")) {
+        temp.addAttribute(new Attribute(CDM.UNITS, "yes/no"));        
+      } else if (spc.startsWith("SOA") || AeroSpcs.contains(spc)) {
+        if (name.equals(EMISSIONS)) {
+          temp.addAttribute(new Attribute(CDM.UNITS, "g/time"));
+        } else {
+          temp.addAttribute(new Attribute(CDM.UNITS, "ug/m**3"));
+        }
+      } else if (LULC.contains(spc)) {
+          temp.addAttribute(new Attribute(CDM.UNITS, "fraction"));
+      } else if (spc.lastIndexOf("_") > -1) {
+        String tmpunit = spc.substring(spc.lastIndexOf("_") + 1);
+        tmpunit = tmpunit.trim();
+        if (tmpunit.equals("M2pS")) {
+          tmpunit = "m**2/s";
+        } else if (tmpunit.equals("MpS")) {
+          tmpunit = "m/s";
+        } else if (tmpunit.equals("PPM")) {
+          tmpunit = "ppm";
+        } else if (tmpunit.equals("MB")) {
+          tmpunit = "millibar";
+        } else if (tmpunit.equals("GpM3")) {
+          tmpunit = "g/m**3";
+        } else if (tmpunit.equals("M")) {
+          tmpunit = "m";
+        }
+        temp.addAttribute(new Attribute(CDM.UNITS, tmpunit));
       } else {
-        temp.addAttribute(new Attribute(CDM.UNITS, "ppm"));
+        if (name.equals(EMISSIONS)) {
+          temp.addAttribute(new Attribute(CDM.UNITS, "mol/time"));
+        } else {
+          temp.addAttribute(new Attribute(CDM.UNITS, "ppm"));
+        }
       }
       ;
       temp.addAttribute(new Attribute(CDM.LONG_NAME, spc));
@@ -342,15 +373,45 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      * 1) needs earth radius
      * 2) needs better error checking
     */
-
-    /* Defaults are based on Continental US */
     Integer gdtyp = 2;
     Double p_alp = 20.;
     Double p_bet = 60.;
     Double p_gam = 0.;
     Double xcent = -95.;
     Double ycent = 25.;
-
+    if (!((iproj == 0) && (tlat1 == 0) && (tlat2 == 0) && (plon == 0) && (plat == 0))) {
+      xcent = new Double(plon);
+      ycent = new Double(plat);
+      if (iproj == 0) {
+        // Lat-Lon (iproj=0) has no additional information
+        gdtyp = 1;
+      } else if (iproj == 1){
+        // UTM uses only iutm 
+        gdtyp = 5;
+        p_alp = new Double(iutm);
+      } else if (iproj == 2){
+        gdtyp = 2;
+        p_alp = new Double(tlat1);
+        p_bet = new Double(tlat2);
+        p_gam = new Double(plon);
+      } else if (iproj == 3){
+        gdtyp = 6;
+        if (plat == 90){
+          p_alp = 1.;
+        } else if (plat == -90) {
+          p_alp = -1.;
+        }
+        p_bet = new Double(tlat1);
+        p_gam = new Double(plon);
+      } else {
+        gdtyp = 2;
+        p_alp = 20.;
+        p_bet = 60.;
+        p_gam = 0.;
+        xcent = -95.;
+        ycent = 25.;
+      }
+    }
     String[] key_value = null;
     String thisLine;
     String projpath = raf.getLocation();
@@ -370,7 +431,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     if (paramFile.exists()) {
       BufferedReader br = new BufferedReader(new FileReader(paramFile));
       while ((thisLine = br.readLine()) != null) {
-        if (thisLine.substring(0, 1) != "#") {
+        if ((thisLine.substring(0, 1) != "#") && (thisLine != "")) {
           key_value = thisLine.split("=");
           if (key_value[0].equals("GDTYP")) {
             gdtyp = Integer.parseInt(key_value[1]);
@@ -403,7 +464,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     } else {
       if (log.isDebugEnabled()) log.debug("UAMIVServiceProvider: adding projection file");
       BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(paramFile));
-      bw.write("# Projection parameters are based on IOAPI.  For details, see www.baronsams.com/products/ioapi");
+      bw.write("# Projection parameters are based on IOAPI.  For details, see www.baronams.com/products/ioapi/GRIDS.html");
       bw.newLine();
       bw.write("GDTYP=");
       bw.write(gdtyp.toString());
