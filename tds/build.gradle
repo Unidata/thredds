@@ -33,7 +33,7 @@ dependencies {
   }
 
   // wms
-  compile (group: 'uk.ac.rdg.resc', name: 'ncwms', version: "1.0.tds.4.3.20130523.1500") {
+  compile (group: 'uk.ac.rdg.resc', name: 'ncwms', version: "1.0.tds.4.4.20130828.1500-SNAPSHOT") {
     exclude group: 'commons-logging'
     exclude group: 'edu.ucar'
     exclude group: 'joda-time'

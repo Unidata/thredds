@@ -48,7 +48,6 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
   static private final String PRECIP = "PCP WATER";
   static private final String RAIN = "RAIN";
 
-  private NetcdfFile ncfile;
   private String[] species_names;
   private long data_start;
   private int n2dvals;
@@ -143,7 +142,6 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      */
     // Internalize raf and ncfile
     super.open(raf, ncfile, cancelTask);
-    this.ncfile = ncfile;
 
     // set raf to big endian and start at the beginning
     raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -332,7 +330,6 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
           temp.addAttribute(new Attribute(CDM.UNITS, "ppm"));
         }
       }
-      ;
       temp.addAttribute(new Attribute(CDM.LONG_NAME, spc));
       temp.addAttribute(new Attribute("var_desc", spc));
     }
