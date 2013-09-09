@@ -41,7 +41,7 @@ import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CancelTask;
-import ucar.util.GoogleDiff;
+//import ucar.util.GoogleDiff;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -995,7 +995,7 @@ public class BufrMessageViewer extends JPanel {
 
   }
 
-  public static void main(String[] args) throws IOException {
+ /* public static void main(String[] args) throws IOException {
     RandomAccessFile raf1 = new RandomAccessFile("G:/ldm/distinct/8.bufr", "r");
     RandomAccessFile raf2 = new RandomAccessFile("G:/ldm/distinct/9.bufr", "r");
     MessageScanner scan1 = new MessageScanner(raf1);
@@ -1022,6 +1022,6 @@ public class BufrMessageViewer extends JPanel {
     diff.diff_cleanupSemantic(result);
     for (GoogleDiff.Diff d : result)
       System.out.printf("%s%n", d);
-  }
+  } */
 
 }
