@@ -250,7 +250,7 @@ public class NcMLReader {
     }
 
     NcMLReader reader = new NcMLReader();
-    NetcdfDataset ncd = reader.readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
+    NetcdfDataset ncd = reader._readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
     if (debugOpen) System.out.println("***NcMLReader.readNcML result= \n" + ncd);
     return ncd;
   }
@@ -348,7 +348,23 @@ public class NcMLReader {
       referencedDatasetUri = netcdfElem.getAttributeValue("url");
 
     NcMLReader reader = new NcMLReader();
-    return reader.readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
+    return reader._readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
+  }
+
+  /**
+   * Read NcML from a JDOM Document, and pass in the name of the dataset. Used to augment datasetScan with NcML
+   *
+   * @param ncmlLocation the URL location string of the NcML document, used as a unique name for caching purposes.
+   * @param netcdfElem   the JDOM Document's root (netcdf) element
+   * @param referencedDatasetUri the URL location string of the underlying dataset, which overrides anything in netcdfElem.
+   *                             prepend with "file:" to eliminate reletive resolving against ncmlLocation
+   * @param cancelTask   allow user to cancel the task; may be null
+   * @return the resulting NetcdfDataset
+   * @throws IOException on read error, or bad referencedDatasetUri URI
+   */
+  static public NetcdfDataset readNcML(String ncmlLocation, Element netcdfElem, String referencedDatasetUri, CancelTask cancelTask) throws IOException {
+    NcMLReader reader = new NcMLReader();
+    return reader._readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -358,6 +374,7 @@ public class NcMLReader {
 
   /**
    * This sets up the target dataset and the referenced dataset.
+   * only place that iospParam is processed, so everything must go through here
    *
    * @param ncmlLocation         the URL location string of the NcML document, used to resolve reletive path of the referenced dataset,
    *                             or may be just a unique name for caching purposes.
@@ -367,9 +384,7 @@ public class NcMLReader {
    * @return NetcdfDataset the constructed dataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  private NetcdfDataset readNcML(String ncmlLocation, String referencedDatasetUri,
-                                 Element netcdfElem, CancelTask cancelTask) throws IOException {
-
+  private NetcdfDataset _readNcML(String ncmlLocation, String referencedDatasetUri, Element netcdfElem, CancelTask cancelTask) throws IOException {
 
     // augment URI.resolve(), by also dealing with base file: URIs
     referencedDatasetUri = URLnaming.resolve(ncmlLocation, referencedDatasetUri);
@@ -469,7 +484,7 @@ public class NcMLReader {
    * @param cancelTask   allow user to cancel the task; may be null
    * @throws IOException on read error
    */
-  public void readNetcdf(String ncmlLocation, NetcdfDataset targetDS, NetcdfFile refds, Element netcdfElem, CancelTask cancelTask) throws IOException {
+  private void readNetcdf(String ncmlLocation, NetcdfDataset targetDS, NetcdfFile refds, Element netcdfElem, CancelTask cancelTask) throws IOException {
     this.location = ncmlLocation; // log messages need this
 
     if (debugOpen)
@@ -1415,7 +1430,7 @@ public class NcMLReader {
 
     public NetcdfFile open(String cacheName, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
       if (debugAggDetail) System.out.println(" NcmlElementReader open nested dataset " + cacheName);
-      NetcdfFile result = readNcML(ncmlLocation, location, netcdfElem, cancelTask);
+      NetcdfFile result = _readNcML(ncmlLocation, location, netcdfElem, cancelTask);
       result.setLocation(ncmlLocation + "#" + location);
       return result;
     }

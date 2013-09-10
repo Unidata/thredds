@@ -44,6 +44,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jdom2.Element;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetFmrc;
@@ -54,6 +55,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileFactory;
 
 
@@ -186,42 +188,48 @@ public class DatasetHandler {
       return ncfile;
     }
 
-    // might be a pluggable DatasetSource
+    // might be a pluggable DatasetSource: LOOK scalability
     NetcdfFile ncfile = null;
     for (DatasetSource datasetSource : sourceList) {
       if (datasetSource.isMine(req)) {
         ncfile = datasetSource.getNetcdfFile(req, res);
-        if (ncfile == null) return null;
+        if (ncfile != null) return ncfile;
       }
     }
 
     // common case - its a file
-    if (ncfile == null) {
-      boolean cache = true; // hack in a "no cache" option
-      if ((match != null) && (match.dataRoot != null)) {
-        cache = match.dataRoot.cache;
+    if (match != null) {
+      boolean doCache = true; // hack in a "no cache" option
+      org.jdom2.Element netcdfElem = null; // find ncml if it exists
+      if (match.dataRoot != null) {
+        doCache = match.dataRoot.cache;
+        InvDatasetScan dscan = match.dataRoot.scan;
+        if (dscan == null) dscan = match.dataRoot.datasetRootProxy;
+        if (dscan != null)
+          netcdfElem = dscan.getNcmlElement();
       }
 
-      // otherwise, must have a datasetRoot in the path
       File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
-      if (file == null) {
+      if (file == null)
         throw new FileNotFoundException(reqPath);
+
+      // if theres an ncml element, open it directly through NcMLReader, therefore not being cached.
+      // this is safer given all the trouble we have with ncml and caching.
+      if (netcdfElem != null) {
+        String ncmlLocation = "DatasetScan#"+file.getName(); // some descriptive name
+        NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, netcdfElem, "file:"+file.getPath(), null);
+        //new NcMLReader().readNetcdf(reqPath, ncd, ncd, netcdfElem, null);
+        if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found DataRoot NcML = " + ds);
+        return ncd;
       }
 
-      if (cache)
+      if (doCache)
         ncfile = NetcdfDataset.acquireFile(file.getPath(), null);
       else
         ncfile = NetcdfDataset.openFile(file.getPath(), null);
-      if (ncfile == null) throw new FileNotFoundException(reqPath);
-    }
 
-    // wrap with ncml if needed : for DatasetScan only
-    org.jdom2.Element netcdfElem = DataRootHandler.getInstance().getNcML(reqPath);
-    if (netcdfElem != null) {
-      NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, null); // do not enhance !!
-      new NcMLReader().readNetcdf(reqPath, ncd, ncd, netcdfElem, null);
-      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found DataRoot NcML = " + ds);
-      return ncd;
+      if (ncfile == null) throw new FileNotFoundException(reqPath);
+
     }
 
     return ncfile;

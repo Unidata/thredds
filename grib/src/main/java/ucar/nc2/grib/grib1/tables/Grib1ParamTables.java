@@ -41,6 +41,7 @@ import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -117,6 +118,7 @@ public class Grib1ParamTables {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  private static Map<String, Grib1ParamTable> localTableHash;
 
   /**
    * Get a Grib1ParamTables object, optionally specifying a parameter table or lookup table specific to this dataset.
@@ -128,13 +130,19 @@ public class Grib1ParamTables {
    */
   static public Grib1ParamTables factory(String paramTablePath, String lookupTablePath) throws IOException {
     if (paramTablePath == null && lookupTablePath == null) return new Grib1ParamTables();
-
     Grib1ParamTables result = new Grib1ParamTables();
+
+    Grib1ParamTable table;
     if (paramTablePath != null) {
-      result.override = new Grib1ParamTable(paramTablePath);
-      if (result.override == null)
-        throw new FileNotFoundException("cant read parameter table=" + paramTablePath);
+      if (localTableHash == null) localTableHash = new HashMap<String, Grib1ParamTable>();
+      table = localTableHash.get(paramTablePath);
+      if (table == null) {
+        table = new Grib1ParamTable(paramTablePath);
+        localTableHash.put(paramTablePath, table);
+      }
+      result.override = table;
     }
+
     if (lookupTablePath != null) {
       result.lookup = new Lookup();
       if (!result.lookup.readLookupTable(lookupTablePath))

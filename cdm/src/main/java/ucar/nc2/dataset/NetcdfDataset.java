@@ -661,14 +661,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     if (svctype == ServiceType.OPENDAP)
-      return acquireDODS(cache, factory, hashKey, location,
-              buffer_size, cancelTask, spiObject);
+      return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
     else if (svctype == ServiceType.CdmRemote)
-      return acquireRemote(cache, factory, hashKey, location,
-              buffer_size, cancelTask, spiObject);
+      return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
     else if (svctype == ServiceType.DAP4)
-      return acquireDap4(cache, factory, hashKey, location,
-              buffer_size, cancelTask, spiObject);
+      return acquireDap4(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
     else if (svctype == ServiceType.NCML)
       return acquireNcml(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
     else if (svctype == ServiceType.THREDDS) {
@@ -685,15 +682,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (location.endsWith(".xml") || location.endsWith(".ncml")) {
       // Pretend it was a file: url
       // Note that technically, this should be 'file://'
-      return acquireNcml(cache, factory, hashKey, "file:" + location,
-              buffer_size, cancelTask, spiObject);
+      return acquireNcml(cache, factory, hashKey, "file:" + location, buffer_size, cancelTask, spiObject);
     }
     // Next to last resort: look in the cache
     if (cache != null) {
       if (factory == null)
         factory = defaultNetcdfFileFactory;
-      return (NetcdfFile) cache.acquire(factory, hashKey, location,
-              buffer_size, cancelTask, spiObject);
+      return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
     }
     // Last resort: try to open as a file
     return NetcdfFile.open(location, buffer_size, cancelTask, spiObject);
