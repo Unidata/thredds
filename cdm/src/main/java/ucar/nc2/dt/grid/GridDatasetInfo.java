@@ -320,15 +320,15 @@ public class GridDatasetInfo {
 		//accept list for Grid As Point requests
 		Element gridAsPoint = new Element("GridAsPoint");
 
-		gridAsPoint.addContent(new Element("accept").addContent("xml"));
-		gridAsPoint.addContent(new Element("accept").addContent("text/xml"));
-		gridAsPoint.addContent(new Element("accept").addContent("csv"));
-		gridAsPoint.addContent(new Element("accept").addContent("text/csv"));
-		gridAsPoint.addContent(new Element("accept").addContent("netcdf"));
+		gridAsPoint.addContent(new Element("accept").addContent("xml").setAttribute("displayName", "xml") );
+		gridAsPoint.addContent(new Element("accept").addContent("text/xml").setAttribute("displayName", "xml (file)"));
+		gridAsPoint.addContent(new Element("accept").addContent("csv").setAttribute("displayName", "csv"));
+		gridAsPoint.addContent(new Element("accept").addContent("text/csv").setAttribute("displayName", "csv (file)"));
+		gridAsPoint.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
 
 		//accept list for Grid requests
 		Element grids = new Element("Grid");
-		grids.addContent(new Element("accept").addContent("netcdf"));
+		grids.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
 		//Check if netcdf4 is available
 		//	    try{
 		//	    	if( Nc4Iosp.isClibraryPresent() ){

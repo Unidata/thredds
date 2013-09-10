@@ -3,165 +3,303 @@
 
   <xsl:output method="html"/>
 
-  <xsl:template match="/">
+	<!-- Gets the tds context as a xslt parameter -->
+	<xsl:param name="tdsContext"></xsl:param>
+
+	<!-- Sets the paths that depends on the tdsContext -->	
+	<xsl:variable name="cssMainPath">
+		<xsl:value-of select="concat($tdsContext,'/style/ncss/main.css')"></xsl:value-of>
+	</xsl:variable>
+	<xsl:variable name="cssLayoutPath">
+		<xsl:value-of select="concat($tdsContext,'/style/ncss/layout.css')"></xsl:value-of>
+	</xsl:variable>
+	<xsl:variable name="cssFormPath">
+		<xsl:value-of select="concat($tdsContext,'/style/ncss/form.css')"></xsl:value-of>
+	</xsl:variable>
+	
+	<xsl:variable name="logoPath">
+		<xsl:value-of select="concat($tdsContext,'/unidataLogo.gif')"></xsl:value-of>
+	</xsl:variable>
+
+	<xsl:template match="/">
+	
+
+  
     <html>
       <head>
-        <title>CDM Remote Subset Service Forms Interface</title>
+        <title>Netcdf Subset Service Station Feature Interface</title>
+        
+				<xsl:element name="link">
+					<xsl:attribute name="rel">StyleSheet</xsl:attribute>
+					<xsl:attribute name="type">text/css</xsl:attribute>
+					<xsl:attribute name="href">
+        				<xsl:value-of select="$cssMainPath"></xsl:value-of>	
+					</xsl:attribute>
+				</xsl:element>
+				<xsl:element name="link">
+					<xsl:attribute name="rel">StyleSheet</xsl:attribute>
+					<xsl:attribute name="type">text/css</xsl:attribute>
+					<xsl:attribute name="href">
+        				<xsl:value-of select="$cssLayoutPath"></xsl:value-of>	
+					</xsl:attribute>
+				</xsl:element>
+				<xsl:element name="link">
+					<xsl:attribute name="rel">StyleSheet</xsl:attribute>
+					<xsl:attribute name="type">text/css</xsl:attribute>
+					<xsl:attribute name="href">
+        				<xsl:value-of select="$cssFormPath"></xsl:value-of>	
+					</xsl:attribute>
+				</xsl:element>
+				
+				<script type="text/javascript">
+
+					var context = '<xsl:value-of select="$tdsContext"></xsl:value-of>';
+					
+					var Ncss ={};
+
+					Ncss.debug = true;
+
+					Ncss.log = function(message){
+					if(Ncss.debug){
+					console.log(message);
+					}
+					};
+
+					//Dynamic load of the javascript files
+					(function(){
+
+					//jQuery
+					var headTag = document.getElementsByTagName("head")[0];
+					var jQueryfile = document.createElement('script');
+					jQueryfile.setAttribute("type", "text/javascript");
+					jQueryfile.setAttribute("src",
+					context+"/js/lib/jquery-1.7.2.min.js");
+					headTag.appendChild(jQueryfile);
+					
+					//ncssApp.js
+					var ncssAppfile = document.createElement('script');
+					ncssAppfile.setAttribute("type", "text/javascript");
+					ncssAppfile.setAttribute("src", context+"/js/ncss/ncssApp.js");
+					var headTag = document.getElementsByTagName("head")[0];
+					headTag.appendChild(ncssAppfile);
+
+					//form.js
+					var jsfile = document.createElement('script');
+					jsfile.setAttribute("type", "text/javascript");
+					jsfile.setAttribute("src", context+"/js/ncss/stationDatasetForm.js");
+					var headTag = document.getElementsByTagName("head")[0];
+					headTag.appendChild(jsfile);
+					})();					
+				</script>				
+				
+								               
       </head>
-      <body bgcolor="#FFFFFF">
-
-        <LINK REL="StyleSheet" HREF="/thredds/upc.css" TYPE="text/css"/>
-        <table width="100%">
-          <tr>
-            <td width="95" height="95" align="left">
-              <img src="/thredds/unidataLogo.gif" width="95" height="93"/>
-            </td>
-            <td width="701" align="left" valign="top">
-              <table width="303">
-                <tr>
-                  <td width="295" height="22" align="left" valign="top">
-                    <h3>
-                      <strong>Thredds Data Server</strong>
-                    </h3>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-
-        <hr/>
-        <h1>CDM Remote Subset Service</h1>
-        <h2>Station Dataset:
-          <xsl:value-of select="capabilities/@location"/></h2>
-          <!-- 
-        <em><a href="?req=capabilities">Dataset Description</a></em>
-        <p><em><a href="?req=stations&amp;accept=xml">Station List</a></em></p>
-         -->
-		<em><a href="dataset.xml">Dataset Description</a></em>
-        <p><em><a href="station.xml">Station List</a></em></p>         
-        <hr/>
-
-        <form method="GET" action="{capabilities/attribute::location}">
-          <input type="hidden" name="req" value="data"/>
-          <table border="0" cellpadding="4" cellspacing="2">
-            <tr valign="top">
-              <td>
-
-                <h3>Select Variable(s):</h3>
-                <input type="radio" name="variables" value="all" checked="checked"> <b>All</b></input><br/>
-                <input type="radio" name="variables" value="some"> <b>Only:</b></input>
-                <blockquote>
-                  <xsl:for-each select="capabilities/variable">
-                    <input type="checkbox" name="var" value="{@name}"/>
-                    <xsl:value-of select="@name"/>
-                    <br/>
-
-                  </xsl:for-each>
-                </blockquote>
-              </td>
-
-              <td>
-                <h3>Choose Spatial Subset:</h3>               
-                <input type="radio" name="spatial" value="all" checked="checked"> <b>All</b></input>
-                <br/>               
-                <input type="radio" name="spatial" value="bb">               
-                <b>Bounding Box (decimal degrees):</b>
-                  <blockquote>
-                    <blockquote>                   
-                      <p>North</p>
-                      <p><input type="text" name="north" size="10" value="{capabilities/LatLonBox/north}"/></p>
-                    </blockquote>
-                  </blockquote>                  
-                  West
-                  <input type="text" name="west" size="10" value="{capabilities/LatLonBox/west}"/>
-                  <input type="text" name="east" size="10" value="{capabilities/LatLonBox/east}"/> East                
-                      <blockquote>
-                        <blockquote>
-                          <p>              
-                            <input type="text" name="south" size="10" value="{capabilities/LatLonBox/south}"/>
-                          </p>
-                          <p>South</p>
-                        </blockquote>
-                      </blockquote>                  
-                 </input>
-                <br/>
-
-                  <input type="radio" name="spatial" value="point"> 
-                   <b> Closest  to this location  (decimal degrees):</b>
-                <blockquote>
-                  Latitude:
-                  <input type="text" name="latitude" size="10"/>
-                  <br/>
-                  Longitude:
-                  <input type="text" name="longitude" size="10"/>
-                  <br/>
-                </blockquote>
-                 </input>
-                <br/>
-
-                 <input type="radio" name="spatial" value="stns"> 
-                <b>Station List (comma separated, no spaces)</b>
-                <blockquote>
-                  <input type="text" name="stn" size="30"/>
-                  <br/>
-                </blockquote>
-                   </input>
-                <br/>
                   
-                <h3>Choose Time Subset:</h3>
-                <input type="radio" name="temporal" value="all" checked="checked"> <b>All</b></input>
-                 <br/>
-                <input type="radio" name="temporal" value="range"> 
-                <b>Time Range:</b>
-                <blockquote>
-                  Starting:
-                  <input type="text" name="time_start" size="20" value="{capabilities/TimeSpan/begin}"/>
-                  <br/>
-                  Ending:
-                  <input type="text" name="time_end" size="20" value="{capabilities/TimeSpan/end}"/>
-                  <br/>
-                </blockquote>
-                  </input>
+      
+      
+      
+      <body onload="Ncss.initStationDataset()">
+				<!-- Header -->
+				<div id="header">
+					<div id="dataset">
+						<h1>
+							NCSS Station Feature
+						</h1>
+					</div>
+					<div id="unidata">
+						<div id="title">
+							<div id="service">
+								<span class="bold">THREDDS data server </span>
+								<span class="service"> NetCDF Subset Service</span>
+							</div>
+						</div>
+						<div id="logo">
+							<span></span>
+						</div>
+					</div>
+				</div>
+				<!-- Main content -->
+				<div id="container">
+					<div id="dataheader">
+						<h2>
+							<span>Dataset: </span>
+							<span class="black">
+								<xsl:value-of select="capabilities/@location" />
+							</span>
+							(
+							<a href="dataset.xml">Dataset Description</a> | <a href="station.xml">Station list</a>
+							)
+						</h2>
+						<h3>
+							<span>Base Time:</span>
+							<span class="black">
+								<xsl:value-of select="capabilities/TimeSpan/begin" />
+							</span>
+						</h3>
+					</div>
+					
+					<form id="form" method="GET" action="{capabilities/attribute::location}">
+						<table class="simple">
+							<tr valign="top">
+								<td class="leftCol">
+									<h3>Select Variable(s):</h3>
+                  					<xsl:for-each select="capabilities/variable">
+                    					<input type="checkbox" name="var" value="{@name}"/>
+                    				<xsl:value-of select="@name"/>
+                    				<br/>
+					                </xsl:for-each>
+					            </td>
+								<td class="rightCol">
+									<h3>Choose Spatial Subset:</h3>
+									<!-- Three tabs: bbox, point, stn list -->
+									<div id="inputBBoxSubset" class="selected">
+										<span class="bold">Bbox subset</span>
+									</div>
+									<div id="inputPointSubset" class="unselected">
+										<span class="bold">Point subset</span>
+									</div>
+									<div id="inputStationList" class="unselected">
+										<span class="bold">Station list</span>
+									</div>
+									
+									<div id="areaInput" class="clear">
+										<div id="spatialSubset">
+											<!-- lat/lon subsetting -->
+											<div id="bboxSubset" class="absoluteTopLeft borderLightGrey">
+												<span class="bold">Bounding Box (decimal degrees):  </span>
+												<div class="top">
+													<span>north</span>
+													<br />
+													<input type="text" name="north" size="8"
+														value="{capabilities/LatLonBox/north}" />
+													<input type="hidden" disabled="disabled" name="dis_north" size="8"
+														value="{capabilities/LatLonBox/north}" />														
+												</div>
+												<div>
+													west
+													<input type="text" name="west" size="8"
+														value="{capabilities/LatLonBox/west}" />
+                                                    <input type="hidden" disabled="disabled" name="dis_west" size="8"
+														value="{capabilities/LatLonBox/west}" />  														
+													<input type="text" name="east" size="8"
+														value="{capabilities/LatLonBox/east}" />
+													<input type="hidden" disabled="disabled" name="dis_east" size="8"
+														value="{capabilities/LatLonBox/east}" />														
+													east
+												</div>
+												<div class="top">
+													<input type="text" name="south" size="8"
+														value="{capabilities/LatLonBox/south}" />
+													<input type="hidden" disabled="disabled" name="dis_south" size="8"
+														value="{capabilities/LatLonBox/south}" />														
+													<br />
+													<span>south</span>
+												</div>
+												<!-- 
+												<div>
+													<input type="checkbox" name="disableLLSubset" id="disableLLSubset" />
+													<span>Disable horizontal subsetting</span>
+												</div>
+												 -->												
+												<span class="blueLink" id="resetLatLonbbox">reset to full extension</span>
+											</div>										
+											<!-- Point subsetting -->
+											<div id="pointSubset" class="hidden absoluteTopLeft borderLightGrey">
+												<label class="sized_big">Latitude:</label>
+												<input disabled="disabled" type="text" name="latitude" size="10" />
+												<br />
+												<label class="sized_big">Longitude:</label>
+												<input disabled="disabled" type="text" name="longitude" size="10" />
+												<br />
+												<span class="bold">Within Bounding Box:</span>
+												<div class="top">
+													<span>north</span>
+													<br />
+													<input disabled="disabled" type="text" name="north" size="8" value="{capabilities/LatLonBox/north}" />
+												</div>
+												<div>
+													<span>west</span>
+													<input disabled="disabled" type="text" name="west" size="8" value="{capabilities/LatLonBox/west}" />
+													<input disabled="disabled" type="text" name="east" size="8" value="{capabilities/LatLonBox/east}" />
+													<span>east</span>
+												</div>
+												<div class="top">
+													<input disabled="disabled" type="text" name="south" size="8" value="{capabilities/LatLonBox/south}" />
+													<br />
+													<span>south</span>
+												</div>																																			
+											</div>
+											<!-- List subsetting -->
+											<div id="listSubset" class="hidden absoluteTopLeft borderLightGrey">
+												<input type="checkbox" name="stns_all" value="" id="stns_all" /><label>All stations</label>
+												<br />
+												<label>Station list (comma separated):</label>
+												<input type="text" name="stns" id="stns" size="30" disabled="disabled" />
+												<input type="hidden" name="subset" value="stns" size="30" disabled="disabled"/>
+											</div>											
+										</div>
+										<br clear="all" />										
+									</div>
+									<br clear="all" />
+									
+									<!-- time subsetting -->
+									<h3>Choose Time Subset:</h3>
+									<div id="inputTimeRange" class="selected">
+										<span class="bold">Time range</span>
+									</div>
+									<div id="inputSingleTime" class="unselected">
+										<span class="bold">Single time</span>
+									</div>
 
-                 <input type="radio" name="temporal" value="point"> 
-                 <b>Specific Time (closest):</b>
-                <blockquote>
-                  Time:
-                  <input type="text" name="time" size="20" value="{capabilities/TimeSpan/begin}"/>
-                  <br/>
-                </blockquote>
-                   </input>
-                <br/>
+									<div id="timeInput" class="clear">
+										<div id="temporalSubsetWithStride">
+											<!-- Time range -->
+											<div id="timeRangeSubset" class="absoluteTopLeft borderLightGrey">
+												<label class="sized">Starting:</label>
+												<input type="text" name="time_start" size="21"
+													value="{capabilities/TimeSpan/begin}" />
+												<input type="hidden" disabled="disabled" name="dis_time_start" size="21"
+													value="{capabilities/TimeSpan/begin}" />													
+												<label class="sized">Ending:  </label>
+												<input type="text" name="time_end" size="21"
+													value="{capabilities/TimeSpan/end}" />
+												<input type="hidden" disabled="disabled" name="dis_time_end" size="21"
+													value="{capabilities/TimeSpan/end}" />													
+												<br />
+												<span class="blueLink" id="resetTimeRange">reset to full extension</span>
+											</div>
+											<div id="singleTimeSubset" class="hidden absoluteTopLeft borderLightGrey">
+												<label class="sized">Time:</label>
+												<input type="text" name="time" size="21" disabled="disabled"
+													value="{capabilities/TimeSpan/begin}" />
+											</div>
+										</div>
+									</div>									
+									
+									<!-- Output format -->
+									<br clear="all" />
+									<h3>Choose Output Format:</h3>
+									<div class="borderLightGrey">
+										<label class="sized">Format:</label>
+										<select name="accept" size="1">											
+											<xsl:for-each select="capabilities/AcceptList/accept">
+												<option value="{.}"  >
+													<xsl:value-of select="@displayName" />
+												</option>
 
-                <h3>Choose Output Format:</h3>
-                <blockquote>
-                  <select name="accept" size="1">
-                    <xsl:for-each select="capabilities/AcceptList/accept">
-                      <option>
-                        <xsl:value-of select="."/>
-                      </option>
-
-                    </xsl:for-each>
-                  </select>
-                </blockquote>
-
-                <br/>
-
-              </td>
-            </tr>
-          </table>
-          <div align="center">
-          <table width="600" border="0">
-            <tr align="center">
-              <input type="submit" value="Submit"/>
-              <input type="reset" value="Reset"/>       
-            </tr>
-          </table>
-            </div>
-        </form>
+											</xsl:for-each>
+										</select>
+									</div>									
+								</td>						            					
+							</tr>
+							<tr>
+								<td colspan="2" class="center"><input class="button" type="submit" value="Submit" /><input class="button" type="reset" value="Reset" /></td>
+							</tr>							
+						</table>	
+					</form>										
+				</div>					
         <hr/>
-        <h3><a href="http://www.unidata.ucar.edu/software/netcdf-java/stream/CdmRemote.html">CDM Remote Documentation</a></h3>
+        <h3><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/NetcdfSubsetService_4_3.html">NetCDF Subset Service Documentation</a></h3>
       </body>
     </html>
 

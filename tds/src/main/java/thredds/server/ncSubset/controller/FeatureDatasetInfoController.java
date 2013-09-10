@@ -84,6 +84,11 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController{
 	void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
 		
+		if(!req.getParameterMap().isEmpty()){
+			//This a 400
+			throw new UnsupportedOperationException("Invalid info request.");
+		}
+		
 		String datasetPath = getDatasetPath( req );		
 		requestPathInfo = extractRequestPathInfo(datasetPath);
 		FeatureDataset fd = datasetService.findDatasetByPath(req, res,
@@ -91,8 +96,7 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController{
 		
 		if (fd == null) {
 			// FeatureDataset not supported!!!
-			throw new UnsupportedOperationException(
-					"Feature Type not supported");
+			throw new UnsupportedOperationException("Feature Type not supported");
 		}		
 		
 		String strResponse ="";

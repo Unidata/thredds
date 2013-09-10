@@ -643,8 +643,14 @@ public class StationWriter {
         // verify SpatialSelection has some stations
         if(qb.getSubset() != null){
       	  if ( qb.getSubset().equals("bb") ) {
-      		  LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast())  );
-      		  wantStations = sfc.getStations( llrect );
+      		  
+      		  if( qb.getSouth() == null || qb.getNorth() == null || qb.getEast() == null ||  qb.getWest() == null){
+      			wantStations = sfc.getStations(); //Wants all
+      		  }else{      			  
+      			  LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast())  );
+      			  wantStations = sfc.getStations( llrect );
+      		  }
+      		  
       		  //wantStations = sfc.getStations(qb.getLatLonRect());
 
       	  } else if (qb.getSubset().equals("stns")) {
@@ -658,13 +664,12 @@ public class StationWriter {
       	  }/* else {
       		  wantStations = sfc.getStations();
       	  }*/
-        }else{
-      	
-      	if( qb.getLatitude()!=null && qb.getLongitude() != null ){ //want closest  
-      		Station closestStation = findClosestStation(new LatLonPointImpl( qb.getLatitude(), qb.getLongitude() ));
-      		List<String> stnList = new ArrayList<String>();
-      		stnList.add(closestStation.getName());    	  
-      		wantStations = sfc.getStations(stnList);
+        }else{      	
+        	if( qb.getLatitude()!=null && qb.getLongitude() != null ){ //want closest  
+        		Station closestStation = findClosestStation(new LatLonPointImpl( qb.getLatitude(), qb.getLongitude() ));
+        		List<String> stnList = new ArrayList<String>();
+        		stnList.add(closestStation.getName());    	  
+        		wantStations = sfc.getStations(stnList);
       	}else{//Want all
       		wantStations = sfc.getStations();
       	}	

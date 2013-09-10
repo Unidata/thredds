@@ -175,6 +175,14 @@ public class FeatureDatasetPointXML {
     }
 
     // add lat/lon bounding box
+    try {
+		fdp.calcBounds();
+	} catch (IOException e) {
+		//e.printStackTrace();
+		log.warn("Unable to compute bounds for dataset "+fdp.getTitle(), e);
+
+	}
+    
     LatLonRect bb = fdp.getBoundingBox();
     if (bb != null)
       rootElem.addContent(writeBoundingBox(bb));
@@ -194,11 +202,11 @@ public class FeatureDatasetPointXML {
     // add accept list
     Element elem = new Element("AcceptList");
     //elem.addContent(new Element("accept").addContent("raw"));
-    elem.addContent(new Element("accept").addContent("csv"));
-    elem.addContent(new Element("accept").addContent("text/csv"));
-    elem.addContent(new Element("accept").addContent("xml"));
-    elem.addContent(new Element("accept").addContent("text/xml"));
-    elem.addContent(new Element("accept").addContent("netcdf"));
+    elem.addContent(new Element("accept").addContent("csv").setAttribute("displayName", "csv"));    
+    elem.addContent(new Element("accept").addContent("text/csv").setAttribute("displayName", "csv (file)"));
+    elem.addContent(new Element("accept").addContent("xml").setAttribute("displayName", "xml"));
+    elem.addContent(new Element("accept").addContent("text/xml").setAttribute("displayName", "xml (file)"));	
+    elem.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));       
     //elem.addContent(new Element("accept").addContent("ncstream"));
     rootElem.addContent(elem);
 

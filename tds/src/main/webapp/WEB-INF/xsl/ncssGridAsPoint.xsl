@@ -336,8 +336,8 @@
 										<label class="sized">Format:</label>
 										<select name="accept" size="1">											
 											<xsl:for-each select="gridForm/AcceptList/GridAsPoint/accept">
-												<option>
-													<xsl:value-of select="." />
+												<option value="{.}"  >
+													<xsl:value-of select="@displayName" />
 												</option>
 
 											</xsl:for-each>

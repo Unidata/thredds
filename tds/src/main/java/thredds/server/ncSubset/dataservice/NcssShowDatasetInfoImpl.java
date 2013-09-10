@@ -5,6 +5,8 @@ import java.io.InputStream;
 
 import javax.servlet.ServletContext;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
@@ -15,7 +17,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.transform.JDOMResult;
 import org.jdom2.transform.JDOMSource;
-import org.jdom2.transform.XSLTransformer;
 import org.jdom2.xpath.XPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,14 +81,26 @@ public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo,
 				String xslt = "/WEB-INF/xsl/ncssSobs.xsl";
 				InputStream is = getXSLT(xslt);
 				Document doc = xmlWriter.getCapabilitiesDocument();
-				XSLTransformer transformer = new XSLTransformer(is);
-				Document html = transformer.transform(doc);
+				//XSLTransformer transformer = new XSLTransformer(is);
+				
+				Transformer transformer = TransformerFactory.newInstance()
+						.newTransformer(new StreamSource(is));
+				String context = servletContext.getContextPath();
+				transformer.setParameter("tdsContext", context);				
+				
+				JDOMSource in = new JDOMSource(doc);
+				JDOMResult out = new JDOMResult();								
+				transformer.transform(in, out);
+				Document html = out.getDocument();
+				
 				XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
 				infoString = fmt.outputString(html);
 				
 			} catch (IOException ioe) {
 				log.error("IO error opening xsl", ioe);
-			} catch (Throwable e) {
+			} catch (TransformerConfigurationException e) {
+				log.error("ForecastModelRunServlet internal error", e);
+			} catch (TransformerException e){
 				log.error("ForecastModelRunServlet internal error", e);
 			}
 		}
@@ -180,12 +193,12 @@ public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo,
 
 		String xPathForGridElement = rootElementName + "/AcceptList/Grid";
 		addElement(datasetDescriptionDoc, xPathForGridElement, new Element(
-				"accept").addContent("netcdf4"));
+				"accept").addContent("netcdf4").setAttribute("displayName", "netcdf4") );
 
 		String xPathForGridAsPointElement = rootElementName
 				+ "/AcceptList/GridAsPoint";
 		addElement(datasetDescriptionDoc, xPathForGridAsPointElement,
-				new Element("accept").addContent("netcdf4"));
+				new Element("accept").addContent("netcdf4").setAttribute("displayName", "netcdf4"));
 	}
 
 	private void addElement(Document datasetDescriptionDoc, String xPath,
