@@ -553,23 +553,7 @@
     <url-pattern>/remoteCatalogValidation.html</url-pattern>
   </servlet-mapping>
 
-  <!-- Metadata services (ncISO) from NGDC -->
-  <!-- 
-  <servlet-mapping>
-    <servlet-name>metadata</servlet-name>
-    <url-pattern>/ncml/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>metadata</servlet-name>
-    <url-pattern>/uddc/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>metadata</servlet-name>
-    <url-pattern>/iso/*</url-pattern>
-  </servlet-mapping>
-   -->
-
-  <!-- old debug, content handling -->
+    <!-- old debug, content handling -->
   <servlet-mapping>
     <servlet-name>admin</servlet-name>
     <url-pattern>/admin/*</url-pattern>
