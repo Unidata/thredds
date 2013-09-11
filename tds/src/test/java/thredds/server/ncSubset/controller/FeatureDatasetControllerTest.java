@@ -79,12 +79,13 @@ public class FeatureDatasetControllerTest {
 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.servletPath("/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
 				.param("longitude", "-105.203").param("latitude", "40.019")
-				.param("accept", "csv")
-				.param("time","2013-08-25 06:00:00Z")
+				.param("accept", "netcdf4")
+				.param("time_start","2013-08-25T06:00:00Z")
+				.param("time_end"  ,"2013-08-26T06:00:00Z")
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 		
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.CSV_STREAM.getResponseContentType() ));
+			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF4.getResponseContentType() ));
 		
 	}	
 	

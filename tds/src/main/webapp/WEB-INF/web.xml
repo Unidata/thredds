@@ -44,11 +44,6 @@
   </filter>
 
   <filter>
-    <filter-name>CatalogGenFilter</filter-name>
-    <filter-class>thredds.servlet.filter.CatalogGenFilter</filter-class>
-  </filter>
-
-  <filter>
     <filter-name>CookieFilter</filter-name>
     <filter-class>thredds.servlet.filter.CookieFilter</filter-class>
   </filter>
@@ -112,11 +107,7 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>dqc</servlet-name>
   </filter-mapping-->
-  
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>catalogGen</servlet-name>
-  </filter-mapping>
+    
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>FileServer</servlet-name>
@@ -163,15 +154,7 @@
     <filter-name>CatalogServiceFilter</filter-name>
     <servlet-name>catalogService</servlet-name>
   </filter-mapping>
-
-  <!--
-  Filter the request parameters used by CatalogGen
-  -->
-  <filter-mapping>
-    <filter-name>CatalogGenFilter</filter-name>
-    <servlet-name>catalogGen</servlet-name>
-  </filter-mapping>
-
+  
   <!--
   Filter opendap cookies
   -->
@@ -279,14 +262,6 @@ Provided the Log4jContextListener is configured in web.xml shutdown now works fi
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
-
-  <!-- Setup for the CatalogGen servlet. (Allows scheduling of CatalogGen tasks) -->
-  <servlet>
-    <servlet-name>catalogGen</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
 
   <!-- data services -->
   <!-- NON-SPRING  controllers ands servlets -->
@@ -487,12 +462,6 @@ Provided the Log4jContextListener is configured in web.xml shutdown now works fi
   </servlet-mapping>
 
   <!-- catalog services -->
-
-  <servlet-mapping>
-    <servlet-name>catalogGen</servlet-name>
-    <url-pattern>/cataloggen/*</url-pattern>
-  </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>DLwriter</servlet-name>
     <url-pattern>/DLwriter</url-pattern>
@@ -582,7 +551,7 @@ Provided the Log4jContextListener is configured in web.xml shutdown now works fi
   </security-constraint>
 
   <!-- Setup security restrictions on THREDDS server HTTP POST capabilities in CatalogGen. -->
-  <security-constraint>
+  <!-- security-constraint>
     <web-resource-collection>
       <web-resource-name>cataloggen configuration</web-resource-name>
       <url-pattern>/cataloggen/admin/*</url-pattern>
@@ -595,7 +564,7 @@ Provided the Log4jContextListener is configured in web.xml shutdown now works fi
     <user-data-constraint>
       <transport-guarantee>CONFIDENTIAL</transport-guarantee>
     </user-data-constraint>
-  </security-constraint>
+  </security-constraint-->
 
   <!-- default restricted access uses DIGEST, but not HTTPS -->
   <security-constraint>

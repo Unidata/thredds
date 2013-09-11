@@ -52,6 +52,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
+import ucar.nc2.ft.point.writer.CFPointWriterUtils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -86,6 +87,7 @@ public final class CFStationCollectionWriterWrapper implements CFPointWriterWrap
 		//timeOrigin = dateUnit.makeCalendarDate(0); 
 		boolean headerDone = false;
 		Attribute unitsAtt = CFPointWriterUtils.findCDMAtt(timeDimAtts, CDM.UNITS);
+		
 		
 		DateUnit dateUnit;
 		try {

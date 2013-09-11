@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructureW;
@@ -61,10 +60,8 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.writer.CFPointWriter;
+import ucar.nc2.ft.point.writer.CFPointWriterUtils;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
 /**
