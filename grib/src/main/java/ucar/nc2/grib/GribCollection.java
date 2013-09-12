@@ -658,7 +658,7 @@ public abstract class GribCollection implements FileCacheable {
     public final int genProcessType;
     public final int cdmHash;                  // unique hashCode - from Grib2Record, but works here also
     public final int timeIdx, vertIdx, ensIdx; // which time, vert and ens coordinates to use (in group)
-    public final long recordsPos;              // where the records array is stored in the index
+    public final long recordsPos;              // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
     public final GroupHcs group;               // belongs to this group
 
@@ -776,7 +776,9 @@ public abstract class GribCollection implements FileCacheable {
     // LOOK : use ehcache here ??
     public void readRecords() throws IOException {
       if (records != null) return;
+
       byte[] b = new byte[recordsLen];
+      if (recordsLen == 0) return;
 
       // synchronize to protect the raf, and records[]
       synchronized (indexRaf) {
@@ -872,6 +874,7 @@ public abstract class GribCollection implements FileCacheable {
     sb.append("\n genProcessId=").append(genProcessId);
     sb.append("\n backProcessId=").append(backProcessId);
     sb.append("\n indexFile=").append(indexFile);
+    sb.append("\n version=").append(version);
     sb.append('}');
     return sb.toString();
   }

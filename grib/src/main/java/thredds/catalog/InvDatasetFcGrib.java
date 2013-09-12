@@ -72,7 +72,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @ThreadSafe
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
-  //static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
   static private final String BEST_DATASET = "best";
 
@@ -109,9 +108,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     this.gribConfig = config.gribConfig;
 
     Formatter errlog = new Formatter();
-    //if (config.useIndexOnly)
-    //  this.dcm = TimePartitionCollection.fromExistingIndices(config, errlog); // not used
-    // else
     if (config.timePartition != null) {
       this.dcm = TimePartitionCollection.factory(config, errlog, logger);
       this.dcm.setChangeChecker(GribIndex.getChangeChecker());
@@ -129,7 +125,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     tmi.setDataType(FeatureType.GRID); // override GRIB
 
-    if (config.gribConfig.bestNamer != null) {
+    if (config.gribConfig != null && config.gribConfig.bestNamer != null) {
       this.bestDatasetName = config.gribConfig.bestNamer;
     }
 
@@ -320,7 +316,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
       }
 
-      for (TimePartition.Partition dc : localState.timePartition.getPartitions()) {
+      for (TimePartition.Partition dc : localState.timePartition.getPartitionsSorted()) {
         String dname = dc.getName();
         InvCatalogRef ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
         top.addDataset(ds);

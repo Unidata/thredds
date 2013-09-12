@@ -246,8 +246,8 @@ public abstract class TimePartition extends GribCollection {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected Map<String, Partition> partitionMap;
-  protected List<Partition> partitions;
+  protected Map<String, Partition> partitionMap = new TreeMap<String, TimePartition.Partition>();
+  protected List<Partition> partitions = new ArrayList<Partition>();
   protected final org.slf4j.Logger logger;
 
   protected TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1, org.slf4j.Logger logger) {
@@ -267,13 +267,15 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public void addPartition(String name, String filename, long lastModified, String directory) {
-    if (partitionMap == null) partitionMap = new TreeMap<String, TimePartition.Partition>();
-    partitionMap.put(name, new Partition(name, filename, lastModified, directory));
+    Partition partition = new Partition(name, filename, lastModified, directory);
+    partitionMap.put(name, partition);
+    partitions.add(partition);
   }
 
   public void addPartition(CollectionManager dcm) {
-    if (partitionMap == null) partitionMap = new TreeMap<String, TimePartition.Partition>();
+    Partition partition = new Partition(dcm);
     partitionMap.put(dcm.getCollectionName(), new Partition(dcm));
+    partitions.add(partition);
   }
 
   public Partition getPartitionByName(String name) {
@@ -281,8 +283,9 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public Partition getPartitionLast() {
-    int last = (this.gribConfig.filesSortIncreasing) ? partitions.size() - 1 : 0;
-    return partitions.get(last);
+    //int last = (this.gribConfig.filesSortIncreasing) ? partitions.size() - 1 : 0;
+    //return partitions.get(last);
+    return partitions.get(partitions.size() - 1);
   }
 
   /* public void cleanup() throws IOException {
@@ -341,20 +344,32 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public List<Partition> getPartitions() {
-    if (partitions == null) {
+    /* if (partitions == null) {
       if (partitionMap == null) {
         logger.warn("No partitions found for {}", name);
         return new ArrayList<Partition>();
       }
       List<Partition> c = new ArrayList<Partition>(partitionMap.values());
-      if (this.gribConfig.filesSortIncreasing) {
+      Collections.sort(c);  // LOOK - must recover original sort -
+
+      /* if (this.gribConfig != null && this.gribConfig.filesSortIncreasing) {
           Collections.sort(c);
       } else {
           Collections.reverse(c);
       }
       partitions = c;
-    }
+    } */
     return partitions;
+  }
+
+  public List<Partition> getPartitionsSorted() {
+    List<Partition> c = new ArrayList<Partition>(partitions);
+    if (this.gribConfig != null && this.gribConfig.filesSortIncreasing) {
+        Collections.sort(c);
+    } else {
+        Collections.reverse(c);
+    }
+    return c;
   }
 
   public void removePartition(Partition p) {
@@ -410,5 +425,18 @@ public abstract class TimePartition extends GribCollection {
     }
     close();
   }
+
+  ////////////////////////////////////////////////////
+  // stuff for debugging
+
+  public void setPartitionIndexReletive() {
+    File dir = new File(getLocation()); // use main index location
+    for (Partition p : getPartitions()) {
+      File old = new File(p.indexFilename);
+      File n = new File(dir.getParent(), old.getName());
+      p.indexFilename = n.getPath(); // set partition index filenames reletive to it
+    }
+  }
+
 
 }

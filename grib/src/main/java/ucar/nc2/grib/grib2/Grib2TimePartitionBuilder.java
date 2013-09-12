@@ -207,7 +207,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     logger.info(" Using canonical partition {}", canon.getDcm().getCollectionName());
 
     // check consistency across vert and ens coords
-    // also replace variables  in canonGc with partitoned variables
+    // also replace variables  in canonGc with partitioned variables
+    // partition index is used - do not resort partitions
     Formatter f = new Formatter();
     GribCollection canonGc = checkPartitions(canon, f);
     if (canonGc == null) {

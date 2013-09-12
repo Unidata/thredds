@@ -82,6 +82,7 @@ public class GribCollectionIndexPanel extends JPanel {
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
+        f.format("magic=%s%n", magic);
         gc.showIndex(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
@@ -308,15 +309,17 @@ public class GribCollectionIndexPanel extends JPanel {
 
   ///////////////////////////////////////////////
   GribCollection gc;
+  String magic;
 
   public void setIndexFile(String indexFile) throws IOException {
     if (gc != null) gc.close();
+    magic = null;
 
     RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
     raf.seek(0);
     byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.getBytes().length];
     raf.read(b);
-    String magic = new String(b);
+    magic = new String(b);
     if (magic.equals(Grib2CollectionBuilder.MAGIC_START))
       gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf, null, logger);
     else if (magic.equals(Grib1CollectionBuilder.MAGIC_START))
@@ -413,195 +416,8 @@ public class GribCollectionIndexPanel extends JPanel {
 
   }
 
-  public class VarBean {
-    GribCollection.VariableIndex v;
-    GribCollection.GroupHcs group;
 
-    public VarBean() {
-    }
-
-    public VarBean(GribCollection.VariableIndex v, GribCollection.GroupHcs group) {
-      this.v = v;
-      this.group = group;
-    }
-
-    public int getTimeCoord() {
-      return v.timeIdx;
-    }
-
-    public boolean getTimeIntv() {
-      return (v.getTimeCoord() == null) ? false : v.getTimeCoord().isInterval();
-    }
-
-    public boolean getVertLayer() {
-      return (v.getVertCoord() == null) ? false : v.getVertCoord().isLayer();
-    }
-
-    public int getVertCoord() {
-      return v.vertIdx;
-    }
-
-    public int getEnsCoord() {
-      return v.ensIdx;
-    }
-
-    public int getLevelType() {
-      return v.levelType;
-    }
-
-    public int getIntvType() {
-      return v.intvType;
-    }
-
-    public int getProbType() {
-      return v.probType;
-    }
-
-    public int getEnsType() {
-      return v.ensDerivedType;
-    }
-
-    public int getGenType() {
-      return v.genProcessType;
-    }
-
-    public String getIntvName() {
-      return v.intvName;
-    }
-
-    public String getProbName() {
-      return v.probabilityName;
-    }
-
-    public int getHash() {
-      return v.cdmHash;
-    }
-
-    public String getGroupId() {
-      return group.getId();
-    }
-
-    public String getVariableId() {
-      return v.discipline + "-" + v.category + "-" + v.parameter;
-    }
-
-    private void showRecords(Formatter f) {
-      TimeCoord tcoord = v.getTimeCoord();
-      VertCoord vcoord = v.getVertCoord();
-      EnsCoord ecoord = v.getEnsCoord();
-
-      try {
-        if (tcoord.isInterval()) {
-          if (vcoord == null)
-            showRecords2Dintv(f, tcoord.getIntervals());
-          else
-            showRecords2Dintv(f, vcoord, tcoord.getIntervals());
-        } else {
-          if (vcoord == null)
-            showRecords(f, tcoord.getCoords());
-          else
-            showRecords(f, vcoord, tcoord.getCoords());
-        }
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
-      }
-    }
-
-    private void showRecords(Formatter f, List<Integer> values) throws IOException {
-      f.format("Variable %s%n", v.toStringComplete());
-      f.format(" Show records (file,pos)%n");
-      f.format(" time (down)%n");
-
-      GribCollection.Record[] records = v.getRecords();
-      for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
-        f.format("%10s = ", values.get(timeIdx));
-        int idx = GribCollection.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
-        GribCollection.Record r = records[idx];
-        if (r == null) f.format("null");
-        else f.format("(%d,%8d) ", r.fileno, r.pos);
-        f.format("%n");
-      }
-
-      f.format("%n Show records in order%n");
-      int count = 0;
-      for (GribCollection.Record r : records) {
-        if (r == null) f.format("null%n");
-        else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
-        count++;
-      }
-      f.format("%n");
-
-    }
-
-    private void showRecords(Formatter f, VertCoord vcoord, List<Integer> values) throws IOException {
-      f.format("Variable %s%n", v.toStringComplete());
-      f.format(" Show records (file,pos)%n");
-      f.format(" time (down) x vert (across) %n");
-
-      f.format("%12s ", " ");
-      List<VertCoord.Level> levels = vcoord.getCoords();
-      boolean isLayer = vcoord.isLayer();
-      for (int j = 0; j < levels.size(); j++)
-        f.format("%6s ", levels.get(j).toString(isLayer));
-      f.format("%n");
-
-      GribCollection.Record[] records = v.getRecords();
-      for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
-        f.format("%10s = ", values.get(timeIdx));
-        for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
-          int idx = GribCollection.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
-          GribCollection.Record r = records[idx];
-          if (r == null) f.format("null");
-          else f.format("(%d,%8d) ", r.fileno, r.pos);
-        }
-        f.format("%n");
-      }
-
-      int count = 0;
-      for (GribCollection.Record r : records) {
-        if (r == null) f.format("null%n");
-        else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
-        count++;
-      }
-      f.format("%n");
-
-    }
-
-    void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoord.Tinv> tinvs) throws IOException {
-      f.format("%12s ", " ");
-      List<VertCoord.Level> levels = vcoord.getCoords();
-      boolean isLayer = vcoord.isLayer();
-      for (int j = 0; j < levels.size(); j++)
-        f.format("%6s ", levels.get(j).toString(isLayer));
-      f.format("%n");
-
-      GribCollection.Record[] records = v.getRecords();
-      for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
-        f.format("%10s = ", tinvs.get(timeIdx));
-        for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
-          int idx = GribCollection.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
-          GribCollection.Record r = records[idx];
-          //f.format("%3d %10d ", r.fileno, r.drsPos);
-          f.format("%6d ", (r == null ? -1 : r.fileno));
-        }
-        f.format("%n");
-      }
-    }
-
-    void showRecords2Dintv(Formatter f, List<TimeCoord.Tinv> tinvs) throws IOException {
-      GribCollection.Record[] records = v.getRecords();
-      for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
-        f.format("%10s = ", tinvs.get(timeIdx));
-        int idx = GribCollection.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
-        GribCollection.Record r = records[idx];
-        //f.format("%3d %10d ", r.fileno, r.drsPos);
-        f.format("%6d ", (r == null ? -1 : r.fileno));
-        f.format("%n");
-      }
-    }
-
-  }
-
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   public class CoordBean {
     VertCoord vc;
     int index;
@@ -675,6 +491,273 @@ public class GribCollectionIndexPanel extends JPanel {
       return index;
     }
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////
+
+  public class VarBean {
+     GribCollection.VariableIndex v;
+     GribCollection.GroupHcs group;
+
+     public VarBean() {
+     }
+
+     public VarBean(GribCollection.VariableIndex v, GribCollection.GroupHcs group) {
+       this.v = v;
+       this.group = group;
+     }
+
+     public int getTimeCoord() {
+       return v.timeIdx;
+     }
+
+     public boolean getTimeIntv() {
+       return (v.getTimeCoord() == null) ? false : v.getTimeCoord().isInterval();
+     }
+
+     public boolean getVertLayer() {
+       return (v.getVertCoord() == null) ? false : v.getVertCoord().isLayer();
+     }
+
+     public int getVertCoord() {
+       return v.vertIdx;
+     }
+
+     public int getEnsCoord() {
+       return v.ensIdx;
+     }
+
+     public int getLevelType() {
+       return v.levelType;
+     }
+
+     public int getIntvType() {
+       return v.intvType;
+     }
+
+     public int getProbType() {
+       return v.probType;
+     }
+
+     public int getEnsType() {
+       return v.ensDerivedType;
+     }
+
+     public int getGenType() {
+       return v.genProcessType;
+     }
+
+     public String getIntvName() {
+       return v.intvName;
+     }
+
+     public String getProbName() {
+       return v.probabilityName;
+     }
+
+     public int getHash() {
+       return v.cdmHash;
+     }
+
+     public String getGroupId() {
+       return group.getId();
+     }
+
+     public String getVariableId() {
+       return v.discipline + "-" + v.category + "-" + v.parameter;
+     }
+
+     private void showRecords(Formatter f) {
+       if (v instanceof TimePartition.VariableIndexPartitioned)
+         showRecordsInPartition(f);
+       else
+         showRecordsInCollection(f);
+     }
+
+     private void showRecordsInPartition(Formatter f) {
+       try {
+         TimePartition.VariableIndexPartitioned vp = (TimePartition.VariableIndexPartitioned) v;
+         showPartitionInfo(vp, f);
+
+       } catch (IOException ioe) {
+         ioe.printStackTrace();
+       }
+     }
+
+     private void showRecordsInCollection(Formatter f) {
+       TimeCoord tcoord = v.getTimeCoord();
+       VertCoord vcoord = v.getVertCoord();
+       EnsCoord ecoord = v.getEnsCoord();
+
+       try {
+         GribCollection.Record[] records = v.getRecords();
+         if (records.length == 0) {
+           f.format("this index has no records%n");
+           return;
+         }
+
+         f.format("%s%n", v.toStringComplete());
+         f.format(" isTimeInterval=%s hasVert=%s%n", tcoord.isInterval(), (vcoord != null));
+         f.format(" Show records (file,pos)%n");
+
+         if (tcoord.isInterval()) {
+           if (vcoord == null)
+             showRecords2Dintv(f, tcoord.getIntervals(), records);
+           else
+             showRecords2Dintv(f, vcoord, tcoord.getIntervals(), records);
+         } else {
+           if (vcoord == null)
+             showRecords(f, tcoord.getCoords(), records);
+           else
+             showRecords(f, vcoord, tcoord.getCoords(), records);
+         }
+       } catch (IOException ioe) {
+         ioe.printStackTrace();
+       }
+     }
+
+     private void showRecords(Formatter f, List<Integer> values, GribCollection.Record[] records) throws IOException {
+       f.format(" time (down)%n");
+
+       for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+         f.format("%10s = ", values.get(timeIdx));
+         int idx = GribCollection.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
+         GribCollection.Record r = records[idx];
+         if (r == null) f.format("null");
+         else f.format("(%d,%8d) ", r.fileno, r.pos);
+         f.format("%n");
+       }
+
+       f.format("%n Show records in order%n");
+       int count = 0;
+       for (GribCollection.Record r : records) {
+         if (r == null) f.format("null%n");
+         else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
+         count++;
+       }
+       f.format("%n");
+
+     }
+
+     private void showRecords(Formatter f, VertCoord vcoord, List<Integer> values, GribCollection.Record[] records) throws IOException {
+       f.format(" time (down) vertLevel (across) %n");
+
+       f.format("%12s ", " ");
+       List<VertCoord.Level> levels = vcoord.getCoords();
+       boolean isLayer = vcoord.isLayer();
+       for (int j = 0; j < levels.size(); j++)
+         f.format("%6s ", levels.get(j).toString(isLayer));
+       f.format("%n");
+
+       for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+         f.format("%10s = ", values.get(timeIdx));
+         for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
+           int idx = GribCollection.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
+           GribCollection.Record r = records[idx];
+           if (r == null) f.format("null");
+           else f.format("(%d,%8d) ", r.fileno, r.pos);
+         }
+         f.format("%n");
+       }
+
+       f.format("%n Show records in order%n");
+       int count = 0;
+       for (GribCollection.Record r : records) {
+         if (r == null) f.format("null%n");
+         else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
+         count++;
+       }
+       f.format("%n");
+
+     }
+
+     void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoord.Tinv> tinvs, GribCollection.Record[] records) throws IOException {
+       f.format(" timeIntv (down) vertLevel (across) %n");
+
+       f.format("%12s ", " ");
+       List<VertCoord.Level> levels = vcoord.getCoords();
+       boolean isLayer = vcoord.isLayer();
+       for (int j = 0; j < levels.size(); j++)
+         f.format("%6s ", levels.get(j).toString(isLayer));
+       f.format("%n");
+
+       for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+         f.format("%10s = ", tinvs.get(timeIdx));
+         for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
+           int idx = GribCollection.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
+           GribCollection.Record r = records[idx];
+           //f.format("%3d %10d ", r.fileno, r.drsPos);
+           f.format("%6d ", (r == null ? -1 : r.fileno));
+         }
+         f.format("%n");
+       }
+     }
+
+     void showRecords2Dintv(Formatter f, List<TimeCoord.Tinv> tinvs, GribCollection.Record[] records) throws IOException {
+       f.format(" timeIntv (down) %n");
+
+       for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+         f.format("%10s = ", tinvs.get(timeIdx));
+         int idx = GribCollection.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
+         GribCollection.Record r = records[idx];
+         //f.format("%3d %10d ", r.fileno, r.drsPos);
+         f.format("%6d ", (r == null ? -1 : r.fileno));
+         f.format("%n");
+       }
+     }
+
+   }
+
+   private void showPartitionInfo(TimePartition.VariableIndexPartitioned vP, Formatter f) throws IOException {
+
+     TimePartition tp = (TimePartition) gc;
+     tp.setPartitionIndexReletive();
+
+     TimeCoordUnion timeCoordP = (TimeCoordUnion) vP.getTimeCoord();
+     VertCoord vcoord = vP.getVertCoord();
+     EnsCoord ecoord = vP.getEnsCoord();
+     int ntimes = (timeCoordP == null) ? 0 : timeCoordP.getSize();
+     int nverts = (vcoord == null) ? 1 : vcoord.getSize();
+     int nens = (ecoord == null) ? 1 : ecoord.getSize();
+
+     for (int timeIdx = 0; timeIdx < ntimes; timeIdx++) {
+
+       TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
+       int partno = val.getPartition();
+       GribCollection.VariableIndex vindex = vP.getVindex(partno); // the variable in this partition
+       f.format("time = %d val = %s partition = %d%n", timeIdx, val, partno);
+
+       for (int ensIdx = 0; ensIdx < nens; ensIdx++) {
+         if (nens > 1) f.format(" ens = %d%n", ensIdx);
+
+         for (int levelIdx = 0; levelIdx <= nverts; levelIdx++) {
+           if (nverts > 1) f.format("  vert = %d%n", levelIdx);
+
+           // where does this record go in the result ??
+           int resultIndex = GribCollection.calcIndex(timeIdx, ensIdx, levelIdx, nens, nverts);
+
+           // where does this record come from ??
+           int recordIndex = -1;
+
+           int flag = vP.flag[partno]; // see if theres a mismatch with vert or ens coordinates
+           if (flag == 0) { // no problem
+             recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
+
+           } else {  // problem - must match coordinates
+             recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, flag, vindex.getEnsCoord(), vindex.getVertCoord(),
+                     vP.getEnsCoord(), vP.getVertCoord());
+           }
+
+           f.format("   recordIndex=%d / %d, resultIndex=%d,  flag=%d%n", recordIndex,  vindex.records.length, resultIndex, flag);
+           if (flag == 0) f.format("   time=%d, ens=%d, level=%d, nens=%d, nverts=%d", val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
+           else  f.format("   time=%d, ens=%d, level=%d, flag=%d, nens=%s, vert=%s ensp=%s, vertp=%s", val.getIndex(), ensIdx, levelIdx, flag,
+                   vindex.getEnsCoord(), vindex.getVertCoord(), vP.getEnsCoord(), vP.getVertCoord());
+
+         }
+       }
+     }
+   }
+
+
 
 }
 
