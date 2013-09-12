@@ -32,20 +32,41 @@
 
 package ucar.nc2.ft.point.writer;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.ArrayStructureW;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
+import ucar.ma2.StructureMembers.Member;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.*;
-import ucar.nc2.ft.*;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
-import ucar.ma2.*;
-
-import java.util.*;
-import java.io.IOException;
 
 /**
  * Write a CF "Discrete Sample" station file.
@@ -346,6 +367,106 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
     recno++;
   }
+  
+  /**
+   * Use this when record structure is not available (netcdf4)
+ * @throws IOException 
+   */
+  public void writeStructure(Station s, PointFeature sobs, StructureData sdata) throws IOException{
+	  String stnName = s.getName();
+	  double timeCoordValue = sobs.getObservationTime();
+	  CalendarDate obsDate = sobs.getNominalTimeAsCalendarDate();
+	  trackBB(null,obsDate);
+	  
+	  Integer parentIndex = stationMap.get(stnName);
+	  if (parentIndex == null)
+		throw new RuntimeException("Cant find station " + stnName);
+
+	  // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
+	  ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
+	  sArray.setStructureData(sdata, 0);
+
+	  timeArray.set(0, timeCoordValue);
+	  parentArray.set(0, parentIndex);	  
+	  
+	  //update the recno record, even if we are not using record structure. It keeps track of the origin for writing vars.
+	  origin[0] = recno;
+	  
+	  try{
+		  
+		  writer.write(time, origin, timeArray);
+		  writer.write(stationIndex, origin, parentArray);
+		  
+			StructureMembers sm = sdata.getStructureMembers();
+			for( Member m : sm.getMembers() ){
+				Variable v = writer.findVariable(m.getName());
+
+				//if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time") ){
+				//if( v != null && v.getDataType() != DataType.CHAR && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName)){
+				if( v != null && v.getDataType() != DataType.CHAR && v.getDimensionsString().equals("obs") ){					
+					
+					Array arr = CFPointWriterUtils.getArrayFromMember(v, m);
+					writer.write( v , origin, arr );																	
+
+				}																					
+			}		  
+		  
+		  
+		  
+	  }catch(InvalidRangeException e) {
+			e.printStackTrace();
+			throw new IllegalStateException(e);
+		}	      
+
+		recno++;	  
+  }
+  
+  
+  
+  /*private Array getArrayFromMember(Variable var, Member m){
+		
+		//DataType m_dt = writer.findVariable(m.getName()).getDataType();
+		DataType v_dt = var.getDataType();
+		//DataType m_dt = m.getDataType();
+		
+		//Writes one single data 
+		//int[] shape = writer.findVariable(m.getName()).getShape();
+		int[] shape = var.getShape();
+		
+		//Set the shape we really want
+		for(int i=0; i< shape.length; i++ ){
+			shape[i] = 1;
+		}					
+									
+		Array arr = Array.factory(v_dt, shape );
+		setDataArray( v_dt, arr, m );						
+		
+		return arr;
+				
+	}
+  
+	private void setDataArray(DataType dt, Array arr, Member m){
+
+		//Set the value (int, short, float, double...)
+		if( dt  == DataType.SHORT){
+			arr.setShort(0, m.getDataArray().getShort(0) );
+		}
+		
+		if( dt  == DataType.INT ){
+			arr.setInt(0, m.getDataArray().getInt(0) );
+		}		
+		
+		if( dt  == DataType.DOUBLE){
+			arr.setDouble(0, m.getDataArray().getDouble(0) );
+		}
+		
+		if( dt  == DataType.FLOAT){
+			arr.setFloat(0, m.getDataArray().getFloat(0) );
+		}		
+		
+	}*/  
+  
+  
 
   private LatLonRect getBoundingBox(List stnList) {
     ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stnList.get(0);

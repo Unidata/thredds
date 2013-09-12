@@ -58,8 +58,8 @@ import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.point.writer.CFPointWriter;
+import ucar.nc2.ft.point.writer.CFPointWriterUtils;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.Station;
 

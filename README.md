@@ -37,8 +37,12 @@ More details on each of these can be found below.
 
 ## netCDF-Java/CDM
 
-The netCDF Java library implements the Common Data Model (CDM) which provides
-an interface to netCDF files and other types of scientific data formats.
+The netCDF Java library provides an interface for scientific data access. It can be
+used to read scientific data from a variety of file formats including netCDF, HDF,
+GRIB, BUFR, and many others. By itself, the netCDF-Java library can only write
+netCDF-3 files. It can write netCDF-4 files by using JNI to call the netCDF-C
+library. It also implements Unidata's Common Data Model (CDM) to provide data
+geolocation capabilities.
 
 For more information about netCDF-Java/CDM, see the netCDF-Java web page at
 
@@ -87,15 +91,18 @@ http://www.unidata.ucar.edu/software/netcdf/ncml/
 
 ## THREDDS Data Server (TDS)
 
-The THREDDS Data Server (TDS) is a web server that provides metadata and data
-access for scientific datasets, using a variety of remote data access protocols.
+The THREDDS Data Server (TDS) provides metadata and data access to scientific
+datasets. Datasets can be served through OPeNDAP, OGC's WMS and WCS, HTTP, and other
+remote data access protocols. It can be configured to aggregate a collection of
+datasets so the collection is seen as a single dataset when viewed through the
+various data access protocols. The TDS is a server-based system that can be easily
+installed in any servlet container such as Apache Tomcat.
 
 For more information about the TDS, see the TDS web page at
 
 * http://www.unidata.ucar.edu/software/tds/
 
-You can obtain a copy of the latest released version of netCDF-Java software
-from
+You can obtain a copy of the latest released version of TDS software from
 
 * http://www.unidata.ucar.edu/downloads/thredds/
 
@@ -112,11 +119,11 @@ Please identify the version of the package.
 
 ## THREDDS Catalogs
 
-THREDDS Catalogs can be thought of as logical directories of on-line data
-resources, encoded as XML documents, which provide a place for annotations and
-other metadata about the data resources to reside. This is how THREDDS-enabled
+THREDDS Catalogs can be thought of as representing logical directories of on-line
+data resources. They are encoded as XML and provide a place for annotations and
+other metadata about the data resources. These XML documents are how THREDDS-enabled
 data consumers find out what data is available from data providers.
 
 THREDDS Catalog documentation (including the specification) is available at
 
-* http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/
+* http://www.unidata.ucar.edu/software/thredds/current/tds/catalog/

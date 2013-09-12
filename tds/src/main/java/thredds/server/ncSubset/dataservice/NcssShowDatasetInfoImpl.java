@@ -70,8 +70,16 @@ public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo,
 
 		FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fp, datasetUrlPath);
 		String infoString="";
+		Document doc = xmlWriter.getCapabilitiesDocument();
+		
+		if (FormatsAvailabilityService
+				.isFormatAvailable(SupportedFormat.NETCDF4)) {
+			String xPathForGridElement = "capabilities/AcceptList";
+			addElement(doc, xPathForGridElement, new Element(
+					"accept").addContent("netcdf4").setAttribute("displayName", "netcdf4") );
+		}		
+		
 		if(wantXml){
-			Document doc = xmlWriter.getCapabilitiesDocument();
 			XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
 			infoString = fmt.outputString(doc);			
 		}else{
@@ -79,8 +87,7 @@ public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo,
 			try{
 				
 				String xslt = "/WEB-INF/xsl/ncssSobs.xsl";
-				InputStream is = getXSLT(xslt);
-				Document doc = xmlWriter.getCapabilitiesDocument();
+				InputStream is = getXSLT(xslt);				
 				//XSLTransformer transformer = new XSLTransformer(is);
 				
 				Transformer transformer = TransformerFactory.newInstance()

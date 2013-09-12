@@ -724,7 +724,12 @@ public class StationWriter {
     	//String pathInfo = fd.getTitle();
     	String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
         String url = NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getServletCachePath() + "/" + fileName;
-        httpHeaders.set("Content-Type", SupportedFormat.NETCDF3.getResponseContentType() );
+        if(version == NetcdfFileWriter.Version.netcdf3)
+        	httpHeaders.set("Content-Type", SupportedFormat.NETCDF3.getResponseContentType() );
+        
+        if(version == NetcdfFileWriter.Version.netcdf4)
+        	httpHeaders.set("Content-Type", SupportedFormat.NETCDF4.getResponseContentType() );
+        
     	httpHeaders.set("Content-Location", url );
     	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");    	
     	
@@ -742,7 +747,13 @@ public class StationWriter {
               log.error("WriterNetcdf.header", e);
             }
           }
-          cfWriter.writeRecord(sfc.getStation(pf), pf, sdata);
+          
+          if( version == NetcdfFileWriter.Version.netcdf3 )
+        	  cfWriter.writeRecord(sfc.getStation(pf), pf, sdata);
+          
+          if( version == NetcdfFileWriter.Version.netcdf4 )
+        	  cfWriter.writeStructure(sfc.getStation(pf), pf, sdata);
+          
           count++;
         }
       };

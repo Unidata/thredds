@@ -85,7 +85,7 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController{
 
 		
 		if(!req.getParameterMap().isEmpty()){
-			//This a 400
+			//This is a 400
 			throw new UnsupportedOperationException("Invalid info request.");
 		}
 		

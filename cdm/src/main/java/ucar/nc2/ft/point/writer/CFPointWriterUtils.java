@@ -1,7 +1,7 @@
 /**
  * 
  */
-package thredds.server.ncSubset.view.netcdf;
+package ucar.nc2.ft.point.writer;
 
 import java.util.Iterator;
 import java.util.List;
@@ -20,11 +20,11 @@ import ucar.unidata.geoloc.Station;
  * @author mhermida
  *
  */
-final class CFPointWriterUtils {
+public final class CFPointWriterUtils {
 	
 	private CFPointWriterUtils(){}
 	
-	static Array getArrayFromMember(Variable var, Member m){
+	public static Array getArrayFromMember(Variable var, Member m){
 	
 		//DataType m_dt = writer.findVariable(m.getName()).getDataType();
 		DataType v_dt = var.getDataType();
@@ -67,7 +67,7 @@ final class CFPointWriterUtils {
 		
 	}
 
-	static LatLonRect getBoundingBox(List<Station> stnList) {
+	public static LatLonRect getBoundingBox(List<Station> stnList) {
 		Station s =  stnList.get(0);
 		LatLonPointImpl llpt = new LatLonPointImpl();
 		llpt.set(s.getLatitude(), s.getLongitude());
@@ -82,7 +82,7 @@ final class CFPointWriterUtils {
 		return rect;
 	}
 	
-	static Attribute findCDMAtt(List<Attribute> atts, String attName){
+	public static Attribute findCDMAtt(List<Attribute> atts, String attName){
 		
 		Iterator<Attribute> it = atts.iterator();
 	

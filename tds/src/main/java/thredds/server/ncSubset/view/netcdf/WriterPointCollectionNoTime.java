@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.ArrayShort;
 import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -23,8 +21,8 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.ft.point.writer.CFPointWriter;
+import ucar.nc2.ft.point.writer.CFPointWriterUtils;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
 /**
