@@ -33,8 +33,7 @@
  */
 package ucar.nc2.util;
 
-import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.*;
 import ucar.nc2.*;
 import ucar.ma2.*;
 
@@ -53,8 +52,8 @@ import java.io.ByteArrayOutputStream;
  */
 public class CompareNetcdf2 {
 
-  static public void compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f) {
-    compareFiles(org, copy, f, false, false, false);
+  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f) {
+    return compareFiles(org, copy, f, false, false, false);
   }
 
   static public boolean compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f, boolean _compareData, boolean _showCompare, boolean _showEach) {
@@ -273,8 +272,50 @@ public class CompareNetcdf2 {
       }
     }
 
+    if (org instanceof VariableDS && copy instanceof VariableDS) {
+      VariableDS orgds = (VariableDS) org;
+      VariableDS copyds = (VariableDS) copy;
+
+      List matches = new ArrayList();
+      ok &= checkAll(orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
+      for (int i = 0; i < matches.size(); i += 2) {
+        CoordinateSystem orgCs = (CoordinateSystem) matches.get(i);
+        CoordinateSystem copyCs = (CoordinateSystem) matches.get(i + 1);
+        ok &= compareCoordinateSystem(orgCs, copyCs, filter);
+      }
+    }
+
     return ok;
   }
+
+
+  private boolean compareCoordinateSystem(CoordinateSystem cs1, CoordinateSystem cs2,  ObjFilter filter) {
+    if (showCompare)
+      f.format("compare CoordinateSystem '%s' to '%s' %n", cs1.getName(), cs2.getName());
+
+    boolean ok = true;
+    List matchAxes = new ArrayList();
+    ok &= checkAll(cs1.getCoordinateAxes(), cs2.getCoordinateAxes(), matchAxes);
+    for (int i = 0; i < matchAxes.size(); i += 2) {
+      CoordinateAxis orgCs = (CoordinateAxis) matchAxes.get(i);
+      CoordinateAxis copyCs = (CoordinateAxis) matchAxes.get(i + 1);
+      ok &= compareCoordinateAxis(orgCs, copyCs, filter);
+    }
+
+    List matchTransforms = new ArrayList();
+    ok &= checkAll(cs1.getCoordinateTransforms(), cs2.getCoordinateTransforms(), matchTransforms);
+    return ok;
+  }
+
+  private boolean compareCoordinateAxis(CoordinateAxis a1, CoordinateAxis a2,  ObjFilter filter) {
+    if (showCompare)
+      f.format("  compare CoordinateAxis '%s' to '%s' %n", a1.getShortName(), a2.getShortName());
+
+    compareVariable(a1, a2);
+    return true;
+  }
+
+
 
   // make sure each object in wantList is contained in container, using equals().
 

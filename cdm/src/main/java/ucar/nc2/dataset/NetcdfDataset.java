@@ -293,7 +293,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param minElementsInMemory keep this number in the cache
    * @param maxElementsInMemory trigger a cleanup if it goes over this number.
-   * @param period              (secs) do periodic cleanups every this number of seconds.
+   * @param period              (secs) do periodic cleanups every this number of seconds. set to < 0 to not cleanup
    */
   static public void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     fileCache = new ucar.nc2.util.cache.FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory, -1, period);
