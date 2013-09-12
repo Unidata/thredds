@@ -354,7 +354,7 @@
 				<hr />
 				<h3>
 					<a
-						href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/NetcdfSubsetService_4_3.html">NetCDF
+						href="http://www.unidata.ucar.edu/software/thredds/v4.4/tds/reference/NetcdfSubsetServiceReference.html">NetCDF
 						Subset Service Documentation</a>
 				</h3>
 			</body>
