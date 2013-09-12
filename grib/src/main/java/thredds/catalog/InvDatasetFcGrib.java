@@ -320,7 +320,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
       }
 
-      for (TimePartition.Partition dc : localState.timePartition.getPartitions()) {
+      for (TimePartition.Partition dc : localState.timePartition.getPartitionsSorted()) {
         String dname = dc.getName();
         InvCatalogRef ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
         top.addDataset(ds);
