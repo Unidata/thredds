@@ -349,7 +349,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Make NetcdfFile into NetcdfDataset with given enhance mode
    *
    * @param ncfile wrap this
-   * @param mode   using this enhance mode (may be null)
+   * @param mode   using this enhance mode (may be null, meaning no enhance)
    * @return NetcdfDataset wrapping the given ncfile
    * @throws IOException on io error
    */
@@ -360,7 +360,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         return (NetcdfDataset) ncfile;
     }
 
-    // enhancement requires wrappping, to not modify underlying dataset, eg if cached
+    // enhancement requires wrapping, to not modify underlying dataset, eg if cached
     // perhaps need a method variant that allows the ncfile to be modified
     return new NetcdfDataset(ncfile, mode);
   }
@@ -467,6 +467,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // now find coord systems which may change some Variables to axes, etc
     if (builder != null) {
       builder.buildCoordinateSystems(ds);
+      // System.out.printf(" parseInfo=%n%s%n", builder.getParseInfo());  //  DEBUG
     }
 
     ds.finish(); // recalc the global lists
@@ -1397,8 +1398,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Transform a NetcdfFile into a NetcdfDataset.
-   * You must not use the underlying NetcdfFile after this call.
+   * Transform a NetcdfFile into a NetcdfDataset, with default enhancement.
+   * You must not use the underlying NetcdfFile after this call, because it gets modified.
+   * Therefore you should not use this with a cached file.
    *
    * @param ncfile NetcdfFile to transform.
    * @throws java.io.IOException on read error

@@ -517,7 +517,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     // put status info into parseInfo that can be shown to someone trying to debug this process
     parseInfo.format("Parsing with Convention = %s\n", conventionName);
 
-    // Bookeeping info for each variable is kept in the VarProcess inner class
+    // Bookkeeping info for each variable is kept in the VarProcess inner class
     addVariables(ncDataset, ncDataset.getVariables(), varList);
 
     // identify which variables are coordinate axes
