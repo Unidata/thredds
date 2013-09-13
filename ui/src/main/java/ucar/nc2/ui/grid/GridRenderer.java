@@ -89,11 +89,7 @@ public class GridRenderer {
   private LatLonProjection projectll;       // special handling for LatLonProjection
 
   // working objects to minimize excessive gc
-  private LatLonPointImpl ptL1 = new LatLonPointImpl();
-  private LatLonPointImpl ptL2 = new LatLonPointImpl();
   private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
-  private ProjectionPointImpl ptP2 = new ProjectionPointImpl();
-  private ProjectionRect[] rects = new ProjectionRect[2];
 
   private final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
   private boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
@@ -103,7 +99,6 @@ public class GridRenderer {
    */
   public GridRenderer(PreferencesExt store) {
     this.store = store;
-    rects[0] = new ProjectionRect();
   }
 
   ///// bean properties
@@ -1031,7 +1026,7 @@ onePixel = 0;  */
     ProjectionRect[] rect = projectll.latLonToProjRect(lat1, lon1, lat2, lon2);
     for (int i = 0; i < 2; i++)
       if (null != rect[i]) {
-        ProjectionRect r2 = rects[i];
+        ProjectionRect r2 = rect[i];
         Rectangle2D.Double r = new Rectangle2D.Double(r2.getX(), r2.getY(), r2.getWidth(), r2.getHeight());
         g.fill(r);
       }
