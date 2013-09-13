@@ -211,5 +211,16 @@
    <datasetSource>my.package.DatsetSourceImpl</datasetSource>
    -->
 
+  <!--
+   set FeatureCollection logging
+  <FeatureCollection>
+     <RollingFileAppender>
+       <MaxFileSize>1 MB</MaxFileSize>
+       <MaxBackups>5</MaxBackups>
+       <Level>INFO</Level>
+     </RollingFileAppender>
+  </FeatureCollection>
+  -->
+
 
 </threddsConfig>

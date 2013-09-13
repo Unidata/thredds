@@ -10,7 +10,7 @@
 
 <hr>
 <p>The TDS configuration file <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> allows the TDS administrator to control the behavior of the TDS.
-  This is the complete reference document for TDS version 4.3.</p>
+  This is the complete reference document for TDS version 4.4.</p>
 
 <p>In general, you do not have to change any of these parameters, since the TDS will
   use default settings. If you do change any of these, you must restart the thredds
@@ -46,6 +46,7 @@
   <li>CDM Configuration
     <ul>
       <li><a href="#Aggregation">Aggregation</a></li>
+      <li><a href="#FeatureCollections">Feature Collections</a></li>
       <li><a href="#netcdfCLibrary">Netcdf-4 C Library Loading</a></li>
       <li><a href="#runtime">NetCDF-Java runtime Loading</a></li>
     </ul>
@@ -120,8 +121,7 @@
   The superseded information is listed as deprecated in the description of the
   <code>htmlSetup</code> element below.</p>
 
-<p>NOTE: The best way to use your own logo is to put it in the <strong>${tomcat_home}/content/thredds/public/ </strong>directory, and specifying it here
-  as<strong> /thredds/&lt;name&gt;</strong>, eg:</p>
+<p>NOTE: The best way to use your own logo is to put it in the <strong>${tomcat_home}/content/thredds/public/ </strong>directory, and specify it in <em>serverInformation</em> as<strong> /thredds/&lt;name&gt;</strong>, eg:</p>
 <pre> &lt;logoUrl&gt;/thredds/yourIcon.gif&lt;/logoUrl&gt;<strong></strong></pre>
 <h3><a name="Generated_HTML_Pages"></a>Generated HTML Pages</h3>
 
@@ -130,15 +130,12 @@
   Instead, these can be overridden by placing the appropriate CSS files in the <strong>${tomcat_home}/content/thredds/public/</strong> directory and pointing to
   them here: </p>
 
-<pre style="margin-left: 40px;">
+<pre>
 &lt;htmlSetup&gt;
 1)  &lt;standardCssUrl&gt;tds.css&lt;/standardCssUrl&gt;
 2)  &lt;catalogCssUrl&gt;tdsCat.css&lt;/catalogCssUrl&gt;    
 3)  &lt;openDapCssUrl&gt;tdsDap.css&lt;/openDapCssUrl&gt;
 4)  &lt;googleTrackingCode&gt;239487348739933&lt;/googleTrackingCode&gt;
-
-
-
 &lt;/htmlSetup&gt;
 </pre>
 
@@ -152,7 +149,7 @@ where:
 </ol>
 <h3>Controlling THREDDS catalog output<a name="catalogOutput" id="catalogOutput"></a></h3>
 
-<p><em>since version 4..1</em><br>
+<p><em>since version 4.1</em><br>
 </p>
 <pre>&lt;catalogWriting&gt;<br>  &lt;<strong>useBytesForDataSize</strong>&gt;false&lt;useBytesForDataSize/&gt;<br>&lt;/catalogWriting&gt;</pre>
 <ul>
@@ -162,7 +159,7 @@ where:
   </li>
 </ul>
 <h3><strong> <a name="catalogRoots"></a> Extra Catalog Roots</strong></h3>
-<pre style="margin-left: 40px;">&lt;<strong>catalogRoot</strong>&gt;tempCatalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;idd/catalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;catgen/subdir/enhancedCatalog-1.0.xml&lt;/catalogRoot&gt;</pre>
+<pre>&lt;<strong>catalogRoot</strong>&gt;tempCatalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;idd/catalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;catgen/subdir/enhancedCatalog-1.0.xml&lt;/catalogRoot&gt;</pre>
 <p>These elements name your root catalogs that are not referenced from your main catalog ( <strong>${tomcat_home}/content/thredds/catalog.xml</strong>).
   On startup, the TDS reads the main catalog and any root catalogs you
   list here, plus any catalogs that are referenced by them in a <strong>catalogRef</strong>. Data roots and other needed information are found and cached. All
@@ -360,8 +357,12 @@ where:
   can control how NcML Aggregation chooses its typical / template
   dataset, the one it uses to populate the metadata for the resulting
   aggregated dataset. Valid values are <strong>first, random</strong>, <strong>latest</strong> and <strong>penultimate</strong> (latest but one). The default
-  for version 4.3 is <strong>penultimate</strong>.</p>
-
+  is <strong>penultimate</strong>.</p>
+<h3>Feature Collections<a name="FeatureCollections"></a></h3>
+<p>Since version 4.4.0</p>
+<pre>  &lt;FeatureCollection&gt;<br>     &lt;RollingFileAppender&gt;<br>       &lt;MaxFileSize&gt;1 MB&lt;/MaxFileSize&gt;<br>       &lt;MaxBackups&gt;5&lt;/MaxBackups&gt;<br>       &lt;Level&gt;INFO&lt;/Level&gt;<br>     &lt;/RollingFileAppender&gt;<br>  &lt;/FeatureCollection&gt;
+</pre>
+<p>Feature Collection logs are placed in <strong>content/thredds/logs/fc.&lt;collectionName&gt;.log</strong>. These are programatically added, so cannot be configured in log4j2.xml. By default, each Feature Collection will rollover at 1 MB, and 5 files will be kept. Messages at the level of INFO and above will be enabled. You can change those settings here, note that your changes will apply to all Feature Collections.</p>
 <h3>NetCDF-4 C library loading<a name="netcdfCLibrary" id="netcdfCLibrary"></a></h3>
 
 <p>Since version 4.3.13.</p>
@@ -382,7 +383,7 @@ where:
 <hr>
 <h2><a name="Caching"></a><a name="Cache_Locations"></a> Disk Caching and temporary files</h2>
 
-<p>As of TDS 4.2 (stable release), the various cache directory locations are now by default are all under <strong>{tomcat_home}/content/thredds/ :</strong></p>
+<p>The various cache directory locations are now by default are all under <strong>{tomcat_home}/content/thredds/ :</strong></p>
 <blockquote>
   <table width="937" border="1">
     <tr>
@@ -417,7 +418,7 @@ where:
       <td>object cache, put ehcache backup file in this directory</td>
     </tr>
     <tr>
-      <td>FeatureCollection.dir</td>
+      <td>FeatureCollectionCache.dir</td>
       <td><strong>cache/collection/</strong></td>
       <td>when we read GridDataset for FMRC, write an XML summary, store in BDB in this directory</td>
     </tr>
@@ -449,9 +450,6 @@ ln -s /data/thredds/content content</pre>
   location. </p>
 
 <p>The following elements allow fine grain control over the location and scouring of each of these.</p>
-
-<p>&nbsp;</p>
-
 <h3><a name="DiskCache"></a>CDM library Disk cache </h3>
 <pre>  &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/cache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;</pre>
 <p>These elements control where the <em><strong>CDM/NetCDF-Java</strong></em> library writes temporary files, for example when it needs to unzip files, or write
@@ -497,26 +495,19 @@ ln -s /data/thredds/content content</pre>
   pronounced difference with and without this cache. </p>
 
 <p>The cache information is updated based on the <strong>recheckEvery</strong> field in the <strong>joinExisting</strong> aggregation element.</p>
-
 <h3>FeatureCollection cache<a name="FeatureCollectionCache"></a></h3>
-
-<p><em>since version 4.2</em></p>
-
-<p>This is where persistent information is kept about feature collections. If you dont have any feature collections, there should be no memory use.</p>
- <pre> &lt;FeatureCollection<strong></strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/cache/collection/&lt;/<strong>dir</strong>&gt;
+<p><em>NOTE change of element name in version 4.4. was </em><strong>FeatureCollection</strong><em>, now called </em><strong>FeatureCollectionCache</strong></p>
+<p>This is where persistent information is kept about feature collections.</p>
+<pre> &lt;FeatureCollectionCache<strong></strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/cache/collection/&lt;/<strong>dir</strong>&gt;
    &lt;<strong>maxSize</strong>&gt;20 Mb&lt;/<strong>maxSize</strong>&gt;
-   &lt;<strong>jvmPercent</strong>&gt;2&lt;/<strong>jvmPercent</strong>&gt;<br> &lt;/FeatureCollection&gt;</pre>
+   &lt;<strong>jvmPercent</strong>&gt;2&lt;/<strong>jvmPercent</strong>&gt;<br> &lt;/FeatureCollectionCache&gt;</pre>
 <ol>
-  <li><strong>dir</strong>: location of Feature Collection cache, currently implemented with
-    <a href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index-093405.html">Berkeley DB</a>. If not otherwise set, the TDS will use the
-    <strong>${tomcat_home}/content/thredds/cache/collection/</strong> directory We recommend that you use this default, by not specifying a <strong>FeatureCollection</strong>.<strong>dir</strong>
-    element.
-  </li>
+  <li><strong>dir</strong>: location of Feature Collection cache, currently implemented with <a href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index-093405.html">Berkeley DB</a>. If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/collection/</strong> directory We recommend that you use this default, by not specifying a <strong>FeatureCollection</strong>.<strong>dir</strong> element. </li>
   <li><strong>maxSize</strong>: maximum amount of memory to be used for this cache.</li>
   <li><strong>jvmPercent</strong>: alternately, set the memory use as a percent of JVM memory, ie -Xmx value. <strong>maxSize</strong> will override if present.
-    Default is 2 %.
-  </li>
+    Default is 2 %. </li>
 </ol>
+<p>We recommend that you use the default setting, unless you understand the internals of Berkeley DB.</p>
 <h3>GRIB Index writing<a name="GribIndexWriting" id="GribIndexWriting"></a></h3>
 
 <p><em>since version 4.3.15</em></p>
@@ -572,9 +563,6 @@ ln -s /data/thredds/content content</pre>
 <pre> &lt;Catalog<strong></strong>&gt;<br>   &lt;<strong>cache</strong>&gt;false&lt;/<strong>cache</strong>&gt;<br> &lt;/Catalog&gt;</pre>
 <hr>
 <h2>IGNORE BELOW THIS</h2>
-
-<p>&nbsp;</p>
-
 <p><strong>LOOK the following may not be working</strong></p>
 
 <p>You may also set <em>cache=false</em> on a <strong>datasetRoot</strong> element. This controls whether a file is put in the NetcdfFile object cache. All
@@ -613,10 +601,8 @@ ln -s /data/thredds/content content</pre>
   <li>location of <a href="http://ehcache.org/">ehcache</a> configuration file.</li>
   <li>location of ehcache data files. If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/ehcache/</strong> directory We
     recommend that you use this default, by not specifying an <strong>ehcache</strong>.<strong>dir</strong> element.
-  </li>
+</li>
 </ul>
-<p>&nbsp;</p>
-
 <h3>The <code>contentRoot</code> Element</h3>
 
 <p><strong>DO NOT USE</strong></p>
@@ -646,7 +632,7 @@ ln -s /data/thredds/content content</pre>
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">
-  This document is maintained by elves and was last updated July 2013.
+  This document is maintained by elves and was last updated Sept 2013.
   Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

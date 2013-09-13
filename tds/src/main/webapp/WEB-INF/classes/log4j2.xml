@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration monitorInterval="30">
   <properties>
-    <property name="tds.content.root.path">../../content</property>
+    <property name="tds.content.root.path">../content</property>
     <property name="tds.log.dir">${sys:tds.content.root.path}/thredds/logs</property>
   </properties>
   

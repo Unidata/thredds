@@ -207,13 +207,5 @@
    <datasetSource>my.package.DatsetSourceImpl</datasetSource>
    -->
 
-  <!--
-  Modify Logging parameters. Normally use log4j.xml
-  <Logging>
-    <DatePattern></DatePattern>
-    <MaxFileSize></MaxFileSize>
-    <MaxFiles></MaxFiles>
-  </Logging>
-  -->
 
 </threddsConfig>

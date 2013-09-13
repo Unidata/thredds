@@ -28,15 +28,15 @@ public class LoggerFactorySpecial implements LoggerFactory {
 
   private String dir = "./";
   private long maxSize;
-  private int maxBackupIndex;
+  private int maxBackups;
   private Level level = Level.INFO;
 
-  public LoggerFactorySpecial(long maxSize, int maxBackupIndex, String levels) {
+  public LoggerFactorySpecial(long maxSize, int maxBackups, String levels) {
     String p = System.getProperty("tds.log.dir");
     if (p != null) dir = p;
 
     this.maxSize =  maxSize;
-    this.maxBackupIndex =  maxBackupIndex;
+    this.maxBackups =  maxBackups;
     try {
       Level tlevel = Level.toLevel(levels);
       if (tlevel != null) level = tlevel;
@@ -138,7 +138,14 @@ public class LoggerFactorySpecial implements LoggerFactory {
               "true",
               "false",
               SizeBasedTriggeringPolicy.createPolicy(Long.toString(maxSize)),
-              DefaultRolloverStrategy.createStrategy(Integer.toString(maxBackupIndex), "0", "max", config),
+
+              //   public static org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy createStrategy
+              // (@org.apache.logging.log4j.core.config.plugins.PluginAttr("max") java.lang.String max,
+              // @org.apache.logging.log4j.core.config.plugins.PluginAttr("min") java.lang.String min,
+              // @org.apache.logging.log4j.core.config.plugins.PluginAttr("fileIndex") java.lang.String fileIndex,
+              // @org.apache.logging.log4j.core.config.plugins.PluginConfiguration org.apache.logging.log4j.core.config.Configuration config) { /* compiled code */ }
+
+              DefaultRolloverStrategy.createStrategy(Integer.toString(maxBackups), null, "max", config),
               layout,
               null,
               "true",

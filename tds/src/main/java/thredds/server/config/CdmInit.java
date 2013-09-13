@@ -87,29 +87,18 @@ public class CdmInit implements InitializingBean,  DisposableBean{
 
     // 4.3.17
     // feature collection logging
-    /* from log4j RollingFileAppender:
-       <param name="MaxFileSize" value="100KB"/>
-       <param name="MaxBackupIndex" value="2"/>
-
-       currently we have bdb stuff:
-     <FeatureCollection>
-       <dir>/tomcat_home/content/thredds/cache/collection/</dir>
-       <maxSize>20 Mb</maxSize>
-       <jvmPercent>2</jvmPercent>
-     </FeatureCollection>
-
-     how about:
+    /*
      <FeatureCollection>
         <RollingFileAppender>
           <MaxFileSize>1 MB</MaxFileSize>
-          <MaxBackupIndex>5</MaxBackupIndex>
+          <MaxBackups>5</MaxBackups>
           <Level>INFO</Level>
         </RollingFileAppender>
       </FeatureCollection>
      */
     startupLog.info("CdmInit: set LoggerFactorySpecial with logging directory "+System.getProperty("tds.log.dir"));
     long maxFileSize = ThreddsConfig.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
-    int maxBackupIndex = ThreddsConfig.getInt("FeatureCollection.RollingFileAppender.MaxBackupIndex", 5);
+    int maxBackupIndex = ThreddsConfig.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 5);
     String level = ThreddsConfig.get("FeatureCollection.RollingFileAppender.Level", "INFO");
     LoggerFactory fac = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
     InvDatasetFeatureCollection.setLoggerFactory(fac);
@@ -135,11 +124,20 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     startupLog.info("CdmInit: GribIndex="+gribCache);
 
     // new for 4.2 - feature collection caching
-    String fcCache = ThreddsConfig.get("FeatureCollection.dir", null);
+    // in 4.4, change name to FeatureCollectionCache, but keep old for backwards compatibility
+    String fcCache = ThreddsConfig.get("FeatureCollectionCache.dir", null);
+    if (fcCache == null)
+      fcCache = ThreddsConfig.get("FeatureCollection.dir", null);
     if (fcCache == null)
       fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/cache/collection/");  // cacheDirectory is old way
-    long maxSizeBytes = ThreddsConfig.getBytes("FeatureCollection.maxSize", 0);
-    int jvmPercent = ThreddsConfig.getInt("FeatureCollection.jvmPercent", 2);
+
+    long maxSizeBytes = ThreddsConfig.getBytes("FeatureCollectionCache.maxSize", -1);
+    if (maxSizeBytes == -1)
+      maxSizeBytes = ThreddsConfig.getBytes("FeatureCollection.maxSize", 0);
+
+    int jvmPercent = ThreddsConfig.getInt("FeatureCollectionCache.jvmPercent", -1);
+    if( -1 == jvmPercent)
+      jvmPercent = ThreddsConfig.getInt("FeatureCollection.jvmPercent", 2);
 
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);

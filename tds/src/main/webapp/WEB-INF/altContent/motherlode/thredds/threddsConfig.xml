@@ -164,7 +164,7 @@
     </GribIndex>
     -->
 
-    <AggregationCache>
+  <AggregationCache>
     <scour>24 hours</scour>
     <maxAge>90 days</maxAge>
   </AggregationCache>
@@ -173,6 +173,18 @@
     <scour>24 hours</scour>
     <maxAge>90 days</maxAge>
   </GribCollection>
+
+  <!--
+   set FeatureCollection logging
+  <FeatureCollection>
+     <RollingFileAppender>
+       <MaxFileSize>1 MB</MaxFileSize>
+       <MaxBackups>5</MaxBackups>
+       <Level>INFO</Level>
+     </RollingFileAppender>
+  </FeatureCollection>
+  -->
+
 
 
 </threddsConfig>

@@ -18,6 +18,7 @@
   <description>
     TDS - NetCDF-Java library integration Test module. This module contains all classes and settings
     needed to test the NetCDF-Java library in a servlet container.
+    Starts up a TDS server and then sends requests to it.
   </description>
   <url>http://www.unidata.ucar.edu/software/tds/</url>
 
