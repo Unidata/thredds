@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
+import ucar.nc2.ft.FeatureDatasetImpl;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.point.collection.UpdateableCollection;
 import ucar.nc2.thredds.MetadataExtractor;
@@ -15,7 +17,8 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Feature Collection for Point types
+ * InvDataset Feature Collection for Point types.
+ * Implement with CompositeDatasetFactory
  *
  * @author caron
  * @since Nov 20, 2010
@@ -45,7 +48,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(name, fcType.getFeatureType(), dcm, errlog);
     } catch (Exception e) {
       // e.printStackTrace(); // not showing up in logs
-      throw new RuntimeException("InvDatasetFcPoint", e);
+      throw new RuntimeException("Failed to create InvDatasetFcPoint", e);
     }
 
     this.wantDatasets = config.pointConfig.datasets;
@@ -78,13 +81,21 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
       // copy on write
       State localState = new State(state);
-      makeDatasets(localState); // LOOK whats really needed is just the time range metadata updated
-      update(CollectionManager.Force.test);
+      makeDatasets(localState); // doesnt actually change i think
+      update(CollectionManager.Force.test); // call update on the fd
 
-      if (null != fd) {
-        localState.vars = MetadataExtractor.extractVariables(fd);
+      // called each time anything changes
+      localState.vars = MetadataExtractor.extractVariables(fd);
+      localState.dateRange = MetadataExtractor.extractCalendarDateRange(fd);
+
+      // coverage can come in the InvDataset metadata, in which case it overrides whats in the files.
+      localState.coverage = getGeospatialCoverage();
+      if (localState.coverage != null) {
+        // override in fd
+        ((PointDatasetImpl) fd).setBoundingBox(localState.coverage.getBoundingBox());
+
+      } else { // look for it in the files
         localState.coverage = MetadataExtractor.extractGeospatial(fd);
-        localState.dateRange = MetadataExtractor.extractCalendarDateRange(fd);
       }
 
       state = localState;
@@ -136,7 +147,6 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
        ds.setUrlPath(this.path + "/" + name);
        ds.setID(id + "/" + name);
        ThreddsMetadata tm = ds.getLocalMetadata();
-//       tm.addDocumentation("summary", "Feature Collection. 'Nuff said");
        ds.getLocalMetadataInheritable().setServiceName(collectionService.getName());
        ds.finish();
        datasets.add(ds);

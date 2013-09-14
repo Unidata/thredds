@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+  <bean id="Server" class="org.eclipse.jetty.server.Server" init-method="start" destroy-method="stop">
+
+    <property name="threadPool">
+      <bean id="ThreadPool" class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+        <property name="minThreads" value="3"/>
+        <property name="maxThreads" value="10"/>
+      </bean>
+    </property>
+
+    <property name="connectors">
+      <list>
+        <bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+          <property name="port" value="6502"/>
+        </bean>
+      </list>
+    </property>
+ 
+    <property name="handler">
+      <bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerList">
+
+        <property name="handlers">
+          <list>
+            <bean class="org.eclipse.jetty.server.handler.ResourceHandler">
+              <property name="directoriesListed" value="true"/>
+              <property name="welcomeFiles">
+                <list>
+                  <value>index.html</value>
+                </list>
+              </property>
+              <property name="resourceBase" value="Q:/cdmUnitsTest"/>
+            </bean>
+
+            <bean class="org.eclipse.jetty.server.handler.DefaultHandler"/>
+
+            <bean class="thredds.cdmr.CdmHandler" />
+
+          </list>
+        </property>
+      </bean>
+    </property>
+
+  </bean>
+</beans>

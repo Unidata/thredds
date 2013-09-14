@@ -56,7 +56,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Abstract superclass for Feature Collection Datasets.
+ * Abstract superclass for Feature Collection InvDatasets.
  * This is a InvCatalogRef subclass. So the reference is placed in the parent, but
  * the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
  *       match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);

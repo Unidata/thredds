@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Feature Collection for Fmrc
+ * InvDataset Feature Collection for Fmrc
  * Generate anew each call; use object caching if needed to improve efficiency
  *
  * @author caron

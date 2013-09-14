@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -12,7 +13,6 @@
   <!-- ===========================================================
            Module Description
        =========================================================== -->
-  <!-- groupId>edu.ucar</groupId-->
   <artifactId>tds</artifactId>
   <packaging>war</packaging>
   <name>THREDDS Data Server (TDS)</name>
@@ -23,25 +23,6 @@
   </description>
   <url>http://www.unidata.ucar.edu/software/tds/</url>
 
-  <!-- ===========================================================
-     Dependencies
-
-     Mandatory dependencies are listed first. Then everything
-     else is declared with the "provided" scope, meaning that
-     the user have to declare those dependencies himself in
-     his own pom.xml file if we want to read some formats.
- =========================================================== -->
-  <!--    <dependencyManagement>
-      <dependencies>
-          <dependency>
-              <groupId>edu.ucar</groupId>
-              <artifactId>netcdf-parent</artifactId>
-              <version>4.2.27-SNAPSHOT</version>
-              <type>pom</type>
-              <scope>import</scope>
-          </dependency>
-      </dependencies>
-  </dependencyManagement>-->
   <dependencies>
 
     <dependency>
@@ -105,6 +86,7 @@
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
     </dependency>
+
     <!-- 
     <dependency>
       <groupId>net.sf.ehcache</groupId>
@@ -112,7 +94,7 @@
       <scope>runtime</scope>
     </dependency>
      -->
-     
+
     <dependency>
       <artifactId>je</artifactId>
       <groupId>com.sleepycat</groupId>
@@ -142,63 +124,65 @@
       <artifactId>spring-webmvc</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>cas</groupId>
-      <artifactId>casclient</artifactId>
-    </dependency>
+    <!-- need to update cas -->
+    <!-- dependency>
+      <groupId>org.jasig.cas</groupId>
+     	<artifactId>cas-client-core</artifactId>
+    </dependency -->
 
     <!-- THREDDS ISO -->
     <dependency>
       <groupId>EDS</groupId>
       <artifactId>threddsIso</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
-    	<groupId>org.jdom</groupId>
-    	<artifactId>jdom-legacy</artifactId>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom-legacy</artifactId>
     </dependency>
     <dependency>
-		<groupId>net.sf.saxon</groupId>
-		<artifactId>saxon</artifactId>
-	</dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon</artifactId>
+    </dependency>
     <dependency>
-		<groupId>net.sf.saxon</groupId>
-		<artifactId>saxon-dom</artifactId>
-	</dependency>    
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon-dom</artifactId>
+    </dependency>
 
     <!-- wms -->
     <dependency>
       <groupId>uk.ac.rdg.resc</groupId>
       <artifactId>ncwms</artifactId>
       <exclusions>
-      	<exclusion>
-      		<groupId>edu.ucar</groupId>
-      		<artifactId>cdm</artifactId>
-      	</exclusion>      	
-      	<exclusion>
-      		<groupId>org.springframework</groupId>
-      		<artifactId>spring-webmvc</artifactId>      	
-      	</exclusion>
         <exclusion>
-       		<groupId>org.slf4j</groupId>
-       		<artifactId>slf4j-api</artifactId>
-       	</exclusion>
+          <groupId>edu.ucar</groupId>
+          <artifactId>cdm</artifactId>
+        </exclusion>
         <exclusion>
-       		<groupId>org.slf4j</groupId>
-       		<artifactId>slf4j-log4j12</artifactId>
-       	</exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-webmvc</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
 
-      	<exclusion>
-      		<groupId>joda-time</groupId>
-      		<artifactId>joda-time</artifactId>      	
-      	</exclusion>      	
+        <exclusion>
+          <groupId>joda-time</groupId>
+          <artifactId>joda-time</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-    
+
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
@@ -215,14 +199,14 @@
 
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
     </dependency>
-    
+
     <!-- JSR 303 with Hibernate Validator -->
     <dependency>
       <groupId>javax.validation</groupId>
@@ -315,7 +299,7 @@
           </excludes>
           <testExcludes>
             <exclude>thredds/dqc/**/*.java</exclude>
-          </testExcludes>          
+          </testExcludes>
         </configuration>
       </plugin>
 

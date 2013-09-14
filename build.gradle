@@ -6,6 +6,10 @@ subprojects {
 
   repositories {
     maven {
+        url "C:/Users/caron/.m2/repository"
+    }
+
+    maven {
         url "https://artifacts.unidata.ucar.edu/content/groups/unidata/"
     }
     mavenCentral()
@@ -15,6 +19,7 @@ subprojects {
     jfreechartVersion = "1.0.14"
     junitVersion = "4.8.2"
     log4jVersion = "2.0-beta8"
+    servletVersion = "3.0.1"
     slf4jVersion = "1.7.5"
     springVersion = "3.2.3.RELEASE"
   }

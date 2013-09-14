@@ -114,7 +114,7 @@ public class CompositeDatasetFactory {
 
     }
 
-    // deffer this is possible
+    // defer this if possible
    public List<VariableSimpleIF> getDataVariables() {
       if (dataVariables == null) {
         if (pfc instanceof CompositePointCollection)
@@ -127,12 +127,12 @@ public class CompositeDatasetFactory {
   }
 
     @Override
-    protected void setDateRange(CalendarDateRange dateRange) {
+    public void setDateRange(CalendarDateRange dateRange) {
       super.setDateRange(dateRange);
     }
 
     @Override
-    protected void setBoundingBox(LatLonRect boundingBox) {
+    public void setBoundingBox(LatLonRect boundingBox) {
       super.setBoundingBox(boundingBox);
     }
 

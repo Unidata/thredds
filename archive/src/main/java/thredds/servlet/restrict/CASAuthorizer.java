@@ -10,7 +10,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import edu.yale.its.tp.cas.client.*;
+import org.jasig.cas.client.*;
 
 /**
  * <p>Protects web-accessible resources with CAS.</p>

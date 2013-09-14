@@ -20,13 +20,12 @@ import thredds.servlet.ThreddsConfig;
  */
 public enum AllowableService {
 
-	WMS(InvService.wms, ThreddsConfig.getBoolean("WMS.allow", false)), WCS(
-			InvService.wcs, ThreddsConfig.getBoolean("WCS.allow", false)), NCSS(
-			InvService.ncss, ThreddsConfig.getBoolean(
-					"NetcdfSubsetService.allow", false)), ISO(InvService.iso,
-			ThreddsConfig.getBoolean("NCISO.isoAllow", false)), UDDC(
-			InvService.uddc, ThreddsConfig.getBoolean("NCISO.uddcAllow", false)), NCML(
-			InvService.ncml, ThreddsConfig.getBoolean("NCISO.ncmlAllow", false));
+	WMS(InvService.wms, ThreddsConfig.getBoolean("WMS.allow", false)),
+  WCS(InvService.wcs, ThreddsConfig.getBoolean("WCS.allow", false)),
+  NCSS(InvService.ncss, ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false)),
+  ISO(InvService.iso, ThreddsConfig.getBoolean("NCISO.isoAllow", false)),
+  UDDC(InvService.uddc, ThreddsConfig.getBoolean("NCISO.uddcAllow", false)),
+  NCML(InvService.ncml, ThreddsConfig.getBoolean("NCISO.ncmlAllow", false));
 
 	private Boolean allowed;
 	private InvService service;

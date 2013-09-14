@@ -295,7 +295,7 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
-        <version>2.0-beta8</version>
+        <version>${log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>  <!-- Adapts apache commons to slf4j, and so replaces commons-logging.jar -->
@@ -530,18 +530,17 @@
         <artifactId>commons-io</artifactId>
         <version>${commons-io.version}</version>
       </dependency>
-      <dependency>
-        <groupId>cas</groupId>
-        <artifactId>casclient</artifactId>
+      <!-- dependency>
+      	<groupId>org.jasig.cas</groupId>
+      	<artifactId>cas-client-core</artifactId>
         <version>${cas.version}</version>
         <exclusions>
-          <!-- Replaced with jcl-over-slf4j. -->
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>oro</groupId>
         <artifactId>oro</artifactId>
@@ -574,9 +573,9 @@
 
       <!-- server -->
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>${javax.servlet.version}</version>
+      	<groupId>javax.servlet</groupId>
+      	<artifactId>javax.servlet-api</artifactId>
+      	<version>3.0.1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -871,20 +870,15 @@
     <build.timestamp>${maven.build.timestamp}</build.timestamp>
 
     <!-- Dependency versions -->
-    <!-- visad.version>2.0-20120411</visad.version -->
     <visad.version>2.0-20130124</visad.version>
-    <!-- was 2.0-20120411, other options 2010-08-09, 2011-05-12 or 2011-08-22 -->
-    <edu.wisc.version>2011-08-22</edu.wisc.version>   
-    <!-- uk.ac.rdg.resc.version>1.0.tds.4.3.20121211.1130</uk.ac.rdg.resc.version-->
-	<!-- uk.ac.rdg.resc.version>1.0.tds.4.3.20130116.1130</uk.ac.rdg.resc.version -->
-	<!-- uk.ac.rdg.resc.version>1.0.tds.4.3.20130523.1500</uk.ac.rdg.resc.version -->
-	<uk.ac.rdg.resc.version>1.0.tds.4.4.20130828.1500-SNAPSHOT</uk.ac.rdg.resc.version>
-   
+    <edu.wisc.version>2011-08-22</edu.wisc.version>
+	  <uk.ac.rdg.resc.version>1.0.tds.4.4.20130828.1500-SNAPSHOT</uk.ac.rdg.resc.version>
+
     <org.geotoolkit.version>3.21</org.geotoolkit.version>
-    <eds.threddsIso.version>2.2.2</eds.threddsIso.version>
+    <eds.threddsIso.version>2.3</eds.threddsIso.version>
 
     <atg.taglib.json.version>0.4.1</atg.taglib.json.version>
-    <cas.version>2.1.1</cas.version>
+    <cas.version>3.1.10</cas.version>
     <cglib.version>2.2</cglib.version>
     <com.google.protobuf.version>2.5.0</com.google.protobuf.version>
     <com.jgoodies.version>1.6.0</com.jgoodies.version>
@@ -895,7 +889,7 @@
     <commons-io.version>2.4</commons-io.version>
     <derby.version>10.9.1.0</derby.version>
     <javax.activation.version>1.1.1</javax.activation.version>
-    <javax.servlet.version>2.5</javax.servlet.version>
+    <javax.servlet.version>3.0.1</javax.servlet.version>
     <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
     <jaxen.version>1.1.4</jaxen.version>
     <org.jfree.jcommon.version>1.0.17</org.jfree.jcommon.version>
@@ -917,6 +911,7 @@
     <oro.version>2.0.8</oro.version>
     <taglibs.version>1.1.2</taglibs.version>
     <saxon.version>8.7</saxon.version>
+
     <!-- Plugins versions -->
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>

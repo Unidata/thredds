@@ -43,7 +43,6 @@ import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.*;
-import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of FeatureDataset.
@@ -105,8 +104,8 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected void setTitle( String title) { this.title = title; }
   protected void setDescription( String desc) { this.desc = desc; }
   protected void setLocationURI( String location) {this.location = location; }
-  protected void setDateRange(CalendarDateRange dateRange) { this.dateRange = dateRange; }
-  protected void setBoundingBox(LatLonRect boundingBox) { this.boundingBox = boundingBox; }
+  public void setDateRange(CalendarDateRange dateRange) { this.dateRange = dateRange; }
+  public void setBoundingBox(LatLonRect boundingBox) { this.boundingBox = boundingBox; }
 
   /* protected void removeDataVariable( String varName) {
     if (dataVariables == null) return;
