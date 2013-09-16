@@ -75,14 +75,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final String COLLECTION = "collection";
   static private final String BEST_DATASET = "best";
 
-  static protected final String LATEST_DATASET = "latest";
-  static protected final String LATEST_DATASET_NAME = "Latest Run";
-
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
     TimePartition timePartition;
     GribCollection gribCollection;
-    InvDatasetImpl top;
 
     protected StateGrib(StateGrib from) {
       super(from);
@@ -97,9 +93,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   //////////////////////////////////////////////////////////////////////////////
 
   private final FeatureCollectionConfig.GribConfig gribConfig;
-  private final AtomicBoolean needsUpdate = new AtomicBoolean();
-  private final AtomicBoolean needsProto = new AtomicBoolean();
-  private boolean first = true;
+  private final AtomicBoolean needsUpdate = new AtomicBoolean(); // not used
+  private final AtomicBoolean needsProto = new AtomicBoolean();  // not used
   private DataFormatType format;
   private String bestDatasetName = "Best Timeseries";
 
@@ -134,12 +129,18 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public void update(CollectionManager.Force force) { // this may be called from a background thread
-    if (first) {
-      synchronized (lock) {
-        this.format = getDataFormatType(); // why wait until now ??
-        firstInit(); // why ??
-        first = false;
+    // deal with the first call
+    boolean firstTime;
+    synchronized (lock) {
+      firstTime = first;
+    }
+    if (firstTime) {
+      try {
+        checkState(); // this will initialize, no update needed
+      } catch (IOException e) {
+        logger.error("Fail to create/update collection on first time", e);
       }
+      return;
     }
 
     /* if (force == CollectionManager.Force.nocheck) {
@@ -174,7 +175,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   @Override
   public void updateProto() {
     needsProto.set(true);
-
     // no actual work, wait until next call to updateCollection (??)
     // not sure proto is used in GribFc
   }
@@ -183,13 +183,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   protected StateGrib checkState() throws IOException { // this is called from the request thread
     synchronized (lock) {
       if (first) {
-        this.format = getDataFormatType(); // for some reason have to wait until first request ??
         firstInit();
-        dcm.scanIfNeeded();
+        dcm.scanIfNeeded(); //always fall through to updateCollection
         first = false;
-
       } else {
-        if (!dcm.scanIfNeeded())
+        if (!dcm.scanIfNeeded()) // return is not needed
           return (StateGrib) state;
       }
 
@@ -210,6 +208,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       state = localState;
       return localState;
     }
+  }
+
+  @Override
+  protected void firstInit() {
+    super.firstInit();
+    this.format = getDataFormatType();
   }
 
   private void updateCollection(StateGrib localState, CollectionManager.Force force) throws IOException {
@@ -443,6 +447,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
 
   @Override
+  // LOOK maybe beter to implement makeDatasets() ??
   protected InvCatalogImpl makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), catURI);
@@ -452,9 +457,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     mainCatalog.addService(virtualService);
     // top.getLocalMetadataInheritable().setServiceName(virtualService.getName());  //??
     mainCatalog.finish();
-
-    mainCatalog.finish();
-
     return mainCatalog;
   }
 
@@ -893,7 +895,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private Grib1Customizer cust1 = null;
   private Grib2Customizer cust2 = null;
 
-  public ThreddsMetadata.Variable extractThreddsVariables(GribCollection gc, GribCollection.VariableIndex vindex) {
+  private ThreddsMetadata.Variable extractThreddsVariables(GribCollection gc, GribCollection.VariableIndex vindex) {
     if (map == null) map = new HashMap<Integer, ThreddsMetadata.Variable>(100);
 
     ThreddsMetadata.Variable tv = map.get(vindex.cdmHash);

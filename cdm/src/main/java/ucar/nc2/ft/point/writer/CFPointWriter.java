@@ -3,6 +3,7 @@ package ucar.nc2.ft.point.writer;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.constants.ACDD;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
@@ -144,7 +145,7 @@ public class CFPointWriter {
 
   // attributes with these nams will not be copied to the output file
   private static final String[] reservedGAtts = new String[]{
-          CDM.CONVENTIONS, CDM.LAT_MIN, CDM.LAT_MAX, CDM.LON_MIN, CDM.LON_MAX, CDM.TIME_START, CDM.TIME_END,
+          CDM.CONVENTIONS, ACDD.LAT_MIN, ACDD.LAT_MAX, ACDD.LON_MIN, ACDD.LON_MAX, ACDD.TIME_START, ACDD.TIME_END,
           _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3};
   private static final String[] reservedVAtts = new String[]{
            _Coordinate.AxisType};
@@ -210,13 +211,13 @@ public class CFPointWriter {
     // dummys, update in finish()
     if(addTimeCoverage){
     	CalendarDate now = CalendarDate.of(new Date());
-    	writer.addGroupAttribute(null, new Attribute(CDM.TIME_START, CalendarDateFormatter.toDateTimeStringISO(now) ));
-    	writer.addGroupAttribute(null, new Attribute(CDM.TIME_END,   CalendarDateFormatter.toDateTimeStringISO(now) ));
+    	writer.addGroupAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(now) ));
+    	writer.addGroupAttribute(null, new Attribute(ACDD.TIME_END,   CalendarDateFormatter.toDateTimeStringISO(now) ));
     }	
-    writer.addGroupAttribute(null, new Attribute(CDM.LAT_MIN, 0.0));
-    writer.addGroupAttribute(null, new Attribute(CDM.LAT_MAX, 0.0));
-    writer.addGroupAttribute(null, new Attribute(CDM.LON_MIN, 0.0));
-    writer.addGroupAttribute(null, new Attribute(CDM.LON_MAX, 0.0));
+    writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, 0.0));
+    writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, 0.0));
+    writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, 0.0));
+    writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, 0.0));
   }
 
   public void setLength(long size) {
@@ -238,18 +239,18 @@ public class CFPointWriter {
   }
 
   public void finish() throws IOException {
-    writer.updateAttribute(null, new Attribute(CDM.LAT_MIN, llbb.getLowerLeftPoint().getLatitude()));
-    writer.updateAttribute(null, new Attribute(CDM.LAT_MAX, llbb.getUpperRightPoint().getLatitude()));
-    writer.updateAttribute(null, new Attribute(CDM.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
-    writer.updateAttribute(null, new Attribute(CDM.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
+    writer.updateAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLowerLeftPoint().getLatitude()));
+    writer.updateAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getUpperRightPoint().getLatitude()));
+    writer.updateAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
+    writer.updateAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
 
-    if((writer.getNetcdfFile().findAttribute("@"+CDM.TIME_START) != null) &&  (writer.getNetcdfFile().findAttribute("@"+CDM.TIME_END) != null )){
+    if((writer.getNetcdfFile().findAttribute("@"+ACDD.TIME_START) != null) &&  (writer.getNetcdfFile().findAttribute("@"+ACDD.TIME_END) != null )){
     	
     	if (minDate == null) minDate = CalendarDate.present();
     	if (maxDate == null) maxDate = CalendarDate.present();
 
-    	writer.updateAttribute(null, new Attribute(CDM.TIME_START, CalendarDateFormatter.toDateTimeStringISO(minDate)));
-    	writer.updateAttribute(null, new Attribute(CDM.TIME_END, CalendarDateFormatter.toDateTimeStringISO(maxDate)));
+    	writer.updateAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(minDate)));
+    	writer.updateAttribute(null, new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(maxDate)));
     }
     
     writer.close();

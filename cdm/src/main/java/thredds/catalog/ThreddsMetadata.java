@@ -219,14 +219,14 @@ public class ThreddsMetadata {
   }
 
   /**
-   * @return list of contributors; may be empty, not null.
+   * @return list of keywords; may be empty, not null.
    */
   public List<Vocab> getKeywords() {
     return keywords;
   }
 
   /**
-   * Set list of contributors; may be empty, not null.
+   * Set list of keywords; may be empty, not null.
    * @param keywords set list of keywords to this
    */
   public void setKeywords(List<Vocab> keywords) {

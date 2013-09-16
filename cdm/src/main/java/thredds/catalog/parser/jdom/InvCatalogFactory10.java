@@ -411,6 +411,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       config.gribConfig.configFromXml(gribConfig, defNS);
     }
 
+    // dome reading - do anything needed
+    config.finish();
+
     InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory( parent, name, path, fcType, config);
     if (ds == null) {
       logger.error( "featureCollection "+name+" has fatal error ");

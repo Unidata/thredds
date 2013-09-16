@@ -214,8 +214,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
 
   @Override
   public void resetProto() {
-    if (lm != null)
-      lm.sendEvent(new TriggerEvent(this, TriggerType.proto));
+    sendEvent(new TriggerEvent(this, TriggerType.proto));
   }
 
   void sendEvent(TriggerEvent event) {

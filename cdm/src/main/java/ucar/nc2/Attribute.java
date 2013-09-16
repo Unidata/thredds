@@ -35,8 +35,10 @@ package ucar.nc2;
 import ucar.ma2.*;
 
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
 import java.nio.ByteBuffer;
+import java.util.Map;
 
 import net.jcip.annotations.Immutable;
 
@@ -55,6 +57,18 @@ public class Attribute extends CDMNode {
   private DataType dataType;
   private int nelems; // can be 0 or greater
   private Array values;
+
+  /**
+   * Turn a list into a map
+   * @param atts list of attributes
+   * @return map of attributes by name
+   */
+  static public Map<String, Attribute> makeMap(List<Attribute> atts) {
+    int size = (atts == null) ? 1 : atts.size();
+    Map<String, Attribute> result = new HashMap<String, Attribute>(size);
+    for (Attribute att : atts) result.put(att.getShortName(), att);
+    return result;
+  }
 
   /**
    * Alias for getShortName
@@ -196,7 +210,7 @@ public class Attribute extends CDMNode {
    *         the index is out of range.
    */
   public Number getNumericValue(int index) {
-    if (isString() || (index < 0) || (index >= nelems))
+    if ((index < 0) || (index >= nelems))
       return null;
 
     if (dataType == DataType.STRING) {

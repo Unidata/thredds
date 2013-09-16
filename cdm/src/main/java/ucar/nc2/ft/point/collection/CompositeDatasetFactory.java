@@ -33,6 +33,7 @@ package ucar.nc2.ft.point.collection;
 
 import thredds.inventory.CollectionManager;
 import thredds.inventory.TimedCollection;
+import ucar.nc2.Attribute;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
@@ -43,6 +44,7 @@ import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
@@ -96,6 +98,7 @@ public class CompositeDatasetFactory {
   private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection  {
     private TimedCollection datasets;
     private FeatureCollection pfc;
+    private List<Attribute> globalAttributes;
 
     public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc,
                                  TimedCollection datasets, LatLonRect bb) {
@@ -115,6 +118,7 @@ public class CompositeDatasetFactory {
     }
 
     // defer this if possible
+    @Override
    public List<VariableSimpleIF> getDataVariables() {
       if (dataVariables == null) {
         if (pfc instanceof CompositePointCollection)
@@ -125,6 +129,17 @@ public class CompositeDatasetFactory {
 
     return dataVariables;
   }
+
+    public List<Attribute> getGlobalAttributes() {
+      if (globalAttributes == null) {
+        if (pfc instanceof CompositePointCollection)
+          globalAttributes = ((CompositePointCollection) pfc).getGlobalAttributes();
+        else if (pfc instanceof CompositeStationCollection)
+          globalAttributes = ((CompositeStationCollection) pfc).getGlobalAttributes();
+      }
+
+      return globalAttributes;
+    }
 
     @Override
     public void setDateRange(CalendarDateRange dateRange) {
@@ -142,7 +157,7 @@ public class CompositeDatasetFactory {
       ((UpdateableCollection)pfc).update();
     }    
 
-    @Override
+    /* @Override
     public NetcdfFile getNetcdfFile() {
       FeatureDatasetPoint proto;
 
@@ -159,7 +174,7 @@ public class CompositeDatasetFactory {
         e.printStackTrace();
       }
       return null;
-    }
+    } */
 
   }
 

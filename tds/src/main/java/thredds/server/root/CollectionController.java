@@ -38,7 +38,6 @@ import ucar.unidata.util.StringUtil2;
 @RequestMapping(value={"/admin"})
 public class CollectionController implements InitializingBean{ //extends AbstractController {
   private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  //private final org.slf4j.Logger logFc = org.slf4j.LoggerFactory.getLogger(DatasetCollectionMFiles.class);
 
   private static final String PATH = "/admin/collection";
   private static final String COLLECTION = "collection";
@@ -47,9 +46,7 @@ public class CollectionController implements InitializingBean{ //extends Abstrac
   
   
   private final TdsContext tdsContext;
-  //private final TdsContext tdsContext;
-  //private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
-  
+
   @Autowired 
   CollectionController(TdsContext _tdsContext) {
 	  this.tdsContext = _tdsContext;

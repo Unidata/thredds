@@ -110,7 +110,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       }
 
       if (checkInv) {
-        makeDatasets(localState);
+        makeDatasetTop(localState);
         localState.lastInvChange = System.currentTimeMillis();
       }
 
@@ -330,11 +330,41 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////
 
-  private void makeDatasets(State localState) {
-     List<InvDataset> datasets = new ArrayList<InvDataset>();
+  private void makeDatasetTop(State localState) {
+    InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
+    if (parent != null)
+      top.transferMetadata(parent, true); // make all inherited metadata local
 
-     String id = getID();
-     if (id == null) id = getPath();
+    String id = getID();
+    if (id == null) id = getPath();
+    top.setID(id);
+
+    /* called anytime something changes. may need to do it only once ??
+
+    // pull out ACDD metadata and put into the catalog
+    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(fd.getGlobalAttributes()), this);
+    acdd.extract();
+
+    localState.vars = MetadataExtractor.extractVariables(fd);
+    localState.dateRange = MetadataExtractor.extractCalendarDateRange(fd);
+
+    // coverage can come in the InvDataset metadata, in which case it overrides whats in the files.
+    localState.coverage = getGeospatialCoverage();
+    if (localState.coverage != null) {
+      // override in fd
+      ((PointDatasetImpl) fd).setBoundingBox(localState.coverage.getBoundingBox());
+
+    } else { // look for it in the files
+      localState.coverage = MetadataExtractor.extractGeospatial(fd);
+    }  */
+
+    // add Variables, GeospatialCoverage, TimeCoverage LOOK doesnt seem to work
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.vars != null) tmi.addVariables(localState.vars);
+    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
+    if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
      if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {
 
@@ -347,7 +377,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
        tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
        //ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
        ds.finish();
-       datasets.add(ds);
+       top.addDataset(ds);
      }
 
     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {
@@ -361,7 +391,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
       //ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
       ds.finish();
-      datasets.add(ds);
+      top.addDataset(ds);
     }
 
     if (config.fmrcConfig.getBestDatasets() != null) {
@@ -375,32 +405,32 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         tm.addDocumentation("summary", "Best time series, excluding offset hours less than "+bd.greaterThan);
         //ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
         ds.finish();
-        datasets.add(ds);
+        top.addDataset(ds);
       }
     }
 
      if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs)) {
        InvDatasetImpl ds = new InvCatalogRef(this, RUN_TITLE, getCatalogHref(RUNS));
        ds.finish();
-       datasets.add(ds);
+       top.addDataset(ds);
      }
 
      if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts)) {
        InvDatasetImpl ds = new InvCatalogRef(this, FORECAST_TITLE, getCatalogHref(FORECAST));
        ds.finish();
-       datasets.add(ds);
+       top.addDataset(ds);
      }
 
      if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets)) {
        InvDatasetImpl ds = new InvCatalogRef(this, OFFSET_TITLE, getCatalogHref(OFFSET));
        ds.finish();
-       datasets.add(ds);
+       top.addDataset(ds);
      }
 
     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files) && (topDirectory != null)) {
       InvCatalogRef filesCat = new InvCatalogRef(this, FILES, getCatalogHref(FILES));
       filesCat.finish();
-      datasets.add(filesCat);
+      top.addDataset(filesCat);
 
     }
     /*
@@ -425,8 +455,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
        localState.scan = scanDataset;
      }  */
 
-     localState.datasets = datasets;
-     this.datasets = datasets;
+     localState.top = top;
      finish();
    }
 

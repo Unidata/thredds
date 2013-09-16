@@ -32,7 +32,6 @@
 
 package thredds.inventory;
 
-import org.slf4j.Logger;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 
@@ -128,7 +127,7 @@ public interface CollectionManager {
   public boolean isScanNeeded();
 
   /**
-   * If isScanNeeded(), do a scan.
+   * If isScanNeeded(), do a scan. Do not send an event.
    * @return true if scan was done, and anything changed.
    * @throws IOException on io error
    */

@@ -54,7 +54,7 @@ public class InvDocumentation {
   /**
    * Constructor.
    *
-   * @param href          :  href of documentation, may be null.
+   * @param href          : href of documentation, may be null.
    * @param uri           : resolved URL, or null
    * @param title         : Xlink title, may be null.
    * @param type          : user-defined InvDocumentation type

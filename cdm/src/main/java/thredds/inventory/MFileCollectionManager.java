@@ -312,8 +312,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   @Override
   public boolean scanIfNeeded() throws IOException {
-    if (map == null && !isStatic()) return true;
-    return isScanNeeded() && scan(true);
+    // if (map == null && !isStatic()) return true;
+    return isScanNeeded() && scan(false);
   }
 
   protected boolean hasScans() {

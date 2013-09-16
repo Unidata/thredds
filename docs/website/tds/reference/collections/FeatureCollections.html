@@ -268,7 +268,7 @@ The XML Schema definition for the update element:
   </li>
   <li><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will
     wait until the scan is finished and a new collection is built (if needed), and so is called <em>synchronous updating</em>. <em><strong>This option will be
-      ignored if you are using the rescan attribute</strong>.</em></li>
+      ignored if you are using the rescan attribute or if you have a tdm element.</strong></em></li>
   <li><strong>rescan</strong>: uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the
     collection should be rescanned in a background task. This is called <em>asynchronous updating</em>.
   </li>
@@ -313,9 +313,11 @@ The XML Schema definition for the update element:
   <li><strong>rescan </strong>and<strong> startup </strong>attributes: uses a background thread to keep the collection updated, so that requests never wait.
     This is called <em>asynchronous updating</em>.
   </li>
-  <li><strong>trigger</strong> attribute: allows a trigger to be sent to the TDS to tell it to update the collection. This is called <em>external controlled
+  <li><strong>trigger</strong> attribute: allows a trigger to be sent to the TDS to tell it to update the collection. This is called <em>user controlled
     updating</em>.
   </li>
+  <li><strong>tdm</strong> element: you may use an external program such as the tdm to do all index updating. This is called <em>external program
+  updating</em>. </li>
 </ol>
 <h3>Static Datasets - Small or Rarely Used</h3>
 
@@ -336,7 +338,7 @@ The XML Schema definition for the update element:
 <blockquote>
   <pre>&lt;update startup =&quot;nocheck&quot; /&gt;</pre>
 </blockquote>
-<p>The dataset will be read in at startup time by using the existing indexes, and never changed.</p>
+<p>The dataset will be read in at startup time by using the existing indexes (if they exists), and never changed. If indexes dont exist, they will be created on startup.</p>
 
 <p>If it occasionally changes, then you want to manually tell it when to rescan:</p>
 <blockquote>
@@ -371,6 +373,12 @@ The XML Schema definition for the update element:
   <pre><strong>&lt;update trigger=&quot;allow&quot; /&gt;</strong></pre>
 </blockquote>
 <p>You must enable remote triggers, and when the dataset changes, send a message to a special URL in the TDS (<a href="#trigger">details</a>)</p>
+<h3><strong>Very Large Changing Datasets </strong></h3>
+<p>You have a very large collection, which takes a long time to scan. You must carefully control when/if it will be scanned. </p>
+<blockquote>
+  <pre>&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot;/&gt;<br />&lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;  </pre>
+</blockquote>
+<p>The dataset will be read in at startup time by using the existing indexes, and will be scanned by the external program <strong>tdm</strong>. Never use <strong>recheckAfter</strong>.</p>
 <hr/>
 <h2>NcML Modifications<a name="ncml" id="ncml"></a></h2>
 
@@ -410,7 +418,7 @@ The XML Schema definition for the update element:
 <p></p>
 <hr width="100%"/>
 <address>
-  <img src="../../thread.png" width="76" height="67"/> This document was last updated July 2013.
+  <img src="../../thread.png" width="76" height="67"/> This document was last updated Sep 2013.
 </address>
 </body>
 </html>

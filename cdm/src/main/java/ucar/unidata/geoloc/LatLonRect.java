@@ -104,10 +104,8 @@ public class LatLonRect {
 
   private void init(LatLonPoint p1, double deltaLat, double deltaLon) {
     double lonmin, lonmax;
-    double latmin = Math.min(p1.getLatitude(),
-        p1.getLatitude() + deltaLat);
-    double latmax = Math.max(p1.getLatitude(),
-        p1.getLatitude() + deltaLat);
+    double latmin = Math.min(p1.getLatitude(), p1.getLatitude() + deltaLat);
+    double latmax = Math.max(p1.getLatitude(), p1.getLatitude() + deltaLat);
 
     double lonpt = p1.getLongitude();
     if (deltaLon > 0) {

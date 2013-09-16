@@ -4,12 +4,14 @@ import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
-import ucar.nc2.ft.FeatureDatasetImpl;
+import ucar.nc2.Attribute;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.point.collection.UpdateableCollection;
 import ucar.nc2.thredds.MetadataExtractor;
+import ucar.nc2.thredds.MetadataExtractorAcdd;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -28,6 +30,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   static private final String FC = "fc.cdmr";
   static private final InvService collectionService = new InvService("collectionService", ServiceType.COMPOUND.toString(), "", "", "");
   static private final InvService fileService = new InvService("fileService", ServiceType.COMPOUND.toString(), "", "", "");
+
+  // LOOK ignoring the configured services
   static {
     collectionService.addService( InvService.cdmrfeature);
     collectionService.addService( InvService.ncss);
@@ -55,10 +59,44 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public FeatureDatasetPoint getFeatureDatasetPoint() { return fd; }
+  public FeatureDatasetPoint getFeatureDatasetPoint() {
+    return fd;
+  }
 
   @Override
-  public void update(CollectionManager.Force force) {
+  public void update(CollectionManager.Force force) { // this may be called from a background thread
+    // deal with the first call
+    boolean firstTime;
+    synchronized (lock) {
+      firstTime = first;
+    }
+    if (firstTime) {
+      try {
+        checkState(); // this will initialize, no update needed
+      } catch (IOException e) {
+        logger.error("Fail to create/update collection on first time", e);
+      }
+      return;
+    }
+
+    // do the update in a local object
+    State localState = new State(state);
+    try {
+      updateCollection(localState, force);
+    } catch (Throwable e) {
+      logger.error("Fail to create/update collection", e);
+      return;
+    }
+    makeDatasetTop(localState);
+    localState.lastInvChange = System.currentTimeMillis();
+
+    // switch to live
+    synchronized (lock) {
+      state = localState;
+    }
+  }
+
+  public void updateCollection(State localState, CollectionManager.Force force) {
     ((UpdateableCollection)fd).update();
   }
 
@@ -73,30 +111,21 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   protected State checkState() throws IOException {
 
     synchronized (lock) {
-      if (state == null) {
-        firstInit();
-      } else if (!dcm.scanIfNeeded()) { // perform new scan if needed, return false if no change
-        return state;
+      synchronized (lock) {
+        if (first) {
+          firstInit();
+          dcm.scanIfNeeded(); //always fall through to updateCollection
+          first = false;
+        } else {
+          if (!dcm.scanIfNeeded()) // return is not needed
+            return state;
+        }
       }
 
       // copy on write
       State localState = new State(state);
-      makeDatasets(localState); // doesnt actually change i think
+      makeDatasetTop(localState); // doesnt actually change i think
       update(CollectionManager.Force.test); // call update on the fd
-
-      // called each time anything changes
-      localState.vars = MetadataExtractor.extractVariables(fd);
-      localState.dateRange = MetadataExtractor.extractCalendarDateRange(fd);
-
-      // coverage can come in the InvDataset metadata, in which case it overrides whats in the files.
-      localState.coverage = getGeospatialCoverage();
-      if (localState.coverage != null) {
-        // override in fd
-        ((PointDatasetImpl) fd).setBoundingBox(localState.coverage.getBoundingBox());
-
-      } else { // look for it in the files
-        localState.coverage = MetadataExtractor.extractGeospatial(fd);
-      }
 
       state = localState;
       return state;
@@ -106,7 +135,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   @Override
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI)  {
     logger.debug("FcPoint make catalog for " + match + " " + catURI);
-    State localState = null;
+    State localState;
     try {
       localState = checkState();
     } catch (IOException e) {
@@ -133,54 +162,75 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     return null;
   }
 
-  private void makeDatasets(State localState) {
-     List<InvDataset> datasets = new ArrayList<InvDataset>();
+  private void makeDatasetTop(State localState) {
+    InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
+    if (parent != null)
+      top.transferMetadata(parent, true); // make all inherited metadata local
 
-     String id = getID();
-     if (id == null) id = getPath();
+    String id = getID();
+    if (id == null) id = getPath();
+    top.setID(id);
 
-     if (wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.cdmrFeature)) {
+    // called anytime something changes. may need to do it only once ??
 
-       InvDatasetImpl ds = new InvDatasetImpl(this, "Feature Collection");
-       String name = getName() + "_" + FC;
-       name = StringUtil2.replace(name, ' ', "_");
-       ds.setUrlPath(this.path + "/" + name);
-       ds.setID(id + "/" + name);
-       ThreddsMetadata tm = ds.getLocalMetadata();
-       ds.getLocalMetadataInheritable().setServiceName(collectionService.getName());
-       ds.finish();
-       datasets.add(ds);
-     }
+    // pull out ACDD metadata and put into the catalog
+    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(fd.getGlobalAttributes()), this);
+    acdd.extract();
 
-     if (wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files) && (topDirectory != null)) {
-         InvCatalogRef filesCat = new InvCatalogRef(this, FILES, getCatalogHref(FILES));
-         filesCat.finish();
-         datasets.add(filesCat);
-       }
-       /* LOOK - replace this with InvDatasetScan( collectionManager) or something
-       //long olderThan = (long) (1000 * fmrc.getOlderThanFilterInSecs());
-       ScanFilter scanFilter = new ScanFilter(null, -1);
-       InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + FILES,
-               topDirectory, scanFilter, true, "true", false, null, null, null);
+    localState.vars = MetadataExtractor.extractVariables(fd);
+    localState.dateRange = MetadataExtractor.extractCalendarDateRange(fd);
 
-       //scanDataset.addService(fileService);
+    // coverage can come in the InvDataset metadata, in which case it overrides whats in the files.
+    localState.coverage = getGeospatialCoverage();
+    if (localState.coverage != null) {
+      // override in fd
+      ((PointDatasetImpl) fd).setBoundingBox(localState.coverage.getBoundingBox());
 
-       ThreddsMetadata tmi = scanDataset.getLocalMetadataInheritable();
-       tmi.setServiceName(fileService.getName());
-       tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
-       tmi.setGeospatialCoverage(null);
-       tmi.setTimeCoverage( (DateRange) null);
-       scanDataset.setServiceName(fileService.getName());
-       scanDataset.finish();
-       datasets.add(scanDataset);
+    } else { // look for it in the files
+      localState.coverage = MetadataExtractor.extractGeospatial(fd);
+    }
 
-       // replace all at once
-       localState.scan = scanDataset;
-     }  */
+    // add Variables, GeospatialCoverage, TimeCoverage LOOK doesnt seem to work
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.vars != null) tmi.addVariables(localState.vars);
+    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
+    if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
-     localState.datasets = datasets;
-     this.datasets = datasets;
-     finish();
-   }
+    if (wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.cdmrFeature)) {
+
+      InvDatasetImpl ds = new InvDatasetImpl(this, "Feature Collection");
+      String name = getName() + "_" + FC;
+      name = StringUtil2.replace(name, ' ', "_");
+      ds.setUrlPath(this.path + "/" + name);
+      ds.setID(id + "/" + name);
+      ThreddsMetadata tm = ds.getLocalMetadata();
+      ds.getLocalMetadataInheritable().setServiceName(collectionService.getName());
+      ds.finish();
+      top.addDataset(ds);
+    }
+
+    if (wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files) && (topDirectory != null)) {
+      InvCatalogRef filesCat = new InvCatalogRef(this, FILES, getCatalogHref(FILES));
+      filesCat.finish();
+      top.addDataset(filesCat);
+    }
+
+    localState.top = top;
+    finish();
+  }
+
+  @Override
+  public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
+    return null;
+  }
+
+  @Override
+  public NetcdfDataset getNetcdfDataset(String matchPath) throws IOException {
+    return null;
+  }
+
+
 
 }

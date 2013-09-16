@@ -32,6 +32,7 @@
 package ucar.nc2.ft.point.collection;
 
 import thredds.inventory.TimedCollection;
+import ucar.nc2.Attribute;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateRange;
@@ -56,6 +57,7 @@ import java.util.List;
 public class CompositeStationCollection extends StationTimeSeriesCollectionImpl implements UpdateableCollection {
   private TimedCollection dataCollection;
   protected List<VariableSimpleIF> dataVariables;
+  protected List<Attribute> globalAttributes;
 
   protected CompositeStationCollection(String name, TimedCollection dataCollection,
                                        List<Station> stns, List<VariableSimpleIF> dataVariables) throws IOException {
@@ -93,6 +95,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         stationHelper.addStation(new CompositeStationFeature(s, null, this.dataCollection));
 
       dataVariables = openDataset.getDataVariables();
+      globalAttributes = openDataset.getGlobalAttributes();
 
     } catch (Exception ioe) {
       throw new RuntimeException(td.getLocation(), ioe);
@@ -106,10 +109,14 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   public List<VariableSimpleIF> getDataVariables() {
-    if (dataVariables == null)
-      initStationHelper();
+    if (dataVariables == null) initStationHelper();
 
     return dataVariables;
+  }
+
+  public List<Attribute> getGlobalAttributes() {
+    if (globalAttributes == null) initStationHelper();
+    return globalAttributes;
   }
 
   @Override

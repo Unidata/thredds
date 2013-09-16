@@ -42,6 +42,7 @@ import java.util.List;
 
 /**
  * Manage collections of files that we can assign date ranges to.
+ * Used by Composite Point Collections
  * A wrap of CollectionManager.
  *
  * @author caron
@@ -67,7 +68,7 @@ public class TimedCollection {
     this.manager = manager;
 
     // get the inventory, sorted by path
-    manager.scanIfNeeded();
+    manager.scanIfNeeded();  // LOOK no event
     update();
 
     if (debug) {

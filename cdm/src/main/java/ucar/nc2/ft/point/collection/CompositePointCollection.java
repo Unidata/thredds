@@ -32,11 +32,11 @@
 package ucar.nc2.ft.point.collection;
 
 import thredds.inventory.TimedCollection;
+import ucar.nc2.Attribute;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
@@ -55,36 +55,46 @@ import java.util.Formatter;
 public class CompositePointCollection extends PointCollectionImpl implements UpdateableCollection {
   private TimedCollection pointCollections;
   protected List<VariableSimpleIF> dataVariables;
+  protected List<Attribute> globalAttributes;
 
   protected CompositePointCollection(String name, TimedCollection pointCollections) throws IOException {
     super(name);
     this.pointCollections = pointCollections;
   }
 
-  public List<VariableSimpleIF> getDataVariables() {
-    if (dataVariables == null) {
-      // must open a prototype in order to get the data variable
-      TimedCollection.Dataset td = pointCollections.getPrototype();
-      if (td == null)
-        throw new RuntimeException("No datasets in the collection");
+  private void readMetadata() {
+    // must open a prototype in order to get the data variable
+    TimedCollection.Dataset td = pointCollections.getPrototype();
+    if (td == null)
+      throw new RuntimeException("No datasets in the collection");
 
-      Formatter errlog = new Formatter();
-      FeatureDatasetPoint openDataset = null;
+    Formatter errlog = new Formatter();
+    FeatureDatasetPoint openDataset = null;
+    try {
+      openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
+      if (openDataset != null) {
+        dataVariables = openDataset.getDataVariables();
+        globalAttributes = openDataset.getGlobalAttributes();
+      }
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+
+    } finally {
       try {
-        openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
-        if (openDataset != null)
-          dataVariables = openDataset.getDataVariables();
-      } catch (IOException ioe) {
-        throw new RuntimeException(ioe);
-
-      } finally {
-        try {
-          if (openDataset != null) openDataset.close();
-        } catch (Throwable t) {
-        }
+        if (openDataset != null) openDataset.close();
+      } catch (Throwable t) {
       }
     }
+  }
+
+  public List<VariableSimpleIF> getDataVariables() {
+    if (dataVariables == null) readMetadata();
     return dataVariables;
+  }
+
+  public List<Attribute> getGlobalAttributes() {
+    if (globalAttributes == null) readMetadata();
+    return globalAttributes;
   }
 
   @Override

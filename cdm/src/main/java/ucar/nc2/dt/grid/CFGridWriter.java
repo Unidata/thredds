@@ -49,6 +49,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.ACDD;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
@@ -479,24 +480,24 @@ public class CFGridWriter {
 		writer.flush();
 		
 		//should we add them if they are not present??
-		if(writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MIN)!=null){
-			Attribute from = writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MIN);			
-			updateAttribute(writer, from, CDM.LAT_MIN, llRect.getLatMin());
+		if(writer.getNetcdfFile().findAttribute("@"+ACDD.LAT_MIN)!=null){
+			Attribute from = writer.getNetcdfFile().findAttribute("@"+ACDD.LAT_MIN);
+			updateAttribute(writer, from, ACDD.LAT_MIN, llRect.getLatMin());
 		}	
 		
-		if(writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MAX)!=null){
-			Attribute from = writer.getNetcdfFile().findAttribute("@"+CDM.LAT_MAX);
-			updateAttribute(writer, from, CDM.LAT_MAX, llRect.getLatMax());
+		if(writer.getNetcdfFile().findAttribute("@"+ACDD.LAT_MAX)!=null){
+			Attribute from = writer.getNetcdfFile().findAttribute("@"+ACDD.LAT_MAX);
+			updateAttribute(writer, from, ACDD.LAT_MAX, llRect.getLatMax());
 		}	
 
-		if(writer.getNetcdfFile().findAttribute("@"+CDM.LON_MIN)!=null){
-			Attribute from = writer.getNetcdfFile().findAttribute("@"+CDM.LON_MIN);
-			updateAttribute(writer, from, CDM.LON_MIN, llRect.getLonMin());
+		if(writer.getNetcdfFile().findAttribute("@"+ACDD.LON_MIN)!=null){
+			Attribute from = writer.getNetcdfFile().findAttribute("@"+ACDD.LON_MIN);
+			updateAttribute(writer, from, ACDD.LON_MIN, llRect.getLonMin());
 		}
 		
-		if(writer.getNetcdfFile().findAttribute("@"+CDM.LON_MAX )!=null){
-			Attribute from = writer.getNetcdfFile().findAttribute("@"+CDM.LON_MAX);
-			updateAttribute(writer, from, CDM.LON_MAX, llRect.getLonMax());
+		if(writer.getNetcdfFile().findAttribute("@"+ACDD.LON_MAX)!=null){
+			Attribute from = writer.getNetcdfFile().findAttribute("@"+ACDD.LON_MAX);
+			updateAttribute(writer, from, ACDD.LON_MAX, llRect.getLonMax());
 		}	
 	}
 	

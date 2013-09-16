@@ -150,6 +150,12 @@ public class FeatureCollectionConfig {
     return f.toString();
   }
 
+  // finished reading - do anything needed
+  public void finish() {
+    if (tdmConfig != null && updateConfig != null)
+      updateConfig.recheckAfter = null; // not allowed with tdm.
+  }
+
   // <update startup="true" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
     public String recheckAfter;
