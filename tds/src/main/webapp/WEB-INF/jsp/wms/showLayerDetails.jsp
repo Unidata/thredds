@@ -38,9 +38,9 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 
     <json:property name="numColorBands" value="${layer.defaultNumColorBands}"/>
 
-    <c:set var="styles" value="boxfill"/>
+    <c:set var="styles" value="boxfill,contour"/>
     <c:if test="${utils:isVectorLayer(layer)}">
-        <c:set var="styles" value="vector,boxfill"/>
+        <c:set var="styles" value="vector,barb,fancyvec,linevec,stumpvec,trivec,boxfill,contour"/>
     </c:if>
     <json:array name="supportedStyles" items="${styles}"/>
 
@@ -66,7 +66,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
              selected on the web interface, in ISO8601 format --%>
         <json:property name="nearestTimeIso" value="${nearestTimeIso}"/>
         <%-- The time axis units: "ISO8601" for "normal" axes, "360_day" for
-             axes that use the 360-day calendar --%>
+             axes that use the 360-day calendar, etc. --%>
         <json:property name="timeAxisUnits" value="${utils:getTimeAxisUnits(layer.chronology)}"/>
     </c:if>
     

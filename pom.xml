@@ -869,11 +869,11 @@
     <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
     <build.timestamp>${maven.build.timestamp}</build.timestamp>
 
-    <!-- Dependency versions -->
+	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
     <edu.wisc.version>2011-08-22</edu.wisc.version>
 	<uk.ac.rdg.resc.version>1.0.tds.4.4.20130918.0800-SNAPSHOT</uk.ac.rdg.resc.version>
-
+	  
     <org.geotoolkit.version>3.21</org.geotoolkit.version>
     <eds.threddsIso.version>2.3</eds.threddsIso.version>
 

@@ -682,6 +682,19 @@ function layerSelected(layerDetails)
             $('zValues').selectedIndex = nearestIndex;
         }
     
+        
+    	$('stylePicker').options.length = 0;
+    	for ( var j = 0; j < layerDetails.supportedStyles.length; j++) {
+    		$('stylePicker').options[j] = new Option(
+    				layerDetails.supportedStyles[j],
+    				layerDetails.supportedStyles[j]);
+
+    	}
+    	$('stylePicker').disabled = false;
+
+    	var style = typeof activeLayer.supportedStyles == 'undefined' ? 'boxfill'
+    			: activeLayer.supportedStyles[0];         
+        
     // Only show the scale bar if the data are coming from an ncWMS server
     var scaleVisibility = isNcWMS ? 'visible' : 'hidden';
     $('scaleBar').style.visibility = scaleVisibility;
@@ -1326,7 +1339,9 @@ function updateMap()
     
     // Get the default style for this layer.  There is some defensive programming here to 
     // take old servers into account that don't advertise the supported styles
-    var style = typeof activeLayer.supportedStyles == 'undefined' ? 'boxfill' : activeLayer.supportedStyles[0];
+    //var style = typeof activeLayer.supportedStyles == 'undefined' ? 'boxfill' : activeLayer.supportedStyles[0];
+    var style = $('stylePicker').value; 
+    
     if (paletteName != null) {
         style += '/' + paletteName;
     }
