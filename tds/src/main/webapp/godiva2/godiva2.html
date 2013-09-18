@@ -96,6 +96,9 @@
                 <input id="scaleMax" class="scaleMax" type="text" size="11" onblur="javascript:validateScale()"/>
                 <span id="scaleTwoThirds"></span>
                 <div id="scaleControls">
+                    <select id="stylePicker" title="Selects the style of the current layer" disabled="true" onchange="javascript:updateMap()"> 
+                        <option value="default" selected>default</option> 
+                    </select>                
                     <select id="scaleSpacing" title="Sets the spacing of the colour scale" onchange="javascript:validateScale()">
                         <option value="linear" selected>linear</option>
                         <option value="logarithmic">log</option>
