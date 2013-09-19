@@ -8,6 +8,7 @@
     <property name="tdsContext" ref="tdsContext"/>
     <property name="defaultPaletteLocation" value="/WEB-INF/palettes/"/>
   </bean>
+  
   <!-- This Controller will handle all the requests to the WMS -->
   <bean id="wmsController" class="thredds.server.wms.ThreddsWmsController" init-method="init">
     <property name="supportedMethods" value="GET"/>
@@ -15,10 +16,11 @@
       <ref local="config"/>
     </property>
   </bean>
+  
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
-      <value><!-- Maps from /wms/* (defined in web.xml servlet mappings) -->
+      <value><!-- Maps values starting by /wms (defined in web.xml servlet mappings) -->
         /**=wmsController
       </value>
     </property>
