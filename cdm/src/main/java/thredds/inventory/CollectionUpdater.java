@@ -3,6 +3,7 @@ package thredds.inventory;
 import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.listeners.SchedulerListenerSupport;
 import thredds.featurecollection.FeatureCollectionConfig;
 
 import java.util.Date;
@@ -54,7 +55,7 @@ public enum CollectionUpdater {
     return scheduler;
   }
 
-  private class MySchedListener implements SchedulerListener {
+  private class MySchedListener extends SchedulerListenerSupport {
 
     @Override
     public void jobScheduled(Trigger trigger) {
@@ -125,31 +126,6 @@ public enum CollectionUpdater {
     public void schedulerError(String s, SchedulerException e) {
       logger.debug("schedulerError {} {}", s, e);
     }
-
-    @Override
-    public void schedulerInStandbyMode() {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void schedulerStarted() {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void schedulerShutdown() {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void schedulerShuttingdown() {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void schedulingDataCleared() {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
   }
 
   public void scheduleTasks(FeatureCollectionConfig config, CollectionManager manager) {
@@ -172,12 +148,13 @@ public enum CollectionUpdater {
             .build();
 
     try {
-      if(!scheduler.checkExists(updateJob.getKey())) 	
+      if(!scheduler.checkExists(updateJob.getKey())) {
       	scheduler.addJob(updateJob, false);
-      else    	  
-    	logger.warn("cronExecutor failed to schedule startup Job for " + config +". Another Job exists with that identification." ); 
+      } else {
+    	  logger.warn("cronExecutor failed to add updateJob for " + updateJob.getKey() +". Another Job exists with that identification." );
+      }
     } catch (SchedulerException e) {
-      logger.error("cronExecutor failed to schedule startup Job for " + config, e);
+      logger.error("cronExecutor failed to add updateJob for " + config, e);
       return;
     }
 
@@ -190,11 +167,8 @@ public enum CollectionUpdater {
               .build();
 
       try {
-    	if(!scheduler.checkExists(startupTrigger.getJobKey() )){  
     	   scheduler.scheduleJob(startupTrigger);
-           logger.info("Schedule startup scan {} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
-    	}else
-    		logger.warn("cronExecutor failed to schedule startup Job for " + config +". Another Job exists with that identification." );
+         logger.info("Schedule startup scan {} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
@@ -209,11 +183,8 @@ public enum CollectionUpdater {
                 .build();
 
       try {
-    	if(!scheduler.checkExists(rescanTrigger.getJobKey() )){  
     		scheduler.scheduleJob(rescanTrigger);
     		logger.info("Schedule recurring scan for '{}' cronExpr={}", config.name, updateConfig.rescan);
-    	}else
-    		logger.warn("cronExecutor failed to schedule cron Job for " + config +". Another Job exists with that identification." );
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule cron Job", e);
         // e.printStackTrace();

@@ -131,12 +131,13 @@ public class LoggerFactorySpecial implements LoggerFactory {
          String advertise,
          String advertiseURI,
          Configuration config) */
-      RollingFileAppender app = RollingFileAppender.createAppender(fileName,
+      RollingFileAppender app = RollingFileAppender.createAppender(
+              fileName,
               fileNamePattern,
               "false",
               name,
               "true",
-              "false",
+              "true",
               SizeBasedTriggeringPolicy.createPolicy(Long.toString(maxSize)),
 
               //   public static org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy createStrategy

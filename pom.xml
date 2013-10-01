@@ -904,7 +904,7 @@
     <org.jsoup.version>1.7.2</org.jsoup.version>
     <org.jdom2.version>2.0.4</org.jdom2.version>
     <org.jdom-legacy.version>1.1.3</org.jdom-legacy.version>
-    <org.quartz-scheduler.version>2.1.1</org.quartz-scheduler.version>
+    <org.quartz-scheduler.version>2.2.0</org.quartz-scheduler.version>
     <org.slf4j.version>1.7.5</org.slf4j.version>
     <org.springframework.version>3.2.2.RELEASE</org.springframework.version>
     <org.springframework.security.version>3.1.3.RELEASE</org.springframework.security.version>
