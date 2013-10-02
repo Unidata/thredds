@@ -78,7 +78,7 @@
 
 <h3>Standard table mapping</h3>
 
-<p>A <em>standard table</em> is a GRIB parameter table that is automatically used by the CDM. A <em>standard table map</em> is an association of a standard
+<p>A <em>standard table</em> is a GRIB parameter table that is automatically used by the CDM. A <em>standard table map<a name="tableMap"></a></em> is an association of a standard
   table with a center/subcenter/version id. The CDM internally loads several table maps, from <strong>resources/grib1/lookupTables.txt </strong>and its
   subdirectories<strong> resources/grib1/*/lookupTables.txt</strong>. These are stored in the <strong>grib.jar, </strong>and referenced in <strong>ucar.nc2.grib.grib1.tables.Grib1ParamTables</strong>.
 </p>
@@ -111,31 +111,30 @@
     <li>If (param &gt; 127 or version &gt; 127) a table must be found for all parameters, or else the file will fail to open.</li>
   </ul>
   <li>You can set strictMode programatically via <strong>ucar.nc2.grib.grib1.tables.Grib1StandardTables.setStrict(true); </strong>or in the
-    <a href="../reference/RuntimeLoading.html#XML">RunTime configuration file</a> by adding<a name="strict"></a>
+    <a href="../RuntimeLoading.html#XML">RunTime configuration file</a> by adding<a name="strict"></a>
     <pre>&lt;grib1Table strict=&quot;true&quot;/&gt;</pre>
     <p>If <strong>strict=true</strong>, when a table is not matched, and local parameters are used, the GRIB file will fail to open. At that point you will need
       to add the correct parameter table, as described below.</p>
   </li>
 </ol>
+<h3>GRIB parameter table formats<a name="GribParameterFormats"></a></h3>
+<p>The CDM can read GRIB parameter tables in several formats:
+</p>
 <ol>
-  <li>The CDM can read GRIB parameter tables in several formats:
-    <ul>
-      <li><strong>A file ending in .xml:</strong> an ad-hoc <a href="#DefineGrib1Params">XML format</a> we made up.</li>
-      <li><strong>A file ending in .tab:</strong> the <a href="ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/usertables.txt">format</a> that
-        <a href="http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html">wgrib</a> uses.
-      </li>
-      <li><strong>A file starting with &quot;table_2_&quot; or &quot;local_table_2_&quot;</strong> : the format the
-        <a href="http://www.ecmwf.int/products/data/software/grib.html">ECMWF software</a> uses.
-      </li>
-    </ul>
-  </li>
+    <li><strong>A file ending in .xml:</strong> an ad-hoc <a href="#DefineGrib1Params">XML format</a> we made up.</li>
+    <li><strong>A file ending in .tab:</strong> the <a href="ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/usertables.txt">format</a> that
+      <a href="http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html">wgrib</a> uses.
+    </li>
+    <li><strong>A file starting with &quot;table_2_&quot; or &quot;local_table_2_&quot;</strong> : the format the
+      <a href="http://www.ecmwf.int/products/data/software/grib.html">ECMWF software</a> uses.
+    </li>
 </ol>
 <h3>Adding to the standard table mapping</h3>
 
 <p>When the CDM does not have a table for a center, subcenter and table version that a GRIB file uses, you must track down the corrrect table and add it to the
   CDM at runtime. (Also, send it to us so we can include it in the next release). To add a table at runtime:</p>
 <ol>
-  <li>Use <a href="../reference/RuntimeLoading.html">Runtime Loading</a> to add your own table programmatically within your application, or by using the Runtime
+  <li>Use <a href="../RuntimeLoading.html">Runtime Loading</a> to add your own table programmatically within your application, or by using the Runtime
     configuration file.
   </li>
   <li>Tables that are added at runtime take precedence over the standard tables, and are searched first in the order of being added. However, the default WMO
@@ -163,13 +162,13 @@
  &lt;/iospParam&gt;<br>&lt;/netcdf&gt;</pre>
   <h4>Reference to a Grib Parameter table in NcML</h4>
 
-  <p>You can reference the table in NcML, with the table being in any <a href="GribParameterFormats">GRIB parameter table format</a> that that CDM recognizes.
+  <p>You can reference the table in NcML, with the table being in any <a href="http://www.ecmwf.int/products/data/software/grib.html">GRIB parameter table format</a> that that CDM recognizes.
     To do so, you pass the string <strong>&quot;GribParameterTable=&lt;absolute file path to table&gt;&quot;</strong> in the iospParam attribute of the netcdf
     element:</p>
   <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;gribParameterTable=/data/NCEP/grib1/version123.tab&quot;</strong>&gt;<br>&lt;/netcdf&gt;</pre>
   <h4>Reference to a Grib Parameter table lookup in NcML</h4>
 
-  <p>You can reference a <a href="tableMap">table map</a> in NcML by passing the string <strong>&quot;GribParameterTableLookup=&lt;absolute file path to table
+  <p>You can reference a <a href="#tableMap">table map</a> in NcML by passing the string <strong>&quot;GribParameterTableLookup=&lt;absolute file path to table
     map&gt;&quot;</strong> in the iospParam attribute of the netcdf element:</p>
   <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;gribParameterTableLookup=/data/NCEP/grib1/lookupTable.txt&quot;</strong>&gt;<br>&lt;/netcdf&gt;
 </pre>
@@ -181,7 +180,7 @@
 <blockquote>
   <h4>Directly embed table in featureCollection element of the TDS configuration catalog</h4>
 
-  <p>You can directly embed an XML table (use the <a href="DefineGrib1Params">standard XML schema</a>) in a featureCollection element of type GRIB in a TDS
+  <p>You can directly embed an XML table (use the <a href="#DefineGrib1Params">standard XML schema</a>) in a featureCollection element of type GRIB in a TDS
     configuration catalog: </p>
   <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
   &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot; name=&quot;GFS_Global_0p5deg&quot; /&gt;
@@ -215,7 +214,7 @@
 <p>In all these cases, the table that you specify will take precedence over any standard tables. However, you only need to specify the changes/additions; when a
   parameter is not found in your table, the standard tables are used.</p>
 <hr WIDTH="100%">
-<h2>XML Schema for defining Grib-1 Parameters<a id="DefineGrib1Params"></a></h2>
+<h2>XML Schema for defining Grib-1 Parameters<a name="DefineGrib1Params" id="DefineGrib1Params"></a></h2>
 
 <p>Derived from NCAR DSS format with additional &quot;name&quot; element.</p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; elementFormDefault=&quot;qualified&quot;&gt;<br>  &lt;xs:element name=&quot;parameterMap&quot;&gt;<br>    &lt;xs:complexType&gt;<br>      &lt;xs:sequence&gt;<br>        &lt;xs:element name=&quot;title&quot; type=&quot;xs:string&quot;/&gt;<br>        &lt;xs:element name=&quot;source&quot; type=&quot;xs:string&quot;/&gt;<br>		   &lt;xs:element maxOccurs=&quot;unbounded&quot; ref=&quot;parameter&quot;/&gt;<br>      &lt;/xs:sequence&gt;<br>    &lt;/xs:complexType&gt;<br>  &lt;/xs:element&gt;<br>

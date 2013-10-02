@@ -16,10 +16,10 @@
 
 <h3>
 Writing temporary files using DiskCache<a name="DiskCache" id="DiskCache"></a></h3>
-<p>There are a number of places where the library needs to write files to disk. If you end up using the file more than once, its useful to save these
+<p>There are a number of places where the CDM library needs to write temporary files to disk. If you end up using the file more than once, its useful to save these
     files.
-  </p>
-Before it writes the temporary file, it looks to see if it already exists.
+  The CDM uses static methods in <strong>ucar.nc2.util.DiskCache</strong> to manage  how the temporary files are managed.</p>
+Before the CDM writes the temporary file, it looks to see if it already exists.
 <ol>
   <li>
     <p>If a filename ends with &quot;<strong>.Z</strong>&quot;, &quot;<strong>.zip</strong>&quot;, &quot;<strong>.gzip</strong>&quot;,
@@ -33,21 +33,24 @@ Before it writes the temporary file, it looks to see if it already exists.
     directory, by default it will use the directory <strong>${user_home}/.unidata/cache/. </strong>You can change the directory by calling
   </p>
   
-  <p><strong>ucar.nc2.util.DiskCache.setRootDirectory().</strong></p>
+  <blockquote>
+    <p><strong>ucar.nc2.util.DiskCache.setRootDirectory(rootDirectory).</strong></p>
+  </blockquote>
 <p>
   You might want to always write temporary files to the cache directory, in order to manage them in a central place. To do so, call </p>
+<blockquote>
   <p>
-    <strong>ucar.nc2.util.DiskCache.setCachePolicy( boolean alwaysInCache) </strong>with parameter alwaysInCache = true<strong>. </strong><br/>
-    <br/>
-    You may want to limit the amount of space the disk cache uses (unless you always have data in writeable directories, so that the disk cache is never used).
-    To scour the cache, call <strong>DiskCache.cleanCache</strong>(). There are several variations of the cleanup:
-
-    <ul>
-      <li><strong>DiskCache.cleanCache(Date cutoff, StringBuilder sbuff) </strong>will delete files older than the cutoff date.</li>
-      <li><strong>DiskCache.cleanCache(long maxBytes, StringBuilder sbuff) </strong>will retain maxBytes bytes, deleting oldest files first.</li>
-      <li><strong>DiskCache.cleanCache(long maxBytes, Comparator&lt;File&gt; fileComparator, StringBuilder sbuff) </strong>will retain maxBytes bytes, deleting
+  <strong>ucar.nc2.util.DiskCache.setCachePolicy( boolean alwaysInCache) </strong>with parameter<strong> alwaysInCache = true</strong>. </p>
+</blockquote>
+<p> You may want to limit the amount of space the disk cache uses (unless you always have data in writeable directories, so that the disk cache is never used).
+  To scour the cache, call <strong>DiskCache.cleanCache</strong>(). There are several variations of the cleanup:  
+</p>
+  <ul>
+    <li><strong>DiskCache.cleanCache(Date cutoff, StringBuilder sbuff) </strong>will delete files older than the cutoff date.</li>
+    <li><strong>DiskCache.cleanCache(long maxBytes, StringBuilder sbuff) </strong>will retain maxBytes bytes, deleting oldest files first.</li>
+    <li><strong>DiskCache.cleanCache(long maxBytes, Comparator&lt;File&gt; fileComparator, StringBuilder sbuff) </strong>will retain maxBytes bytes, deleting
         files in the order defined by your Comparator.
-      </li>
+    </li>
     </ul>
     <p>For long running appplication, you might want to do this periodically in a background timer thread, as in the following example.</p>
 <pre>1) Calendar c = Calendar.getInstance(); // contains current startup time
@@ -75,36 +78,20 @@ Before it writes the temporary file, it looks to see if it already exists.
         <li>Optionally log a message with the results of the scour.</li>
         <li>Make sure you cancel the timer before your application exits, or else the process will not terminate.</li>
       </ol>
-      <hr/>
-      <h2><a name="GRIB" id="GRIB"></a>GRIB Caching</h2>
-
-      <p>In 4.3, for GRIB files the CDM writes a <em>grib index file</em> using the filename plus suffix <strong>.gbx9</strong>. So a file named <strong>filename.grib1</strong>
-        will have an index file<strong> filename.grib1.gbx9</strong> created for it the first time that its read. Usually a <em>cdm index file</em> is also
-        created, using the filename plus suffix <strong>.ncx</strong>. So a file named <strong>filename.grib1</strong> will have an index file<strong>
-          filename.grib1.ncx</strong> created for it the first time. When a grib file is only part of a collection of grib files, then the ncx file may be created
-        only for the collection. </p>
-
-      <p>The location of these index files is controlled by a <em>caching strategy.</em> The default strategy is to try to place the index files in the same
-        directory as the data file. If that directory is not writeable, then the default strategy is to write the index files in the <em>default caching
-          directory</em>. In a client application using the CDM, that directory will be 
-<blockquote>
-        <p><strong>${user_home}/.unidata/cache/. </strong></p>
+<h3>Writing temporary files using DiskCache2<a name="DiskCache2" id="DiskCache2"></a></h3>
+      <p>In a number of places, the <strong>ucar.nc2.util.DiskCache2</strong> class is used to control caching. This does not use static methods, so can be configured for each individual use.</p>
+<p>The default constructor mimics DiskCache, using <strong>${user_home}/.unidata/cache/</strong> as the root directory:</p>
+      <blockquote>
+        <p><strong>DiskCache2 dc2 = new DiskCache2();</strong>      </p>
       </blockquote>
- On the TDS it will be
-        <blockquote>
-          <p><strong>${tomcat_home}/content/thredds/cache/</strong><strong>cdm</strong>        </p>
-        </blockquote>
-<p>In CDM 4.3.14 and before, the DiskCache class is used to control caching, with standard policy <strong>alwaysInCache</strong>=false. You can change the default directory by calling      
-
+      <p>You can change the root directory by calling </p>
 <blockquote>
-  <p><strong>ucar.nc2.util.DiskCache.setRootDirectory().</strong></p>
+  <p><strong>dc2.setRootDirectory(rootDirectory).</strong>  </p>
 </blockquote>
-      <p>In CDM 4.3.15 and after, the DiskCache2 class is used to control caching, You can change the default directory by </p>
-
-      <pre>DiskCache2 dc2 = new DiskCache2();
-dc2.setRootDirectory( rootDir);
-GribCollection.setDiskCache2( DiskCache2 dc2);</pre>
-      <p>to add cache cleanup, use:</p>
+      <p>You can tell the class to scour itself in a background timer by using the constructor:      </p>
+      <blockquote>
+        <p><strong>DiskCache2 dc2 = new DiskCache2(rootDirectory, false, 24 * 60, 60);</strong></p>
+      </blockquote>
       <pre>/**
  * Create a cache on disk.
  * @param root the root directory of the cache. Must be writeable.
@@ -114,7 +101,41 @@ GribCollection.setDiskCache2( DiskCache2 dc2);</pre>
  */
  public DiskCache2(String root, boolean reletiveToHome, int persistMinutes, int scourEveryMinutes);
        </pre>
-      <hr width="100%"/>
+      <p>You can change the cache policy from the default <strong>CachePathPolicy</strong>.<strong>OneDirectory</strong> by (eg):</p>
+      <blockquote>
+        <p><strong>dc2.setCachePathPolicy(CachePathPolicy.NestedTruncate, null).</strong></p>
+      </blockquote>
+      <pre>  /**<br />   * Set the cache path policy<br />   * @param cachePathPolicy one of:<br />   *   OneDirectory (default) : replace &quot;/&quot; with &quot;-&quot;, so all files are in one directory.<br />   *   NestedDirectory: cache files are in nested directories under the root.<br />   *   NestedTruncate: eliminate leading directories<br />   *<br />   * @param cachePathPolicyParam for NestedTruncate, eliminate this string<br />   */<br />  public void <strong>setCachePathPolicy</strong>(CachePathPolicy cachePathPolicy, String cachePathPolicyParam);
+</pre>
+      <p>You can ensure that the cache is always used with:</p>
+      <blockquote>
+        <p><strong>dc2.setCacheAlwaysUsed(true);</strong></p>
+      </blockquote>
+      <p>Otherwise, the cache will try to write the temporary file in the same directory as the data file, and only use the cache if that directory is not writeable.</p>
+      <hr/>
+      <h2><a name="GRIB" id="GRIB"></a>GRIB Indexing and Caching</h2>
+
+      <p>In 4.3 and above, for each GRIB file the CDM writes a <em>grib index file</em> using the filename plus suffix <strong>.gbx9</strong>. So a file named <strong>filename.grib1</strong>
+        will have an index file<strong> filename.grib1.gbx9</strong> created for it the first time that its read. Usually a <em>cdm index file</em> is also
+        created, using the filename plus suffix <strong>.ncx</strong>. So a file named <strong>filename.grib1</strong> will have an index file<strong>
+          filename.grib1.ncx</strong> created for it the first time. When a GRIB file is only part of a collection of GRIB files, then the ncx file may be created
+        only for the collection. </p>
+
+      <p>The location of these index files is controlled by a <em>caching strategy.</em> The default strategy is to try to place the index files in the same
+        directory as the data file. If that directory is not writeable, then the default strategy is to write the index files in the <em>default caching
+          directory</em>. In a client application using the CDM,  that default will be 
+<blockquote>
+        <p><strong>${user_home}/.unidata/cache/. </strong></p>
+      </blockquote>
+ On the TDS it will be
+        <blockquote>
+          <p><strong>${tomcat_home}/content/thredds/cache/</strong><strong>cdm</strong>        </p>
+        </blockquote>
+<p>Clients of the CDM can change the <strong></strong>GRIB caching behavior by configuring a <a href="#DiskCache2">DiskCache2</a> and calling:
+<blockquote>
+  <p><strong>ucar.nc2.grib.GribCollection.setDiskCache2(DiskCache2 dc);</strong></p>
+</blockquote>
+<hr width="100%"/>
       <h2>Object Caching</h2>
 
       <h3>NetcdfFileCache</h3>

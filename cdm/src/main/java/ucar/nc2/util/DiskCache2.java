@@ -63,6 +63,7 @@ public class DiskCache2 {
     NestedDirectory,
     NestedTruncate }
 
+  // deprecated
   public static int CACHEPATH_POLICY_ONE_DIRECTORY = 0;
   public static int CACHEPATH_POLICY_NESTED_DIRECTORY = 1;
   public static int CACHEPATH_POLICY_NESTED_TRUNCATE = 2;
@@ -102,7 +103,7 @@ public class DiskCache2 {
 
 
   /**
-   * Create a cache on disk.
+   * Create a cache on disk. Use default policy (CachePathPolicy.OneDirectory)
    * @param root the root directory of the cache. Must be writeable.
    * @param reletiveToHome if the root directory is reletive to the cache home directory.
    * @param persistMinutes  a file is deleted if its last modified time is greater than persistMinutes
@@ -272,6 +273,18 @@ public class DiskCache2 {
     return result;
   }
 
+
+  /**
+   * Set the cache path policy
+   * @param cachePathPolicy one of:
+   *   OneDirectory (default) : replace "/" with "-", so all files are in one directory.
+   *   NestedDirectory: cache files are in nested directories under the root.
+   *   NestedTruncate: eliminate leading directories
+   */
+  public void setPolicy(CachePathPolicy cachePathPolicy) {
+    this.cachePathPolicy = cachePathPolicy;
+  }
+
   /**
    * Set the cache path policy
    * @param cachePathPolicy one of:
@@ -295,7 +308,7 @@ public class DiskCache2 {
   }
 
   /**
-   * @deprecated use setCachePathPolicy(CachePathPolicy cachePathPolicy, String cachePathPolicyParam)
+   * @deprecated use setCachePathPolicy(CachePathPolicy cachePathPolicy)
    */
   public void setPolicy(int cachePathPolicy) {
     switch (cachePathPolicy) {
@@ -315,16 +328,18 @@ public class DiskCache2 {
   }
 
   /**
-   * @deprecated use setCachePathPolicy(CachePathPolicy cachePathPolicy, String cachePathPolicyParam)
+   * If true, always put the file in the cache. default false.
+   * @param alwaysUseCache  If true, always put the file in the cache
    */
-  public void setPolicy(CachePathPolicy cachePathPolicy) {
-    this.cachePathPolicy = cachePathPolicy;
-  }
-
   public void setAlwaysUseCache(boolean alwaysUseCache) {
     this.alwaysUseCache = alwaysUseCache;
   }
 
+
+  /**
+   * If true, never put the file in the cache. default false.
+   * @param neverUseCache  If true, never put the file in the cache
+   */
   public void setNeverUseCache(boolean neverUseCache) {
     this.neverUseCache = neverUseCache;
   }
