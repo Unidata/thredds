@@ -50,8 +50,10 @@ subprojects {
     testCompile group: 'junit', name: 'junit', version: junitVersion
   }
 
+  task wrapper(type: Wrapper) {
+    gradleVersion = '1.7-rc-2'
+  }
+
 }
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '1.7-rc-2'
-}
+
