@@ -132,7 +132,7 @@ public class TestAttributes extends TestCase {
     assert( DataType.STRING == att.getDataType());
 
     Number n = att.getNumericValue();
-    assert (n == null);
+    assert (n != null);
 
     ncfile.close();
   }

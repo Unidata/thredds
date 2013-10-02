@@ -26,7 +26,7 @@ dependencies {
   compile 'joda-time:joda-time:2.2'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'org.jdom:jdom2:2.0.4'
-  compile ('org.quartz-scheduler:quartz:2.1.5') {   // eliminate c3p0
+  compile ('org.quartz-scheduler:quartz:2.2.0') {   // eliminate c3p0
     transitive = false
   }
   compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
