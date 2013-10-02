@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
 <catalog xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata IDD Model Data" version="0.6">
   <dataset name="Unidata IDD Model Data" dataType="Grid" ID="ucar.unidata.idd.model" authority="Unidata">
     <service name="latest" serviceType="Resolver" base="/thredds/dqc/latestModelNew" />

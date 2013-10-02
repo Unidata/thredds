@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
 <catalog name="Example THREDDS Inventory Catalog Reference part 2" version="0.6">
 	<dataset name="ETA data (inside CatalogRef)" dataType="Grid" serviceName="local">
 		<service serviceType="NetCDF" name="local" base="file://E:/metapps/data/"/>

@@ -6,6 +6,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.cache.FileCache;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -23,7 +24,7 @@ public class TestAggCached {
   public void TestAggCached() throws IOException, InvalidRangeException {
     NetcdfDataset.initNetcdfFileCache(10, 20, -1);
 
-    String filename = "G:/work/CherylMorse/wqb.ncml";
+    String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
     //String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
     boolean ok = true;
 
@@ -58,7 +59,7 @@ public class TestAggCached {
   public void TestAggCached2() throws IOException, InvalidRangeException {
     NetcdfDataset.initNetcdfFileCache(10, 20, -1);
 
-    String filename = "G:/work/CherylMorse/wqb.ncml";
+    String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
     //String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
     boolean ok = true;
 

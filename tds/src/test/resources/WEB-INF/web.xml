@@ -161,10 +161,6 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>ForecastModelRunInventory</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>DLwriter</servlet-name>
   </filter-mapping>
   <filter-mapping>
@@ -284,11 +280,6 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-  <!-- TDS context configuration listener. -->
-  <listener>
-    <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
-  </listener>
-
   <listener>
     <listener-class>thredds.server.opendap.OpendapSessionAttributeListener</listener-class>
   </listener>
@@ -378,12 +369,6 @@
     <servlet-name>FileServer</servlet-name>
     <servlet-class>thredds.servlet.FileServerServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
-
-  <!-- ncss grids -->
-  <servlet>
-    <servlet-name>GridSubsetService</servlet-name>
-    <servlet-class>thredds.server.ncSubset.GridServlet</servlet-class>
   </servlet>
 
   <!-- Radar Server -->
@@ -584,11 +569,6 @@
   </servlet-mapping -->
 
   <servlet-mapping>
-    <servlet-name>GridSubsetService</servlet-name>
-    <url-pattern>/ncss/grid/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
     <servlet-name>RadarServer</servlet-name>
     <url-pattern>/radarServer/*</url-pattern>
   </servlet-mapping>
@@ -638,11 +618,6 @@
   <servlet-mapping>
     <servlet-name>catalogGen</servlet-name>
     <url-pattern>/cataloggen/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>ForecastModelRunInventory</servlet-name>
-    <url-pattern>/modelInventory/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

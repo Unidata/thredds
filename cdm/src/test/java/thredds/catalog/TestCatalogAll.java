@@ -62,8 +62,8 @@ public class TestCatalogAll extends TestCase {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(validate);
 
     try {
-      InvCatalogImpl cat = (InvCatalogImpl) catFactory.readXML(catalogName);
-      boolean isValid = ((InvCatalogImpl)cat).check( buff, showValidation);
+      InvCatalogImpl cat =  catFactory.readXML(catalogName);
+      boolean isValid = cat.check( buff, showValidation);
       if (!isValid)
         System.out.println("Validate failed "+ catalogName+" = \n<"+ buff.toString()+">");
       else if (showValidationMessages)
