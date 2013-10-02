@@ -178,7 +178,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       DataBlock dblock = new DataBlock();
       doublingTable.blockList.add(dblock);
       readDirectBlock(h5.getFileOffset(rootBlockAddress), address, dblock);
-      dblock.size = startingBlockSize - dblock.extraBytes;
+      dblock.size = startingBlockSize; // - dblock.extraBytes;  // removed 10/1/2013
       rootBlock.add(dblock);
 
     } else {
@@ -189,7 +189,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       for (DataBlock dblock : doublingTable.blockList) {
         if (dblock.address > 0) {
           readDirectBlock(h5.getFileOffset(dblock.address), address, dblock);
-          dblock.size -= dblock.extraBytes;
+          // dblock.size -= dblock.extraBytes;  // removed 10/1/2013
         }
       }
     }
@@ -215,8 +215,8 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
   class DHeapId {
     int type;
     int n, m;
-    int offset;
-    int size;
+    int offset; // This field is the offset of the object in the heap.
+    int size;   // This field is the length of the object in the heap
 
     DHeapId(byte[] heapId) throws IOException {
       type = (heapId[0] & 0x30) >> 4;
@@ -248,18 +248,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       this.startingBlockSize = startingBlockSize;
       this.managedSpace = managedSpace;
       this.maxDirectBlockSize = maxDirectBlockSize;
-
-      /* nrows = calcNrows(managedSpace);
-     int maxDirectRows = calcNrows(maxDirectBlockSize);
-     if (nrows > maxDirectRows) {
-       nDirectRows = maxDirectRows;
-       nIndirectRows = nrows - maxDirectRows;
-     } else {
-       nDirectRows = nrows;
-       nIndirectRows = 0;
-     } */
-
-      blockList = new ArrayList<DataBlock>(tableWidth * currentNumRows);
+      this.blockList = new ArrayList<DataBlock>(tableWidth * currentNumRows);
     }
 
     private int calcNrows(long max) {
@@ -298,8 +287,8 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       }
 
       log.error("DoublingTable: illegal offset=" + offset);
-      return -1; // LOOK temporary skip
-      // throw new IllegalStateException("offset=" + offset);
+      //return -1; // temporary skip
+      throw new IllegalStateException("offset=" + offset);
     }
 
     void showDetails(Formatter f) {
@@ -427,7 +416,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
         DataBlock directBlock = new DataBlock();
         iblock.add(directBlock);
 
-        directBlock.address = h5.readOffset();
+        directBlock.address = h5.readOffset();  // This field is the address of the child direct block. The size of the [uncompressed] direct block can be computed by its offset in the heap's linear address space.
         if (hasFilter) {
           directBlock.sizeFilteredDirectBlock = h5.readLength();
           directBlock.filterMask = raf.readInt();
@@ -470,16 +459,16 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       throw new IllegalStateException(magic + " should equal FHDB");
 
     byte version = raf.readByte();
-    long heapHeaderAddress = h5.readOffset();
+    long heapHeaderAddress = h5.readOffset(); // This is the address for the fractal heap header that this block belongs to. This field is principally used for file integrity checking.
     if (heapAddress != heapHeaderAddress)
       throw new IllegalStateException();
 
-    dblock.extraBytes = 5; // keep track of how much room is taken out of blocak size
+    dblock.extraBytes = 5; // keep track of how much room is taken out of block size, that is, how much is left for the object
     dblock.extraBytes += h5.isOffsetLong ? 8 : 4;
 
     int nbytes = maxHeapSize / 8;
     if (maxHeapSize % 8 != 0) nbytes++;
-    dblock.offset = h5.readVariableSizeUnsigned(nbytes);
+    dblock.offset = h5.readVariableSizeUnsigned(nbytes); // This is the offset of the block within the fractal heap's address space (in bytes).
     dblock.dataPos = pos; // raf.getFilePointer();  // offsets are from the start of the block
 
     dblock.extraBytes += nbytes;

@@ -103,14 +103,26 @@ public class TestNc4IospReading {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  //@Test
+  // @Test
   public void problem() throws IOException {
     //String filename = "Q:/cdmUnitTest/formats/hdf5/npoess/GATRO-SATMR_npp_d20020906_t0409572_e0410270_b19646_c20090720223122943227_devl_int.h5";
     //String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\npoess\\ExampleFiles\\AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5";
     //String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\npoess\\ExampleFiles\\GDNBF-VNCCO_NPP_d2003125_t101038_e10116_b9_c2005829162517_dev.h5";
-    String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\wrf\\wrf_bdy_par.h5";
+    String filename = "G:/work/robertson/espresso_his_20130913_0000_0007.nc";
     System.out.printf("***READ %s%n", filename);
     doCompare(filename, false, false, false);
+  }
+
+
+  @Test
+  public void fractalHeapProblem() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/espresso_his_20130913_0000_0007.nc";
+    System.out.printf("***READ %s%n", filename);
+    doCompare(filename, false, false, false);
+
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+    assert ncfile.findVariable("h")  != null;
+    ncfile.close();
   }
 
 

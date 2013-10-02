@@ -3902,7 +3902,12 @@ public class H5header {
 
         // the heapId points to a Link message in the Fractal Heap
         long pos = fractalHeap.getHeapId(heapId).getPos();
-        if (pos < 0) continue;
+        if (pos < 0) { // deebuggering
+          FractalHeap fractalHeap2 = new FractalHeap(H5header.this, group.displayName, groupNewMessage.fractalHeapAddress);
+          FractalHeap.DHeapId dhid = fractalHeap2.getHeapId(heapId);
+          pos = dhid.getPos();
+          continue;
+        }
         raf.seek(pos);
         MessageLink linkMessage = new MessageLink();
         linkMessage.read();
