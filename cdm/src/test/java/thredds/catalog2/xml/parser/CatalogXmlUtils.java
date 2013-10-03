@@ -147,7 +147,7 @@ public class CatalogXmlUtils
     serviceBldr = serviceBldrs.get( 1);
     assertEquals( serviceBldr.getName(), "wcs" );
     assertEquals( serviceBldr.getType(), ServiceType.WCS );
-    assertEquals( serviceBldr.getBaseUri().toString(), "/thredds/wcs/wcs/");
+    assertEquals( serviceBldr.getBaseUri().toString(), "/thredds/wcs/");
 
     serviceBldr = serviceBldrs.get( 2);
     assertEquals( serviceBldr.getName(), "wms" );
