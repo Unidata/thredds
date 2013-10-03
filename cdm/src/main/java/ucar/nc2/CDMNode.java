@@ -64,7 +64,7 @@ public class CDMNode {
    * if two datasets are the same, but I am not sure where.
    */
 
-  static boolean OBJECTHASH = false; // true=>use Object.hashCode()
+  static boolean OBJECTHASH = true; // true=>use Object.hashCode()
 
   CDMSort sort = null;
   Group group = null;

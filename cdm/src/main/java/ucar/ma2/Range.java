@@ -103,6 +103,7 @@ public final class Range {
     this.first = 0;
     this.stride = 1;
     this.n = length;
+    assert (this.n != 0);
   }
 
   /**
@@ -146,11 +147,11 @@ public final class Range {
       throw new InvalidRangeException("last ("+last+") must be >= first ("+first+")");
     if (stride < 1)
       throw new InvalidRangeException("stride ("+stride+") must be > 0");
-
     this.name = name;
     this.first = first;
     this.stride = stride;
     this.n = Math.max(1 + (last - first) / stride, 1);
+    assert this.n != 0;
   }
 
   /**
@@ -163,6 +164,7 @@ public final class Range {
     n = r.length();
     stride = r.stride();
     name = r.getName();
+    assert this.n != 0;
   }
 
   /**
@@ -176,6 +178,7 @@ public final class Range {
     first = r.first();
     n = r.length();
     stride = r.stride();
+    assert this.n != 0;
   }
 
 
@@ -518,8 +521,14 @@ if(false) {// Original version
     return first + i * stride;
   }
 
-  public String toString() {
-    return first + ":" + last() + (stride > 1 ? ":" + stride : "");
+  public String toString()
+  {
+    if(this.n == 0)
+        return "EMPTY";
+    else if(this.n < 0)
+        return "VLEN";
+    else
+      return first + ":" + last() + (stride > 1 ? ":" + stride : "");
   }
 
   /**

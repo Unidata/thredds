@@ -46,6 +46,7 @@ import java.util.*;
 public class  Section {
   private List<Range> list;
   private boolean immutable = false;
+  private boolean isvariablelength = false;
 
   /**
    * Create Section from a shape array, assumes 0 origin.
@@ -59,8 +60,10 @@ public class  Section {
         list.add(new Range(shape[i]));
       else if (shape[i] == 0 )
         list.add(Range.EMPTY);
-      else
+      else {
         list.add(Range.VLEN);
+        isvariablelength = true;
+      }
     }
   }
 
@@ -74,7 +77,14 @@ public class  Section {
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
     list = new ArrayList<Range>();
     for (int i = 0; i < shape.length; i++) {
-      list.add(shape[i] > 0 ? new Range(origin[i], origin[i] + shape[i] - 1) : Range.EMPTY);
+      if(shape[i] > 0)
+          list.add(new Range(origin[i],origin[i]+shape[i] - 1));
+      else if(shape[i] == 0)
+          list.add(Range.EMPTY);
+      else {
+          list.add(Range.VLEN);
+          isvariablelength = true;
+      }
     }
   }
 
@@ -89,7 +99,14 @@ public class  Section {
   public Section(int[] origin, int[] size, int[] stride) throws InvalidRangeException {
     list = new ArrayList<Range>();
     for (int i = 0; i < size.length; i++) {
-      list.add(size[i] > 0 ? new Range(origin[i], origin[i] + size[i] - 1, stride[i]) : Range.EMPTY);
+       if(size[i] > 0)
+         list.add(new Range(origin[i], origin[i]+size[i] - 1, stride[i]));
+       else if(size[i] == 0)
+         list.add(Range.EMPTY);
+       else {
+         list.add(Range.VLEN);
+         isvariablelength = true;
+       }
     }
   }
 
@@ -100,6 +117,10 @@ public class  Section {
    */
   public Section(List<Range> from) {
     list = new ArrayList<Range>(from);
+    for(int i =0 ; i <from.size(); i++) {
+        if(from.get(i) == Range.VLEN)
+            isvariablelength = true;
+    }
   }
 
   /**
@@ -227,7 +248,6 @@ public class  Section {
           throw new IllegalArgumentException(" illegal selector: " + s + " part of <" + sectionSpec + ">");
         }
       }
-
       list.add(range);
     }
 
@@ -308,7 +328,7 @@ public class  Section {
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank(), or invalid component Range
    */
   public Section intersect(Section other) throws InvalidRangeException {
-    if (other.getRank() != getRank())
+    if (!compatibleRank(other))
       throw new InvalidRangeException("Invalid Section rank");
 
     // check individual nulls
@@ -323,7 +343,7 @@ public class  Section {
   }
 
   public int offset(Section intersect) throws InvalidRangeException {
-    if (intersect.getRank() != getRank())
+    if (!compatibleRank(intersect))
       throw new InvalidRangeException("Invalid Section rank");
 
     int result = 0;
@@ -388,15 +408,18 @@ public class  Section {
    *
    * @param other another section
    * @return true if intersection is non-empty
-   * @throws InvalidRangeException if want.getRank() not equal to this.getRank()
+   * @throws InvalidRangeException if want.getRank() not equal to this.getRank(),
+   *                               ignoring vlen
    */
   public boolean intersects(Section other) throws InvalidRangeException {
-    if (other.getRank() != getRank())
+    if (!compatibleRank(other))
       throw new InvalidRangeException("Invalid Section rank");
 
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
       Range r = other.getRange(j);
+      if(base == Range.VLEN || r == Range.VLEN)
+          continue;
       if (!base.intersects(r))
         return false;
     }
@@ -641,8 +664,10 @@ public class  Section {
           list.set(i, new Range(shape[i]));
         else if (shape[i] == 0 )
           list.set(i, Range.EMPTY);
-        else
+        else  {
           list.set(i, Range.VLEN);
+          isvariablelength = true;
+        }
       }
     }
   }
@@ -663,6 +688,10 @@ public class  Section {
 
   public boolean isImmutable() {
     return immutable;
+  }
+
+  public boolean isVariableLength() {
+      return isvariablelength;
   }
 
   public boolean isStrided() {
@@ -751,13 +780,37 @@ public class  Section {
   }
 
   /**
+   * Get rank excluding vlens.
+   *
+   * @return rank
+   */
+   public int getVlenRank() {
+      return list.size() - (isvariablelength ? 1 : 0);
+   }
+
+   /**
+     * Compare this section with another upto the vlen in either
+    */
+    public boolean compatibleRank(Section other)
+    {
+      return (getRank() == other.getRank());
+      /*if((isVariableLength() && other.isVariableLength())
+          || (!isVariableLength() && !other.isVariableLength()))
+          return getRank() == other.getRank();
+      else if(isVariableLength() && !other.isVariableLength())
+          return getVlenRank() == other.getRank();
+      else // !isVariableLength() && other.isVariableLength()
+        return getRank() == other.getVlenRank(); */
+    }
+
+  /**
    * Compute total number of elements represented by the section.
    * Any VLEN Ranges are effectively skipped.
    * @return total number of elements
    */
   public long computeSize() {
     long product = 1;
-    for (int ii = list.size() - 1; ii >= 0; ii--) {
+    for(int ii=0;ii<list.size();ii++) {
       Range r = list.get(ii);
       if (r != Range.VLEN)
         product *= r.length();

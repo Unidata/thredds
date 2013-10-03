@@ -33,9 +33,12 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.ma2.Section;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * For datasets where the data are stored in chunks.
@@ -75,6 +78,12 @@ public class LayoutTiled implements Layout {
     this.chunkSize = chunkSize;
     this.elemSize = elemSize;
     this.want = wantSection;
+    if(this.want.isVariableLength()) {
+        // remove the varlen
+        List<Range> newrange = new ArrayList<Range>(this.want.getRanges());
+        newrange.remove(newrange.size()-1);
+        this.want = new Section(newrange);
+    }
 
     this.totalNelems = this.want.computeSize();
     this.totalNelemsDone = 0;

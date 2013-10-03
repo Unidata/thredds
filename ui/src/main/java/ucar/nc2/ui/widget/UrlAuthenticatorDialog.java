@@ -38,21 +38,22 @@ import java.net.PasswordAuthentication;
 import javax.swing.JButton;
 
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.*;
+import org.apache.http.auth.*;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.auth.RFC2617Scheme;
 import ucar.util.prefs.ui.*;
 
 /**
  * This can be used both for java.net authentication:
  *   java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
  *
- * or for org.apache.commons.httpclient authentication:
+ * or for org.apache.http authentication:
  *    httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
  *
  * @author John Caron
  */
-public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider {
+public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider
+{
 
   private IndependentDialog dialog;
   private UsernamePasswordCredentials pwa = null;
@@ -100,15 +101,10 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
   {
   }
 
-  /*fix:public void setCredentials(AuthScope scope, Credentials cred)
+  public void setCredentials(AuthScope scope, Credentials cred)
   {
-      provider.setCredentials(scope,cred);
+      //todo: provider.setCredentials(scope,cred);
   }
-
-  public Credentials getCredentials(AuthScope scope)
-  {
-      return provider.getCredentials(scope);
-  } */
 
     // java.net calls this:                           g
   protected PasswordAuthentication getPasswordAuthentication() {
@@ -135,24 +131,20 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
 
 
   // http client calls this:
- public Credentials getCredentials(AuthScheme scheme, String host, int port, boolean proxy)
-         throws CredentialsNotAvailableException
+ public Credentials getCredentials(AuthScope scope) //AuthScheme scheme, String host, int port, boolean proxy)
  {
-    if (scheme == null)
-      throw new CredentialsNotAvailableException( "Null authentication scheme: ");
-
-    if (!(scheme instanceof RFC2617Scheme))
-      throw new CredentialsNotAvailableException( "Unsupported authentication scheme: " +
-                        scheme.getSchemeName());
+    //todo: if (!(scope.getScheme()RFC2617Scheme))
+      //throw new UnsupportedOperationException( "Unsupported authentication scheme: " +
+      //                  scope.getScheme().toString()) ;
 
     if (debug) {
-      System.out.println(host + ":" + port + " requires authentication with the realm '" + scheme.getRealm() + "'");
+      System.out.println(scope.getHost() + ":" + scope.getPort() + " requires authentication with the realm '" + scope.getRealm() + "'");
     }
 
-    serverF.setText(host+":"+port);
-    realmF.setText(scheme.getRealm());
+    serverF.setText(scope.getHost()+":"+scope.getPort());
+    realmF.setText(scope.getRealm());
     dialog.setVisible( true);
-    if (pwa == null) throw new CredentialsNotAvailableException();
+    if (pwa == null) throw new IllegalStateException();
 
     if (debug) {
       System.out.println("user= ("+pwa.getUserName()+")");

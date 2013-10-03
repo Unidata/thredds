@@ -1,14 +1,10 @@
 package thredds.tds;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.http.client.HttpClient;
 import org.junit.Test;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 

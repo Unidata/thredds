@@ -32,10 +32,8 @@
  */
 package ucar.nc2.util;
 
-import ucar.nc2.util.EscapeStrings;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
 
+import javax.print.URIException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.io.File;
@@ -77,8 +75,8 @@ public class URLnaming {
       if (query.indexOf("%") < 0) { // assume that its not already encoded...
         String path = urlString.substring(0, posQ);
         try {
-          urlString = path + "?" + URIUtil.encodeQuery(query);
-        } catch (URIException e) {
+          urlString = path + "?" + URLEncoder.encode(query,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
           e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
       }

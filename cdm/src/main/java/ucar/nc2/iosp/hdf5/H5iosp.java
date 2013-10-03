@@ -58,6 +58,8 @@ import java.util.Formatter;
 public class H5iosp extends AbstractIOServiceProvider {
   static public final String IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES = "IncludeOrgAttributes";
 
+  static public final int VLEN_T_SIZE = 16; // Appears to be no way to compute on the fly.
+
   static boolean debug = false;
   static boolean debugPos = false;
   static boolean debugHeap = false;
@@ -188,7 +190,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       } else if (vinfo.typeInfo.hdfType == 9) { // vlen
         elemSize = vinfo.typeInfo.byteSize;
         endian = vinfo.typeInfo.endian;
-        wantSection = wantSection.removeVlen(); // remove vlen dimension
+        //wantSection = wantSection.removeVlen(); // remove vlen dimension
       }
 
       if (vinfo.isChunked) {
@@ -254,7 +256,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       // general case is to read an array of vlen objects
       // each vlen generates an Array - so return ArrayObject of Array
       //boolean scalar = false; // layout.getTotalNelems() == 1; // if scalar, return just the len Array // remove 12/25/10 jcaron
-      Object[] data = new Object[(int) layout.getTotalNelems()];
+      Array[] data = new Array[(int) layout.getTotalNelems()];
       int count = 0;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -265,8 +267,28 @@ public class H5iosp extends AbstractIOServiceProvider {
           data[count++] = (typeInfo.base.hdfType == 7) ? convertReference(vlenArray) : vlenArray;
         }
       }
+      int prefixrank = 0;
+      for(int i=0;i<shape.length;i++) {if(shape[i] < 0) {prefixrank = i; break;}}
+      Array result = null;
+      if(prefixrank == 0) // if scalar, return just the singleton vlen array
+        result = data[0];
+      else if(prefixrank == 1)
+        result = new ArrayObject(data[0].getClass(), new int[]{count}, data);
+      else {
+          // Otherwise create and fill in an n-dimensional Array Of Arrays
+          int[] newshape = new int[prefixrank];
+          System.arraycopy(shape, 0, newshape, 0, prefixrank);
+          Array ndimarray = Array.factory(Array.class, newshape);
+          // Transfer the elements of data into the n-dim arrays
+          IndexIterator iter = ndimarray.getIndexIterator();
+          for(int i = 0;iter.hasNext();i++) {
+              iter.setObjectNext(data[i]);
+          }
+          result = ndimarray;
+      }
       //return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
-      return new ArrayObject(data[0].getClass(), shape, data);
+      //return new ArrayObject(data[0].getClass(), shape, data);
+      return result;
     }
 
     if (dataType == DataType.STRUCTURE) {  // LOOK what about subset ?
@@ -398,17 +420,53 @@ public class H5iosp extends AbstractIOServiceProvider {
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap
 
       } else if (m.isVariableLength()) {
-        int destPos = pos + m.getDataParam();
+        int startPos = pos + m.getDataParam();
         bb.order(ByteOrder.LITTLE_ENDIAN);
 
         ByteOrder bo = (ByteOrder) m.getDataObject();
         int endian = bo.equals(ByteOrder.LITTLE_ENDIAN) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        // Compute rank and size upto the first (and ideally last) VLEN
+        int[] fieldshape = m.getShape();
+        int prefixrank = 0;
+        int size = 1;
+        for(;prefixrank < fieldshape.length;prefixrank++) {
+            if(fieldshape[prefixrank] < 0) break;
+            size *= fieldshape[prefixrank];
+        }
+        assert size == m.getSize() : "Internal error: field size mismatch";
+        Array[] fieldarray = new Array[size]; // hold all the vlen instance data
+        // destPos will point to each vlen instance in turn
+        // assuming we have 'size' such instances in a row.
+        int destPos = startPos;
+        for(int i = 0;i < size;i++) {
+          // vlenarray extracts the i'th vlen contents (struct not supported).
+          Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
+          fieldarray[i] = vlenArray;
+          destPos += VLEN_T_SIZE;  // Apparentlly no way to compute VLEN_T_SIZE on the fly
+        }
+        Array result = null;
+        if(prefixrank == 0) // if scalar, return just the singleton vlen array
+          result = fieldarray[0];
+        else if(prefixrank == 1)
+          result = new ArrayObject(fieldarray[0].getClass(), new int[]{size}, fieldarray);
+        else {
+          // Otherwise create and fill in an n-dimensional Array Of Arrays
+          int[] newshape = new int[prefixrank];
+          System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
+          Array ndimarray = Array.factory(Array.class, newshape);
+          // Transfer the elements of data into the n-dim arrays
+          IndexIterator iter = ndimarray.getIndexIterator();
+          for(int i = 0;iter.hasNext();i++) {
+              iter.setObjectNext(fieldarray[i]);
+          }
+          result = ndimarray;
+        }
 
-        Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
+        //Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
 
-        int index = asbb.addObjectToHeap(vlenArray);
-        bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
-        bb.putInt(destPos, index); // overwrite with the index into the StringHeap
+        int index = asbb.addObjectToHeap(result);
+        bb.order(ByteOrder.nativeOrder());
+        bb.putInt(startPos, index); // overwrite with the index into the Heap
       }
     }
   }
