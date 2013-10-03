@@ -11,7 +11,7 @@
 <h1>TDS and ncISO: Metadata Services</h1>
 <hr>
 
-<p>The TDS distribution (as of TDS 4.2.4) includes the
+<p>The TDS distribution includes the
   <a href="http://www.ngdc.noaa.gov/eds/tds/">ncISO package</a>
   from NOAA/NGDC (many thanks to Dave Neufeld and Ted Habermann).</p>
 
@@ -31,13 +31,9 @@
 
 <h2>Enabling ncISO Services</h2>
 
-<p>NOTE: The following <strong>applies to TDS 4.2.8+</strong>. For versions 4.2.4 through 4.2.7, see the
-  "Enabling ncISO Services - pre-4.2.8" section <a href="../thread.png"> in TDS 4.2 reference</a>.</p>
-
 <p>
-  In TDS 4.2.8 on, the ncISO services are disabled by default and can be enabled for locally served
-  datasets by including the following in the threddsConfig.xml file:
-</p>
+  The ncISO services are disabled by default and can be enabled for locally served
+  datasets by including the following in the threddsConfig.xml file:</p>
 <pre>
 &lt;NCISO&gt;
   &lt;ncmlAllow&gt;true&lt;/ncmlAllow&gt;

@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="tds.css" type="text/css"/>
 </head>
 <body>
-<h1 align="left"><img src="unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"><strong>THREDDS Data Server</strong></h1>
+<h1 align="left"><img src="unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"><strong>THREDDS Data Server</strong> 4.4</h1>
 <hr>
 <h2> Overview</h2>
 
@@ -65,15 +65,30 @@
 
 <h2>System Requirements</h2>
 <ul>
-  <li><a href="http://www.oracle.com/technetwork/java/index.html">Java</a> version 6 or 7 (aka 1.6 or 1.7). Version 5 (coming in 2014) will require Java 7.</li>
-  <li>Version 4.2 requires <a href="http://tomcat.apache.org/">Tomcat</a> 5.5 or above, we recommend the latest version of Tomcat 6 or 7.</li>
+  <li><a href="http://www.oracle.com/technetwork/java/index.html">Java</a> version 6 or 7 (aka 1.6 or 1.7). TDS version 5 (coming in 2014) will require Java 7.</li>
   <li>Version 4.3 requires Tomcat 6, but we recommend the latest version of Tomcat 7.</li>
+  <li>Version 4.4 requires Tomcat 7.</li>
   <li><strong>Be sure to keep up with the latest versions of Java and Tomcat for security fixes. This is required for publically accessible servers!</strong>
   </li>
 </ul>
 
 <h2>Downloads</h2>
 
+<p><strong>TDS 4.4 is the development release. </strong></p>
+<ul>
+  <li>Download the latest release: [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">thredds.war</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war.md5">MD5</a>)]
+    (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war.sha1">SHA1</a>)]
+    [<a href="https://github.com/Unidata/thredds">source on GitHub</a>]
+    [<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>] </li>
+  <li>Documentation:
+    <ul>
+      <li><a href="reference/index.html">Reference</a></li>
+      <li><a href="tutorial/index.html">Tutorial</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="tutorial/Checklist.html">Checklist for Production Installation</a></li>
+    </ul>
+  </li>
+</ul>
 <p><strong>TDS 4.3 is the current stable release. </strong></p>
 <ul>
   <li>Download the latest release: [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.3/current/thredds.war">thredds.war</a>
@@ -82,19 +97,8 @@
     [<a href="https://github.com/Unidata/thredds">source on GitHub</a>]
     [<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>]
   </li>
-  <li>Documentation:
-    <ul>
-      <li><a href="reference/index.html">Reference</a></li>
-      <li><a href="tutorial/index.html">Tutorial</a></li>
-      <li><a href="faq.html">FAQ</a></li>
-      <li><a href="UpgradingTo4.3.html">Upgrading to TDS 4.3</a></li>
-      <li><a href="AccessChangesTds4.3.html">New GRIB handling in TDS 4.3</a></li>
-      <li><a href="tutorial/Checklist.html">Checklist for Production Installation</a></li>
-      <li><a href="SourceCodeBuild.html">Building TDS 4.3 from Source Code</a></li>
-    </ul>
-  </li>
+  <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/tds/TDS.html">Documentation</a>:  </li>
 </ul>
-
 <h2>TDS Services</h2>
 <blockquote>
   <h3>Standard TDS Services</h3>
@@ -103,23 +107,18 @@
     <li><a href="http://www.resc.rdg.ac.uk/trac/ncWMS/">ncWMS</a> implementing the <a href="reference/WMS.html">Web Map Service</a></li>
     <li><a href="reference/WCS.html">Web Coverage Service</a></li>
     <li><a href="http://www.ngdc.noaa.gov/eds/tds/">ncISO</a></li>
-    <li>Netcdf Subset Service(<a href="reference/interfaceSpec/NetcdfSubsetService.html">4.3</a>)</li>
+    <li><a href="reference/NetcdfSubsetServiceReference.html">Netcdf Subset Services</a></li>
   </ul>
   <h3>Experimental TDS Services</h3>
   <ul>
-    <li><a href="../netcdf-java/reference/stream/CdmRemote.html">CdmRemote web service</a></li>
+    <li><a href="reference/NetcdfSubsetServiceReference.html">CdmRemote web service</a></li>
     <li>Radar Subset Service
       <ul>
-        <li><a href="reference/interfaceSpec/RadarLevel2SubsetService.html">NEXRAD Level 2</a></li>
-        <li><a href="reference/interfaceSpec/RadarLevel3SubsetService.html">NEXRAD Level </a></li>
+        <li><a href="reference/radarServer/RadarLevel2SubsetService.html">NEXRAD Level 2</a></li>
+        <li><a href="reference/radarServer/RadarLevel3SubsetService.html">NEXRAD Level </a></li>
       </ul>
     </li>
   </ul>
-  <h3>Show Remote Catalog as HTML</h3>
-  <ul>
-    <li><a href="http://motherlode.ucar.edu:8080/thredds/showHtmlForm.html">Show catalog as HTML form.</a></li>
-  </ul>
-  <h3><a name="CDM_Coordinate_System_Validator"></a>CDM Coordinate System Validator</h3>
 </blockquote>
 <h2>Other ways to use TDS</h2>
 <ul>
@@ -140,7 +139,7 @@
 </ul>
 <hr width="100%">
 <address>
-  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated July 2013
+  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated Oct 2013
 </address>
 </body>
 </html>

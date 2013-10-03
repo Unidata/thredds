@@ -112,41 +112,35 @@
     any configuration catalogs.
   </li>
   <li>The <strong>featureCollectionScan.log</strong> file shows messages from feature collections. You should examine this for errors periodically.</li>
+  <li>There is one<strong> fc.&lt;CollectionName&gt;.log</strong> file for each feature collection.</li>
   <li>The <strong>cache.log</strong> file shows cache initialization and scouring messages. Usually you dont need to look at these.</li>
-  <li>The <strong>models.log</strong> log file is no longer used.</li>
 </ul>
 <hr style="width: 100%; height: 2px;">
 
 <h2><a name="Log4J"></a>Log4J</h2>
 
-<p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">Log4J </a> library, and the <a href="http://www.slf4j.org/">SLF4J</a>
-  logging facade to route all log messages to Log4J. (Users of the TDS
-  can ignore the SLF4J facade,).</p>
+<p>TDS version 4.4 uses the <a href="http://logging.apache.org/log4j/2.x/">Log4J2 </a> library, and the <a href="http://www.slf4j.org/">SLF4J</a>
+  logging facade to route all log messages to Log4J2. (Users of the TDS
+  can ignore the SLF4J facade).</p>
 
-<p>The <a href="log4j.xml.txt">default log4j configuration file</a> is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it
-  at <strong>${tomcat_home}/webapps/thredds/WEB-INF/classes/log4j.xml. </strong>You
+<p>The <a href="files/log4j2.xml">default log4j2 configuration file</a> is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it
+  at <strong>${tomcat_home}/webapps/thredds/WEB-INF/classes/log4j2.xml. </strong>You
   can modify this if you want and restart the TDS to have it take
   effect. However, it will be overwritten when you install an updated
   <strong>thredds.war</strong> file.</p>
 
-<p>You can change the location of the log4j configuration file with the <em>log4j-init-file</em> context parameter in the TDS war configuration file: <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml.</strong>
-  file. For example:</p>
-<pre> &lt;context-param&gt;<br>   &lt;param-name&gt;<strong>log4j-init-file</strong>&lt;/param-name&gt;<br>   &lt;param-value&gt;<strong>/data/mylog4j.xml</strong>&lt;/param-value&gt;<br> &lt;/context-param&gt; <br></pre>
-<p>The value should be the absolute path to the log4j configuration
-  file. Remember that web.xml gets overwritten when the thredds.war file
-  is updated.</p>
+<p>You can change the location of the log4j2 configuration file by setting the system property <em>log4j.configurationFile</em> to the apsolute path name of your configuration file. Otherwise, the default one will be use.</p>
+<p>For debugging log4j, add "status=DEBUG" in the configuration file. See <a href="http://logging.apache.org/log4j/2.x/">Log4J2</a> documentation for details.</p>
 
-<p>For debugging log4j, add "-Dlog4j.debug" on the JVM startup of Tomcat.</p>
+<h3>Log4J threddsServlet configuration</h3>
 
-<h2>ThreddsServlet logfile</h2>
-
-<p>The ThreddsServlet logs roll over every 10MB, keeping the last 10 files. The log4j entry looks like: </p>
-<pre>  &lt;appender name="threddsServlet" class="org.apache.log4j.RollingFileAppender"&gt;<br>    &lt;param name="File" value="${logdir}/threddsServlet.log"/&gt;<br>    &lt;param name="MaxFileSize" value="10MB"/&gt;<br>    &lt;param name="MaxBackupIndex" value="10"/&gt;<br>    &lt;layout class="org.apache.log4j.PatternLayout"&gt;<br>      &lt;param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/&gt;<br>    &lt;/layout&gt;<br>  &lt;/appender&gt;</pre>
+<p>The threddsServlet logs roll over every hour, or every 100 MB. The log4j entry looks like: </p>
+<pre>    &lt;RollingFile name=&quot;threddsServlet&quot; fileName=&quot;${tds.log.dir}/threddsServlet.log&quot; filePattern=&quot;${tds.log.dir}/threddsServlet.%d{yyyy-MM-dd-HH}.log&quot;&gt;<br>      &lt;PatternLayout pattern=&quot;%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n&quot;/&gt;<br>      &lt;Policies&gt;<br>        &lt;TimeBasedTriggeringPolicy/&gt;<br>        &lt;SizeBasedTriggeringPolicy size=&quot;100 MB&quot;/&gt;<br>      &lt;/Policies&gt;<br>    &lt;/RollingFile&gt;
+</pre>
 <p>As you can see, the PatternLayout looks like:</p>
 <pre><strong> "%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"</strong></pre>
-<p>An example entry looks like:</p>
-<pre><strong>2006-01-24T17:31:41.452 -0700 [2025609][44] INFO - thredds.servlet.ServletUtil - Remote host: 128.117.140.172 - Request: "GET
-  /thredds/idd/radars.xml HTTP/1.1"<br> </strong></pre>
+<p>This produces  entries in the threddsServlet.log  like:</p>
+<pre><strong>2006-01-24T17:31:41.452 -0700 [2025609][44] INFO - thredds.servlet.ServletUtil - Remote host: 128.117.140.172 - Request: "GET /thredds/idd/radars.xml HTTP/1.1"<br></strong></pre>
 <table border="1" width="954">
   <tbody>
   <tr>
@@ -235,7 +229,7 @@
 <hr width="100%">
 <address>
   <img src="../thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated Dec 2012.
+  This document is maintained by Unidata and was last updated Oct 2013.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 

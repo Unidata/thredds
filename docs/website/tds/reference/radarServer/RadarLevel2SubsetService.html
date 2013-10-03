@@ -11,8 +11,7 @@
 <hr>
 <div class="head">
   <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
-  <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:rkambic@unidata.ucar.edu">Robb Kambic</a></em>Overview</p>
-  <p>See <a href="NetcdfSubsetService.html">Subset Service</a> for an overview.</p>
+  <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a></em></p>
   <h2>RadarLevel2 Subset Service </h2>
 
   <h3><strong>A. Example urls<a name="urls"></a></strong></h3>
@@ -68,9 +67,7 @@
     </li>
 
 //-->
-
-  </ul>
-  <p>Some interesting URLs for the radarServer service: </p>
+<p>Some interesting URLs for the radarServer service: </p>
   <ul>
 
 <!--
@@ -82,15 +79,15 @@
     <li>DQC <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/DQC.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/DQC.xml</a></strong></li>
 //-->
 
-    <li>Level2 Radar Collections <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/catalog.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/catalog.xml</a></strong></li>
+    <li>Level2 Radar Collections <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/catalog.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/catalog.xml</a></li>
 
-    <li>Level2 Stations <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/stations.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/stations.xml</a></strong></li>
+    <li>Level2 Stations <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/stations.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/stations.xml</a></li>
 
-    <li>Level2 Stations for IDD dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD/stations.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD/stations.xml</a></strong></li>
+    <li>Level2 Stations for IDD dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD/stations.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD/stations.xml</a></li>
 
-    <li>Level2 Stations for CCS039 dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/stations.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/stations.xml</a></strong></li>
-    <li>Level2 Datasets <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/dataset.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/dataset.xml</a></strong></li>
-    <li>Level2 CCS039 Dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/dataset.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/dataset.xml</a></strong></li>
+    <li>Level2 Stations for CCS039 dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/stations.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/stations.xml</a></li>
+    <li>Level2 Datasets <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/dataset.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/dataset.xml</a></li>
+    <li>Level2 CCS039 Dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/dataset.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/dataset.xml</a></li>
 <!--
     <li>Level2 IDD dataset and station KFTG <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present</a></strong></li>
 
@@ -106,13 +103,13 @@
   <h2><strong><a name="Common"></a>Subsetting Parameters </strong></h2>
   <p>Some interesting URLs for the radarServer query service: </p>
   <ul>
-    <li>IDD dataset with Bounding Box and latest time <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.2&east=-100.0&time=present"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.0&east=-100.0&time=present</a></strong></li>
-    <li>IDD dataset and station KFTG latest time <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present</a></strong></li>
-    <li>IDD dataset and station KFTG one day <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time_end=present&time_duration=PT24H"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time_end=present&time_duration=PT24H</a></strong></li>
-    <li>IDD dataset and station KFTG all times <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG</a></strong></li>
+    <li>IDD dataset with Bounding Box and latest time <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.2&east=-100.0&time=present"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.0&east=-100.0&time=present</a></li>
+    <li>IDD dataset and station KFTG latest time <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present</a></li>
+    <li>IDD dataset and station KFTG one day <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time_end=present&time_duration=PT24H"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time_end=present&time_duration=PT24H</a></li>
+    <li>IDD dataset and station KFTG all times <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG</a></li>
 
-    <li>CCS039 dataset Station KDMX  all times <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX</a></strong></li>
-    <li>CCS039 dataset Station KDMX  2 hour time range <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00</a></strong></li>
+    <li>CCS039 dataset Station KDMX  all times <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX</a></li>
+    <li>CCS039 dataset Station KDMX  2 hour time range <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00</a></li>
 <!--
     <li>CCS039 dataset all stations all times <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=ALL"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=ALL</a></strong></li>
 // -->
@@ -182,9 +179,9 @@
   <h4><strong>1. Time range</strong></h4>
   <p>Specify 2 of these 3 parameters (order does not matter): </p>
   <ul>
-    <li><strong>time_start</strong>: starting time as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
-    <li><strong>time_end</strong>: ending time  as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
-    <li><strong>time_duration</strong>: length of time as an <a href="NetcdfSubsetService.html#W3Cduration">W3C time duration</a> </li>
+    <li><strong>time_start</strong>: starting time as an W3C date string or &quot;present&quot; </li>
+    <li><strong>time_end</strong>: ending time  as an W3C date string or &quot;present&quot; </li>
+    <li><strong>time_duration</strong>: length of time as an W3C time duration </li>
   </ul>
   <p>The intersection of the requested time range with the dataset time range will be returned. </p>
   <p>Examples:</p>
@@ -195,7 +192,7 @@
   </ul>
   <h4><strong>2. Time point</strong></h4>
   <ul>
-    <li><strong>time: </strong>time as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
+    <li><strong>time: </strong>time as an W3C date string or &quot;present&quot; </li>
   </ul>
   <p> The 'latest' data retrieval is obtained by 'time=present'.  
   The  requested time point must lie within the dataset time range. The time slice/point closest to the requested time will be returned. </p>
@@ -294,7 +291,7 @@ on these settings. We really don't want to support these options for radar data.
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../thread.png" width="110" height="108">This document is maintained by <a href="mailto:rkambic@unidata.ucar.edu">Robb Kambic</a> and was last updated on Feb 5, 2008 
+<img src="../../thread.png" width="110" height="108">This document was last updated on Feb 5, 2008 
 </address>
 <p>&nbsp;
 </p>

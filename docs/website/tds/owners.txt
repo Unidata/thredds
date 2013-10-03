@@ -1,3 +1,55 @@
+Oct 2013 /c/dev/github/thredds/docs/website/tds/reference (target-4.4.0)
+
+caron    	AccessLog.html
+*    		CatalogConfiguration.html	// kinda sucks, should be tutorial?	
+caron    	CatalogService.html
+*    		ConfigWithTdsProperties.html	// is this true?	
+caron    	DatasetScan.html
+caron    	DatasetSource.html
+caron    	DigitalLibraries.html
+caron    	DirectoryLocations.html	
+caron    	HTTPsecurityChallenge.html
+caron    	JavaOptsSummary.html
+caron    	NetcdfSubsetServiceConfigure.html
+caron    	NetcdfSubsetServiceReference.html
+caron    	Performance.html
+caron    	PluggableRestrictedAccess.html
+caron    	RecommendedUpgradeProcessForTDS.html
+*    		RemoteManagement.html		// kinda sucks, should be tutorial?	
+caron    	RestrictedAccess.html
+*    		RunningMultipleTDS.html		// is this true?
+caron    	ServerInfo.html
+caron    	Services.html
+caron    	ServletLog.html
+*    		TDSarchictecture.ppt		// update
+caron    	ThreddsConfigXMLFile.html	
+*    		TomcatBehindProxyServer.html // review, esp "Changing the TDS Context Path"
+caron    	TomcatSecurity.html
+caron    	Viewers.html
+caron    	WCS.html
+caron    	WMS.html
+
+caron    	index.html
+caron    	ncISO.html
+caron    	reference.css
+caron    	tdsUrlMaps.xml
+
+collections
+	CollectionSpecification.html
+	FeatureCollections.html
+	FmrcCollection.html
+	GribCollectionInternal.html
+	GribCollections.html
+	PointFeatures.html
+	SimpleDateFormat.html
+	TDM.html
+	
+radarServer
+	RadarLevel2SubsetService.html
+	RadarLevel3SubsetService.html
+
+
+==================================================================================
 July 2013
 
 /c/dev/github/thredds/docs/web/thredds/tech/tds4.3/tutorial (target-4.3.18)

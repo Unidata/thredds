@@ -3,22 +3,16 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <link href="../tds.css" rel="stylesheet" type="text/css"/>
-  <title>TDS Reference: Location of Various TDS Directories</title>
+  <title>Location of TDS Directories</title>
 </head>
 <body>
-<h1>Location of Various TDS Directories</h1>
+<h1>Location of  TDS Directories</h1>
 <hr>
 
 <p>For performance and space reasons, you may want some TDS directories on larger and higher
-  performance disks. For instance:</p>
+  performance disks than the directory where Tomcat is installed. For instance:</p>
 <ul>
-  <li>The TDS configuration directory (<code>content/thredds</code>). If not in its entirety than
-    perhaps these inparticular:
-    <ul>
-      <li>The TDS logs directory (<code>content/thredds/logs</code>).</li>
-      <li>The TDS cache directory (<code>content/thredds/cache</code>).</li>
-    </ul>
-  </li>
+  <li>The TDS configuration directory (<code>content/thredds</code>).   </li>
   <li>The Tomcat logs directory (<code>${tomcat_home}/logs</code>).</li>
   <li>Data directories</li>
 </ul>
@@ -32,11 +26,6 @@
 </p>
 
 <pre>
-my.server.edu: cd /opt/tdsA
-my.server.edu: pwd
-/opt/apache-tomcat-6.0.29-tdsA
-my.server.edu: ll
-total 128
 -rw-r--r--   1 tomcat   tomcat     37950 Jul 19 07:01 LICENSE
 -rw-r--r--   1 tomcat   tomcat       557 Jul 19 07:01 NOTICE
 -rw-r--r--   1 tomcat   tomcat      8669 Jul 19 06:59 RELEASE-NOTES
@@ -48,26 +37,17 @@ drwxr-xr-x   2 tomcat   tomcat       512 Aug  9 15:02 lib/
 lrwxrwxrwx   1 tomcat   tomcat        27 Aug 17 18:16 logs -> /data/tds/tdsA/logs/
 drwxr-xr-x   2 tomcat   tomcat       512 Oct 22 12:04 temp/
 drwxr-xr-x   7 tomcat   tomcat       512 Nov  1 18:33 webapps/
-drwxr-xr-x   3 tomcat   tomcat       512 Aug  9 19:38 work/
-my.server.edu:
-</pre>
-
-<h3>Configuration Settings for Moving Non-data Directories</h3>
-
-<p>For some of the non-data directories, there are configuration settings available for changing
-  their locations:</p>
+drwxr-xr-x   3 tomcat   tomcat       512 Aug  9 19:38 work/</pre>
+<h3><a name="moveLocation"></a> Using tds.content.root.path to change the location of the configuration directory</h3>
 <ul>
-  <li>Changing the location of the TDS configuration directory is describe
-    <a href="ConfigDirectory.html#moveLocation">here</a>.
-  </li>
-  <li>The various cache directories (<code>agg/</code>, <code>cdm/</code>, <code>wcs/</code> e.g.)
-    can be configured with the <code>dir</code> child element of the various caching elements in
-    <a href="ThreddsConfigXMLFile.html">the <code>threddsConfig.xml</code> file</a>. However,
-    <strong>we recommend</strong> using a symbolic link to move <code>content/thredds</code>
-    instead (more detail <a href="ThreddsConfigXMLFile.html#Cache_Locations">here</a>).
+  <li>You may set the "tds.content.root.path"
+    Java system property. For instance, by adding the following to JAVA_OPTS in your startup
+    script:
+    <pre>-Dtds.content.root.path=/some/absolute/path</pre>
+    <p>the TDS will use or create (if they don't already exist) the configuration files in:</p>
+    <pre>/some/absolute/path/thredds</pre>
   </li>
 </ul>
-
 <h3>Locations of Data Directories</h3>
 
 <p>The location of your data directories is configured in your
@@ -76,11 +56,54 @@ my.server.edu:
   various dataset configurations (<code>datasetRoot</code>, <code>datasetScan</code>, and
   <code>featureCollection</code> elements).
 </p>
-
+<h3>Location of cache Directories</h3>
+<p>The various cache directories (<code>agg/</code>, <code>cdm/</code>, <code>wcs/</code> e.g.)
+    can be configured with the <code>dir</code> child element of the various caching elements in the <a href="ThreddsConfigXMLFile.html"><code>threddsConfig.xml</code></a> file. However, <strong>we recommend</strong> using a symbolic link to move <code>content/thredds</code> instead (more detail <a href="ThreddsConfigXMLFile.html#Cache_Locations">here</a>).</p>
+<hr>
+<h2>TDS Configuration Directory
+</h2>
+<p>The TDS configuration directory is created and populated with default files the first time the
+  TDS is deployed. It is persistent even when a TDS installation is upgraded or re-deployed. All
+  modifications and additions to the TDS configuration should be made in this directory. Do not
+  place files containing passwords or anything else with security issues in this directory.
+Typically you will only be adding and modifying catalogs and configuration files.</p>
+<p>When there are many catalogs, you may want to keep them in seperate subdirectories of the TDS configuration directory. This is recommended practice. However,
+  do not use a subdirectory <strong>content/thredds/catalog</strong>, as <strong>catalog</strong> is a reserved word in this context.</p>
+<p> When the TDS is first deployed, the TDS configuration directory looks like: </p>
+<ul>
+  <li><code>${tomcat_home}/content/thredds/</code>
+    <ul>
+      <li><code>catalog.xml </code> - the main TDS configuration catalog
+        (root catalog for TDS configuration) </li>
+      <li><code>enhancedCatalog.xml</code> - an example catalog [Note: It
+        is referenced from <code>catalog.xml</code>.] </li>
+      <li><code>threddsConfig.xml</code> - configuration
+        file for allowing non-default services, configuring caching, etc
+        (<a href="ThreddsConfigXMLFile.html">more detailed information</a>). </li>
+      <li><code>logs/</code>
+        <ul>
+          <li><code>catalogInit.log</code> - log file for messages generated while reading TDS
+            configuration catalogs during TDS initialization and reinitialization. </li>
+          <li><code>threddsServlet.log</code> - TDS error log file.</li>
+        </ul>
+      </li>
+      <li><code>cache/</code> - various cache directories
+        <ul>
+          <li><code>agg/</code></li>
+          <li><code>cdm/</code></li>
+          <li><code>collection/</code></li>
+          <li><code>ehcache/</code></li>
+          <li><code>ncss/</code></li>
+          <li><code>wcs/</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">
-  This document is maintained by Unidata and was last updated November 2010.
+  This document is maintained by Unidata and was last updated October 2013.
   Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
