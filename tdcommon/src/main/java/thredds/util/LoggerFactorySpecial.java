@@ -117,24 +117,26 @@ public class LoggerFactorySpecial implements LoggerFactory {
       Configuration config = new NullConfiguration(); // ?? LOOK
       Layout layout = PatternLayout.createLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n", config, null, null, "no");
 
-      /* String fileName,
-         String filePattern,
-         String append,
-         String name,
-         String bufferedIO,
-         String immediateFlush,
-         TriggeringPolicy policy,
-         RolloverStrategy strategy,
-         Layout<S> layout,
-         Filter filter,
-         String suppress,
-         String advertise,
-         String advertiseURI,
-         Configuration config) */
+      /*
+       fileName - The name of the file that is actively written to. (required).
+       filePattern - The pattern of the file name to use on rollover. (required).
+       append - If true, events are appended to the file. If false, the file is overwritten when opened. Defaults to "true"
+       name - The name of the Appender (required).
+       bufferedIO - When true, I/O will be buffered. Defaults to "true".
+       immediateFlush - When true, events are immediately flushed. Defaults to "true".
+       policy - The triggering policy. (required).
+       strategy - The rollover strategy. Defaults to DefaultRolloverStrategy.
+       layout - The layout to use (defaults to the default PatternLayout).
+       filter - The Filter or null.
+       ignore - If "true" (default) exceptions encountered when appending events are logged; otherwise they are propagated to the caller.
+       advertise - "true" if the appender configuration should be advertised, "false" otherwise.
+       advertiseURI - The advertised URI which can be used to retrieve the file contents.
+       config - The Configuration.
+        */
       RollingFileAppender app = RollingFileAppender.createAppender(
               fileName,
               fileNamePattern,
-              "false",
+              "true",
               name,
               "true",
               "true",
@@ -146,7 +148,24 @@ public class LoggerFactorySpecial implements LoggerFactory {
               // @org.apache.logging.log4j.core.config.plugins.PluginAttr("fileIndex") java.lang.String fileIndex,
               // @org.apache.logging.log4j.core.config.plugins.PluginConfiguration org.apache.logging.log4j.core.config.Configuration config) { /* compiled code */ }
 
-              DefaultRolloverStrategy.createStrategy(Integer.toString(maxBackups), null, "max", config),
+              /*
+              public static DefaultRolloverStrategy createStrategy(String max,
+                                                                   String min,
+                                                                   String fileIndex,
+                                                                   String compressionLevelStr,
+                                                                   Configuration config)
+              Create the DefaultRolloverStrategy.
+              Parameters:
+              max - The maximum number of files to keep.
+              min - The minimum number of files to keep.
+              fileIndex - If set to "max" (the default), files with a higher index will be newer than files with a smaller index. If set to "min", file renaming and the counter will follow the Fixed Window strategy.
+              compressionLevelStr - The compression level, 0 (less) through 9 (more); applies only to ZIP files.
+              config - The Configuration.
+              Returns:
+              A DefaultRolloverStrategy.
+
+               */
+              DefaultRolloverStrategy.createStrategy(Integer.toString(maxBackups), "1", "max", null, config),
               layout,
               null,
               "true",

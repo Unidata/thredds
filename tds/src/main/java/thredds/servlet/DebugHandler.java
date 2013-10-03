@@ -65,6 +65,7 @@ public class DebugHandler {
     pw.println("<body>");
     pw.println(HtmlWriter.getInstance().getOldStyleHeader());
     pw.println("<br><a href='content/logs/'>Show TDS Logs</a>");
+    pw.println("<br><a href='content/tdm/'>Show TDM Logs</a>");
     pw.println("<br><a href='logs/'>Show Tomcat Logs</a>");
     pw.println("<h2>Debug Actions</h2>");
     pw.println("<pre>");

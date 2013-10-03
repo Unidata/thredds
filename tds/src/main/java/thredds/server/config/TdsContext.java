@@ -162,7 +162,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   public void setWebappVersionBuildDate( String buildDateString) { this.webappVersionBuildDate = buildDateString; }
 
   public void setContentRootPath( String contentRootPath) {this.contentRootPath = contentRootPath; }
-  
+  public String getContentRootPath( ) { return this.contentRootPath; }
+
   public void setContentPath( String contentPath) {this.contentPath = contentPath; }
   public void setStartupContentPath( String startupContentPath ) { this.startupContentPath = startupContentPath; }
   public void setIddContentPath( String iddContentPath ) { this.iddContentPath = iddContentPath; }
