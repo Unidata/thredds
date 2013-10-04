@@ -116,7 +116,7 @@ public class FeatureDatasetPointXML {
     FeatureCollection fc = list.get(0);
 
     if (!(fc instanceof StationTimeSeriesFeatureCollection)) {
-      throw new UnsupportedOperationException( fc.getClass().getName()+" not a StationTimeSeriesFeatureCollection");
+      throw new UnsupportedOperationException(fc.getClass().getName() + " not a StationTimeSeriesFeatureCollection");
     }
     StationTimeSeriesFeatureCollection sobs = (StationTimeSeriesFeatureCollection) fc;
 
@@ -162,7 +162,7 @@ public class FeatureDatasetPointXML {
       Element elem = new Element("featureDataset");
       FeatureType ft = fdp.getFeatureType();
       elem.setAttribute("type", ft.toString().toLowerCase());
-      String url = path.replace("dataset.xml", ft.toString().toLowerCase()+".xml");
+      String url = path.replace("dataset.xml", ft.toString().toLowerCase() + ".xml");
       elem.setAttribute("url", url);
       rootElem.addContent(elem);
     }
@@ -176,13 +176,12 @@ public class FeatureDatasetPointXML {
 
     // add lat/lon bounding box
     try {
-		fdp.calcBounds();
-	} catch (IOException e) {
-		//e.printStackTrace();
-		log.warn("Unable to compute bounds for dataset "+fdp.getTitle(), e);
+      fdp.calcBounds();
+    } catch (IOException e) {
+      //e.printStackTrace();
+      log.warn("Unable to compute bounds for dataset " + fdp.getTitle(), e);
+    }
 
-	}
-    
     LatLonRect bb = fdp.getBoundingBox();
     if (bb != null)
       rootElem.addContent(writeBoundingBox(bb));
@@ -202,11 +201,11 @@ public class FeatureDatasetPointXML {
     // add accept list
     Element elem = new Element("AcceptList");
     //elem.addContent(new Element("accept").addContent("raw"));
-    elem.addContent(new Element("accept").addContent("csv").setAttribute("displayName", "csv"));    
+    elem.addContent(new Element("accept").addContent("csv").setAttribute("displayName", "csv"));
     elem.addContent(new Element("accept").addContent("text/csv").setAttribute("displayName", "csv (file)"));
     elem.addContent(new Element("accept").addContent("xml").setAttribute("displayName", "xml"));
-    elem.addContent(new Element("accept").addContent("text/xml").setAttribute("displayName", "xml (file)"));	
-    elem.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));       
+    elem.addContent(new Element("accept").addContent("text/xml").setAttribute("displayName", "xml (file)"));
+    elem.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
     //elem.addContent(new Element("accept").addContent("ncstream"));
     rootElem.addContent(elem);
 
@@ -275,12 +274,12 @@ public class FeatureDatasetPointXML {
     try {
       Date start = CalendarDateFormatter.parseISODate(beginS);
       Date end = CalendarDateFormatter.parseISODate(endS);
-       if ((start == null) || (end == null)) {
+      if ((start == null) || (end == null)) {
         return null;
       }
 
       DateRange dr = new DateRange(start, end);
-      
+
       if (resS != null)
         dr.setResolution(new TimeDuration(resS));
 
@@ -333,12 +332,12 @@ public class FeatureDatasetPointXML {
     }
 
     public String getName() {
-       return name;
-     }
+      return name;
+    }
 
     public String getFullName() {
-       return name;
-     }
+      return name;
+    }
 
     @Override
     public String getShortName() {
@@ -414,9 +413,9 @@ public class FeatureDatasetPointXML {
           "C:/tmp/stationCapabilities.xml"
     ); */
 
-    doOne( "Q:/cdmUnitTest/ft/point/ship/nc/Surface_Buoy_20090920_0000.nc",
-          "http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/buoy/collection",
-          "C:/tmp/pointCapabilities.xml"
+    doOne("Q:/cdmUnitTest/ft/point/ship/nc/Surface_Buoy_20090920_0000.nc",
+            "http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/buoy/collection",
+            "C:/tmp/pointCapabilities.xml"
     );
 
 

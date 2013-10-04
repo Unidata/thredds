@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *  Portions of this software were developed by the Unidata Program at the
+ *  University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *  Access and use of this software shall impose the following obligations
+ *  and understandings on the user. The user is granted the right, without
+ *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  this software, and any derivative works thereof, and its supporting
+ *  documentation for any purpose whatsoever, provided that this entire
+ *  notice appears in all copies of the software, derivative works and
+ *  supporting documentation.  Further, UCAR requests that the user credit
+ *  UCAR/Unidata in any publications that result from the use of this
+ *  software or in any product that includes this software. The names UCAR
+ *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  to endorse or promote any products or commercial entity unless specific
+ *  written permission is obtained from UCAR/Unidata. The user also
+ *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  any support, consulting, training or assistance of any kind with regard
+ *  to the use, operation and performance of this software nor to provide
+ *  the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package thredds.server.ncSubset.view;
@@ -101,20 +102,25 @@ public class StationWriter {
 
   private final FeatureDatasetPoint fd;
   private final StationTimeSeriesFeatureCollection sfc;
-  private final PointDataRequestParamsBean qb; 
+  private final PointDataRequestParamsBean qb;
   private final CalendarDate start, end;
-  private StationWriter.Writer w;  
+  private StationWriter.Writer writer;
   private List<VariableSimpleIF> wantVars;
   private CalendarDateRange wantRange;
   private ucar.nc2.util.DiskCache2 diskCache;
 
-  public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointDataRequestParamsBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException 
-  {
+  public static StationWriter stationWriterFactory(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointDataRequestParamsBean qb, ucar.nc2.util.DiskCache2 diskCache, OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException {
+    StationWriter sw = new StationWriter(fd, sfc, qb, diskCache);
+    sw.writer = sw.getWriterForFormat(out, format);
+    return sw;
+  }
+
+  private StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointDataRequestParamsBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
     this.fd = fd;
     this.sfc = sfc;
     this.qb = qb;
     this.diskCache = diskCache;
-    start = fd.getCalendarDateStart();    
+    start = fd.getCalendarDateStart();
     end = fd.getCalendarDateEnd();
   }
 
@@ -135,103 +141,97 @@ public class StationWriter {
   }*/
 
   /// ------- new stuff for decoupling things ----///
-  
-  public static StationWriter stationWriterFactory(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointDataRequestParamsBean qb, ucar.nc2.util.DiskCache2 diskCache, OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException{
 
-	  StationWriter sw = new StationWriter(fd, sfc, qb, diskCache);
-	  sw.w = sw.getWriterForFormat(out, format );
-	  return sw;
-  }
-  
-  
+
+
   private Writer getWriterForFormat(OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException {
-	 
-	    Writer w;
-	    
-	    switch(format){    
-	    	case XML_STREAM: case XML_FILE:
-	    		w = new WriterXML(new PrintWriter(out), format.isStream());
-	    		break;
-	    		
-	    	case CSV_STREAM: case CSV_FILE:
-	    		w = new WriterCSV(new PrintWriter(out), format.isStream());
-	    		break;
-	    		
-	    	case NETCDF3:
-	    		w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf3, out);
-	    		break;
-	    	case NETCDF4:
-	    		w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf4, out);
-	    		break;
-		default:
-			log.error("Unknown result type = " + format.getFormatName());
-	        return null;    	    
-	    }
-	    
-	   return w; 
-  }
-  
-  
-  public HttpHeaders getHttpHeaders(FeatureDataset fd,
-			SupportedFormat format, String datasetPath){
-	  
-	  return w.getHttpHeaders(datasetPath);
-	  
-  }
-  
-  public void write() throws ParseException, IOException, VariableNotContainedInDatasetException, NcssException{
-	  
-	  Limit counter = new Limit();
-	    // for closest time, set wantRange to the time LOOK - do we need +- increment ??
-	    if (qb.getTime() != null ) { //Means we want just one single time
-	      CalendarDate  startR = CalendarDate.parseISOformat(null, qb.getTime() );      
-	      startR = startR.subtract(CalendarPeriod.Hour);
-	      CalendarDate endR = CalendarDate.parseISOformat(null, qb.getTime() );
-	      endR = endR.add(CalendarPeriod.Hour);
-	      //wantRange = new DateRange( new Date(startR.getMillis()), new Date(endR.getMillis()));
-	      wantRange = CalendarDateRange.of( new Date(startR.getMillis()), new Date(endR.getMillis()));
-	      
-	    }else{
-	    	//Time range: need to compute the time range from the params
-	    	if(qb.getTemporal() != null && qb.getTemporal().equals("all")){
-	    		//Full time range -->CHECK: wantRange=null means all range??? 
-	    		
-	    	}else{
-	    		if(qb.getTime_start() != null && qb.getTime_end() != null  ){
-	    			CalendarDate  startR = CalendarDate.parseISOformat(null, qb.getTime_start() );
-	    			CalendarDate  endR = CalendarDate.parseISOformat(null, qb.getTime_end() );
-	    			//wantRange = new DateRange( new Date(startR.getMillis()), new Date(endR.getMillis()));;
-	    			wantRange = CalendarDateRange.of( new Date(startR.getMillis()), new Date(endR.getMillis()));;
-	    		}else if(qb.getTime_start() != null && qb.getTime_duration() != null) {
-	    			CalendarDate  startR = CalendarDate.parseISOformat(null, qb.getTime_start() );
-	    			TimeDuration td = TimeDuration.parseW3CDuration(qb.getTime_duration());
-	    			//wantRange = new DateRange( new Date(startR.getMillis()), td);
-	    			wantRange = new CalendarDateRange(startR, (long)td.getValueInSeconds());
-	    		}else if(qb.getTime_end() != null && qb.getTime_duration() != null){
-	    			CalendarDate  endR = CalendarDate.parseISOformat(null, qb.getTime_end() );
-	    			TimeDuration td = TimeDuration.parseW3CDuration(qb.getTime_duration());
-	    			//wantRange = new DateRange(null, new DateType( qb.getTime_end(), null, null), td, null);
-	    			wantRange = new CalendarDateRange(endR, (long)td.getValueInSeconds() * (-1));
-	    		}
-	    	}
-	    	
-	    }
 
-	    // spatial: all, bb, point, stns
-	    PointFeatureCollection pfc = null;
-	    
-	    
-	    List<Station> stns = w.getStationsInSubset();
-	    
-	    if(stns.isEmpty())
-	    	throw new FeaturesNotFoundException("Features not found");
-	    	
-	    List<String> stations = new ArrayList<String>(); 
-	    for(Station st : stns)
-	    	stations.add(st.getName());
-	    
-	    pfc = sfc.flatten(stations, wantRange, null);
-	    
+    Writer w;
+
+    switch (format) {
+      case XML_STREAM:
+      case XML_FILE:
+        w = new WriterXML(new PrintWriter(out), format.isStream());
+        break;
+
+      case CSV_STREAM:
+      case CSV_FILE:
+        w = new WriterCSV(new PrintWriter(out), format.isStream());
+        break;
+
+      case NETCDF3:
+        w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf3, out);
+        break;
+      case NETCDF4:
+        w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf4, out);
+        break;
+      default:
+        log.error("Unknown result type = " + format.getFormatName());
+        return null;
+    }
+
+    return w;
+  }
+
+
+  public HttpHeaders getHttpHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
+    return writer.getHttpHeaders(datasetPath);
+  }
+
+  public void write() throws ParseException, IOException, VariableNotContainedInDatasetException, NcssException {
+
+    Limit counter = new Limit();
+    // for closest time, set wantRange to the time LOOK - do we need +- increment ??
+    if (qb.getTime() != null) { //Means we want just one single time
+      CalendarDate startR = CalendarDate.parseISOformat(null, qb.getTime());
+      startR = startR.subtract(CalendarPeriod.Hour);
+      CalendarDate endR = CalendarDate.parseISOformat(null, qb.getTime());
+      endR = endR.add(CalendarPeriod.Hour);
+      //wantRange = new DateRange( new Date(startR.getMillis()), new Date(endR.getMillis()));
+      wantRange = CalendarDateRange.of(new Date(startR.getMillis()), new Date(endR.getMillis()));
+
+    } else {
+      //Time range: need to compute the time range from the params
+      if (qb.getTemporal() != null && qb.getTemporal().equals("all")) {
+        //Full time range -->CHECK: wantRange=null means all range???
+
+      } else {
+        if (qb.getTime_start() != null && qb.getTime_end() != null) {
+          CalendarDate startR = CalendarDate.parseISOformat(null, qb.getTime_start());
+          CalendarDate endR = CalendarDate.parseISOformat(null, qb.getTime_end());
+          //wantRange = new DateRange( new Date(startR.getMillis()), new Date(endR.getMillis()));;
+          wantRange = CalendarDateRange.of(new Date(startR.getMillis()), new Date(endR.getMillis()));
+          ;
+        } else if (qb.getTime_start() != null && qb.getTime_duration() != null) {
+          CalendarDate startR = CalendarDate.parseISOformat(null, qb.getTime_start());
+          TimeDuration td = TimeDuration.parseW3CDuration(qb.getTime_duration());
+          //wantRange = new DateRange( new Date(startR.getMillis()), td);
+          wantRange = new CalendarDateRange(startR, (long) td.getValueInSeconds());
+        } else if (qb.getTime_end() != null && qb.getTime_duration() != null) {
+          CalendarDate endR = CalendarDate.parseISOformat(null, qb.getTime_end());
+          TimeDuration td = TimeDuration.parseW3CDuration(qb.getTime_duration());
+          //wantRange = new DateRange(null, new DateType( qb.getTime_end(), null, null), td, null);
+          wantRange = new CalendarDateRange(endR, (long) td.getValueInSeconds() * (-1));
+        }
+      }
+
+    }
+
+    // spatial: all, bb, point, stns
+    PointFeatureCollection pfc = null;
+
+
+    List<Station> stns = writer.getStationsInSubset();
+
+    if (stns.isEmpty())
+      throw new FeaturesNotFoundException("Features not found");
+
+    List<String> stations = new ArrayList<String>();
+    for (Station st : stns)
+      stations.add(st.getName());
+
+    pfc = sfc.flatten(stations, wantRange, null);
+
 	    /*
 	    //Subsetting type
 	    String stn = qb.getSubset();
@@ -258,53 +258,51 @@ public class StationWriter {
 	    	pfc = sfc.flatten(stnList, wantRange, null); 
 	    	
 	    }*/
-	    
-	    
-	    //Wanted vars
-	    // restrict to these variables
-	    List<? extends VariableSimpleIF> dataVars = fd.getDataVariables();
-	      
-	    Map<String, VariableSimpleIF> dataVarsMap = new HashMap<String, VariableSimpleIF>(); 
-	    for(VariableSimpleIF v : dataVars ){
-	    	dataVarsMap.put(v.getShortName(), v);
-	    }
-	    
-	    List<String> varNames = qb.getVar();
-	    
-	    //if ((varNames == null) || (varNames.size() == 0) || varNames.equals("all")) {
-	    if (varNames.equals("all")) {
-	      wantVars = new ArrayList<VariableSimpleIF>(dataVars);
-	    } else {
-	    	List<String> allVars = new ArrayList<String>( dataVarsMap.keySet());
-	    	wantVars = new ArrayList<VariableSimpleIF>();
-	    	for(String v : varNames){
-	    		if( allVars.contains(v) ){
-	    			VariableSimpleIF var = dataVarsMap.get(v);
-	    			wantVars.add(var);
-	    		}else{
-	    			throw new VariableNotContainedInDatasetException("Variable: "+v+" is not contained in the requested dataset");
-	    		}
-	    	}    	    	
-	    }    
-	    
-	    Action act = w.getAction();
-	    w.header();
 
-	    if (qb.getTime() != null) { 
-	          scanForClosestTime(pfc, new DateType(qb.getTime(), null, null) , null, act, counter);    
 
-	    } else {
-	      scan(pfc, wantRange, null, act, counter);
-	    }
+    //Wanted vars
+    // restrict to these variables
+    List<? extends VariableSimpleIF> dataVars = fd.getDataVariables();
 
-	    w.trailer();	  
-	  
-	  
-	  
-  } 
-  
-  
-  
+    Map<String, VariableSimpleIF> dataVarsMap = new HashMap<String, VariableSimpleIF>();
+    for (VariableSimpleIF v : dataVars) {
+      dataVarsMap.put(v.getShortName(), v);
+    }
+
+    List<String> varNames = qb.getVar();
+
+    //if ((varNames == null) || (varNames.size() == 0) || varNames.equals("all")) {
+    if (varNames.equals("all")) {
+      wantVars = new ArrayList<VariableSimpleIF>(dataVars);
+    } else {
+      List<String> allVars = new ArrayList<String>(dataVarsMap.keySet());
+      wantVars = new ArrayList<VariableSimpleIF>();
+      for (String v : varNames) {
+        if (allVars.contains(v)) {
+          VariableSimpleIF var = dataVarsMap.get(v);
+          wantVars.add(var);
+        } else {
+          throw new VariableNotContainedInDatasetException("Variable: " + v + " is not contained in the requested dataset");
+        }
+      }
+    }
+
+    Action act = writer.getAction();
+    writer.header();
+
+    if (qb.getTime() != null) {
+      scanForClosestTime(pfc, new DateType(qb.getTime(), null, null), null, act, counter);
+
+    } else {
+      scan(pfc, wantRange, null, act, counter);
+    }
+
+    writer.trailer();
+
+
+  }
+
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   
   
@@ -523,10 +521,10 @@ public class StationWriter {
 
       if (range != null) {
         //Date obsDate = pf.getObservationTimeAsDate(); // LOOK: needed?
-    	CalendarDate obsDate = pf.getObservationTimeAsCalendarDate();  
-    	//if (!range.contains(obsDate)) continue;
-        if (!range.includes( obsDate )) continue;
-        
+        CalendarDate obsDate = pf.getObservationTimeAsCalendarDate();
+        //if (!range.contains(obsDate)) continue;
+        if (!range.includes(obsDate)) continue;
+
       }
       limit.count++;
 
@@ -571,7 +569,7 @@ public class StationWriter {
       long obsTime = pf.getObservationTimeAsCalendarDate().getMillis();
       long diff = Math.abs(obsTime - wantTime);
 
-      Station s = ((StationPointFeature)pf).getStation();
+      Station s = ((StationPointFeature) pf).getStation();
       StationDataTracker track = map.get(s.getName());
       if (track == null) {
         map.put(s.getName(), new StationDataTracker(pf, diff));
@@ -620,65 +618,65 @@ public class StationWriter {
   }
 
   private abstract class Writer {
-	  
-	protected List<Station> wantStations = new ArrayList<Station>();
-	  
+
+    protected List<Station> wantStations = new ArrayList<Station>();
+
     abstract void header() throws IOException;
-  
+
     abstract Action getAction();
 
     abstract void trailer() throws IOException;
 
     abstract HttpHeaders getHttpHeaders(String pathInfo);
-    
+
     java.io.PrintWriter writer;
     int count = 0;
 
     Writer(final java.io.PrintWriter writer) {
       this.writer = writer; // LOOK what about buffering?
     }
-    
-    protected List<Station> getStationsInSubset() throws IOException{
-    	
-        // verify SpatialSelection has some stations
-        if(qb.getSubset() != null){
-      	  if ( qb.getSubset().equals("bb") ) {
-      		  
-      		  if( qb.getSouth() == null || qb.getNorth() == null || qb.getEast() == null ||  qb.getWest() == null){
-      			wantStations = sfc.getStations(); //Wants all
-      		  }else{      			  
-      			  LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast())  );
-      			  wantStations = sfc.getStations( llrect );
-      		  }
-      		  
-      		  //wantStations = sfc.getStations(qb.getLatLonRect());
 
-      	  } else if (qb.getSubset().equals("stns")) {
-      		  List<String> stnNames = qb.getStns();
-      		  
-      		  if(stnNames.get(0).equals("all") )
-      			  wantStations = sfc.getStations();
-      		  else
-      			  wantStations = sfc.getStations(stnNames);
+    protected List<Station> getStationsInSubset() throws IOException {
 
-      	  }/* else {
+      // verify SpatialSelection has some stations
+      if (qb.getSubset() != null) {
+        if (qb.getSubset().equals("bb")) {
+
+          if (qb.getSouth() == null || qb.getNorth() == null || qb.getEast() == null || qb.getWest() == null) {
+            wantStations = sfc.getStations(); //Wants all
+          } else {
+            LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast()));
+            wantStations = sfc.getStations(llrect);
+          }
+
+          //wantStations = sfc.getStations(qb.getLatLonRect());
+
+        } else if (qb.getSubset().equals("stns")) {
+          List<String> stnNames = qb.getStns();
+
+          if (stnNames.get(0).equals("all"))
+            wantStations = sfc.getStations();
+          else
+            wantStations = sfc.getStations(stnNames);
+
+        }/* else {
       		  wantStations = sfc.getStations();
       	  }*/
-        }else{      	
-        	if( qb.getLatitude()!=null && qb.getLongitude() != null ){ //want closest  
-        		Station closestStation = findClosestStation(new LatLonPointImpl( qb.getLatitude(), qb.getLongitude() ));
-        		List<String> stnList = new ArrayList<String>();
-        		stnList.add(closestStation.getName());    	  
-        		wantStations = sfc.getStations(stnList);
-      	}else{//Want all
-      		wantStations = sfc.getStations();
-      	}	
-        }    	
-    	
-    	
-    	return wantStations;
+      } else {
+        if (qb.getLatitude() != null && qb.getLongitude() != null) { //want closest
+          Station closestStation = findClosestStation(new LatLonPointImpl(qb.getLatitude(), qb.getLongitude()));
+          List<String> stnList = new ArrayList<String>();
+          stnList.add(closestStation.getName());
+          wantStations = sfc.getStations(stnList);
+        } else {//Want all
+          wantStations = sfc.getStations();
+        }
+      }
+
+
+      return wantStations;
     }
-    
+
   }
 
   private class WriterNetcdf extends Writer {
@@ -690,18 +688,18 @@ public class StationWriter {
     private OutputStream out;
 
     WriterNetcdf(NetcdfFileWriter.Version version, OutputStream out) throws IOException {
-    	this(version);
-    	this.out = out;    	
+      this(version);
+      this.out = out;
     }
-    
+
     WriterNetcdf(NetcdfFileWriter.Version version) throws IOException {
       super(null);
       this.version = version;
       netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
       atts.add(new Attribute(CDM.TITLE, "Extracted data from TDS using CDM remote subsetting"));
-      cfWriter = new WriterCFStationCollection(version, netcdfResult.getAbsolutePath(), atts);            
-      
+      cfWriter = new WriterCFStationCollection(version, netcdfResult.getAbsolutePath(), atts);
+
     }
 
     void header() {
@@ -710,30 +708,30 @@ public class StationWriter {
     void trailer() throws IOException {
       cfWriter.finish();
       //Copy the file in to the OutputStream
-		try{			
-			IO.copyFileB(netcdfResult, out, 60000);			
-		}catch(IOException ioe){
-			log.error("Error copying result to the output stream", ioe);
-		}
-      
+      try {
+        IO.copyFileB(netcdfResult, out, 60000);
+      } catch (IOException ioe) {
+        log.error("Error copying result to the output stream", ioe);
+      }
+
     }
-    
-    HttpHeaders getHttpHeaders(String pathInfo){
-    	
-    	HttpHeaders httpHeaders = new HttpHeaders();
-    	//String pathInfo = fd.getTitle();
-    	String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
-        String url = NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getServletCachePath() + "/" + fileName;
-        if(version == NetcdfFileWriter.Version.netcdf3)
-        	httpHeaders.set("Content-Type", SupportedFormat.NETCDF3.getResponseContentType() );
-        
-        if(version == NetcdfFileWriter.Version.netcdf4)
-        	httpHeaders.set("Content-Type", SupportedFormat.NETCDF4.getResponseContentType() );
-        
-    	httpHeaders.set("Content-Location", url );
-    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");    	
-    	
-    	return httpHeaders;
+
+    HttpHeaders getHttpHeaders(String pathInfo) {
+
+      HttpHeaders httpHeaders = new HttpHeaders();
+      //String pathInfo = fd.getTitle();
+      String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
+      String url = NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getServletCachePath() + "/" + fileName;
+      if (version == NetcdfFileWriter.Version.netcdf3)
+        httpHeaders.set("Content-Type", SupportedFormat.NETCDF3.getResponseContentType());
+
+      if (version == NetcdfFileWriter.Version.netcdf4)
+        httpHeaders.set("Content-Type", SupportedFormat.NETCDF4.getResponseContentType());
+
+      httpHeaders.set("Content-Location", url);
+      httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+      return httpHeaders;
     }
 
     Action getAction() {
@@ -747,13 +745,13 @@ public class StationWriter {
               log.error("WriterNetcdf.header", e);
             }
           }
-          
-          if( version == NetcdfFileWriter.Version.netcdf3 )
-        	  cfWriter.writeRecord(sfc.getStation(pf), pf, sdata);
-          
-          if( version == NetcdfFileWriter.Version.netcdf4 )
-        	  cfWriter.writeStructure(sfc.getStation(pf), pf, sdata);
-          
+
+          if (version == NetcdfFileWriter.Version.netcdf3)
+            cfWriter.writeRecord(sfc.getStation(pf), pf, sdata);
+
+          if (version == NetcdfFileWriter.Version.netcdf4)
+            cfWriter.writeStructure(sfc.getStation(pf), pf, sdata);
+
           count++;
         }
       };
@@ -773,13 +771,13 @@ public class StationWriter {
     }
 
     void trailer() throws IOException {
-        PointStream.writeMagic(out, PointStream.MessageType.End);
-        out.flush();
+      PointStream.writeMagic(out, PointStream.MessageType.End);
+      out.flush();
     }
-    
-    HttpHeaders getHttpHeaders(String pathInfo){
-    	return new HttpHeaders();
-    }    
+
+    HttpHeaders getHttpHeaders(String pathInfo) {
+      return new HttpHeaders();
+    }
 
     Action getAction() {
       return new Action() {
@@ -829,9 +827,9 @@ public class StationWriter {
     void trailer() {
       writer.flush();
     }
-    
-    public HttpHeaders getHttpHeaders(String pathInfo){
-    	return new HttpHeaders();
+
+    public HttpHeaders getHttpHeaders(String pathInfo) {
+      return new HttpHeaders();
     }
 
     Action getAction() {
@@ -848,10 +846,10 @@ public class StationWriter {
   }
 
   class WriterXML extends Writer {
-	  
+
     private XMLStreamWriter staxWriter;
     private boolean isStream;
-    
+
     WriterXML(final java.io.PrintWriter writer, boolean isStream) {
       super(writer);
       this.isStream = isStream;
@@ -890,18 +888,18 @@ public class StationWriter {
       writer.flush();
     }
 
-    HttpHeaders getHttpHeaders(String pathInfo){
-    	HttpHeaders  httpHeaders = new HttpHeaders();
-    	
-		if(!isStream){
-			httpHeaders.set("Content-Location", pathInfo );
-			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
-		}    	
-    	
-    	httpHeaders.setContentType(MediaType.APPLICATION_XML );
-    	return httpHeaders;
+    HttpHeaders getHttpHeaders(String pathInfo) {
+      HttpHeaders httpHeaders = new HttpHeaders();
+
+      if (!isStream) {
+        httpHeaders.set("Content-Location", pathInfo);
+        httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
+      }
+
+      httpHeaders.setContentType(MediaType.APPLICATION_XML);
+      return httpHeaders;
     }
-    
+
     Action getAction() {
       return new Action() {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
@@ -952,8 +950,8 @@ public class StationWriter {
 
   class WriterCSV extends Writer {
 
-	private boolean isStream;
-	  
+    private boolean isStream;
+
     WriterCSV(final java.io.PrintWriter writer, boolean isStream) {
       super(writer);
       this.isStream = isStream;
@@ -974,18 +972,18 @@ public class StationWriter {
       writer.flush();
     }
 
-    HttpHeaders getHttpHeaders(String pathInfo){
-    	HttpHeaders  httpHeaders = new HttpHeaders();
-    	
-		if(!isStream){
-			httpHeaders.set("Content-Location", pathInfo );
-			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
-		}
-    	
-    	httpHeaders.setContentType(MediaType.TEXT_PLAIN);
-    	return httpHeaders;
+    HttpHeaders getHttpHeaders(String pathInfo) {
+      HttpHeaders httpHeaders = new HttpHeaders();
+
+      if (!isStream) {
+        httpHeaders.set("Content-Location", pathInfo);
+        httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
+      }
+
+      httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+      return httpHeaders;
     }
-    
+
     Action getAction() {
       return new Action() {
         public void act(PointFeature pf, StructureData sdata) throws IOException {

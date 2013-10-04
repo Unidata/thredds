@@ -139,6 +139,7 @@
 					</div>
 					
 					<form id="form" method="GET" action="{capabilities/attribute::location}">
+            <input type="hidden" name="req" value="station" />
 						<table class="simple">
 							<tr valign="top">
 								<td class="leftCol">
