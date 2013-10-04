@@ -655,7 +655,8 @@ public class Grib1CollectionPanel extends JPanel {
 
   public void showGds(Grib1SectionGridDefinition gdss, Grib1Gds gds, Formatter f) {
     f.format("Grib1SectionGridDefinition = %s", gdss);
-    f.format("Grib1GDS hash = %s", gds.hashCode());
+    f.format("Grib1GDS hash = %s%n", gds.hashCode());
+    f.format("Grib1GDS = %s", gds);
     GdsHorizCoordSys gdsHc = gds.makeHorizCoordSys();
     f.format("%n%n%s", gdsHc);
     ProjectionImpl proj = gdsHc.proj;

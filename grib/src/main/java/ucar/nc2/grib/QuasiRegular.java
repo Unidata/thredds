@@ -133,8 +133,7 @@ public class QuasiRegular {
     return max;
   }
 
-  private static void secondDerivative(float[] inpt, int idx, int n, double x1d,
-                                       double xnd, double[] y2d) {
+  private static void secondDerivative(float[] inpt, int idx, int n, double x1d, double xnd, double[] y2d) {
     //    float *inpt;        /* input data */
     //    float idx;          /* input data index*/
     //    int n;              /* number of points in input row */

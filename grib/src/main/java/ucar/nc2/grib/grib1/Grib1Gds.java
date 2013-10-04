@@ -40,6 +40,7 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.Stereographic;
 
+import java.util.Arrays;
 import java.util.Formatter;
 
 /**
@@ -234,6 +235,28 @@ public abstract class Grib1Gds {
   }
 
   @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("Grib1Gds{");
+    sb.append(" template=").append(template);
+    sb.append(", earthRadius=").append(earthRadius);
+    sb.append(", majorAxis=").append(majorAxis);
+    sb.append(", minorAxis=").append(minorAxis);
+    sb.append(", earthShape=").append(earthShape);
+    sb.append(", nx=").append(nx);
+    sb.append(", ny=").append(ny);
+    sb.append(", scanMode=").append(scanMode);
+    sb.append(", resolution=").append(resolution);
+    sb.append(", lastOctet=").append(lastOctet);
+    if (nptsInLine == null) sb.append(", nptsInLine=null");
+    else {
+      sb.append(", nptsInLine (").append(nptsInLine.length);
+      sb.append(")=").append(Arrays.toString(nptsInLine));
+    }
+    sb.append('}');
+    return sb.toString();
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
@@ -401,13 +424,13 @@ public abstract class Grib1Gds {
     @Override
     public float getDx() {
       if (nptsInLine == null || deltaLon != GribNumbers.UNDEFINED) return deltaLon;
-      return (float) (lo2 - lo1) / (getNx() - 1);
+      return (lo2 - lo1) / (getNx() - 1);
   }
 
     @Override
     public float getDy() {
       if (nptsInLine == null || deltaLat != GribNumbers.UNDEFINED) return deltaLat;
-      return (float) (la2 - la1) / (getNy() - 1);
+      return (la2 - la1) / (getNy() - 1);
   }
 
     @Override
@@ -449,14 +472,16 @@ public abstract class Grib1Gds {
 
     @Override
     public String toString() {
-      return "LatLon{" +
-              "la1=" + la1 +
-              ", lo1=" + lo1 +
-              ", la2=" + la2 +
-              ", lo2=" + lo2 +
-              ", deltaLon=" + deltaLon +
-              ", deltaLat=" + deltaLat +
-              '}';
+      final StringBuilder sb = new StringBuilder();
+      sb.append(super.toString());
+      sb.append("\nLatLon{ la1=").append(la1);
+      sb.append(", lo1=").append(lo1);
+      sb.append(", la2=").append(la2);
+      sb.append(", lo2=").append(lo2);
+      sb.append(", deltaLon=").append(deltaLon);
+      sb.append(", deltaLat=").append(deltaLat);
+      sb.append('}');
+      return sb.toString();
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
@@ -488,29 +513,82 @@ public abstract class Grib1Gds {
     }
   }
 
-  /*
-  Grid definition –   Gaussian latitude/longitude grid (including rotated, stretched or stretched and rotated)
- Octet    Contents
-    7–8     Ni – number of points along a parallel
-    9–10    Nj – number of points along a meridian
-    11–13   La1 – latitude of first grid point
-    14–16   Lo1 – longitude of first grid point
-    17      Resolution and component flags (see Code table 7)
-    18–20   La2 – latitude of last grid point
-    21–23   Lo2 – longitude of last grid point
-    24–25   Di – i direction increment
-    26–27   N – number of parallels between a pole and the equator
-    28      Scanning mode (flags – see Flag/Code table 8)
-    29–32   Set to zero (reserved)
-    33–35   Latitude of the southern pole in millidegrees (integer)
-            Latitude of pole of stretching in millidegrees (integer)
-    36–38   Longitude of the southern pole in millidegrees (integer)
-            Longitude of pole of stretching in millidegrees (integer)
-    39–42   Angle of rotation (represented in the same way as the reference value)
-            Stretching factor (representation as for the reference value)
-    43–45   Latitude of pole of stretching in millidegrees (integer)
-    46–48   Longitude of pole of stretching in millidegrees (integer)
-    49–52   Stretching factor (representation as for the reference value)
+  /* Template 4
+    Grid definition – Gaussian latitude/longitude grid (including rotated, stretched or stretched and rotated)
+
+    Octet No. Contents
+    7–8   	Ni – number of points along a parallel
+    9–10 	Nj – number of points along a meridian
+    11–13 	La1 – latitude of first grid point
+    14–16 	Lo1 – longitude of first grid point
+    17 	  Resolution and component flags (see Code table 7)
+    18–20 	La2 – latitude of last grid point
+    21–23 	Lo2 – longitude of last grid point
+    24–25 	Di – i direction increment
+    26–27 	N – number of parallels between a pole and the equator
+    28 	  Scanning mode (flags – see Flag/Code table 8)
+    29–32 	Set to zero (reserved)
+    33–35 	Latitude of the southern pole in millidegrees (integer)
+    	    Latitude of pole of stretching in millidegrees (integer)
+    36–38 	Longitude of the southern pole in millidegrees (integer)
+    	    Longitude of pole of stretching in millidegrees (integer)
+    39–42 	Angle of rotation (represented in the same way as the reference value)
+    	    Stretching factor (representation as for the reference value)
+    43–45 	Latitude of pole of stretching in millidegrees (integer)
+    46–48 	Longitude of pole of stretching in millidegrees (integer)
+    49–52 	Stretching factor (representation as for the reference value)
+
+    Notes:
+    (1) Latitude, longitude and increments are in millidegrees.
+
+    (2) Latitude values are limited to the range 0–90 000; bit 1 is set to 1 to indicate south latitude.
+
+    (3) Longitude values are limited to the range 0–360 000; bit 1 is set to 1 to indicate west longitude.
+
+    (4) The number of parallels between a pole and the equator is used to establish the variable (Gaussian) spacing of the
+    parallels; this value must always be given.
+
+    (5) The latitude and longitude of the last grid point and the first grid point should always be given for regular grids.
+
+    (6) Where items are not given, the appropriate octet(s) should have all bits set to 1.
+
+    (7) See Notes 6 to 11 under Grid definition – latitude/longitude grid (or equidistant cylindrical, or Plate Carrée) –
+    page I.2 – Bi — 8.
+
+    (6) Three parameters define a general latitude/longitude coordinate system, formed by a general rotation of the sphere. One
+    choice for these parameters is:
+      (a) The geographic latitude in degrees of the southern pole of the coordinate system, θp for example;
+      (b) The geographic longitude in degrees of the southern pole of the coordinate system, λp for example;
+      (c) The angle of rotation in degrees about the new polar axis (measured clockwise when looking from the southern to
+          the northern pole) of the coordinate system, assuming the new axis to have been obtained by first rotating the
+          sphere through λp degrees about the geographic polar axis, and then rotating through (90 + θp) degrees so that
+          the southern pole moved along the (previously rotated) Greenwich meridian.
+    (7) For rotated grids, the vertical coordinate parameters start at octet 43 instead of 33.
+    (8) The stretching is defined by three parameters:
+      (a) The latitude in degrees (measured in the model coordinate system) of the “pole of stretching”;
+      (b) The longitude in degrees (measured in the model coordinate system) of the “pole of stretching”;
+      (c) The stretching factor C.
+      The stretching is defined by representing data uniformly in a coordinate system with longitude λ and latitude θ1, where:
+        (1 – C2) + (1 + C2) sin θ
+        θ1 = sin–1
+        (1 + C2) + (1 – C2) sin θ
+      and λ and θ are longitude and latitude in a coordinate system in which the “pole of stretching” is the northern pole. C = 1
+      gives uniform resolution, while C > 1 gives enhanced resolution around the pole of stretching.
+    (9) For stretched grids, the vertical coordinate parameters start at octet 43 instead of 33.
+    (10) For stretched and rotated latitude/longitude grids, the vertical coordinate parameters start at octet 53.
+    (11) The first and last grid points may not necessarily correspond to the first and last data points, respectively, if the bit-map
+      section is used.
+
+    (8) Quasi-regular Gaussian latitude/longitude grids are defined only for subsets of global grids containing full latitude rows (360°).
+
+    (9) For data on a quasi-regular grid, in which all the rows do not necessarily have the same number of grid points, Ni
+    (octets 7–8) and the corresponding Di (octets 24–25) shall be coded with all bits set to 1 (missing); the actual number
+    of points along each parallel shall be coded.
+
+    (10) A quasi-regular Gaussian latitude/longitude grid is only defined for the grid scanning mode with consecutive points on
+    parallels (bit 3 set to zero in Code table 8). The first point in each row shall be positioned at the meridian indicated by
+    octets 14–16 and the last shall be positioned at the meridian indicated by octets 21–23. The grid points along each
+    parallel shall be evenly spaced in longitude.
    */
   public static class GaussianLatLon extends LatLon {
     int nparellels;
@@ -546,9 +624,7 @@ public abstract class Grib1Gds {
       if (!super.equals(o)) return false;
 
       GaussianLatLon that = (GaussianLatLon) o;
-
       if (nparellels != that.nparellels) return false;
-
       return true;
     }
 
@@ -616,6 +692,22 @@ Grid definition –   polar stereographic
       scanMode =  getOctet(28);
 
       lastOctet = 28;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append(super.toString());
+      sb.append("\nPolarStereographic{");
+      sb.append("la1=").append(la1);
+      sb.append(", lo1=").append(lo1);
+      sb.append(", lov=").append(lov);
+      sb.append(", dX=").append(dX);
+      sb.append(", dY=").append(dY);
+      sb.append(", projCenterFlag=").append(projCenterFlag);
+      sb.append(", lad=").append(lad);
+      sb.append('}');
+      return sb.toString();
     }
 
     @Override
@@ -768,6 +860,26 @@ Grid definition –   polar stereographic
     }
 
     @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append(super.toString());
+      sb.append("\nLambertConformal{");
+      sb.append("la1=").append(la1);
+      sb.append(", lo1=").append(lo1);
+      sb.append(", lov=").append(lov);
+      sb.append(", lad=").append(lad);
+      sb.append(", dX=").append(dX);
+      sb.append(", dY=").append(dY);
+      sb.append(", latin1=").append(latin1);
+      sb.append(", latin2=").append(latin2);
+      sb.append(", latSouthPole=").append(latSouthPole);
+      sb.append(", lonSouthPole=").append(lonSouthPole);
+      sb.append(", projCenterFlag=").append(projCenterFlag);
+      sb.append('}');
+      return sb.toString();
+    }
+
+    @Override
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
@@ -904,7 +1016,6 @@ Grid definition –   polar stereographic
 
   public static class Mercator extends Grib1Gds {
     public float la1, lo1, la2, lo2, latin, dX, dY;
-    protected int lastOctet;
 
     Mercator(byte[] data, int template) {
       super(data, template);
@@ -932,6 +1043,22 @@ Grid definition –   polar stereographic
     @Override
     public float getDyRaw() {
       return dY;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append(super.toString());
+      sb.append("\nMercator{ ");
+      sb.append("la1=").append(la1);
+      sb.append(", lo1=").append(lo1);
+      sb.append(", la2=").append(la2);
+      sb.append(", lo2=").append(lo2);
+      sb.append(", latin=").append(latin);
+      sb.append(", dX=").append(dX);
+      sb.append(", dY=").append(dY);
+      sb.append('}');
+      return sb.toString();
     }
 
     @Override
@@ -1005,7 +1132,6 @@ Grid definition –   polar stereographic
     public float angleRotation; // Angle of rotation (represented in the same way as the reference value)
     public float latSouthPole; // Latitude of pole of stretching in millidegrees (integer)
     public float lonSouthPole;  // Longitude of pole of stretching in millidegrees (integer)
-    protected int lastOctet;
 
     RotatedLatLon(byte[] data, int template) {
       super(data, template);
@@ -1029,7 +1155,6 @@ Grid definition –   polar stereographic
       sb.append("{angleRotation=").append(angleRotation);
       sb.append(", latSouthPole=").append(latSouthPole);
       sb.append(", lonSouthPole=").append(lonSouthPole);
-      sb.append(", lastOctet=").append(lastOctet);
       sb.append('}');
       return sb.toString();
     }
