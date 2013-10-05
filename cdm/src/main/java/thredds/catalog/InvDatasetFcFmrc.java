@@ -8,6 +8,7 @@ import thredds.inventory.CollectionManager;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.thredds.MetadataExtractor;
 import ucar.nc2.time.CalendarDate;
@@ -461,7 +462,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
 
   @Override
-  public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
     int pos = matchPath.indexOf('/');
     String wantType = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
     String wantName = (pos > -1) ? matchPath.substring(pos + 1) : matchPath;
@@ -521,6 +522,11 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     }
 
     return null;
+  }
+
+  @Override
+  public FeatureDataset getFeatureDataset() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
 }

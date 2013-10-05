@@ -46,6 +46,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import ucar.nc2.time.CalendarDateRange;
 
@@ -57,7 +58,7 @@ import ucar.nc2.time.CalendarDateRange;
 public class DefaultDateRangeTests {
 
 	//private GridDataController gridDataController; 
-	private RequestParamsBean requestParams;
+	private NcssParamsBean requestParams;
 	
 	private long durationInSeconds;
 	
@@ -85,7 +86,7 @@ public class DefaultDateRangeTests {
 	
 	public DefaultDateRangeTests(long expectedDuration, String time, String time_start, String time_end, String time_duration){
 		durationInSeconds = expectedDuration;
-		requestParams = new RequestParamsBean();
+		requestParams = new NcssParamsBean();
 		requestParams.setTime(time);
 		requestParams.setTime_start(time_start);
 		requestParams.setTime_end(time_end);

@@ -32,28 +32,23 @@
  */
 package thredds.server.ncSubset.params;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author mhermida
  *
  */
 public class ParamsBean {
-	
+
+  // @NotNull(message="accept param may not be null")
 	private String accept;
 
-	/**
-	 * @return the accept
-	 */
 	public String getAccept() {
 		return accept;
 	}
 
-	/**
-	 * @param accept the accept to set
-	 */
 	public void setAccept(String accept) {
 		this.accept = accept;
 	}
-	
-
 
 }

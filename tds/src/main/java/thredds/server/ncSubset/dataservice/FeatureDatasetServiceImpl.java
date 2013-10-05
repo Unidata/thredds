@@ -49,7 +49,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
-import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
@@ -72,16 +72,17 @@ public class FeatureDatasetServiceImpl implements FeatureDatasetService {
     if (ftCollection != null) {
       type = ftCollection.getDataType();
       if (type == FeatureType.GRID) {
-        GridDataset gds = DatasetHandler.openGridDataset(req, res, datasetPath);
-        //builds a FeatureDataset from an TypedDataset LOOK
-        fd = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(gds.getNetcdfFile()));
+        fd = DatasetHandler.openGridDataset(req, res, datasetPath);
+        //builds a FeatureDataset from an TypedDataset
+        // fd = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(gds.getNetcdfFile()));
       }
 
       if (type.isPointFeatureType()) {
-        fd = ftCollection.getFeatureDatasetPoint();
+        fd = ftCollection.getFeatureDataset();
       }
 
     } else {
+
       //Try as file?
       NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, datasetPath);
       Set<Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(Enhance.CoordSystems, Enhance.ConvertEnums));

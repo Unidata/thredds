@@ -52,14 +52,6 @@ public class PointDataRequestParamsBean extends RequestParamsBean {
 
   private String req; // point or station
 
-  public String getReq() {
-    return req;
-  }
-
-  public void setReq(String req) {
-    this.req = req;
-  }
-
   //Spatial subsetting type. Must be: point (default), all, bb, stns
 	private String subset;
 	
@@ -81,12 +73,15 @@ public class PointDataRequestParamsBean extends RequestParamsBean {
 		this.longitude = longitude;
 	}
 
-	/*public Boolean getPoint() {
-		return point;
-	}
-	public void setPoint(Boolean point) {
-		this.point = point;
-	}*/
+  public String getReq() {
+    return req;
+  }
+
+  public void setReq(String req) {
+    this.req = req;
+  }
+
+
 	
 	public String getSubset(){
 		return this.subset;

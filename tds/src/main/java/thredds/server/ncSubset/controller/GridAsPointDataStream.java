@@ -52,8 +52,7 @@ import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.ParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.view.PointDataStream;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.GridCoordSystem;
@@ -88,7 +87,7 @@ public class GridAsPointDataStream extends GridDatasetSubsetter implements NCSSP
 	 */
 	@Override
 	public void pointDataStream(HttpServletResponse res, FeatureDataset fd, String requestPathInfo,
-			PointDataRequestParamsBean queryParams, SupportedFormat format) throws IOException, VariableNotContainedInDatasetException, UnsupportedOperationException, OutOfBoundariesException, TimeOutOfWindowException, ParseException, DateUnitException, InvalidRangeException {
+			NcssParamsBean queryParams, SupportedFormat format) throws IOException, VariableNotContainedInDatasetException, UnsupportedOperationException, OutOfBoundariesException, TimeOutOfWindowException, ParseException, DateUnitException, InvalidRangeException {
 	
 		GridDataset gridDataset =(GridDataset) fd;					
 		LatLonPoint point = new LatLonPointImpl(queryParams.getLatitude(), queryParams.getLongitude()); //Check if the point is within boundaries!!
@@ -107,7 +106,7 @@ public class GridAsPointDataStream extends GridDatasetSubsetter implements NCSSP
 		pds.stream(gridDataset, point, wantedDates, groupVars, queryParams.getVertCoord());
 	}
 
-	protected SupportedFormat getSupportedFormat(ParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException{
+	protected SupportedFormat getSupportedFormat(NcssParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException{
 		
 		//Cheking request format...
 		SupportedFormat sf;		
@@ -153,14 +152,11 @@ public class GridAsPointDataStream extends GridDatasetSubsetter implements NCSSP
 	 * @see thredds.server.ncSubset.NCSSPointDataStream#setResponseHeaders(ucar.nc2.constants.FeatureType, thredds.server.ncSubset.format.SupportedFormat, java.lang.String)
 	 */
 	@Override
-	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format,
-			String datasetPath) {
-
+	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
 		return pds.getHttpHeaders((GridDataset)fd, datasetPath, format.isStream() );
 	}
 
-	public static GridAsPointDataStream gridAsPointDataStreamFactory(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
-		
+	public static GridAsPointDataStream factory(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
 		return new GridAsPointDataStream(diskCache, format, out);
 	}
 

@@ -42,7 +42,7 @@ import thredds.server.ncSubset.controller.PointDataStream;
 import thredds.server.ncSubset.controller.StationPointDataStream;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.util.DiskCache2;
@@ -62,14 +62,14 @@ public final class NCSSPointDataStreamFactory {
    * @throws ParseException
    * @throws NcssException
    */
-  public static NCSSPointDataStream getDataStreamer(FeatureDataset fd, PointDataRequestParamsBean queryParams,
+  public static NCSSPointDataStream getDataStreamer(FeatureDataset fd, NcssParamsBean queryParams,
                                                     SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException {
 
     FeatureType ft = fd.getFeatureType();
     DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
 
     if (ft == FeatureType.GRID) {
-      return GridAsPointDataStream.gridAsPointDataStreamFactory(diskCache, format, out);
+      return GridAsPointDataStream.factory(diskCache, format, out);
     }
 
     if (ft == FeatureType.STATION) {

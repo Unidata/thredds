@@ -6,6 +6,7 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
@@ -59,7 +60,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public FeatureDatasetPoint getFeatureDatasetPoint() {
+  public FeatureDataset getFeatureDataset() {
     return fd;
   }
 
@@ -222,7 +223,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
     return null;
   }
 

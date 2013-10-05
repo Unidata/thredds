@@ -22,8 +22,7 @@ span.bold {
 </head>
 <body>
 	<h1>
-		<img src="../images/unidataLogo.png" height="90" width="89">
-		NetCDF Subset Service Reference (TDS 4.4.0-alpha)	</h1>
+	  NetCDF Subset Service Reference (TDS 4.4)	</h1>
     <h3>Please note that the interface described here is still a
 		prototype, and subject to change.</h3>
 <h3>
@@ -48,28 +47,17 @@ span.bold {
 		<a name="Overview"></a>Overview
 	</h2>
 	<p>
-	    The NetCDF Subset Service is a web service for subsetting <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using earth
+	    The NetCDF Subset Service (NCSS) is a web service for subsetting <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using earth
 		coordinates, such as lat/lon or projection coordinates bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but not resampled or
 		reprojected, and preserve the resolution and accuracy of the original dataset.
 	</p>
 	<p>
 		A Dataset is described by a <a href="#DatasetDescription">Dataset Description</a> XML document, which describes the dataset in enough detail to enable a programmatic client to form valid data requests.
 	</p>
+	<p>NCSS uses HTTP GET with key-value pairs (KVP) which may in any order. The service interface tries to follow <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST design</a>, as well as <a href="https://developers.google.com/kml/">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
 	<p>
-		The NetCDF Subset Service may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset.
+		NCSS may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset.
 	</p>
-	<p>
-		The NetCDF Subset Service uses HTTP GET with key-value pairs (KVP). The service interface tries to follow <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST design</a>, as well as <a href="https://developers.google.com/kml/">Google/KML</a>
-		and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable.
-	</p>	
-	<p>
-		As of version 4.4.0 of TDS the service supports subsetting on collections of two feature types: grids and stations. 
-	    There are two kinds of subsetting requests: bounding box requests and point requests. Default is bounding box request and if no bounding box or point is provided in the request all the features in
-	    the dataset are returned in the response. If a point is specified with the parameters latitude and longitude the request will be a point request. Point requests on grid datasets will extract point features from 
-	    the grid whereas on station features the station closest to the specified point will be returned.
-	    Besides, on station features we can subset providing a comma separated list of stations id.
-	</p>
-
 	<hr>
 		
 	<!-- 
@@ -113,217 +101,139 @@ span.bold {
 	<table>
 		<thead>
 			<tr>
-				<th>Parameter Name</th>
-				<th>Required</th>
-				<th>Constraints</th>
-				<th>Description / possible values</th>
-				<th>default</th>
+				<th width="143">Parameter Name</th>
+				<th width="64">Required</th>
+				<th width="555">Description / possible values</th>
+				<th width="522">Constraints</th>
+				<th width="3">&nbsp;</th>
+				<th width="266">default</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td>var</td>
 				<td>yes</td>
-				<td>Variables must be in the dataset description.<span
-					class="bold">Bounding box requests on grid datasets only support requests on variables with same vertical levels.</span></td>
 				<td><span>Name of variables, separated by ',' (comma).</span></td>
+				<td>Variables must be in the dataset description. Bounding box requests on grid datasets only support requests on variables with same vertical levels and time coordinates.</td>
+				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tr>
 			<tr>
-				<td>latitude</td>
+				<td><p>latitude, longitude</p></td>
 				<td>no</td>
-				<td><span>Must be within the data(*). If latitude is provided longitude must be provided too(*).</span></td>
-				<td><span>In Point requests latitude of the
-						point.</span></td>
+				<td><span>Point location. units of degrees_east, degrees_north</span></td>
+				<td><span>Must be within the dataset bounding box(*). </span></td>
+				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tr>
 			<tr>
-				<td>longitude</td>
+				<td>north, south, east, west</td>
 				<td>no</td>
-				<td><span>Must be within the data(*). If longitude is provided	latitude must be provided too.</span></td>
-				<td><span>In Point requests latitude of the
-						point</span></td>
+				<td>Lat/lon bounding box, units of degrees_east, degrees_north</td>
+				<td>north > south,  if crossing 180 meridian, use east boundary &gt; 180</td>
+				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tr>
 			<tr>
-				<td>north</td>
+				<td>minx, miny, maxx, maxy</td>
 				<td>no</td>
-				<td><span>lat/lon bounding box must have north > south</span></td>
-				<td><span>Used to define a lat/lon bounding box.</span><span
-					class="bold">Lat/lon bounding box must have all 4 parameters: north,
-						south, east and west</span></td>
-				<td><span>If no bounding box is specified returns all the features in the dataset</span></td>
+				<td>Projection bounding box, in projection coordinate units.</td>
+				<td>Only on grid datasets. min &lt; max</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
 			</tr>
 			<tr>
-				<td>south</td>
-				<td>no</td>
-				<td><span>lat/lon bounding box must have north > south</span></td>
-				<td><span>Used to define a lat/lon bounding box.</span><span
-					class="bold">Lat/lon bounding box must have all 4 parameters: north,
-						south, east and west</span></td>
-				<td><span>If no bounding box is specified  returns all the features in the dataset</span></td>
-			</tr>
+			  <td>horizStride</td>
+			  <td>no</td>
+			  <td>Take only every nth point (both x and y)</td>
+			  <td>Only on grid datasets.</td>
+			  <td>&nbsp;</td>
+			  <td>1</td>
+		  </tr>
 			<tr>
-				<td>east</td>
-				<td>no</td>
-				<td><span>lat/lon bounding box must have east &gt; west;
-						if crossing 180 meridian, use east boundary > 180 </span></td>
-				<td><span>Used to define a lat/lon bounding box.</span><span
-					class="bold">Lat/lon bounding box must have all 4 parameters: north,
-						south, east and west</span></td>
-				<td><span>If no bounding box is specified  returns all the features in the dataset</span></td>
-			</tr>
-			<tr>
-				<td>west</td>
-				<td>no</td>
-				<td><span>lat/lon bounding box must have east &gt; west;
-						if crossing 180 meridian, use east boundary > 180 </span></td>
-				<td><span>Used to define a lat/lon bounding box.</span><span
-					class="bold">Lat/lon bounding box must have all 4 parameters: north,
-						south, east and west</span></td>
-				<td><span>If no bounding box is specified  returns all the features in the dataset</span></td>
-			</tr>
-			<tr>
-				<td>minx</td>
-				<td>no</td>
-				<td><span class="bold">Only on grid datasets.</span> Projection bounding box must have minx &lt; maxx</td>
-				<td>Used to define a projection bounding box. <span
-					class="bold">Projection bounding box must have all 4 parameters: minx,
-						miny, maxx, maxy</span>
-				</td>
-				<td>If no bounding box is specified returns the whole grid</td>
-			</tr>
-			<tr>
-				<td>maxx</td>
-				<td>no</td>
-				<td><span class="bold">Only on grid datasets.</span> Projection bounding box must have minx &lt; maxx</td>
-				<td>Used to define a projection bounding box. <span class="bold">Projection bounding box must have all 4 parameters: minx,miny, maxx, maxy</span></td>
-				<td>If no bounding box is specified returns the whole grid</td>
-			</tr>
-			<tr>
-				<td>miny</td>
-				<td>no</td>
-				<td><span class="bold">Only on grid datasets.</span> Projection bounding box must have miny &lt; maxy</td>
-				<td>Used to define a projection bounding box. <span class="bold">Projection bounding
-						box must have all 4 parameters: minx, miny, maxx, maxy</span></td>
-				<td>If no bounding box is specified returns the whole grid</td>
-			</tr>
-			<tr>
-				<td>maxy</td>
-				<td>no</td>
-				<td><span class="bold">Only on grid datasets.</span> Projection bounding box must have miny &lt; maxy</td>
-				<td>Used to define a projection bounding box. <b>Projection bounding
-						box must have all 4 parameters: minx, miny, maxx, maxy</b>
-				</td>
-				<td>If no bounding box is specified returns the whole grid</td>
-			</tr>
+			  <td>addLatLon</td>
+			  <td>no</td>
+			  <td>if present, make output strictly CF compliant by adding lat/lon coordinates if needed.</td>
+			  <td>Only on grid datasets, when writing to netCDF: make output strictly CF compliant.</td>
+			  <td>&nbsp;</td>
+			  <td>false</td>
+		  </tr>
 			<tr>
 				<td>time</td>
 				<td>no</td>
-				<td>Must be a time within the dataset time range</td>
 				<td>Time as a <a rel="nofollow"
 					" href="#W3Cdate">W3C
-						date</a> or "present". The time slice closest to the requested time is
-					returned
-				</td>
-				<td>If no time or time range is provided returns the closest to
-					the current time</td>
+				  date</a> or "present". The time slice closest to the requested time is
+				  returned</td>
+				<td>Must be a time within the dataset time range</td>
+				<td>&nbsp;</td>
+				<td><em>present</em></td>
 			</tr>
 			<tr>
-				<td>time_start</td>
+				<td>time_start, time_end, time_duration</td>
 				<td>no</td>
-				<td>The provided time range must intersect the dataset time
-					range</td>
-				<td>Used to specify the starting time of a time range. Time as
-					a <a rel="nofollow"
+				<td>Used to specify a time range. Time as
+				  a <a rel="nofollow"
 					" href="#W3Cdate">W3C
-						date</a> or "present". <b>Two of time_start, time_end,
-						time_duration must be present to define a valid time range</b>.
-				</td>
-				<td>If no time or time range is provided returns the closest to
-					the current time</td>
-			</tr>
-			<tr>
-				<td>time_end</td>
-				<td>no</td>
-				<td>The provided time range must intersect the dataset time
+				    date</a> or "present".  Duration	as a <a rel="nofollow" href="http://www.unidata.ucar.edu/software/thredds/v4.4/tds/reference/NetcdfSubsetServiceReference.html#W3Cduration">W3C time duration</a>.</td>
+				<td>Two of time_start, time_end,
+				      time_duration must be present to define a valid time range. The provided time range must intersect the dataset time
 					range</td>
-				<td>Used to specify the ending time of a time range. Time as a
-					<a rel="nofollow"
-					href="#W3Cdate">W3C
-						date</a> or "present". <b>Two of time_start, time_end,
-						time_duration must be present to define a valid time range</b>.
-				</td>
-				<td>If no time or time range is provided returns the closest to
-					the current time</td>
-			</tr>
-			<tr>
-				<td>time_duration</td>
-				<td>no</td>
-				<td>The provided time range must intersect the dataset time
-					range</td>
-				<td>Used to specify the time duration of a time range. Duration	as a <a rel="nofollow" href="#W3Cduration">W3C time duration</a>. 
-					<b>Two of time_start, time_end, time_duration must be present to define a valid time range</b>.
-				</td>
-				<td>If no time or time range is provided returns the closest to the current time</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
 			</tr>
 			<tr>
 				<td>temporal</td>
 				<td>no</td>
+				<td><em>all</em></td>
 				<td>Must be equal to "all" to have effect</td>
-				<td>Shorthand to request all the available time range</td>
-				<td>If no time or time range is provided returns the closest to
-					the current time</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
 			</tr>
 			<tr>
 				<td>timeStride</td>
 				<td>no</td>
-				<td>Only for  bounding box requests on grid datasets</td>
 				<td>Take only every nth time in the available series</td>
-				<td>1</td>
-			</tr>
-			<tr>
-				<td>horStride</td>
-				<td>no</td>
-				<td>Only for  bounding box requests on grid datasets</td>
-				<td>Take only every nth point (both x and y)</td>
+				<td>Only on grid datasets.</td>
+				<td>&nbsp;</td>
 				<td>1</td>
 			</tr>
 			<tr>
 				<td>vertCoord</td>
 				<td>no</td>
+				<td>&nbsp;</td>
 				<td>Bounding box requests on grid datasets must have the same vertical levels.
 				</td>
 				<td>&nbsp;</td>
-				<td>If the requested variables have vertical levels, all the
+				<td>All the
 					vertical levels will be returned</td>
 			</tr>
 			<tr>
 				<td>accept</td>
 				<td>no</td>
-				<td>Accepted values for bounding box requests on grids are netCDF and netCDF4. Bounding box requests on stantions and point requests accept csv, xml, netCDF and netCDF4</td>
-				<td>Used to specify the returned format. Supported formats are
-					netCDF for grid requests and csv, xml and netcdf for grid as point
-				</td>
-				<td>Grid requests netcdf, Grid as point requests csv</td>
+				<td>Used to specify the returned format. Grid: <em>netCDF</em>, <em>netCDF4</em>. Station and Point:<em> csv, xml, netCDF, netCDF4</em></td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>grid: <em>netCDF</em>,  point:<em> csv</em></td>
 			</tr>
 			<tr>
 				<td>subset</td>
 				<td>no</td>
+				<td>Used to specify the subsetting type on a station feature. subset=stns means we will provide a station list. </td>
 				<td>Only on station features. Accepted values are stns and bb</td>
-				<td>Used to specify the subsetting type on a station feature. subset=stns means we will provide a station list.
-				</td>
+				<td>&nbsp;</td>
 				<td>Default subset type is bounding box.</td>
 			</tr>
 			<tr>
 				<td>stns</td>
 				<td>no</td>
-				<td>Only on station features.</td>
 				<td>Used when subset=stns to specify the list of stations in the subset.</td>
+				<td>Only on station features.</td>
+				<td>&nbsp;</td>
 				<td></td>
 			</tr>						
 			<tr>
-				<td colspan="5">(*)Note the lat/lon
+				<td colspan="6">(*)Note the lat/lon
 						bounding box declared in the dataset description is an
 						approximated rectangle to the actual lat/lon boundaries so there
 						may be valid points within the data but ouside of the declared
@@ -333,26 +243,41 @@ span.bold {
 	</table>
 
 
-	<h2>
-		<strong><a name="Subsetting"></a> Subsetting types and use cases </strong>
-	</h2>
+	<p>As of version 4.4.0 of TDS, NCSS supports spatial and temporal subsetting on collections of grids, stations and points. </p>
+	<p><strong> Horizontal spatial subsetting:</strong></p>
+    <ul>
+      <li>grids: you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire horizontal grid.</li>
+      <li>grids as point: you <strong>must</strong> specify a point location with the<em> latitude, longitude</em> parameters. </li>
+      <li>stations: you may specify a lat/lon bounding box, a point location, or a list of stations. If none, do not filter.</li>
+      <li>points: you may specify a lat/lon bounding box. If none, do not filter.</li>
+    </ul>
+    <p><strong>Vertical spatial subsetting:</strong></p>
+    <ul>
+      <li>grids: you may a vertCoord. If none, return all vertical levels</li>
+    </ul>
+    <p><strong>Temporal subsetting:</strong></p>
+<ul>
+      <li>For all types, you may specify a time range or a specific time. If none, return the time closest to the present.</li>
+      <li>A time range will request all features that intersect the range.</li>
+      <li>A time point will request the feature that is closest to that time.</li>
+</ul>
+<h2><strong><a name="Subsetting"></a> Subsetting types and use cases </strong>
+</h2>
 	
 	<h3>
 		<strong><a name="GridAsPoint"></a> Spatial and coordinate subsetting </strong>
 	</h3>
-	<p>We can provide two types of bounding boxes to subset the data:</p>
+<p>NCSS  provides two types of bounding boxes to subset the data:</p>
 	<ul>
-		<li><span class="bold">Lat/lon bounding box:</span> is specified with the params north, south, east and west. These parameters are spatial coordinates. 
-		Units must be degrees east, may be positive or negative, and will be taken modulo 360.	Therefore, when crossing the dateline, the west edge may be greater than the east edge. 
-		They define a rectangle and the data contained in the intersection of this rectangle with the data is returned.</li>
-		<li><span class="bold">Projection bounding box (only on grid datasets):</span> is specified with the params minx, miny, maxx and maxy. Those parameters are coodinates on the projection of the data and also define the rectangle that will be returned.</li>
+		<li><span class="bold">Lat/lon bounding box:</span> is specified with the params <em>north, south, east </em>and<em> west.</em> The <em>north </em>and<em> south</em> parameters are latitude values, and must be in units of <em>degrees_north</em> and lie between +/- 90.  The <em>east </em>and<em> west</em> parameters are longitude values with units of <em>degrees_east</em>, and may be positive or negative, and will be interpreted modulo 360. The requested subset starts at the west longitude and goes eastward until the east longitude. Therefore, when crossing the dateline, the west edge may be greater than the east edge. 
+		For grids, if the underlying dataset is on a projection, the minimum enclosing projection bounding box will be calculated and used. The data contained in the intersection of this rectangle with the data is returned.</li>
+		<li><span class="bold">Projection bounding box (only on grid datasets):</span> is specified with the params<em> minx, miny, maxx </em>and<em> maxy</em>. These are projection coordinates; the data contained in the intersection of this rectangle with the data is returned.</li>
 	</ul>
-	<p>The boundaries or the extension of the data can be checked in the <a href="#DatasetDescription">dataset descriptions</a> in the tags LatLonBox and projectionBox. 
+	<p>The boundaries or the extension of the data can be found in the <a href="#DatasetDescription">dataset descriptions</a> in the tags LatLonBox and projectionBox. 
 	Note that the declared LatLonBox is an approximated rectangle to the full extension of the data and there may be points outside of the declared LatLonBox but within the data. So 
 	the provided lat/lon bounding box does not necesarily have to intersect it but it has to intersect the actual data.</p>
-	<p>By default, if no spatial subsetting is specified the service returns all the features in the dataset</p>
-	<p>Bounding box requests return a nectCDF or netCDF4 binary file on grid datasets and nectCDF, netCDF4, csv or xml on station datasets.</p>
-  	<p>Examples of query strings for spatial and coordinate subsetting:</p>
+	<p>By default, if no spatial subsetting is specified, the service returns all the features in the dataset.</p>
+	<p>Examples of query strings for spatial and coordinate subsetting:</p>
   	<ul>
     	<li><strong>Lat/lon bounding box: </strong><strong>north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong></li>
     	<li><strong>Projection bounding box: </strong><strong>minx=-500&amp;miny=-1600&amp;maxx=500&amp;maxy=0</strong></li>
@@ -361,7 +286,7 @@ span.bold {
 	<h3>
 		<strong><a name="Spatial"></a> Point requests </strong>
 	</h3>
-	<p>The NetDFC Subset Service allows the user to extract data for a single point. This is done specifying the latitude and longitude for our point of interest. When these parameters are provided the service will
+	<p>The NetCDF Subset Service allows the user to extract data for a single point. This is done specifying the latitude and longitude for our point of interest. When these parameters are provided the service will
 	extract point features types from the grid on grid features and will return the data for the closest station on station features.</p> 
 	<p>Point requests support netCDF, netCDF4, csv and xml as format result for a request.</p>
   	<p>Examples:</p>
@@ -407,7 +332,8 @@ span.bold {
 		multivariable request by simply passing a comma separated list of
 		variables in the var= parameter. Please note that <span class="bold"> on grid datasets only
 			requests on variables with same vertical levels are supported</span>
-	</p>
+	.</p>
+	<h3>Examples:</h3>
 
 	<!-- h4>
 		<span class="bold">Basic Request:</span>
@@ -608,7 +534,7 @@ span.bold {
     <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:mhermida@unidata.ucar.edu">Marcos Hermida</a> and was last updated September, 2013
+<img src="../images/thread.png" width="110" height="108">This document  was last updated October 2013
 </address>
 <p>&nbsp;</p>  
 </body>

@@ -49,11 +49,11 @@ public class GridDataRequestParamsBean extends RequestParamsBean {
 	private boolean addLatLon;
 	
 	//default 
-	@NotNull(message="horizStride param may not be null")
+	//@NotNull(message="horizStride param may not be null")
 	private Integer horizStride = 1;
 	
 	//default
-	@NotNull(message="timeStride param may not be null")
+	//@NotNull(message="timeStride param may not be null")
 	private Integer timeStride = 1;
 	
 	private Integer vertStride=1;

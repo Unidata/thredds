@@ -56,6 +56,7 @@ import thredds.server.ncSubset.exception.FeaturesNotFoundException;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.Array;
@@ -102,20 +103,20 @@ public class StationWriter {
 
   private final FeatureDatasetPoint fd;
   private final StationTimeSeriesFeatureCollection sfc;
-  private final PointDataRequestParamsBean qb;
+  private final NcssParamsBean qb;
   private final CalendarDate start, end;
   private StationWriter.Writer writer;
   private List<VariableSimpleIF> wantVars;
   private CalendarDateRange wantRange;
   private ucar.nc2.util.DiskCache2 diskCache;
 
-  public static StationWriter stationWriterFactory(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointDataRequestParamsBean qb, ucar.nc2.util.DiskCache2 diskCache, OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException {
+  public static StationWriter stationWriterFactory(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, NcssParamsBean qb, ucar.nc2.util.DiskCache2 diskCache, OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException {
     StationWriter sw = new StationWriter(fd, sfc, qb, diskCache);
     sw.writer = sw.getWriterForFormat(out, format);
     return sw;
   }
 
-  private StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointDataRequestParamsBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
+  private StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, NcssParamsBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
     this.fd = fd;
     this.sfc = sfc;
     this.qb = qb;
@@ -141,7 +142,6 @@ public class StationWriter {
   }*/
 
   /// ------- new stuff for decoupling things ----///
-
 
 
   private Writer getWriterForFormat(OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException {
@@ -192,7 +192,7 @@ public class StationWriter {
 
     } else {
       //Time range: need to compute the time range from the params
-      if (qb.getTemporal() != null && qb.getTemporal().equals("all")) {
+      if (qb.isAllTimes()) {
         //Full time range -->CHECK: wantRange=null means all range???
 
       } else {
@@ -233,7 +233,7 @@ public class StationWriter {
     pfc = sfc.flatten(stations, wantRange, null);
 
 	    /*
-	    //Subsetting type
+      //Subsetting type
 	    String stn = qb.getSubset();
 	    if(stn != null){
 	    	if( stn.equals("all") ){
@@ -639,40 +639,32 @@ public class StationWriter {
     protected List<Station> getStationsInSubset() throws IOException {
 
       // verify SpatialSelection has some stations
-      if (qb.getSubset() != null) {
-        if (qb.getSubset().equals("bb")) {
+      if (qb.hasStations()) {
+        List<String> stnNames = qb.getStns();
 
-          if (qb.getSouth() == null || qb.getNorth() == null || qb.getEast() == null || qb.getWest() == null) {
-            wantStations = sfc.getStations(); //Wants all
-          } else {
-            LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast()));
-            wantStations = sfc.getStations(llrect);
-          }
-
-          //wantStations = sfc.getStations(qb.getLatLonRect());
-
-        } else if (qb.getSubset().equals("stns")) {
-          List<String> stnNames = qb.getStns();
-
-          if (stnNames.get(0).equals("all"))
-            wantStations = sfc.getStations();
-          else
-            wantStations = sfc.getStations(stnNames);
-
-        }/* else {
-      		  wantStations = sfc.getStations();
-      	  }*/
-      } else {
-        if (qb.getLatitude() != null && qb.getLongitude() != null) { //want closest
-          Station closestStation = findClosestStation(new LatLonPointImpl(qb.getLatitude(), qb.getLongitude()));
-          List<String> stnList = new ArrayList<String>();
-          stnList.add(closestStation.getName());
-          wantStations = sfc.getStations(stnList);
-        } else {//Want all
+        if (stnNames.get(0).equals("all"))
           wantStations = sfc.getStations();
-        }
-      }
+        else
+          wantStations = sfc.getStations(stnNames);
 
+      } else if (qb.hasLatLonBB()) {
+
+        if (qb.getSouth() == null || qb.getNorth() == null || qb.getEast() == null || qb.getWest() == null) {
+          wantStations = sfc.getStations(); //Wants all
+        } else {
+          LatLonRect llrect = new LatLonRect(new LatLonPointImpl(qb.getSouth(), qb.getWest()), new LatLonPointImpl(qb.getNorth(), qb.getEast()));
+          wantStations = sfc.getStations(llrect);
+        }
+
+      } else if (qb.hasLatLonPoint()) {
+        Station closestStation = findClosestStation(new LatLonPointImpl(qb.getLatitude(), qb.getLongitude()));
+        List<String> stnList = new ArrayList<String>();
+        stnList.add(closestStation.getName());
+        wantStations = sfc.getStations(stnList);
+
+      } else { //Want all
+        wantStations = sfc.getStations();
+      }
 
       return wantStations;
     }

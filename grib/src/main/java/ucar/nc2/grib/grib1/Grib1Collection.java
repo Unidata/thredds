@@ -89,7 +89,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
     }
   }
 
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
     GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 

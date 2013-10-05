@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import thredds.server.ncSubset.controller.FeatureDatasetController;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.Array;
@@ -49,7 +50,7 @@ public class PointWriter {
   private static final boolean debug = false, debugDetail = false;
 
   private final FeatureDatasetPoint fd;
-  private final PointDataRequestParamsBean qb;
+  private final NcssParamsBean qb;
   private PointFeatureCollection pfc;
   private Writer writer;
 
@@ -60,7 +61,7 @@ public class PointWriter {
 
     /// ------- new stuff for decoupling things ----///
 
-  public static PointWriter factory(FeatureDatasetPoint fd, PointFeatureCollection sfc, PointDataRequestParamsBean qb,
+  public static PointWriter factory(FeatureDatasetPoint fd, PointFeatureCollection sfc, NcssParamsBean qb,
                                     ucar.nc2.util.DiskCache2 diskCache, OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException {
     PointWriter sw = new PointWriter(fd, sfc, qb, diskCache);
     sw.writer = sw.getWriterForFormat(out, format);
@@ -71,7 +72,7 @@ public class PointWriter {
     return writer.getHttpHeaders(datasetPath);
   }
 
-  private PointWriter(FeatureDatasetPoint fd, PointFeatureCollection pfc, PointDataRequestParamsBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
+  private PointWriter(FeatureDatasetPoint fd, PointFeatureCollection pfc, NcssParamsBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
     this.fd = fd;
     this.pfc = pfc;
     this.qb = qb;

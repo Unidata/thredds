@@ -42,7 +42,7 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.log.LoggerFactoryImpl;
@@ -53,7 +53,6 @@ import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 /**
@@ -473,7 +472,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * @return Grid Dataset, or null if n/a
    * @throws IOException on error
    */
-  public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
     int pos = matchPath.indexOf('/');
     String type = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
     String name = (pos > -1) ? matchPath.substring(pos + 1) : "";
@@ -490,9 +489,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return null;
   }
 
-  public FeatureDatasetPoint getFeatureDatasetPoint() {
-    return null;
-  }
+  abstract public FeatureDataset getFeatureDataset();
 
   ///////////////////////////////////////////////////////////////////////////////
   // handle individual files

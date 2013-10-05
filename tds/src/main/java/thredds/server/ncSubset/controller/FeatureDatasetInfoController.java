@@ -69,9 +69,7 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController {
   private boolean wantXML = false;
   private boolean showForm = false;
   private boolean showPointForm = false;
-
   private String requestPathInfo;
-
 
   @Autowired
   private NcssShowFeatureDatasetInfo ncssShowDatasetInfo;
@@ -89,26 +87,29 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController {
 
     String datasetPath = getDatasetPath(req);
     requestPathInfo = extractRequestPathInfo(datasetPath);
-    FeatureDataset fd = datasetService.findDatasetByPath(req, res, requestPathInfo);
+    FeatureDataset fd = null;
 
-    if (fd == null) {
-      // FeatureDataset not supported!!!
-      throw new UnsupportedOperationException("Feature Type not supported");
+    try {
+      fd = datasetService.findDatasetByPath(req, res, requestPathInfo);
+
+      if (fd == null)
+        throw new UnsupportedOperationException("Feature Type not supported");
+
+      String strResponse = "";
+      strResponse = ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
+
+      res.setContentLength(strResponse.length());
+
+      if (wantXML)
+        res.setContentType("text/xml; charset=iso-8859-1");
+      else
+        res.setContentType("text/html; charset=UTF-8");
+
+      writeResponse(strResponse, res);
+
+    } finally {
+      if (fd != null) fd.close();
     }
-
-    String strResponse = "";
-    strResponse = ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
-
-    res.setContentLength(strResponse.length());
-
-    if (wantXML)
-      res.setContentType("text/xml; charset=iso-8859-1");
-    else
-      res.setContentType("text/html; charset=UTF-8");
-
-    writeResponse(strResponse, res);
-
-    fd.close();
   }
 
 
@@ -122,33 +123,38 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController {
     } else {
       String datasetPath = getDatasetPath(req);
       requestPathInfo = extractRequestPathInfo(datasetPath);
-      FeatureDataset fd = datasetService.findDatasetByPath(req, res,
-              requestPathInfo);
+      FeatureDataset fd = null;
+      try {
+        fd = datasetService.findDatasetByPath(req, res, requestPathInfo);
 
-      if (fd.getFeatureType() != FeatureType.STATION) {
-        throw new UnsupportedOperationException("Station list request is only supported for Station features");
+        if (fd == null)
+          throw new UnsupportedOperationException("Feature Type not supported");
+
+        if (fd.getFeatureType() != FeatureType.STATION)
+          throw new UnsupportedOperationException("Station list request is only supported for Station features");
+
+        FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, buildDatasetUrl(datasetPath));
+
+        String[] stnsList = new String[]{};
+        if (params.getStn() != null)
+          stnsList = params.getStn().toArray(stnsList);
+        else
+          stnsList = null;
+
+        LatLonRect llrect = null;
+        if (params.getNorth() != null && params.getSouth() != null && params.getEast() != null && params.getWest() != null)
+          llrect = new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
+
+        Document doc = xmlWriter.makeStationCollectionDocument(llrect, stnsList);
+        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+        String infoString = fmt.outputString(doc);
+
+        res.setContentType("text/xml; charset=iso-8859-1");
+        writeResponse(infoString, res);
+
+      } finally {
+        if (fd != null) fd.close();
       }
-
-      FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, buildDatasetUrl(datasetPath));
-
-      String[] stnsList = new String[]{};
-      if (params.getStn() != null)
-        stnsList = params.getStn().toArray(stnsList);
-      else
-        stnsList = null;
-
-      LatLonRect llrect = null;
-      if (params.getNorth() != null && params.getSouth() != null && params.getEast() != null && params.getWest() != null)
-        llrect = new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
-
-      Document doc = xmlWriter.makeStationCollectionDocument(llrect, stnsList);
-      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-      String infoString = fmt.outputString(doc);
-
-      res.setContentType("text/xml; charset=iso-8859-1");
-      writeResponse(infoString, res);
-
-      fd.close();
     }
   }
 

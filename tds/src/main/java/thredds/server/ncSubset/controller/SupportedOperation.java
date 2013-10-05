@@ -49,10 +49,11 @@ import thredds.server.ncSubset.format.SupportedFormat;
  */
 enum SupportedOperation {
 	
-	DATASET_INFO_REQUEST("Dataset info request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML_FILE })),SupportedFormat.XML_FILE),
-	DATASET_BOUNDARIES_REQUEST("Dataset grid boundaries request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.JSON, SupportedFormat.WKT })),SupportedFormat.WKT),
-	POINT_REQUEST("Grid as Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML_STREAM, SupportedFormat.XML_FILE, SupportedFormat.CSV_STREAM, SupportedFormat.CSV_FILE , SupportedFormat.NETCDF3, SupportedFormat.NETCDF4})),SupportedFormat.XML_STREAM),
-	GRID_REQUEST("Grid data request",Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.NETCDF3, SupportedFormat.NETCDF4})),SupportedFormat.NETCDF3);
+	DATASET_INFO_REQUEST("Dataset info request", Collections.unmodifiableList(Arrays.asList(SupportedFormat.XML_FILE)),SupportedFormat.XML_FILE),
+	DATASET_BOUNDARIES_REQUEST("Dataset grid boundaries request", Collections.unmodifiableList(Arrays.asList(SupportedFormat.JSON, SupportedFormat.WKT)),SupportedFormat.WKT),
+	POINT_REQUEST("Grid as Point data request", Collections.unmodifiableList(Arrays.asList(SupportedFormat.XML_STREAM, SupportedFormat.XML_FILE,
+          SupportedFormat.CSV_STREAM, SupportedFormat.CSV_FILE, SupportedFormat.NETCDF3, SupportedFormat.NETCDF4)),SupportedFormat.XML_STREAM),
+	GRID_REQUEST("Grid data request",Collections.unmodifiableList(Arrays.asList(SupportedFormat.NETCDF3, SupportedFormat.NETCDF4)),SupportedFormat.NETCDF3);
 	
 	private final String operationName; 
 	private final List<SupportedFormat> supportedFormats;

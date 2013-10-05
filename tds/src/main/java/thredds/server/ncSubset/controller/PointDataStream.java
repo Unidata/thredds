@@ -6,7 +6,7 @@ import org.springframework.http.HttpHeaders;
 import thredds.server.ncSubset.NCSSPointDataStream;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.view.PointWriter;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.ft.*;
@@ -52,7 +52,7 @@ public class PointDataStream implements NCSSPointDataStream {
 	 * thredds.server.ncSubset.params.ParamsBean)
 	 */
 	@Override
-	public void pointDataStream(HttpServletResponse res, FeatureDataset fd, String requestPathInfo, PointDataRequestParamsBean queryParams, SupportedFormat format)
+	public void pointDataStream(HttpServletResponse res, FeatureDataset fd, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
 			throws IOException, ParseException, InvalidRangeException, NcssException {
 
     writer.write();
@@ -72,7 +72,7 @@ public class PointDataStream implements NCSSPointDataStream {
 		return writer.getHttpHeaders(fd, format, datasetPath);
 	}
 
-  public static PointDataStream factory(FeatureDataset fd, PointDataRequestParamsBean queryParams, DiskCache2 diskCache, SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException{
+  public static PointDataStream factory(FeatureDataset fd, NcssParamsBean queryParams, DiskCache2 diskCache, SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException{
  		FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
  		List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
     PointFeatureCollection sfc = (PointFeatureCollection) coll.get(0);

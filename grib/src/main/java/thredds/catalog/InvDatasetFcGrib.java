@@ -38,8 +38,9 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Iosp;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -125,6 +126,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     finish();
+  }
+
+  @Override
+  public FeatureDataset getFeatureDataset() {
+    return null;
   }
 
   @Override
@@ -719,7 +725,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
     /* handle FILES
     GridDataset result = super.getGridDataset(matchPath);
     if (result != null) return result; */

@@ -37,7 +37,7 @@ public class FeatureDatasetPointServiceImpl implements 	FeatureDatasetPointServi
 		// this looks for a featureCollection
 		InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res, path);
 		if (fc != null) {
-			fdp = fc.getFeatureDatasetPoint();
+			fdp = (FeatureDatasetPoint) fc.getFeatureDataset();
 
 		} else {
 			// tom kunicki 12/18/10

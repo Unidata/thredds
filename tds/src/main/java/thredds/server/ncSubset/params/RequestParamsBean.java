@@ -43,13 +43,9 @@ import thredds.server.ncSubset.validation.VarParamConstraint;
 @TimeParamsConstraint
 public class RequestParamsBean extends ParamsBean {
 	
-	//@NotNull(message="var param may not be null")
 	@VarParamConstraint
 	private List<String> var;
-	
-	//@NotNull(message="accept param may not be null")
-	//private String accept;
-	
+
 	@Valid
 	private String time_start;
 
@@ -68,17 +64,13 @@ public class RequestParamsBean extends ParamsBean {
 	
 	private Double vertCoord;
 	
-	//@NotNull(message="north param may not be null")	
 	private Double north;
 	
-	//@NotNull(message="south param may not be null")	
 	private Double south;
 	
-	//@NotNull(message="east param may not be null")	
 	private Double east;
 	
-	//@NotNull(message="west param may not be null")	
-	private Double west;	
+	private Double west;
 	
 	
 	public List<String> getVar() {
@@ -128,15 +120,7 @@ public class RequestParamsBean extends ParamsBean {
 	
 	public String getTemporal(){
 		return this.temporal;
-	}	
-	
-	/*public void setAccept(String accept){
-		this.accept = accept;
 	}
-	 
-	public String getAccept(){
-		return this.accept;
-	}*/
 	
 	public Double getVertCoord() {
 		return vertCoord;

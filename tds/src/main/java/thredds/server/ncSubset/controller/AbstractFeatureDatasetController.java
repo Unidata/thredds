@@ -62,8 +62,7 @@ public class AbstractFeatureDatasetController {
 	
 	static private final Logger log = LoggerFactory.getLogger(AbstractFeatureDatasetController.class);
 	
-	protected void handleValidationErrorsResponse(HttpServletResponse response,
-			int status, BindingResult validationResult) {
+	protected void handleValidationErrorsResponse(HttpServletResponse response, int status, BindingResult validationResult) {
 
 		List<ObjectError> errors = validationResult.getAllErrors();
 		response.setStatus(status);
@@ -76,7 +75,6 @@ public class AbstractFeatureDatasetController {
 		}
 
 		try {
-
 			PrintWriter pw = response.getWriter();
 			pw.write(responseStr.toString());
 			pw.flush();
@@ -93,8 +91,7 @@ public class AbstractFeatureDatasetController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
 		return new ResponseEntity<String>(
-				"NetCDF Subset Service exception handled : "
-						+ ncsse.getMessage(), responseHeaders,
+				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
 				HttpStatus.BAD_REQUEST);
 	}
 	
@@ -104,8 +101,7 @@ public class AbstractFeatureDatasetController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
 		return new ResponseEntity<String>(
-				"UnsupportedOperationException exception handled : "
-						+ ex.getMessage(), responseHeaders,
+				"UnsupportedOperationException exception handled : " + ex.getMessage(), responseHeaders,
 				HttpStatus.BAD_REQUEST);
 	}	
 	

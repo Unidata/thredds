@@ -44,7 +44,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jdom2.Element;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetFmrc;
@@ -53,9 +52,8 @@ import thredds.catalog.InvDatasetScan;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileFactory;
 
 

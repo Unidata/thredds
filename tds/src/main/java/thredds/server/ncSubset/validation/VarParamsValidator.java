@@ -42,13 +42,10 @@ public class VarParamsValidator implements ConstraintValidator<VarParamConstrain
 
 	@Override
 	public void initialize(VarParamConstraint constraintAnnotation) {
-
-		
 	}
 
 	@Override
 	public boolean isValid(List<String> vars, ConstraintValidatorContext constraintValidatorContext) {
-
 		boolean isValid = true;
 		
 		if( vars == null || vars.isEmpty() ){
@@ -61,6 +58,4 @@ public class VarParamsValidator implements ConstraintValidator<VarParamConstrain
 		return isValid;
 	}
 	
-	
-
 }

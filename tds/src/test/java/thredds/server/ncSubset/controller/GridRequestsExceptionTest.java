@@ -52,6 +52,7 @@ import thredds.server.ncSubset.exception.RequestTooLargeException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
 import ucar.nc2.dt.GridDataset;
 
@@ -83,37 +84,37 @@ public class GridRequestsExceptionTest {
 	@Test(expected=RequestTooLargeException.class)
 	public void testRequestTooLargeException() throws Exception{
 			
-		GridDataRequestParamsBean params;
+    NcssParamsBean params;
 		BindingResult validationResult;
-		params = new GridDataRequestParamsBean();		
-		params.setTemporal("all");
+		params = new NcssParamsBean();
+		params.setAllTimes(true);
 		List<String> vars = new ArrayList<String>();
 		vars.add("Relative_humidity");
 		vars.add("Temperature");
 		params.setVar(vars);		
 		validationResult = new BeanPropertyBindingResult(params, "params");
-		featureDatasetController.getGridSubset(params, validationResult, response, request);
+		featureDatasetController.handleRequest(request, response, params, validationResult);
 	}
 	
 	@Test(expected=UnsupportedOperationException.class)
 	public void testUnsupportedOperationException() throws Exception{
-		GridDataRequestParamsBean params;
+    NcssParamsBean params;
 		BindingResult validationResult;
-		params = new GridDataRequestParamsBean();		
+		params = new NcssParamsBean();
 		List<String> vars = new ArrayList<String>();
 		vars.add("all");
 		params.setVar(vars);
 		params.setVertCoord(200.);
 		validationResult = new BeanPropertyBindingResult(params, "params");
-		featureDatasetController.getGridSubset(params, validationResult, response, request);
+		featureDatasetController.handleRequest(request, response, params, validationResult);
 		
 	}
 	
 	@Test(expected=TimeOutOfWindowException.class)
 	public void testTimeOutOfWindowException() throws Exception{
-		GridDataRequestParamsBean params;
+    NcssParamsBean params;
 		BindingResult validationResult;
-		params = new GridDataRequestParamsBean();		
+		params = new NcssParamsBean();
 		List<String> vars = new ArrayList<String>();
 		vars.add("Relative_humidity");
 		vars.add("Temperature");
@@ -121,7 +122,7 @@ public class GridRequestsExceptionTest {
 		params.setTime("2012-04-18T15:00:00Z");
 		params.setTime_window("PT1H");
 		validationResult = new BeanPropertyBindingResult(params, "params");
-		featureDatasetController.getGridSubset(params, validationResult, response, request);
+		featureDatasetController.handleRequest(request, response, params, validationResult);
 				
 	}	
 	

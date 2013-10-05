@@ -54,95 +54,92 @@ import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
 import ucar.nc2.ft.FeatureDataset;
 
 
-
 /**
  * @author mhermida
- *
  */
 @Controller
 @Scope("request")
-@RequestMapping(value="/ncss/**")
-public class DatasetBoundariesController extends AbstractFeatureDatasetController{ 
+@RequestMapping(value = "/ncss/**")
+public class DatasetBoundariesController extends AbstractFeatureDatasetController {
 
-	static private final Logger log = LoggerFactory.getLogger(DatasetBoundariesController.class);
-	
-	@Autowired
-	FeatureDatasetService datasetService;
-	
-	//private String requestPathInfo;
-	
-	@RequestMapping(value = { "datasetBoundaries" } )
-	void getDatasetBoundaries(ParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException{
-		
-		//Checking request format...			
-		SupportedFormat sf = getSupportedFormat( params, SupportedOperation.DATASET_BOUNDARIES_REQUEST  );
-		
-		String pathInfo = extractRequestPathInfo( req.getServletPath() );
-		FeatureDataset fd = datasetService.findDatasetByPath(req, res, pathInfo);		
-		
-		if(fd.getFeatureType() != FeatureType.GRID){
-			throw new UnsupportedOperationException("Dataset Boundaries request is only supported on Grid features");
-		}
-		
-		String boundaries = getBoundaries( sf, (GridDataset) fd );
-		
-		res.setContentType(sf.getResponseContentType());		
-		res.getWriter().write(boundaries);
-		res.getWriter().flush();
-		
-		fd.close();
-	}
-	
-	private String getBoundaries(SupportedFormat format, GridDataset gridDataset){
-		
-		String boundaries ="";						
-		GridBoundariesExtractor gbe =GridBoundariesExtractor.valueOf(gridDataset);
-		
-		if( format == SupportedFormat.WKT )
-			boundaries = gbe.getDatasetBoundariesWKT();
-		if( format == SupportedFormat.JSON )
-			boundaries = gbe.getDatasetBoundariesGeoJSON();
-						
-		return boundaries;
-	}
-	
+  static private final Logger log = LoggerFactory.getLogger(DatasetBoundariesController.class);
 
+  @Autowired
+  FeatureDatasetService datasetService;
 
-	String extractRequestPathInfo(String requestPathInfo) {
+  @RequestMapping(value = {"datasetBoundaries"})
+  void getDatasetBoundaries(ParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException {
 
-		requestPathInfo = requestPathInfo.substring( servletPath.length() , requestPathInfo.length() );
-		if( requestPathInfo.endsWith("datasetBoundaries")  ){
-			requestPathInfo = requestPathInfo.trim(); 
-			String[] pathInfoArr = requestPathInfo.split("/");			  
-			StringBuilder sb = new StringBuilder();
-			int len = pathInfoArr.length;
-			sb.append(pathInfoArr[1]);
-			for(int i= 2;  i<len-1; i++  ){
-				sb.append("/"+pathInfoArr[i]);
-			}
-			requestPathInfo = sb.toString();
-		}
-		
-		//this.requestPathInfo = requestPathInfo;
-		return requestPathInfo;
-	}
+    //Checking request format...
+    SupportedFormat sf = getSupportedFormat(params, SupportedOperation.DATASET_BOUNDARIES_REQUEST);
 
-	protected SupportedFormat getSupportedFormat(ParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException{
-		
-		//Cheking request format...
-		SupportedFormat sf;		
-		if(params.getAccept() == null){
-			//setting the default format
-			sf = operation.getDefaultFormat();
-			params.setAccept(sf.getFormatName());
-		}else{		
-			sf = SupportedOperation.isSupportedFormat(params.getAccept(), operation);
-			if( sf == null ){			
-				throw new UnsupportedResponseFormatException("Requested format: "+params.getAccept()+" is not supported for "+operation.getOperation().toLowerCase() );
-			}
-		}
-		
-		return sf;		
-	}	
-	
+    String pathInfo = extractRequestPathInfo(req.getServletPath());
+    FeatureDataset fd = null;
+    try {
+      fd = datasetService.findDatasetByPath(req, res, pathInfo);
+
+      if (fd == null)
+        throw new UnsupportedOperationException("Feature Type not supported");
+      if (fd.getFeatureType() != FeatureType.GRID)
+        throw new UnsupportedOperationException("Dataset Boundaries request is only supported on Grid features");
+
+      String boundaries = getBoundaries(sf, (GridDataset) fd);
+
+      res.setContentType(sf.getResponseContentType());
+      res.getWriter().write(boundaries);
+      res.getWriter().flush();
+    } finally {
+      if (fd != null) fd.close();
+    }
+  }
+
+  private String getBoundaries(SupportedFormat format, GridDataset gridDataset) {
+
+    String boundaries = "";
+    GridBoundariesExtractor gbe = GridBoundariesExtractor.valueOf(gridDataset);
+
+    if (format == SupportedFormat.WKT)
+      boundaries = gbe.getDatasetBoundariesWKT();
+    if (format == SupportedFormat.JSON)
+      boundaries = gbe.getDatasetBoundariesGeoJSON();
+
+    return boundaries;
+  }
+
+  String extractRequestPathInfo(String requestPathInfo) {
+
+    requestPathInfo = requestPathInfo.substring(servletPath.length(), requestPathInfo.length());
+    if (requestPathInfo.endsWith("datasetBoundaries")) {
+      requestPathInfo = requestPathInfo.trim();
+      String[] pathInfoArr = requestPathInfo.split("/");
+      StringBuilder sb = new StringBuilder();
+      int len = pathInfoArr.length;
+      sb.append(pathInfoArr[1]);
+      for (int i = 2; i < len - 1; i++) {
+        sb.append("/" + pathInfoArr[i]);
+      }
+      requestPathInfo = sb.toString();
+    }
+
+    return requestPathInfo;
+  }
+
+  protected SupportedFormat getSupportedFormat(ParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException {
+
+    //Checking request format...
+    SupportedFormat sf;
+    if (params.getAccept() == null) {
+      //setting the default format
+      sf = operation.getDefaultFormat();
+      params.setAccept(sf.getFormatName());
+    } else {
+      sf = SupportedOperation.isSupportedFormat(params.getAccept(), operation);
+      if (sf == null) {
+        throw new UnsupportedResponseFormatException("Requested format: " + params.getAccept() + " is not supported for " + operation.getOperation().toLowerCase());
+      }
+    }
+
+    return sf;
+  }
+
 }

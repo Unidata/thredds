@@ -48,7 +48,7 @@ import thredds.server.ncSubset.exception.RequestTooLargeException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.servlet.ThreddsConfig;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -101,7 +101,7 @@ class GridDataStream extends GridDatasetSubsetter {
 	 * @throws InvalidRangeException
 	 */
 	File getResponseFile(HttpServletRequest request,
-			HttpServletResponse response, GridDataRequestParamsBean params,
+			HttpServletResponse response, NcssParamsBean params,
 			NetcdfFileWriter.Version version)
 			throws VariableNotContainedInDatasetException, NcssException,
 			InvalidRangeException, ParseException, IOException {
@@ -119,7 +119,7 @@ class GridDataStream extends GridDatasetSubsetter {
 		return netcdfResult;
 	}
 
-	private boolean isSpatialSubset(GridDataRequestParamsBean params)
+	private boolean isSpatialSubset(NcssParamsBean params)
 			throws InvalidBBOXException {
 
 		boolean spatialSubset = false;
@@ -156,7 +156,7 @@ class GridDataStream extends GridDatasetSubsetter {
 		return spatialSubset;
 	}
 
-	private File spatialSubset(GridDataRequestParamsBean params,
+	private File spatialSubset(NcssParamsBean params,
 			NetcdfFileWriter.Version version) throws RequestTooLargeException,
 			OutOfBoundariesException, InvalidRangeException, ParseException,
 			IOException, VariableNotContainedInDatasetException,
@@ -219,7 +219,7 @@ class GridDataStream extends GridDatasetSubsetter {
 		// }
 	}
 
-	private File coordinatesSubset(GridDataRequestParamsBean params,
+	private File coordinatesSubset(NcssParamsBean params,
 			HttpServletResponse response, NetcdfFileWriter.Version version)
 			throws OutOfBoundariesException, ParseException,
 			InvalidRangeException, RequestTooLargeException, IOException,
@@ -308,8 +308,7 @@ class GridDataStream extends GridDatasetSubsetter {
 		return new File(cacheFilename);
 	}
 
-	private LatLonRect setBBForRequest(GridDataRequestParamsBean params,
-			GridDataset gds) throws InvalidBBOXException {
+	private LatLonRect setBBForRequest(NcssParamsBean params, GridDataset gds) throws InvalidBBOXException {
 
 		if (params.getNorth() == null && params.getSouth() == null
 				&& params.getWest() == null && params.getEast() == null)

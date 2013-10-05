@@ -57,9 +57,7 @@ import thredds.server.ncSubset.dataservice.FeatureDatasetService;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
-import thredds.server.ncSubset.params.RequestParamsAdapter;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
@@ -83,21 +81,109 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
   TdsContext tdsContext;
 
   /**
-   * Handles ncss point data requests for GRID and STATION feature datasets.
-   *
-   * @param req request
-   * @param res result
-   * @throws IOException
-   * @throws UnsupportedResponseFormatException
-   *
-   * @throws InvalidRangeException
-   * @throws ParseException
-   */
+    * Handles ncss data requests
+    *
+    * @param req request
+    * @param res result
+    * @throws IOException
+    * @throws UnsupportedResponseFormatException
+    *
+    * @throws InvalidRangeException
+    * @throws ParseException
+    */
+   @RequestMapping("**")
+   void handleRequest(HttpServletRequest req, HttpServletResponse res,
+                        @Valid NcssParamsBean params,
+                        BindingResult validationResult) throws IOException, NcssException, ParseException, InvalidRangeException {
+
+     if (validationResult.hasErrors()) {
+       handleValidationErrorsResponse(res, HttpServletResponse.SC_BAD_REQUEST, validationResult);
+       return;
+     }
+
+     String datasetPath = getDatasetPath(req);
+     FeatureDataset fd = null;
+     try {
+       fd = datasetService.findDatasetByPath(req, res, datasetPath);  // LOOK cant we get ft somewhere else first ?
+
+       if (fd == null)
+         throw new UnsupportedOperationException("Not a valid Feature Type dataset");
+
+       if (fd.getFeatureType() == FeatureType.GRID) {
+
+         if (!params.hasLatLonPoint()) {
+           handleRequestGrid(req, res, params, datasetPath, (GridDataset) fd);
+         } else {
+           handleRequestGridAsPoint(req, res, params, datasetPath, fd);
+         }
+
+       } else if (fd.getFeatureType() == FeatureType.STATION) {
+         handleRequestStation(req, res, params, datasetPath, fd);
+
+       } else if (fd.getFeatureType() == FeatureType.POINT) {
+         handleRequestStation(req, res, params, datasetPath, fd);
+
+       } else {
+           throw new UnsupportedOperationException("Feature Type not supported");
+       }
+
+      } finally {
+       if (fd != null) fd.close();
+     }
+
+   }
+
+  void handleRequestGrid(HttpServletRequest req, HttpServletResponse res,
+                         NcssParamsBean params, String datasetPath,
+                         GridDataset gridDataset) throws IOException, NcssException, ParseException, InvalidRangeException {
+
+    // Supported formats are netcdf3 (default) and netcdf4 (if available)
+    SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.GRID_REQUEST);
+
+    NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
+    if (sf.equals(SupportedFormat.NETCDF4)) {
+      version = NetcdfFileWriter.Version.netcdf4;
+    }
+
+    GridDataStream gds = GridDataStream.valueOf(gridDataset, datasetPath);
+    File netcdfResult = gds.getResponseFile(req, res, params, version);
+
+    // Headers...
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.set("Content-Type", sf.getResponseContentType());
+    setResponseHeaders(res, httpHeaders);
+    IO.copyFileB(netcdfResult, res.getOutputStream(), 60000);
+    res.flushBuffer();
+    res.getOutputStream().close();
+    res.setStatus(HttpServletResponse.SC_OK);
+  }
+
+  void handleRequestGridAsPoint(HttpServletRequest req, HttpServletResponse res,
+                       NcssParamsBean params, String datasetPath,
+                       FeatureDataset fd) throws IOException, NcssException, ParseException, InvalidRangeException {
+
+    SupportedFormat format = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST);
+    NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer(fd, params, format, res.getOutputStream());
+    setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
+    pds.pointDataStream(res, fd, datasetPath, params, format);
+  }
+
+  void handleRequestStation(HttpServletRequest req, HttpServletResponse res,
+                       NcssParamsBean params, String datasetPath,
+                       FeatureDataset fd) throws IOException, NcssException, ParseException, InvalidRangeException {
+
+    SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST);
+    NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer(fd, params, sf, res.getOutputStream());
+    setResponseHeaders(res, pds.getResponseHeaders(fd, sf, datasetPath));
+    pds.pointDataStream(res, fd, datasetPath, params, sf);
+  }
+
+
+  /*
   @RequestMapping("**")
   void streamPointData(HttpServletRequest req, HttpServletResponse res,
-                       @Valid PointDataRequestParamsBean params,
-                       BindingResult validationResult) throws IOException, NcssException,
-          ParseException, InvalidRangeException {
+                       @Valid NcssParamsBean params,
+                       BindingResult validationResult) throws IOException, NcssException, ParseException, InvalidRangeException {
 
     if (validationResult.hasErrors()) {
       handleValidationErrorsResponse(res, HttpServletResponse.SC_BAD_REQUEST, validationResult);
@@ -106,33 +192,24 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
       SupportedFormat format = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST);
 
       String datasetPath = getDatasetPath(req);
-      FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath);
+      FeatureDataset fd = null;
+      try {
+        fd = datasetService.findDatasetByPath(req, res, datasetPath);
 
-      if (fd == null) {
-        // FeatureDataset not supported!!!
-        throw new UnsupportedOperationException("Feature Type not supported");
+        if (fd == null)
+          throw new UnsupportedOperationException("Feature Type not supported");
+
+        NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer(fd, params, format, res.getOutputStream());
+        setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
+        pds.pointDataStream(res, fd, datasetPath, params, format);
+
+      } finally {
+        if (fd != null) fd.close();
       }
-
-      NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer(fd, params, format, res.getOutputStream());
-
-      setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
-      pds.pointDataStream(res, fd, datasetPath, params, format);
-
-      fd.close();
     }
   }
 
-  /**
-   * Grid requests on grid datasets
-   *
-   * @param params
-   * @param validationResult
-   * @param response
-   * @throws NcssException
-   * @throws IOException
-   * @throws ParseException
-   * @throws InvalidRangeException
-   */
+
   @RequestMapping(value = "**", params = {"!latitude", "!longitude", "!subset", "!req"})
   void getGridSubset(@Valid GridDataRequestParamsBean params,
                      BindingResult validationResult, HttpServletResponse response,
@@ -144,51 +221,55 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
 
     } else {
       String pathInfo = getDatasetPath(request);
-      FeatureDataset fd = datasetService.findDatasetByPath(request, response, pathInfo);
-      if (fd.getFeatureType() == FeatureType.GRID) {
-        // Supported formats are netcdf3 (default) and netcdf4 (if
-        // available)
-        SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.GRID_REQUEST);
+      FeatureDataset fd = null;
+      try {
+        fd = datasetService.findDatasetByPath(request, response, pathInfo);
+        if (fd == null)
+          throw new UnsupportedOperationException("Feature Type not supported");
 
-        NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
-        if (sf.equals(SupportedFormat.NETCDF4)) {
-          version = NetcdfFileWriter.Version.netcdf4;
+        if (fd.getFeatureType() == FeatureType.GRID) {
+          // Supported formats are netcdf3 (default) and netcdf4 (if available)
+          SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.GRID_REQUEST);
+
+          NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
+          if (sf.equals(SupportedFormat.NETCDF4)) {
+            version = NetcdfFileWriter.Version.netcdf4;
+          }
+
+          GridDataset gridDataset = (GridDataset) fd;
+          GridDataStream gds = GridDataStream.valueOf(gridDataset, pathInfo);
+          File netcdfResult = gds.getResponseFile(request, response, params, version);
+
+          // Headers...
+          HttpHeaders httpHeaders = new HttpHeaders();
+          httpHeaders.set("Content-Type", sf.getResponseContentType());
+          setResponseHeaders(response, httpHeaders);
+          IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);
+          response.flushBuffer();
+          response.getOutputStream().close();
+          response.setStatus(HttpServletResponse.SC_OK);
+
+          gridDataset.close();
+
+        } else if (fd.getFeatureType() == FeatureType.STATION) {
+
+          SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST);
+
+          PointDataRequestParamsBean pdr = RequestParamsAdapter.adaptGridParamsToPointParams(params);
+
+          NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer(fd, pdr, sf, response.getOutputStream());
+
+          setResponseHeaders(response, pds.getResponseHeaders(fd, sf, pathInfo));
+          pds.pointDataStream(response, fd, pathInfo, pdr, sf);
+
         }
 
-        GridDataset gridDataset = (GridDataset) fd;
-        GridDataStream gds = GridDataStream.valueOf(gridDataset,
-                pathInfo);
-        File netcdfResult = gds.getResponseFile(request, response,
-                params, version);
-
-        // Headers...
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Content-Type", sf.getResponseContentType());
-        setResponseHeaders(response, httpHeaders);
-        IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);
-        response.flushBuffer();
-        response.getOutputStream().close();
-        response.setStatus(HttpServletResponse.SC_OK);
-
-        gridDataset.close();
-
-      } else if (fd.getFeatureType() == FeatureType.STATION) {
-
-        SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST);
-
-        PointDataRequestParamsBean pdr = RequestParamsAdapter.adaptGridParamsToPointParams(params);
-
-        NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer(fd, pdr, sf, response.getOutputStream());
-
-        setResponseHeaders(response, pds.getResponseHeaders(fd, sf, pathInfo));
-        pds.pointDataStream(response, fd, pathInfo, pdr, sf);
-
+      } finally {
+        if (fd != null) fd.close();
       }
-
-      fd.close();
     }
 
-  }
+  }  */
 
   private String getDatasetPath(HttpServletRequest req) {
 
@@ -205,13 +286,9 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
   }
 
 
-  private void setResponseHeaders(HttpServletResponse response,
-                                  HttpHeaders httpHeaders) {
-
+  private void setResponseHeaders(HttpServletResponse response, HttpHeaders httpHeaders) {
     Set<String> keySet = httpHeaders.keySet();
-    Iterator<String> it = keySet.iterator();
-    while (it.hasNext()) {
-      String key = it.next();
+    for (String key : keySet) {
       if (httpHeaders.containsKey(key)) {
         response.setHeader(key, httpHeaders.get(key).get(0));
       }

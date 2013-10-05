@@ -42,10 +42,8 @@ import java.util.Map;
 
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
-import thredds.server.ncSubset.params.RequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDatatype;
@@ -79,7 +77,7 @@ public abstract class GridDatasetSubsetter {
 	 * @return
 	 * @throws VariableNotContainedInDatasetException
 	 */
-	protected boolean checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException{
+	protected boolean checkRequestedVars(GridDataset gds, NcssParamsBean params) throws VariableNotContainedInDatasetException{
 		//Check vars
 		//if var = all--> all variables requested
 		if(params.getVar().get(0).equals("all")){
@@ -121,7 +119,7 @@ public abstract class GridDatasetSubsetter {
 		return sameVertCoord;
 	}
 						
-	protected Map<String, List<String>> groupVarsByVertLevels(GridDataset gds, PointDataRequestParamsBean params) throws VariableNotContainedInDatasetException{
+	protected Map<String, List<String>> groupVarsByVertLevels(GridDataset gds, NcssParamsBean params) throws VariableNotContainedInDatasetException{
 		String no_vert_levels ="no_vert_level";
 		List<String> vars = params.getVar();
 		Map<String, List<String>> varsGroupsByLevels = new HashMap<String, List<String>>();
@@ -156,7 +154,7 @@ public abstract class GridDatasetSubsetter {
 		return varsGroupsByLevels;
 	}
 	
-	protected List<CalendarDate> getRequestedDates(GridDataset gds, RequestParamsBean params) throws OutOfBoundariesException, ParseException, TimeOutOfWindowException{
+	protected List<CalendarDate> getRequestedDates(GridDataset gds, NcssParamsBean params) throws OutOfBoundariesException, ParseException, TimeOutOfWindowException{
 		
 		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds, params.getVar());
 		List<CalendarDate> dates = gap.getDates();	
@@ -170,7 +168,7 @@ public abstract class GridDatasetSubsetter {
 		}		
 				
 		//Check param temporal=all (ignore any other value) --> returns all dates
-		if(params.getTemporal()!= null && params.getTemporal().equals("all") ){			
+		if(params.isAllTimes() ){
 			return dates;			
 		}else{ //Check if some time param was provided, if not closest time to current
 			if(params.getTime()==null && params.getTime_start()==null && params.getTime_end()==null && params.getTime_duration()==null ){
@@ -215,7 +213,7 @@ public abstract class GridDatasetSubsetter {
 	}	
 	
 	
-	public static final CalendarDateRange getRequestedDateRange(RequestParamsBean params) throws ParseException{
+	public static final CalendarDateRange getRequestedDateRange(NcssParamsBean params) throws ParseException{
 		
 		if(params.getTime()!=null){			
 			CalendarDate date=null;			
