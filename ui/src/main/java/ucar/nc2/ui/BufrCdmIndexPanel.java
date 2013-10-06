@@ -126,11 +126,11 @@ public class BufrCdmIndexPanel extends JPanel {
     fldTable = new BeanTableSorted(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields", "BufrCdmIndexProto.Field", new FieldBean());
 
     JTable table = fldTable.getJTable();
-    JComboBox<BufrCdmIndexProto.FldType> comboBox = new JComboBox<BufrCdmIndexProto.FldType>(BufrCdmIndexProto.FldType.values());
+    JComboBox comboBox = new JComboBox(BufrCdmIndexProto.FldType.values());
     table.setDefaultEditor(BufrCdmIndexProto.FldType.class, new DefaultCellEditor(comboBox));
 
     TableColumn sportColumn = table.getColumnModel().getColumn(2);
-    JComboBox<String> cb = new JComboBox<String>();
+    JComboBox cb = new JComboBox();
     cb.addItem("Snowboarding");
     cb.addItem("Rowing");
     cb.addItem("Chasing toddlers");

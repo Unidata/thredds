@@ -2465,14 +2465,14 @@ public class ToolsUI extends JPanel {
   private class BufrReportPanel extends OpPanel {
     ucar.nc2.ui.BufrReportPanel reportPanel;
     boolean useIndex = true;
-    JComboBox<ucar.nc2.ui.BufrReportPanel.Report> reports;
+    JComboBox reports;
 
     BufrReportPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
       reportPanel = new ucar.nc2.ui.BufrReportPanel(prefs, buttPanel);
       add(reportPanel, BorderLayout.CENTER);
 
-      reports = new JComboBox<ucar.nc2.ui.BufrReportPanel.Report>(ucar.nc2.ui.BufrReportPanel.Report.values());
+      reports = new JComboBox(ucar.nc2.ui.BufrReportPanel.Report.values());
       buttPanel.add(reports);
 
       AbstractAction useIndexButt = new AbstractAction() {
