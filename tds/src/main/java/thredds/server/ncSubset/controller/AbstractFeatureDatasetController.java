@@ -105,6 +105,14 @@ public class AbstractFeatureDatasetController {
 				HttpStatus.BAD_REQUEST);
 	}	
 	
+	// Exception handlers
+	@ExceptionHandler(Throwable.class)
+	public ResponseEntity<String> handle(Throwable ex) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>("Throwable exception handled : " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
 	public static final String getNCSSServletPath() {
 		return servletPath;
 	}

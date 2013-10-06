@@ -1,13 +1,14 @@
-package thredds.server.ncSubset.view;
+package thredds.server.ncSubset.view.dsg;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import thredds.server.cdmremote.params.CdmrfQueryBean;
 import thredds.server.ncSubset.controller.FeatureDatasetController;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
+import thredds.server.ncSubset.view.gridaspoint.NetCDFPointDataWriter;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
@@ -20,12 +21,15 @@ import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Format;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -39,25 +43,20 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Describe
+ * NCSS subsetting for point data.
  *
  * @author caron
  * @since 10/3/13
  */
-public class PointWriter {
+public class PointWriter extends AbstractWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(thredds.server.cdmremote.StationWriter.class);
 
   private static final boolean debug = false, debugDetail = false;
 
-  private final FeatureDatasetPoint fd;
-  private final NcssParamsBean qb;
   private PointFeatureCollection pfc;
   private Writer writer;
 
   private LatLonRect wantBB;
-  private DateRange wantRange;
-  private List<VariableSimpleIF> wantVars;
-  private ucar.nc2.util.DiskCache2 diskCache;
 
     /// ------- new stuff for decoupling things ----///
 
@@ -72,12 +71,59 @@ public class PointWriter {
     return writer.getHttpHeaders(datasetPath);
   }
 
-  private PointWriter(FeatureDatasetPoint fd, PointFeatureCollection pfc, NcssParamsBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
-    this.fd = fd;
+  private PointWriter(FeatureDatasetPoint fd, PointFeatureCollection pfc, NcssParamsBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException, NcssException {
+    super(fd, qb, diskCache);
     this.pfc = pfc;
-    this.qb = qb;
-    this.diskCache = diskCache;
   }
+
+  /* private boolean validate() throws IOException {
+
+    // verify TemporalSelection intersects
+    if (qb.getTemporalSelection() == CdmrfQueryBean.TemporalSelection.range) {
+      wantRange = qb.getDateRange();
+      DateRange haveRange = fd.getDateRange();
+      if (!haveRange.intersects(wantRange)) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: This dataset does not include the requested time range= " + wantRange +
+                "\ndataset time range = " + haveRange);
+        return false;
+      }
+    }
+
+    // restrict to these variables
+    List<? extends VariableSimpleIF> dataVars = fd.getDataVariables();
+    List<String> varNames = qb.getVar();
+    if ((varNames == null) || (varNames.size() == 0)) {
+      wantVars = new ArrayList<VariableSimpleIF>(dataVars);
+    } else {
+      wantVars = new ArrayList<VariableSimpleIF>();
+      for (VariableSimpleIF v : dataVars) {
+        if ((varNames == null) || varNames.contains(v.getShortName())) // LOOK N**2
+          wantVars.add(v);
+      }
+       if (wantVars.size() == 0) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: This dataset does not include the requested variables= " + qb.getVar());
+        return false;
+      }
+    }
+
+    // verify SpatialSelection has some stations
+    if (qb.getSpatialSelection() == CdmrfQueryBean.SpatialSelection.bb) {
+      wantBB = qb.getLatLonRect();
+      LatLonRect haveBB = pfc.getBoundingBox();
+      if ((wantBB != null) && (haveBB != null) && (wantBB.intersect(haveBB) == null)) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: This dataset does not include the requested bb= " + wantBB);
+        return false;
+      }
+
+    }
+
+    // let the PointFeatureCollection do the subsetting, then we only have to scan
+    this.pfc = ((wantBB != null) || (wantRange != null)) ?
+      pfc.subset(wantBB, wantRange) : pfc;
+
+    return true;
+  }   */
+
 
   private Writer getWriterForFormat(OutputStream out, SupportedFormat format) throws IOException, ParseException, NcssException {
 
@@ -148,14 +194,14 @@ public class PointWriter {
 
   // scan collection, records that pass the predicate match are acted on, within limits
 
-  private void scan(PointFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
+  private void scan(PointFeatureCollection collection, CalendarDateRange range, Predicate p, Action a, Limit limit) throws IOException {
 
     while (collection.hasNext()) {
       PointFeature pf = collection.next();
 
       if (range != null) {
-        Date obsDate = pf.getObservationTimeAsDate(); // LOOK: needed?
-        if (!range.contains(obsDate)) continue;
+        CalendarDate obsDate = pf.getObservationTimeAsCalendarDate(); // LOOK: needed?
+        if (!range.includes(obsDate)) continue;
       }
       limit.count++;
 

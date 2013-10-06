@@ -30,38 +30,51 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package thredds.server.ncSubset.controller;
 
-package thredds.server.ncSubset.view;
+import java.io.IOException;
+import java.text.ParseException;
 
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
 
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.util.DiskCache2;
+import org.springframework.http.HttpHeaders;
 
-public class NetCDF4PointDataWriterFactory implements PointDataWriterFactory {
+import thredds.server.ncSubset.exception.NcssException;
+import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.params.GridDataRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
+import thredds.server.ncSubset.params.PointDataRequestParamsBean;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.ft.FeatureDataset;
 
-	private static NetCDF4PointDataWriterFactory INSTANCE;
+/**
+ * @author mhermida
+ *
+ */
+public interface NcssResponder {
 
-	private static final NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf4; 
+	/**
+	 * 
+	 * Handles Point Data Request 
+	 * 
+	 * @param res
+	 * @param ft
+	 * @param requestPathInfo
+	 * @param queryParams
+	 * @param format
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws InvalidRangeException
+	 * @throws NcssException
+	 */
+	public void respond(HttpServletResponse res, FeatureDataset ft, String requestPathInfo, NcssParamsBean queryParams,
+                      SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException;
 	
-	private NetCDF4PointDataWriterFactory(){
-	}
-	
-	public static NetCDF4PointDataWriterFactory getInstance(){
-		if(INSTANCE == null){
-			INSTANCE = new NetCDF4PointDataWriterFactory(); 
-		}
-		
-		return INSTANCE;
-	} 
-		
-	@Override
-	public PointDataWriter createPointDataWriter( OutputStream os, DiskCache2 diskCache) {
-		return NetCDFPointDataWriter.createNetCDFPointDataWriter(version, os, diskCache);
-	}
-	
-	public NetcdfFileWriter.Version getVersion(){
-		return version;
-	}
-	
+
+	/**
+	 * @param fd
+	 * @param format
+	 * @param datasetPath
+	 */
+	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath);
 }

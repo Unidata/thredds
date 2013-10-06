@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpHeaders;
 
-import thredds.server.ncSubset.NCSSPointDataStream;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
@@ -53,8 +52,14 @@ import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.server.ncSubset.view.PointDataStream;
+import thredds.server.ncSubset.view.gridaspoint.PointDataWriter;
+import thredds.server.ncSubset.view.gridaspoint.PointDataWriterFactory;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -69,30 +74,34 @@ import ucar.unidata.geoloc.ProjectionPoint;
  * @author mhermida
  *
  */
-public class GridAsPointDataStream extends GridDatasetSubsetter implements NCSSPointDataStream {
+public class GridAsPointResponder extends GridDatasetResponder implements NcssResponder {
+
+  public static GridAsPointResponder factory(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
+ 		return new GridAsPointResponder(diskCache, format, out);
+ 	}
 	
 	private DiskCache2 diskCache = null; 
 	private SupportedFormat format;
 	
-	private PointDataStream pds;
+  private final PointDataWriter pdw;
 
-	private GridAsPointDataStream(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
+	private GridAsPointResponder(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
 		this.diskCache = diskCache;
 		this.format = format;
-		pds = PointDataStream.createPointDataStream(format,  out, diskCache);
+    pdw = PointDataWriterFactory.factory(format, out, diskCache);
 	}
 
 	/* (non-Javadoc)
 	 * @see thredds.server.ncSubset.NCSSPointDataStream#pointDataStream(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, ucar.nc2.constants.FeatureType, java.lang.String, thredds.server.ncSubset.params.ParamsBean)
 	 */
 	@Override
-	public void pointDataStream(HttpServletResponse res, FeatureDataset fd, String requestPathInfo,
-			NcssParamsBean queryParams, SupportedFormat format) throws IOException, VariableNotContainedInDatasetException, UnsupportedOperationException, OutOfBoundariesException, TimeOutOfWindowException, ParseException, DateUnitException, InvalidRangeException {
+	public void respond(HttpServletResponse res, FeatureDataset fd, String requestPathInfo,
+                      NcssParamsBean queryParams, SupportedFormat format) throws IOException, VariableNotContainedInDatasetException, UnsupportedOperationException, OutOfBoundariesException, TimeOutOfWindowException, ParseException, DateUnitException, InvalidRangeException {
 	
-		GridDataset gridDataset =(GridDataset) fd;					
+		GridDataset gridDataset = (GridDataset) fd;
 		LatLonPoint point = new LatLonPointImpl(queryParams.getLatitude(), queryParams.getLongitude()); //Check if the point is within boundaries!!
 		checkRequestedVars(gridDataset, queryParams);
-		Map<String, List<String>> groupVars= groupVarsByVertLevels(gridDataset, queryParams);
+		Map<String, List<String>> groupVars = groupVarsByVertLevels(gridDataset, queryParams);
 								
 		if( !isPointWithinBoundaries(gridDataset, point, groupVars ) ){			
 			throw  new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data. "+
@@ -100,11 +109,71 @@ public class GridAsPointDataStream extends GridDatasetSubsetter implements NCSSP
 		}			
 
 		List<CalendarDate> wantedDates = getRequestedDates( gridDataset, queryParams);								
-		
 
-		//Get point, wDates, groupedVars and vertCoort from params.				
-		pds.stream(gridDataset, point, wantedDates, groupVars, queryParams.getVertCoord());
-	}
+		//Get point, wDates, groupedVars and vertCoort from params.
+
+ 		boolean allDone= false;
+ 		List<String> vars = new ArrayList<String>();
+ 		List<String> keys = new ArrayList<String>(groupVars.keySet());
+ 		for(String key : keys){
+ 			vars.addAll(groupVars.get(key));
+ 		}
+
+    Double vertCoord = queryParams.getVertCoord();
+
+ 		if (pdw.header(groupVars, gridDataset, wantedDates, getTimeDimAtts(gridDataset) , point, vertCoord)) {
+ 			boolean allPointsRead = pdw.write(groupVars, gridDataset, wantedDates, point, vertCoord);
+ 			allDone = pdw.trailer() && allPointsRead;
+ 		}
+ 		// return allDone;  LOOK
+ 	}
+
+  private List<Attribute> getTimeDimAtts(ucar.nc2.dt.GridDataset gds){
+
+ 		//If the grid does not have time axis, return null
+ 		//if(grid.getCoordinateSystem().getTimeAxis() == null)
+ 		//	return null;
+ 		CoordinateAxis1DTime tAxis = null;
+ 		List<ucar.nc2.dt.GridDataset.Gridset> ggss = gds.getGridsets();
+
+ 		Iterator<ucar.nc2.dt.GridDataset.Gridset> it = ggss.iterator();
+ 		while( tAxis == null && it.hasNext() ){
+ 			ucar.nc2.dt.GridDataset.Gridset gs = it.next();
+ 			tAxis = gs.getGeoCoordSystem().getTimeAxis1D();
+ 		}
+
+ 		if(tAxis == null) return null;
+
+ 		List<Attribute> timeAtts = new ArrayList<Attribute>();
+
+ 		String timeUnitString = tAxis.getUnitsString();
+ 		if( tAxis.getDataType() == DataType.STRING && tAxis.getUnitsString().equals("") ){ //Time axis contains String dates (ISO ??)
+ 			CalendarDate startDate = tAxis.getCalendarDate(0);
+ 			timeUnitString = "seconds since "+ startDate.toString(); //Units will be seconds since the origin of the time axis
+ 			timeAtts.add(new Attribute( CDM.UNITS, timeUnitString ));
+ 		}else{
+ 			Attribute tUnits = tAxis.findAttribute(CDM.UNITS);
+ 			if(tUnits != null )
+ 				timeAtts.add( tUnits );
+ 		}
+ 		//Check calendar
+ 		Attribute tCal = tAxis.findAttribute( CF.CALENDAR );
+ 		if(tCal != null){
+ 			timeAtts.add(tCal);
+ 		}
+ 		//Chek names..
+ 		Attribute tStdName = tAxis.findAttribute( CF.STANDARD_NAME );
+ 		if(tStdName != null){
+ 			timeAtts.add(tStdName);
+ 		}
+ 		Attribute tLongName = tAxis.findAttribute( CDM.LONG_NAME );
+ 		if(tLongName != null){
+ 			timeAtts.add(tLongName);
+ 		}
+
+ 		return timeAtts;
+ 	}
+
 
 	protected SupportedFormat getSupportedFormat(NcssParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException{
 		
@@ -153,11 +222,9 @@ public class GridAsPointDataStream extends GridDatasetSubsetter implements NCSSP
 	 */
 	@Override
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
-		return pds.getHttpHeaders((GridDataset)fd, datasetPath, format.isStream() );
+    pdw.setHTTPHeaders((GridDataset)fd, datasetPath, format.isStream());
+    return pdw.getResponseHeaders();
 	}
 
-	public static GridAsPointDataStream factory(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
-		return new GridAsPointDataStream(diskCache, format, out);
-	}
 
 }

@@ -68,7 +68,11 @@ import ucar.unidata.geoloc.ProjectionRect;
  * @author mhermida
  * 
  */
-class GridDataStream extends GridDatasetSubsetter {
+class GridResponder extends GridDatasetResponder {
+
+  public static GridResponder factory(GridDataset gds, String requestPathInfo) {
+ 		return new GridResponder(gds, requestPathInfo);
+ 	}
 
 	/*
 	 * Compression rate used to estimate the filesize of netcdf4 compressed
@@ -82,7 +86,7 @@ class GridDataStream extends GridDatasetSubsetter {
 
 	private long maxFileDownloadSize;
 
-	private GridDataStream(GridDataset gds, String requestPathInfo) {
+	private GridResponder(GridDataset gds, String requestPathInfo) {
 		this.gds = gds;
 		this.requestPathInfo = requestPathInfo;
 	}
@@ -103,10 +107,9 @@ class GridDataStream extends GridDatasetSubsetter {
 	File getResponseFile(HttpServletRequest request,
 			HttpServletResponse response, NcssParamsBean params,
 			NetcdfFileWriter.Version version)
-			throws VariableNotContainedInDatasetException, NcssException,
-			InvalidRangeException, ParseException, IOException {
+			throws NcssException, InvalidRangeException, ParseException, IOException {
 
-		if(!checkRequestedVars(gds, params) && params.getVertCoord() != null )
+		if (!checkRequestedVars(gds, params) && params.getVertCoord() != null )
 			throw new UnsupportedOperationException("The variables requested: " + params.getVar() + " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
 			
 		File netcdfResult = null;
@@ -135,18 +138,15 @@ class GridDataStream extends GridDatasetSubsetter {
 
 		if (contValid == 4) {
 			if (params.getNorth() < params.getSouth()) {
-				throw new InvalidBBOXException(
-						"Invalid bbox. Bounding Box must have north > south");
+				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have north > south");
 			}
 			if (params.getEast() < params.getWest()) {
-				throw new InvalidBBOXException(
-						"Invalid bbox. Bounding Box must have east > west; if crossing 180 meridian, use east boundary > 180");
+				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have east > west; if crossing 180 meridian, use east boundary > 180");
 			}
 			spatialSubset = true;
 		} else {
 			if (contValid > 0)
-				throw new InvalidBBOXException(
-						"Invalid bbox. All params north, south, east and west must be provided");
+				throw new InvalidBBOXException("Invalid bbox. All params north, south, east and west must be provided");
 			else { // no bbox provided --> is spatialSubsetting
 				if (params.getMaxx() == null && params.getMinx() == null
 						&& params.getMaxy() == null && params.getMiny() == null)
@@ -207,8 +207,7 @@ class GridDataStream extends GridDatasetSubsetter {
 				estimatedSize /= ESTIMATED_C0MPRESION_RATE;
 			}
 			if (estimatedSize > maxFileDownloadSize) {
-				throw new RequestTooLargeException("NCSS response too large = "
-						+ estimatedSize + " max = " + maxFileDownloadSize);
+				throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
 			}
 		}
 
@@ -243,17 +242,14 @@ class GridDataStream extends GridDatasetSubsetter {
 
 		if (contValid == 4) {
 			if (minx > maxx) {
-				throw new InvalidBBOXException(
-						"Invalid bbox. Bounding Box must have minx < maxx");
+				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have minx < maxx");
 			}
 			if (miny > maxy) {
-				throw new InvalidBBOXException(
-						"Invalid bbox. Bounding Box must have miny < maxy");
+				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have miny < maxy");
 			}
 
 		} else {
-			throw new InvalidBBOXException(
-					"Invalid bbox. All params minx, maxx. miny, maxy must be provided");
+			throw new InvalidBBOXException("Invalid bbox. All params minx, maxx. miny, maxy must be provided");
 		}
 
 		ProjectionRect rect = new ProjectionRect(minx, miny, maxx, maxy);
@@ -270,8 +266,7 @@ class GridDataStream extends GridDatasetSubsetter {
 				wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
 
 		CFGridWriter writer = new CFGridWriter();
-		maxFileDownloadSize = ThreddsConfig.getBytes(
-				"NetcdfSubsetService.maxFileDownloadSize", -1L);
+		maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
 		if (maxFileDownloadSize > 0) {
 			long estimatedSize = writer.makeGridFileSizeEstimate(gds,
 					params.getVar(), rect, params.getHorizStride(), zRange,
@@ -432,7 +427,4 @@ class GridDataStream extends GridDatasetSubsetter {
 		return filename;
 	}
 
-	public static GridDataStream valueOf(GridDataset gds, String requestPathInfo) {
-		return new GridDataStream(gds, requestPathInfo);
-	}
 }

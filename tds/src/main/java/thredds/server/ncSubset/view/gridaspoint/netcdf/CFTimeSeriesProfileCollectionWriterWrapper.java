@@ -31,7 +31,7 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.ncSubset.view.netcdf;
+package thredds.server.ncSubset.view.gridaspoint.netcdf;
 
 import java.io.IOException;
 import java.util.ArrayList;

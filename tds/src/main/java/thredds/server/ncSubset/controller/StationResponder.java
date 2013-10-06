@@ -43,12 +43,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
-import thredds.server.ncSubset.NCSSPointDataStream;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
-import thredds.server.ncSubset.view.StationWriter;
+import thredds.server.ncSubset.view.dsg.StationWriter;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.FeatureDataset;
@@ -60,9 +58,17 @@ import ucar.nc2.util.DiskCache2;
  * @author mhermida
  * 
  */
-public class StationPointDataStream implements NCSSPointDataStream {
+public class StationResponder implements NcssResponder {
+	static private final Logger log = LoggerFactory.getLogger(NcssResponder.class);
 
-	static private final Logger log = LoggerFactory.getLogger(NCSSPointDataStream.class);
+  public static StationResponder factory(FeatureDataset fd, NcssParamsBean queryParams, DiskCache2 diskCache, SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException{
+ 		FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
+ 		List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
+ 		StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
+ 		StationWriter stationWriter = StationWriter.stationWriterFactory((FeatureDatasetPoint) fd, sfc, queryParams, diskCache, out, format);
+
+ 		return new StationResponder(diskCache, format, out, stationWriter);
+ 	}
 	
 	//private DiskCache2 diskCache = null;
 	//private SupportedFormat format;
@@ -70,7 +76,7 @@ public class StationPointDataStream implements NCSSPointDataStream {
 	
 	private StationWriter stationWriter;
 
-	private StationPointDataStream(DiskCache2 diskCache, SupportedFormat format, OutputStream out, StationWriter stationWriter) {
+	private StationResponder(DiskCache2 diskCache, SupportedFormat format, OutputStream out, StationWriter stationWriter) {
 		//this.diskCache = diskCache;
 		//this.format = format;
 		//this.out = out;
@@ -88,7 +94,7 @@ public class StationPointDataStream implements NCSSPointDataStream {
 	 * thredds.server.ncSubset.params.ParamsBean)
 	 */
 	@Override
-	public void pointDataStream(HttpServletResponse res, FeatureDataset fd, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
+	public void respond(HttpServletResponse res, FeatureDataset fd, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
 			throws IOException, ParseException, InvalidRangeException, NcssException {
 		
 		stationWriter.write();
@@ -107,14 +113,5 @@ public class StationPointDataStream implements NCSSPointDataStream {
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
 		return stationWriter.getHttpHeaders(fd, format, datasetPath);
 	}
-
-  public static StationPointDataStream factory(FeatureDataset fd, NcssParamsBean queryParams, DiskCache2 diskCache, SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException{
- 		FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
- 		List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
- 		StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
- 		StationWriter stationWriter = StationWriter.stationWriterFactory((FeatureDatasetPoint) fd, sfc, queryParams, diskCache, out, format);
-
- 		return new StationPointDataStream(diskCache, format, out, stationWriter);
- 	}
 
 }

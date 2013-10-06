@@ -61,7 +61,33 @@ import ucar.nc2.units.TimeDuration;
  * @author mhermida
  * 
  */
-public abstract class GridDatasetSubsetter {
+public abstract class GridDatasetResponder {
+
+  public static CalendarDateRange getRequestedDateRange(NcssParamsBean params) throws ParseException{
+
+ 		if(params.getTime()!=null){
+ 			CalendarDate date=null;
+ 			if( params.getTime().equalsIgnoreCase("present") ){
+ 				date =CalendarDate.of(new Date());
+ 			}else{
+
+ 				//date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );
+ 				date =  CalendarDateFormatter.isoStringToCalendarDate(null, params.getTime());
+ 			}
+ 			return CalendarDateRange.of(date,date);
+ 		}
+ 		//We should have valid params here...
+ 		CalendarDateRange dates=null;
+ 		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null), new DateType(params.getTime_end(), null, null), new TimeDuration(params.getTime_duration()), null );
+ 	    //dates = CalendarDateRange.of(dr);
+ 		dates = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()  );
+
+ 		return dates;
+ 	}
+
+ 	public static String buildCacheUrl(String fileName){
+ 		 return NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getNCSSServletPath() + "/" + fileName;
+ 	}
 
 //	private GridDataset gds;
 //	private long maxFileDownloadSize;
@@ -132,8 +158,7 @@ public abstract class GridDatasetSubsetter {
 				throw new VariableNotContainedInDatasetException("Variable: "+var+" is not contained in the requested dataset");
 			}			
 
-
-			CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();					
+			CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();
 
 			String axisKey = null;
 			if(axis == null){
@@ -211,33 +236,7 @@ public abstract class GridDatasetSubsetter {
 		CalendarDateRange dateRange = getRequestedDateRange(params);		
 		return NcssRequestUtils.wantedDates(gap, dateRange, time_window );	
 	}	
-	
-	
-	public static final CalendarDateRange getRequestedDateRange(NcssParamsBean params) throws ParseException{
-		
-		if(params.getTime()!=null){			
-			CalendarDate date=null;			
-			if( params.getTime().equalsIgnoreCase("present") ){
-				date =CalendarDate.of(new Date());
-			}else{			
-				
-				//date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );	
-				date =  CalendarDateFormatter.isoStringToCalendarDate(null, params.getTime());
-			}						
-			return CalendarDateRange.of(date,date);		
-		}	
-		//We should have valid params here...
-		CalendarDateRange dates=null;
-		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null), new DateType(params.getTime_end(), null, null), new TimeDuration(params.getTime_duration()), null );		
-	    //dates = CalendarDateRange.of(dr);
-		dates = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()  );
-				
-		return dates;
-	}
-	
-	public static final String buildCacheUrl(String fileName){
-		 return NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getNCSSServletPath() + "/" + fileName;
-	}	
+
 
 	
 }

@@ -30,57 +30,27 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncSubset;
+package thredds.server.ncSubset.view.gridaspoint.netcdf;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.ParseException;
+import java.util.List;
+import java.util.Map;
 
-import thredds.server.ncSubset.controller.GridAsPointDataStream;
-import thredds.server.ncSubset.controller.NcssDiskCache;
-import thredds.server.ncSubset.controller.PointDataStream;
-import thredds.server.ncSubset.controller.StationPointDataStream;
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.NcssParamsBean;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.util.DiskCache2;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.time.CalendarDate;
+import ucar.unidata.geoloc.LatLonPoint;
+
 
 /**
  * @author mhermida
+ *
  */
-public final class NCSSPointDataStreamFactory {
+public interface CFPointWriterWrapper {
 
-  /**
-   * @param fd
-   * @param queryParams
-   * @param format
-   * @param out
-   * @return
-   * @throws IOException
-   * @throws ParseException
-   * @throws NcssException
-   */
-  public static NCSSPointDataStream getDataStreamer(FeatureDataset fd, NcssParamsBean queryParams,
-                                                    SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException {
-
-    FeatureType ft = fd.getFeatureType();
-    DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
-
-    if (ft == FeatureType.GRID) {
-      return GridAsPointDataStream.factory(diskCache, format, out);
-    }
-
-    if (ft == FeatureType.STATION) {
-      return StationPointDataStream.factory(fd, queryParams, diskCache, format, out);
-    }
-
-    if (ft == FeatureType.POINT) {
-      return PointDataStream.factory(fd, queryParams, diskCache, format, out);
-    }
-
-    return null;
-  }
-
+	public boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord);
+	
+	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) throws InvalidRangeException;
+	
+	public boolean trailer();
 }

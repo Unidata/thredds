@@ -41,7 +41,7 @@ public class FeaturesNotFoundException extends NcssException {
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * Creates an OutOfBoundariesException with a specific message
+	 * Creates an FeaturesNotFoundException with a specific message
 	 * @param message
 	 */	
 	public FeaturesNotFoundException(String message){
@@ -49,7 +49,7 @@ public class FeaturesNotFoundException extends NcssException {
 	}
 	
 	/**
-	 * Wraps an exception into an OutOfBoundariesException with a specific message 
+	 * Wraps an exception into an FeaturesNotFoundException with a specific message
 	 * @param message
 	 */		
 	public FeaturesNotFoundException(String message, Exception cause){

@@ -2,7 +2,6 @@ package thredds.server.ncSubset.view;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,12 +16,12 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.util.NcssRequestUtils;
+import thredds.server.ncSubset.view.gridaspoint.PointDataStream;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
@@ -31,7 +30,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
@@ -39,7 +37,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 public class PointCollectionStreamTest {
 
 	private PointDataStream pointDataStream;
-	private SupportedFormat supportedFormat;	
+	private SupportedFormat supportedFormat;
 	private String pathInfo;
 	private LatLonPoint point;
 	private Double verticalLevel;
@@ -81,8 +79,8 @@ public class PointCollectionStreamTest {
 		gridDataset = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		List<String> keys = new ArrayList<String>( vars.keySet());		
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );
-		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
-		pointDataStream = PointDataStream.createPointDataStream(supportedFormat, new ByteArrayOutputStream(), diskCache);	
+		//DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
+		//pointDataStream = PointDataStream.factory(supportedFormat, new ByteArrayOutputStream(), diskCache);
 		List<CalendarDate> dates = gridAsPointDataset.getDates();
 		Random rand = new Random();
 		int randInt =     rand.nextInt( dates.size());

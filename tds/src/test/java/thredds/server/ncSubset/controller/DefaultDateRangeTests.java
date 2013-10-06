@@ -40,14 +40,12 @@ import java.util.Collection;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.server.ncSubset.params.RequestParamsBean;
 import ucar.nc2.time.CalendarDateRange;
 
 /**
@@ -102,7 +100,7 @@ public class DefaultDateRangeTests {
 	@Test
 	public void shouldGetPresent() throws ParseException{
 		
-		CalendarDateRange range= GridDatasetSubsetter.getRequestedDateRange(requestParams);
+		CalendarDateRange range= GridDatasetResponder.getRequestedDateRange(requestParams);
 		
 		//assertEquals(durationInSeconds, range.getDurationInSecs() );
 		//long duration =Math.abs( durationInSeconds - range.getDurationInSecs() );		

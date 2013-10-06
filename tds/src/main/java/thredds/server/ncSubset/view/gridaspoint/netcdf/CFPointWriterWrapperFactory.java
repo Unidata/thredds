@@ -30,33 +30,36 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package thredds.server.ncSubset.view.gridaspoint.netcdf;
 
-package thredds.server.ncSubset.view;
+import java.io.IOException;
+import java.util.List;
 
-import java.io.OutputStream;
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.constants.CF;
 
-import ucar.nc2.util.DiskCache2;
+/**
+ * @author mhermida
+ *
+ */
+public final class CFPointWriterWrapperFactory {
 
-class CSVPointDataWriterFactory implements PointDataWriterFactory {
-
-	private static CSVPointDataWriterFactory INSTANCE;
+	private CFPointWriterWrapperFactory(){}
 	
-	private CSVPointDataWriterFactory(){
+	public static final CFPointWriterWrapper getWriterForFeatureType( NetcdfFileWriter.Version version, CF.FeatureType featureType, String filePath, List<Attribute> atts   ) throws IOException{
 		
-	}
-	
-	public static CSVPointDataWriterFactory getInstance(){
-		if(INSTANCE == null){
-			INSTANCE = new CSVPointDataWriterFactory(); 
+		if(featureType == CF.FeatureType.timeSeries){		
+			return CFStationCollectionWriterWrapper.factory(version, filePath, atts);
 		}
+		if (featureType == CF.FeatureType.point ) {
+			//return WriterCFPointCollectionWrapper.createWrapper(filePath, atts);
+			return PointCollectionNoTimeWriterWrapper.createWrapper(version, filePath, atts);
+		}		
+		if (featureType == CF.FeatureType.timeSeriesProfile ) {
+			return CFTimeSeriesProfileCollectionWriterWrapper.createWrapper(version, filePath, atts);
+		}		
 		
-		return INSTANCE;
+		throw new UnsupportedOperationException("Unsupported FeatureType: "+featureType.name());
 	}
-	
-	@Override
-	public PointDataWriter createPointDataWriter(OutputStream os, DiskCache2 diskCache) {
-		
-		return CSVPointDataWriter.createCSVPointDataWriter(os);
-	}
-
 }

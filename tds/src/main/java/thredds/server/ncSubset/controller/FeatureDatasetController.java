@@ -34,8 +34,8 @@ package thredds.server.ncSubset.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,8 +51,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import thredds.server.config.TdsContext;
-import thredds.server.ncSubset.NCSSPointDataStream;
-import thredds.server.ncSubset.NCSSPointDataStreamFactory;
 import thredds.server.ncSubset.dataservice.FeatureDatasetService;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
@@ -63,6 +61,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 
 /**
@@ -81,7 +80,8 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
   TdsContext tdsContext;
 
   /**
-    * Handles ncss data requests
+    * Handles ncss data requests.
+    * Dont know what responder to use until we can open the dataset.
     *
     * @param req request
     * @param res result
@@ -114,18 +114,21 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
          if (!params.hasLatLonPoint()) {
            handleRequestGrid(req, res, params, datasetPath, (GridDataset) fd);
          } else {
-           handleRequestGridAsPoint(req, res, params, datasetPath, fd);
+           handleRequestPoint(req, res, params, datasetPath, fd);
          }
 
        } else if (fd.getFeatureType() == FeatureType.STATION) {
-         handleRequestStation(req, res, params, datasetPath, fd);
+         handleRequestPoint(req, res, params, datasetPath, fd);
 
        } else if (fd.getFeatureType() == FeatureType.POINT) {
-         handleRequestStation(req, res, params, datasetPath, fd);
+         handleRequestPoint(req, res, params, datasetPath, fd);
 
-       } else {
-           throw new UnsupportedOperationException("Feature Type not supported");
-       }
+       } //else {
+        //   throw new UnsupportedOperationException("Feature Type not supported");
+       //}
+
+     } catch (Throwable t) {
+       log.error("NCSS request failed query="+ req.getQueryString(), t);
 
       } finally {
        if (fd != null) fd.close();
@@ -145,7 +148,7 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
       version = NetcdfFileWriter.Version.netcdf4;
     }
 
-    GridDataStream gds = GridDataStream.valueOf(gridDataset, datasetPath);
+    GridResponder gds = GridResponder.factory(gridDataset, datasetPath);
     File netcdfResult = gds.getResponseFile(req, res, params, version);
 
     // Headers...
@@ -158,26 +161,36 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
-  void handleRequestGridAsPoint(HttpServletRequest req, HttpServletResponse res,
+  void handleRequestPoint(HttpServletRequest req, HttpServletResponse res,
                        NcssParamsBean params, String datasetPath,
                        FeatureDataset fd) throws IOException, NcssException, ParseException, InvalidRangeException {
 
     SupportedFormat format = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST);
-    NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer(fd, params, format, res.getOutputStream());
+    NcssResponder pds = makePointResponder(fd, params, format, res.getOutputStream());
     setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
-    pds.pointDataStream(res, fd, datasetPath, params, format);
+    pds.respond(res, fd, datasetPath, params, format);
   }
 
-  void handleRequestStation(HttpServletRequest req, HttpServletResponse res,
-                       NcssParamsBean params, String datasetPath,
-                       FeatureDataset fd) throws IOException, NcssException, ParseException, InvalidRangeException {
+  private NcssResponder makePointResponder(FeatureDataset fd, NcssParamsBean queryParams,
+                                      SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException {
 
-    SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST);
-    NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer(fd, params, sf, res.getOutputStream());
-    setResponseHeaders(res, pds.getResponseHeaders(fd, sf, datasetPath));
-    pds.pointDataStream(res, fd, datasetPath, params, sf);
+    FeatureType ft = fd.getFeatureType();
+    DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
+
+    if (ft == FeatureType.GRID) {
+      return GridAsPointResponder.factory(diskCache, format, out);
+    }
+
+    if (ft == FeatureType.STATION) {
+      return StationResponder.factory(fd, queryParams, diskCache, format, out);
+    }
+
+    if (ft == FeatureType.POINT) {
+      return PointResponder.factory(fd, queryParams, diskCache, format, out);
+    }
+
+    return null;
   }
-
 
   /*
   @RequestMapping("**")

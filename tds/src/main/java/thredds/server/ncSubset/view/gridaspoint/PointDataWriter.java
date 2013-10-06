@@ -30,51 +30,33 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncSubset;
 
-import java.io.IOException;
-import java.text.ParseException;
+package thredds.server.ncSubset.view.gridaspoint;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.Attribute;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.time.CalendarDate;
+import ucar.unidata.geoloc.LatLonPoint;
 
 /**
- * @author mhermida
- *
+ * Write GridAsPoint
  */
-public interface NCSSPointDataStream {
 
-	/**
-	 * 
-	 * Handles Point Data Request 
-	 * 
-	 * @param res
-	 * @param ft
-	 * @param requestPathInfo
-	 * @param queryParams
-	 * @param format
-	 * @throws IOException
-	 * @throws ParseException
-	 * @throws InvalidRangeException
-	 * @throws NcssException
-	 */
-	public void pointDataStream( HttpServletResponse res, FeatureDataset ft, String requestPathInfo, NcssParamsBean queryParams,
-                               SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException;
+public interface PointDataWriter {
+
+	void setHTTPHeaders(GridDataset gds, String pathInfo, boolean isStream);
+
+	boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord);
 	
-
-	/**
-	 * @param fd
-	 * @param format
-	 * @param datasetPath
-	 */
-	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath);
+	boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord) throws InvalidRangeException;
+	
+	boolean trailer();
+	
+	HttpHeaders getResponseHeaders();
 }

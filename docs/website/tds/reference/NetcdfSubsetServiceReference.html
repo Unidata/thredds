@@ -244,6 +244,10 @@ span.bold {
 
 
 	<p>As of version 4.4.0 of TDS, NCSS supports spatial and temporal subsetting on collections of grids, stations and points. </p>
+	<p><strong>Variable subsetting:</strong></p>
+	<ul>
+	  <li>For all types, you <strong>must</strong> specify a list of valid variable names.</li>
+</ul>
 	<p><strong> Horizontal spatial subsetting:</strong></p>
     <ul>
       <li>grids: you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire horizontal grid.</li>
@@ -253,7 +257,7 @@ span.bold {
     </ul>
     <p><strong>Vertical spatial subsetting:</strong></p>
     <ul>
-      <li>grids: you may a vertCoord. If none, return all vertical levels</li>
+      <li>grids: you may specify a vertical coordinate. If none, return all vertical levels</li>
     </ul>
     <p><strong>Temporal subsetting:</strong></p>
 <ul>

@@ -155,9 +155,9 @@
                   <div id="inputBBoxSubset" class="selected">
                     <span class="bold">Bbox subset</span>
                   </div>
-                  <div id="inputPointSubset" class="unselected">
+                  <!-- div id="inputPointSubset" class="unselected">
                     <span class="bold">Point subset</span>
-                  </div>
+                  </div -->
                   <!-- div id="inputStationList" class="unselected">
                     <span class="bold">Station list</span>
                   </div -->
@@ -203,7 +203,7 @@
                          -->
                         <span class="blueLink" id="resetLatLonbbox">reset to full extension</span>
                       </div>
-                      <!-- Point subsetting -->
+                      <!-- Point subsetting
                       <div id="pointSubset" class="hidden absoluteTopLeft borderLightGrey">
                         <label class="sized_big">Latitude:</label>
                         <input disabled="disabled" type="text" name="latitude" size="10"/>
@@ -228,7 +228,7 @@
                           <br/>
                           <span>south</span>
                         </div>
-                      </div>
+                      </div -->
                       <!-- List subsetting
                       <div id="listSubset" class="hidden absoluteTopLeft borderLightGrey">
                         <input type="checkbox" name="stns_all" value="" id="stns_all"/>

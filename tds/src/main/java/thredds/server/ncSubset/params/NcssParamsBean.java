@@ -1,9 +1,12 @@
 package thredds.server.ncSubset.params;
 
+import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.validation.TimeParamsConstraint;
 import thredds.server.ncSubset.validation.VarParamConstraint;
+import ucar.nc2.units.TimeDuration;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -276,4 +279,15 @@ public class NcssParamsBean {
   public void setAllTimes(boolean allTimes) {
     this.allTimes = allTimes;
   }
+
+  public TimeDuration parseTimeDuration() throws NcssException {
+    if (getTime_duration() == null) return null;
+    try {
+      return TimeDuration.parseW3CDuration(getTime_duration());
+    } catch (ParseException e) {
+      throw new NcssException("invalid time duration");
+    }
+
+  }
+
 }
