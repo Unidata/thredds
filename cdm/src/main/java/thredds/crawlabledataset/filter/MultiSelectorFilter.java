@@ -32,8 +32,8 @@
  */
 package thredds.crawlabledataset.filter;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 import java.util.Collections;
 
 import thredds.crawlabledataset.CrawlableDataset;
@@ -49,75 +49,98 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
 public class MultiSelectorFilter implements CrawlableDatasetFilter
 {
 
-
-  private List<Selector> selectorGroup;
+  private final List<Selector> selectorGroup;
+  private final boolean containsIncluders;
+  private final boolean containsExcluders;
 
   public MultiSelectorFilter( List<Selector> selectorGroup )
   {
-    if ( selectorGroup == null )
-      throw new IllegalArgumentException( "Selector group parameter must not be null." );
-    this.selectorGroup = selectorGroup;
+    if ( selectorGroup == null || selectorGroup.isEmpty() ) {
+      this.selectorGroup = Collections.emptyList();
+      this.containsIncluders = false;
+      this.containsExcluders = false;
+    }
+    else {
+      boolean anyIncluders = false;
+      boolean anyExcluders = false;
+      List<Selector> tmpSelectorGroup = new ArrayList<Selector>();
+      for ( Selector curSelector : selectorGroup ) {
+        if ( curSelector.isIncluder() )
+          anyIncluders = true;
+        else
+          anyExcluders = true;
+        tmpSelectorGroup.add( curSelector);
+      }
+
+      this.selectorGroup = tmpSelectorGroup;
+      this.containsIncluders = anyIncluders;
+      this.containsExcluders = anyExcluders;
+    }
   }
 
   public MultiSelectorFilter( Selector selector)
   {                         
-    if ( selector == null )
-      selectorGroup = Collections.emptyList();
-    else
-      selectorGroup = Collections.singletonList( selector);
+    if ( selector == null ) {
+      this.selectorGroup = Collections.emptyList();
+      this.containsIncluders = false;
+      this.containsExcluders = false;
+    }
+    else{
+      boolean anyIncluders = false;
+      boolean anyExcluders = false;
+      if ( selector.isIncluder() )
+        anyIncluders = true;
+      else
+        anyExcluders = true;
+
+      this.selectorGroup = Collections.singletonList( selector);
+      this.containsIncluders = anyIncluders;
+      this.containsExcluders = anyExcluders;
+    }
   }
 
-  public Object getConfigObject() { return selectorGroup; }
+  public Object getConfigObject() {
+    return selectorGroup;
+  }
 
   public boolean accept( CrawlableDataset dataset )
   {
-    if ( dataset == null ) throw new IllegalArgumentException( "Dataset parameter must not be null." );
+    if ( dataset == null )
+      return false;
 
-    // If no selectors, accept all datasets.
-    if ( selectorGroup.isEmpty() )
-    {
-      return ( true );
-    }
+    // If no Selectors, accept all datasets.
+    if ( this.selectorGroup.isEmpty() )
+      return true;
 
-    // Loop through selector group to check if current dataset should be accepted.
-    boolean accept = false;
-    boolean doAnyIncludersApply = false;
-    boolean doAnySelectorsApply = false;
-    for ( Selector curSelector: selectorGroup )
-    {
-      if ( curSelector.isApplicable( dataset ) )
-      {
-        doAnySelectorsApply = true;
-        if ( curSelector.isIncluder() )
-        {
-          doAnyIncludersApply = true;
-          if ( curSelector.match( dataset ) )
-          {
-            accept = true; // Dataset accepted by current DatasetFilter.
-          }
-        }
-        else // isExcluder()
-        {
-          if ( curSelector.match( dataset ) )
-          {
-            return ( false ); // Exclusion takes precedence over inclusion.
-          }
+    boolean include = false;
+    boolean exclude = false;
+
+    for ( Selector curSelector: this.selectorGroup ) {
+      if ( curSelector.isApplicable( dataset )) {
+        if ( curSelector.match( dataset )) {
+          if ( curSelector.isIncluder())
+            include = true;
+          else
+            exclude = true;
         }
       }
     }
 
-    // If at least one filter accepted (and none rejected), accept.
-    if ( accept ) return ( true );
+    // If have only inclusion Selectors, accept any dataset that is explicitly included.
+    if ( this.containsIncluders && ! this.containsExcluders )
+      return include;
 
-    // If no selectors apply to this dataset, accept it.
-    if ( ! doAnySelectorsApply ) return ( true );
+    // If have only exclusion Selectors, accept any dataset not explicitly excluded.
+    if ( this.containsExcluders && ! this.containsIncluders )
+      return ! exclude;
 
-    // If no includers apply to this dataset (and no excluders
-    // rejected it), accept. [Allows exclusion only.]
-    if ( ! doAnyIncludersApply ) return ( true );
+    // If have both inclusion and exclusion Selectors, accept datasets that are
+    // explicitly included but not explicitly excluded.
+    if ( this.containsIncluders && this.containsExcluders && include )
+      return ! exclude;
 
-    // Dataset not accepted or rejected by any DatasetFilter (so reject).
-    return ( false );
+    // Otherwise, don't accept.
+    return false;
   }
 
   /**
@@ -126,11 +149,11 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
   */
  public static class Selector
   {
-    private boolean includer;
-    private boolean applyToAtomicDataset;
-    private boolean applyToCollectionDataset;
+    private final boolean includer;
+    private final boolean applyToAtomicDataset;
+    private final boolean applyToCollectionDataset;
 
-    private CrawlableDatasetFilter filter;
+    private final CrawlableDatasetFilter filter;
 
 
     /**
