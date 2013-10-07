@@ -86,7 +86,7 @@ public class CF1Convention extends CSMConvention {
   }
 
   private static int extractVersion(String hasName) {
-    if (!hasName.startsWith(convName)) return 0;
+    if (!hasName.startsWith(convName)) return -1;
     String versionS = hasName.substring(convName.length());
     try {
       return Integer.parseInt(versionS);
