@@ -32,16 +32,19 @@
  */
 package thredds.crawlabledataset;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.Before;
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.IOException;
 
 import thredds.crawlabledataset.filter.*;
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
  * _more_
@@ -51,30 +54,58 @@ import thredds.crawlabledataset.filter.*;
  */
 public class TestCrawlableDatasetFilter
 {
-  private List resultsNcNoCVS;
-  private List resultsAll;
+  private static File tmpTestDataDir;
+  private static CrawlableDataset tmpTestDataCrDs;
+  private static List<String> dataFiles_FullPathNames;
+  private static List<String> allFiles_FullPathNames;
 
-  @Before
-  public void setUp()
-  {
-    resultsNcNoCVS = new ArrayList();
-    resultsNcNoCVS.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050300_gfs_211.nc" );
-    resultsNcNoCVS.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050306_gfs_211.nc" );
-    resultsNcNoCVS.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050312_gfs_211.nc" );
-    resultsNcNoCVS.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050318_gfs_211.nc" );
+  @BeforeClass
+  public static void setupTestDataDir() {
+    File tmpLocalRootDataDir = new File( TestDir.temporaryLocalDataDir);
+    assertTrue( tmpLocalRootDataDir.exists());
+    assertTrue( tmpLocalRootDataDir.canRead());
+    assertTrue( tmpLocalRootDataDir.canWrite() );
+    tmpTestDataDir = TestFileDirUtils.createTempDirectory( "TestCrawlableDatasetFilter", tmpLocalRootDataDir );
+    assertNotNull(tmpTestDataDir);
+    assertTrue( tmpTestDataDir.exists());
+    assertTrue( tmpTestDataDir.canRead());
+    assertTrue( tmpTestDataDir.canWrite());
 
-    resultsAll = new ArrayList( resultsNcNoCVS );
-    resultsAll.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/CVS" );
+    tmpTestDataCrDs = createCrawlableDataset( tmpTestDataDir.getPath(), tmpTestDataDir.getName());
+
+    List<String> dirNamesToIgnore = new ArrayList<String>();
+    dirNamesToIgnore.add("CVS");
+    dirNamesToIgnore.add(".git");
+
+    List<String> dataFileNames = new ArrayList<String>();
+    dataFileNames.add("2004050300_eta_211.nc");
+    dataFileNames.add("2004050312_eta_211.nc");
+    dataFileNames.add("2004050400_eta_211.nc");
+    dataFileNames.add("2004050412_eta_211.nc");
+
+    for ( String dirName : dirNamesToIgnore )
+      TestFileDirUtils.addDirectory( tmpTestDataDir, dirName);
+
+    for ( String fileName : dataFileNames )
+      TestFileDirUtils.addFile( tmpTestDataDir, fileName );
+
+    allFiles_FullPathNames = new ArrayList<String>();
+    dataFiles_FullPathNames = new ArrayList<String>();
+
+    for ( String fileName : dirNamesToIgnore )
+      allFiles_FullPathNames.add( String.format( "%s/%s", tmpTestDataCrDs.getPath(), fileName));
+
+    for ( String fileName : dataFileNames ) {
+      String path = String.format("%s/%s", tmpTestDataCrDs.getPath(), fileName);
+      allFiles_FullPathNames.add( path);
+      dataFiles_FullPathNames.add( path);
+    }
+
   }
 
   @Test
   public void testRegExpIncludeAll()
   {
-    String path = "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
-    String name = "gfs_211";
-
-    CrawlableDataset cd = createCrawlableDataset( path, name );
-
     // Construct filter
     List selectors = new ArrayList();
     selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( ".*"), true, true, false ) );
@@ -83,25 +114,20 @@ public class TestCrawlableDatasetFilter
 
     // Get filtered list of datasets.
     List list = null;
-    try
-    {
-      list = cd.listDatasets( me);
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException getting children datasets <" + cd.getName() + ">: " + e.getMessage(),
-                  false );
+    try {
+      list = tmpTestDataCrDs.listDatasets( me);
+    } catch ( IOException e ) {
+      fail(String.format( "IOException getting children datasets [%s]: %s", tmpTestDataCrDs.getName(), e.getMessage()));
       return;
     }
 
     int expectedNumDs = 4;
-    assertTrue( "Number of datasets <" + list.size() + "> not as expected <" + expectedNumDs + ">.",
-                list.size() == expectedNumDs );
+    assertEquals( "Number of datasets", expectedNumDs, list.size());
     for ( Iterator it = list.iterator(); it.hasNext(); )
     {
       CrawlableDataset curCd = (CrawlableDataset) it.next();
-      assertTrue( "Result path <" + curCd.getPath() + "> not as expected <" + resultsAll + ">.",
-                  resultsAll.contains( curCd.getPath() ) );
+      assertTrue("Result path [" + curCd.getPath() + "] not as expected [" + allFiles_FullPathNames + "].",
+          allFiles_FullPathNames.contains(curCd.getPath()));
     }
 
   }
@@ -109,11 +135,6 @@ public class TestCrawlableDatasetFilter
   @Test
   public void testRegExpIncludeNcExcludeCVS()
   {
-    String path = "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
-    String name = "gfs_211";
-
-    CrawlableDataset cd = createCrawlableDataset( path, name );
-
     // Construct filter
     List selectors = new ArrayList();
     selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( ".*nc$"), true, true, false ) );
@@ -123,32 +144,23 @@ public class TestCrawlableDatasetFilter
 
     // Get filtered list of datasets.
     List list = null;
-    try
-    {
-      list = cd.listDatasets( me );
+    try {
+      list = tmpTestDataCrDs.listDatasets( me );
+    } catch ( IOException e ) {
+      fail(String.format( "IOException getting children datasets [%s]: %s", tmpTestDataCrDs.getName(), e.getMessage()));
     }
-    catch ( IOException e )
-    {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
-    assertTrue( "Number of datasets <" + list.size() + "> not as expected <4>.",
-                list.size() == 4 );
+    assertEquals( "Number of datasets", 4, list.size());
     for ( Iterator it = list.iterator(); it.hasNext(); )
     {
       CrawlableDataset curCd = (CrawlableDataset) it.next();
-      assertTrue( "Result path <" + curCd.getPath() + "> not as expected <" + resultsNcNoCVS + ">.",
-                  resultsNcNoCVS.contains( curCd.getPath() ) );
+      assertTrue("Result path [" + curCd.getPath() + "] not as expected ]" + dataFiles_FullPathNames + "].",
+          dataFiles_FullPathNames.contains(curCd.getPath()));
     }
   }
 
   @Test
   public void testWildcardIncludeNcExcludeCVS()
   {
-    String path = "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
-    String name = "gfs_211";
-
-    CrawlableDataset cd = createCrawlableDataset( path, name );
-
     // Construct filter
     List selectors = new ArrayList();
     selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "*.nc$"), true, true, false ) );
@@ -158,47 +170,29 @@ public class TestCrawlableDatasetFilter
 
     // Get filtered list of datasets.
     List list = null;
-    try
-    {
-      list = cd.listDatasets( me );
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException getting children datasets <" + cd.getName() + ">: " + e.getMessage(),
-                  false );
+    try {
+      list = tmpTestDataCrDs.listDatasets( me );
+    } catch ( IOException e ) {
+      fail(String.format( "IOException getting children datasets [%s]: %s", tmpTestDataCrDs.getName(), e.getMessage()));
       return;
     }
 
-    assertTrue( "Number of datasets <" + list.size() + "> not as expected <2>.",
-                list.size() == 4 );
+    assertEquals( "Number of datasets", 4, list.size());
     for ( Iterator it = list.iterator(); it.hasNext(); )
     {
       CrawlableDataset curCd = (CrawlableDataset) it.next();
-      assertTrue( "Result path <" + curCd.getPath() + "> not as expected <" + resultsNcNoCVS + ">.",
-                  resultsNcNoCVS.contains( curCd.getPath() ) );
+      assertTrue("Result path [" + curCd.getPath() + "] not as expected [" + dataFiles_FullPathNames + "].",
+          dataFiles_FullPathNames.contains(curCd.getPath()));
     }
   }
 
   private static CrawlableDataset createCrawlableDataset( String path, String name )
   {
-    // Create CrawlableDataset.
-    CrawlableDataset cd = null;
-    try
-    {
-      cd = CrawlableDatasetFactory.createCrawlableDataset( path, null, null );
-    }
-    catch ( Exception e )
-    {
-      assertTrue( "Failed to create CrawlableDataset <" + path + ">: " + e.getMessage(),
-                  false );
+    try {
+      return CrawlableDatasetFactory.createCrawlableDataset( path, null, null );
+    } catch ( Exception e ) {
+      fail( String.format( "Failed to create CrawlableDataset [%s]: %s", path, e.getMessage()));
       return null;
     }
-
-    assertTrue( "CD path <" + cd.getPath() + "> not as expected <" + path + ">.",
-                cd.getPath().equals( path ) );
-    assertTrue( "CD name <" + cd.getName() + "> not as expected <" + name + ">.",
-                cd.getName().equals( name ) );
-    return cd;
   }
-
 }
