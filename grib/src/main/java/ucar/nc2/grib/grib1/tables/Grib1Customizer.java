@@ -321,8 +321,9 @@ public class Grib1Customizer implements GribTables {
   @Override
   public String getLevelNameShort(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    String result = (lt == null) ? "level"+levelType : lt.getAbbrev();
-    return  (result == null) ? "level"+levelType : result;
+    String result = (lt == null) ? null : lt.getAbbrev();
+    if (result == null) result = "unknownLevel"+levelType;
+    return result;
   }
 
   public String getLevelDescription(int levelType) {
