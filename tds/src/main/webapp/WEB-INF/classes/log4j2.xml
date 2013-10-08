@@ -161,11 +161,11 @@
       <appender-ref ref="threddsServlet"/>
     </logger>
 
-    <logger name="org.springframework.beans.factory" level="error" additivity="false">
+    <logger name="org.springframework.beans.factory" level="debug" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <logger name="org.springframework" level="info" additivity="false">
+    <logger name="org.springframework" level="debug" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
