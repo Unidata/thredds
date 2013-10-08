@@ -106,7 +106,7 @@ public class TestOddTypes extends TestCase {
     ncfile.close();
   }
 
-  public void testTime() throws IOException {
+  /* public void testTime() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("support/time.h5");
 
@@ -115,7 +115,7 @@ public class TestOddTypes extends TestCase {
     NCdump.printArray(data, "dset", System.out, null);
     System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
     ncfile.close();
-  }
+  } */
 
   // not supporting bitfield, poor documentation
   public void testBitfield() throws InvalidRangeException, IOException {

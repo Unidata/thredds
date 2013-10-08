@@ -69,7 +69,7 @@ public class TestH5ReadAndCount extends TestCase {
     read(testDir + "support/enum.h5", 0, 1, 0, 1, 0, 0);
     read(testDir + "support/SDS_array_type.h5", 0, 1, 0, 1, 0, 0);
     read(testDir + "support/short.h5", 0, 1, 0, 1, 0, 0);
-    read(testDir + "support/time.h5", 0, 1, 0, 1, 0, 0);
+    // read(testDir + "support/time.h5", 0, 1, 0, 1, 0, 0);
     read(testDir + "support/uvlstr.h5", 0, 1, 0, 1, 0, 0);
     read(testDir + "support/vlslab.h5", 0, 1, 0, 1, 0, 0);
     read(testDir + "support/vlstra.h5", 0, 0, 1, 0, 0, 0);

@@ -178,7 +178,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       DataBlock dblock = new DataBlock();
       doublingTable.blockList.add(dblock);
       readDirectBlock(h5.getFileOffset(rootBlockAddress), address, dblock);
-      dblock.size = startingBlockSize - dblock.extraBytes;
+      dblock.size = startingBlockSize; // - dblock.extraBytes;  LOOK scary bug - retrofit to 4.3
       rootBlock.add(dblock);
 
     } else {
@@ -189,7 +189,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       for (DataBlock dblock : doublingTable.blockList) {
         if (dblock.address > 0) {
           readDirectBlock(h5.getFileOffset(dblock.address), address, dblock);
-          dblock.size -= dblock.extraBytes;
+          // dblock.size -= dblock.extraBytes;  LOOK scary bug - retrofit to 4.3
         }
       }
     }
