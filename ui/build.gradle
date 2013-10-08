@@ -51,7 +51,9 @@ jar {
 ext {
   toolsUIjar = 'toolsUI-'+version+'.jar'
   webstartWorkingDir = "build/signed"
-  webstartDir = webdir + "webstart"
+  if ( project.hasProperty( "webdir")) {
+    webstartDir = webdir + "webstart"
+  }
 }
 
 shadow {
@@ -92,36 +94,44 @@ shadow {
 }
 
 task releaseWebstart << {
-  ant.delete(dir: webstartWorkingDir)
-  ant.mkdir(dir: webstartWorkingDir)
+  if ( project.hasProperty( "webdir") && project.hasProperty( "keystore")
+          && project.hasProperty( "keystoreAlias") && project.hasProperty( "keystorePassword") )
+  {
+      ant.delete( dir: webstartWorkingDir )
+      ant.mkdir( dir: webstartWorkingDir )
 
-  copy {
-    println "copyJnlp"
-    from 'netCDFtools.jnlp'
-    from 'netCDFtoolsExtraJars.jnlp'
-    into webstartWorkingDir
-  }
+      copy {
+          println "copyJnlp"
+          from 'netCDFtools.jnlp'
+          from 'netCDFtoolsExtraJars.jnlp'
+          into webstartWorkingDir
+      }
 
-  println "signjar"
-  ant.signjar(jar: "build/libs/ui-" + version + ".jar", signedjar: webstartWorkingDir + "/netcdfUI.jar",
-          alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
-          preservelastmodified: "true")
-  for (file in configurations.runtime.resolve()) {
-    println " " + file
-    ant.signjar(destDir: webstartWorkingDir, jar: file, alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
-            preservelastmodified: "true")
-  }
+      println "signjar"
+      ant.signjar( jar: "build/libs/ui-" + version + ".jar", signedjar: webstartWorkingDir + "/netcdfUI.jar",
+                   alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
+                   preservelastmodified: "true" )
+      for ( file in configurations.runtime.resolve() )
+      {
+          println " " + file
+          ant.signjar( destDir: webstartWorkingDir, jar: file, alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
+                       preservelastmodified: "true" )
+      }
 
-  copy {
-    println "copy2web"
-    from(webstartWorkingDir)
-    rename { String fileName ->
-      pos = fileName.lastIndexOf('-');
-      fileName2 = (pos >= 0) ? fileName.substring(0, pos) + ".jar" : fileName
-      println " " + fileName + " -> " + fileName2
-      fileName2
-    }
-    into webstartDir
+      copy {
+          println "copy2web"
+          from( webstartWorkingDir )
+          rename { String fileName ->
+              pos = fileName.lastIndexOf( '-' );
+              fileName2 = ( pos >= 0 ) ? fileName.substring( 0, pos ) + ".jar" : fileName
+              println " " + fileName + " -> " + fileName2
+              fileName2
+          }
+          into webstartDir
+      }
+  } else {
+      println "Several properties (\"webdir\", \"keystore\", \"keystoreAlias\", \"keystorePassword\" )\n"
+      + "must be defined to run \"releaseWebstart\" task."
   }
 }
 
@@ -133,10 +143,14 @@ task releaseWebstart << {
    ftpdir:ftp directory
  */
 task releaseCdm(dependsOn: ['shadow', 'releaseWebstart']) << {
-  println "copy " + toolsUIjar + " to " + ftpdir
-  copy { // does not give error message
-    from 'build/libs/' + toolsUIjar
-    into ftpdir
+  if (  project.hasProperty( "ftpdir") ) {
+      println "copy " + toolsUIjar + " to " + ftpdir
+      copy { // does not give error message
+        from 'build/libs/' + toolsUIjar
+        into ftpdir
+      }
+  } else {
+      println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
   }
 }
 
@@ -156,15 +170,19 @@ javadoc {
 }
 
 task releaseDocs(dependsOn: javadoc) << {
-  releaseDir = webdir + "javadocAll"
+  if ( project.hasProperty( "webdir")) {
+    releaseDir = webdir + "javadocAll"
 
-  ant.delete(dir: releaseDir)
-  ant.mkdir(dir: releaseDir)
+    ant.delete(dir: releaseDir)
+    ant.mkdir(dir: releaseDir)
 
-  copy {
-    println "copyDocs to " + releaseDir
-    from("build/docs/javadoc")
-    into releaseDir
+    copy {
+      println "copyDocs to " + releaseDir
+      from("build/docs/javadoc")
+      into releaseDir
+    }
+  } else {
+      println "Property \"webdir\" must be defined to run \"releaseDocs\" task."
   }
 }
 

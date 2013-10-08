@@ -48,6 +48,12 @@ import java.util.*;
  */
 @Immutable
 public class EnumTypedef extends CDMNode {
+
+  // Constants for the unsigned max values for enum(1,2,4)
+  static public final int UBYTE_MAX = 255;
+  static public final int USHORT_MAX = 65535;
+  //not used static public final long UINT_MAX = 4294967295L;
+
   private final Map<Integer, String> map;
   private ArrayList<String> enumStrings;
   private DataType basetype;
@@ -97,31 +103,37 @@ public class EnumTypedef extends CDMNode {
   {
      if(map == null || basetype == null) return false;
      for(Integer I: map.keySet()) {
-         int i = (int) I;
-	if(basetype == DataType.ENUM1
-	   && (i < Byte.MIN_VALUE || i > Byte.MAX_VALUE))
-	    return false;
-	if(basetype == DataType.ENUM2
-	   && (i < Short.MIN_VALUE || i > Short.MAX_VALUE))
-	    return false;
-	if(basetype == DataType.ENUM2
-	   && (i < Integer.MIN_VALUE || i > Integer.MAX_VALUE))
-	    return false;
+        // WARNING, we do not have signed/unsigned info available
+        int i = (int)I;
+        switch (basetype) {
+        case ENUM1:
+            if(i < Byte.MIN_VALUE || i > UBYTE_MAX)
+                return false;
+            break;
+        case ENUM2:
+           if(i < Short.MIN_VALUE || i > USHORT_MAX)
+            return false;
+           break;
+        case ENUM4:
+            break; // enum4 is always ok
+        default:
+            return false;
+        }
      }
      return true;
   }
 
-  public boolean
-  inRange(int i)
+  private boolean
+  IgnoreinRange(int i)
   {
+    // WARNING, we do not have signed/unsigned info available
     if(this.basetype == DataType.ENUM1
-       && (i >= Byte.MIN_VALUE || i <= Byte.MAX_VALUE))
+       && (i >= Byte.MIN_VALUE || i <= UBYTE_MAX))
         return true;
     else if(this.basetype == DataType.ENUM2
-       && (i >= Short.MIN_VALUE || i <= Short.MAX_VALUE))
+       && (i >= Short.MIN_VALUE || i <= USHORT_MAX))
         return true;
-    else if(this.basetype == DataType.ENUM2
-       && (i >= Integer.MIN_VALUE || i <= Integer.MAX_VALUE))
+    else if(this.basetype == DataType.ENUM4) // always ok
         return true;
     else
         return false;
@@ -144,7 +156,14 @@ public class EnumTypedef extends CDMNode {
 
   protected void writeCDL(Formatter out, Indent indent, boolean strict) {
     String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
-    out.format("%senum %s { ", indent, name);
+    String basetype = "";
+    switch (this.basetype) {
+    case ENUM1: basetype = "byte "; break;
+    case ENUM2: basetype = "short "; break;
+    case ENUM4: basetype = ""; break;
+    default: assert false : "Internal error";
+    }
+    out.format("%s%senum %s { ", indent, basetype, name);
     int count = 0;
     List<Object> keyset = Arrays.asList(map.keySet().toArray());
     //Collections.sort(keyset);

@@ -508,7 +508,14 @@ public class H5header {
         if (facadeNested.dobj.mdt.map != null) {
           EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
           if (enumTypedef == null) {
-            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
+            DataType basetype;
+            switch (facadeNested.dobj.mdt.byteSize) {
+            case 1: basetype = DataType.ENUM1; break;
+            case 2: basetype = DataType.ENUM2; break;
+            case 4: basetype = DataType.ENUM4; break;
+            default: basetype = DataType.ENUM4; break;
+            }
+            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
             ncGroup.addEnumeration(enumTypedef);
           }
         }
@@ -1345,6 +1352,8 @@ public class H5header {
     // special case of variable length strings
     if (v.getDataType() == DataType.STRING)
       v.setElementSize(16); // because the array has elements that are HeapIdentifier
+    else if (v.getDataType() == DataType.OPAQUE) // special case of opaque
+      v.setElementSize(facade.dobj.mdt.getBaseSize());
 
     v.setSPobject(vinfo);
 
@@ -1470,6 +1479,8 @@ public class H5header {
     // special case of variable length strings
     if (v.getDataType() == DataType.STRING)
       v.setElementSize(16); // because the array has elements that are HeapIdentifier
+    else if (v.getDataType() == DataType.OPAQUE) // special case of opaque
+      v.setElementSize(mdt.getBaseSize());
 
     v.setSPobject(vinfo);
     vinfo.setOwner(v);
@@ -1520,14 +1531,18 @@ public class H5header {
     int[] dim = (msd != null) ? msd.dimLength : new int[0];
     if (dim == null) dim = new int[0]; // scaler
 
+    boolean hasvlen = (mdt != null && mdt.isVlen());
+
     // merge the shape for array type (10)
     if (mdt.type == 10) {
       int len = dim.length + mdt.dim.length;
+      if(hasvlen) len++;
       int[] combinedDim = new int[len];
       for (int i = 0; i < dim.length; i++)
         combinedDim[i] = dim[i];  // the dataspace is the outer (slow) dimensions
       for (int i = 0; i < mdt.dim.length; i++)
         combinedDim[dim.length + i] = mdt.dim[i];  // type 10 is the inner dimensions
+      if(hasvlen) combinedDim[len-1] = -1;
       dim = combinedDim;
     }
 
@@ -1549,7 +1564,7 @@ public class H5header {
           v.setDimensionsAnonymous(shape);
         }
 
-       } else if ((mdt.type == 9) && !mdt.isVString) { // variable length (not a string)
+       } else if (mdt.isVlen()) { // variable length (not a string)
 
         if ((dim.length == 1) && (dim[0] == 1)) { // replace scalar with vlen
           int[] shape = new int[] {-1};
@@ -1606,6 +1621,8 @@ public class H5header {
     int[] storageSize;  // for type 1 (continuous) : mds.dimLength;
                         // for type 2 (chunked)    : msl.chunkSize (last number is element size)
                         // null for attributes
+
+    boolean isvlen = false; // VLEN, but not vlenstring
 
     // chunked stuff
     boolean isChunked = false;
@@ -1679,6 +1696,7 @@ public class H5header {
       this.mds = facade.dobj.mds;
       this.mfp = facade.dobj.mfp;
 
+      isvlen = this.mdt.isVlen();
       if (!facade.dobj.mdt.isOK && warnings) {
         debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + facade.dobj.mdt);
         return; // not a supported datatype
@@ -1712,6 +1730,8 @@ public class H5header {
         debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + mdt);
         return; // not a supported datatype
       }
+
+      isvlen = this.mdt.isVlen() ;
 
       // figure out the data type
       //this.hdfType = mdt.type;
@@ -1785,6 +1805,7 @@ public class H5header {
 
       } else if (hdfType == 9) { // variable length array
         tinfo.isVString = mdt.isVString;
+        tinfo.isVlen = mdt.isVlen;
         if (mdt.isVString) {
           tinfo.vpad = ((flags[0] >> 4) & 0xf);
           tinfo.dataType = DataType.STRING;
@@ -1794,11 +1815,12 @@ public class H5header {
         }
       } else if (hdfType == 10) { // array : used for structure members
         tinfo.endian = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
-        if ((mdt.base.type == 9) && mdt.base.isVString) {
+        if (mdt.isVString()){
           tinfo.dataType = DataType.STRING;
-        } else
-          tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
-
+        } else {
+          int basetype = mdt.getBaseType();
+          tinfo.dataType = getNCtype(basetype, mdt.getBaseSize());
+        }
       } else if (warnings) {
         debugOut.println("WARNING not handling hdf dataType = " + hdfType + " size= " + byteSize);
       }
@@ -1984,6 +2006,7 @@ public class H5header {
     int endian = -1; // 1 = RandomAccessFile.LITTLE_ENDIAN || 0 = RandomAccessFile.BIG_ENDIAN
     boolean unsigned;
     boolean isVString; // is it a vlen string ?
+    boolean isVlen; // vlen but not string
     int vpad;          // string padding
     TypeInfo base;     // vlen, enum
 
@@ -3051,6 +3074,7 @@ public class H5header {
     // enum, variable-length, array types have "base" DataType
     MessageDatatype base;
     boolean isVString; // variable length (not a string)
+    boolean isVlen; // vlen but not string
 
     // array (10)
     int[] dim;
@@ -3073,9 +3097,10 @@ public class H5header {
           f.format("   %s%n", mm);
       } else if (type == 7)
         f.format(" referenceType= %s", referenceType);
-      else if (type == 9)
-        f.format(" isVString= %s", isVString);
-      if ((type == 9) || (type == 10))
+      else if (type == 9) {
+          f.format(" isVString= %s", isVString);
+          f.format(" isVlen= %s", isVlen);
+      } if ((type == 9) || (type == 10))
         f.format(" parent base= {%s}", base);
       return f.toString();
     }
@@ -3214,6 +3239,7 @@ public class H5header {
 
       } else if (type == 9) { // variable-length
         isVString = (flags[0] & 0xf) == 1;
+        if(!isVString) isVlen = true;
         if (debug1)
           debugOut.println("   type 9(variable length): type= " + (isVString ? "string" : "sequence of type:"));
         base = new MessageDatatype(); // base type
@@ -3255,6 +3281,16 @@ public class H5header {
 
     byte[] getFlags() {
       return (base != null) ? base.getFlags() : flags;
+    }
+
+    boolean isVlen()
+    {
+        return (type == 10 ? base.isVlen() : isVlen);
+    }
+
+    boolean isVString()
+    {
+        return (type == 10 ? base.isVString() : isVString);
     }
   }
 
@@ -3902,12 +3938,7 @@ public class H5header {
 
         // the heapId points to a Link message in the Fractal Heap
         long pos = fractalHeap.getHeapId(heapId).getPos();
-        if (pos < 0) { // deebuggering
-          FractalHeap fractalHeap2 = new FractalHeap(H5header.this, group.displayName, groupNewMessage.fractalHeapAddress);
-          FractalHeap.DHeapId dhid = fractalHeap2.getHeapId(heapId);
-          pos = dhid.getPos();
-          continue;
-        }
+        if (pos < 0) continue;
         raf.seek(pos);
         MessageLink linkMessage = new MessageLink();
         linkMessage.read();
@@ -4209,7 +4240,7 @@ public class H5header {
    * @param globalHeapIdAddress address of the heapId, used to get the String out of the heap
    * @param dataType type of data
    * @param endian byteOrder of the data (0 = BE, 1 = LE)
-   * @return String the String read from the heap
+   * @return  the Array read from the heap
    * @throws IOException on read error
    */
   Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException, InvalidRangeException {

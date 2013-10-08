@@ -27,7 +27,10 @@ jar {
 ext {
   ncIdvJar = 'ncIdvs-'+version+'.jar'
   webstartWorkingDir = "build/signed"
-  webstartDir = webdir + "webstart"
+  if ( project.hasProperty( "webdir")) {
+    webstartDir = webdir + "webstart"
+  }
+
 }
 
 shadow {
@@ -68,10 +71,14 @@ shadow {
    ftpdir:ftp directory
  */
 task releaseCdm(dependsOn: ['shadow']) << {
-  println "copy " + ncIdvJar + " to " + ftpdir
-  copy { // does not give error message
-    from ${destinationDir} + ncIdvJar
-    into ftpdir
+  if (  project.hasProperty( "ftpdir") ) {
+    println "copy " + ncIdvJar + " to " + ftpdir
+    copy { // does not give error message
+      from ${destinationDir} + ncIdvJar
+      into ftpdir
+    }
+  } else {
+      println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
   }
 }
 

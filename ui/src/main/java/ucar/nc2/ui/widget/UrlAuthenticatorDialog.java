@@ -52,7 +52,8 @@ import ucar.util.prefs.ui.*;
  *
  * @author John Caron
  */
-public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider {
+public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider
+{
 
   private IndependentDialog dialog;
   private UsernamePasswordCredentials pwa = null;

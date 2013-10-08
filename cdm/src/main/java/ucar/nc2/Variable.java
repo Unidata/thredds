@@ -434,8 +434,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
             list.add(new Range(d.getShortName(), 0, len - 1));
           else if (len == 0)
             list.add( Range.EMPTY); // LOOK empty not named
-          else
+          else {
+            assert d.isVariableLength();
             list.add( Range.VLEN); // LOOK vlen not named
+          }
         }
         shapeAsSection = new Section(list).makeImmutable();
         
@@ -559,7 +561,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   protected NetcdfFile getNetcdfFile() {
     return ncfile;
   }
-
+   
   //////////////////////////////////////////////////////////////////////////////
 
   /**

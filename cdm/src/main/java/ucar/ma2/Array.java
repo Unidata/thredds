@@ -620,6 +620,7 @@ public abstract class Array {
   /**
    * Create a new Array as a subsection of this Array, without rank reduction.
    * No data is moved, so the new Array references the same backing store as the original.
+   * Vlen is transferred over unchanged.
    *
    * @param ranges list of Ranges that specify the array subset.
    *               Must be same rank as original Array.
@@ -648,8 +649,12 @@ public abstract class Array {
       stride = new int[origin.length];
       for (int i = 0; i < stride.length; i++) stride[i] = 1;
     }
-    for (int i = 0; i < origin.length; i++)
-      ranges.add(new Range(origin[i], origin[i] + stride[i] * shape[i] - 1, stride[i]));
+    for (int i = 0; i < origin.length; i++) {
+      if(shape[i] < 0) // VLEN
+        ranges.add(Range.VLEN);
+      else
+        ranges.add(new Range(origin[i], origin[i] + stride[i] * shape[i] - 1, stride[i]));
+    }
     return createView(indexCalc.sectionNoReduce(ranges));
   }
 
