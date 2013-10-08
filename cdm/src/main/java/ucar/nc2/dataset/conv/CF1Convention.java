@@ -37,7 +37,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
@@ -71,13 +70,13 @@ public class CF1Convention extends CSMConvention {
 
   /**
    * Get which CF version this is, ie CF-1.x
-   * @param hasName extract from convention name or list of names
+   * @param hasConvName extract from convention name or list of names
    * @return version, or -1 if not CF
    */
-  public static int getVersion(String hasName) {
-    int result = extractVersion(hasName);
+  public static int getVersion(String hasConvName) {
+    int result = extractVersion(hasConvName);
     if (result >= 0) return result;
-    List<String> names = breakupConventionNames(hasName);
+    List<String> names = breakupConventionNames(hasConvName);
     for (String name : names) {
       result = extractVersion(name);
       if (result >= 0) return result;
@@ -85,9 +84,9 @@ public class CF1Convention extends CSMConvention {
     return -1;
   }
 
-  private static int extractVersion(String hasName) {
-    if (!hasName.startsWith(convName)) return -1;
-    String versionS = hasName.substring(convName.length());
+  private static int extractVersion(String hasConvName) {
+    if (!hasConvName.startsWith(convName)) return -1;
+    String versionS = hasConvName.substring(convName.length());
     try {
       return Integer.parseInt(versionS);
     } catch (Exception e) {

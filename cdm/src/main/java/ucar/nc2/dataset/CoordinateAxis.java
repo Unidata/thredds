@@ -36,6 +36,8 @@ package ucar.nc2.dataset;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CF;
+import ucar.nc2.constants._Coordinate;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -84,10 +86,9 @@ public class CoordinateAxis extends VariableDS {
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
    */
   static public CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds) {
-    if ((vds.getRank() == 1) ||
-            (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR))
-      return new CoordinateAxis1D(ncd, vds);
-    else if (vds.getRank() == 2)
+    if ((vds.getRank() == 1) || (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR)) {
+        return new CoordinateAxis1D(ncd, vds);
+    } else if (vds.getRank() == 2)
       return new CoordinateAxis2D(ncd, vds);
     else
       return new CoordinateAxis(ncd, vds);

@@ -67,6 +67,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   static private final Logger logger = LoggerFactory.getLogger(CoordinateAxis1DTime.class);
 
   static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
+    if (org instanceof CoordinateAxis1DTime) return (CoordinateAxis1DTime) org;
+
     if (org.getDataType() == DataType.CHAR)
       return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimension(0).getShortName());
 
@@ -209,8 +211,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         String hasName = convention.getStringValue();
         int version = CF1Convention.getVersion(hasName);
         if (version >= 0) {
-          if (version < 7 ) return Calendar.gregorian;
-          if (version >= 7 ) return Calendar.proleptic_gregorian; // LOOK is this true?
+          return Calendar.gregorian;
+          //if (version < 7 ) return Calendar.gregorian;
+          //if (version >= 7 ) return Calendar.proleptic_gregorian; //
         }
         if (COARDSConvention.isMine(hasName)) return Calendar.gregorian;
       }

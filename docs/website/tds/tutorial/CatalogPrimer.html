@@ -24,7 +24,7 @@
 <p>This primer will describe the <em><strong>client view of the catalog</strong></em>. If you are maintaining a TDS <em>server</em>, you will also need to add
   other information to the catalog, which is used only by the server and is not seen by the client.</p>
 
-<p>The <a href="../../catalog/v1.0.2/InvCatalogSpec.html">annotated schema</a> is the best complete description of THREDDS catalogs.</p>
+<p>The <a href="../catalog/InvCatalogSpec.html">annotated schema</a> is the best complete description of THREDDS catalogs.</p>
 <ul>
   <li><a href="#Basics">Basics</a></li>
   <li><a href="#Advanced">Advanced Topics</a></li>
@@ -237,7 +237,7 @@
     <pre style="margin-left: 40px;">http://my.server/thredds/dodsC/test/example3.nc</pre>
   </li>
 </ol>
-<p>More information is available on <a href="InvCatalogSpec.html#constructingURLs">constructing
+<p>More information is available on <a href="../reference/NetcdfSubsetServiceConfigure.html">constructing
   access URLs</a>.</p>
 
 <p>&nbsp;</p>
@@ -268,7 +268,7 @@
 <pre style="margin-left: 40px;"><code>/thredds/dodsC/more/cool/data.nc</code></pre>
 <p>Note:</p>
 <ul>
-  <li>The catalog specification provides a <a href="InvCatalogSpec.html#serviceTypes">list of recognized service types</a>.</li>
+  <li>The catalog specification provides a <a href="../catalog/InvCatalogSpec.html#serviceTypes">list of recognized service types</a>.</li>
   <li>The service names must be unique in each catalog.</li>
 </ul>
 <p>&nbsp;</p>
@@ -318,7 +318,7 @@
   library, knows where the schemas are located, so you only need to add these
   2 lines if you want to do your own validation.</p>
 
-<p>You will want to study the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec11.html">annotated schema</a>, and the
+<p>You will want to study the <a href="../catalog/InvCatalogSpec.html">annotated schema</a>, and the
   <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">schema document </a>itself.</p>
 
 <h3>&nbsp;</h3>
@@ -327,11 +327,11 @@
 
 <p>The NetCDF Tools User Interface (aka ToolsUI) can read and display THREDDS catalogs. You can start it from the command line, or
   <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart/netCDFtools.jnlp">launch it from webstart</a>. Use the THREDDS Tab, and click on the
-  <img src="../../images/fileIcon.jpg" width="31" height="29"> button to navigate to a local catalog file, or enter in the URL of a remote catalog, as below
+  <img src="images/fileIcon.jpg" width="31" height="29"> button to navigate to a local catalog file, or enter in the URL of a remote catalog, as below
   <em>(note that this is an XML document, not an HTML page!</em>). The catalog will be displayed in a tree widget on the left, and the selected dataset will be
   shown on the right, for example: </p>
 
-<p><img src="images/TUIthreddsTab.png" width="1270" height="833"></p>
+<p><img src="images/fileIcon.jpg" width="1270" height="833"></p>
 
 <p>Once you get your catalog working in a TDS, you can enter the TDS URL directly, and view the datasets with the <strong>Open</strong> buttons. </p>
 

@@ -3,12 +3,12 @@
 <head>
 
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <link rel="stylesheet" href="../../tds.css" type="text/css">
-  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="../tds.css" type="text/css">
+  <link href="../tds.css" rel="stylesheet" type="text/css"/>
   <title>Catalog Spec 1.0.2</title>
 </head>
 <body>
-<h1><img alt="THREDDS" src="../../THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.2 </h1>
+<h1><img alt="THREDDS" src="../THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.2 </h1>
 <address>
   last update: 9 December 2009
   <br>
@@ -68,7 +68,7 @@
 
 <ul>
   <li>Catalog <a href="../../tds4.3/tutorial/CatalogPrimer.html">Primer</a></li>
-  <li><a href="../Example1.0rc8.xml">Example</a> 1.0 Catalog</li>
+  <li><a href="Example1.0rc8.xml">Example</a> 1.0 Catalog</li>
   <li>InvCatalog XML Schema:</li>
   <ul>
     <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">Version 1.0.2</a></li>
@@ -76,12 +76,12 @@
     <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">Version 1.0</a></li>
   </ul>
 
-  <li><a href="../DL.html">Writing metadata for Digital Libraries</a></li>
+  <li><a href="DL.html">Writing metadata for Digital Libraries</a></li>
   <li>Read catalogs using the InvCatalog Java API in the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java library</a>.<br>
   </li>
 
-  <li><a href="Changes.html">Changes</a> since version 1.0.1.</li>
-  <li><a href="../v1.0.3/InvCatalogSpec.server.html">Server-side THREDDS InvCatalog specification</a></li>
+  <li><a href="v1.0.2/Changes.html">Changes</a> since version 1.0.1.</li>
+  <li><a href="v1.0.3/InvCatalogSpec.server.html">Server-side THREDDS InvCatalog specification</a></li>
 </ul>
 
 <p><strong>Changes from version 1.0.1:</strong></p>
@@ -120,7 +120,7 @@
 
 <h3><em>service</em><a name="service"></a> element</h3>
 
-<pre>&lt;xsd:element name="service"&gt;<br> &lt;xsd:complexType&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/&gt; &lt;!-- see <a href="InvCatalogSpec.server.html">Server-side
+<pre>&lt;xsd:element name="service"&gt;<br> &lt;xsd:complexType&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/&gt; &lt;!-- see <a href="v1.0.2/InvCatalogSpec.server.html">Server-side
   InvCat doc</a> --&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="base" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="serviceType" type="serviceTypes" use="required" /&gt;<br>  &lt;xsd:attribute name="desc" type="xsd:string"/&gt;<br>  &lt;xsd:attribute name="suffix" type="xsd:string" /&gt;<br> &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
 
 <p>A <em>service</em> element represents a data access service and allows basic data access information to be factored out of <em>dataset</em> and <em>access</em>
@@ -358,7 +358,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
   attribute set to "true" means that they apply to the containing dataset and any nested datasets.<br>
 </p>
 
-<p>If your intention is to enable THREDDS to write entries into a Digital Library, you should to be aware of <a href="../DL.html">how elements are mapped to
+<p>If your intention is to enable THREDDS to write entries into a Digital Library, you should to be aware of <a href="DL.html">how elements are mapped to
   Digital Libraries</a>. For example, you will probably want to add a <em>documentation</em> element with type <em>summary<a name="summary"></a></em> as its
   content will be the description of the dataset in the DL entry. Another documentation element you may need has type <em>rights<a name="rights"></a></em> which
   specifies what restrictions there are on the dataset usage.</p>
@@ -1017,7 +1017,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
 
 <p>A THREDDS dataset is an abstract object, containing various properties and
   other objects, as described in this document, along with their semantics. One
-  implementation of THREDDS datasets can be found in the <a href="../../../netcdf-java/">netCDF-Java library</a>. This document also describes one
+  implementation of THREDDS datasets can be found in the <a href="../../netcdf-java">netCDF-Java library</a>. This document also describes one
   representation of
   THREDDS datasets using XML, and the catalog library does serialization between
   its dataset objects and their XML encoding. </p>

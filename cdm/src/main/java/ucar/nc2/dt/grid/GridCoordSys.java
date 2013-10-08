@@ -34,7 +34,6 @@ package ucar.nc2.dt.grid;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDate;
@@ -322,10 +321,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   private boolean isLatLon = false;
 
-  // deferred creation
-  //private List<NamedObject> times = null;
-  //private Date[] timeDates = null;
-
   /**
    * Create a GridCoordSys from an existing Coordinate System.
    * This will choose which axes are the XHoriz, YHoriz, Vertical, Time, RunTIme, Ensemble.
@@ -562,7 +557,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     CoordinateAxis1D eaxis = from.getEnsembleAxis();
     if (eaxis != null) {
-      ensembleAxis = (e_range == null) ? eaxis : (CoordinateAxis1D) eaxis.section(e_range);
+      ensembleAxis = (e_range == null) ? eaxis : eaxis.section(e_range);
       coordAxes.add(ensembleAxis);
     }
 
@@ -1109,12 +1104,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
         // Check if grid contains poles.
         boolean includesNorthPole = false;
-        int[] resultNP = new int[2];
+        int[] resultNP;
         resultNP = findXYindexFromLatLon(90.0, 0, null);
         if (resultNP[0] != -1 && resultNP[1] != -1)
           includesNorthPole = true;
         boolean includesSouthPole = false;
-        int[] resultSP = new int[2];
+        int[] resultSP;
         resultSP = findXYindexFromLatLon(-90.0, 0, null);
         if (resultSP[0] != -1 && resultSP[1] != -1)
           includesSouthPole = true;
@@ -1441,8 +1436,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     for (int i = 0; i < runtimes.size(); i++) {
       CoordinateAxis1DTime taxis = getTimeAxisForRun(i);
       List<CalendarDate> times = taxis.getCalendarDates();
-      for (int j = 0; j < times.size(); j++)
-        dates.add(times.get(j));
+      for (CalendarDate time : times) dates.add(time);
     }
 
     // sorted list
@@ -1714,13 +1708,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   static public LatLonRect getLatLonBoundingBox(Projection proj, double startx, double starty, double endx, double endy) {
 
     if (proj instanceof LatLonProjection) {
-      double startLat = starty;
-      double startLon = startx;
-
       double deltaLat = endy - starty;
       double deltaLon = endx - startx;
 
-      LatLonPoint llpt = new LatLonPointImpl(startLat, startLon);
+      LatLonPoint llpt = new LatLonPointImpl(starty, startx);
       return new LatLonRect(llpt, deltaLat, deltaLon);
 
     }

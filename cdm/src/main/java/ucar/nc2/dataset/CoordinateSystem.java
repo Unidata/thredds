@@ -74,6 +74,7 @@ import java.util.*;
  * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System Object Model</a>
  */
 public class CoordinateSystem {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
 
   /**
    * Create standard name from list of axes. Sort the axes first
@@ -91,6 +92,8 @@ public class CoordinateSystem {
     }
     return buff.toString();
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////
 
   protected NetcdfDataset ds;
   protected List<CoordinateAxis> coordAxes = new ArrayList<CoordinateAxis>();
@@ -518,6 +521,24 @@ public class CoordinateSystem {
     }
     return false;
    }
+
+  void makeTimeAxis() {
+
+    if ((tAxis != null) && (tAxis instanceof CoordinateAxis1D) && !(tAxis instanceof CoordinateAxis1DTime)) {
+
+      Formatter err = new Formatter();
+      try {
+        CoordinateAxis1DTime timeAxis = CoordinateAxis1DTime.factory(ds, tAxis, err);
+        coordAxes.remove(tAxis);
+        coordAxes.add(timeAxis);
+        tAxis = timeAxis;
+        ds.addCoordinateAxis(timeAxis); // will remove old one
+
+      } catch (Exception e) {
+        log.error(tAxis.getDatasetLocation() + ": Error reading time coord= " + err, e);
+      }
+    }
+  }
 
 
   ////////////////////////////////////////////////////////////////////////////
