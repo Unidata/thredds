@@ -69,11 +69,12 @@ public class TestJustReadGrib  {
     TestDir.actOnAll(dirName, new GribFilter(), new GribAct(), recurse);
   }
 
-  @Test
+  // @Test
   public void testProblem() throws IOException {
     String filename = "Q:\\cdmUnitTest\\tds\\fnmoc\\NAVGEM/FNMOC_NAVGEM_Global_0p5deg_20130802_1200.grib1";
     System.out.println("read file= "+filename);
     NetcdfFile ncfile = NetcdfDataset.openFile( filename, null);
+
     ncfile.close();
   }
 
