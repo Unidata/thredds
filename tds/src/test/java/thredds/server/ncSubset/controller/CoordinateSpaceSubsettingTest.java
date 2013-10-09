@@ -55,23 +55,16 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDataset;
 
 /**
  * @author mhermida

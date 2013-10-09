@@ -1,6 +1,6 @@
 package thredds.server.ncSubset.validation;
 
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -11,7 +11,7 @@ import javax.validation.ConstraintValidatorContext;
  * @author caron
  * @since 10/9/13
  */
-public class NcssRequestValidator implements ConstraintValidator<NcssRequestConstraint, GridDataRequestParamsBean> {
+public class NcssRequestValidator implements ConstraintValidator<NcssRequestConstraint, NcssParamsBean> {
 
 	/* (non-Javadoc)
 	 * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
@@ -27,7 +27,7 @@ public class NcssRequestValidator implements ConstraintValidator<NcssRequestCons
 	 * @see "http://www.unidata.ucar.edu/software/thredds/v4.4/tds/reference/NetcdfSubsetServiceReference.html"
 	 */
 	@Override
-	public boolean isValid(GridDataRequestParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
+	public boolean isValid(NcssParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
 
 		constraintValidatorContext.disableDefaultConstraintViolation();
     boolean isValid =true;

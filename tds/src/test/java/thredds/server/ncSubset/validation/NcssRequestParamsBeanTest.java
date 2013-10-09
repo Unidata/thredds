@@ -17,7 +17,7 @@ import javax.validation.ValidatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.params.NcssParamsBean;
 
 public class NcssRequestParamsBeanTest {
@@ -32,11 +32,11 @@ public class NcssRequestParamsBeanTest {
 
   @Test
   public void testNcssRequestParamsBeanVarsAll() {
-    GridDataRequestParamsBean params = new GridDataRequestParamsBean();
+    NcssParamsBean params = new NcssParamsBean();
     List<String> varsAll = new ArrayList<String>();
     varsAll.add("all");
     params.setVar(varsAll);
-    Set<ConstraintViolation<GridDataRequestParamsBean>> constraintViolations = validator.validate(params);
+    Set<ConstraintViolation<NcssParamsBean>> constraintViolations = validator.validate(params);
     assertTrue(constraintViolations.isEmpty());
   }
 

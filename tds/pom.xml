@@ -308,17 +308,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <attachClasses>true</attachClasses>
-          <!-- This packagingExcludes doesn't seem to work. Now done in dependency/exclusions. -->
-          <!--
-          <packagingExcludes>
-            WEB-INF/lib/commons-logging*.jar,
-            WEB-INF/lib/javax.servlet*.jar,
-            WEB-INF/lib/jdom-1.0.jar,
-            WEB-INF/lib/slf4j-jdk14*.jar,
-            WEB-INF/lib/visad-*.jar
-          </packagingExcludes>
-          -->
-          <archive>
+           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
@@ -341,7 +331,6 @@
               <directory>${basedir}</directory>
               <includes>
                 <include>README.txt</include>
-                <include>CHANGES.txt</include>
               </includes>
             </resource>
           </webResources>

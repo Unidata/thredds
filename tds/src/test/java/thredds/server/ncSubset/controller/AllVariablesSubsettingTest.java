@@ -35,16 +35,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -53,19 +48,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.servlet.DatasetHandlerAdapter;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDataset;
 
 /**
  * @author mhermida

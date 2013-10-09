@@ -51,10 +51,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.servlet.DatasetHandlerAdapter;
-import ucar.nc2.dt.GridDataset;
 
 /**
  * @author mhermida
