@@ -50,8 +50,7 @@
     <property name="installUrl" value="${tds.install.url}" />
   </bean>
 
-  
-
+  <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
 
     <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>

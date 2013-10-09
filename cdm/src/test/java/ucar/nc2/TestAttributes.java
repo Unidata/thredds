@@ -42,6 +42,9 @@ import java.io.IOException;
 
 public class TestAttributes extends TestCase {
 
+  public void testFailureTest() throws IOException {
+    assert false;
+  }
 
   public void testNC3ReadAttributes() throws IOException {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
