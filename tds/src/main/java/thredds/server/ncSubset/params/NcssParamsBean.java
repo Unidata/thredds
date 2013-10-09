@@ -1,6 +1,7 @@
 package thredds.server.ncSubset.params;
 
 import thredds.server.ncSubset.exception.NcssException;
+import thredds.server.ncSubset.validation.NcssRequestConstraint;
 import thredds.server.ncSubset.validation.TimeParamsConstraint;
 import thredds.server.ncSubset.validation.VarParamConstraint;
 import ucar.nc2.time.CalendarDateRange;
@@ -21,7 +22,7 @@ import java.util.List;
  * @since 10/5/13
  */
 
-@TimeParamsConstraint
+@NcssRequestConstraint
 public class NcssParamsBean {
 
   private String accept;
@@ -39,7 +40,7 @@ public class NcssParamsBean {
  	private String time_duration;
 
  	@Valid
- 	private String time_window;
+ 	private String time_window;  // WTF ??
 
  	private String time;
 
@@ -302,7 +303,7 @@ public class NcssParamsBean {
 		return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), new LatLonPointImpl(getNorth(), getEast()));
 	}
 
-  public CalendarDateRange getCalendarDateRange() throws ParseException{
+  public CalendarDateRange getCalendarDateRange() throws ParseException {
 
 		DateRange dr;
 		if (time == null)
@@ -315,5 +316,10 @@ public class NcssParamsBean {
 		return CalendarDateRange.of(dr );
 
 	}
+
+  public boolean isValidGridRequest() {
+    return true;
+
+  }
 
 }

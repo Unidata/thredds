@@ -35,13 +35,13 @@ package thredds.server.ncSubset.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 
 /**
  * @author mhermida
  *
  */
-public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstraint, PointDataRequestParamsBean> {
+public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstraint, NcssParamsBean> {
 
 	/* (non-Javadoc)
 	 * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
@@ -55,7 +55,7 @@ public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstr
 	 * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
 	 */
 	@Override
-	public boolean isValid(PointDataRequestParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
+	public boolean isValid(NcssParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
 
 		constraintValidatorContext.disableDefaultConstraintViolation();
 		boolean isValid =true;

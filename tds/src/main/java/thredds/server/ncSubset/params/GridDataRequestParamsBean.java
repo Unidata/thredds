@@ -33,9 +33,9 @@
 
 package thredds.server.ncSubset.params;
 
-import thredds.server.ncSubset.validation.GridDataRequestConstraint;
+import thredds.server.ncSubset.validation.NcssRequestConstraint;
 
-@GridDataRequestConstraint
+@NcssRequestConstraint
 public class GridDataRequestParamsBean extends NcssParamsBean {
 
 

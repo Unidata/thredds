@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import thredds.server.ncSubset.dataservice.FeatureDatasetService;
 import thredds.server.ncSubset.dataservice.NcssShowFeatureDatasetInfo;
-import thredds.server.ncSubset.params.StationRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
@@ -114,7 +114,7 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController {
 
 
   @RequestMapping(value = {"/ncss/**/station.xml"})
-  void getStations(HttpServletRequest req, HttpServletResponse res, @Valid StationRequestParamsBean params,
+  void getStations(HttpServletRequest req, HttpServletResponse res, @Valid NcssParamsBean params,
                    BindingResult validationResult) throws IOException {
 
     if (validationResult.hasErrors()) {
