@@ -90,7 +90,7 @@ public class TestH5 {
     }
   }
 
-  public static junit.framework.Test suite ( ) {
+  /* public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
 
     // hdf5 reading
@@ -111,5 +111,5 @@ public class TestH5 {
     suite.addTest(new TestSuite(TestH5read.class)); //
     suite.addTest(new TestSuite(TestH5subset.class)); //
     return suite;
-  }
+  } */
 }

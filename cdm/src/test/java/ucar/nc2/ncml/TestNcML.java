@@ -43,7 +43,7 @@ import ucar.unidata.test.util.TestDir;
 public class TestNcML {
   public static String topDir = TestDir.cdmLocalTestDataDir + "ncml/";
 
-  public static junit.framework.Test suite ( ) {
+  /* public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
 
     //test reading XML
@@ -54,7 +54,7 @@ public class TestNcML {
     suite.addTest(new TestSuite(TestNcMLReadOverride.class)); // read and override
     suite.addTest(new TestSuite(TestNcMLModifyAtts.class)); // modify atts
     suite.addTest(new TestSuite(TestNcMLModifyVars.class)); // modify vars
-    suite.addTest(new TestSuite(TestNcMLRenameVar.class)); // all metadata in xml, rename vars  */
+    suite.addTest(new TestSuite(TestNcMLRenameVar.class)); // all metadata in xml, rename vars
 
     // test aggregations
     suite.addTest(new TestSuite(TestAggUnionSimple.class));
@@ -75,6 +75,6 @@ public class TestNcML {
     //suite.addTest(new TestSuite(TestAggSynGrid.class));
 
     return suite;
-  }
+  } */
 
 }

@@ -101,7 +101,7 @@ public class TestCatalogAll extends TestCase {
   }
 
 
-  public static junit.framework.Test suite ( ) {
+  /* public static junit.framework.Test suite ( ) {
 
     if (false) {
         try {
@@ -135,12 +135,12 @@ public class TestCatalogAll extends TestCase {
     suite.addTest(new TestSuite(TestSubset.class)); //
 
     suite.addTest(new TestSuite(TestCatalogReference.class)); //
-    suite.addTest(new TestSuite(TestVariables.class)); // */
+    suite.addTest(new TestSuite(TestVariables.class)); //
 
-    //suite.addTest(new TestSuite(TestWrite.class)); // */
-    //suite.addTest(new TestSuite(TestConvert.class)); // */
-    suite.addTest(new TestSuite(TestSpatialCoverage.class)); // */
-    suite.addTest(new TestSuite(TestTimeCoverage.class)); // */
+    //suite.addTest(new TestSuite(TestWrite.class)); //
+    //suite.addTest(new TestSuite(TestConvert.class)); //
+    suite.addTest(new TestSuite(TestSpatialCoverage.class)); //
+    suite.addTest(new TestSuite(TestTimeCoverage.class)); //
 
     //suite.addTest( new JUnit4TestAdapter( TestDeepCopyUtils.class ));
 
@@ -148,5 +148,5 @@ public class TestCatalogAll extends TestCase {
     suite.addTestSuite( thredds.catalog.parser.jdom.TestReadMetadata.class );
 
     return suite;
-  }
+  } */
 }

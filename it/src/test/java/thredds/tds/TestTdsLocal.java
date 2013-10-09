@@ -78,7 +78,7 @@ public class TestTdsLocal extends TestCase {
     return null;
   }
 
-  public static junit.framework.Test suite ( ) {
+  /* public static junit.framework.Test suite ( ) {
     DODSNetcdfFile.debugServerCall = true;
     //ThreddsDataFactory.setPreferCdm(false); // test dods !!
 
@@ -96,5 +96,5 @@ public class TestTdsLocal extends TestCase {
 
 
     return suite;
-  }
+  }  */
 }

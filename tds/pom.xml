@@ -363,7 +363,6 @@
           </includes>
           <excludes>
             <exclude>thredds/server/config/ServerConfigTestSuit.java</exclude>
-            <exclude>thredds/dqc/**</exclude>
           </excludes>
         </configuration>
         <!-- executions>

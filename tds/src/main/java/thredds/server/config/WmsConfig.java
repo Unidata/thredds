@@ -1,11 +1,14 @@
 package thredds.server.config;
 
+import org.springframework.stereotype.Component;
+
 /**
  * _more_
  *
  * @author edavis
  * @since 4.1
  */
+@Component
 public class WmsConfig
 {
   private boolean allow;
