@@ -32,20 +32,17 @@
  */
 package thredds.catalog;
 
-import java.util.*;
-import junit.framework.*;
-
 /**
  * TestSuite that runs all the sample tests
  *
  */
-public class TestCatalogAll extends TestCase {
+public class TestCatalogAll {
 
   public static String tmpDir = "target/test/tmp/";
   public static String dataDir = "src/test/data/thredds/catalog/";
 
   static private boolean showValidation = false;
-  static boolean debug = true, showValidationMessages = true;
+  static boolean showValidationMessages = true;
 
   public static String makeFilepath(String catalogName) {
     return makeFilepath() + catalogName;
@@ -72,7 +69,7 @@ public class TestCatalogAll extends TestCase {
 
     } catch (Exception e) {
       e.printStackTrace();
-      assertTrue( false);
+      assert false;
     }
 
     return null;
@@ -84,8 +81,8 @@ public class TestCatalogAll extends TestCase {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(validate);
 
     try {
-      InvCatalogImpl cat = (InvCatalogImpl) catFactory.readXML(catalogName);
-      boolean isValid = ((InvCatalogImpl)cat).check( buff, showValidation);
+      InvCatalogImpl cat = catFactory.readXML(catalogName);
+      boolean isValid = cat.check( buff, showValidation);
       if (!isValid)
         System.out.println("Validate failed "+ catalogName+" = \n<"+ buff.toString()+">");
       else if (showValidationMessages)
@@ -94,7 +91,7 @@ public class TestCatalogAll extends TestCase {
 
     } catch (Exception e) {
       e.printStackTrace();
-      assertTrue( false);
+      assert false;
     }
 
     return null;

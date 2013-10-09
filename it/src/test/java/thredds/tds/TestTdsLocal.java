@@ -32,11 +32,8 @@
  */
 package thredds.tds;
 
-import junit.framework.*;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogFactory;
-import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.nc2.thredds.ThreddsDataFactory;
 
 /**
  * TestSuite that runs all the sample tests for testing the TDS on localhost.
@@ -49,7 +46,7 @@ import ucar.nc2.thredds.ThreddsDataFactory;
  *
  * jcaron, resurrected Sep 2010
  */
-public class TestTdsLocal extends TestCase {
+public class TestTdsLocal {
   public static String topCatalog = "http://localhost:8081/thredds";
   public static boolean showValidationMessages = false;
 
@@ -65,14 +62,14 @@ public class TestTdsLocal extends TestCase {
       boolean isValid = cat.check( buff, false);
       if (!isValid) {
         System.out.println("Validate failed "+ catalogName+" = \n<"+ buff.toString()+">");
-        assertTrue( false);
+        assert false;
       } else if (showValidationMessages)
         System.out.println("Validate ok "+ catalogName+" = \n<"+ buff.toString()+">");
       return cat;
 
     } catch (Exception e) {
       e.printStackTrace();
-      assertTrue( false);
+      assert false;
     }
 
     return null;

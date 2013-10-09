@@ -184,8 +184,9 @@ public class TestPointFeatureTypes extends TestCase {
     assert 20 == checkPointDataset(CFpointObs_topdir + "trajMultidim6.ncml", FeatureType.TRAJECTORY, false);
   }
 
-  public void testProblem() throws IOException {
-    assert 36 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTimeAndZ.ncml", FeatureType.STATION_PROFILE, false);
+  // in this example, the time coord has a missing value.
+  public void testTimeCoordinateHasMissingValue() throws IOException {
+    assert 4 == checkPointDataset(CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, false);
   }
 
   public void testCF() throws IOException {
