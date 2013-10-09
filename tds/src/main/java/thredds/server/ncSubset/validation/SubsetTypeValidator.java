@@ -59,21 +59,20 @@ public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstr
 
 		constraintValidatorContext.disableDefaultConstraintViolation();
 		boolean isValid =true;
-		
+
+    boolean isStnRequest =  params.hasLatLonPoint() && params.hasStations();
+    boolean isPointRequest =  params.hasLatLonPoint() && !params.hasStations();
+
 		// if no stn param is provided ignore all the others, it must be a point request
 		// if stn == all --> all stations		
-		if( params.getSubset() == null ){
-			
-			if( params.getLatitude() == null || params.getLongitude() == null){
+		if( !isStnRequest && !isPointRequest ){
 				isValid = false;
 				constraintValidatorContext
 				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror.lat_or_lon_missing}")
 				.addConstraintViolation();				
-			}			
-			
 		}
 		
-		if( params.getSubset() != null && !params.getSubset().equals("stns") && !params.getSubset().equals("all") && !params.getSubset().equals("bb")  ){
+		/* if( params.getSubset() != null && !params.getSubset().equals("stns") && !params.getSubset().equals("all") && !params.getSubset().equals("bb")  ){
 			isValid = false;
 			constraintValidatorContext
 			.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror}")
@@ -92,7 +91,7 @@ public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstr
 			constraintValidatorContext
 			.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror.no_bounding_box}")
 			.addConstraintViolation();			
-		}		
+		}		*/
 		
 		
 		return isValid;

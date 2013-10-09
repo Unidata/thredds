@@ -95,7 +95,7 @@ public class NcssSubsetTypeValidationTest {
 		
 	}
 	
-	@Test
+	/* @Test
 	public void testNcssInvalidSubsetTypeMissingStns(){
 		
 		PointDataRequestParamsBean params = new PointDataRequestParamsBean();
@@ -145,6 +145,6 @@ public class NcssSubsetTypeValidationTest {
 		assertEquals(0 , constraintViolations.size());
 		//assertEquals("Wrong subset type", constraintViolations.iterator().next().getMessage());		
 		
-	}	
+	}	   */
 
 }

@@ -136,8 +136,8 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController {
         FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, buildDatasetUrl(datasetPath));
 
         String[] stnsList = new String[]{};
-        if (params.getStn() != null)
-          stnsList = params.getStn().toArray(stnsList);
+        if (params.getStns() != null)
+          stnsList = params.getStns().toArray(stnsList);
         else
           stnsList = null;
 

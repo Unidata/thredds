@@ -3,7 +3,12 @@ package thredds.server.ncSubset.params;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.validation.TimeParamsConstraint;
 import thredds.server.ncSubset.validation.VarParamConstraint;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 
 import javax.validation.Valid;
 import java.text.ParseException;
@@ -268,6 +273,10 @@ public class NcssParamsBean {
     return east != null && west != null && north != null && south != null;
   }
 
+  public boolean hasProjectionBB() { // need to validate
+    return minx != null && miny != null && maxx != null && maxy != null;
+  }
+
   public boolean hasStations() {
     return stns != null && !stns.isEmpty();
   }
@@ -287,7 +296,24 @@ public class NcssParamsBean {
     } catch (ParseException e) {
       throw new NcssException("invalid time duration");
     }
-
   }
+
+  public LatLonRect getBB(){
+		return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), new LatLonPointImpl(getNorth(), getEast()));
+	}
+
+  public CalendarDateRange getCalendarDateRange() throws ParseException{
+
+		DateRange dr;
+		if (time == null)
+			dr = new DateRange( new DateType(time_start, null, null), new DateType(time_end, null, null), new TimeDuration(time_duration), null );
+		else{
+			DateType dtDate = new DateType(time, null, null);
+			dr = new DateRange( dtDate.getDate(), dtDate.getDate() );
+		}
+
+		return CalendarDateRange.of(dr );
+
+	}
 
 }

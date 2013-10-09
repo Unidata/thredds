@@ -30,7 +30,7 @@ public class NcssRequestParamsBeanTest {
 		validator = factory.getValidator();
 	}
 	
-	@Test
+	/* @Test
 	public void testNcssRequestParamsBeanTwoMissing(){
 		
 		PointDataRequestParamsBean params = new PointDataRequestParamsBean();
@@ -135,7 +135,7 @@ public class NcssRequestParamsBeanTest {
 		Set<ConstraintViolation<PointDataRequestParamsBean>> constraintViolations = validator.validate(params);
 		assertTrue(constraintViolations.isEmpty());
 				
-	}
+	}  */
 	
 	@Test
 	public void testNcssRequestParamsBeanVarsAll(){

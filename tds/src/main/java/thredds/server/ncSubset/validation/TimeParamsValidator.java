@@ -40,7 +40,6 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.server.ncSubset.params.RequestParamsBean;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
