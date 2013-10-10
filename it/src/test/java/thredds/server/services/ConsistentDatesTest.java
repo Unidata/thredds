@@ -153,7 +153,7 @@ public class ConsistentDatesTest {
 
   }
 
-  @HttpTest(method = Method.GET, path = "thredds/ncss/grid/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all")
+  @HttpTest(method = Method.GET, path = "thredds/ncss/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all")
   public void checkNCSSDates() throws JDOMException, IOException {
 
     assertOk(response);
@@ -181,7 +181,7 @@ public class ConsistentDatesTest {
 
   }
   
-  @HttpTest(method = Method.GET, path = "thredds/ncss/grid/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=netcdf")
+  @HttpTest(method = Method.GET, path = "thredds/ncss/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=netcdf")
   public void checkNCSSDatesInNetcdf() throws JDOMException, IOException {
 
     assertOk(response);
@@ -215,7 +215,7 @@ public class ConsistentDatesTest {
   }
   
   
-  @HttpTest(method = Method.GET, path = "thredds/ncss/grid/ncssTest/pr_HRM3_2038-2070.CO.nc?var=pr&latitude=40.019&longitude=-105.293&time_start=2038-01-01T03%3A00%3A00Z&time_end=2038-01-02T03%3A00%3A00Z&accept=netcdf")
+  @HttpTest(method = Method.GET, path = "thredds/ncss/ncssTest/pr_HRM3_2038-2070.CO.nc?var=pr&latitude=40.019&longitude=-105.293&time_start=2038-01-01T03%3A00%3A00Z&time_end=2038-01-02T03%3A00%3A00Z&accept=netcdf")
   public void checkNCSSDatesInNetcdfWithCalendars() throws JDOMException, IOException {
 
     assertOk(response);

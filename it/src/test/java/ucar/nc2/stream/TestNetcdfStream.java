@@ -47,7 +47,6 @@ public class TestNetcdfStream {
      });
      scanDir(serverRoot+"/gini/", ".gini");
      scanDir(serverRoot+"/gempak/", ".gem");
-     //scanDir(serverRoot+"/gempak/", ".gem");
      scanDir(serverRoot+"/gnexrad2empak/", ".ar2v"); // */
   }
 

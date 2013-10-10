@@ -38,25 +38,25 @@ public class NcssIntegrationTest {
   private Response response; // will be injected after every request
 
 
-  @HttpTest(method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=all&accept=xml")
+  @HttpTest(method = Method.GET, path = "/thredds/ncss/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=all&accept=xml")
   public void checkBadRequest() {
 
     assertBadRequest(response);
   }
 
-  @HttpTest(method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=")
+  @HttpTest(method = Method.GET, path = "/thredds/ncss/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=")
   public void checkBadGridRequestWhenNoVarParam() {
 
     assertBadRequest(response);
   }
 
-  @HttpTest(method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?latitude=40.019&longitude=-105.293")
+  @HttpTest(method = Method.GET, path = "/thredds/ncss/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?latitude=40.019&longitude=-105.293")
   public void checkBadGridAsPointRequestWhenNoVarParam() {
 
     assertBadRequest(response);
   }
 
-  @HttpTest(method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=Temperature_isobaric&latitude=40&longitude=-102&vertCoord=225")
+  @HttpTest(method = Method.GET, path = "/thredds/ncss/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=Temperature_isobaric&latitude=40&longitude=-102&vertCoord=225")
   public void checkGoodRequest() throws JDOMException, IOException {
     assertOk(response);
     String xml = response.getBody(String.class);
@@ -69,7 +69,7 @@ public class NcssIntegrationTest {
 
   }
 
-  @HttpTest(method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=Temperature_isobaric")
+  @HttpTest(method = Method.GET, path = "/thredds/ncss/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=Temperature_isobaric")
   public void getSomeBinaryDataRequest() throws IOException {
     assertOk(response);
     assertTrue(response.hasBody());
