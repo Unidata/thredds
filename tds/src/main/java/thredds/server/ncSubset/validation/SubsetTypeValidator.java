@@ -68,7 +68,7 @@ public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstr
 		if( !isStnRequest && !isPointRequest ){
 				isValid = false;
 				constraintValidatorContext
-				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror.lat_or_lon_missing}")
+				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.lat_or_lon_missing}")
 				.addConstraintViolation();				
 		}
 		

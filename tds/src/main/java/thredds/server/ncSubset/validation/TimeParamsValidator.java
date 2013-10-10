@@ -75,12 +75,12 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
         } catch (ParseException pe) {
           isValid = false;
           constraintValidatorContext
-                  .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.parseerror.param.time_window}")
+                  .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.param.time_window}")
                   .addConstraintViolation();
         }
       }
 
-      return isValid && validateISOString(time, "{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.parseerror.param.time}", constraintValidatorContext);
+      return isValid && validateISOString(time, "{thredds.server.ncSubset.validation.param.time}", constraintValidatorContext);
     }
 
     String time_start = params.getTime_start();
@@ -93,17 +93,17 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 
     if (!hasValidDateRange(time_start, time_end, time_duration)) {
       constraintValidatorContext
-              .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.twoofthree}")
+              .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.time.range}")
               .addConstraintViolation();
       isValid = false;
     } else {
       //check the formats
       if (time_start != null) {
-        isValid = validateISOString(time_start, "{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.parseerror.param.time_start}", constraintValidatorContext);
+        isValid = validateISOString(time_start, "{thredds.server.ncSubset.validation.param.time_start}", constraintValidatorContext);
       }
 
       if (time_end != null) {
-        isValid = validateISOString(time_end, "{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.parseerror.param.time_end}", constraintValidatorContext) && isValid;
+        isValid = validateISOString(time_end, "{thredds.server.ncSubset.validation.param.time_end}", constraintValidatorContext) && isValid;
       }
 
       if (time_duration != null) {
@@ -114,7 +114,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
         } catch (ParseException pe) {
           isValid = false;
           constraintValidatorContext
-                  .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.parseerror.param.time_duration}")
+                  .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.param.time_duration}")
                   .addConstraintViolation();
         }
       }
@@ -127,7 +127,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
         if (start.after(end)) {
           isValid = false;
           constraintValidatorContext
-                  .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.start_gt_end}")
+                  .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.start_gt_end}")
                   .addConstraintViolation();
         }
       }

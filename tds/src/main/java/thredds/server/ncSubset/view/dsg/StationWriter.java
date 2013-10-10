@@ -168,7 +168,7 @@ public class StationWriter extends AbstractWriter {
     return writer.getHttpHeaders(datasetPath);
   }
 
-  public void write() throws ParseException, IOException, VariableNotContainedInDatasetException, NcssException {
+  public void write() throws ParseException, IOException, NcssException {
 
     Limit counter = new Limit();
 

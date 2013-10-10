@@ -4,10 +4,9 @@ package thredds.server.ncSubset.validation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -18,16 +17,28 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.server.ncSubset.params.NcssParamsBean;
 
 public class NcssRequestParamsBeanTest {
 
   private static Validator validator;
+  private static Properties resolver = new Properties();
 
   @BeforeClass
   public static void setUp() {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     validator = factory.getValidator();
+
+    Class c = resolver.getClass();
+    InputStream is = c.getResourceAsStream ("/ValidationMessages.properties");
+    if (is != null) {
+      try {
+        resolver.load(is);
+        // resolver.list(System.out);
+        is.close();
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+    }
   }
 
   @Test
@@ -71,7 +82,7 @@ public class NcssRequestParamsBeanTest {
     Set<ConstraintViolation<NcssParamsBean>> constraintViolations = validator.validate(params);
 
     assertEquals(1, constraintViolations.size());
-    assertEquals("Must have 2 of 3 parameters: time_start, time_end, time_duration", constraintViolations.iterator().next().getMessage());
+    assertEquals(resolver.get("thredds.server.ncSubset.validation.time.range"), constraintViolations.iterator().next().getMessage());
   }
 
   @Test
@@ -93,7 +104,6 @@ public class NcssRequestParamsBeanTest {
 
   @Test
   public void testNcssRequestParamsBeanTimeInvalidFormat() {
-
     NcssParamsBean params = new NcssParamsBean();
     params.setLatitude(42.04);
     params.setLongitude(-105.0);
@@ -104,8 +114,7 @@ public class NcssRequestParamsBeanTest {
 
     Set<ConstraintViolation<NcssParamsBean>> constraintViolations = validator.validate(params);
     assertEquals(1, constraintViolations.size());
-    assertEquals("Invalid data format for param time", constraintViolations.iterator().next().getMessage());
-
+    assertEquals(resolver.get("thredds.server.ncSubset.validation.param.time"), constraintViolations.iterator().next().getMessage());
   }
 
   @Test
@@ -121,7 +130,7 @@ public class NcssRequestParamsBeanTest {
 
     Set<ConstraintViolation<NcssParamsBean>> constraintViolations = validator.validate(params);
     assertEquals(1, constraintViolations.size());
-    assertEquals("Invalid data format for param time_duration", constraintViolations.iterator().next().getMessage());
+    assertEquals(resolver.get("thredds.server.ncSubset.validation.param.time_duration"), constraintViolations.iterator().next().getMessage());
   }
 
   @Test
@@ -137,7 +146,57 @@ public class NcssRequestParamsBeanTest {
 
     Set<ConstraintViolation<NcssParamsBean>> constraintViolations = validator.validate(params);
     assertEquals(1, constraintViolations.size());
-    assertEquals("Invalid data format for param time_window", constraintViolations.iterator().next().getMessage());
+    assertEquals(resolver.get("thredds.server.ncSubset.validation.param.time_window"), constraintViolations.iterator().next().getMessage());
   }
+
+  @Test
+ 	public void testNcssMissingLatLon(){
+
+ 		NcssParamsBean params = new NcssParamsBean();
+
+ 		params.setLongitude(-105.0);
+ 		params.setVar( Arrays.asList("var1", "var2") );
+ 		params.setAccept("text/csv");
+ 		params.setTime("2012-03-27T00:00:00Z");
+
+ 		Set<ConstraintViolation<NcssParamsBean>> constraintViolations = validator.validate(params);
+ 		assertEquals(1 , constraintViolations.size());
+    assertEquals(resolver.get("thredds.server.ncSubset.validation.lat_or_lon_missing"), constraintViolations.iterator().next().getMessage());
+ 	}
+
+ 	@Test
+ 	public void testNcssInvalidSubsetTypeMissingLon(){
+
+ 		NcssParamsBean params = new NcssParamsBean();
+ 		params.setLatitude(42.04);
+ 		params.setVar( Arrays.asList("var1", "var2") );
+ 		params.setAccept("text/csv");
+ 		params.setTime("2012-03-27T00:00:00Z");
+
+ 		Set<ConstraintViolation<NcssParamsBean>> constraintViolations = validator.validate(params);
+ 		assertEquals(1 , constraintViolations.size());
+    assertEquals(resolver.get("thredds.server.ncSubset.validation.lat_or_lon_missing"), constraintViolations.iterator().next().getMessage());
+ 	}
+
+  @Test
+ 	public void testNcssBBSubsetType(){
+
+ 		NcssParamsBean params = new NcssParamsBean();
+ 		params.setNorth(43.0);
+ 		params.setSouth(38.0);
+ 		params.setWest(-107.0);
+ 		params.setEast(-102.0);
+ 		params.setVar( Arrays.asList("var1", "var2") );
+ 		params.setAccept("text/csv");
+ 		params.setTime("2012-03-27T00:00:00Z");
+
+
+ 		Set<ConstraintViolation<NcssParamsBean>> constraintViolations = validator.validate(params);
+ 		assertEquals(0 , constraintViolations.size());
+ 		//assertEquals("Wrong subset type", constraintViolations.iterator().next().getMessage());
+
+ 	}
+
+
 
 }

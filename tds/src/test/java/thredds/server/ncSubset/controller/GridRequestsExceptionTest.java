@@ -84,7 +84,7 @@ public class GridRequestsExceptionTest {
     NcssParamsBean params;
 		BindingResult validationResult;
 		params = new NcssParamsBean();
-		params.setAllTimes(true);
+		params.setTemporal("all");
 		List<String> vars = new ArrayList<String>();
 		vars.add("Relative_humidity");
 		vars.add("Temperature");

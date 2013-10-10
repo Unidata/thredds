@@ -61,7 +61,7 @@ import javax.validation.Payload;
 @Documented
 public @interface TimeParamsConstraint {
 	
-	String message() default "{thredds.server.ncSubset.validation.ncsstimeparamsvalidator}";
+	String message() default "{thredds.server.ncSubset.validation.timeparams}";
 	
 	Class<?>[] groups() default {};
 	

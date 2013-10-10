@@ -127,9 +127,6 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
            throw new UnsupportedOperationException("Feature Type "+ft.toString()+" not supported");
        }
 
-     } catch (Throwable t) {
-       log.error("NCSS request failed query="+ req.getQueryString(), t);
-
       } finally {
        if (fd != null) fd.close();
      }

@@ -37,7 +37,7 @@ public class NcssRequestValidator implements ConstraintValidator<NcssRequestCons
 			if ( !params.hasLatLonPoint()){
 				isValid = false;
 				constraintValidatorContext
-				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.subsettypeerror.lat_or_lon_missing}")
+				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.lat_or_lon_missing}")
 				.addConstraintViolation();
 			}
 		}
@@ -58,22 +58,10 @@ public class NcssRequestValidator implements ConstraintValidator<NcssRequestCons
       if( !params.hasProjectionBB()){
 				isValid = false;
 				constraintValidatorContext
-				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.wrong_bbox}")
+				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.wrong_pbox}")
 				.addConstraintViolation();
 			}
 		}
-
-    // time range
-    if( params.getTime_start() != null || params.getTime_end() != null ||  params.getTime_duration() != null) {
-      try {
-        params.getCalendarDateRange();
-      } catch (Throwable t) {
-        isValid = false;
-    				constraintValidatorContext
-    				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.ncsstimeparamsvalidator}")
-    				.addConstraintViolation();
-  		}
-    }
 
 		return isValid;
 	}

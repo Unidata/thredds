@@ -21,7 +21,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface NcssRequestConstraint {
 
-	String message() default "{thredds.server.ncSubset.validation.wrong_bbox}";
+	String message() default "{thredds.server.ncSubset.validation.failure}";
 
 	Class<?>[] groups() default {};
 

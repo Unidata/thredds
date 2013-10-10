@@ -1,5 +1,6 @@
 package thredds.server.ncSubset.params;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.validation.NcssRequestConstraint;
 import thredds.server.ncSubset.validation.TimeParamsConstraint;
@@ -22,6 +23,7 @@ import java.util.List;
  * @since 10/5/13
  */
 
+@TimeParamsConstraint
 @NcssRequestConstraint
 public class NcssParamsBean {
 
@@ -30,21 +32,22 @@ public class NcssParamsBean {
   @VarParamConstraint
  	private List<String> var;
 
- 	@Valid
+ 	@DateTimeFormat
  	private String time_start;
 
- 	@Valid
+  @DateTimeFormat
  	private String time_end;
 
- 	@Valid
+  @DateTimeFormat
  	private String time_duration;
 
- 	@Valid
+  @DateTimeFormat
  	private String time_window;  // WTF ??
 
+  @DateTimeFormat
  	private String time;
 
-  private boolean allTimes;
+  private String temporal;  // == all
 
  	private Double north;
 
@@ -282,12 +285,16 @@ public class NcssParamsBean {
     return stns != null && !stns.isEmpty();
   }
 
-  public boolean isAllTimes() {
-    return allTimes;
+  public String getTemporal() {
+    return temporal;
   }
 
-  public void setAllTimes(boolean allTimes) {
-    this.allTimes = allTimes;
+  public void setTemporal(String temporal) {
+    this.temporal = temporal;
+  }
+
+  public boolean isAllTimes() {
+    return temporal != null && temporal.equalsIgnoreCase("all");
   }
 
   public TimeDuration parseTimeDuration() throws NcssException {
