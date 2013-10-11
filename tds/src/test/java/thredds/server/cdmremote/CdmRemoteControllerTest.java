@@ -19,8 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.test.util.xml.NcmlParserUtil;
-import thredds.test.util.xml.XmlUtil;
+import thredds.util.xml.NcmlParserUtil;
+import thredds.util.xml.XmlUtil;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamIosp;
