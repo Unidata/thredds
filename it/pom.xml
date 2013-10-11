@@ -58,6 +58,11 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
+      <artifactId>clcommon</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
       <artifactId>grib</artifactId>
     </dependency>
 
@@ -69,12 +74,6 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>visadCdm</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>edu.wisc.ssec</groupId>
-      <artifactId>visad</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -208,7 +207,7 @@
           </container>
           <configuration>
             <properties>
-              <cargo.jvmargs>-Dtds.content.root.path="/share/testcatalogs/content" -Xmx1024m -server</cargo.jvmargs>
+              <cargo.jvmargs>-Dtds.content.root.path="/share/testdata/cdmUnitTest/it/content" -Xmx1024m -server</cargo.jvmargs>
               <cargo.servlet.port>8081</cargo.servlet.port>
               <cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
               <cargo.tomcat.shutdown.port>8006</cargo.tomcat.shutdown.port>

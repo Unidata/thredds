@@ -30,7 +30,6 @@ import com.eclipsesource.restfuse.annotation.HttpTest;
 @RunWith(HttpJUnitRunner.class)
 public class NcssIntegrationTest {
 
-
   @Rule
   public Destination destination = new Destination("http://localhost:8081");
 
@@ -40,19 +39,16 @@ public class NcssIntegrationTest {
 
   @HttpTest(method = Method.GET, path = "/thredds/ncss/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=all&accept=xml")
   public void checkBadRequest() {
-
     assertBadRequest(response);
   }
 
   @HttpTest(method = Method.GET, path = "/thredds/ncss/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=")
   public void checkBadGridRequestWhenNoVarParam() {
-
     assertBadRequest(response);
   }
 
   @HttpTest(method = Method.GET, path = "/thredds/ncss/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?latitude=40.019&longitude=-105.293")
   public void checkBadGridAsPointRequestWhenNoVarParam() {
-
     assertBadRequest(response);
   }
 
@@ -66,7 +62,6 @@ public class NcssIntegrationTest {
     XPath xPath = XPath.newInstance("/grid/point/data[@name='Temperature_isobaric']");
 
     assertEquals(1, xPath.selectNodes(doc).size());
-
   }
 
   @HttpTest(method = Method.GET, path = "/thredds/ncss/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=Temperature_isobaric")
@@ -77,8 +72,6 @@ public class NcssIntegrationTest {
     ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
 
     assertNotNull(gdsDataset.findGridByName("Temperature_isobaric"));
-
   }
-
 
 }

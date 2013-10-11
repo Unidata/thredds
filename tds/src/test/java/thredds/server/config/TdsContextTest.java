@@ -13,7 +13,7 @@ import thredds.mock.web.TdsContentRootPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"},loader=MockTdsContextLoader.class)
-@TdsContentRootPath(path = "/share/testcatalogs/content")
+@TdsContentRootPath(path = "/share/testdata/cdmUnitTest/it/content")
 public class TdsContextTest {
 
 	@Autowired

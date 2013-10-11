@@ -54,7 +54,6 @@ public class ConsistentDatesTest {
   @Context
   private Response response; // will be injected after every request
 
-
   private final DateTime[] expectedDateTime = {
           new DateTime("0000-01-16T06:00:00Z"),
           new DateTime("0000-02-15T16:29:05.999Z"),
