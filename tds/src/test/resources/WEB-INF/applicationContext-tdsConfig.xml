@@ -39,7 +39,6 @@
         <entry key="share" value="${tds.dir.share}"/> 	
    </util:map>
 
-
   <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
 
   <bean id="htmlConfig" class="thredds.server.config.HtmlConfig">
