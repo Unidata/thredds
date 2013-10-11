@@ -162,7 +162,8 @@ public class CalendarDateFormatter {
    */
   static public CalendarDate isoStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException{
 	  DateTime dt = parseIsoTimeString(calt, iso);
-	  return new CalendarDate(calt, dt);
+    Calendar useCal = Calendar.of(dt.getChronology());
+	  return new CalendarDate(useCal, dt);
   }
 
   /**
@@ -227,6 +228,11 @@ public class CalendarDateFormatter {
       }
 
       if (isMinus) year = -year;
+
+      // kludge to deal with legacy files using year 0. // 10/10/2013 jcaron
+      if ((year == 0) && (calt == Calendar.gregorian)) {
+        calt = Calendar.proleptic_gregorian;
+      }
 
       // Get a DateTime object in this Chronology
       Chronology cron = Calendar.getChronology(calt);

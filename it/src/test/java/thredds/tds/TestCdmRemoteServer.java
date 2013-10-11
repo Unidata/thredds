@@ -47,10 +47,7 @@ import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 
-public class TestCdmRemoteServer extends TestCase {
-  public TestCdmRemoteServer( String name) {
-    super(name);
-  }
+public class TestCdmRemoteServer {
 
   public void testSingleDataset() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);

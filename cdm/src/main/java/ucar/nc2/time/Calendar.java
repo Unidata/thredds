@@ -1,7 +1,6 @@
 package ucar.nc2.time;
 
 import org.joda.time.Chronology;
-import org.joda.time.chrono.GregorianChronology;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.JulianChronology;
 import uk.ac.rdg.resc.edal.time.AllLeapChronology;
@@ -46,6 +45,7 @@ public enum Calendar {
    * Map of CF identifiers for calendar systems to joda-time Chronologies
    */
   private static final Map<Calendar, Chronology> CHRONOLOGIES = new HashMap<Calendar, Chronology>();
+  private static final Map<Chronology, Calendar> CALENDARS = new HashMap<Chronology, Calendar>();
 
   static {
     // Implements the Gregorian/Julian calendar system which is the calendar system used in most of the world. Wherever possible,
@@ -60,25 +60,30 @@ public enum Calendar {
     // instead of 1. The yearOfEra field produces results compatible with GregorianCalendar.
     // The Julian calendar does not have a year zero, and so year -1 is followed by year 1. If the Gregorian cutover date is
     // specified at or before year -1 (Julian), year zero is defined. In other words, the proleptic Gregorian chronology used by this class has a year zero.
-    CHRONOLOGIES.put(Calendar.gregorian, org.joda.time.chrono.GJChronology.getInstanceUTC());
+    associate(Calendar.gregorian, org.joda.time.chrono.GJChronology.getInstanceUTC());
 
     // Implements a pure proleptic Gregorian calendar system, which defines every fourth year as leap, unless the year
     // is divisible by 100 and not by 400. This improves upon the Julian calendar leap year rule.
     // Although the Gregorian calendar did not exist before 1582 CE, this chronology assumes it did, thus it is proleptic.
     // This implementation also fixes the start of the year at January 1, and defines the year zero.
-    CHRONOLOGIES.put(Calendar.proleptic_gregorian, ISOChronology.getInstanceUTC());
-    CHRONOLOGIES.put(Calendar.none, ISOChronology.getInstanceUTC());
+    associate(Calendar.none, ISOChronology.getInstanceUTC());
+    associate(Calendar.proleptic_gregorian, ISOChronology.getInstanceUTC());
 
     // Implements a pure proleptic Julian calendar system, which defines every fourth year as leap. This implementation follows
     // the leap year rule strictly, even for dates before 8 CE, where leap years were actually irregular. In the Julian calendar,
     // year zero does not exist: 1 BCE is followed by 1 CE.
     // Although the Julian calendar did not exist before 45 BCE, this chronology assumes it did, thus it is proleptic.
     // This implementation also fixes the start of the year at January 1.
-    CHRONOLOGIES.put(Calendar.julian, JulianChronology.getInstanceUTC());
+    associate(Calendar.julian, JulianChronology.getInstanceUTC());
 
-    CHRONOLOGIES.put(Calendar.all_leap, AllLeapChronology.getInstanceUTC());
-    CHRONOLOGIES.put(Calendar.noleap, NoLeapChronology.getInstanceUTC());
-    CHRONOLOGIES.put(Calendar.uniform30day, ThreeSixtyDayChronology.getInstanceUTC());
+    associate(Calendar.all_leap, AllLeapChronology.getInstanceUTC());
+    associate(Calendar.noleap, NoLeapChronology.getInstanceUTC());
+    associate(Calendar.uniform30day, ThreeSixtyDayChronology.getInstanceUTC());
+  }
+
+  static private void associate(Calendar cal, Chronology cron) {
+    CHRONOLOGIES.put(cal, cron);
+    CALENDARS.put(cron, cal);
   }
 
   /**
@@ -89,6 +94,16 @@ public enum Calendar {
   static Chronology getChronology(Calendar cal) {
     if (cal == null) cal = getDefault();
     return CHRONOLOGIES.get(cal);
+  }
+
+  /**
+   * Return Calendar corresponding to this joda Chronology corresponding to this Calendar.
+   * @param cron want this Calendar, or null to use the default.
+   * @return Calendar corresponding to this joda Chronology
+   */
+  static Calendar of(Chronology cron) {
+    if (cron == null) return getDefault();
+    return CALENDARS.get(cron);
   }
 
 }

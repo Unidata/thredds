@@ -72,6 +72,12 @@
     </dependency>
 
     <dependency>
+      <groupId>edu.wisc.ssec</groupId>
+      <artifactId>visad</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
     </dependency>

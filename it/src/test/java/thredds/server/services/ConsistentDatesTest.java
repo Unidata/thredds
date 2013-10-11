@@ -72,21 +72,21 @@ public class ConsistentDatesTest {
 
   private final List<DateTime> expectedDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
   //private final List<DateTime> expectedWMSDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
-  
+
   //Dates for noleap calendar
-  private final CalendarDate[] expectedCalendarDates={
-		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T03:00:00Z"),
-		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T06:00:00Z"),
-		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T09:00:00Z"),
-		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T12:00:00Z"),
-		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T15:00:00Z"),
-		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T18:00:00Z"),
-		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-28T21:00:00Z"),
-		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-29T00:00:00Z"),
-		  CalendarDate.parseISOformat( Calendar.uniform30day.toString(), "2038-12-29T03:00:00Z")
+  private final CalendarDate[] expectedCalendarDates = {
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T03:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T06:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T09:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T12:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T15:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T18:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-28T21:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-29T00:00:00Z"),
+          CalendarDate.parseISOformat(Calendar.uniform30day.toString(), "2038-12-29T03:00:00Z")
   };
-  
-  private final List<CalendarDate> expectedDatesAsCalendarDate = Collections.unmodifiableList(Arrays.asList(expectedCalendarDates));  
+
+  private final List<CalendarDate> expectedDatesAsCalendarDate = Collections.unmodifiableList(Arrays.asList(expectedCalendarDates));
 
   @Before
   public void setUp() {
@@ -134,13 +134,13 @@ public class ConsistentDatesTest {
     // old way - deprecated
     //XPath xPath = XPath.newInstance("//wcs:temporalDomain/gml:timePosition");
     //xPath.addNamespace("wcs", doc.getRootElement().getNamespaceURI());
-   // List<Element> timePositionNodes = xPath.selectNodes(doc);
+    // List<Element> timePositionNodes = xPath.selectNodes(doc);
 
     Namespace wcs = Namespace.getNamespace("wcs", doc.getRootElement().getNamespaceURI());
     Namespace gml = Namespace.getNamespace("gml", "http://www.opengis.net/gml");
     XPathExpression<Element> xpath =
-        XPathFactory.instance().compile("//wcs:temporalDomain/gml:timePosition", Filters.element(),
-                null, wcs, gml);
+            XPathFactory.instance().compile("//wcs:temporalDomain/gml:timePosition", Filters.element(),
+                    null, wcs, gml);
     List<Element> timePositionNodes = xpath.evaluate(doc);
 
     List<DateTime> timePositionDateTime = new ArrayList<DateTime>();
@@ -168,7 +168,7 @@ public class ConsistentDatesTest {
     //List<Element> dataTimeNodes = xPath.selectNodes(doc);
 
     XPathExpression<Element> xpath =
-        XPathFactory.instance().compile("/grid/point/data[@name='date']", Filters.element());
+            XPathFactory.instance().compile("/grid/point/data[@name='date']", Filters.element());
     List<Element> dataTimeNodes = xpath.evaluate(doc);
 
     List<DateTime> timePositionDateTime = new ArrayList<DateTime>();
@@ -180,52 +180,62 @@ public class ConsistentDatesTest {
     assertTrue(timePositionDateTime.equals(expectedDatesAsDateTime));
 
   }
-  
+
+  // PF5_SST_Climatology:  :units = "hour since 0000-01-01 00:00:00";
   @HttpTest(method = Method.GET, path = "thredds/ncss/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=netcdf")
   public void checkNCSSDatesInNetcdf() throws JDOMException, IOException {
 
     assertOk(response);
     assertTrue(response.hasBody());
-	NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getBody(byte[].class) );			
-	NetcdfDataset ds =new NetcdfDataset(nf);
-	
-	CoordinateAxis1D tAxis = (CoordinateAxis1D) ds.findCoordinateAxis("time");
-	Attribute calendarAtt = tAxis.findAttribute(CF.CALENDAR);
-	Calendar calendar;
-	if(calendarAtt == null){
-		calendar = Calendar.getDefault();
-	}else{
-		calendar = Calendar.get(calendarAtt.getStringValue()); 
-	} 
-	Attribute units = tAxis.findAttribute(CDM.UNITS);
-	double[] values = tAxis.getCoordValues();
-	
-	List<DateTime> ccdd = new ArrayList<DateTime>();
-	CalendarDateUnit dateUnit = CalendarDateUnit.withCalendar(calendar, units.getStringValue() );
-	for(int i =0; i<values.length; i++){
-		CalendarDate cd = dateUnit.makeCalendarDate(values[i]);
-		ccdd.add(new DateTime(cd.getMillis()) );
-	}
-	
-	assertTrue(ccdd.equals(expectedDatesAsDateTime));
-	
-	//FAIL!!! ???
-	//CoordinateAxis1DTime tAxis2 = CoordinateAxis1DTime.factory(ds, ds.findCoordinateAxis("time") , null);	
-	//assertTrue(tAxis2.getCalendarDates().equals(expectedDatesAsDateTime));
+    NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getBody(byte[].class));
+    NetcdfDataset ds = new NetcdfDataset(nf);
+
+    CoordinateAxis1D tAxis = (CoordinateAxis1D) ds.findCoordinateAxis("time");
+    Attribute calendarAtt = tAxis.findAttribute(CF.CALENDAR);
+    Calendar calendar;
+    if (calendarAtt == null) {
+      calendar = Calendar.getDefault();
+    } else {
+      calendar = Calendar.get(calendarAtt.getStringValue());
+    }
+    Attribute units = tAxis.findAttribute(CDM.UNITS);
+    double[] values = tAxis.getCoordValues();
+
+    List<DateTime> ccdd = new ArrayList<DateTime>();
+    CalendarDateUnit dateUnit = CalendarDateUnit.withCalendar(calendar, units.getStringValue());
+    for (double value : values) {
+      CalendarDate cd = dateUnit.makeCalendarDate(value);
+      ccdd.add(new DateTime(cd.getMillis()));
+    }
+
+    assertTrue(ccdd.equals(expectedDatesAsDateTime));
+
+    //FAIL!!! ???
+    //CoordinateAxis1DTime tAxis2 = CoordinateAxis1DTime.factory(ds, ds.findCoordinateAxis("time") , null);
+    //assertTrue(tAxis2.getCalendarDates().equals(expectedDatesAsDateTime));
   }
-  
-  
+
+
+  /*  pr_HRM3_2038-2070.CO.nc:
+
+    double time(time=95040);
+      :units = "days since 2038-01-01 00:00:00";
+      :standard_name = "time";
+      :long_name = "time";
+      :calendar = "360_day";
+      :bounds = "time_bnds";
+   */
   @HttpTest(method = Method.GET, path = "thredds/ncss/ncssTest/pr_HRM3_2038-2070.CO.nc?var=pr&latitude=40.019&longitude=-105.293&time_start=2038-01-01T03%3A00%3A00Z&time_end=2038-01-02T03%3A00%3A00Z&accept=netcdf")
   public void checkNCSSDatesInNetcdfWithCalendars() throws JDOMException, IOException {
 
     assertOk(response);
     assertTrue(response.hasBody());
-	NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getBody(byte[].class) );			
-	NetcdfDataset ds =new NetcdfDataset(nf);
-	
-	CoordinateAxis1DTime tAxis = CoordinateAxis1DTime.factory(ds, ds.findCoordinateAxis("time") , null);
-	
-	assertTrue(tAxis.getCalendarDates().equals(expectedDatesAsCalendarDate));
-  }  
+    NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getBody(byte[].class));
+    NetcdfDataset ds = new NetcdfDataset(nf);
+
+    CoordinateAxis1DTime tAxis = CoordinateAxis1DTime.factory(ds, ds.findCoordinateAxis("time"), null);
+
+    assertTrue(tAxis.getCalendarDates().equals(expectedDatesAsCalendarDate));
+  }
 
 }
