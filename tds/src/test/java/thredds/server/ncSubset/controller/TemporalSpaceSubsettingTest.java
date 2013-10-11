@@ -34,21 +34,17 @@ package thredds.server.ncSubset.controller;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -86,18 +82,18 @@ public class TemporalSpaceSubsettingTest {
 				
 		
 		return Arrays.asList( new Object[][]{
-				{ SupportedFormat.NETCDF3,  1, PathInfoParams.getPatInfo().get(4), null , null, null, null, null, null }, //No time subset provided
-				{ SupportedFormat.NETCDF3, 6, PathInfoParams.getPatInfo().get(3), "all", null, null, null, null, null }, //Requesting all
-				{ SupportedFormat.NETCDF3, 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T12:00:00.000Z", null, null, null, null }, //Single time on singleDataset
-				{ SupportedFormat.NETCDF3, 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T15:30:00.000Z", "PT3H", null, null, null }, //Single time in range with time_window
-				{ SupportedFormat.NETCDF3, 6, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", "2012-04-19T18:00:00.000Z", null }, //Time series on Best time series
-				{ SupportedFormat.NETCDF3, 5, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", null, "PT24H" }, //Time series on Best time series
-		    { SupportedFormat.NETCDF4,  1, PathInfoParams.getPatInfo().get(4), null , null, null, null, null, null }, //No time subset provided
-				{ SupportedFormat.NETCDF4, 6, PathInfoParams.getPatInfo().get(3), "all", null, null, null, null, null }, //Requesting all
-				{ SupportedFormat.NETCDF4, 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T12:00:00.000Z", null, null, null, null }, //Single time on singleDataset
-				{ SupportedFormat.NETCDF4, 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T15:30:00.000Z", "PT3H", null, null, null }, //Single time in range with time_window
-				{ SupportedFormat.NETCDF4, 6, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", "2012-04-19T18:00:00.000Z", null }, //Time series on Best time series
-				{ SupportedFormat.NETCDF4, 5, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", null, "PT24H" } //Time series on Best time series
+				{ SupportedFormat.NETCDF3,  1, PathInfoParams.getPathInfo().get(4), null , null, null, null, null, null }, //No time subset provided
+				{ SupportedFormat.NETCDF3, 6, PathInfoParams.getPathInfo().get(3), "all", null, null, null, null, null }, //Requesting all
+				{ SupportedFormat.NETCDF3, 1, PathInfoParams.getPathInfo().get(0), ""   , "2012-04-19T12:00:00.000Z", null, null, null, null }, //Single time on singleDataset
+				{ SupportedFormat.NETCDF3, 1, PathInfoParams.getPathInfo().get(0), ""   , "2012-04-19T15:30:00.000Z", "PT3H", null, null, null }, //Single time in range with time_window
+				{ SupportedFormat.NETCDF3, 6, PathInfoParams.getPathInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", "2012-04-19T18:00:00.000Z", null }, //Time series on Best time series
+				{ SupportedFormat.NETCDF3, 5, PathInfoParams.getPathInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", null, "PT24H" }, //Time series on Best time series
+		    { SupportedFormat.NETCDF4,  1, PathInfoParams.getPathInfo().get(4), null , null, null, null, null, null }, //No time subset provided
+				{ SupportedFormat.NETCDF4, 6, PathInfoParams.getPathInfo().get(3), "all", null, null, null, null, null }, //Requesting all
+				{ SupportedFormat.NETCDF4, 1, PathInfoParams.getPathInfo().get(0), ""   , "2012-04-19T12:00:00.000Z", null, null, null, null }, //Single time on singleDataset
+				{ SupportedFormat.NETCDF4, 1, PathInfoParams.getPathInfo().get(0), ""   , "2012-04-19T15:30:00.000Z", "PT3H", null, null, null }, //Single time in range with time_window
+				{ SupportedFormat.NETCDF4, 6, PathInfoParams.getPathInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", "2012-04-19T18:00:00.000Z", null }, //Time series on Best time series
+				{ SupportedFormat.NETCDF4, 5, PathInfoParams.getPathInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", null, "PT24H" } //Time series on Best time series
 				
 			});
 	}

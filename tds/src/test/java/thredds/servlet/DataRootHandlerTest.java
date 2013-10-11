@@ -22,7 +22,7 @@ public class DataRootHandlerTest {
 		
 		//datasetScan request path 
 		//reqPath ="/opendapTest/GFS_Puerto_Rico_191km_20100515_0000.grib1";
-		reqPath =PathInfoParams.getPatInfo().get(1);
+		reqPath =PathInfoParams.getPathInfo().get(1);
 		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 		assertNotNull(match);
 								
@@ -31,7 +31,7 @@ public class DataRootHandlerTest {
 	@Test
 	public void testAliasExpandersDatasetFeaturecollection(){
 		//featureCollection request path
-		reqPath =PathInfoParams.getPatInfo().get(3);
+		reqPath =PathInfoParams.getPathInfo().get(3);
 		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 		assertNotNull(match);		
 	}

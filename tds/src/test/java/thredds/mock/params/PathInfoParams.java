@@ -63,7 +63,7 @@ public final class PathInfoParams {
 		});		
 	}
 	
-	public static final List<String> getPatInfo(){
+	public static final List<String> getPathInfo(){
 		
 		return pathInfo;
 	}

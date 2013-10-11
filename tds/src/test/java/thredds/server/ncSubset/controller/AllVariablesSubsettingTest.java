@@ -76,7 +76,7 @@ public class AllVariablesSubsettingTest {
 		
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();	
 		//String servletPath = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);
-		String servletPath = FeatureDatasetController.getNCSSServletPath() + PathInfoParams.getPatInfo().get(0);
+		String servletPath = FeatureDatasetController.getNCSSServletPath() + PathInfoParams.getPathInfo().get(0);
 		
 		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath).param("var", "all");
 		

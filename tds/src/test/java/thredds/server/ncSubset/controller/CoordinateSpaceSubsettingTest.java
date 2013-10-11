@@ -36,18 +36,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -91,12 +88,12 @@ public class CoordinateSpaceSubsettingTest {
 	public static Collection<Object[]> getTestParameters(){
 				
 		return Arrays.asList( new Object[][]{
-				{ new int[][]{ {1,2,2}, {1,2,2} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getProjectionRect().get(0) }, //No vertical levels 
-				{ new int[][]{ {1,1,16,15}, {1,1,16,15} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
-				{ new int[][]{ {1,29,2,93}, {1,29,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), GridDataParameters.getProjectionRect().get(2) }, //Same vertical level (multiple level)
-				{ new int[][]{ {1,2,93}, {1,29,2,93}, {1,1,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(2)}, //No vertical levels and vertical levels
-				{ new int[][]{ {1,1,65,93}, {1,29,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(3)}, //Full extension
-				{ new int[][]{ {1,1,11,53}, {1,29,11,53} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(4)}  //Intersection				
+				{ new int[][]{ {1,2,2}, {1,2,2} } , PathInfoParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getProjectionRect().get(0) }, //No vertical levels
+				{ new int[][]{ {1,1,16,15}, {1,1,16,15} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
+				{ new int[][]{ {1,29,2,93}, {1,29,2,93} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(2), GridDataParameters.getProjectionRect().get(2) }, //Same vertical level (multiple level)
+				{ new int[][]{ {1,2,93}, {1,29,2,93}, {1,1,2,93} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(2)}, //No vertical levels and vertical levels
+				{ new int[][]{ {1,1,65,93}, {1,29,65,93} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(3)}, //Full extension
+				{ new int[][]{ {1,1,11,53}, {1,29,11,53} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(4)}  //Intersection
 			});	
 	
 	}
