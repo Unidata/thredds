@@ -35,16 +35,14 @@ package thredds.server.opendap;
 
 import junit.framework.TestCase;
 import opendap.dap.BaseType;
-import opendap.servers.CEEvaluator;
-import opendap.servers.ServerDDS;
-import opendap.servers.ServerMethods;
+import opendap.servers.*;
 import opendap.servlet.AsciiWriter;
 import opendap.servlet.GuardedDataset;
-import org.junit.Test;
-import ucar.nc2.util.UnitTestCommon;
+import thredds.server.opendap.GuardedDatasetCacheAndClone;
 import ucar.unidata.test.Diff;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+
 
 import java.io.*;
 import java.io.FileWriter;
@@ -52,7 +50,7 @@ import java.util.Enumeration;
 
 // Test that the Constraint parsing is correct
 
-public class TestCEEvaluator extends UnitTestCommon
+public class TestCEEvaluator extends TestCase
 {
     static boolean debug = true;
 
@@ -106,12 +104,22 @@ public class TestCEEvaluator extends UnitTestCommon
     public TestCEEvaluator(String name)
     {
         super(name);
-        this.testdir = threddsRoot + "/opendap/" +  this.testdir;
+        // Check to see if we are in the correct working directory
+        String userdir = System.getProperty( "user.dir" );
+        //if(userdir.endsWith("cdm")) {
+        if(userdir.endsWith("tds")) {
+            // we are being run under TestAll
+            this.testdir = "../opendap/" +  this.testdir;
+        }
     }
+
+    protected void setUp()
+    {
+    }
+
 
     //////////////////////////////////////////////////
 
-    @Test
     public void testCEEvaluator() throws Exception
     {
         if(generate) dogenerate();
@@ -122,7 +130,7 @@ public class TestCEEvaluator extends UnitTestCommon
     {
         File file;
         NetcdfFile ncfile;
-	GuardedDataset ds;
+        GuardedDataset ds;
         ServerDDS dds;
         StringWriter content;
         PrintWriter pw;
@@ -131,7 +139,7 @@ public class TestCEEvaluator extends UnitTestCommon
         boolean pass = true;
         String expectedfile = null;
 
-loop:   for(int i = 0; i < ntestsets && pass; i++) {
+loop:        for(int i = 0; i < ntestsets && pass; i++) {
             String[] testset = testsets[i];
             int ntests = (testset.length);
             String basename = testset[1];
@@ -148,6 +156,7 @@ loop:   for(int i = 0; i < ntestsets && pass; i++) {
                     file = new File(path);
                     ncfile = NetcdfDataset.openFile(file.getPath(), null);
                     if(ncfile == null) throw new FileNotFoundException(path);
+
                     ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
                     dds = ds.getDDS();
                     // force the name
@@ -256,6 +265,7 @@ loop:   for(int i = 0; i < ntestsets && pass; i++) {
             for(int j = 1; j < ntests; j++) {
                 String constraint = testset[j];
                 String testname = path + constraint;
+                dds = ds.getDDS();
                 ce = new CEEvaluator(dds);
                 ce.parseConstraint(constraint,null);
                 content = new FileWriter(String.format("%s.%02d.asc", path, j));
@@ -267,30 +277,5 @@ loop:   for(int i = 0; i < ntestsets && pass; i++) {
             }
         }
     }
-
-
-//    DataInputStream
-//    getData(String path)
-//    {
-//        try {
-//            // go get a file stream that points to the requested DDSfile.
-//            File fin = new File(path);
-//            FileInputStream fp_in = new FileInputStream(fin);
-//            DataInputStream dds_source = new DataInputStream(fp_in);
-//            return (dds_source);
-//        } catch (FileNotFoundException fnfe) {
-//            return (null);
-//        }
-//    }
-
-//    ServerDDS
-//    getDDS(DataInputStream)
-//    {
-//        // Get your class factory and instantiate the DDS
-//       BaseTypeFactory sfactory = new DefaultFactory();
-//       ServerDDS dds = new ServerDDS(path, sfactory, null);
-//       return dds;
-//    }
-
 }
 

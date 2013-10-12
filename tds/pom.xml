@@ -61,7 +61,10 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>visadCdm</artifactId>
-      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.wisc.ssec</groupId>
+      <artifactId>visad</artifactId>
     </dependency>
 
     <dependency>
@@ -409,9 +412,4 @@
       </plugin-->
     </plugins>
   </build>
-
-  <properties>
-    <!-- testContent.root.path>/share/testcatalogs/content</testContent.root.path-->
-    <testContent.root.path>content</testContent.root.path>
-  </properties>
 </project>

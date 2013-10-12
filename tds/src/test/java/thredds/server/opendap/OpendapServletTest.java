@@ -21,7 +21,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dods.DODSNetcdfFile;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"},loader=MockTdsContextLoader.class)
+@ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"}, loader=MockTdsContextLoader.class)
 public class OpendapServletTest {
 
 	@Autowired
@@ -51,10 +51,11 @@ public class OpendapServletTest {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
 		opendapServlet.doGet(request, response);
-		
+    assertEquals(200, response.getStatus());
+
 		String strResponse = response.getContentAsString();
-		
-		fail("Not yet implemented");
+		System.out.printf("%s%n",strResponse );
+		//fail("Not yet implemented");
 		
 	}
 	

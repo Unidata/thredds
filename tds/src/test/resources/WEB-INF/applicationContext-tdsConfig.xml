@@ -36,7 +36,8 @@
 
    <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
         <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
-        <entry key="share" value="${tds.dir.share}"/> 	
+        <entry key="testdata" value="${tds.dir.testdata}"/>
+        <entry key="share" value="${tds.dir.share}"/>
    </util:map>
 
   <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />

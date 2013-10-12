@@ -79,7 +79,7 @@ import ucar.unidata.util.StringUtil2;
  * @author edavis
  * @since 4.0
  */
-@Component
+@Component("tdsContext")
 public final class TdsContext implements ServletContextAware, InitializingBean, DisposableBean {
 
 //  ToDo Once Log4j config is called by Spring listener instead of ours, use this logger instead of System.out.println.
@@ -161,10 +161,16 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   public void setWebappVersion( String verFull ) { this.webappVersion = verFull; }
   public void setWebappVersionBuildDate( String buildDateString) { this.webappVersionBuildDate = buildDateString; }
 
-  public void setContentRootPath( String contentRootPath) {this.contentRootPath = contentRootPath; }
-  public String getContentRootPath( ) { return this.contentRootPath; }
+  public void setContentRootPath( String contentRootPath) {
+    this.contentRootPath = contentRootPath;
+  }
+  public String getContentRootPath( ) {
+    return this.contentRootPath;
+  }
 
-  public void setContentPath( String contentPath) {this.contentPath = contentPath; }
+  public void setContentPath( String contentPath) {
+    this.contentPath = contentPath;
+  }
   public void setStartupContentPath( String startupContentPath ) { this.startupContentPath = startupContentPath; }
   public void setIddContentPath( String iddContentPath ) { this.iddContentPath = iddContentPath; }
   public void setMotherlodeContentPath( String motherlodeContentPath ) { this.motherlodeContentPath = motherlodeContentPath; }

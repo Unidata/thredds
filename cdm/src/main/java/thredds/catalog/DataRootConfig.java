@@ -33,7 +33,7 @@
 package thredds.catalog;
 
 /**
- * ataRoot eleentg in a thredds config catalog.
+ * DataRoot element in a thredds config catalog.
  *
  * @author caron
  * @since Sep 14, 2009
@@ -48,6 +48,5 @@ public class DataRootConfig extends InvProperty {
   public boolean isCache() {
     return !nocache;
   }
-
 
 }

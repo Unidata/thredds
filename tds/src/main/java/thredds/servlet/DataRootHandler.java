@@ -160,7 +160,6 @@ public final class DataRootHandler implements InitializingBean {
 
   private List<ConfigListener> configListeners = new ArrayList<ConfigListener>();
 
-  //private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
   private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
 
   /**
@@ -209,6 +208,16 @@ public final class DataRootHandler implements InitializingBean {
       dataRootLocationAliasExpanders.add(new StartsWithPathAliasReplacement("${" + key + "}", value));
     }
   }
+
+  /* private String expandAlias(String org) {
+    if (org == null) return null;
+    String path = StringUtils.cleanPath(org);
+    for (PathAliasReplacement e : dataRootLocationAliasExpanders)  {
+      String result = e.replaceIfMatch(path);
+      if (result != null) return result;
+    }
+    return null;
+  } */
 
 
   //////////////////////////////////////////////
@@ -363,6 +372,7 @@ public final class DataRootHandler implements InitializingBean {
   private void initCatalog(String path, boolean recurse, boolean cache) throws IOException {
     path = StringUtils.cleanPath(path);
     File f = this.tdsContext.getConfigFileSource().getFile(path);
+    // System.out.printf("catalog %s -> %s%n", path, f.getAbsolutePath());
 
     if (f == null) {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
@@ -757,6 +767,7 @@ public final class DataRootHandler implements InitializingBean {
   private boolean addRoot(DataRootConfig config, boolean wantErr) {
     String path = config.getName();
     String location = config.getValue();
+
     // check for duplicates
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
@@ -820,13 +831,13 @@ public final class DataRootHandler implements InitializingBean {
     DataRoot(InvDatasetScan scan) {
       this.path = scan.getPath();
       this.scan = scan;
-      this.dirLocation = scan.getScanLocation();
+      this.dirLocation =  scan.getScanLocation();
       this.datasetRootProxy = null;
     }
 
     DataRoot(String path, String dirLocation, boolean cache) {
       this.path = path;
-      this.dirLocation = dirLocation;
+      this.dirLocation =  dirLocation;
       this.cache = cache;
       this.scan = null;
 
