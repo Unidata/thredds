@@ -205,7 +205,10 @@ public final class DataRootHandler implements InitializingBean {
     for (String key : aliases.keySet()) {
       String value = aliases.get(key);
       if (value == null || value.isEmpty()) continue;
-      dataRootLocationAliasExpanders.add(new StartsWithPathAliasReplacement("${" + key + "}", value));
+      StartsWithPathAliasReplacement alias = new StartsWithPathAliasReplacement("${" + key + "}", value);
+      dataRootLocationAliasExpanders.add(alias);
+      System.out.printf("alias= %s%n", alias);
+
     }
   }
 
@@ -817,6 +820,11 @@ public final class DataRootHandler implements InitializingBean {
       this.path = featCollection.getPath();
       this.featCollection = featCollection;
       this.dirLocation = featCollection.getTopDirectoryLocation();
+      show();
+    }
+
+    private void show() {
+      System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
     }
 
     DataRoot(InvDatasetFmrc fmrc) {
@@ -826,6 +834,7 @@ public final class DataRootHandler implements InitializingBean {
       InvDatasetFmrc.InventoryParams params = fmrc.getFmrcInventoryParams();
       if (null != params)
         dirLocation = params.location;
+      show();
     }
 
     DataRoot(InvDatasetScan scan) {
@@ -833,6 +842,7 @@ public final class DataRootHandler implements InitializingBean {
       this.scan = scan;
       this.dirLocation =  scan.getScanLocation();
       this.datasetRootProxy = null;
+      show();
     }
 
     DataRoot(String path, String dirLocation, boolean cache) {
@@ -842,6 +852,7 @@ public final class DataRootHandler implements InitializingBean {
       this.scan = null;
 
       makeProxy();
+      show();
     }
 
     void makeProxy() {

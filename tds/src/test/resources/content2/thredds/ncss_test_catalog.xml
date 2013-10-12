@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Unit Test Server: see thredds\tds\src\test\java\thredds\tds\TestTdsLocal.java"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <service name="all" base="" serviceType="compound">
+    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
+    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+  </service>
+
+  <!-- test FMRC -->
+  <featureCollection featureType="GRIB" name="GFS_CONUS_80km" path="ncss_tests">
+    <!--featureCollection featureType="GRIB" name="GFS_CONUS_80km" path="GFS_CONUS_80km/tests"-->
+    <dataFormat>GRIB-1</dataFormat>
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <dataType>Grid</dataType>
+
+      <documentation type="summary">NCEP GFS Model : AWIPS 202 (I) Grid. National - CONUS (polar stereographic).
+        Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
+        Horizontal = 65 by 43 points, resolution 190.5 km, Polar Stereographic projection.
+        Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
+        layers.
+      </documentation>
+    </metadata>
+
+    <collection spec="${testdata}/ncss/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" olderThan="10 min"/>
+    <update startup="true" trigger="allow"/>
+    <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+
+  </featureCollection>
+
+
+</catalog>

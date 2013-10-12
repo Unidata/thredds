@@ -29,7 +29,7 @@
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
     <property name="locations">
       <list>
-        <value>classpath:thredds/server/tds.properties</value>
+        <value>classpath:WEB-INF/classes/thredds/server/tds.properties</value>
       </list>
     </property>
   </bean>
@@ -37,7 +37,7 @@
    <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
         <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
         <entry key="testdata" value="${tds.dir.testdata}"/>
-        <entry key="share" value="${tds.dir.share}"/>
+        <entry key="ncss" value="${tds.dir.ncss}"/>
    </util:map>
 
   <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />

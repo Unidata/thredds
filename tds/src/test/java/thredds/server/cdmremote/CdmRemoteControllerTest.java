@@ -38,12 +38,10 @@ public class CdmRemoteControllerTest {
 
   @Before
   public void setUp() {
-
     //Same dataset for all tests ???
     request = new MockHttpServletRequest("GET", "/thredds/cdmremote/NCOF/POLCOMS/IRISH_SEA/files/20060925_0600.nc");
     request.setServletPath("/thredds/cdmremote");
     request.setPathInfo("/NCOF/POLCOMS/IRISH_SEA/files/20060925_0600.nc");
-
   }
 
   @Test

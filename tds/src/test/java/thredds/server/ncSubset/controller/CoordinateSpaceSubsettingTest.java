@@ -111,7 +111,8 @@ public class CoordinateSpaceSubsettingTest {
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();		
 		//String servletPath = AbstractNcssDataRequestController.servletPath + pathInfo;
 		String servletPath = FeatureDatasetController.servletPath + pathInfo;
-				
+    System.out.printf("servletPath=%s%n", servletPath);
+
 		Iterator<String> it = vars.iterator();
 		String varParamVal = it.next();
 		while(it.hasNext()){
@@ -129,7 +130,7 @@ public class CoordinateSpaceSubsettingTest {
 	}
 	
 	@Test
-	public void shoudSubsetGrid() throws Exception{
+	public void shouldSubsetGrid() throws Exception{
 				
 		MvcResult mvc = this.mockMvc.perform(requestBuilder).andReturn();
 		assertEquals(200, mvc.getResponse().getStatus());

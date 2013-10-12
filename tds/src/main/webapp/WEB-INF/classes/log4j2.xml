@@ -47,7 +47,7 @@
       <DefaultRolloverStrategy max="3"/>
     </RollingFile>
 
-    <Console name="consoleLogger" target="SYSTEM_OUT">
+    <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p %c: %m%n"/>
     </Console>
 
@@ -59,8 +59,9 @@
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-     <logger name="thredds.servlet.DataRootHandler.catalogInit" level="info" additivity="false">
+     <logger name="thredds.servlet.DataRootHandler.catalogInit" level="debug" additivity="false">
       <appender-ref ref="catalogInit"/>
+      <appender-ref ref="console"/>
     </logger>
 
     <logger name="thredds.catalog.parser" level="info" additivity="false">
@@ -159,6 +160,10 @@
 
     <logger name="thredds.server.metadata" level="warn" additivity="false">
       <appender-ref ref="threddsServlet"/>
+    </logger>
+
+    <logger name="org.springframework.beans.factory" level="debug" additivity="false">
+      <appender-ref ref="serverStartupAppender"/>
     </logger>
 
     <logger name="org.springframework" level="info" additivity="false">
