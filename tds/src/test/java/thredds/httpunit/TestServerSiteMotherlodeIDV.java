@@ -57,7 +57,7 @@ public class TestServerSiteMotherlodeIDV extends TestCase
   private WebConversation wc;
 
   /** The TDS site to test. */
-  private String host = "motherlode.ucar.edu:8080";
+  private String host = "thredds.ucar.edu";
 
   String latestString = "dqc/latestModel-InvCat1.0";
   String latestOldString = "dqc/latestModel-InvCat0.6";

@@ -47,7 +47,7 @@ import java.io.*;
 public class TestOutstandingIssues extends TestCase {
 
   public void testByteAttribute() throws IOException {
-    String filename = "dods://localhost:8080/thredds/dodsC/CdataScan/profiler/PROFILER_wind_06min_20070514_2354.nc";
+    String filename = TestLocalDodsServer.server+"CdataScan/profiler/PROFILER_wind_06min_20070514_2354.nc";
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename, true, null);
     assert ncd != null;
     VariableDS v = (VariableDS) ncd.findVariable("uvQualityCode");

@@ -414,7 +414,7 @@ public class FeatureDatasetPointXML {
     ); */
 
     doOne("Q:/cdmUnitTest/ft/point/ship/nc/Surface_Buoy_20090920_0000.nc",
-            "http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/buoy/collection",
+            "http://thredds.ucar.edu/thredds/cdmremote/idd/buoy/collection",
             "C:/tmp/pointCapabilities.xml"
     );
 

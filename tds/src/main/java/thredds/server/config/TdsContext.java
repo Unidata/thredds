@@ -168,6 +168,11 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     return this.contentRootPath;
   }
 
+  public String getContentRootPathAbsolute( ) {
+    File abs = new File(this.contentRootPath);
+    return abs.getAbsolutePath();
+  }
+
   public void setContentPath( String contentPath) {
     this.contentPath = contentPath;
   }

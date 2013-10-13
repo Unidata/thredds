@@ -47,8 +47,8 @@ import java.util.List;
  */
 public class TestLocalDodsServer {
 
-  public static String alldata = "dods://localhost:8080/thredds/dodsC/ncdodsTest/";
-  public static String testdata = "dods://localhost:8080/thredds/dodsC/ncdodsTest/";
+  public static String server = "dods://localhost:8081/thredds/dodsC/";
+  public static String testdata = server + "ncdodsTest/";
 
   public static junit.framework.Test suite() {
     TestSuite suite = new TestSuite();
@@ -60,7 +60,7 @@ public class TestLocalDodsServer {
   }
 
   public static void doit() throws IOException {
-    NetcdfFile ncd = NetcdfDataset.openFile("thredds:resolve:http://motherlode.ucar.edu:9080/thredds/dodsC/station/metar/latest.xml",null);
+    NetcdfFile ncd = NetcdfDataset.openFile("thredds:resolve:http://thredds.ucar.edu/thredds/dodsC/station/metar/latest.xml",null);
 
     List vars = ncd.getVariables();
     for (int i = 0; i < vars.size(); i++) {

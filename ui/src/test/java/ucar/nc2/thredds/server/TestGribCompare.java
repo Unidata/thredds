@@ -92,8 +92,8 @@ public class TestGribCompare {
 
   }
 
-  static String serverOld = "http://motherlode.ucar.edu:8080";
-  static String serverNew = "http://motherlode.ucar.edu:9080";
+  static String serverOld = "http://thredds.ucar.edu";
+  static String serverNew = "http://thredds-dev.ucar.edu";
   static Random random = new Random(System.currentTimeMillis());
 
   public static void main(String args[]) throws Exception {

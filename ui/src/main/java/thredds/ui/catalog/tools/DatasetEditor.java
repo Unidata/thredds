@@ -892,7 +892,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
     java.net.Authenticator.setDefault(new UrlAuthenticatorDialog(frame));
 
     // String url = "http://uni10.unidata.ucar.edu:8088/thredds/content/idd/models.xml";
-    String url = "http://motherlode.ucar.edu:8088/thredds/content/idd/models.xml";
+    String url = "http://thredds.ucar.edu/thredds/content/idd/models.xml";
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     cat = catFactory.readXML(url);
     InvDatasetImpl ds = (InvDatasetImpl) cat.findDatasetByID("NCEP/NAM/V");

@@ -51,7 +51,7 @@ public class TestServerSiteIDD extends TestCase
   private WebConversation wc;
 
   /** The TDS site to test. */
-  private String host = "motherlode.ucar.edu:8088";
+  private String host = "thredds.ucar.edu";
 
   private String targetUrl = "http://" + host + "/thredds/";
 

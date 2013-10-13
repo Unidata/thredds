@@ -64,7 +64,7 @@ public class TestUriResolver extends TestCase
     URI uri = null;
     try
     {
-      uri = new URI( "http://motherlode.ucar.edu:8080/thredds/catalog.xml");
+      uri = new URI( "http://thredds.ucar.edu/thredds/catalog.xml");
     }
     catch ( URISyntaxException e )
     {

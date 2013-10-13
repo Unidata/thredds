@@ -42,7 +42,7 @@ public class TdsTestUtils
 {
   public static String getTargetTdsUrl()
   {
-    String server = System.getProperty( "thredds.tds.test.server", "motherlode.ucar.edu" );
+    String server = System.getProperty( "thredds.tds.test.server", "thredds.ucar.edu" );
     String port = System.getProperty( "thredds.tds.test.port", "8080" );
     return "http://" + server + ( port != null ? ":" + port : "" ) + "/thredds/";
   }

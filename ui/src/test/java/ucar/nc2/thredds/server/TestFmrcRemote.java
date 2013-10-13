@@ -48,8 +48,8 @@ import java.io.IOException;
 public class TestFmrcRemote extends TimerTask {
   enum What {TwoD, BEST}
 
-  static private final String server1 = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/";
-  static private final String server2 = "http://motherlode.ucar.edu:9080/thredds/dodsC/fmrc/";
+  static private final String server1 = "http://thredds.ucar.edu/thredds/dodsC/fmrc/";
+  static private final String server2 = "http://thredds-dev.ucar.edu/thredds/dodsC/fmrc/";
 
   // fmrc
   static private final String latestPrefix = "thredds/catalog/fmrc/";

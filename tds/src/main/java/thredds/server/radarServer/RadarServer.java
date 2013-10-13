@@ -508,7 +508,7 @@ public class RadarServer extends AbstractServlet {
   public static void main(String args[]) throws IOException {
 
     // Function References
-    String path = "http://motherlode.ucar.edu:8081/thredds/radarServer/nexrad/level3/IDD/dataset.xml";
+    String path = "http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD/dataset.xml";
 
     try {
       catURI = new URI(StringUtil2.escape(path, "/:-_."));

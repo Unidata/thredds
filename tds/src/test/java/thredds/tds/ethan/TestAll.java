@@ -130,7 +130,7 @@ public class TestAll extends TestCase
   private boolean showDebug;
   private boolean verbose;
 
-  private String host = "motherlode.ucar.edu:8080";
+  private String host = "thredds.ucar.edu";
   private String[] catalogList;
 
   private String targetTdsUrl;
@@ -798,7 +798,7 @@ public class TestAll extends TestCase
     for ( String curCat : catList )
     {
       gcsMsg.append( "********************\n<h4>" ).append( curCat ).append( "</h4>\n\n<pre>\n" );
-      curCat = "http://motherlode.ucar.edu:8080/thredds/catalog/" + curCat + "/files/catalog.xml";
+      curCat = "http://thredds.ucar.edu/thredds/catalog/" + curCat + "/files/catalog.xml";
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       PrintStream out = new PrintStream( os );
       int numDs = 0;

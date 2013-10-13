@@ -330,7 +330,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void utestCdmRemote() throws IOException {
-    checkPointDataset("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
+    checkPointDataset("cdmremote:http://thredds.ucar.edu/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
     //checkPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal", FeatureType.STATION, true);
   }
 
@@ -338,7 +338,7 @@ public class TestPointFeatureTypes extends TestCase {
     //testDon3("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
     while (true) {
       // testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
-      testDon2("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", true);
+      testDon2("cdmremote:http://thredds.ucar.edu/thredds/cdmremote/idd/metar/gempak", true);
       Thread.sleep(60 * 1000);
     }
 

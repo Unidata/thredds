@@ -110,7 +110,7 @@ public class TestTDScompareWithFiles extends TestCase {
   private void doOne(String filename) throws IOException {
     filename = StringUtil2.replace(filename, '\\', "/");
     filename = StringUtil2.remove(filename, root);
-    String dodsUrl = TestLocalDodsServer.alldata+filename;
+    String dodsUrl = TestLocalDodsServer.testdata+filename;
     String localPath = root+filename;
     System.out.println("--Compare "+localPath+" to "+dodsUrl);
     compareDatasets(dodsUrl, localPath);

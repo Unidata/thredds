@@ -183,9 +183,9 @@ public class TestAuth extends UnitTestCommon
     }
 
     static AuthDataBasic[] basictests = {
-                new AuthDataBasic("http://motherlode.ucar.edu:8081/thredds/dodsC/restrict/testData.nc.html",
+                new AuthDataBasic("http://thredds-test.ucar.edu/thredds/dodsC/restrict/testData.nc.html",
                         "tiggeUser", "tigge", MUSTPASS),
-                new AuthDataBasic("http://motherlode.ucar.edu:8081/thredds/dodsC/restrict/testData.nc.html",
+                new AuthDataBasic("http://thredds-test.ucar.edu/thredds/dodsC/restrict/testData.nc.html",
                         "", "", MUSTFAIL)
         };
 

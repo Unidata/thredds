@@ -832,7 +832,7 @@ public class CFGridWriter {
 	}
 
 	public static void main(String args[]) throws IOException, InvalidRangeException, ParseException {
-		String fileIn = "dods://motherlode.ucar.edu/repository/entry/show/output:data.opendap/entryid:c41a3a26-57e5-4b15-b8b1-a8762b6f02c7/dodsC/entry";
+		String fileIn = "dods://thredds.ucar.edu/repository/entry/show/output:data.opendap/entryid:c41a3a26-57e5-4b15-b8b1-a8762b6f02c7/dodsC/entry";
 		String fileOut = "C:/temp/testCF.nc";
 
 		ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileIn);

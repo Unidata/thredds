@@ -66,7 +66,7 @@ public class PingTdsOnMotherlode8080
     @Test
     public void ping()
     {
-        String tdsUrl = "http://motherlode.ucar.edu:8080/thredds/";
+        String tdsUrl = "http://thredds.ucar.edu/thredds/";
 
         CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );
     }

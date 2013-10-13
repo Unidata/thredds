@@ -47,7 +47,7 @@ import ucar.nc2.util.IO;
  * @since Oct 6, 2008
  */
 public class TestWmsServer extends TestCase {
-  private String server = "http://localhost:8080/thredds/wms/";
+  private String server = "http://localhost:8081/thredds/wms/";
 
   public TestWmsServer( String name) {
     super(name);
@@ -59,7 +59,7 @@ public class TestWmsServer extends TestCase {
     getMap(dataset, "Pressure_surface", "C:/temp/wmsNAM.jpg");
   }
 
-  // http://localhost:8080/thredds/wms/testWMS/cmor_pcmdi.nc
+  // http://localhost:8081/thredds/wms/testWMS/cmor_pcmdi.nc
 
 
   public void testLatlon() throws IOException {
