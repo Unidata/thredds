@@ -181,7 +181,21 @@
     </netcdf>
   </dataset>
   -->
+
   <!-- test FMRC -->
+  <featureCollection featureType="FMRC" name="Test Feature Collection" path="testGridFeatureCollection">
+
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <dataType>Grid</dataType>
+    </metadata>
+
+ 	<!-- For unit testing data files are copied from resources to target. We use olderThan=0 thus the first scan finds something in the collection -->
+    <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.nc$" olderThan="0 min"/>
+    <update startup="true" rescan="* * 0/2 * * ? *" trigger="allow"/>
+    <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+  </featureCollection>
+
   <featureCollection featureType="FMRC" name="NAM FMRC" path="aggorama">
 
     <metadata inherited="true">

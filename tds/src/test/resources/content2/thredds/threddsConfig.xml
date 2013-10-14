@@ -141,10 +141,5 @@
     <alwaysUseCache>false</alwaysUseCache>
   </GribIndexing>
 
-  <AggregationCache>
-    <scour>24 hours</scour>
-    <maxAge>90 days</maxAge>
-  </AggregationCache>
-
 
 </threddsConfig>

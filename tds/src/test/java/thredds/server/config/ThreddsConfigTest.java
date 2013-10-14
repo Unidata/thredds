@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import thredds.servlet.ThreddsConfig;
 
+import java.io.File;
+
 public class ThreddsConfigTest {
 
 	private String threddsConfigPath;
@@ -17,24 +19,24 @@ public class ThreddsConfigTest {
 	public void setUp(){
 		
 		//It uses maven path for resources and default threddsConfig
-		//threddsConfigPath ="target/test-classes/WEB-INF/altContent/startup/threddsConfig.xml";
-		threddsConfigPath="target/test-classes/content/thredds/threddsConfig.xml";
+		//threddsConfigPath ="C:\dev\github\thredds3\tds\src\test\resources\content2\thredds\threddsConfig.xml"
+		threddsConfigPath="src/test/resources/content2/thredds/threddsConfig.xml";
+    File f = new File(threddsConfigPath);
+    System.out.printf("threddsConfigPath= %s exist=%s%n", f.getAbsolutePath(), f.exists());
 		ThreddsConfig.init(threddsConfigPath);
 	}
 	
 	@Test
 	public void testGet(){
-		
 		assertEquals("THREDDS Support", ThreddsConfig.get( "serverInformation.contact.name", null));
 		assertEquals("true", ThreddsConfig.get( "CatalogServices.allowRemote", null));
 		assertEquals("true", ThreddsConfig.get( "WMS.allow", null));
-		assertEquals( 8388608, ThreddsConfig.getBytes( "NetcdfSubsetService.maxFileDownloadSize", -1L));
+		assertEquals( 52428800, ThreddsConfig.getBytes( "NetcdfSubsetService.maxFileDownloadSize", -1L));
 	}
 	
 	@Test 
 	public void testHasElement(){
-	    
-	   assertFalse(ThreddsConfig.hasElement("AggregationCache") );	
+	   assertFalse(ThreddsConfig.hasElement("AggregationCache") );
 	}
 	
 	

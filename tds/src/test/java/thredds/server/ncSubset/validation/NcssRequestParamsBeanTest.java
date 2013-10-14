@@ -33,7 +33,7 @@ public class NcssRequestParamsBeanTest {
     if (is != null) {
       try {
         resolver.load(is);
-        // resolver.list(System.out);
+        resolver.list(System.out);
         is.close();
       } catch (IOException e) {
         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
