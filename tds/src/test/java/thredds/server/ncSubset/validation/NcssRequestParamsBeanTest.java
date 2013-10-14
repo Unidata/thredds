@@ -114,7 +114,8 @@ public class NcssRequestParamsBeanTest {
 
     Set<ConstraintViolation<NcssParamsBean>> constraintViolations = validator.validate(params);
     assertEquals(1, constraintViolations.size());
-    assertEquals(resolver.get("thredds.server.ncSubset.validation.param.time"), constraintViolations.iterator().next().getMessage());
+    Object expect = resolver.get("thredds.server.ncSubset.validation.param.time");
+    assertEquals(expect, constraintViolations.iterator().next().getMessage());
   }
 
   @Test

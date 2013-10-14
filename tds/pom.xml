@@ -274,18 +274,13 @@
       <testResource>
         <filtering>true</filtering>
         <directory>${basedir}/src/test/resources</directory>
-        <excludes>
-          <exclude>content/thredds/public/**</exclude>
-          <exclude>content/thredds/cache/**</exclude>
-          <exclude>content/thredds/logs/**</exclude>
-          <exclude>content/thredds/cataloggen/**</exclude>
-        </excludes>
       </testResource>
       <testResource>
         <filtering>false</filtering>
-        <directory>${basedir}/src/test/resources</directory>
+        <directory>${basedir}/src/main/webapp/WEB-INF/classes</directory>
         <includes>
-          <include>content/thredds/public/**</include>
+          <include>ValidationMessages.properties</include>
+          <include>log4j2.xml</include>
         </includes>
       </testResource>
     </testResources>

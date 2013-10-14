@@ -32,11 +32,9 @@ public class OpendapServletTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		
 		opendapServlet =new OpendapServlet();
 		opendapServlet.init(servletConfig);
 		opendapServlet.init();
-		
 	}
 	
 	@Test
@@ -47,7 +45,7 @@ public class OpendapServletTest {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);		
 		request.setContextPath("/thredds");
 		request.setQueryString(mockQueryString);
-		request.setPathInfo("/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1.ascii"); 
+		request.setPathInfo("/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1.ascii");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
 		opendapServlet.doGet(request, response);
@@ -55,31 +53,26 @@ public class OpendapServletTest {
 
 		String strResponse = response.getContentAsString();
 		System.out.printf("%s%n",strResponse );
-		//fail("Not yet implemented");
-		
 	}
 	
 	
 	@Test
 	public void dodsDataRequestTest() throws IOException{
 		
-		String mockURI = "/thredds/dodsC/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1.ascii";
-		String mockQueryString ="Temperature_height_above_ground[0:1:0][0:1:0][41][31]";
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);		
+    String mockURI = "/thredds/dodsC/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1.dods";
+    String mockQueryString ="Temperature_height_above_ground[0:1:0][0:1:0][41][31]";
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", mockURI);
 		request.setContextPath("/thredds");
 		request.setQueryString(mockQueryString);
-		request.setPathInfo("/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1.ascii"); 
+		request.setPathInfo("/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1.dods");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
 		opendapServlet.doGet(request, response);
+    assertEquals(200, response.getStatus());
+
 		assertEquals("application/octet-stream" , response.getContentType());
 
-		byte[] content = response.getContentAsByteArray();
-		
-		NetcdfFile nf = DODSNetcdfFile.openInMemory("test_data.dods", content );
-
-		
-		fail("Not yet implemented");
-	}	
+    String strResponse = response.getContentAsString();
+    System.out.printf("%s%n",strResponse );
+	}
 	
 }
