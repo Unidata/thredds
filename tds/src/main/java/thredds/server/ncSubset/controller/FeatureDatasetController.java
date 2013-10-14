@@ -106,8 +106,10 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
      FeatureDataset fd = null;
      try {
        fd = datasetService.findDatasetByPath(req, res, datasetPath);  // LOOK cant we get ft somewhere else first ?
-       if (fd == null)
-         throw new UnsupportedOperationException("Not a valid Feature Type dataset");
+       if (fd == null)  {
+         handleValidationErrorMessage(res, HttpServletResponse.SC_NOT_FOUND, "dataset path not found "+datasetPath);
+         return;
+       }
 
        Formatter errs = new Formatter();
        if (!params.intersectsTime(fd, errs)) {

@@ -32,6 +32,7 @@
  */
 package thredds.server.ncSubset.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -101,6 +102,16 @@ public class AbstractFeatureDatasetController {
  	}
 
 	// Exception handlers
+	@ExceptionHandler(FileNotFoundException.class)
+	public ResponseEntity<String> handle(FileNotFoundException ncsse) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>(
+				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
+				HttpStatus.NOT_FOUND);
+	}
+
+	// Exception handlers
 	@ExceptionHandler(NcssException.class)
 	public ResponseEntity<String> handle(NcssException ncsse) {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -109,7 +120,7 @@ public class AbstractFeatureDatasetController {
 				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
 				HttpStatus.BAD_REQUEST);
 	}
-	
+
 	// Exception handlers
 	@ExceptionHandler(UnsupportedOperationException.class)
 	public ResponseEntity<String> handle(UnsupportedOperationException ex) {

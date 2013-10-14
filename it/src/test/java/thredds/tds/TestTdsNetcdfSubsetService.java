@@ -51,8 +51,8 @@ public class TestTdsNetcdfSubsetService extends TestCase {
     String url = "/ncServer/gribCollection/NAM_CONUS_20km_surface_20060316_0000.grib1.nc?grid=K_index&grid=Sweat_index&west=-140&east=-90&north=50&south=20&time_start=3&time_end=12";
     File fileSave = new File("C:/TEMP/testNetcdfSubsetService.nc");
 
-    IO.readURLtoFile(TestTdsLocal.top +url, fileSave);
-    System.out.println("Copied "+ TestTdsLocal.top +url+" to "+fileSave.getPath());
+    IO.readURLtoFile(TestTdsLocal.topCatalog +url, fileSave);
+    System.out.println("Copied "+ TestTdsLocal.topCatalog +url+" to "+fileSave.getPath());
 
     NetcdfFile ncd = null;
     try {

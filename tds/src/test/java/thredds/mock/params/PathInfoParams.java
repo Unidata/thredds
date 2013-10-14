@@ -54,10 +54,10 @@ public final class PathInfoParams {
 	static{
 		
 		pathInfo =Arrays.asList( new String[]{
-				"/ncssUnitData/GFS/CONUS_80km/GFS_CONUS_80km_20120419_0000.nc",//single dataset
+				"/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc",//single dataset
 				"/testGridScan/GFS_CONUS_80km_20120419_0000.nc", //datasetScan
-				"/testGFSfmrc/Test_Feature_Collection_fmrc.ncd", //FeatureCollection --> TwoD
-				"/testGFSfmrc/Test_Feature_Collection_best.ncd", //FeatureCollection --> Best
+				"/testGFSfmrc/GFS_CONUS_80km_FMRC_fmrc.ncd", //FeatureCollection --> TwoD
+				"/testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd", //FeatureCollection --> Best
 				"/testGFSfmrc/files/GFS_CONUS_80km_20120418_1200.nc", //FeatureCollection --> Files
 				"/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z" //FeatureCollection --> Runs
 		});		

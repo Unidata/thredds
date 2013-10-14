@@ -110,6 +110,7 @@ public final class DataRootHandler implements InitializingBean {
   //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
   static private DataRootHandler singleton = null;
   static private final String ERROR = "*** ERROR ";
+  static private final boolean debug = false;
 
   /**
    * Initialize the DataRootHandler singleton instance.
@@ -207,7 +208,7 @@ public final class DataRootHandler implements InitializingBean {
       if (value == null || value.isEmpty()) continue;
       StartsWithPathAliasReplacement alias = new StartsWithPathAliasReplacement("${" + key + "}", value);
       dataRootLocationAliasExpanders.add(alias);
-      //System.out.printf("DataRootHandler alias= %s%n", alias);
+      if (debug) System.out.printf("DataRootHandler alias= %s%n", alias);
     }
   }
 
@@ -780,6 +781,7 @@ public final class DataRootHandler implements InitializingBean {
       return false;
     }
 
+    location =  expandAliasForDataRoot(location);
     File file = new File(location);
     if (!file.exists()) {
       logCatalogInit.error(ERROR + "DataRootConfig path =" + path + " directory= <" + location + "> does not exist");
@@ -792,6 +794,15 @@ public final class DataRootHandler implements InitializingBean {
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + location + ">");
     return true;
+  }
+
+  private String expandAliasForDataRoot(String location) {
+    for (PathAliasReplacement par : this.dataRootLocationAliasExpanders) {
+        String result =  par.replaceIfMatch(location);
+        if (result != null)
+          return result;
+    }
+    return location;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -823,7 +834,7 @@ public final class DataRootHandler implements InitializingBean {
     }
 
     private void show() {
-      System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
+      if (debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
     }
 
     DataRoot(InvDatasetFmrc fmrc) {

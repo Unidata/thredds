@@ -25,13 +25,14 @@
   <dataset name="Test latlon crossing seam" ID="testCrossingSeam" serviceName="all" urlPath="localContent/GFS_Global_onedeg_20120515_1200.grib2.nc" dataType="Grid"  />
   <dataset name="Test climatology" ID="testClimatology" serviceName="all" urlPath="cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc" dataType="Grid"  />
 
-  <dataset name="Test Single Grid Dataset" ID="testSingleGridDataset" serviceName="all" urlPath="cdmUnitTest/ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120419_0000.nc" dataType="Grid"/>
+  <dataset name="Test Single Grid Dataset" ID="testSingleGridDataset" serviceName="all" urlPath="cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc" dataType="Grid"/>
   <dataset name="Test Single Station Dataset" ID="testSingleStationDataset" serviceName="all" urlPath="cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc" dataType="Station"/>
 
    <datasetScan name="Test Scan Grids" ID="testGridScan" path="testGridScan" location="${cdmUnitTest}/ncss/GFS/CONUS_80km">
      <metadata inherited="true">
        <serviceName>all</serviceName>
        <dataType>Grid</dataType>
+       <dataFormat>GRIB-1</dataFormat>
      </metadata>
    </datasetScan>
 
@@ -48,7 +49,6 @@
   <datasetScan name="Test scan cdmUnitTest/tds" ID="testTdsScan" path="testTdsScan" location="${cdmUnitTest}/tds">
     <metadata inherited="true">
       <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
     </metadata>
 
     <addProxies>
@@ -172,7 +172,7 @@
   -->
 
   <!-- test FMRC -->
-  <featureCollection featureType="FMRC" name="GFS_CONUS_80km FMRC" path="testGFSfmrc">
+  <featureCollection featureType="FMRC" name="GFS_CONUS_80km_FMRC" path="testGFSfmrc">
 
     <metadata inherited="true">
       <serviceName>all</serviceName>
