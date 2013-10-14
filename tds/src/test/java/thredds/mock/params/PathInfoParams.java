@@ -55,7 +55,7 @@ public final class PathInfoParams {
 		
 		pathInfo =Arrays.asList( new String[]{
 				"/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc",//single dataset
-				"/testGridScan/GFS_CONUS_80km_20120419_0000.nc", //datasetScan
+				"/testGridScan/GFS_CONUS_80km_20120227_0000.grib1", //datasetScan
 				"/testGFSfmrc/GFS_CONUS_80km_FMRC_fmrc.ncd", //FeatureCollection --> TwoD
 				"/testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd", //FeatureCollection --> Best
 				"/testGFSfmrc/files/GFS_CONUS_80km_20120418_1200.nc", //FeatureCollection --> Files

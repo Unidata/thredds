@@ -67,7 +67,7 @@ public class ViewControllerTest{
 	public void testBadRequest() throws IOException{
 	
 		ViewerRequestParamsBean params = new ViewerRequestParamsBean();
-		params.setViewer("ToolsUI");
+		params.setViewer("BadViewer");
 		params.setCatalog("wrong_catalog.xml");//
 		params.setDataset("wrong_dataset.nc"); //		
 		BindingResult result = new BeanPropertyBindingResult(params, "params");

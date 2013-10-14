@@ -78,21 +78,6 @@ public class GridRequestsExceptionTest {
 		
 	}
 	
-	@Test(expected=RequestTooLargeException.class)
-	public void testRequestTooLargeException() throws Exception{
-			
-    NcssParamsBean params;
-		BindingResult validationResult;
-		params = new NcssParamsBean();
-		params.setTemporal("all");
-		List<String> vars = new ArrayList<String>();
-		vars.add("Relative_humidity");
-		vars.add("Temperature");
-		params.setVar(vars);		
-		validationResult = new BeanPropertyBindingResult(params, "params");
-		featureDatasetController.handleRequest(request, response, params, validationResult);
-	}
-	
 	@Test(expected=UnsupportedOperationException.class)
 	public void testUnsupportedOperationException() throws Exception{
     NcssParamsBean params;
