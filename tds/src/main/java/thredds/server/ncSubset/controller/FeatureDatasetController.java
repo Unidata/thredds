@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
+import java.util.Formatter;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -107,8 +108,14 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
        fd = datasetService.findDatasetByPath(req, res, datasetPath);  // LOOK cant we get ft somewhere else first ?
        if (fd == null)
          throw new UnsupportedOperationException("Not a valid Feature Type dataset");
-       FeatureType ft = fd.getFeatureType();
 
+       Formatter errs = new Formatter();
+       if (!params.intersectsTime(fd, errs)) {
+         handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, errs.toString());
+         return;
+       }
+
+       FeatureType ft = fd.getFeatureType();
        if (ft == FeatureType.GRID) {
 
          if (!params.hasLatLonPoint()) {

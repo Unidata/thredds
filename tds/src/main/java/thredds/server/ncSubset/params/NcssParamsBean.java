@@ -5,6 +5,9 @@ import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.validation.NcssRequestConstraint;
 import thredds.server.ncSubset.validation.TimeParamsConstraint;
 import thredds.server.ncSubset.validation.VarParamConstraint;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -12,8 +15,9 @@ import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
-import javax.validation.Valid;
 import java.text.ParseException;
+import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -310,7 +314,19 @@ public class NcssParamsBean {
 		return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), new LatLonPointImpl(getNorth(), getEast()));
 	}
 
+  private boolean hasValidTime;
+  private boolean hasValidDateRange;
+
+  public void setHasValidTime(boolean hasValidTime) {
+    this.hasValidTime = hasValidTime;
+  }
+
+  public void setHasValidDateRange(boolean hasValidDateRange) {
+    this.hasValidDateRange = hasValidDateRange;
+  }
+
   public CalendarDateRange getCalendarDateRange() throws ParseException {
+    if (!hasValidDateRange) return null;
 
 		DateRange dr;
 		if (time == null)
@@ -321,12 +337,42 @@ public class NcssParamsBean {
 		}
 
 		return CalendarDateRange.of(dr );
-
 	}
+
+  public CalendarDate getRequestedTime() throws ParseException {
+    if (!hasValidTime) return null;
+
+ 			CalendarDate date=null;
+ 			if( getTime().equalsIgnoreCase("present") ){
+ 				 return CalendarDate.of(new Date());
+ 			}
+
+    // default calendar (!)
+    return CalendarDateFormatter.isoStringToCalendarDate(null, getTime());
+ 	}
 
   public boolean isValidGridRequest() {
     return true;
-
   }
+
+  public boolean intersectsTime(FeatureDataset fd, Formatter errs) throws ParseException {
+    CalendarDateRange have =  fd.getCalendarDateRange();
+    if (have == null) return true;
+
+    CalendarDateRange want = getCalendarDateRange();
+    if (want != null) {
+      if (have.intersects(want)) {
+        return true;
+      } else {
+        errs.format("Requested Time Range %s does not intersect actual time range %s", want, have);
+        return false;
+      }
+    }
+
+    CalendarDate wantTime = getRequestedTime();
+    if (wantTime == null) return true;
+    return  (have.includes(wantTime));
+  }
+
 
 }

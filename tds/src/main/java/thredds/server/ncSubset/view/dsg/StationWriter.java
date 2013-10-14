@@ -184,6 +184,7 @@ public class StationWriter extends AbstractWriter {
     for (Station st : stns)
       stations.add(st.getName());
 
+    // LOOK should we always flatten ??
     pfc = sfc.flatten(stations, wantRange, null);
 
 	    /*

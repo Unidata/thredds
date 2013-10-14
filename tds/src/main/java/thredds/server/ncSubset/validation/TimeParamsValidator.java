@@ -61,16 +61,15 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 
     constraintValidatorContext.disableDefaultConstraintViolation();
 
-    boolean isValid = true;
     String time = params.getTime();
     String time_window = params.getTime_window();
 
     if (time != null) {
+      boolean isValid = validateISOString(time, "{thredds.server.ncSubset.validation.param.time}", constraintValidatorContext);
 
-      if (time_window != null) {
+      if (time_window != null) {  // LOOK
         try {
-          TimeDuration tdTime_window;
-          tdTime_window = new TimeDuration(time_window);
+          new TimeDuration(time_window);
 
         } catch (ParseException pe) {
           isValid = false;
@@ -80,7 +79,8 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
         }
       }
 
-      return isValid && validateISOString(time, "{thredds.server.ncSubset.validation.param.time}", constraintValidatorContext);
+      params.setHasValidTime(isValid);
+      return isValid;
     }
 
     String time_start = params.getTime_start();
@@ -89,13 +89,16 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 
     //if all of them are null --> returns the whole time series
     //so all null are valid parameters
-    if (time_start == null & time_end == null && time_duration == null) return true;
+    if (time_start == null && time_end == null && time_duration == null) return true;
+    boolean isValid = true;
 
+    // has 2 of 3
     if (!hasValidDateRange(time_start, time_end, time_duration)) {
       constraintValidatorContext
               .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.time.range}")
               .addConstraintViolation();
       isValid = false;
+
     } else {
       //check the formats
       if (time_start != null) {
@@ -103,13 +106,12 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
       }
 
       if (time_end != null) {
-        isValid = validateISOString(time_end, "{thredds.server.ncSubset.validation.param.time_end}", constraintValidatorContext) && isValid;
+        isValid &= validateISOString(time_end, "{thredds.server.ncSubset.validation.param.time_end}", constraintValidatorContext) && isValid;
       }
 
       if (time_duration != null) {
         try {
-          TimeDuration tdTime_duration;
-          tdTime_duration = new TimeDuration(time_duration);
+          new TimeDuration(time_duration);
 
         } catch (ParseException pe) {
           isValid = false;
@@ -134,6 +136,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 
     }
 
+    params.setHasValidDateRange(isValid);
     return isValid;
   }
 
