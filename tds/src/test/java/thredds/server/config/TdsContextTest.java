@@ -13,7 +13,6 @@ import thredds.mock.web.TdsContentRootPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"},loader=MockTdsContextLoader.class)
-@TdsContentRootPath(path = "/share/testdata/cdmUnitTest/it/content")
 public class TdsContextTest {
 
 	@Autowired
@@ -21,7 +20,7 @@ public class TdsContextTest {
 
 	@Test
 	public void testInit() {
-		
+		System.out.printf("%s%n", tdsContext);
 		//All the initialization was done
 		//serverInfo, htmlConfig, wmsConfig are initialized by TdsConfigMapper after ThreddConfig reads the threddsServer.xml file
 		assertNotNull( tdsContext.getServerInfo() );

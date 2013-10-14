@@ -24,18 +24,17 @@ public final class PointDataParameters {
 
 			vars = new ArrayList<List<String>>();			
 			//Variables with no vertical level
-			vars.add(Arrays.asList(new String[]{"Convective_Available_Potential_Energy_surface", "Pressure_surface"}));			
+			vars.add(Arrays.asList("Convective_Available_Potential_Energy_surface", "Pressure_surface"));
 			//Variables with one vertical level
-			vars.add(Arrays.asList(new String[]{"Relative_humidity_height_above_ground", "Temperature_height_above_ground"}));			
+			vars.add(Arrays.asList("Relative_humidity_height_above_ground", "Temperature_height_above_ground"));
 			//Variables with multiple vertical levels (hPa)
-			vars.add(Arrays.asList(new String[]{"Temperature_isobaric", "Relative_humidity_isobaric"}));			
+			vars.add(Arrays.asList("Temperature_isobaric", "Relative_humidity_isobaric"));
 			
 			pathInfo = new ArrayList<String>();									
 			//dataset must contain the corresponding variables array
-			pathInfo =Arrays.asList( new String[]{"/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1", 
-												  "/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1",
-												  "/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1"
-					});
+			pathInfo = Arrays.asList("/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1",
+              "/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1",
+              "/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1");
 			
 			//Points must be within the dataset boundaries
 			point = new ArrayList<LatLonPoint>();
@@ -43,7 +42,7 @@ public final class PointDataParameters {
 			point.add(new LatLonPointImpl( 50.0,-100.2 ));			
 			point.add(new LatLonPointImpl( 18.0,-102.25 ));
 		
-			verticalLevels=Arrays.asList( new Double[]{-1.0, 10.0, -1.0}  );
+			verticalLevels=Arrays.asList(-1.0, 10.0, -1.0);
 	};
 	
 	

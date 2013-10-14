@@ -207,8 +207,7 @@ public final class DataRootHandler implements InitializingBean {
       if (value == null || value.isEmpty()) continue;
       StartsWithPathAliasReplacement alias = new StartsWithPathAliasReplacement("${" + key + "}", value);
       dataRootLocationAliasExpanders.add(alias);
-      System.out.printf("alias= %s%n", alias);
-
+      //System.out.printf("DataRootHandler alias= %s%n", alias);
     }
   }
 

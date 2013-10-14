@@ -75,8 +75,8 @@ public class FeatureDatasetControllerTest {
 
   @Test
  	public void getGridAsPointSubset() throws Exception{
- 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
- 				.servletPath("/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+ 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/Test_Feature_Collection_best.ncd")
+ 				.servletPath("/ncss/testGFSfmrc/Test_Feature_Collection_best.ncd")
  				.param("accept", "netcdf" )
  				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground")
  				.param("latitude", "40.019")
@@ -132,8 +132,8 @@ public class FeatureDatasetControllerTest {
 	
 	@Test
 	public void getGridSubsetOnGridDataset() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
-				.servletPath("/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/Test_Feature_Collection_best.ncd")
+				.servletPath("/ncss/testGFSfmrc/Test_Feature_Collection_best.ncd")
 				.param("accept", "netcdf")
 				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground");
 		

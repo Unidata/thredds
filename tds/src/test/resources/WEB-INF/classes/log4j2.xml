@@ -61,7 +61,7 @@
 
      <logger name="thredds.servlet.DataRootHandler.catalogInit" level="debug" additivity="false">
       <appender-ref ref="catalogInit"/>
-      <appender-ref ref="console"/>
+      <!-- appender-ref ref="console"/ -->
     </logger>
 
     <logger name="thredds.catalog.parser" level="info" additivity="false">

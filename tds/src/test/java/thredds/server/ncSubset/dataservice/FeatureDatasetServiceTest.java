@@ -115,7 +115,7 @@ public class FeatureDatasetServiceTest {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		
-		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testGridFeatureCollection/Test_Feature_Collection_best.ncd");
+		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testGFSfmrc/Test_Feature_Collection_best.ncd");
 		
 		assertEquals(FeatureType.GRID, fd.getFeatureType());
 		

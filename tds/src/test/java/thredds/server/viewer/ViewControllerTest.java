@@ -36,12 +36,12 @@ public class ViewControllerTest{
 	public void testLaunchViewerIDVRequest() throws IOException{
 		
 		ViewerRequestParamsBean params = new ViewerRequestParamsBean(); 		
-		params.setUrl("http://localhost:9080/thredds/dodsC/ncss_tests/files/GFS_CONUS_80km_20120227_0000.grib1");
+		params.setUrl("http://localhost:9080/thredds/dodsC/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120227_0000.grib1");
 		params.setViewer("idv");		
 		BindingResult result = new BeanPropertyBindingResult(params, "params");
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		MockHttpServletRequest req = new MockHttpServletRequest();
-		req.setRequestURI("/thredds/view/idv.jnlp?url=http://localhost:9080/thredds/dodsC/ncss_tests/files/GFS_CONUS_80km_20120227_0000.grib1");
+		req.setRequestURI("/thredds/view/idv.jnlp?url=http://localhost:9080/thredds/dodsC/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120227_0000.grib1");
 		viewerController.launchViewer(params, result, res, req);		
 		assertEquals(200, res.getStatus() );
 		assertEquals("application/x-java-jnlp-file", res.getContentType() );
@@ -52,12 +52,12 @@ public class ViewControllerTest{
 		
 		ViewerRequestParamsBean params = new ViewerRequestParamsBean(); 		
 		params.setViewer("ToolsUI");
-		params.setCatalog("http://localhost:9080/thredds/catalog/ncss_tests/files/catalog.xml");
-		params.setDataset("ncss_tests/files/GFS_CONUS_80km_20120227_0000.grib1");
+		params.setCatalog("http://localhost:9080/thredds/catalog/gribCollection/GFS_CONUS_80km/files/catalog.xml");
+		params.setDataset("gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120227_0000.grib1");
 		BindingResult result = new BeanPropertyBindingResult(params, "params");
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		MockHttpServletRequest req = new MockHttpServletRequest();
-		req.setRequestURI("/thredds/view/ToolsUI.jnlp?catalog=http://localhost:9080/thredds/catalog/ncss_tests/files/catalog.xml&dataset=ncss_tests/files/GFS_CONUS_80km_20120227_0000.grib1");
+		req.setRequestURI("/thredds/view/ToolsUI.jnlp?catalog=http://localhost:9080/thredds/catalog/gribCollection/GFS_CONUS_80km/files/catalog.xml&dataset=ncss_tests/files/GFS_CONUS_80km_20120227_0000.grib1");
 		viewerController.launchViewer(params, result, res, req);		
 		assertEquals(200, res.getStatus() );
 		assertEquals("application/x-java-jnlp-file", res.getContentType() );
@@ -73,7 +73,7 @@ public class ViewControllerTest{
 		BindingResult result = new BeanPropertyBindingResult(params, "params");
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		MockHttpServletRequest req = new MockHttpServletRequest();		
-		req.setRequestURI("/thredds/view/ToolsUI.jnlp?catalog=http://localhost:9080/thredds/catalog/ncss_tests/files/catalog.xml&dataset=ncss_tests/files/GFS_CONUS_80km_20120227_0000.grib1");
+		req.setRequestURI("/thredds/view/ToolsUI.jnlp?catalog=http://localhost:9080/thredds/catalog/gribCollection/GFS_CONUS_80km/files/catalog.xml&dataset=ncss_tests/files/GFS_CONUS_80km_20120227_0000.grib1");
 		viewerController.launchViewer(params, result, res, req);
 		assertEquals(404, res.getStatus() );
 	} 

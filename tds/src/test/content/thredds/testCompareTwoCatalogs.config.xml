@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Succeeds -->
+<testCompareTwoCatalogsConfig depth="2" doAssert="false">
+  <firstCatalog host="motherlode.ucar.edu:8080"
+                catPath="thredds/catalog.xml"/>
+  <secondCatalog host="motherlode.ucar.edu:9080"
+                 catPath="thredds/catalog.xml"/>
+  <!--
+                 catPath="thredds/catalog.xml"/>
+                 catPath="thredds/idv/rt-models.1.0.xml"/>
+                 catPath="thredds/topcatalog.xml"/>
+                 catPath="thredds/catalog/nexrad/level3/NVW/YUX/20060315/catalog.xml"/>
+                              Change this date as appropriate --^^^^^^^^
+                                   (we keep about 7 days on motherlode)
+    -->
+</testCompareTwoCatalogsConfig>

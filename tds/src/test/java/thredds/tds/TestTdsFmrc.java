@@ -27,13 +27,13 @@ public class TestTdsFmrc extends TestCase {
     super(name);
   }
 
-  String catalog = "/catalog/aggorama/catalog.xml";
+  String catalog = "/catalog/testNAMfmrc/catalog.xml";
 
   public void testFmrc() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(catalog);
 
-    InvDataset ds = cat.findDatasetByID("aggorama/NAM_FMRC_best.ncd");
-    assert (ds != null) : "cant find dataset 'aggorama/NAM_FMRC_best.ncd'";
+    InvDataset ds = cat.findDatasetByID("testNAMfmrc/NAM_FMRC_best.ncd");
+    assert (ds != null) : "cant find dataset 'testNAMfmrc/NAM_FMRC_best.ncd'";
     assert ds.getDataType() == FeatureType.GRID;
 
     ThreddsDataFactory fac = new ThreddsDataFactory();

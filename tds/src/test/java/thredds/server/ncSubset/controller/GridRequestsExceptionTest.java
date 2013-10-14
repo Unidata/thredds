@@ -66,7 +66,7 @@ public class GridRequestsExceptionTest {
 	
 	private MockHttpServletResponse response ;
 	private MockHttpServletRequest request;
-	private String pathInfo="/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd";
+	private String pathInfo="/ncss/testGFSfmrc/Test_Feature_Collection_best.ncd";
 	
 	@Before
 	public void setUp() throws IOException{

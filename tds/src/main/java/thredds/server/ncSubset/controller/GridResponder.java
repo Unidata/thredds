@@ -196,13 +196,13 @@ class GridResponder extends GridDatasetResponder {
 					wantedDates.get(wantedDates.size() - 1));
 
 		CFGridWriter writer = new CFGridWriter();
-		maxFileDownloadSize = ThreddsConfig.getBytes(
-				"NetcdfSubsetService.maxFileDownloadSize", -1L);
+		maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
 		if (maxFileDownloadSize > 0) {
 			long estimatedSize = writer.makeGridFileSizeEstimate(gds,
 					params.getVar(), hasBB ? requestedBB : null,
 					params.getHorizStride(), zRange, wantedDateRange,
 					params.getTimeStride(), params.isAddLatLon());
+
 			if (version == NetcdfFileWriter.Version.netcdf4) {
 				estimatedSize /= ESTIMATED_C0MPRESION_RATE;
 			}
@@ -215,7 +215,6 @@ class GridResponder extends GridDatasetResponder {
 				hasBB ? requestedBB : null, params.getHorizStride(), zRange,
 				wantedDateRange, params.getTimeStride(), params.isAddLatLon(),
 				version);
-		// }
 	}
 
 	private File coordinatesSubset(NcssParamsBean params,

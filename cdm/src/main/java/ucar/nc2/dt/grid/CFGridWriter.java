@@ -653,7 +653,9 @@ public class CFGridWriter {
 	 * @return size of the added variables
 	 * @throws InvalidRangeException
 	 */
-	private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds, GridDatatype grid, Range timeRange, Range zRangeUse, LatLonRect llbb, int z_stride, int y_stride, int x_stride, List<CoordinateAxis> axisList) throws InvalidRangeException {
+	private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds,
+                                         GridDatatype grid, Range timeRange, Range zRangeUse, LatLonRect llbb, int z_stride, int y_stride, int x_stride,
+                                         List<CoordinateAxis> axisList) throws InvalidRangeException {
 
 		List<Range> yxRanges = new ArrayList<Range>(2);
 
@@ -668,7 +670,8 @@ public class CFGridWriter {
 	}  
 
 
-	private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds, GridDatatype grid, Range timeRange, Range zRangeUse, Range yRange, Range xRange, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
+	private long processTransformationVars(ArrayList<Variable> varList, ArrayList<String> varNameList , NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds,
+                                         GridDatatype grid, Range timeRange, Range zRangeUse, Range yRange, Range xRange, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
 
 		long varsSize =0L;
 		List<CoordinateTransform> cctt =  grid.getCoordinateSystem().getCoordinateTransforms();

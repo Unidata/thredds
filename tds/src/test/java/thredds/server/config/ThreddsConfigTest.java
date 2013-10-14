@@ -7,22 +7,32 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockServletConfig;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import thredds.mock.web.MockTdsContextLoader;
+import thredds.mock.web.TdsContentRootPath;
 import thredds.servlet.ThreddsConfig;
 
 import java.io.File;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"},loader=MockTdsContextLoader.class)
 public class ThreddsConfigTest {
 
+  @Autowired
+  private TdsContext tdsContext;
+
 	private String threddsConfigPath;
-	
+
 	@Before
 	public void setUp(){
 		
 		//It uses maven path for resources and default threddsConfig
-		//threddsConfigPath ="C:\dev\github\thredds3\tds\src\test\resources\content2\thredds\threddsConfig.xml"
-		threddsConfigPath="src/test/resources/content2/thredds/threddsConfig.xml";
-    File f = new File(threddsConfigPath);
-    System.out.printf("threddsConfigPath= %s exist=%s%n", f.getAbsolutePath(), f.exists());
+		//threddsConfigPath ="C:/dev/github/thredds3/tds/src/test/content/thredds/threddsConfig.xml";
+		threddsConfigPath= tdsContext.getContentRootPath() +  "/thredds/threddsConfig.xml";
 		ThreddsConfig.init(threddsConfigPath);
 	}
 	
