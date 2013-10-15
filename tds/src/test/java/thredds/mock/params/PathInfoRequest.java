@@ -56,14 +56,14 @@ public final class PathInfoRequest {
 		pathInfo =Arrays.asList( new String[]{
 				"unitTests/GFS/CONUS_80km/GFS_CONUS_80km_20120419_0000.nc",//single dataset
 				"testTdsScan/GFS_CONUS_80km_20120419_0000.nc", //datasetScan 
-				"testFeatureCollection/Test_Feature_Collection_fmrc.ncd", //FeatureCollection --> TwoD
-				"testFeatureCollection/Test_Feature_Collection_best.ncd", //FeatureCollection --> Best
+				"testFeatureCollection/GFS_CONUS_80km_FMRC_fmrc.ncd", //FeatureCollection --> TwoD
+				"testFeatureCollection/GFS_CONUS_80km_FMRC_best.ncd", //FeatureCollection --> Best
 				"testFeatureCollection/files/GFS_CONUS_80km_20120418_1200.nc", //FeatureCollection --> Files
 				"testFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z" //FeatureCollection --> Runs
 		});		
 	}
 	
-	public static final List<String> getPatInfo(){
+	public static final List<String> getPathInfo(){
 		
 		return pathInfo;
 	}

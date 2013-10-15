@@ -235,7 +235,7 @@ public class CatalogSearcher extends JPanel {
     return buff.toString();
   }
 
-  private String threddsServer="http://motherlode.ucar.edu:8088/thredds/subset.html?";
+  private String threddsServer="http://thredds.ucar.edu/thredds/subset.html?";
   private void doOneDoc( StringBuffer buff, Document doc) {
 
     buff.append("<h3>Dataset: "+doc.getField("name").stringValue()+"</h3><ul>\n");

@@ -54,16 +54,16 @@ public final class PathInfoParams {
 	static{
 		
 		pathInfo =Arrays.asList( new String[]{
-				"/unitTests/GFS/CONUS_80km/GFS_CONUS_80km_20120419_0000.nc",//single dataset
-				"/testGridScan/GFS_CONUS_80km_20120419_0000.nc", //datasetScan 
-				"/testGridFeatureCollection/Test_Feature_Collection_fmrc.ncd", //FeatureCollection --> TwoD
-				"/testGridFeatureCollection/Test_Feature_Collection_best.ncd", //FeatureCollection --> Best
-				"/testGridFeatureCollection/files/GFS_CONUS_80km_20120418_1200.nc", //FeatureCollection --> Files
-				"/testGridFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z" //FeatureCollection --> Runs
+				"/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc",//single dataset
+				"/testGridScan/GFS_CONUS_80km_20120227_0000.grib1", //datasetScan
+				"/testGFSfmrc/GFS_CONUS_80km_FMRC_fmrc.ncd", //FeatureCollection --> TwoD
+				"/testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd", //FeatureCollection --> Best
+				"/testGFSfmrc/files/GFS_CONUS_80km_20120418_1200.nc", //FeatureCollection --> Files
+				"/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z" //FeatureCollection --> Runs
 		});		
 	}
 	
-	public static final List<String> getPatInfo(){
+	public static final List<String> getPathInfo(){
 		
 		return pathInfo;
 	}

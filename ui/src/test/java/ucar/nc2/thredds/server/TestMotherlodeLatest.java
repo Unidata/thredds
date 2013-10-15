@@ -49,9 +49,9 @@ import java.util.*;
 import java.io.IOException;
 
 public class TestMotherlodeLatest extends TimerTask {
-  static private final String server1 = "http://motherlode.ucar.edu:8080/";
+  static private final String server1 = "http://thredds.ucar.edu/";
   //static private final String server1 = "http://thredds.cise-nsf.gov:8080/";
-  static private final String server2 = "http://motherlode.ucar.edu:9080/";
+  static private final String server2 = "http://thredds-dev.ucar.edu/";
 
   // fmrc
   static private final String latestPrefix = "thredds/catalog/fmrc/";

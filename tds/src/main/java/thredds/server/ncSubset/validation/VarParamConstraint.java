@@ -51,7 +51,7 @@ import javax.validation.Payload;
 @Documented
 public @interface VarParamConstraint {
 	
-	String message() default "{thredds.server.ncSubset.validation.ncssvarparamsvalidator}";
+	String message() default "{thredds.server.ncSubset.validation.varparams}";
 	
 	Class<?>[] groups() default {};
 	

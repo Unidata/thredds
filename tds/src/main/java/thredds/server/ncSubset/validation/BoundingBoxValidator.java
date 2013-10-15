@@ -35,13 +35,13 @@ package thredds.server.ncSubset.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import thredds.server.ncSubset.params.StationRequestParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 
 /**
  * @author mhermida
  *
  */
-public class BoundingBoxValidator implements ConstraintValidator<BoundingBoxConstraint, StationRequestParamsBean>{
+public class BoundingBoxValidator implements ConstraintValidator<BoundingBoxConstraint, NcssParamsBean>{
 
 	/* (non-Javadoc)
 	 * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
@@ -56,7 +56,7 @@ public class BoundingBoxValidator implements ConstraintValidator<BoundingBoxCons
 	 * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
 	 */
 	@Override
-	public boolean isValid(StationRequestParamsBean params,
+	public boolean isValid(NcssParamsBean params,
 			ConstraintValidatorContext constraintValidatorContext) {
 		
 		constraintValidatorContext.disableDefaultConstraintViolation();

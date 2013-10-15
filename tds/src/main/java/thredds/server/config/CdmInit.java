@@ -42,6 +42,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import thredds.catalog.InvDatasetFeatureCollection;
@@ -71,6 +72,7 @@ import ucar.nc2.util.log.LoggerFactory;
  */
 
 @Component ("CdmInit")
+@DependsOn ("tdsContext")
 public class CdmInit implements InitializingBean,  DisposableBean{
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
@@ -82,6 +84,8 @@ public class CdmInit implements InitializingBean,  DisposableBean{
   private TdsContext tdsContext;
 
   public void afterPropertiesSet(){
+    System.out.printf("CdmInit getContentRootPathAbsolute= %s%n", tdsContext.getContentRootPath());
+
     // prefer cdmRemote when available
     ThreddsDataFactory.setPreferCdm(true);
 

@@ -15,15 +15,10 @@ import thredds.mock.web.MockTdsContextLoader;
 
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml","/WEB-INF/catalogService-servlet.xml" }, loader=MockTdsContextLoader.class)
 public class AnyHtmlControllerTest extends AbstractCatalogServiceTest{
-	
 
-	
-	
 	@Autowired
 	private LocalCatalogServiceController anyHtmlController;
-	
-	
-	
+
 	@Before
 	public void setUp(){		
 		anyHtmlController.setTdsContext(tdsContext);
@@ -86,7 +81,5 @@ public class AnyHtmlControllerTest extends AbstractCatalogServiceTest{
         assertNull( mv );
         assertEquals(400, response.getStatus() );
         assertEquals("Bad request: The \"command\" field may not be VALIDATE." , response.getErrorMessage());
-		
-
-	}	
+	}
 }

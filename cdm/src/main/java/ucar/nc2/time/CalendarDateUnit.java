@@ -82,7 +82,6 @@ There’s an alternative proposition, in which the new units of calendar_month a
   private final boolean isCalendarField;
 
   private CalendarDateUnit(Calendar calt, String dateUnitString) {
-    this.cal = calt;
 
     dateUnitString = dateUnitString.trim();
     dateUnitString = dateUnitString.toLowerCase();
@@ -103,9 +102,11 @@ There’s an alternative proposition, in which the new units of calendar_month a
 
     int pos = dateUnitString.indexOf("since");
     String iso = dateUnitString.substring(pos + 5);
-    baseDate = CalendarDateFormatter.isoStringToCalendarDate(cal, iso);
-    //DateTime dt = parseUdunitsTimeString(dateUnitString, m.group(2), m.group(4), m.group(5));
-    //baseDate = CalendarDate.of(cal, dt);
+    baseDate = CalendarDateFormatter.isoStringToCalendarDate(calt, iso);
+
+    // calendar might change !!
+    calt = baseDate.getCalendar();
+    this.cal = calt;
   }
 
   /* private DateTime parseUdunitsTimeString(String dateUnitString, String dateString, String timeString, String zoneString) {

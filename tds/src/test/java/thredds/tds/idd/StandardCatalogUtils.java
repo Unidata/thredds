@@ -23,14 +23,13 @@ public class StandardCatalogUtils
         return result;
     }
 
-    public static List<String> getIddMainCatalogUrlList() {
-        return Arrays.asList( iddMainCatalogUrls );
-    }
-
     private static final String[] iddMainCatalogUrls = {
             "catalog.xml",
-            "idd/models.xml",
+            "idd/modelsNcep.xml",
+            "idd/modelsFnmoc.xml",
+            "idd/modelsOther.xml",
             "idd/obsData.xml",
+            "idd/newPointObs.xml",
             "idd/radars.xml",
             "idd/satellite.xml"
     };
@@ -95,13 +94,6 @@ public class StandardCatalogUtils
     private static final String[] mlodeMainCatalogUrls = {
             "topcatalog.xml",
             "idd/rtmodel.xml",
-            "idv/models.xml",
-            "idv/latestModels.xml",
-            "idv/rt-models.xml",            // check that not expired!
-            "idv/rt-models.1.0.xml",        // check that not expired!
-            "gempakTestCat.xml",
-            "cataloggen/catalogs/uniModelsInvCat1.0en.xml",  // check that not expired!
-            "galeon/catalog.xml",
             "casestudies/catalog.xml",
             "casestudies/vgeeCatalog.xml",
             "casestudies/ccs034Catalog.xml",

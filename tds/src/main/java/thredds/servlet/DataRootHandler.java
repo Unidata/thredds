@@ -110,6 +110,7 @@ public final class DataRootHandler implements InitializingBean {
   //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
   static private DataRootHandler singleton = null;
   static private final String ERROR = "*** ERROR ";
+  static private final boolean debug = false;
 
   /**
    * Initialize the DataRootHandler singleton instance.
@@ -160,7 +161,6 @@ public final class DataRootHandler implements InitializingBean {
 
   private List<ConfigListener> configListeners = new ArrayList<ConfigListener>();
 
-  //private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
   private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
 
   /**
@@ -206,9 +206,21 @@ public final class DataRootHandler implements InitializingBean {
     for (String key : aliases.keySet()) {
       String value = aliases.get(key);
       if (value == null || value.isEmpty()) continue;
-      dataRootLocationAliasExpanders.add(new StartsWithPathAliasReplacement("${" + key + "}", value));
+      StartsWithPathAliasReplacement alias = new StartsWithPathAliasReplacement("${" + key + "}", value);
+      dataRootLocationAliasExpanders.add(alias);
+      if (debug) System.out.printf("DataRootHandler alias= %s%n", alias);
     }
   }
+
+  /* private String expandAlias(String org) {
+    if (org == null) return null;
+    String path = StringUtils.cleanPath(org);
+    for (PathAliasReplacement e : dataRootLocationAliasExpanders)  {
+      String result = e.replaceIfMatch(path);
+      if (result != null) return result;
+    }
+    return null;
+  } */
 
 
   //////////////////////////////////////////////
@@ -363,6 +375,7 @@ public final class DataRootHandler implements InitializingBean {
   private void initCatalog(String path, boolean recurse, boolean cache) throws IOException {
     path = StringUtils.cleanPath(path);
     File f = this.tdsContext.getConfigFileSource().getFile(path);
+    // System.out.printf("catalog %s -> %s%n", path, f.getAbsolutePath());
 
     if (f == null) {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
@@ -757,6 +770,7 @@ public final class DataRootHandler implements InitializingBean {
   private boolean addRoot(DataRootConfig config, boolean wantErr) {
     String path = config.getName();
     String location = config.getValue();
+
     // check for duplicates
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
@@ -767,6 +781,7 @@ public final class DataRootHandler implements InitializingBean {
       return false;
     }
 
+    location =  expandAliasForDataRoot(location);
     File file = new File(location);
     if (!file.exists()) {
       logCatalogInit.error(ERROR + "DataRootConfig path =" + path + " directory= <" + location + "> does not exist");
@@ -779,6 +794,15 @@ public final class DataRootHandler implements InitializingBean {
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + location + ">");
     return true;
+  }
+
+  private String expandAliasForDataRoot(String location) {
+    for (PathAliasReplacement par : this.dataRootLocationAliasExpanders) {
+        String result =  par.replaceIfMatch(location);
+        if (result != null)
+          return result;
+    }
+    return location;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -806,6 +830,11 @@ public final class DataRootHandler implements InitializingBean {
       this.path = featCollection.getPath();
       this.featCollection = featCollection;
       this.dirLocation = featCollection.getTopDirectoryLocation();
+      show();
+    }
+
+    private void show() {
+      if (debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
     }
 
     DataRoot(InvDatasetFmrc fmrc) {
@@ -815,22 +844,25 @@ public final class DataRootHandler implements InitializingBean {
       InvDatasetFmrc.InventoryParams params = fmrc.getFmrcInventoryParams();
       if (null != params)
         dirLocation = params.location;
+      show();
     }
 
     DataRoot(InvDatasetScan scan) {
       this.path = scan.getPath();
       this.scan = scan;
-      this.dirLocation = scan.getScanLocation();
+      this.dirLocation =  scan.getScanLocation();
       this.datasetRootProxy = null;
+      show();
     }
 
     DataRoot(String path, String dirLocation, boolean cache) {
       this.path = path;
-      this.dirLocation = dirLocation;
+      this.dirLocation =  dirLocation;
       this.cache = cache;
       this.scan = null;
 
       makeProxy();
+      show();
     }
 
     void makeProxy() {

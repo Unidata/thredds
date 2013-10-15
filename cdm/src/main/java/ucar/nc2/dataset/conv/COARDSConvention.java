@@ -49,6 +49,17 @@ import java.util.List;
 
 public class COARDSConvention extends CoordSysBuilder {
 
+  /*
+  The COARDS standard offers limited support for climatological time. For compatibility with COARDS, time coordinates should also be
+  recognised as climatological if they have a units attribute of time-units relative to midnight on 1 January in year 0
+  i.e. since 0-1-1 in udunits syntax , and provided they refer to the real-world calendar. We do not recommend this convention because
+   (a) it does not provide any information about the intervals used to compute the climatology, and
+   (b) there is no standard for how dates since year 1 will be encoded with units having a reference time in year 0,
+  since this year does not exist; consequently there may be inconsistencies among software packages in the interpretation of the
+  time coordinates. Year 0 may be a valid year in non-real-world calendars, and therefore cannot be used to signal climatological
+  time in such cases.
+   */
+
   public static boolean isMine(String hasName) {
     if (hasName.equalsIgnoreCase("COARDS")) return true;
     List<String> names = breakupConventionNames(hasName);

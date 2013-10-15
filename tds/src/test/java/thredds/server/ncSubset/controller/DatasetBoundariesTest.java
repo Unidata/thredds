@@ -77,8 +77,8 @@ public class DatasetBoundariesTest {
 	
 	@Test
 	public void getDatasetBoundaries() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGridFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
-				.servletPath("/ncss/testGridFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
+				.servletPath("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
 				.param("accept", "json");
 		
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
@@ -89,8 +89,8 @@ public class DatasetBoundariesTest {
 	@Test
 	public void defaultContentType() throws Exception{
 		
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGridFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
-				.servletPath("/ncss/testGridFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries");
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
+				.servletPath("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries");
 		
 		this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.WKT.getResponseContentType() ) );		
 		
@@ -99,8 +99,8 @@ public class DatasetBoundariesTest {
 	@Test
 	public void jsonResponseHasContentType() throws Exception{
 		
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGridFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
-				.servletPath("/ncss/testGridFeatureCollection/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries").param("accept", "json");
+		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
+				.servletPath("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries").param("accept", "json");
 		
 		this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.JSON.getResponseContentType() ) );		
 		

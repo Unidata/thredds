@@ -1,12 +1,23 @@
 package thredds.server.ncSubset.params;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import thredds.server.ncSubset.exception.NcssException;
+import thredds.server.ncSubset.validation.NcssRequestConstraint;
 import thredds.server.ncSubset.validation.TimeParamsConstraint;
 import thredds.server.ncSubset.validation.VarParamConstraint;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 
-import javax.validation.Valid;
 import java.text.ParseException;
+import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -17,6 +28,7 @@ import java.util.List;
  */
 
 @TimeParamsConstraint
+@NcssRequestConstraint
 public class NcssParamsBean {
 
   private String accept;
@@ -24,21 +36,22 @@ public class NcssParamsBean {
   @VarParamConstraint
  	private List<String> var;
 
- 	@Valid
+ 	@DateTimeFormat
  	private String time_start;
 
- 	@Valid
+  @DateTimeFormat
  	private String time_end;
 
- 	@Valid
+  @DateTimeFormat
  	private String time_duration;
 
- 	@Valid
- 	private String time_window;
+  @DateTimeFormat
+ 	private String time_window;  // WTF ??
 
+  @DateTimeFormat
  	private String time;
 
-  private boolean allTimes;
+  private String temporal;  // == all
 
  	private Double north;
 
@@ -268,16 +281,24 @@ public class NcssParamsBean {
     return east != null && west != null && north != null && south != null;
   }
 
+  public boolean hasProjectionBB() { // need to validate
+    return minx != null && miny != null && maxx != null && maxy != null;
+  }
+
   public boolean hasStations() {
     return stns != null && !stns.isEmpty();
   }
 
-  public boolean isAllTimes() {
-    return allTimes;
+  public String getTemporal() {
+    return temporal;
   }
 
-  public void setAllTimes(boolean allTimes) {
-    this.allTimes = allTimes;
+  public void setTemporal(String temporal) {
+    this.temporal = temporal;
+  }
+
+  public boolean isAllTimes() {
+    return temporal != null && temporal.equalsIgnoreCase("all");
   }
 
   public TimeDuration parseTimeDuration() throws NcssException {
@@ -287,7 +308,71 @@ public class NcssParamsBean {
     } catch (ParseException e) {
       throw new NcssException("invalid time duration");
     }
-
   }
+
+  public LatLonRect getBB(){
+		return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), new LatLonPointImpl(getNorth(), getEast()));
+	}
+
+  private boolean hasValidTime;
+  private boolean hasValidDateRange;
+
+  public void setHasValidTime(boolean hasValidTime) {
+    this.hasValidTime = hasValidTime;
+  }
+
+  public void setHasValidDateRange(boolean hasValidDateRange) {
+    this.hasValidDateRange = hasValidDateRange;
+  }
+
+  public CalendarDateRange getCalendarDateRange() throws ParseException {
+    if (!hasValidDateRange) return null;
+
+		DateRange dr;
+		if (time == null)
+			dr = new DateRange( new DateType(time_start, null, null), new DateType(time_end, null, null), new TimeDuration(time_duration), null );
+		else{
+			DateType dtDate = new DateType(time, null, null);
+			dr = new DateRange( dtDate.getDate(), dtDate.getDate() );
+		}
+
+		return CalendarDateRange.of(dr );
+	}
+
+  public CalendarDate getRequestedTime() throws ParseException {
+    if (!hasValidTime) return null;
+
+ 			CalendarDate date=null;
+ 			if( getTime().equalsIgnoreCase("present") ){
+ 				 return CalendarDate.of(new Date());
+ 			}
+
+    // default calendar (!)
+    return CalendarDateFormatter.isoStringToCalendarDate(null, getTime());
+ 	}
+
+  public boolean isValidGridRequest() {
+    return true;
+  }
+
+  public boolean intersectsTime(FeatureDataset fd, Formatter errs) throws ParseException {
+    CalendarDateRange have =  fd.getCalendarDateRange();
+    if (have == null) return true;
+
+    CalendarDateRange want = getCalendarDateRange();
+    if (want != null) {
+      if (have.intersects(want)) {
+        return true;
+      } else {
+        errs.format("Requested Time Range %s does not intersect actual time range %s", want, have);
+        return false;
+      }
+    }
+
+    CalendarDate wantTime = getRequestedTime();
+    if (wantTime == null) return true;
+    return  (have.includes(wantTime));
+  }
+
 
 }

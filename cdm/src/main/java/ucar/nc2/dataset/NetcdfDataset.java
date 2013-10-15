@@ -470,10 +470,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       // System.out.printf(" parseInfo=%n%s%n", builder.getParseInfo());  //  DEBUG
     }
 
-    // timeTaxis must be CoordinateAxis1DTime
+    /* timeTaxis must be CoordinateAxis1DTime
     for (CoordinateSystem cs : ds.getCoordinateSystems()) {
       cs.makeTimeAxis();
-    }
+    } */
 
 
     ds.finish(); // recalc the global lists

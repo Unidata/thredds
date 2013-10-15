@@ -21,10 +21,10 @@ public abstract class AbstractCatalogServiceTest {
 	public abstract void showCommandTest() throws Exception;
 	
 	@Test
-	public abstract void subsetCommandTest() throws Exception;;
+	public abstract void subsetCommandTest() throws Exception;
 	
 	@Test
-	public abstract void validateCommandTest() throws Exception;;	
+	public abstract void validateCommandTest() throws Exception;
 	
 
 }

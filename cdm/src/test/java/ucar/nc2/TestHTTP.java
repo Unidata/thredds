@@ -125,12 +125,12 @@ public class TestHTTP extends TestCase {
 
   public List<String> makeList() throws IOException {
     ArrayList<String> list = new ArrayList<String>();
-    list.add("http://motherlode.ucar.edu/dods/casestudies/2004Aug03/2004080301_metar.nc");
-    list.add("http://motherlode.ucar.edu/dods/casestudies/2004Aug03/2004080302_metar.nc");
-    list.add("http://motherlode.ucar.edu/dods/casestudies/2004Aug03/2004080303_metar.nc");
-    list.add("http://motherlode.ucar.edu/dods/casestudies/2004Aug03/2004080304_metar.nc");
-    list.add("http://motherlode.ucar.edu/dods/casestudies/2004Aug03/2004080305_metar.nc");
-    list.add("http://motherlode.ucar.edu/dods/casestudies/2004Aug03/2004080306_metar.nc");
+    list.add("http://thredds.ucar.edu/dods/casestudies/2004Aug03/2004080301_metar.nc");
+    list.add("http://thredds.ucar.edu/dods/casestudies/2004Aug03/2004080302_metar.nc");
+    list.add("http://thredds.ucar.edu/dods/casestudies/2004Aug03/2004080303_metar.nc");
+    list.add("http://thredds.ucar.edu/dods/casestudies/2004Aug03/2004080304_metar.nc");
+    list.add("http://thredds.ucar.edu/dods/casestudies/2004Aug03/2004080305_metar.nc");
+    list.add("http://thredds.ucar.edu/dods/casestudies/2004Aug03/2004080306_metar.nc");
     return list;
   }
 

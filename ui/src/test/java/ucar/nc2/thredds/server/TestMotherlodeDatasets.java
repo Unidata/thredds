@@ -243,7 +243,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   }
 
   public static void main2(String args[]) throws IOException {
-    String url = "http://motherlode.ucar.edu:9080/thredds/dodsC/fmrc/NCEP/GFS/Alaska_191km/forecast/NCEP-GFS-Alaska_191km_ConstantForecast_2010-06-07T06:00:00Z";
+    String url = "http://thredds.ucar.edu/thredds/dodsC/fmrc/NCEP/GFS/Alaska_191km/forecast/NCEP-GFS-Alaska_191km_ConstantForecast_2010-06-07T06:00:00Z";
     System.out.printf("open %s%n", url);
     GridDataset gds = GridDataset.open(url);
     java.util.List<GridDatatype> grids =  gds.getGrids();
@@ -261,7 +261,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     //String problemCat = "http://localhost:8080/thredds/enhancedCatalog.xml";
     //String problemCat = "http://motherlode.ucar.edu:9080/thredds/grib/NCDC/CFSR/catalog.xml";
 
-    String server = "http://motherlode.ucar.edu:9080/thredds";
+    String server = "http://thredds.ucar.edu/thredds";
     //String catalog = "/idd/modelsNcep.xml";
     String catalog = "/catalog/grib/NCEP/RAP/CONUS_13km/RAP-CONUS_13km_20120618/catalog.xml";
 

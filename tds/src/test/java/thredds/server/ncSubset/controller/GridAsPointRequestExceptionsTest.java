@@ -26,8 +26,8 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
-import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
-import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
@@ -59,7 +59,7 @@ public class GridAsPointRequestExceptionsTest {
 		//String servletPath = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);		
 		
 		//this.pathInfo = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);
-		this.pathInfo = FeatureDatasetController.getNCSSServletPath() +PathInfoParams.getPatInfo().get(0);
+		this.pathInfo = FeatureDatasetController.getNCSSServletPath() +PathInfoParams.getPathInfo().get(0);
 	}
 	
 	

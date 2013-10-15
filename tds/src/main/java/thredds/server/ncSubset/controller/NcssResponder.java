@@ -41,9 +41,7 @@ import org.springframework.http.HttpHeaders;
 
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.ft.FeatureDataset;
 

@@ -32,6 +32,7 @@
  */
 package thredds.server.ncSubset.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -62,29 +63,54 @@ public class AbstractFeatureDatasetController {
 	
 	static private final Logger log = LoggerFactory.getLogger(AbstractFeatureDatasetController.class);
 	
-	protected void handleValidationErrorsResponse(HttpServletResponse response, int status, BindingResult validationResult) {
+  protected void handleValidationErrorsResponse(HttpServletResponse response, int status, BindingResult validationResult) {
 
-		List<ObjectError> errors = validationResult.getAllErrors();
-		response.setStatus(status);
-		// String responseStr="Validation errors: ";
-		StringBuffer responseStr = new StringBuffer();
-		responseStr.append("Validation errors: ");
-		for (ObjectError err : errors) {
-			responseStr.append(err.getDefaultMessage());
-			responseStr.append("  -- ");
-		}
+ 		List<ObjectError> errors = validationResult.getAllErrors();
+ 		response.setStatus(status);
+ 		// String responseStr="Validation errors: ";
+ 		StringBuffer responseStr = new StringBuffer();
+ 		responseStr.append("Validation errors: ");
+ 		for (ObjectError err : errors) {
+ 			responseStr.append(err.getDefaultMessage());
+ 			responseStr.append("  -- ");
+ 		}
 
-		try {
-			PrintWriter pw = response.getWriter();
-			pw.write(responseStr.toString());
-			pw.flush();
+ 		try {
+ 			PrintWriter pw = response.getWriter();
+ 			pw.write(responseStr.toString());
+ 			pw.flush();
 
-		} catch (IOException ioe) {
-			log.error(ioe.getMessage());
-		}
+ 		} catch (IOException ioe) {
+ 			log.error(ioe.getMessage());
+ 		}
 
+ 	}
+
+  protected void handleValidationErrorMessage(HttpServletResponse response, int status, String errorMessage) {
+
+ 		response.setStatus(status);
+
+ 		try {
+ 			PrintWriter pw = response.getWriter();
+ 			pw.write(errorMessage);
+ 			pw.flush();
+
+ 		} catch (IOException ioe) {
+ 			log.error(ioe.getMessage());
+ 		}
+
+ 	}
+
+	// Exception handlers
+	@ExceptionHandler(FileNotFoundException.class)
+	public ResponseEntity<String> handle(FileNotFoundException ncsse) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>(
+				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
+				HttpStatus.NOT_FOUND);
 	}
-	
+
 	// Exception handlers
 	@ExceptionHandler(NcssException.class)
 	public ResponseEntity<String> handle(NcssException ncsse) {
@@ -94,7 +120,7 @@ public class AbstractFeatureDatasetController {
 				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
 				HttpStatus.BAD_REQUEST);
 	}
-	
+
 	// Exception handlers
 	@ExceptionHandler(UnsupportedOperationException.class)
 	public ResponseEntity<String> handle(UnsupportedOperationException ex) {
@@ -108,6 +134,7 @@ public class AbstractFeatureDatasetController {
 	// Exception handlers
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<String> handle(Throwable ex) {
+    ex.printStackTrace();
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
 		return new ResponseEntity<String>("Throwable exception handled : " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);

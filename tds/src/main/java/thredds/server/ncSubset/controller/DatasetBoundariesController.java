@@ -47,7 +47,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.server.ncSubset.dataservice.FeatureDatasetService;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.params.ParamsBean;
+import thredds.server.ncSubset.params.NcssParamsBean;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
@@ -68,7 +68,7 @@ public class DatasetBoundariesController extends AbstractFeatureDatasetControlle
   FeatureDatasetService datasetService;
 
   @RequestMapping(value = {"datasetBoundaries"})
-  void getDatasetBoundaries(ParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException {
+  void getDatasetBoundaries(NcssParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException {
 
     //Checking request format...
     SupportedFormat sf = getSupportedFormat(params, SupportedOperation.DATASET_BOUNDARIES_REQUEST);
@@ -124,7 +124,7 @@ public class DatasetBoundariesController extends AbstractFeatureDatasetControlle
     return requestPathInfo;
   }
 
-  protected SupportedFormat getSupportedFormat(ParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException {
+  protected SupportedFormat getSupportedFormat(NcssParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException {
 
     //Checking request format...
     SupportedFormat sf;

@@ -107,7 +107,7 @@ public class TestHttpDownloadModels implements CatalogCrawler.Listener {
 
     public static JPanel main;
     public static void main(String args[]) throws IOException {
-      String server = "http://motherlode.ucar.edu:9080/thredds";
+      String server = "http://thredds.ucar.edu/thredds";
       String dir = "Q:/cdmUnitTest/tds/ncep/new/";
       File dirf = new File(dir);
       if (!dirf.exists())

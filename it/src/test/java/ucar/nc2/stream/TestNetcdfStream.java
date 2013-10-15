@@ -16,7 +16,7 @@ public class TestNetcdfStream {
 
   @Test
   public void utestProblem() throws IOException {
-    doOne(serverRoot+"/netcdf4/vlenBigEndian.nc");
+    doOne(serverRoot+"/gini/SUPER-NATIONAL_8km_WV_20051128_2100.gini");
   }
 
   @Test
@@ -47,7 +47,6 @@ public class TestNetcdfStream {
      });
      scanDir(serverRoot+"/gini/", ".gini");
      scanDir(serverRoot+"/gempak/", ".gem");
-     //scanDir(serverRoot+"/gempak/", ".gem");
      scanDir(serverRoot+"/gnexrad2empak/", ".ar2v"); // */
   }
 

@@ -45,7 +45,7 @@ import thredds.catalog.*;
 public class TestTdsIddPing extends TestCase
 {
 
-  private String host = "motherlode.ucar.edu:8080";
+  private String host = "thredds.ucar.edu";
   private String targetTdsUrl;
 
   public TestTdsIddPing( String name )

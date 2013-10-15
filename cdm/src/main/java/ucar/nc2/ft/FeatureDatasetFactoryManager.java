@@ -411,7 +411,7 @@ public class FeatureDatasetFactoryManager {
   }
 
   public static void main(String[] args) throws  IOException {
-    String server = "http://motherlode:8080/";
+    String server = "http://thredds.ucar.edu/";
     String dataset = "/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2009-05-13T12:00:00Z";
     String testFile = "Q:/cdmUnitTest/formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
     Formatter errlog = new Formatter();

@@ -17,6 +17,17 @@ sourceSets {
            exclude 'thredds/catalog2/**/*.java'
        }
     }
+
+    integrationTest {
+      java.srcDir file('src/integration-test/java')
+      resources.srcDir file('src/integration-test/resources')
+  }
+}
+
+task integrationTest(type: Test, dependsOn: jar) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    systemProperties['jar.path'] = jar.archivePath
 }
 
 dependencies {

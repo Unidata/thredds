@@ -61,7 +61,10 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>visadCdm</artifactId>
-      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.wisc.ssec</groupId>
+      <artifactId>visad</artifactId>
     </dependency>
 
     <dependency>
@@ -271,18 +274,13 @@
       <testResource>
         <filtering>true</filtering>
         <directory>${basedir}/src/test/resources</directory>
-        <excludes>
-          <exclude>content/thredds/public/**</exclude>
-          <exclude>content/thredds/cache/**</exclude>
-          <exclude>content/thredds/logs/**</exclude>
-          <exclude>content/thredds/cataloggen/**</exclude>
-        </excludes>
       </testResource>
       <testResource>
         <filtering>false</filtering>
-        <directory>${basedir}/src/test/resources</directory>
+        <directory>${basedir}/src/main/webapp/WEB-INF/classes</directory>
         <includes>
-          <include>content/thredds/public/**</include>
+          <include>ValidationMessages.properties</include>
+          <include>log4j2.xml</include>
         </includes>
       </testResource>
     </testResources>
@@ -308,17 +306,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <attachClasses>true</attachClasses>
-          <!-- This packagingExcludes doesn't seem to work. Now done in dependency/exclusions. -->
-          <!--
-          <packagingExcludes>
-            WEB-INF/lib/commons-logging*.jar,
-            WEB-INF/lib/javax.servlet*.jar,
-            WEB-INF/lib/jdom-1.0.jar,
-            WEB-INF/lib/slf4j-jdk14*.jar,
-            WEB-INF/lib/visad-*.jar
-          </packagingExcludes>
-          -->
-          <archive>
+           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
@@ -341,7 +329,6 @@
               <directory>${basedir}</directory>
               <includes>
                 <include>README.txt</include>
-                <include>CHANGES.txt</include>
               </includes>
             </resource>
           </webResources>
@@ -355,16 +342,16 @@
           <!-- Enabling tests for first unit testing -->
           <skip>${skipTests}</skip>
           <testFailureIgnore>true</testFailureIgnore>
-          <includes>
+          <excludes>
+            <exclude>/thredds/httpunit/*</exclude>
+            <exclude>/thredds/tds/ethan/*</exclude>
+          </excludes>
+          <!-- includes>
             <include>thredds/server/catalogservice/**</include>
             <include>thredds/server/ncSubset/**</include>
             <include>thredds/server/config/**</include>
             <include>thredds/servlet/**</include>
-          </includes>
-          <excludes>
-            <exclude>thredds/server/config/ServerConfigTestSuit.java</exclude>
-            <exclude>thredds/dqc/**</exclude>
-          </excludes>
+          </includes -->
         </configuration>
         <!-- executions>
                     <execution>
@@ -421,9 +408,4 @@
       </plugin-->
     </plugins>
   </build>
-
-  <properties>
-    <!-- testContent.root.path>/share/testcatalogs/content</testContent.root.path-->
-    <testContent.root.path>content</testContent.root.path>
-  </properties>
 </project>

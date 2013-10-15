@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
+import java.util.Formatter;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -105,11 +106,19 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
      FeatureDataset fd = null;
      try {
        fd = datasetService.findDatasetByPath(req, res, datasetPath);  // LOOK cant we get ft somewhere else first ?
+       if (fd == null)  {
+         handleValidationErrorMessage(res, HttpServletResponse.SC_NOT_FOUND, "dataset path not found "+datasetPath);
+         return;
+       }
 
-       if (fd == null)
-         throw new UnsupportedOperationException("Not a valid Feature Type dataset");
+       Formatter errs = new Formatter();
+       if (!params.intersectsTime(fd, errs)) {
+         handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, errs.toString());
+         return;
+       }
 
-       if (fd.getFeatureType() == FeatureType.GRID) {
+       FeatureType ft = fd.getFeatureType();
+       if (ft == FeatureType.GRID) {
 
          if (!params.hasLatLonPoint()) {
            handleRequestGrid(req, res, params, datasetPath, (GridDataset) fd);
@@ -117,18 +126,15 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
            handleRequestPoint(req, res, params, datasetPath, fd);
          }
 
-       } else if (fd.getFeatureType() == FeatureType.STATION) {
+       } else if (ft == FeatureType.STATION) {
          handleRequestPoint(req, res, params, datasetPath, fd);
 
-       } else if (fd.getFeatureType() == FeatureType.POINT) {
+       } else if (ft == FeatureType.POINT) {
          handleRequestPoint(req, res, params, datasetPath, fd);
 
-       } //else {
-        //   throw new UnsupportedOperationException("Feature Type not supported");
-       //}
-
-     } catch (Throwable t) {
-       log.error("NCSS request failed query="+ req.getQueryString(), t);
+       } else {
+           throw new UnsupportedOperationException("Feature Type "+ft.toString()+" not supported");
+       }
 
       } finally {
        if (fd != null) fd.close();
@@ -139,6 +145,8 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
   void handleRequestGrid(HttpServletRequest req, HttpServletResponse res,
                          NcssParamsBean params, String datasetPath,
                          GridDataset gridDataset) throws IOException, NcssException, ParseException, InvalidRangeException {
+
+    params.isValidGridRequest();
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
     SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.GRID_REQUEST);

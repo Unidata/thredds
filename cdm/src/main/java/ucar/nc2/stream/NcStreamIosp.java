@@ -275,7 +275,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
         ncm.add(new NcsMess(pos, 0, "MAGIC_START missing - abort"));
         return;
       }
-      throw new IOException("Data corrupted on " + ncfile.getLocation());
+      throw new IOException("Data corrupted on " + raf.getLocation());
     }
     if (ncm != null) ncm.add(new NcsMess(pos, 4, "MAGIC_START"));
 

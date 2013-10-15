@@ -58,7 +58,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 	public void showCommandTest() throws Exception{
 
 		// Testing against some reliable remote TDS
-		catUriString = "http://thredds-dev.ucar.edu/thredds/catalog.xml";
+		catUriString = "http://thredds.ucar.edu/thredds/catalog.xml";
 		request.setRequestURI(catUriString);
 
 		// REQUEST WITH DEFAULT VALUES
@@ -83,7 +83,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 
 	}
 
-	@Ignore
+	// http://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_80km/catalog.html?dataset=grib/NCEP/NAM/CONUS_80km/best
 	@Test
 	public void subsetCommandTest() throws Exception{
 
@@ -94,10 +94,10 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 		// htmlView= null
 		// verbose = null
 		// command null and a providing a datasetId becomes in a subset command  
-		catUriString = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Alaska_191km/catalog.xml";
+		catUriString = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_80km/catalog.xml";
 		request.setParameter(parameterNameCatalog, catUriString);
 		request.setParameter(parameterNameCommand, command);
-		request.setParameter(parameterNameDatasetId, "fmrc/NCEP/GFS/Alaska_191km");
+		request.setParameter(parameterNameDatasetId, "grib/NCEP/NAM/CONUS_80km/best");
 		request.setParameter(parameterNameHtmlView, htmlView);
 		request.setParameter(parameterNameVerbose, verbose);
 		
@@ -110,7 +110,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 		assertTrue( response.getStatus() == 200 );
 	}
 	
-	@Ignore
+	//@Ignore
 	@Test
 	public void validateCommandTest() throws Exception {
 
@@ -119,7 +119,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 		// datasetId= null
 		// htmlView= null
 		// verbose = null 
-		catUriString = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Alaska_191km/catalog.xml";		
+    catUriString = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_80km/catalog.xml";
 		request.setParameter(parameterNameCatalog, catUriString);
 		request.setParameter(parameterNameCommand, cmdValidate);
 		request.setParameter(parameterNameDatasetId, datasetId);

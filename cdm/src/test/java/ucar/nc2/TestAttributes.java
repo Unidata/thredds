@@ -42,7 +42,6 @@ import java.io.IOException;
 
 public class TestAttributes extends TestCase {
 
-
   public void testNC3ReadAttributes() throws IOException {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 

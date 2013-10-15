@@ -117,6 +117,5 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 	
 	private void extractConfiguration(Class<?> clazz){
 		tdsContentRootPath = AnnotationUtils.findAnnotation(clazz, TdsContentRootPath.class);
-		
 	}
 }

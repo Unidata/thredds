@@ -126,5 +126,21 @@ public class TestCalendars {
     }
   }
 
+  // from Q:/cdmUnitTest/conventions/cf/year0.nc
+  @Test
+  public void testZeroYear() {
+    double[] times = new double[] {366.0, 1096.485, 1826.97, 2557.455, 3287.94, 4018.425, 4748.91, 5479.395, 6209.88, 6940.365, 7670.85, 8401.335};
+    CalendarDateUnit unit = CalendarDateUnit.withCalendar(null, "hour since 0000-01-01 00:00:00");
+    for (double time : times) {
+      CalendarDate cd1 = unit.makeCalendarDate(time);
+      System.out.printf("%s with Calendar %s%n", cd1, null);
+    }
+
+    // year0 fails in gregorian. kluge in CalendarDateFormatter
+    CalendarDateUnit unit2 = CalendarDateUnit.withCalendar(Calendar.gregorian, "hour since 0000-01-01 00:00:00");
+    assert unit2.getCalendar() == Calendar.proleptic_gregorian;
+  }
+
+
 }
 

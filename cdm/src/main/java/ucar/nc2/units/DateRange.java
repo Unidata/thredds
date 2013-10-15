@@ -111,7 +111,7 @@ public class DateRange {
 
     useStart = (start != null) && !start.isBlank();
     useEnd = (end != null) && !end.isBlank();
-    useDuration = (duration != null);
+    useDuration = (duration != null) && !duration.isBlank();
     useResolution = (resolution != null);
 
     boolean invalid = true;

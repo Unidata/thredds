@@ -51,10 +51,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.servlet.DatasetHandlerAdapter;
-import ucar.nc2.dt.GridDataset;
 
 /**
  * @author mhermida
@@ -69,7 +66,7 @@ public class GridRequestsExceptionTest {
 	
 	private MockHttpServletResponse response ;
 	private MockHttpServletRequest request;
-	private String pathInfo="/ncss/testGridFeatureCollection/Test_Feature_Collection_best.ncd";
+	private String pathInfo="/ncss/testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd";
 	
 	@Before
 	public void setUp() throws IOException{
@@ -79,21 +76,6 @@ public class GridRequestsExceptionTest {
 		request.setPathInfo(pathInfo);
 		request.setServletPath(pathInfo);		
 		
-	}
-	
-	@Test(expected=RequestTooLargeException.class)
-	public void testRequestTooLargeException() throws Exception{
-			
-    NcssParamsBean params;
-		BindingResult validationResult;
-		params = new NcssParamsBean();
-		params.setAllTimes(true);
-		List<String> vars = new ArrayList<String>();
-		vars.add("Relative_humidity");
-		vars.add("Temperature");
-		params.setVar(vars);		
-		validationResult = new BeanPropertyBindingResult(params, "params");
-		featureDatasetController.handleRequest(request, response, params, validationResult);
 	}
 	
 	@Test(expected=UnsupportedOperationException.class)

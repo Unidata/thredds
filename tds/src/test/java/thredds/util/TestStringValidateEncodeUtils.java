@@ -360,6 +360,7 @@ public class TestStringValidateEncodeUtils extends TestCase
     assertEquals( "%ff", StringValidateEncodeUtils.unicodeCodePoint2PercentHexString( 255, "ISO-8859-1" ));
     // DEVANAGARI SIGN CANDRABINDU
     assertEquals( "%e0%a4%81", StringValidateEncodeUtils.unicodeCodePoint2PercentHexString( 2305, "UTF-8" ) );
+
     //   Not a valid unicode code point
     try
     {

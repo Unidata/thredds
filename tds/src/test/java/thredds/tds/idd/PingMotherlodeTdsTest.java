@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public class PingMotherlodeTdsTest
 {
-  private String tdsUrl = "http://motherlode.ucar.edu/thredds/";
+  private String tdsUrl = "http://thredds.ucar.edu/thredds/";
 
   private String catUrl;
 
@@ -46,7 +46,6 @@ public class PingMotherlodeTdsTest
     String url = this.tdsUrl + this.catUrl;
     InvCatalogImpl cat = TestAll.openValidateAndCheckExpires( url, msgLog );
 
-    assertNotNull( "Catalog [" + url + "] failed to open, failed to validate, or was expired: " + msgLog,
-                   cat);
+    assertNotNull( "Catalog [" + url + "] failed to open, failed to validate, or was expired: " + msgLog, cat);
   }
 }

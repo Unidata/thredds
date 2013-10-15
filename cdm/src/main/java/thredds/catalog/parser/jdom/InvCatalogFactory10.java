@@ -100,10 +100,20 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return Collections.unmodifiableList(this.dataRootLocAliasExpanders);
   }
 
-  private String expandDataRootLocationAlias(String location) {
+  private String expandAliasForPath(String location) {
     for (PathAliasReplacement par : this.dataRootLocAliasExpanders) {
-      if (par.containsPathAlias(location))
-        return par.replacePathAlias(location);
+      if (par.containsPathAlias(location)) {
+        String result =  par.replacePathAlias(location);
+        return result;
+      }
+    }
+    return location;
+  }
+
+  private String expandAliasForCollectionSpec(String location) {
+    for (PathAliasReplacement par : this.dataRootLocAliasExpanders) {
+        String result =  par.replaceIfMatch(location);
+        if (result != null) return result;
     }
     return location;
   }
@@ -344,7 +354,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String specName = collElem.getAttributeValue("name");
     if (specName == null) specName = name; // If missing, the Feature Collection name is used.
     // String spec = collElem.getAttributeValue("spec");
-    String spec = expandDataRootLocationAlias( collElem.getAttributeValue("spec")); // LOOK
+    String spec = expandAliasForCollectionSpec(collElem.getAttributeValue("spec")); // LOOK
     String timePartition = collElem.getAttributeValue("timePartition");
     String dateFormatMark = collElem.getAttributeValue("dateFormatMark");
     String olderThan = collElem.getAttributeValue("olderThan");
@@ -443,7 +453,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     Element fmrcElem = dsElem.getChild( "fmrcInventory", defNS );
     if (fmrcElem != null) {
-      String location = expandDataRootLocationAlias( fmrcElem.getAttributeValue("location"));
+      String location = expandAliasForPath(fmrcElem.getAttributeValue("location"));
       String def = fmrcElem.getAttributeValue("fmrcDefinition");
       String suffix = fmrcElem.getAttributeValue("suffix");
       String olderThan = fmrcElem.getAttributeValue("olderThan");
@@ -477,7 +487,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
       String path = dsElem.getAttributeValue( "path" );
 
-      String scanDir = expandDataRootLocationAlias( dsElem.getAttributeValue( "dirLocation" ));
+      String scanDir = expandAliasForPath(dsElem.getAttributeValue("dirLocation"));
       String filter = dsElem.getAttributeValue( "filter" );
       String addDatasetSizeString = dsElem.getAttributeValue( "addDatasetSize" );
       String addLatest = dsElem.getAttributeValue( "addLatest" );
@@ -538,7 +548,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String name = dsElem.getAttributeValue( "name" );
     String path = dsElem.getAttributeValue( "path" );
 
-    String scanDir = expandDataRootLocationAlias( dsElem.getAttributeValue( "location" ));
+    String scanDir = expandAliasForPath(dsElem.getAttributeValue("location"));
 
     // Read datasetConfig element
     String configClassName = null;
@@ -1165,7 +1175,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String dirLocation = s.getAttributeValue("location");
     if ( dirLocation == null )
       dirLocation = s.getAttributeValue( "dirLocation" );
-    dirLocation = expandDataRootLocationAlias( dirLocation );
+    dirLocation = expandAliasForPath(dirLocation);
 
     if (path != null) {
       if (path.charAt(0) == '/') path = path.substring(1);

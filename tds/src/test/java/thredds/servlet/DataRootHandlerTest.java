@@ -7,22 +7,41 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+import java.util.List;
+
+@RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"}, loader=MockTdsContextLoader.class)
 public class DataRootHandlerTest {
-	
-	
-	private String reqPath;
+
+  @SpringJUnit4ParameterizedClassRunner.Parameters
+ 	public static List<String[]> getTestParameters(){
+ 		return PathInfoParams.getPathInfoAsListOfArrays();
+ 	}
+  private String pathInfo;
+
+ 	public DataRootHandlerTest(String pathInfo){
+ 		this.pathInfo=pathInfo;
+ 	}
+
+  @Test
+  public void testAllRoots() {
+    System.out.printf("pathInfo=%s%n", pathInfo);
+		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(pathInfo);
+		assertNotNull(match);
+
+ 	}
 		
-	@Test
+	/* @Test
 	public void testAliasExpandersDatasetScan(){
 		
 		//datasetScan request path 
 		//reqPath ="/opendapTest/GFS_Puerto_Rico_191km_20100515_0000.grib1";
-		reqPath =PathInfoParams.getPatInfo().get(1);
+		reqPath =PathInfoParams.getPathInfo().get(1);
+    System.out.printf("reqPath=%s%n", reqPath);
 		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 		assertNotNull(match);
 								
@@ -31,9 +50,10 @@ public class DataRootHandlerTest {
 	@Test
 	public void testAliasExpandersDatasetFeaturecollection(){
 		//featureCollection request path
-		reqPath =PathInfoParams.getPatInfo().get(3);
+		reqPath =PathInfoParams.getPathInfo().get(3);
+    System.out.printf("reqPath=%s%n", reqPath);
 		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 		assertNotNull(match);		
-	}
+	}    */
 
 }

@@ -11,8 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
-import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.dt.GridDataset;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)

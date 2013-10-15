@@ -29,16 +29,14 @@
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
     <property name="locations">
       <list>
-        <value>classpath:thredds/server/tds.properties</value>
+        <value>classpath:WEB-INF/classes/thredds/server/tds.properties</value>
       </list>
     </property>
   </bean>
 
    <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
-        <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
-        <entry key="share" value="${tds.dir.share}"/> 	
+     <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
    </util:map>
-
 
   <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
 
@@ -50,8 +48,7 @@
     <property name="installUrl" value="${tds.install.url}" />
   </bean>
 
-  
-
+  <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
 
     <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>

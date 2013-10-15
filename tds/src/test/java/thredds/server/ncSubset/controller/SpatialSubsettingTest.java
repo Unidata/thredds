@@ -34,13 +34,11 @@ package thredds.server.ncSubset.controller;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,12 +57,10 @@ import org.springframework.web.context.WebApplicationContext;
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.servlet.DatasetHandlerAdapter;
-import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
-import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
-import ucar.ma2.InvalidRangeException;
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
@@ -105,11 +101,11 @@ public class SpatialSubsettingTest {
 							
 		
 		return Arrays.asList( new Object[][]{
-				{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
-				{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
+				{ SupportedFormat.NETCDF3, PathInfoParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
+				{ SupportedFormat.NETCDF3, PathInfoParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
 				
-				{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
-				{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox			
+				{ SupportedFormat.NETCDF4, PathInfoParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
+				{ SupportedFormat.NETCDF4, PathInfoParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
 								
 			});
 	}

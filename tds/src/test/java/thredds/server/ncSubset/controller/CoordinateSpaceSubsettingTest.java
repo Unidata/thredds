@@ -36,18 +36,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -55,23 +52,16 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
-import thredds.servlet.DatasetHandlerAdapter;
-import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
-import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
-import ucar.ma2.InvalidRangeException;
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDataset;
 
 /**
  * @author mhermida
@@ -98,12 +88,12 @@ public class CoordinateSpaceSubsettingTest {
 	public static Collection<Object[]> getTestParameters(){
 				
 		return Arrays.asList( new Object[][]{
-				{ new int[][]{ {1,2,2}, {1,2,2} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getProjectionRect().get(0) }, //No vertical levels 
-				{ new int[][]{ {1,1,16,15}, {1,1,16,15} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
-				{ new int[][]{ {1,29,2,93}, {1,29,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), GridDataParameters.getProjectionRect().get(2) }, //Same vertical level (multiple level)
-				{ new int[][]{ {1,2,93}, {1,29,2,93}, {1,1,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(2)}, //No vertical levels and vertical levels
-				{ new int[][]{ {1,1,65,93}, {1,29,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(3)}, //Full extension
-				{ new int[][]{ {1,1,11,53}, {1,29,11,53} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(4)}  //Intersection				
+				{ new int[][]{ {1,2,2}, {1,2,2} } , PathInfoParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getProjectionRect().get(0) }, //No vertical levels
+				{ new int[][]{ {1,1,16,15}, {1,1,16,15} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
+				{ new int[][]{ {1,29,2,93}, {1,29,2,93} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(2), GridDataParameters.getProjectionRect().get(2) }, //Same vertical level (multiple level)
+				{ new int[][]{ {1,2,93}, {1,29,2,93}, {1,1,2,93} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(2)}, //No vertical levels and vertical levels
+				{ new int[][]{ {1,1,65,93}, {1,29,65,93} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(3)}, //Full extension
+				{ new int[][]{ {1,1,11,53}, {1,29,11,53} }, PathInfoParams.getPathInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(4)}  //Intersection
 			});	
 	
 	}
@@ -121,7 +111,8 @@ public class CoordinateSpaceSubsettingTest {
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();		
 		//String servletPath = AbstractNcssDataRequestController.servletPath + pathInfo;
 		String servletPath = FeatureDatasetController.servletPath + pathInfo;
-				
+    System.out.printf("servletPath=%s%n", servletPath);
+
 		Iterator<String> it = vars.iterator();
 		String varParamVal = it.next();
 		while(it.hasNext()){
@@ -139,7 +130,7 @@ public class CoordinateSpaceSubsettingTest {
 	}
 	
 	@Test
-	public void shoudSubsetGrid() throws Exception{
+	public void shouldSubsetGrid() throws Exception{
 				
 		MvcResult mvc = this.mockMvc.perform(requestBuilder).andReturn();
 		assertEquals(200, mvc.getResponse().getStatus());

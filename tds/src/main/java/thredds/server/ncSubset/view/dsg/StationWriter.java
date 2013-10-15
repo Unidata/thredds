@@ -168,7 +168,7 @@ public class StationWriter extends AbstractWriter {
     return writer.getHttpHeaders(datasetPath);
   }
 
-  public void write() throws ParseException, IOException, VariableNotContainedInDatasetException, NcssException {
+  public void write() throws ParseException, IOException, NcssException {
 
     Limit counter = new Limit();
 
@@ -184,6 +184,7 @@ public class StationWriter extends AbstractWriter {
     for (Station st : stns)
       stations.add(st.getName());
 
+    // LOOK should we always flatten ??
     pfc = sfc.flatten(stations, wantRange, null);
 
 	    /*

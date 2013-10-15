@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" 
+   name="Unidata THREDDS-IDD NetCDF-OpenDAP Server" version="1.0.1">
+  
+  <service name="latest" serviceType="Resolver" base="" />
+  <service name="both" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+  </service>
+
+  <dataset name="NCEP Model Data">
+    <metadata inherited="true">
+      <serviceName>both</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Grid</dataType>
+      <dataFormat>NetCDF</dataFormat>
+      <documentation type="rights">Freely available</documentation>
+      <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html" xlink:title="NCEP Model documentation"></documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml" />
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>14 days</duration>
+      </timeCoverage>
+    </metadata>
+
+    <datasetScan name="ETA Data" ID="testEnhanced"
+                 path="testEnhanced" location="content/testdata/"
+                 harvest="true">
+      <metadata inherited="true">
+        <documentation type="summary">NCEP North American Model : AWIPS 211 (Q) Regional - CONUS (Lambert Conformal). Model runs are made at 12Z and 00Z, with analysis and forecasts every 6 hours out to 60 hours. Horizontal = 93 by 65 points, resolution 81.27 km, LambertConformal projection. Vertical = 1000 to 100 hPa pressure levels.</documentation>
+        <geospatialCoverage>
+          <northsouth>
+            <start>26.92475</start>
+            <size>15.9778</size>
+            <units>degrees_north</units>
+          </northsouth>
+          <eastwest>
+            <start>-135.33123</start>
+            <size>103.78772</size>
+            <units>degrees_east</units>
+          </eastwest>
+          <updown>
+            <start>0.0</start>
+            <size>0.0</size>
+            <units>km</units>
+          </updown>
+        </geospatialCoverage>
+        <variables vocabulary="GRIB-1" />
+        <variables vocabulary="">
+          <variable name="Z_sfc" vocabulary_name="" units="gp m">Geopotential height, gpm</variable>
+        </variables>
+      </metadata>
+
+      <filter>
+        <include wildcard="*eta_211.nc" />
+      </filter>
+      <addID/>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+      <addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_eta_211.nc$"
+                       startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+                       duration="60 hours" />
+    </datasetScan>
+  </dataset>
+</catalog>
+

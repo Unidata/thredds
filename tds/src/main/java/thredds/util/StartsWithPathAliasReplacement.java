@@ -65,17 +65,34 @@ public class StartsWithPathAliasReplacement implements PathAliasReplacement {
     return this.replacementPath;
   }
 
+  @Override
   public boolean containsPathAlias(String path) {
     if (path == null) throw new IllegalArgumentException("Path must not be null.");
     path = StringUtils.cleanPath(path);
     return path.startsWith(alias + "/");
   }
 
+  @Override
   public String replacePathAlias(String path) {
     if (path == null) throw new IllegalArgumentException("Path must not be null.");
     path = StringUtils.cleanPath(path);
     if (!path.startsWith(alias + "/"))
       throw new IllegalArgumentException("Path [" + path + "] does not contain alias [startWith( \"" + alias + "/\" )].");
     return replacementPath + path.substring(alias.length());
+  }
+
+  @Override
+  public String replaceIfMatch(String path) {
+    if (!path.startsWith(alias)) return null;
+    return replacementPath + path.substring(alias.length());
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("StartsWithPathAliasReplacement{");
+    sb.append("alias='").append(alias).append('\'');
+    sb.append(", replacementPath='").append(replacementPath).append('\'');
+    sb.append('}');
+    return sb.toString();
   }
 }
