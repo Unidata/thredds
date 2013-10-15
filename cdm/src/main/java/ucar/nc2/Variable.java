@@ -1200,9 +1200,6 @@ if(CDMNode.OBJECTHASH) return super.hashCode(); else {
    */
   public void setDataType(DataType dataType) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    if(getShortName() == null) {
-      System.out.println();
-    }
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
     EnumTypedef etd = getEnumTypedef();
