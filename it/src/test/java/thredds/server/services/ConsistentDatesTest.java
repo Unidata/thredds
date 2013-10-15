@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
+import thredds.server.TestWithLocalServer;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.CDM;
@@ -49,7 +50,7 @@ import com.eclipsesource.restfuse.annotation.HttpTest;
 public class ConsistentDatesTest {
 
   @Rule
-  public Destination destination = new Destination("http://localhost:8081");
+  public Destination destination = new Destination(TestWithLocalServer.server);
 
   @Context
   private Response response; // will be injected after every request
@@ -91,8 +92,7 @@ public class ConsistentDatesTest {
   public void setUp() {
 
   }
-
-  @HttpTest(method = Method.GET, path = "/thredds/wms/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WMS&version=1.3.0&request=GetCapabilities")
+  @HttpTest(method = Method.GET, path = "/thredds/wms/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WMS&version=1.3.0&request=GetCapabilities")
   public void checkWMSDates() throws JDOMException, IOException {
 
     assertOk(response);
@@ -121,7 +121,7 @@ public class ConsistentDatesTest {
 
   }
 
-  @HttpTest(method = Method.GET, path = "/thredds/wcs/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WCS&version=1.0.0&request=DescribeCoverage&coverage=sst")
+  @HttpTest(method = Method.GET, path = "/thredds/wcs/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WCS&version=1.0.0&request=DescribeCoverage&coverage=sst")
   public void checkWCSDates() throws JDOMException, IOException {
     assertOk(response);
     assertTrue(response.hasBody());
@@ -152,7 +152,7 @@ public class ConsistentDatesTest {
 
   }
 
-  @HttpTest(method = Method.GET, path = "thredds/ncss/testStandardTds/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all")
+  @HttpTest(method = Method.GET, path = "/thredds/ncss/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all")
   public void checkNCSSDates() throws JDOMException, IOException {
 
     assertOk(response);

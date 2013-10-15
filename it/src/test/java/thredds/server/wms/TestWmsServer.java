@@ -33,26 +33,68 @@
 
 package thredds.server.wms;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.io.File;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.List;
 
+import com.eclipsesource.restfuse.Destination;
+import com.eclipsesource.restfuse.HttpJUnitRunner;
+import com.eclipsesource.restfuse.Method;
+import com.eclipsesource.restfuse.Response;
+import com.eclipsesource.restfuse.annotation.Context;
+import com.eclipsesource.restfuse.annotation.HttpTest;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.filter.Filters;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.xpath.XPathExpression;
+import org.jdom2.xpath.XPathFactory;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import thredds.server.TestWithLocalServer;
 import ucar.nc2.util.IO;
 
-/**
- * Class Description.
- *
- * @author caron
- * @since Oct 6, 2008
- */
-public class TestWmsServer extends TestCase {
-  private String server = "http://localhost:8081/thredds/wms/";
+import static com.eclipsesource.restfuse.Assert.assertOk;
+import static org.junit.Assert.assertEquals;
 
-  public TestWmsServer( String name) {
-    super(name);
-  }
+@RunWith(HttpJUnitRunner.class)
+public class TestWmsServer {
 
+  @Rule
+  public Destination destination = new Destination(TestWithLocalServer.server);
+
+  @Context
+  private Response response; // will be injected after every request
+
+  private String server = TestWithLocalServer.server+ "wms/";
+
+  @HttpTest(method = Method.GET, path = "http://localhost:8080/thredds/wms/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc?service=WCS&version=1.0.0&request=GetCapabilities")
+   public void testCapabilites() throws IOException, JDOMException {
+     assertOk(response);
+     String xml = response.getBody(String.class);
+     Reader in = new StringReader(xml);
+     SAXBuilder sb = new SAXBuilder();
+     Document doc = sb.build(in);
+
+     XPathExpression<Element> xpath = XPathFactory.instance().compile("/WMS_Capabilities/Capability/Layer/Layer/Layer/Name", Filters.element());
+     List<Element> elements = xpath.evaluate(doc);
+     for (Element emt : elements) {
+         System.out.println("XPath has result: " + emt.getName());
+     }
+     assertEquals(6, elements.size());
+
+     XPathExpression<Element> xpath2 =
+         XPathFactory.instance().compile("/WMS_Capabilities/Capability/Layer/Layer/Layer/Name", Filters.element());
+     Element emt = xpath2.evaluateFirst(doc);
+     assertEquals("Relative_humidity", emt.getTextTrim());
+   }
+
+
+  //@Test
   public void testNAM() throws IOException {
     String dataset = server+"testAll/namExtract/20060925_0600.nc";
     showGetCapabilities(dataset);
@@ -62,18 +104,21 @@ public class TestWmsServer extends TestCase {
   // http://localhost:8081/thredds/wms/testWMS/cmor_pcmdi.nc
 
 
+  //@Test
   public void testLatlon() throws IOException {
     String dataset = server+"testWMS/cmor_pcmdi.nc";
     showGetCapabilities(dataset);
     // getMap(dataset, "tos", "C:/temp/wmsLatlon.jpg");
   }
 
+  //@Test
   public void testRot() throws IOException {
     String dataset = server+"testWMS/rotatedLatlon.grb";
     showGetCapabilities(dataset);
     getMap(dataset, "Geopotential_height", "C:/temp/wmsRot.jpg");
   }
 
+  //@Test
   public void testGoogle() throws IOException {
     String g = "testWMS/rotatedlatlon.grb?VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326&WIDTH=512&HEIGHT=512&LAYERS=Geopotential_height&STYLES=BOXFILL/alg&TRANSPARENT=TRUE&FORMAT=image/gif&BBOX=-135,35.34046249175859,135,82.1914946416798";
     saveRead(server+g, "C:/temp/wmsGoogle.gif");
