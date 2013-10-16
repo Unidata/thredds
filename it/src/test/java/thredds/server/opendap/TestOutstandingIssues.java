@@ -32,12 +32,12 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.dods;
+package thredds.server.opendap;
 
 
 import junit.framework.*;
+import thredds.server.TestWithLocalServer;
 import ucar.ma2.*;
-import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 
@@ -47,7 +47,7 @@ import java.io.*;
 public class TestOutstandingIssues extends TestCase {
 
   public void testByteAttribute() throws IOException {
-    String filename = TestLocalDodsServer.server+"CdataScan/profiler/PROFILER_wind_06min_20070514_2354.nc";
+    String filename = TestWithLocalServer.server+"CdataScan/profiler/PROFILER_wind_06min_20070514_2354.nc";
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename, true, null);
     assert ncd != null;
     VariableDS v = (VariableDS) ncd.findVariable("uvQualityCode");

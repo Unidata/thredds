@@ -29,7 +29,21 @@
   <dataset name="Test Single Station Dataset" ID="testSingleStationDataset" serviceName="all" urlPath="cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc" dataType="Station"/>
   <dataset name="Test sst" ID="TESTsst" serviceName="all" urlPath="cdmUnitTest/conventions/coards/sst.mnmean.nc" dataType="Grid"/>
 
-   <datasetScan name="Test Scan Grids" ID="testGridScan" path="testGridScan" location="${cdmUnitTest}/ncss/GFS/CONUS_80km">
+  <datasetScan name="Test Scan Local" ID="testScanLocal" path="scanLocal" location="content/testdata/">
+     <metadata inherited="true">
+       <serviceName>all</serviceName>
+     </metadata>
+   </datasetScan>
+
+  <!-- a scan on the entire /upc/share/cdmUnitTest directory; not all services will make sense -->
+  <datasetScan name="Test scan cdmUnitTest" ID="scanCdmUnitTests" path="scanCdmUnitTests" location="${cdmUnitTest}">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+    <addDatasetSize/>
+  </datasetScan>
+
+  <datasetScan name="Test Scan Grids" ID="testGridScan" path="testGridScan" location="${cdmUnitTest}/ncss/GFS/CONUS_80km">
      <metadata inherited="true">
        <serviceName>all</serviceName>
        <dataType>Grid</dataType>
@@ -37,45 +51,14 @@
      </metadata>
    </datasetScan>
 
-   <!-- Test Dataset Scan on Station data-->
-   <!-- pathInfo:   /testTdsScan/GFS_CONUS_80km_yyyyMMdd_HHmm.grib1.nc -->
-   <datasetScan name="Test Scan Stations" ID="testStationScan" path="testStationScan" location="${cdmUnitTest}/ncss/point_features/metar">
-     <metadata inherited="true">
-       <serviceName>all</serviceName>
-       <dataType>Station</dataType>
-     </metadata>
-   </datasetScan>
-
-  <!-- a scan on the entire /upc/share/cdmUnitTest/tds directory; not all services will make sense -->
-  <datasetScan name="Test scan cdmUnitTest/tds" ID="testTdsScan" path="testTdsScan" location="${cdmUnitTest}/tds">
-    <metadata inherited="true">
-      <serviceName>all</serviceName>
-    </metadata>
-
-    <addProxies>
-      <simpleLatest/>
-    </addProxies>
-    <sort>
-      <lexigraphicByName increasing="true"/>
-    </sort>
-    <addDatasetSize/>
-  </datasetScan>
-
-  <!-- a scan on the /share/testdata/cdmUnitTest/formats directory; used for Cdmremote integration tests -->
-  <datasetScan name="Test scan cdmUnitTest/formats" ID="testCdmUnitFormats" path="testCdmUnitFormats" location="${cdmUnitTest}/formats" >
-    <metadata inherited="true">
-      <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
-    </metadata>
-
-    <addProxies>
-      <simpleLatest/>
-    </addProxies>
-    <sort>
-      <lexigraphicByName increasing="true"/>
-    </sort>
-    <addDatasetSize/>
-  </datasetScan>
+  <!-- Test Dataset Scan on Station data-->
+ <!-- pathInfo:   /testTdsScan/GFS_CONUS_80km_yyyyMMdd_HHmm.grib1.nc -->
+ <datasetScan name="Test Scan Stations" ID="testStationScan" path="testStationScan" location="${cdmUnitTest}/ncss/point_features/metar">
+   <metadata inherited="true">
+     <serviceName>all</serviceName>
+     <dataType>Station</dataType>
+   </metadata>
+ </datasetScan>
 
   <!-- opendap specific -->
   <!--

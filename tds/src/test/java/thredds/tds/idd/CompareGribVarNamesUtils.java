@@ -42,7 +42,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Formatter;
 import java.io.IOException;
-import java.text.ParseException;
 
 import thredds.catalog.*;
 import static org.junit.Assert.*;
@@ -58,9 +57,9 @@ public class CompareGribVarNamesUtils
 {
     private CompareGribVarNamesUtils() {}
 
-    private final static String FMRC_PREFIX = "catalog/fmrc/";
-    private final static String FMRC_RUN_CATALOG_SUFFIX = "/runs/catalog.xml";
-    private final static String FMRC_RAW_FILE_CATALOG_SUFFIX = "/files/catalog.xml";
+    private final static String GRIB_PREFIX = "catalog/grib/";
+    private final static String RUN_CATALOG_SUFFIX = "/runs/catalog.xml";
+    private final static String FILE_CATALOG_SUFFIX = "/files/catalog.xml";
 
     /**
      * For the given model ID, get the dataset at the given index in the
@@ -101,31 +100,31 @@ public class CompareGribVarNamesUtils
     private static GridDataset assertFmrcRunDatasetIsAccessible( String tdsUrl, String modelId, int index )
     {
         // Construct URL for the given model's FMRC Run catalog.
-        String fmrcRunCatUrl = tdsUrl + FMRC_PREFIX + modelId + FMRC_RUN_CATALOG_SUFFIX;
+        String fmrcRunCatUrl = tdsUrl + GRIB_PREFIX + modelId + RUN_CATALOG_SUFFIX;
 
         // Read the "FMRC Run" catalog
         InvCatalogImpl cat = InvCatalogFactory.getDefaultFactory( false ).readXML( fmrcRunCatUrl );
-        assertFalse( "\"FMRC Run\" catalog [" + fmrcRunCatUrl + "] had a fatal error= "  + " " +cat.getLog(),
+        assertFalse( "GRIB Collection catalog [" + fmrcRunCatUrl + "] had a fatal error= "  + " " +cat.getLog(),
                      cat.hasFatalError() );
 
         // Make sure the "FMRC Run" catalog has a top dataset and get its children.
         List<InvDataset> datasets = cat.getDatasets();
-        assertEquals( "\"FMRC Run\" catalog [" + fmrcRunCatUrl + "] does not have a top dataset.",
+        assertEquals( "GRIB Collection catalog [" + fmrcRunCatUrl + "] does not have a top dataset.",
                       datasets.size(), 1 );
         datasets = datasets.get( 0 ).getDatasets();
 
         // Make sure the "FMRC Run" collection has enough children to satisfy request.
-        assertFalse( "\"FMRC Run\" top dataset [" + fmrcRunCatUrl + "] - requested child index [" + index + "] out of range [0-" + ( datasets.size() - 1 ) + "].",
+        assertFalse( "GRIB Collection top dataset [" + fmrcRunCatUrl + "] - requested child index [" + index + "] out of range [0-" + ( datasets.size() - 1 ) + "].",
                      datasets.size() < index + 1 );
 
         // Get the requested child dataset and make sure it exists, has no children, and is OPeNDAP accessible.
         InvDataset requestedChildDs = datasets.get( index );
-        assertNotNull( "\"FMRC Run\" child [" + index + "] dataset [" + fmrcRunCatUrl + "] is null.",
+        assertNotNull( "GRIB Collection child [" + index + "] dataset [" + fmrcRunCatUrl + "] is null.",
                        requestedChildDs );
-        assertFalse( "\"FMRC Run\" child [" + index + "] dataset [" + requestedChildDs.getFullName() + "] has nested datasets.",
+        assertFalse( "GRIB Collection child [" + index + "] dataset [" + requestedChildDs.getFullName() + "] has nested datasets.",
                      requestedChildDs.hasNestedDatasets() );
         InvAccess access = requestedChildDs.getAccess( ServiceType.OPENDAP );
-        assertNotNull( "\"FMRC Run\" child [" + index + "] dataset [" + requestedChildDs.getFullName() + "] not OPeNDAP accessible.",
+        assertNotNull( "GRIB Collection child [" + index + "] dataset [" + requestedChildDs.getFullName() + "] not OPeNDAP accessible.",
                        access );
 
         System.out.println( "FMRC Run child(" + index + ") dataset              : "
@@ -176,7 +175,7 @@ public class CompareGribVarNamesUtils
         Date runDate = dateFormatter.getISODate(  s);
         if (runDate == null)
         {
-            fail( "\"FMRC Run\" dataset URL [" + url + "] did not contain timestamp in expected format: " + s );
+            fail( "GRIB Collection dataset URL [" + url + "] did not contain timestamp in expected format: " + s );
         }
         return runDate;
     }
@@ -193,7 +192,7 @@ public class CompareGribVarNamesUtils
     private static GridDataset assertFmrcRawFileDatasetForMatchingTimeIsAccessible( String tdsUrl, String modelId, Date runDate )
     {
         // Construct URL for the given model's "Scan" catalog.
-        String scanCatalogUrl = tdsUrl + FMRC_PREFIX + modelId + FMRC_RAW_FILE_CATALOG_SUFFIX;
+        String scanCatalogUrl = tdsUrl + GRIB_PREFIX + modelId + FILE_CATALOG_SUFFIX;
 
         // Read the "Scan" catalog.
         InvCatalogImpl cat = InvCatalogFactory.getDefaultFactory( false ).readXML( scanCatalogUrl );

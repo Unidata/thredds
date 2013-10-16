@@ -45,6 +45,7 @@ import com.eclipsesource.restfuse.annotation.Context;
 import com.eclipsesource.restfuse.annotation.HttpTest;
 import junit.framework.TestCase;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
@@ -92,6 +93,12 @@ public class TestTdsDodsServer {
     assert ress.contains("15636.879");
   }
 
+  @Test
+  public void testUrlReading() throws IOException {
+    doOne(TestTdsLocal.topCatalog+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_22km_20100504_0000.grib1");
+    doOne(TestTdsLocal.topCatalog+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_45km_conduit_20100913_0000.grib2");
+  }
+
   /*
   Dataset {
       Grid {
@@ -117,7 +124,7 @@ public class TestTdsDodsServer {
   -4226.1084
    */
 
-   public void testSingleDataset() throws IOException {
+   private void testSingleDataset() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);
 
     InvDataset ds = cat.findDatasetByID("testDataset2");
@@ -162,11 +169,6 @@ public class TestTdsDodsServer {
     assert data.getSize() == v.getSize();
 
     ncd.close();
-  }
-
-  public void testUrlReading() throws IOException {
-    doOne(TestTdsLocal.topCatalog+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_22km_20100504_0000.grib1");
-    doOne(TestTdsLocal.topCatalog+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_45km_conduit_20100913_0000.grib2");
   }
 
   public void testCompareWithFile() throws IOException {

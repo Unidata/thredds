@@ -1,4 +1,4 @@
-// $Id: TestLocalDodsServer.java 51 2006-07-12 17:13:13Z caron $
+// $Id: TestTDSselect.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -31,53 +31,69 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.dods;
+package thredds.server.opendap;
 
-import junit.framework.TestSuite;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
+import org.junit.Test;
+import thredds.server.TestWithLocalServer;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.DataType;
 import ucar.ma2.Array;
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author john
  */
-public class TestLocalDodsServer {
+public class TestSanity {
 
-  public static String server = "dods://localhost:8081/thredds/dodsC/";
-  public static String testdata = server + "ncdodsTest/";
+  @Test
+  public void testStrings() throws IOException, InvalidRangeException {
+    String url = TestWithLocalServer.server + "/dodsC/scanLocal/testWrite.nc";
+    NetcdfDataset dodsfile = null;
+    try {
 
-  public static junit.framework.Test suite() {
-    TestSuite suite = new TestSuite();
+      dodsfile = NetcdfDataset.openDataset(url);
 
-    suite.addTest(new TestSuite(TestTDSselect.class)); //
-    suite.addTest(new TestSuite(TestTDScompareWithFiles.class)); //
+      Variable v = null;
 
-    return suite;
-  }
+      // string
+      assert (null != (v = dodsfile.findVariable("svar")));
+      assert v.getFullName().equals("svar");
+      assert v.getRank() == 1;
+      assert v.getSize() == 80;
+      assert v.getDataType() == DataType.CHAR : v.getDataType();
 
-  public static void doit() throws IOException {
-    NetcdfFile ncd = NetcdfDataset.openFile("thredds:resolve:http://thredds.ucar.edu/thredds/dodsC/station/metar/latest.xml",null);
+      Array a = v.read();
+      assert a.getRank() == 1;
+      assert a.getSize() == 80 : a.getSize();
+      assert a.getElementType() == DataType.CHAR.getPrimitiveClassType();
 
-    List vars = ncd.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v =  (Variable) vars.get(i);
-      if (!v.getFullName().equals("record")) {
-        Array data = v.read();
-        System.out.println(" read "+v.getFullName()+" size = "+ data.getSize());
-      }
+      a = v.read("1:10");
+      assert a.getRank() == 1;
+      assert a.getSize() == 10 : a.getSize();
+      assert a.getElementType() == DataType.CHAR.getPrimitiveClassType();
+
+      // string array
+      assert (null != (v = dodsfile.findVariable("names")));
+      assert v.getFullName().equals("names");
+      assert v.getRank() == 2;
+      assert v.getSize() == 3 * 80;
+      assert v.getDataType() == DataType.CHAR : v.getDataType();
+
+      a = v.read();
+      assert a.getRank() == 2;
+      assert a.getSize() == 3 * 80 : a.getSize();
+      assert a.getElementType() == DataType.CHAR.getPrimitiveClassType();
+
+      a = v.read("0:1,1:10");
+      assert a.getRank() == 2;
+      assert a.getSize() == 2 * 10 : a.getSize();
+      assert a.getElementType() == DataType.CHAR.getPrimitiveClassType();
+
+    } finally {
+      if (dodsfile != null) dodsfile.close();
     }
-
-    ncd.close();
-
   }
-
-  public static void main(String args[]) throws IOException {
-    while (true) doit();
-  }
-
-
 }

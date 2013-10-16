@@ -74,7 +74,7 @@ public class DefaultDateRangeTests {
 				{0L, "present", null, null, null},
 				{86400L, null, "present", dayAfterStr, null},
 				{86400L, null, dayBeforeStr,"present",  null},
-				{86400L*2,null, dayBeforeStr,dayAfterStr,  null},
+				{86400L*2,null, dayBeforeStr, dayAfterStr,  null},
 				{86400L*3,null, nowStr,null,  "P3D"},
 				{86400L*2,null,null, dayBeforeStr,  "P2D"}
 		});

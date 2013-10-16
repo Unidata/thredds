@@ -1,10 +1,12 @@
-package thredds.servlet;
+package thredds.server.ncSubset.dataservice;
 
 import java.io.IOException;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import thredds.server.ncSubset.controller.AbstractFeatureDatasetController;
+import thredds.servlet.DatasetHandler;
 import ucar.nc2.dt.GridDataset;
 
 /**
@@ -26,7 +28,8 @@ public final class DatasetHandlerAdapter {
 		
 		req.setPathInfo(pathInfo);
 		
-		return DatasetHandler.openGridDataset(req, res, pathInfo);
+    String datasetPath = AbstractFeatureDatasetController.getDatasetPath(pathInfo);
+		return DatasetHandler.openGridDataset(req, res, datasetPath);
 	}
 
 }

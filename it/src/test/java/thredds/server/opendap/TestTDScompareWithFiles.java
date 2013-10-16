@@ -30,12 +30,13 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.dods;
+package thredds.server.opendap;
 
 import junit.framework.*;
 import java.io.*;
 import java.util.*;
 
+import thredds.server.TestWithLocalServer;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants._Coordinate;
@@ -110,7 +111,7 @@ public class TestTDScompareWithFiles extends TestCase {
   private void doOne(String filename) throws IOException {
     filename = StringUtil2.replace(filename, '\\', "/");
     filename = StringUtil2.remove(filename, root);
-    String dodsUrl = TestLocalDodsServer.testdata+filename;
+    String dodsUrl = TestWithLocalServer.server+filename;
     String localPath = root+filename;
     System.out.println("--Compare "+localPath+" to "+dodsUrl);
     compareDatasets(dodsUrl, localPath);

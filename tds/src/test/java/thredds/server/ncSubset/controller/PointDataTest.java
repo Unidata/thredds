@@ -23,7 +23,7 @@ import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.util.NcssRequestUtils;
-import thredds.servlet.DatasetHandlerAdapter;
+import thredds.server.ncSubset.dataservice.DatasetHandlerAdapter;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.dt.GridDataset;

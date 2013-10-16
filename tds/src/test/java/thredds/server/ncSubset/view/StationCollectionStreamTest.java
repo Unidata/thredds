@@ -25,7 +25,7 @@ import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.server.ncSubset.view.gridaspoint.PointDataStream;
-import thredds.servlet.DatasetHandlerAdapter;
+import thredds.server.ncSubset.dataservice.DatasetHandlerAdapter;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.ma2.InvalidRangeException;
