@@ -139,6 +139,21 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest) System.out.printf(" took %d msecs %n", took);
   }
 
+  public CdmRemote(InputStream is, String location ) throws IOException {
+    long start = System.currentTimeMillis();
+    remoteURI = location;
+
+    try {
+      NcStreamReader reader = new NcStreamReader();
+      reader.readStream(is, this);
+      this.location = SCHEME + remoteURI;
+
+    } finally {
+    }
+    long took = System.currentTimeMillis() - start;
+    if (showRequest) System.out.printf(" took %d msecs %n", took);
+  }
+
   @Override
   protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
     //if (unlocked)

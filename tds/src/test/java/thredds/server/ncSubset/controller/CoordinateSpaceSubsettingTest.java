@@ -109,10 +109,6 @@ public class CoordinateSpaceSubsettingTest {
 	public void setUp() throws IOException{		
 		
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();		
-		//String servletPath = AbstractNcssDataRequestController.servletPath + pathInfo;
-		String servletPath = FeatureDatasetController.servletPath + pathInfo;
-    System.out.printf("servletPath=%s%n", servletPath);
-
 		Iterator<String> it = vars.iterator();
 		String varParamVal = it.next();
 		while(it.hasNext()){
@@ -120,7 +116,7 @@ public class CoordinateSpaceSubsettingTest {
 			varParamVal =varParamVal+","+next;
 		}
 		
-		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath)
+		requestBuilder = MockMvcRequestBuilders.get(pathInfo).servletPath(pathInfo)
 				.param("var",  varParamVal)
 				.param("minx", Double.valueOf(projectionRectParams[0]).toString())
 				.param("miny", Double.valueOf(projectionRectParams[1]).toString())

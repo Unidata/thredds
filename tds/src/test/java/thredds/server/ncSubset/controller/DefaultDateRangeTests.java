@@ -37,16 +37,16 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import thredds.server.ncSubset.params.NcssParamsBean;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarPeriod;
 
 /**
  * @author marcos
@@ -55,7 +55,6 @@ import ucar.nc2.time.CalendarDateRange;
 @RunWith(Parameterized.class)
 public class DefaultDateRangeTests {
 
-	//private GridDataController gridDataController; 
 	private NcssParamsBean requestParams;
 	
 	private long durationInSeconds;
@@ -63,14 +62,13 @@ public class DefaultDateRangeTests {
 	@Parameters
 	public static Collection<Object[]> getParameters(){
 		
-		DateTime now = new DateTime();
-		DateTime dayAfter = now.plusDays(1);
-		DateTime dayBefore = now.plusDays(-1);
-		
-		DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
-		String nowStr = fmt.print(now);
-		String dayAfterStr  = fmt.print(dayAfter);		
-		String dayBeforeStr = fmt.print(dayBefore);
+		CalendarDate now = CalendarDate.present();
+    CalendarDate dayAfter = now.add(1, CalendarPeriod.Field.Day);
+    CalendarDate dayBefore = now.add(-1, CalendarPeriod.Field.Day);
+
+		String nowStr = CalendarDateFormatter.toDateTimeStringISO(now);
+		String dayAfterStr  = CalendarDateFormatter.toDateTimeStringISO(dayAfter);
+		String dayBeforeStr = CalendarDateFormatter.toDateTimeStringISO(dayBefore);
 		
 		return Arrays.asList( new Object[][]{				
 				{0L, "present", null, null, null},
@@ -89,7 +87,8 @@ public class DefaultDateRangeTests {
 		requestParams.setTime_start(time_start);
 		requestParams.setTime_end(time_end);
 		requestParams.setTime_duration(time_duration);
-	} 
+    System.out.printf("range=[%s - %s]%n", time_start, time_end);
+	}
 	
 //	@Before
 //	public void setUp(){
@@ -101,11 +100,11 @@ public class DefaultDateRangeTests {
 	public void shouldGetPresent() throws ParseException{
 		
 		CalendarDateRange range= GridDatasetResponder.getRequestedDateRange(requestParams);
-		System.out.printf("%s%n", range);
-		System.out.printf("  expected=%d actual=%d%n", durationInSeconds, range.getDurationInSecs());
+		System.out.printf("range=%s%n", range);
+		System.out.printf(" duration: expected=%d actual=%d%n", durationInSeconds, range.getDurationInSecs());
 		//assertEquals(durationInSeconds, range.getDurationInSecs() );
 		//long duration =Math.abs( durationInSeconds - range.getDurationInSecs() );		
-		assertTrue(Math.abs( durationInSeconds - range.getDurationInSecs() ) < 5 );
+		assertTrue(Math.abs( durationInSeconds - range.getDurationInSecs() ) < 10 );
 		
 	}
 }

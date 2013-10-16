@@ -30,14 +30,27 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.tds;
+package thredds.server.opendap;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.List;
 
+import com.eclipsesource.restfuse.Destination;
+import com.eclipsesource.restfuse.HttpJUnitRunner;
+import com.eclipsesource.restfuse.Method;
+import com.eclipsesource.restfuse.Response;
+import com.eclipsesource.restfuse.annotation.Context;
+import com.eclipsesource.restfuse.annotation.HttpTest;
 import junit.framework.TestCase;
+import org.junit.Rule;
+import org.junit.runner.RunWith;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
+import thredds.server.TestWithLocalServer;
+import thredds.tds.TestTdsLocal;
+import thredds.tds.URLEncoder;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -52,111 +65,57 @@ import ucar.nc2.util.IO;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
-public class TestTdsDodsServer extends TestCase {
-  private URLEncoder encoder = new URLEncoder();
+import static com.eclipsesource.restfuse.Assert.assertBadRequest;
+import static com.eclipsesource.restfuse.Assert.assertOk;
 
-  public TestTdsDodsServer( String name) {
-    super(name);
+@RunWith(HttpJUnitRunner.class)
+public class TestTdsDodsServer {
+  private static URLEncoder encoder = new URLEncoder();
+
+  @Rule
+  public Destination destination = new Destination(TestWithLocalServer.server);
+
+  @Context
+  private Response response; // will be injected after every request
+
+
+  @HttpTest(method = Method.GET, path = "/thredds/dodsC/testTdsScan/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.badascii?Visibility_surface[0:1:0][0:1:0][0:1:0]")
+  public void checkBadRequest() {
+    assertBadRequest(response);
   }
 
-  //                http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1.ascii?Visibility[0:1:0][10:21:0][0:10:0]
-  //                http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1.ascii?Visibility[0:1:0][0:1:0][0:1:0]
-  String dataset = TestTdsLocal.topCatalog+"/dodsC/testCdmUnitTest/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2";
-  public void testGrid() {
-    String grid = dataset + ".ascii?Visibility_surface[0:1:0][0:1:0][0:1:0]";
-    System.out.println(" request= "+grid);
-    try {
-      String result = IO.readURLcontentsWithException(grid);
-      System.out.println(" result= "+result);
-    } catch (IOException ioe) {
-      System.out.printf("FAIL %s%n", ioe.getMessage());
-      assert false;
-    }
+  @HttpTest(method = Method.GET, path = "/thredds/dodsC/testTdsScan/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.ascii?Visibility_surface[0:1:0][0:1:0][0:1:0]")
+  public void testGridArrayAscii() {
+    assertOk(response);
+    String ress = response.getBody(String.class);
+    assert ress.contains("testTdsScan/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2");
+    assert ress.contains("15636.879");
   }
 
-  public void testGridArrayAsc() {
-     String array = dataset + ".asc?Visibility_surface.Visibility_surface[0:1:0][0:1:0][0:1:0]";
-     System.out.println(" request= "+array);
-     try {
-       String result = IO.readURLcontentsWithException(array);
-       System.out.println(" result= "+result);
-     } catch (IOException ioe) {
-       System.out.printf("FAIL %s%n", ioe.getMessage());
-       assert false;
-     }
-   }
+  /*
+  Dataset {
+      Grid {
+       ARRAY:
+          Float32 Visibility_surface[time = 1][y = 1][x = 1];
+       MAPS:
+          Int32 time[time = 1];
+          Float32 y[y = 1];
+          Float32 x[x = 1];
+      } Visibility_surface;
+  } testTdsScan/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2;
+  ---------------------------------------------
+  Visibility_surface.Visibility_surface[1][1][1]
+  [0][0], 15636.879
 
-  public void testGridArray() {
-     String array = dataset + ".dods?Visibility_surface.Visibility_surface[0:1:0][0:1:0][0:1:0]";
-     System.out.println(" request= "+array);
-     try {
-       String result = IO.readURLcontentsWithException(array);
-       System.out.println(" result= "+result);
-     } catch (IOException ioe) {
-       System.out.printf("FAIL %s%n", ioe.getMessage());
-       assert false;
-     }
-   }
+  Visibility_surface.time[1]
+  0
 
-  public void testGridArray2() {
-     String array = dataset + ".dods?Visibility_surface.Visibility_surface[0][0][0]";
-     System.out.println(" request= "+array);
-     try {
-       String result = IO.readURLcontentsWithException(array);
-       System.out.println(" result= "+result);
-     } catch (IOException ioe) {
-       System.out.printf("FAIL %s%n", ioe.getMessage());
-       assert false;
-     }
-   }
+  Visibility_surface.y[1]
+  -832.6978
 
-  public void testGridArray3() {
-     String array = dataset + ".dods?Visibility_surface.Visibility_surface[0:0][0:0][0:0]";
-     System.out.println(" request= "+array);
-     try {
-       String result = IO.readURLcontentsWithException(array);
-       System.out.println(" result= "+result);
-     } catch (IOException ioe) {
-       System.out.printf("FAIL %s%n", ioe.getMessage());
-       assert false;
-     }
-   }
-
-  public void testGridArrayEsc() {
-     String array = dataset + ".dods?Visibility_surface.Visibility_surface" + encoder.encode("[0:1:0][0:1:0][0:1:0]");
-     System.out.println(" request= "+array);
-     try {
-       String result = IO.readURLcontentsWithException(array);
-       System.out.println(" result= "+result);
-     } catch (IOException ioe) {
-       System.out.printf("FAIL %s%n", ioe.getMessage());
-       assert false;
-     }
-   }
-
-  public void testGridArrayEsc2() {
-     String array = dataset + ".dods?Visibility_surface.Visibility_surface"  + encoder.encode("[0][0][0]");
-     System.out.println(" request= "+array);
-     try {
-       String result = IO.readURLcontentsWithException(array);
-       System.out.println(" result= "+result);
-     } catch (IOException ioe) {
-       System.out.printf("FAIL %s%n", ioe.getMessage());
-       assert false;
-     }
-   }
-
-  public void testGridArrayEsc3() {
-     String array = dataset + ".dods?Visibility_surface.Visibility_surface"  + encoder.encode("[0:0][0:0][0:0]");
-     System.out.println(" request= "+array);
-     try {
-       String result = IO.readURLcontentsWithException(array);
-       System.out.println(" result= "+result);
-     } catch (IOException ioe) {
-       System.out.printf("FAIL %s%n", ioe.getMessage());
-       assert false;
-     }
-   }
+  Visibility_surface.x[1]
+  -4226.1084
+   */
 
    public void testSingleDataset() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);
@@ -187,7 +146,6 @@ public class TestTdsDodsServer extends TestCase {
 
     dataResult.featureDataset.close();
   }
-
 
   private void doOne(String urlString) throws IOException {
     System.out.println("Open and read "+urlString);

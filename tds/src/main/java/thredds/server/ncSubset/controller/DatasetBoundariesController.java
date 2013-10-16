@@ -59,7 +59,7 @@ import ucar.nc2.ft.FeatureDataset;
  */
 @Controller
 @Scope("request")
-@RequestMapping(value = "/ncss/**")
+@RequestMapping(value = "/ncss/**/datasetBoundaries.xml")
 public class DatasetBoundariesController extends AbstractFeatureDatasetController {
 
   static private final Logger log = LoggerFactory.getLogger(DatasetBoundariesController.class);
@@ -73,10 +73,10 @@ public class DatasetBoundariesController extends AbstractFeatureDatasetControlle
     //Checking request format...
     SupportedFormat sf = getSupportedFormat(params, SupportedOperation.DATASET_BOUNDARIES_REQUEST);
 
-    String pathInfo = extractRequestPathInfo(req.getServletPath());
+    String datasetPath = getDatasetPath(req);
     FeatureDataset fd = null;
     try {
-      fd = datasetService.findDatasetByPath(req, res, pathInfo);
+      fd = datasetService.findDatasetByPath(req, res, datasetPath);
 
       if (fd == null)
         throw new UnsupportedOperationException("Feature Type not supported");
@@ -104,24 +104,6 @@ public class DatasetBoundariesController extends AbstractFeatureDatasetControlle
       boundaries = gbe.getDatasetBoundariesGeoJSON();
 
     return boundaries;
-  }
-
-  String extractRequestPathInfo(String requestPathInfo) {
-
-    requestPathInfo = requestPathInfo.substring(servletPath.length(), requestPathInfo.length());
-    if (requestPathInfo.endsWith("datasetBoundaries")) {
-      requestPathInfo = requestPathInfo.trim();
-      String[] pathInfoArr = requestPathInfo.split("/");
-      StringBuilder sb = new StringBuilder();
-      int len = pathInfoArr.length;
-      sb.append(pathInfoArr[1]);
-      for (int i = 2; i < len - 1; i++) {
-        sb.append("/" + pathInfoArr[i]);
-      }
-      requestPathInfo = sb.toString();
-    }
-
-    return requestPathInfo;
   }
 
   protected SupportedFormat getSupportedFormat(NcssParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException {

@@ -105,8 +105,10 @@ public abstract class GridDatasetResponder {
 	 */
 	protected boolean checkRequestedVars(GridDataset gds, NcssParamsBean params) throws VariableNotContainedInDatasetException{
 		//Check vars
+    if (params.getVar() == null || params.getVar().isEmpty()) return false; // err from VarParamsValidator
+
 		//if var = all--> all variables requested
-		if(params.getVar().get(0).equals("all")){
+		if (params.getVar().get(0).equals("all")){
 			params.setVar(NcssRequestUtils.getAllVarsAsList(gds));					
 		}		
 

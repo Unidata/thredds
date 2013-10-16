@@ -79,8 +79,7 @@ public class PointDataTest {
 	public void setUp() throws IOException{
 		
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();	
-		//String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;		
-		String servletPath = FeatureDatasetController.servletPath+pathInfo;
+		String servletPath = pathInfo;
 		
 		//Creates values for param var
 		Iterator<String> it = vars.iterator();
@@ -91,7 +90,8 @@ public class PointDataTest {
 		}
 		
 		//Values for time subsetting
-		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
+    String datasetPath = AbstractFeatureDatasetController.getDatasetPath(this.pathInfo);
+		GridDataset gds = DatasetHandlerAdapter.openGridDataset(datasetPath);
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gds, vars);
 		List<CalendarDate> dates = gridAsPointDataset.getDates();		
 		Random rand = new Random();
@@ -101,6 +101,7 @@ public class PointDataTest {
 		int end = Math.max(randInt, randIntNext);				
 		String startDate= dates.get(start).toString();
 		String endDate= dates.get(end).toString();
+    gds.close();
 		
 		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath)
 				.param("var", varParamVal)

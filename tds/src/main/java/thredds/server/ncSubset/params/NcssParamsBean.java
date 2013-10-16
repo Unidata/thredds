@@ -364,14 +364,18 @@ public class NcssParamsBean {
       if (have.intersects(want)) {
         return true;
       } else {
-        errs.format("Requested Time Range %s does not intersect actual time range %s", want, have);
+        errs.format("Requested time range %s does not intersect actual time range %s", want, have);
         return false;
       }
     }
 
     CalendarDate wantTime = getRequestedTime();
     if (wantTime == null) return true;
-    return  (have.includes(wantTime));
+    if (!have.includes(wantTime)) {
+      errs.format("Requested time %s does not intersect actual time range %s", wantTime, have);
+      return false;
+    }
+    return true;
   }
 
 

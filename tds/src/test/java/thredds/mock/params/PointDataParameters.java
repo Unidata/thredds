@@ -27,27 +27,27 @@ public final class PointDataParameters {
 
 			vars = new ArrayList<List<String>>();			
 			//Variables with no vertical level
-			vars.add(Arrays.asList(new String[]{"Pressure", "Pressure_reduced_to_MSL"}));
+			vars.add(Arrays.asList("Pressure", "Pressure_reduced_to_MSL"));
 			//vars.add(Arrays.asList(new String[]{"Pressure"}));
 			//Variables with one vertical level
-			vars.add(Arrays.asList(new String[]{"Relative_humidity_height_above_ground", "Temperature_height_above_ground"}));			
+			vars.add(Arrays.asList("Relative_humidity_height_above_ground", "Temperature_height_above_ground"));
 			//Variables with multiple vertical levels (hPa)
-			vars.add(Arrays.asList(new String[]{"Temperature", "Relative_humidity"}));			
+			vars.add(Arrays.asList("Temperature", "Relative_humidity"));
 			
 			//Variables with different vertical levels
-			vars.add(Arrays.asList(new String[]{"Pressure", "Relative_humidity_height_above_ground", "Temperature"}));
+			vars.add(Arrays.asList("Pressure", "Relative_humidity_height_above_ground", "Temperature"));
 			
 			//Variables for NARR dataset
-			vars.add(Arrays.asList(new String[]{"TMP_200mb"}));
+			vars.add(Arrays.asList("TMP_200mb"));
 			
 			pathInfo = new ArrayList<String>();									
 			//dataset must contain the corresponding variables array
-			pathInfo =Arrays.asList( new String[]{"/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
-												  "/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
-												  //"testGFSfmrc/files/GFS_CONUS_80km_20120418_1200.nc",
-												  "/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
-												  "/testGFSfmrc/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4"
-					});
+			pathInfo =Arrays.asList(
+              "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
+              "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
+              //"testGFSfmrc/files/GFS_CONUS_80km_20120418_1200.nc",
+              "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
+              "/ncss/testGFSfmrc/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4");
 			
 			Map<String,List<String>> noVertLevels = new HashMap<String,List<String> >();
 			noVertLevels.put("no_vert_levels", vars.get(0) );
@@ -74,10 +74,9 @@ public final class PointDataParameters {
 			point.add(new LatLonPointImpl( 18.0,-102.25 ));
 			point.add(new LatLonPointImpl( 40.019,-105.293 ));
 		
-			verticalLevels=Arrays.asList( new Double[]{-1.0, 10.0, -1.0}  );
-	};
-	
-	
+			verticalLevels=Arrays.asList(-1.0, 10.0, -1.0);
+	}
+
 	public static List<List<String>>  getVars(){
 		return vars;
 	}

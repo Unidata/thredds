@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ import thredds.server.ncSubset.exception.NcssException;
  */
 public class AbstractFeatureDatasetController {
 	
-	protected static final String servletPath = "/ncss";
+	protected static final String servletPath = "/ncss/";
 
 	protected static final String servletCachePath = "/cache/ncss";
 	
@@ -146,6 +147,69 @@ public class AbstractFeatureDatasetController {
 
 	public static final String getServletCachePath() {
 		return servletCachePath;
-	}	
+	}
+
+  private static final String[] endings = new String[] {"/dataset.xml", "/dataset.html", "/datasetBoundaries.xml"};
+  public static String getDatasetPath(HttpServletRequest req) {
+    return getDatasetPath( req.getServletPath());
+  }
+  public static String getDatasetPath(String path) {
+
+    // strip off /ncss/
+    if (path.startsWith(FeatureDatasetController.servletPath))
+      path = path.substring(FeatureDatasetController.servletPath.length());
+
+    // strip off endings
+    for (String ending : endings) {
+      if (path.endsWith(ending)) {
+        int len = path.length() - ending.length();
+        path = path.substring(0, len);
+        break;
+      }
+    }
+
+    System.out.printf("datasetPath = %s%n", path);
+    return path;
+  }
+
+  /* String extractRequestPathInfo(String requestPathInfo) {
+
+    requestPathInfo = requestPathInfo.substring(servletPath.length(), requestPathInfo.length());
+    if (requestPathInfo.endsWith("datasetBoundaries")) {
+      requestPathInfo = requestPathInfo.trim();
+      String[] pathInfoArr = requestPathInfo.split("/");
+      StringBuilder sb = new StringBuilder();
+      int len = pathInfoArr.length;
+      sb.append(pathInfoArr[1]);
+      for (int i = 2; i < len - 1; i++) {
+        sb.append("/" + pathInfoArr[i]);
+      }
+      requestPathInfo = sb.toString();
+    }
+
+    return requestPathInfo;
+  } */
+
+
+    /* String[] servletPathTokens = servletPath.split("/");
+    String lastToken = servletPathTokens[servletPathTokens.length - 1];
+    if (lastToken.endsWith(".html") || lastToken.endsWith(".xml")) {
+      servletPath = servletPath.substring(0, servletPath.length() - lastToken.length() - 1);
+    }
+
+    return servletPath.substring(
+            FeatureDatasetController.servletPath.length(),
+            servletPath.length());  */
+
+    /*
+      private String getDatasetPath(HttpServletRequest req) {
+
+    String servletPath = req.getServletPath();
+
+    return servletPath.substring(
+            FeatureDatasetController.servletPath.length(),
+            servletPath.length());
+  }
+     */
 
 }

@@ -18,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncSubset.controller.AbstractFeatureDatasetController;
 import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.format.SupportedFormat;
@@ -87,8 +88,10 @@ public class PointDataWriterTest {
 	@Before
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
 		
-		gridDataset = DatasetHandlerAdapter.openGridDataset(pathInfo);
-			
+    String datasetPath = AbstractFeatureDatasetController.getDatasetPath(this.pathInfo);
+		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);
+    assert gridDataset != null;
+
 		List<String> keys = new ArrayList<String>( vars.keySet());		
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );		
 		

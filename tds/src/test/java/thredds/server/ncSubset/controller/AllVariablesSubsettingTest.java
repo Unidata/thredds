@@ -74,9 +74,7 @@ public class AllVariablesSubsettingTest {
 	@Before
 	public void setUp() throws IOException{
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();	
-		//String servletPath = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);
-		String servletPath = FeatureDatasetController.getNCSSServletPath() + PathInfoParams.getPathInfo().get(0);
-    System.out.printf("servletPath=%s%n", servletPath);
+		String servletPath = PathInfoParams.getPathInfo().get(0);
 		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath).param("var", "all");
 	}
 	

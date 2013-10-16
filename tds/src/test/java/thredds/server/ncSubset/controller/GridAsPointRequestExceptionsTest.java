@@ -43,23 +43,16 @@ public class GridAsPointRequestExceptionsTest {
 	
 	@Parameters
 	public static Collection<String[]> getTestParameters(){		
-		
 		return Arrays.asList( new String[][]{{PointDataParameters.getPathInfo().get(1)}});
 	}
 	
 	@Before
 	public void setUp() throws IOException{
-		
 		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-		
 	}
 	
 	public GridAsPointRequestExceptionsTest(String pathInfo){
-		
-		//String servletPath = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);		
-		
-		//this.pathInfo = AbstractNcssDataRequestController.servletPath+PathInfoParams.getPatInfo().get(0);
-		this.pathInfo = FeatureDatasetController.getNCSSServletPath() +PathInfoParams.getPathInfo().get(0);
+		this.pathInfo = PathInfoParams.getPathInfo().get(0);
 	}
 	
 	

@@ -76,13 +76,6 @@ import ucar.unidata.geoloc.LatLonRect;
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class SpatialSubsettingTest {
 
-	//@Autowired
-	//private GridDataController gridDataController;
-	
-	//private GridDataRequestParamsBean params;	
-	//private BindingResult validationResult;
-	//private MockHttpServletResponse response ;
-	
 	@Autowired
 	private WebApplicationContext wac;
 	
@@ -98,8 +91,7 @@ public class SpatialSubsettingTest {
 	
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
-							
-		
+
 		return Arrays.asList( new Object[][]{
 				{ SupportedFormat.NETCDF3, PathInfoParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
 				{ SupportedFormat.NETCDF3, PathInfoParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
@@ -111,7 +103,6 @@ public class SpatialSubsettingTest {
 	}
 	
 	public SpatialSubsettingTest( SupportedFormat format, String pathInfo, List<String> vars, double[] latlonRectParams){
-
 		this.accept = format.getAliases().get(0);
 		this.pathInfo = pathInfo;
 		this.vars = vars;
@@ -120,10 +111,8 @@ public class SpatialSubsettingTest {
 	
 	@Before
 	public void setUp() throws IOException{
-		
-		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();	
-		//String servletPath = AbstractNcssDataRequestController.servletPath+pathInfo;
-		String servletPath = FeatureDatasetController.servletPath + pathInfo;
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		String servletPath = pathInfo;
 		
 		//Creates values for param var
 		Iterator<String> it = vars.iterator();
@@ -138,13 +127,15 @@ public class SpatialSubsettingTest {
 				.param("south",String.valueOf( latlonRectParams[1]))
 				.param("east", String.valueOf( latlonRectParams[2]))
 				.param("north",String.valueOf( latlonRectParams[3]))
-				.param("accept", accept);				;
-		
-		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
+				.param("accept", accept);
+
+    String datasetPath = AbstractFeatureDatasetController.getDatasetPath(this.pathInfo);
+		GridDataset gds = DatasetHandlerAdapter.openGridDataset(datasetPath);
+    assert (gds != null);
 		
 		requestedBBOX = new LatLonRect(new LatLonPointImpl(latlonRectParams[1], latlonRectParams[0]), new LatLonPointImpl(latlonRectParams[3], latlonRectParams[2]) );
 		datasetBBOX = gds.getBoundingBox();
-
+    gds.close();
 	}
 	
 	@Test
@@ -154,7 +145,7 @@ public class SpatialSubsettingTest {
 		
 		this.mockMvc.perform(requestBuilder)
 		.andExpect(MockMvcResultMatchers.status().isOk())
-		.andExpect(new ResultMatcher(){
+		.andExpect( new ResultMatcher(){
 			public void match(MvcResult result) throws Exception{
 				
 				//Open the binary response in memory

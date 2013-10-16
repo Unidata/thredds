@@ -32,9 +32,6 @@
  */
 package thredds.server.ncSubset.controller;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,17 +41,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.method.HandlerMethod;
 
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.format.SupportedFormat;
-import ucar.nc2.NetcdfFile;
 
 /**
  * @author mhermida
@@ -69,47 +63,41 @@ public class DatasetBoundariesTest {
 	private WebApplicationContext wac;
 	
 	private MockMvc mockMvc;
-	
+  private String path = "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries.xml";
+
 	@Before
 	public void setup(){
 		this.mockMvc = webAppContextSetup(this.wac).build(); 
 	}
 	
 	@Test
-	public void getDatasetBoundaries() throws Exception{						
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
-				.servletPath("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
+	public void getDatasetBoundaries() throws Exception {
+		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
 				.param("accept", "json");
 		
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
-		
 	}
 	
-	
 	@Test
-	public void defaultContentType() throws Exception{
+	public void defaultContentType() throws Exception {
 		
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
-				.servletPath("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries");
-		
-		this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.WKT.getResponseContentType() ) );		
-		
-	}	
+		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path);
+		this.mockMvc.perform(rb)
+            .andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.WKT.getResponseContentType() ) );
+	}
 	
 	@Test
 	public void jsonResponseHasContentType() throws Exception{
 		
-		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries")
-				.servletPath("/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries").param("accept", "json");
+		RequestBuilder rb =MockMvcRequestBuilders.get(path).servletPath(path)
+            .param("accept", "json");
 		
-		this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.JSON.getResponseContentType() ) );		
-		
+		this.mockMvc.perform(rb)
+            .andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.JSON.getResponseContentType() ) );
 	}
 	
 	private MockMvcBuilder webAppContextSetup(WebApplicationContext wac){
-		
 		return MockMvcBuilders.webAppContextSetup(wac);
-		
 	}
 
 }

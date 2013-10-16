@@ -190,15 +190,6 @@ class FeatureDatasetInfoController extends AbstractFeatureDatasetController {
     return requestPathInfo;
   }
 
-  private String getDatasetPath(HttpServletRequest req) {
-
-    String servletPath = req.getServletPath();
-
-    return servletPath.substring(
-            FeatureDatasetController.servletPath.length(),
-            servletPath.length());
-  }
-
   /**
    * Writes out the responseStr to the response object
    *

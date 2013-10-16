@@ -45,5 +45,6 @@ import ucar.nc2.ft.FeatureDataset;
  */
 public interface FeatureDatasetService {
 
+	public FeatureDataset findDatasetByPath(HttpServletRequest req, HttpServletResponse res) throws IOException;
 	public FeatureDataset findDatasetByPath(HttpServletRequest req, HttpServletResponse res, String path) throws IOException;
 }

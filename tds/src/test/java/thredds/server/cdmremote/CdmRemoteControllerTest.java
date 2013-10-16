@@ -23,6 +23,7 @@ import thredds.mock.web.TdsContentRootPath;
 import thredds.util.xml.NcmlParserUtil;
 import thredds.util.xml.XmlUtil;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamIosp;
 import ucar.unidata.io.InMemoryRandomAccessFile;
@@ -116,47 +117,9 @@ public class CdmRemoteControllerTest {
     assertEquals(200, response.getStatus());
     assertEquals("application/octet-stream", response.getContentType());
 
-    //response is a ncstream??...open with??
-    //ByteArrayInputStream bais = new ByteArrayInputStream( response.getContentAsByteArray() );
-    //assertTrue( NcStream.readAndTest(bais, NcStream.MAGIC_DATA ));
-
-    //NetcdfFile in memory...
-    byte[] content = response.getContentAsByteArray();
-    //NetcdfFile nf = NetcdfFile.openInMemory("test_data", content );
-
-    InMemoryRandomAccessFile raf = new InMemoryRandomAccessFile("test_data.ncs", content);
-    NcStreamIosp ncsiosp = new NcStreamIosp();
-    ncsiosp.open(raf, null, null);
-
-    //NetcdfDataset nfd = new NetcdfDataset(nf);
-
-
-    // just checking if there is some more magic in the stream...
-        /*        
-        int nBytes =0;   
-        byte[] tmp = new byte[ 4 ];       
-        boolean isMagicStart=false; 
-        boolean isMagicHeader=false;
-        boolean isMagicData=false;
-        boolean isMagicVData=false;
-        boolean isMagicVEnd=false;
-        boolean isMagicErr=false; 
-        boolean isMagicEnd =false;
-        
-        while( nBytes !=-1 ){
-        	
-        	nBytes = bais.read(tmp, 0, 4);
-        	if( checkBytes(tmp, NcStream.MAGIC_START) )   isMagicStart=true;
-        	if( checkBytes(tmp, NcStream.MAGIC_HEADER) )  isMagicHeader=true;
-        	if( checkBytes(tmp, NcStream.MAGIC_DATA) )    isMagicData=true;
-        	if( checkBytes(tmp, NcStream.MAGIC_VDATA) )   isMagicVData=true;
-        	if( checkBytes(tmp, NcStream.MAGIC_VEND) )    isMagicVEnd=true;
-        	if( checkBytes(tmp, NcStream.MAGIC_ERR) )     isMagicErr=true;
-        	if( checkBytes(tmp, NcStream.MAGIC_END) )     isMagicEnd=true;
-        	        	
-        }*/
-
-    fail("Not yet implemented");
+    // response is a ncstream??...open with??
+    ByteArrayInputStream bais = new ByteArrayInputStream( response.getContentAsByteArray() );
+    assertTrue( NcStream.readAndTest(bais, NcStream.MAGIC_DATA ));
   }
 
 
@@ -172,13 +135,11 @@ public class CdmRemoteControllerTest {
     assertEquals(200, response.getStatus());
     assertEquals("application/octet-stream", response.getContentType());
 
-    //response is a ncstream??...open with??
+    //response is a ncstream
     ByteArrayInputStream bais = new ByteArrayInputStream(response.getContentAsByteArray());
-    assertTrue(NcStream.readAndTest(bais, NcStream.MAGIC_HEADER));
-
-    NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getContentAsByteArray());
-
-    fail("Not yet implemented");
+    CdmRemote cdmr = new CdmRemote(bais, "test");
+    System.out.printf("%s%n", cdmr);
+    cdmr.close();
   }
 
   private boolean checkBytes(byte[] read, byte[] expected) {

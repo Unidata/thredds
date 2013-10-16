@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncSubset.controller.AbstractFeatureDatasetController;
 import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
@@ -74,8 +75,10 @@ public class StationCollectionStreamTest {
 	@Before
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
 		
-		gridDataset = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		
+    String datasetPath = AbstractFeatureDatasetController.getDatasetPath(this.pathInfo);
+		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);
+    assert gridDataset != null;
+
 		List<String> keys = new ArrayList<String>( vars.keySet());		
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );		
 		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();

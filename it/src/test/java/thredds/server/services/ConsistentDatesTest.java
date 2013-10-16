@@ -46,6 +46,10 @@ import com.eclipsesource.restfuse.Response;
 import com.eclipsesource.restfuse.annotation.Context;
 import com.eclipsesource.restfuse.annotation.HttpTest;
 
+/**
+ * Consistency of uniform30day calendar dates across services: ncss, wms, wcs
+ */
+
 @RunWith(HttpJUnitRunner.class)
 public class ConsistentDatesTest {
 

@@ -80,8 +80,8 @@ public class TestWcsServer {
   private String ncdcWcsDataset = "http://eclipse.ncdc.noaa.gov:9090/thredds/wcs/gfsmon/largedomain.nc";
   private String ncdcOpendapDataset = "http://eclipse.ncdc.noaa.gov:9090/thredds/dodsC/gfsmon/largedomain.nc";
 
-  @HttpTest(method = Method.GET, path = "http://localhost:8080/thredds/wcs/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc?service=WCS&version=1.0.0&request=GetCapabilities")
-  public void testCapabilites() throws IOException, JDOMException {
+  @HttpTest(method = Method.GET, path = "/thredds/wcs/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc?service=WCS&version=1.0.0&request=GetCapabilities")
+  public void testGetCapabilites() throws IOException, JDOMException {
     assertOk(response);
     String xml = response.getBody(String.class);
     Reader in = new StringReader(xml);
@@ -99,6 +99,18 @@ public class TestWcsServer {
         XPathFactory.instance().compile("/WCS_Capabilities/ContentMetadata/CoverageOfferingBrief/name", Filters.element());
     Element emt = xpath2.evaluateFirst(doc);
     assertEquals("Pressure_reduced_to_MSL", emt.getTextTrim());
+  }
+
+  @HttpTest(method = Method.GET,
+          path = "/thredds/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=")
+  public void testDescribeCoverage() throws IOException {
+    assertOk(response);
+  }
+
+  @HttpTest(method = Method.GET,
+          path = "/thredds/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&REQUEST=GetCoverage&COVERAGE=tos&CRS=EPSG%3a4326&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
+  public void testGetCoverage() throws IOException {
+    assertOk(response);
   }
 
  // @org.junit.Test
@@ -228,21 +240,6 @@ public class TestWcsServer {
       assert ncfile != null;
     }
     //showRead( getURL);
-  }
-
-  public void testReq() throws IOException {
-    String server = "http://thredds.ucar.edu/";
-    String req = server2+"testdata/sst.nc?SERVICE=WCS&" +
-       "VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=tos&CRS=EPSG%3a4326&BBOX=1,-79.5,359,89.5"+
-       "&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml";
-    System.out.println("req= "+req);
-
-    File file = File.createTempFile("test", "tiff");
-    System.out.println("****************\n");
-    String result = IO.readURLtoFile(req, file);
-    System.out.println("result= "+result);
-
-    System.out.println(" copied contents to "+file.getPath());
   }
 
 

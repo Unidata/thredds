@@ -39,6 +39,7 @@ import java.text.ParseException;
 import java.util.Formatter;
 import java.util.Set;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -57,6 +58,7 @@ import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.NcssParamsBean;
+import thredds.servlet.ServletUtil;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
@@ -69,7 +71,7 @@ import ucar.nc2.util.IO;
  * @author mhermida
  */
 @Controller
-@RequestMapping("ncss/")
+@RequestMapping("/ncss/")
 public class FeatureDatasetController extends AbstractFeatureDatasetController {
 
   static private final Logger log = LoggerFactory.getLogger(FeatureDatasetController.class);
@@ -96,6 +98,8 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
    void handleRequest(HttpServletRequest req, HttpServletResponse res,
                         @Valid NcssParamsBean params,
                         BindingResult validationResult) throws IOException, NcssException, ParseException, InvalidRangeException {
+
+     //System.out.printf("%s%n", ServletUtil.showRequestDetail(null, req));
 
      if (validationResult.hasErrors()) {
        handleValidationErrorsResponse(res, HttpServletResponse.SC_BAD_REQUEST, validationResult);
@@ -291,20 +295,6 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
     }
 
   }  */
-
-  private String getDatasetPath(HttpServletRequest req) {
-
-    String servletPath = req.getServletPath();
-    String[] servletPathTokens = servletPath.split("/");
-    String lastToken = servletPathTokens[servletPathTokens.length - 1];
-    if (lastToken.endsWith(".html") || lastToken.endsWith(".xml")) {
-      servletPath = servletPath.substring(0, servletPath.length() - lastToken.length() - 1);
-    }
-
-    return servletPath.substring(
-            FeatureDatasetController.servletPath.length(),
-            servletPath.length());
-  }
 
 
   private void setResponseHeaders(HttpServletResponse response, HttpHeaders httpHeaders) {

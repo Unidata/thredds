@@ -27,6 +27,7 @@
 
   <dataset name="Test Single Grid Dataset" ID="testSingleGridDataset" serviceName="all" urlPath="cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc" dataType="Grid"/>
   <dataset name="Test Single Station Dataset" ID="testSingleStationDataset" serviceName="all" urlPath="cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc" dataType="Station"/>
+  <dataset name="Test sst" ID="TESTsst" serviceName="all" urlPath="cdmUnitTest/conventions/coards/sst.mnmean.nc" dataType="Grid"/>
 
    <datasetScan name="Test Scan Grids" ID="testGridScan" path="testGridScan" location="${cdmUnitTest}/ncss/GFS/CONUS_80km">
      <metadata inherited="true">

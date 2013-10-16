@@ -45,7 +45,7 @@ import org.junit.Test;
  */
 public class NcssServletPathTest {
 	
-	private static String NCSS_SERVLET_PATH = "/ncss";
+	private static String NCSS_SERVLET_PATH = "/ncss/";
 	private static String NCSS_CACHE_PATH = "/cache/ncss";
 	
 	@Test

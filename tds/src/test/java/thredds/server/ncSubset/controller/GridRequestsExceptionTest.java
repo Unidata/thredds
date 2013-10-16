@@ -32,90 +32,89 @@
 package thredds.server.ncSubset.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.junit.After;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import org.springframework.web.context.WebApplicationContext;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.exception.RequestTooLargeException;
-import thredds.server.ncSubset.exception.TimeOutOfWindowException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
-import thredds.server.ncSubset.params.NcssParamsBean;
 
 /**
  * @author mhermida
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class GridRequestsExceptionTest {
-	
-	@Autowired
-	private FeatureDatasetController featureDatasetController;
-	
-	private MockHttpServletResponse response ;
-	private MockHttpServletRequest request;
-	private String pathInfo="/ncss/testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd";
-	
-	@Before
-	public void setUp() throws IOException{
 
-		response = new MockHttpServletResponse();
-		request = new MockHttpServletRequest();
-		request.setPathInfo(pathInfo);
-		request.setServletPath(pathInfo);		
-		
-	}
+  @Autowired
+ 	private WebApplicationContext wac;
+
+ 	private MockMvc mockMvc;
+	private String path="/ncss/gribCollection/GFS_CONUS_80km/best";
+
+  @Before
+ 	public void setUp() throws IOException{
+    this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+ 	}
+
+  @Test
+ 	public void checkBadGridRequestWhenNoParams() throws Exception{
+    MvcResult result = this.mockMvc.perform(get(path).servletPath(path)) // note make it both the request an the servlet path (!)
+            .andExpect(status().is(400))
+            .andExpect(content().string(containsString("No variables requested")))
+            .andReturn();
+
+    //System.out.printf("content= %s%n", result.getResponse().getContentAsString());
+ 	}
 	
-	@Test(expected=UnsupportedOperationException.class)
-	public void testUnsupportedOperationException() throws Exception{
-    NcssParamsBean params;
-		BindingResult validationResult;
-		params = new NcssParamsBean();
-		List<String> vars = new ArrayList<String>();
-		vars.add("all");
-		params.setVar(vars);
-		params.setVertCoord(200.);
-		validationResult = new BeanPropertyBindingResult(params, "params");
-		featureDatasetController.handleRequest(request, response, params, validationResult);
-		
-	}
-	
-	@Test(expected=TimeOutOfWindowException.class)
-	public void testTimeOutOfWindowException() throws Exception{
-    NcssParamsBean params;
-		BindingResult validationResult;
-		params = new NcssParamsBean();
-		List<String> vars = new ArrayList<String>();
-		vars.add("Relative_humidity");
-		vars.add("Temperature");
-		params.setVar(vars);
-		params.setTime("2012-04-18T15:00:00Z");
-		params.setTime_window("PT1H");
-		validationResult = new BeanPropertyBindingResult(params, "params");
-		featureDatasetController.handleRequest(request, response, params, validationResult);
-				
-	}	
-	
-	@After
-	public void tearDown() throws IOException{
-		
-		//GridDataset gds = gridDataController.getGridDataset();
-		//gds.close();		
-		//gds = null;
-		//gridDataController =null;
-		
-	}	
+  @Test
+ 	public void checkBadGridRequestWhenEmptyVarParams() throws Exception{
+    MvcResult result = this.mockMvc.perform(get(path).servletPath(path)
+            .param("var", ""))
+            .andExpect(status().is(400))
+            .andExpect(content().string(containsString("No variables requested")))
+            .andReturn();
+
+    //System.out.printf("content= %s%n", result.getResponse().getContentAsString());
+ 	}
+
+  @Test
+ 	public void testMultipleVerticalCoordinates() throws Exception{
+    MvcResult result = this.mockMvc.perform(get(path).servletPath(path)
+            .param("var", "all")
+            .param("vertCoord", "200.0"))
+            .andExpect(status().is(400))
+            .andExpect(content().string(containsString("must have variables with same vertical levels")))
+            .andReturn();
+
+    System.out.printf("content= %s%n", result.getResponse().getContentAsString());
+ 	}
+
+  @Test
+ 	public void testTimeDoesNotIntersect() throws Exception{
+    MvcResult result = this.mockMvc.perform(get(path).servletPath(path)
+            .param("var", "Pressure_surface")
+            .param("time", "2012-04-18T15:00:00Z"))
+            // .param("time_window", "PT1H"))
+            .andExpect(status().is(400))
+            .andExpect(content().string(containsString("does not intersect actual time range")))
+            .andReturn();
+
+    System.out.printf("content= %s%n", result.getResponse().getContentAsString());
+ 	}
 
 }

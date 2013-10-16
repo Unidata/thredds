@@ -54,15 +54,15 @@ public class GridDataParameters {
 
 		vars = new ArrayList<List<String>>();			
 		//Variables with no vertical level
-		vars.add(Arrays.asList(new String[]{"Pressure", "Pressure_reduced_to_MSL"}));			
+		vars.add(Arrays.asList("Pressure", "Pressure_reduced_to_MSL"));
 		//Variables with one vertical level
-		vars.add(Arrays.asList(new String[]{"Relative_humidity_height_above_ground", "Temperature_height_above_ground"}));			
+		vars.add(Arrays.asList("Relative_humidity_height_above_ground", "Temperature_height_above_ground"));
 		//Variables with multiple vertical levels (hPa)
-		vars.add(Arrays.asList(new String[]{"Temperature", "Relative_humidity"}));
+		vars.add(Arrays.asList("Temperature", "Relative_humidity"));
 		//No vert level and vert levels
-		vars.add(Arrays.asList(new String[]{"Pressure", "Temperature", "Relative_humidity_height_above_ground"}));
+		vars.add(Arrays.asList("Pressure", "Temperature", "Relative_humidity_height_above_ground"));
 		//Different vert levels
-		vars.add(Arrays.asList(new String[]{"Relative_humidity_height_above_ground", "Temperature" }));
+		vars.add(Arrays.asList("Relative_humidity_height_above_ground", "Temperature"));
 		
 		projectionRect = new ArrayList<double[]>();
 		

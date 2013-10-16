@@ -30,12 +30,13 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.tds;
+package thredds.server.cdmr;
 
 import junit.framework.*;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
+import thredds.tds.TestTdsLocal;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;

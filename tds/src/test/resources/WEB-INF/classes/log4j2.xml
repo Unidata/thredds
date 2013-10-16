@@ -166,8 +166,9 @@
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <logger name="org.springframework" level="info" additivity="false">
+    <logger name="org.springframework" level="debug" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
+      <appender-ref ref="console"/>
     </logger>
 
     <!-- All normal logging messages go to threddsServlet.log -->

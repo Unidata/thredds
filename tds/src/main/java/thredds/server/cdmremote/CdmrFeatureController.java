@@ -116,12 +116,11 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
     // absolute path of the dataset endpoint
     String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + req.getPathInfo();
-    String path = req.getPathInfo();
 
     if (showReq)
       System.out.printf("CdmFeatureController req=%s%n", absPath + "?" + req.getQueryString());
     if (debug) {
-      System.out.printf(" path=%s%n query=%s%n", path, req.getQueryString());
+      System.out.printf(" path=%s%n query=%s%n", req.getPathInfo(), req.getQueryString());
     }
 
     CdmRemoteQueryBean query = null;
@@ -141,14 +140,14 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     FeatureDatasetPoint fdp = null;
 
     // this looks for a featureCollection
-    InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res, path);
+    InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res);
     if (fc != null) {
       fdp = (FeatureDatasetPoint) fc.getFeatureDataset();
 
     } else {
       // tom kunicki 12/18/10
       // allows a single NetcdfFile to be turned into a FeatureDataset
-      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res);
       if (ncfile != null) {
         FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
                 FeatureType.ANY,                  // will check FeatureType below if needed...
@@ -174,6 +173,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     }
 
     // check on feature type, using suffix convention LOOK
+    String path = req.getPathInfo();
     FeatureType ft = null;
     if (path.endsWith("/station")) {
       ft = FeatureType.STATION;

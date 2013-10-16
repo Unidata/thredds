@@ -59,9 +59,12 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 @Service
 public class FeatureDatasetServiceImpl implements FeatureDatasetService {
 
-  /* (non-Javadoc)
-   * @see thredds.server.ncSubset.dataservice.DatasetService#findDatasetByByPath(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.String)
-   */
+
+  @Override
+  public FeatureDataset findDatasetByPath(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    return findDatasetByPath(req, res, req.getPathInfo());
+  }
+
   @Override
   public FeatureDataset findDatasetByPath(HttpServletRequest req, HttpServletResponse res, String datasetPath) throws IOException {
 
