@@ -33,8 +33,6 @@
 package thredds.server.opendap;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.List;
 
 import com.eclipsesource.restfuse.Destination;
@@ -43,13 +41,12 @@ import com.eclipsesource.restfuse.Method;
 import com.eclipsesource.restfuse.Response;
 import com.eclipsesource.restfuse.annotation.Context;
 import com.eclipsesource.restfuse.annotation.HttpTest;
-import junit.framework.TestCase;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
-import thredds.server.TestWithLocalServer;
+import thredds.TestWithLocalServer;
 import thredds.tds.TestTdsLocal;
 import thredds.tds.URLEncoder;
 import ucar.ma2.Array;
@@ -62,7 +59,6 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.util.IO;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -95,8 +91,8 @@ public class TestTdsDodsServer {
 
   @Test
   public void testUrlReading() throws IOException {
-    doOne(TestTdsLocal.topCatalog+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_22km_20100504_0000.grib1");
-    doOne(TestTdsLocal.topCatalog+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_45km_conduit_20100913_0000.grib2");
+    doOne(TestWithLocalServer.server+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_22km_20100504_0000.grib1");
+    doOne(TestWithLocalServer.server+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_45km_conduit_20100913_0000.grib2");
   }
 
   /*
@@ -172,7 +168,7 @@ public class TestTdsDodsServer {
   }
 
   public void testCompareWithFile() throws IOException {
-    final String urlPrefix = TestTdsLocal.topCatalog+"/dodsC/opendapTest/";
+    final String urlPrefix = TestWithLocalServer.server+"/dodsC/opendapTest/";
     final String dirName = TestDir.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
     TestDir.actOnAll(dirName, new TestDir.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestDir.Act() {

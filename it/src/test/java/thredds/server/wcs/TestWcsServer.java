@@ -49,16 +49,14 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.xpath.XPath;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
-import thredds.server.TestWithLocalServer;
+import thredds.TestWithLocalServer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.IO;
 
-import static com.eclipsesource.restfuse.Assert.assertBadRequest;
 import static com.eclipsesource.restfuse.Assert.assertOk;
 import static org.junit.Assert.assertEquals;
 

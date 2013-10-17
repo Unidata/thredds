@@ -96,8 +96,8 @@ public class CompareNetcdf2 {
     this.showCompare = showCompare;
     this.showEach = showEach;
 
-    f.format("First file = %s%n", org.getLocation());
-    f.format("Second file= %s%n", copy.getLocation());
+    f.format(" First file = %s%n", org.getLocation());
+    f.format(" Second file= %s%n", copy.getLocation());
 
     long start = System.currentTimeMillis();
 
@@ -198,7 +198,8 @@ public class CompareNetcdf2 {
 
     // nested groups
     List groups = new ArrayList();
-    ok &= checkAll(org.getGroups(), copy.getGroups(), groups);
+    String name = org.isRoot() ? "root" : org.getFullName();
+    ok &= checkAll(name, org.getGroups(), copy.getGroups(), groups);
     for (int i = 0; i < groups.size(); i += 2) {
       Group orgGroup = (Group) groups.get(i);
       Group ncmlGroup = (Group) groups.get(i + 1);
@@ -237,7 +238,7 @@ public class CompareNetcdf2 {
     if ((org instanceof VariableEnhanced) && (copy instanceof VariableEnhanced)) {
       VariableEnhanced orge = (VariableEnhanced) org;
       VariableEnhanced copye = (VariableEnhanced) copy;
-      ok &= checkAll(orge.getCoordinateSystems(), copye.getCoordinateSystems(), null);
+      ok &= checkAll(orge.getFullName(), orge.getCoordinateSystems(), copye.getCoordinateSystems(), null);
     }
 
     // data !!
@@ -263,7 +264,7 @@ public class CompareNetcdf2 {
         Structure ncmlS = (Structure) copy;
 
         List vars = new ArrayList();
-        ok &= checkAll(orgS.getVariables(), ncmlS.getVariables(), vars);
+        ok &= checkAll(orgS.getFullName(), orgS.getVariables(), ncmlS.getVariables(), vars);
         for (int i = 0; i < vars.size(); i += 2) {
           Variable orgV = (Variable) vars.get(i);
           Variable ncmlV = (Variable) vars.get(i + 1);
@@ -277,7 +278,7 @@ public class CompareNetcdf2 {
       VariableDS copyds = (VariableDS) copy;
 
       List matches = new ArrayList();
-      ok &= checkAll(orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
+      ok &= checkAll(orgds.getFullName(), orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
       for (int i = 0; i < matches.size(); i += 2) {
         CoordinateSystem orgCs = (CoordinateSystem) matches.get(i);
         CoordinateSystem copyCs = (CoordinateSystem) matches.get(i + 1);
@@ -295,7 +296,7 @@ public class CompareNetcdf2 {
 
     boolean ok = true;
     List matchAxes = new ArrayList();
-    ok &= checkAll(cs1.getCoordinateAxes(), cs2.getCoordinateAxes(), matchAxes);
+    ok &= checkAll(cs1.getName(), cs1.getCoordinateAxes(), cs2.getCoordinateAxes(), matchAxes);
     for (int i = 0; i < matchAxes.size(); i += 2) {
       CoordinateAxis orgCs = (CoordinateAxis) matchAxes.get(i);
       CoordinateAxis copyCs = (CoordinateAxis) matchAxes.get(i + 1);
@@ -303,7 +304,7 @@ public class CompareNetcdf2 {
     }
 
     List matchTransforms = new ArrayList();
-    ok &= checkAll(cs1.getCoordinateTransforms(), cs2.getCoordinateTransforms(), matchTransforms);
+    ok &= checkAll(cs1.getName(), cs1.getCoordinateTransforms(), cs2.getCoordinateTransforms(), matchTransforms);
     return ok;
   }
 
@@ -339,14 +340,15 @@ public class CompareNetcdf2 {
   private boolean checkAttributes(Variable v, List<Attribute> list1, List<Attribute> list2, ObjFilter filter) {
     boolean ok = true;
 
+    String name = v == null ? "global" : "variable " + v.getFullName();
     for (Attribute att1 : list1) {
       if (filter == null || filter.attOk(v, att1))
-        ok &= checkEach(att1, "file1", list1, "file2", list2, null);
+        ok &= checkEach(name, att1, "file1", list1, "file2", list2, null);
     }
 
     for (Attribute att2 : list2) {
       if (filter == null || filter.attOk(v, att2))
-      ok &= checkEach(att2, "file2", list2, "file1", list1, null);
+      ok &= checkEach(name, att2, "file2", list2, "file1", list1, null);
     }
 
     return ok;
@@ -401,15 +403,15 @@ public class CompareNetcdf2 {
  // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
 
-  private boolean checkAll(List list1, List list2, List result) {
+  private boolean checkAll(String what, List list1, List list2, List result) {
     boolean ok = true;
 
     for (Object aList1 : list1) {
-      ok &= checkEach(aList1, "file1", list1, "file2", list2, result);
+      ok &= checkEach(what, aList1, "file1", list1, "file2", list2, result);
     }
 
     for (Object aList2 : list2) {
-      ok &= checkEach(aList2, "file2", list2, "file1", list1, result);
+      ok &= checkEach(what, aList2, "file2", list2, "file1", list1, result);
     }
 
     return ok;
@@ -417,24 +419,24 @@ public class CompareNetcdf2 {
 
   // check that want is in both list1 and list2, using object.equals()
 
-  private boolean checkEach(Object want1, String name1, List list1, String name2, List list2, List result) {
+  private boolean checkEach(String what, Object want1, String name1, List list1, String name2, List list2, List result) {
     boolean ok = true;
     try {
       int index2 = list2.indexOf(want1);
       if (index2 < 0) {
-        f.format("  ** %s %s 0x%x (%s) not in %s %n", want1.getClass().getName(), want1, want1.hashCode(), name1, name2);
+        f.format("  ** %s %s %s 0x%x (%s) not in %s %n", what, want1.getClass().getName(), want1, want1.hashCode(), name1, name2);
         ok = false;
       } else { // found it in second list
         Object want2 = list2.get(index2);
         int index1 = list1.indexOf(want2);
         if (index1 < 0) { // can this happen ??
-          f.format("  ** %s %s 0x%x (%s) not in %s %n", want2.getClass().getName(), want2, want2.hashCode(), name2, name1);
+          f.format("  ** %s %s %s 0x%x (%s) not in %s %n", what, want2.getClass().getName(), want2, want2.hashCode(), name2, name1);
           ok = false;
 
         } else { // found it in both lists
           Object want = list1.get(index1);
           if (!want.equals(want1)) {
-            f.format("  ** %s %s 0x%x (%s) not equal to %s 0x%x (%s) %n", want1.getClass().getName(), want1, want1.hashCode(), name1, want2, want2.hashCode(), name2);
+            f.format("  ** %s %s %s 0x%x (%s) not equal to %s 0x%x (%s) %n", what, want1.getClass().getName(), want1, want1.hashCode(), name1, want2, want2.hashCode(), name2);
             ok = false;
           } else {
             if (showEach)

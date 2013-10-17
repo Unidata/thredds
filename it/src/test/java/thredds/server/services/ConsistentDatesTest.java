@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-import thredds.server.TestWithLocalServer;
+import thredds.TestWithLocalServer;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.CDM;
@@ -94,8 +94,8 @@ public class ConsistentDatesTest {
 
   @Before
   public void setUp() {
-
   }
+
   @HttpTest(method = Method.GET, path = "/thredds/wms/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WMS&version=1.3.0&request=GetCapabilities")
   public void checkWMSDates() throws JDOMException, IOException {
 

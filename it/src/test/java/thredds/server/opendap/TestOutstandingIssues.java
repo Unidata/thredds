@@ -36,7 +36,7 @@ package thredds.server.opendap;
 
 
 import junit.framework.*;
-import thredds.server.TestWithLocalServer;
+import thredds.TestWithLocalServer;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
@@ -47,7 +47,7 @@ import java.io.*;
 public class TestOutstandingIssues extends TestCase {
 
   public void testByteAttribute() throws IOException {
-    String filename = TestWithLocalServer.server+"CdataScan/profiler/PROFILER_wind_06min_20070514_2354.nc";
+    String filename = TestWithLocalServer.server+"dodsC/scanCdmUnitTests/ft/stationProfile/PROFILER_wind_06min_20091030_2330.nc";
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename, true, null);
     assert ncd != null;
     VariableDS v = (VariableDS) ncd.findVariable("uvQualityCode");

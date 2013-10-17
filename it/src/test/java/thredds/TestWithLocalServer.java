@@ -33,7 +33,7 @@
  *
  */
 
-package thredds.server;
+package thredds;
 
 /**
  * Describe

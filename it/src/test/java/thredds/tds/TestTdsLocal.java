@@ -32,6 +32,8 @@
  */
 package thredds.tds;
 
+import org.junit.Test;
+import thredds.TestWithLocalServer;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogFactory;
 
@@ -47,12 +49,11 @@ import thredds.catalog.InvCatalogFactory;
  * jcaron, resurrected Sep 2010
  */
 public class TestTdsLocal {
-  public static String topCatalog = "http://localhost:8081/thredds";
   public static boolean showValidationMessages = false;
 
   public static InvCatalogImpl open(String catalogName) {
     if (catalogName == null) catalogName = "/catalog.xml";
-    String catalogPath = topCatalog + catalogName;
+    String catalogPath = TestWithLocalServer.server + catalogName;
     System.out.println("\n open= "+catalogPath);
     StringBuilder buff = new StringBuilder();
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false);
@@ -75,23 +76,10 @@ public class TestTdsLocal {
     return null;
   }
 
-  /* public static junit.framework.Test suite ( ) {
-    DODSNetcdfFile.debugServerCall = true;
-    //ThreddsDataFactory.setPreferCdm(false); // test dods !!
+  @Test
+  public void readCatalog() {
+    InvCatalogImpl mainCat = open(null);
+    assert mainCat != null;
+  }
 
-    TestSuite suite= new TestSuite();
-    suite.addTest(new TestSuite(TestCdmRemoteServer.class));
-    //suite.addTest(new TestSuite(TestTdsDodsServer.class));
-    //suite.addTest(new TestSuite(TestTdsNcml.class));
-    //suite.addTest(new TestSuite(TestTdsDatasetScan.class));
-    //suite.addTest(new TestSuite(TestTdsFmrc.class));
-    //suite.addTest(new TestSuite(TestWaveModel.class));
-    //suite.addTest(new TestSuite(TestTdsNetcdfSubsetService.class));
-    //suite.addTest(new TestSuite(TestTdsWxs.class));
-    //suite.addTest(new TestSuite(ucar.nc2.util.net.TestHTTPSession.class));
-    //suite.addTest(new TestSuite(ucar.nc2.util.net.TestMisc.class));
-
-
-    return suite;
-  }  */
 }

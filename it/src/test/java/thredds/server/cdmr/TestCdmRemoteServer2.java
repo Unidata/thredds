@@ -35,6 +35,7 @@ package thredds.server.cdmr;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import thredds.TestWithLocalServer;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogRef;
@@ -140,7 +141,7 @@ public class TestCdmRemoteServer2 extends TestCase {
   //////////////////////////////////////////////////
 
   public void testCompareWithFile() throws IOException {
-    final String urlPrefix = CdmRemote.SCHEME+TestTdsLocal.topCatalog+"/cdmremote/opendapTest/";
+    final String urlPrefix = CdmRemote.SCHEME+ TestWithLocalServer.server+"/cdmremote/opendapTest/";
     final String dirName = TestDir.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
     TestDir.actOnAll(dirName, new TestDir.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestDir.Act() {

@@ -272,8 +272,16 @@
     -->
     <testResources>
       <testResource>
-        <filtering>true</filtering>
-        <directory>${basedir}/src/test/resources</directory>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/main/webapp</directory>
+      </testResource>
+      <testResource>
+        <filtering>false</filtering>
+        <outputDirectory>${project.build.testOutputDirectory}/WEB-INF/classes</outputDirectory>
+        <includes>
+          <include>ValidationMessages.properties</include>
+          <include>log4j2.xml</include>
+        </includes>
       </testResource>
       <testResource>
         <filtering>false</filtering>

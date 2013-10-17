@@ -34,7 +34,7 @@
 package thredds.server.opendap;
 
 import org.junit.Test;
-import thredds.server.TestWithLocalServer;
+import thredds.TestWithLocalServer;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
