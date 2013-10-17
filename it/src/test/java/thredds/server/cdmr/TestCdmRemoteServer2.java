@@ -35,6 +35,7 @@ package thredds.server.cdmr;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 import thredds.TestWithLocalServer;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalogImpl;
@@ -43,6 +44,7 @@ import thredds.catalog.InvDataset;
 import thredds.catalog.ServiceType;
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.tds.TestTdsLocal;
+import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -56,11 +58,9 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
-public class TestCdmRemoteServer2 extends TestCase {
-  public TestCdmRemoteServer2(String name) {
-    super(name);
-  }
+public class TestCdmRemoteServer2 {
 
+  @Test
   public void testCdmRemote() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);
 
@@ -92,14 +92,19 @@ public class TestCdmRemoteServer2 extends TestCase {
 
     CoordinateAxis1D time = gcs.getTimeAxis1D();
     assert time != null;
-    assert time.getSize() == 1;
-    assert Misc.closeEnough(time.readScalarDouble(), 102840.0) : time.readScalarDouble();
+    assert time.getSize() == 12 : time.getSize();
+
+    double[] expect = new double[] {366.0, 1096.485, 1826.97, 2557.455, 3287.94, 4018.425, 4748.91, 5479.395, 6209.88, 6940.365, 7670.85, 8401.335};
+    Array data = time.read();
+    for (int i=0; i<expect.length; i++)
+      assert Misc.closeEnough(expect[i], data.getDouble(i));
 
     dataResult.featureDataset.close();
   }
 
+  @Test
   public void testUrlReading() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open("/catalog/testCdmremote/netcdf3/catalog.xml");
+    InvCatalogImpl cat = TestTdsLocal.open("/catalog/scanCdmUnitTests/formats/netcdf3/catalog.xml");
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
 
       @Override
@@ -137,28 +142,5 @@ public class TestCdmRemoteServer2 extends TestCase {
     ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( access, null);
     System.out.println("ThreddsDataFactory.Result= "+dataResult);
   }
-
-  //////////////////////////////////////////////////
-
-  public void testCompareWithFile() throws IOException {
-    final String urlPrefix = CdmRemote.SCHEME+ TestWithLocalServer.server+"/cdmremote/opendapTest/";
-    final String dirName = TestDir.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
-
-    TestDir.actOnAll(dirName, new TestDir.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestDir.Act() {
-      public int doAct(String filename) throws IOException {
-        filename = StringUtil2.replace(filename, '\\', "/");
-        filename = StringUtil2.remove(filename, dirName);
-        String cdmrUrl = urlPrefix+filename;
-        String localPath = dirName+filename;
-        System.out.println("--Compare "+localPath+" to "+cdmrUrl);
-
-        NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
-        NetcdfDataset dods_file = NetcdfDataset.openDataset(cdmrUrl);
-        ucar.unidata.test.util.CompareNetcdf.compareFiles(org_ncfile, dods_file);
-        return 1;
-      }
-    });
-  }
-
 
 }

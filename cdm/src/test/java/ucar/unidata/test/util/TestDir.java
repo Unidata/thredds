@@ -209,7 +209,7 @@ public class TestDir {
       String name = f.getAbsolutePath();
       if (f.isDirectory())
         continue;
-      if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude")) {
+      if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude") ) {
         System.out.println("----acting on file "+name);
         count += act.doAct(name);
       }
@@ -218,7 +218,7 @@ public class TestDir {
     if (!recurse) return count;
 
     for (File f : allFiles) {
-      if (f.isDirectory() && !f.getName().equals("exclude"))
+      if (f.isDirectory() && !f.getName().equals("exclude")&& !f.getName().equals("problem"))
         count += actOnAll(f.getAbsolutePath(), ff, act);
     }
 

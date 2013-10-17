@@ -76,23 +76,23 @@ public class TestTdsDodsServer {
   private Response response; // will be injected after every request
 
 
-  @HttpTest(method = Method.GET, path = "/thredds/dodsC/testTdsScan/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.badascii?Visibility_surface[0:1:0][0:1:0][0:1:0]")
+  @HttpTest(method = Method.GET, path = "/dodsC/scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.badascii?Visibility_surface[0:1:0][0:1:0][0:1:0]")
   public void checkBadRequest() {
     assertBadRequest(response);
   }
 
-  @HttpTest(method = Method.GET, path = "/thredds/dodsC/testTdsScan/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.ascii?Visibility_surface[0:1:0][0:1:0][0:1:0]")
+  @HttpTest(method = Method.GET, path = "/dodsC/scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.ascii?Visibility_surface[0:1:0][0:1:0][0:1:0]")
   public void testGridArrayAscii() {
     assertOk(response);
     String ress = response.getBody(String.class);
-    assert ress.contains("testTdsScan/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2");
+    assert ress.contains("scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2");
     assert ress.contains("15636.879");
   }
 
   @Test
   public void testUrlReading() throws IOException {
-    doOne(TestWithLocalServer.server+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_22km_20100504_0000.grib1");
-    doOne(TestWithLocalServer.server+"/dodsC/testCdmUnitTest/ncep/NAM_Alaska_45km_conduit_20100913_0000.grib2");
+    doOne(TestWithLocalServer.server+"dodsC/scanCdmUnitTests/tds/ncep/NAM_Alaska_22km_20100504_0000.grib1");
+    doOne(TestWithLocalServer.server+"dodsC/scanCdmUnitTests/tds/ncep/NAM_Alaska_45km_conduit_20100913_0000.grib2");
   }
 
   /*

@@ -264,7 +264,7 @@ public class CompareNetcdf2 {
         Structure ncmlS = (Structure) copy;
 
         List vars = new ArrayList();
-        ok &= checkAll(orgS.getFullName(), orgS.getVariables(), ncmlS.getVariables(), vars);
+        ok &= checkAll("struct "+orgS.getNameAndDimensions(), orgS.getVariables(), ncmlS.getVariables(), vars);
         for (int i = 0; i < vars.size(); i += 2) {
           Variable orgV = (Variable) vars.get(i);
           Variable ncmlV = (Variable) vars.get(i + 1);
@@ -278,7 +278,7 @@ public class CompareNetcdf2 {
       VariableDS copyds = (VariableDS) copy;
 
       List matches = new ArrayList();
-      ok &= checkAll(orgds.getFullName(), orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
+      ok &= checkAll(orgds.getNameAndDimensions(), orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
       for (int i = 0; i < matches.size(); i += 2) {
         CoordinateSystem orgCs = (CoordinateSystem) matches.get(i);
         CoordinateSystem copyCs = (CoordinateSystem) matches.get(i + 1);
@@ -424,19 +424,19 @@ public class CompareNetcdf2 {
     try {
       int index2 = list2.indexOf(want1);
       if (index2 < 0) {
-        f.format("  ** %s %s %s 0x%x (%s) not in %s %n", what, want1.getClass().getName(), want1, want1.hashCode(), name1, name2);
+        f.format("  ** %s: %s 0x%x (%s) not in %s %n", what, want1, want1.hashCode(), name1, name2);
         ok = false;
       } else { // found it in second list
         Object want2 = list2.get(index2);
         int index1 = list1.indexOf(want2);
         if (index1 < 0) { // can this happen ??
-          f.format("  ** %s %s %s 0x%x (%s) not in %s %n", what, want2.getClass().getName(), want2, want2.hashCode(), name2, name1);
+          f.format("  ** %s: %s 0x%x (%s) not in %s %n", what, want2, want2.hashCode(), name2, name1);
           ok = false;
 
         } else { // found it in both lists
           Object want = list1.get(index1);
           if (!want.equals(want1)) {
-            f.format("  ** %s %s %s 0x%x (%s) not equal to %s 0x%x (%s) %n", what, want1.getClass().getName(), want1, want1.hashCode(), name1, want2, want2.hashCode(), name2);
+            f.format("  ** %s: %s 0x%x (%s) not equal to %s 0x%x (%s) %n", what, want1, want1.hashCode(), name1, want2, want2.hashCode(), name2);
             ok = false;
           } else {
             if (showEach)

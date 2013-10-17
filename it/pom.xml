@@ -77,6 +77,11 @@
     </dependency>
 
     <dependency>
+      <groupId>edu.wisc.ssec</groupId>
+      <artifactId>visad</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
     </dependency>
@@ -102,7 +107,12 @@
     <dependency>
     	<groupId>jaxen</groupId>
     	<artifactId>jaxen</artifactId>
-    </dependency>    
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+    </dependency>
     
     <dependency>
     	<groupId>com.restfuse</groupId>

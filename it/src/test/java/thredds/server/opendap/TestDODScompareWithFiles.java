@@ -40,12 +40,15 @@ import thredds.TestWithLocalServer;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.StringUtil2;
 
-/** compare files served through netcdf-DODS server. */
+/**
+ * compare files served through netcdf-DODS server.
+ */
 
-public class TestTDScompareWithFiles  {
+public class TestDODScompareWithFiles {
   static boolean showCompare = false, showEach = false, showStringValues = false;
   String contentRoot;
 
@@ -85,12 +88,12 @@ public class TestTDScompareWithFiles  {
   String path = "dodsC/scanCdmUnitTests/";
 
   public void testCompareAll() throws IOException {
-    readAllDir(contentRoot+"ncml", ".ncml");
+    readAllDir(contentRoot + "ncml", ".ncml");
   }
 
   void readAllDir(String dirName, String suffix) throws IOException {
-    System.out.println("---------------Reading directory "+dirName);
-    File allDir = new File( dirName);
+    System.out.println("---------------Reading directory " + dirName);
+    File allDir = new File(dirName);
     File[] allFiles = allDir.listFiles();
 
     for (int i = 0; i < allFiles.length; i++) {
@@ -115,21 +118,28 @@ public class TestTDScompareWithFiles  {
   private void doOne(String filename) throws IOException {
     filename = StringUtil2.replace(filename, '\\', "/");
     filename = StringUtil2.remove(filename, contentRoot);
-    String dodsUrl = TestWithLocalServer.server+path+filename;
-    String localPath = contentRoot+filename;
+    String dodsUrl = TestWithLocalServer.server + path + filename;
+    String localPath = contentRoot + filename;
     compareDatasets(dodsUrl, localPath);
   }
 
   private void compareDatasets(String dodsUrl, String localPath) throws IOException {
     System.out.printf("--Compare %s to %s%n", localPath, dodsUrl);
-    NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
-    NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);
+    NetcdfDataset ncfile = null, ncremote = null;
+    try {
+      ncfile = NetcdfDataset.openDataset(localPath);
+      ncremote = NetcdfDataset.openDataset(dodsUrl);
 
-    Formatter f = new Formatter();
-    CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
-    boolean ok = mind.compare(org_ncfile, dods_file, new DodsObjFilter(), false, false, false);
-    if (!ok) {
-      System.out.printf(" NOT OK%n%s%n", f);
+      Formatter f = new Formatter();
+      CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
+      boolean ok = mind.compare(ncfile, ncremote, new DodsObjFilter(), false, false, false);
+      if (!ok) {
+        System.out.printf(" NOT OK%n%s%n", f);
+      }
+
+    } finally {
+      if (ncfile != null) ncfile.close();
+      if (ncremote != null) ncremote.close();
     }
   }
 
@@ -146,7 +156,6 @@ public class TestTDScompareWithFiles  {
     }
 
   }
-
 
 
 }
