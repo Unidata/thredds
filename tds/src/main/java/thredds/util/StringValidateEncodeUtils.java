@@ -437,26 +437,25 @@ public class StringValidateEncodeUtils
   public static String unicodeCodePoint2PercentHexString( int codePoint, String charsetName )
   {
     if ( ! Character.isDefined( codePoint ))
-      throw new IllegalArgumentException( "Not a valid Unicode code point [" + codePoint + "]." );
+      throw new IllegalArgumentException( String.format( "Given code point [U+%1$04X - %1$d] not assigned to an abstract character.", codePoint ) );
+    if ( Character.getType( codePoint) == Character.SURROGATE )
+      throw new IllegalArgumentException( String.format( "Given code point [U+%1$04X - %1$d] is an unencodable (by itself) surrogate character.", codePoint ) );
+
     Charset charset = Charset.availableCharsets().get( charsetName );
     if ( charset == null )
-      throw new IllegalArgumentException( "Unsupported charset ["+charsetName+"].");
+      throw new IllegalArgumentException( String.format( "Unsupported charset [%s].", charsetName));
 
     char[] chars = Character.toChars( codePoint );
     ByteBuffer byteBuffer = null;
-    try
-    {
+    try {
       byteBuffer = charset.newEncoder().encode( CharBuffer.wrap( chars ) );
-    }
-    catch ( CharacterCodingException e )
-    {
-      // The selected charset cannot encode given code point.
-      return null;
+    } catch ( CharacterCodingException e ) {
+      String message = String.format( "Given code point [U+%1$04X - %1$d] cannot be encode in given charset [%2$s].", codePoint, charsetName );
+      throw new IllegalArgumentException( message, e );
     }
     byteBuffer.rewind();
     StringBuilder encodedString = new StringBuilder();
-    for ( int i = 0; i < byteBuffer.limit(); i++ )
-    {
+    for ( int i = 0; i < byteBuffer.limit(); i++ ) {
       String asHex = Integer.toHexString( byteBuffer.get() & 0xFF );
       encodedString.append( "%" ).append( asHex.length() == 1 ? "0" : "").append( asHex );
     }
