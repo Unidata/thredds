@@ -51,6 +51,7 @@ import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.format.SupportedOperation;
 import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.view.gridaspoint.PointDataWriter;
 import thredds.server.ncSubset.view.gridaspoint.PointDataWriterFactory;
@@ -184,9 +185,9 @@ public class GridAsPointResponder extends GridDatasetResponder implements NcssRe
 			sf = operation.getDefaultFormat();
 			params.setAccept(sf.getFormatName());
 		}else{		
-			sf = SupportedOperation.isSupportedFormat(params.getAccept(), operation);
+			sf = operation.getSupportedFormat(params.getAccept());
 			if( sf == null ){			
-				throw new UnsupportedResponseFormatException("Requested format: "+params.getAccept()+" is not supported for "+operation.getOperation().toLowerCase() );
+				throw new UnsupportedResponseFormatException("Requested format: "+params.getAccept()+" is not supported for "+operation.getName().toLowerCase() );
 			}
 		}
 		

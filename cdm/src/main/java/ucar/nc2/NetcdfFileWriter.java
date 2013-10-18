@@ -268,6 +268,7 @@ public class NetcdfFileWriter {
   }
 
   public NetcdfFile getNetcdfFile() {
+    if (defineMode) throw new IllegalStateException("Must leave define mode first");
     return ncfile;
   }
 
@@ -277,6 +278,10 @@ public class NetcdfFileWriter {
 
   public Variable findVariable(String fullNameEscaped) {
     return ncfile.findVariable(fullNameEscaped);
+  }
+
+  public Attribute findGlobalAttribute(String attName) {
+    return ncfile.getRootGroup().findAttribute(attName);
   }
 
   ////////////////////////////////////////////

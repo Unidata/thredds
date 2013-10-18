@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.server.ncSubset.dataservice.FeatureDatasetService;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.format.SupportedOperation;
 import thredds.server.ncSubset.params.NcssParamsBean;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.grid.GridDataset;
@@ -115,9 +116,9 @@ public class DatasetBoundariesController extends AbstractFeatureDatasetControlle
       sf = operation.getDefaultFormat();
       params.setAccept(sf.getFormatName());
     } else {
-      sf = SupportedOperation.isSupportedFormat(params.getAccept(), operation);
+      sf = operation.getSupportedFormat(params.getAccept());
       if (sf == null) {
-        throw new UnsupportedResponseFormatException("Requested format: " + params.getAccept() + " is not supported for " + operation.getOperation().toLowerCase());
+        throw new UnsupportedResponseFormatException("Requested format: " + params.getAccept() + " is not supported for " + operation.getName().toLowerCase());
       }
     }
 

@@ -258,8 +258,6 @@ public class WriterCFStationCollection  extends CFPointWriter {
       }
       newVar.addAttribute(new Attribute(CF.COORDINATES, coordNames));
     }
-
-    System.out.printf("%s%n", writer.getNetcdfFile());
   }
 
   int countDim = 0;

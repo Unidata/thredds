@@ -14,7 +14,7 @@
     <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
     <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
     <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
-    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>   
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
   </service>
 
   <datasetRoot path="localContent" location="content/testdata/"/>
@@ -26,26 +26,31 @@
     <property name="viewer2" value="http://www.unidata.ucar.edu/,MyOtherViewer"/>
 
   </dataset>
-  <dataset name="Test latlon crossing seam" ID="testCrossingSeam" serviceName="all" urlPath="localContent/GFS_Global_onedeg_20120515_1200.grib2.nc" dataType="Grid"  />
-  <dataset name="Test climatology" ID="testClimatology" serviceName="all" urlPath="cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc" dataType="Grid"  />
+  <dataset name="Test latlon crossing seam" ID="testCrossingSeam" serviceName="all" urlPath="localContent/GFS_Global_onedeg_20120515_1200.grib2.nc"
+           dataType="Grid"/>
+  <dataset name="Test climatology" ID="testClimatology" serviceName="all" urlPath="cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc"
+           dataType="Grid"/>
 
-  <dataset name="Test Single Grid Dataset" ID="testSingleGridDataset" serviceName="all" urlPath="cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc" dataType="Grid"/>
-  <dataset name="Test Single Station Dataset" ID="testSingleStationDataset" serviceName="all" urlPath="cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc" dataType="Station"/>
+  <dataset name="Test Single Grid Dataset" ID="testSingleGridDataset" serviceName="all" urlPath="cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc"
+           dataType="Grid"/>
+  <dataset name="Test Single Station Dataset" ID="testSingleStationDataset" serviceName="all"
+           urlPath="cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc" dataType="Station"/>
   <dataset name="Test sst" ID="TESTsst" serviceName="all" urlPath="cdmUnitTest/conventions/coards/sst.mnmean.nc" dataType="Grid"/>
 
   <dataset name="Test Hyrax" ID="Hyrax2TDS" serviceName="all" urlPath="Hyrax2TDS/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf" dataType="Grid">
-    <ncml:netcdf xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="http://eosdap.hdfgroup.uiuc.edu:8080/opendap/data/NASAFILES/hdf4/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf" />
+    <ncml:netcdf xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+                 location="http://eosdap.hdfgroup.uiuc.edu:8080/opendap/data/NASAFILES/hdf4/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf"/>
   </dataset>
 
 
   <datasetScan name="Test Scan Local (no ID)" path="scanLocal" location="content/testdata/">
-     <metadata inherited="true">
-       <serviceName>all</serviceName>
-     </metadata>
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
     <sort>
-      <lexigraphicByName increasing="true" />
+      <lexigraphicByName increasing="true"/>
     </sort>
-   </datasetScan>
+  </datasetScan>
 
   <!-- a scan on the entire /upc/share/cdmUnitTest directory; not all services will make sense -->
   <datasetScan name="Test scan cdmUnitTest (ID)" ID="scanCdmUnitTests" path="scanCdmUnitTests" location="${cdmUnitTest}/">
@@ -53,51 +58,29 @@
       <serviceName>all</serviceName>
     </metadata>
     <sort>
-      <lexigraphicByName increasing="true" />
+      <lexigraphicByName increasing="true"/>
     </sort>
     <addDatasetSize/>
   </datasetScan>
 
   <datasetScan name="Test Scan Grids" ID="testGridScan" path="testGridScan" location="${cdmUnitTest}/ncss/GFS/CONUS_80km">
-     <metadata inherited="true">
-       <serviceName>all</serviceName>
-       <dataType>Grid</dataType>
-       <dataFormat>GRIB-1</dataFormat>
-     </metadata>
-   </datasetScan>
-
-  <!-- Test Dataset Scan on Station data-->
- <!-- pathInfo:   /testTdsScan/GFS_CONUS_80km_yyyyMMdd_HHmm.grib1.nc -->
- <datasetScan name="Test Scan Stations" ID="testStationScan" path="testStationScan" location="${cdmUnitTest}/ncss/point_features/metar">
-   <metadata inherited="true">
-     <serviceName>all</serviceName>
-     <dataType>Station</dataType>
-   </metadata>
- </datasetScan>
-
-  <!-- opendap specific -->
-  <!--
-  <datasetScan name="opendapTest" ID="opendapTest" path="opendapTest" location="${cdmUnitTest}/tds/opendap">
     <metadata inherited="true">
       <serviceName>all</serviceName>
+      <dataType>Grid</dataType>
+      <dataFormat>GRIB-1</dataFormat>
     </metadata>
   </datasetScan>
- -->
-  <!--
-  <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
 
   <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="testStandardTds/testData2.grib2" restrictAccess="tiggeData">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
   </dataset>
-  -->
-  <!-- test NcML in dataset -->
-  <!--
+
+  <!-- UNTESTED test NcML in dataset -->
   <dataset name="Example NcML Modified - DODS" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="/share/testdata/cdmUnitTest/tds/example1.nc"
-            addRecords="true">
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
       <attribute name="name" value="value"/>
       <variable name="Temperature" orgName="T"/>
       <variable name="ReletiveHumidity" orgName="rh">
@@ -107,13 +90,11 @@
       </variable>
     </netcdf>
   </dataset>
-  -->
-  <!-- test NcML in dataset -->
-  <!--
+
   <dataset name="Example NcML Modified - cdmremote" ID="ExampleNcMLModified2" urlPath="ExampleNcML2/Modified.nc">
     <serviceName>cdmremote</serviceName>
     <dataType>Grid</dataType>
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="/share/testdata/cdmUnitTest/tds/example1.nc"
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc"
             addRecords="true">
       <attribute name="name" value="value"/>
       <variable name="Temperature" orgName="T"/>
@@ -124,10 +105,9 @@
       </variable>
     </netcdf>
   </dataset>
-  -->
+
   <!-- test NcML in datasetScan -->
-  <!--
-  <datasetScan name="ModifyDatasetScan" ID="ModifyDatasetScan" path="ModifyDatasetScan" location="/share/testdata/cdmUnitTest/tds/">
+  <datasetScan name="ModifyDatasetScan" ID="ModifyDatasetScan" path="ModifyDatasetScan" location="${cdmUnitTest}/tds/">
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <dataType>Grid</dataType>
@@ -149,126 +129,28 @@
     </netcdf>
 
   </datasetScan>
-  -->
+
   <!-- test NcML aggregation in dataset -->
-  <!--
   <dataset name="Example NcML Aggregation" ID="ExampleNcMLAgg" urlPath="ExampleNcML/Agg.nc">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
     <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-      <aggregation dimName="time" type="joinExisting" timeUnitsChange="true">
-        <netcdf location="/share/testdata/cdmUnitTest/ncml/nc/namExtract/20060925_0600.nc" ncoords="2"/>
-        <netcdf location="/share/testdata/cdmUnitTest/ncml/nc/namExtract/20060925_1200.nc" ncoords="2"/>
-        <netcdf location="/share/testdata/cdmUnitTest/ncml/nc/namExtract/20060925_1800.nc" ncoords="2"/>
-        <netcdf location="/share/testdata/cdmUnitTest/ncml/nc/namExtract/20060926_0000.nc" ncoords="2"/>
-      </aggregation>
       <attribute name="ncmlAdded" value="stuff"/>
       <variable name="lat">
         <attribute name="ncmlAdded" value="lat_stuff"/>
       </variable>
+      <aggregation dimName="time" type="joinExisting" timeUnitsChange="true">
+          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_0600.nc" ncoords="2"/>   <!-- prob doesnt work -->
+          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1200.nc" ncoords="2"/>
+          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1800.nc" ncoords="2"/>
+          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060926_0000.nc" ncoords="2"/>
+        </aggregation>
     </netcdf>
   </dataset>
-  -->
+  <!-- END UNTESTED-->
 
-  <!-- test FMRC -->
-  <featureCollection featureType="FMRC" name="GFS_CONUS_80km_FMRC" path="testGFSfmrc">
-
-    <metadata inherited="true">
-      <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
-    </metadata>
-
-    <collection spec="${cdmUnitTest}/ncss/CONUS_80km_nc/GFS_CONUS_80km_#yyyyMMdd_HHmm#.nc$" />
-    <update startup="true" rescan="* * 0/2 * * ? *" trigger="allow"/>
-    <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
-  </featureCollection>
-
-  <featureCollection featureType="FMRC" name="NAM FMRC" path="testNAMfmrc">
-
-    <metadata inherited="true">
-      <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
-    </metadata>
-
-    <collection spec="${cdmUnitTest}/ncml/agg/#yyyyMMdd_HHmm#.nc$" />
-    <update startup="true" rescan="10 43 * * * ? *" trigger="allow"/>
-
-    <protoDataset choice="Penultimate" change="0 43 * * * ? *">
-      
-      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-        <attribute name="ncmlAdded" value="goodStuff"/>
-        <variable name="Visibility">
-          <attribute name="ncmlAdded" value="reallyGoodStuff"/>
-        </variable>
-      </netcdf>
-    </protoDataset>
-
-    
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-      <variable name="Visibility">
-        <attribute name="ncmlInnerAdded" value="innerTruth"/>
-      </variable>
-    </netcdf>
-
-    <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
-
-  </featureCollection>
-
-  <!-- LOOK original dataset lost ?? -->
-  <featureCollection name="POLCOMS-Irish-Sea" featureType="FMRC" path="NCOF/POLCOMS/IRISH_SEA">
-
-    <metadata inherited="true">
-      <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
-    </metadata>
-
-    <collection spec="${cdmUnitTest}/ncml/agg/#yyyyMMdd_HHmm#.nc$"/>
-
-    <protoDataset>
-      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-        <variable name="Visibility">
-          <attribute name="units" value="celsius"/>
-        </variable>
-      </netcdf>
-    </protoDataset>
-
-  </featureCollection>
-
-  <!-- featureCollection station -->
-  <featureCollection name="Metar Station Data" harvest="true" featureType="Station" path="testStationFeatureCollection">
-    <metadata inherited="true">
-      <dataType>Station</dataType>
-      <documentation type="summary">Metars: hourly surface weather observations</documentation>
-      <keyword>metar</keyword>
-      <keyword>surface observations</keyword>
-    </metadata>
-
-    <property name="raw" value="report"/>
-    <property name="resolution" value="20 min"/>
-
-    <collection spec="${cdmUnitTest}/ft/station/ldm-metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$" />
-    <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-    <protoDataset choice="Penultimate" />
-    <pointConfig datasetTypes="cdmrFeature Files"/>
-  </featureCollection>
-
-  <!--
-  <catalogRef xlink:title="Test FMRC with inner and outer NcML" xlink:href="wav_mod.xml" name=""/>
-  -->
-  <!-- datasetScan name="NCSS testing dataset" ID="ncssTestDataset" serviceName="all" path="ncssTest" location="${ncss}/test">
-    <metadata inherited="true">
-      <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
-    </metadata>
-  </datasetScan>
-
-  <datasetScan name="ncWMS Dataset" ID="ncWMSTestDataset" serviceName="all" path="ncWMSTest" location="${testdata}/ncwms">
-    <metadata inherited="true">
-      <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
-    </metadata>
-  </datasetScan -->
-
-  <catalogRef xlink:title="Test NCSS" xlink:href="ncss_test_catalog.xml" name=""/>
+  <catalogRef xlink:title="Test FMRC" xlink:href="catalogFMRC.xml" name=""/>
+  <catalogRef xlink:title="Test GRIB FC" xlink:href="catalogGrib.xml" name=""/>
+  <catalogRef xlink:title="Test Point FC" xlink:href="catalogPoint.xml" name=""/>
 
 </catalog>

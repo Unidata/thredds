@@ -424,15 +424,22 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     // dome reading - do anything needed
     config.finish();
 
-    InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory( parent, name, path, fcType, config);
-    if (ds == null) {
-      logger.error( "featureCollection "+name+" has fatal error ");
+    try {
+      InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory( parent, name, path, fcType, config);
+      if (ds == null) {
+        logger.error( "featureCollection "+name+" has fatal error ");
+        return null;
+      }
+      // regular dataset elements
+      readDatasetInfo( catalog, ds, dsElem, base);
+      return ds;
+
+    } catch (Exception e) {
+      logger.error( "featureCollection "+name+" has fatal error, skipping ", e);
       return null;
     }
 
-    // regular dataset elements
-    readDatasetInfo( catalog, ds, dsElem, base);
-    return ds;
+
   }
 
   protected FeatureCollectionConfig.UpdateConfig readUpdateElement(Element updateElem) {

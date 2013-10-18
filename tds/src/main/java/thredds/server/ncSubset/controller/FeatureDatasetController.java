@@ -39,7 +39,6 @@ import java.text.ParseException;
 import java.util.Formatter;
 import java.util.Set;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -57,8 +56,8 @@ import thredds.server.ncSubset.dataservice.FeatureDatasetService;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.format.SupportedOperation;
 import thredds.server.ncSubset.params.NcssParamsBean;
-import thredds.servlet.ServletUtil;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
@@ -99,7 +98,7 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
                         @Valid NcssParamsBean params,
                         BindingResult validationResult) throws IOException, NcssException, ParseException, InvalidRangeException {
 
-     //System.out.printf("%s%n", ServletUtil.showRequestDetail(null, req));
+     // System.out.printf("%s%n", ServletUtil.showRequestDetail(null, req));
 
      if (validationResult.hasErrors()) {
        handleValidationErrorsResponse(res, HttpServletResponse.SC_BAD_REQUEST, validationResult);
@@ -153,7 +152,7 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
     params.isValidGridRequest();
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
-    SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.GRID_REQUEST);
+    SupportedFormat sf = SupportedOperation.GRID_REQUEST.getSupportedFormat(params.getAccept());
 
     NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
     if (sf.equals(SupportedFormat.NETCDF4)) {
@@ -177,7 +176,7 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
                        NcssParamsBean params, String datasetPath,
                        FeatureDataset fd) throws IOException, NcssException, ParseException, InvalidRangeException {
 
-    SupportedFormat format = SupportedOperation.isSupportedFormat(params.getAccept(), SupportedOperation.POINT_REQUEST);
+    SupportedFormat format = SupportedOperation.POINT_REQUEST.getSupportedFormat(params.getAccept());
     NcssResponder pds = makePointResponder(fd, params, format, res.getOutputStream());
     setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
     pds.respond(res, fd, datasetPath, params, format);

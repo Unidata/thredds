@@ -246,7 +246,7 @@ public class CFPointWriter {
       writer.updateAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
     }
 
-    if ((writer.getNetcdfFile().findAttribute("@" + ACDD.TIME_START) != null) && (writer.getNetcdfFile().findAttribute("@" + ACDD.TIME_END) != null)) {
+    if ((writer.findGlobalAttribute(ACDD.TIME_START) != null) && (writer.findGlobalAttribute(ACDD.TIME_END) != null)) {
       if (minDate == null) minDate = CalendarDate.present();
       if (maxDate == null) maxDate = CalendarDate.present();
       writer.updateAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(minDate)));

@@ -192,13 +192,8 @@ public class FileWriter2 {
 
       if (cancel != null && cancel.isCancel()) return null;
 
-      if (debugWrite)
-        System.out.printf("About to write = %n%s%n", writer.getNetcdfFile());
-
       // create the file
       writer.create();
-      if (debug)
-        System.out.printf("File Out= %n%s%n", writer.getNetcdfFile());
 
       if (cancel != null && cancel.isCancel()) return null;
       double total = copyVarData(varList, null, cancel);

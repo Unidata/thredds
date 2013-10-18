@@ -37,18 +37,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public enum SupportedFormat{
+public enum SupportedFormat {
 	
-	CSV_STREAM("CSV", true, "text/plain", "csv"  ),
-	CSV_FILE("CSV", false,  "text/csv"  ),
+	CSV_STREAM("csv", true, "text/plain", "csv"  ),
+	CSV_FILE("csv_(file)", false,  "text/csv"  ),
 	
-	XML_STREAM("XML", true, "application/xml", "xml"),
-	XML_FILE("XML", false, "text/xml"),
+	XML_STREAM("xml", true, "application/xml", "xml"),
+	XML_FILE("xml_(file)", false, "text/xml"),
 	
-	NETCDF3("NETCDF3", false,  "application/x-netcdf", "netcdf"),
-	NETCDF4("NETCDF4", false,  "application/x-netcdf4", "netcdf4"),
-	JSON("JSON", false, "application/json", "json", "geojson"),
-	WKT("WKT", false, "text/plain", "wkt");
+	NETCDF3("netcdf", false,  "application/x-netcdf", "netcdf"),
+	NETCDF4("netcdf4", false,  "application/x-netcdf4", "netcdf4"),
+	JSON("json", false, "application/json", "json", "geojson"),
+	WKT("wkt", false, "text/plain", "wkt");
 	
 	/*
 	 * First alias is used as content-type in the http headers
@@ -57,7 +57,7 @@ public enum SupportedFormat{
 	private final String formatName;
 	private final boolean isStream;
 
-	SupportedFormat(String formatName, boolean isStream, String...aliases ){
+  private SupportedFormat(String formatName, boolean isStream, String...aliases ){
 		this.formatName=formatName;
 		this.isStream = isStream;
 		List<String> aliasesList = new ArrayList<String>();
@@ -73,6 +73,12 @@ public enum SupportedFormat{
 	public List<String> getAliases(){
 		return aliases;
 	}
+
+  public boolean isAlias(String want){
+ 		for (String have : aliases)
+      if (have.equalsIgnoreCase(want)) return true;
+    return false;
+ 	}
 
 	//The first item in the aliases is the content type for the responses
 	public String getResponseContentType(){

@@ -1124,6 +1124,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return the attribute, or null if not found
    */
   public Attribute findGlobalAttribute(String name) {
+    if (gattributes == null)
+      System.out.println("HEY");
     for (Attribute a : gattributes) {
       if (name.equals(a.getShortName()))
         return a;

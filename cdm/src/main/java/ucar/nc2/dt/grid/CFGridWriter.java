@@ -480,23 +480,23 @@ public class CFGridWriter {
 		writer.flush();
 		
 		//should we add them if they are not present??
-		if(writer.getNetcdfFile().findAttribute("@"+ACDD.LAT_MIN)!=null){
-			Attribute from = writer.getNetcdfFile().findAttribute("@"+ACDD.LAT_MIN);
+		if(writer.findGlobalAttribute(ACDD.LAT_MIN)!=null){
+			Attribute from = writer.findGlobalAttribute(ACDD.LAT_MIN);
 			updateAttribute(writer, from, ACDD.LAT_MIN, llRect.getLatMin());
 		}	
 		
-		if(writer.getNetcdfFile().findAttribute("@"+ACDD.LAT_MAX)!=null){
-			Attribute from = writer.getNetcdfFile().findAttribute("@"+ACDD.LAT_MAX);
+		if(writer.findGlobalAttribute(ACDD.LAT_MAX)!=null){
+			Attribute from = writer.findGlobalAttribute("@"+ACDD.LAT_MAX);
 			updateAttribute(writer, from, ACDD.LAT_MAX, llRect.getLatMax());
 		}	
 
-		if(writer.getNetcdfFile().findAttribute("@"+ACDD.LON_MIN)!=null){
-			Attribute from = writer.getNetcdfFile().findAttribute("@"+ACDD.LON_MIN);
+		if(writer.findGlobalAttribute(ACDD.LON_MIN)!=null){
+			Attribute from = writer.findGlobalAttribute("@"+ACDD.LON_MIN);
 			updateAttribute(writer, from, ACDD.LON_MIN, llRect.getLonMin());
 		}
 		
-		if(writer.getNetcdfFile().findAttribute("@"+ACDD.LON_MAX)!=null){
-			Attribute from = writer.getNetcdfFile().findAttribute("@"+ACDD.LON_MAX);
+		if(writer.findGlobalAttribute(ACDD.LON_MAX)!=null){
+			Attribute from = writer.findGlobalAttribute(ACDD.LON_MAX);
 			updateAttribute(writer, from, ACDD.LON_MAX, llRect.getLonMax());
 		}	
 	}
