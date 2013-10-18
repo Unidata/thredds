@@ -110,8 +110,11 @@ public class TestWcsServer {
     assertOk(response);
   }
 
-  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&REQUEST=GetCoverage&COVERAGE=sst&CRS=EPSG%3a4326&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
+  @HttpTest(method = Method.GET, path = "wcs/scanCdmUnitTests/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&request=GetCoverage&COVERAGE=sst&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
   public void testGetCoverage() throws IOException {
+    if (response.getStatus() != 200) {
+      System.out.printf("%s%n", response.getBody(String.class));
+    }
     assertOk(response);
   }
 

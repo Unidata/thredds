@@ -42,6 +42,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -50,16 +51,10 @@ import ucar.unidata.util.StringUtil2;
 
 public class TestDODScompareWithFiles {
   static boolean showCompare = false, showEach = false, showStringValues = false;
-  String contentRoot;
+  String contentRoot = TestDir.cdmUnitTestDir + "formats";
+
   int fail = 0;
   int success = 0;
-
-  @Before
-  public void setup() {
-    contentRoot = System.getProperty("tds.dir.cdmUnitTest");
-    if (contentRoot != null && !contentRoot.endsWith("/"))
-      contentRoot += "/";
-  }
 
   @org.junit.Test
   public void testCompare() throws IOException {
@@ -121,7 +116,6 @@ public class TestDODScompareWithFiles {
 
   private void doOne(String filename) throws IOException {
     filename = StringUtil2.replace(filename, '\\', "/");
-    filename = StringUtil2.remove(filename, contentRoot);
     String dodsUrl = TestWithLocalServer.server + path + filename;
     String localPath = contentRoot + filename;
     compareDatasets(dodsUrl, localPath);

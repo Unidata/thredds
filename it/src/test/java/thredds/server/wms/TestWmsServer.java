@@ -90,15 +90,15 @@ public class TestWmsServer {
      assertEquals("sst", emt.getTextTrim());
    }
 
-  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=sst")
+  /* @HttpTest(method = Method.GET, path = "/wms/cdmUnitTest/conventions/coards/sst.mnmean.nc?request=DescribeCoverage&version=1.0.0&service=WMS&coverage=sst")
   public void testDescribeCoverage() throws IOException {
     assertOk(response);
   }
 
-  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&REQUEST=GetCoverage&COVERAGE=sst&CRS=EPSG%3a4326&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
+  @HttpTest(method = Method.GET, path = "/wms/cdmUnitTest/conventions/coards/sst.mnmean.nc?service=WMS&version=1.0.0&REQUEST=GetCoverage&COVERAGE=sst&CRS=EPSG%3a4326&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
   public void testGetCoverage() throws IOException {
     assertOk(response);
-  }
+  }  */
 
 
   /* @Test
