@@ -26,6 +26,7 @@ public class TestNcstreamCompareWithFiles {
   }
 
   int fail = 0;
+  int success = 0;
 
   @Test
   public void testScan() throws IOException {
@@ -56,8 +57,8 @@ public class TestNcstreamCompareWithFiles {
     scanDir(contentRoot +"/gini/", ".gini");
     scanDir(contentRoot +"/gempak/", ".gem");
 
-    System.out.printf("fail = %d%n", fail);
-    assert fail == 0;
+    System.out.printf("success = %d fail = %d%n", success, fail);
+    assert fail == 0 : "failed="+fail;
   }
 
   void scanDir(String dirName, final String suffix) throws IOException {
@@ -85,21 +86,6 @@ public class TestNcstreamCompareWithFiles {
     compareDatasets(filename, remote);
   }
 
-  void compare(String file, String remote) throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.openFile(file, null);
-    NetcdfFile ncfileRemote = new CdmRemote(remote);
-
-    Formatter f = new Formatter();
-    CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, false);
-    boolean ok = cn.compare(ncfile, ncfileRemote);
-    if (ok)
-      System.out.printf("compare %s ok %n", file);
-    else
-      System.out.printf("compare %s NOT OK %n%s", file, f.toString());
-    ncfile.close();
-    ncfileRemote.close();
-  }
-
   private void compareDatasets(String local, String remote) throws IOException {
     //System.out.printf("--Compare %s to %s%n", local, remote);
     NetcdfFile ncfile = null, ncremote = null;
@@ -113,6 +99,8 @@ public class TestNcstreamCompareWithFiles {
       if (!ok) {
         System.out.printf(" NOT OK%n%s%n", f);
         fail++;
+      } else {
+        success++;
       }
     } finally {
       if (ncfile != null) ncfile.close();

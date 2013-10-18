@@ -47,6 +47,7 @@ import com.eclipsesource.restfuse.annotation.HttpTest;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
@@ -71,14 +72,18 @@ public class TestWcsServer {
   @Context
   private Response response; // will be injected after every request
 
-  private String server = TestWithLocalServer.server+ "wcs/";
-  private String server2 = "http://thredds.ucar.edu/thredds/wcs/";
+  private final Namespace NS_WCS = Namespace.getNamespace("wcs", "http://www.opengis.net/wcs");
+
+
+  //private String server = TestWithLocalServer.server+ "wcs/";
+  //private String server2 = "http://thredds.ucar.edu/thredds/wcs/";
 
   //private String ncdcWcsServer = "http://eclipse.ncdc.noaa.gov:9090/thredds/wcs/";
-  private String ncdcWcsDataset = "http://eclipse.ncdc.noaa.gov:9090/thredds/wcs/gfsmon/largedomain.nc";
-  private String ncdcOpendapDataset = "http://eclipse.ncdc.noaa.gov:9090/thredds/dodsC/gfsmon/largedomain.nc";
+  //private String ncdcWcsDataset = "http://eclipse.ncdc.noaa.gov:9090/thredds/wcs/gfsmon/largedomain.nc";
+  //private String ncdcOpendapDataset = "http://eclipse.ncdc.noaa.gov:9090/thredds/dodsC/gfsmon/largedomain.nc";
 
-  @HttpTest(method = Method.GET, path = "/thredds/wcs/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc?service=WCS&version=1.0.0&request=GetCapabilities")
+
+  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc?service=WCS&version=1.0.0&request=GetCapabilities")
   public void testGetCapabilites() throws IOException, JDOMException {
     assertOk(response);
     String xml = response.getBody(String.class);
@@ -86,32 +91,31 @@ public class TestWcsServer {
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
-    XPathExpression<Element> xpath = XPathFactory.instance().compile("/WCS_Capabilities/ContentMetadata/CoverageOfferingBrief", Filters.element());
+    //XPathExpression<Element> xpath = XPathFactory.instance().compile("ns:/WCS_Capabilities/ContentMetadata/CoverageOfferingBrief", Filters.element(), null, NS_WCS);
+    XPathExpression<Element> xpath = XPathFactory.instance().compile("//wcs:CoverageOfferingBrief", Filters.element(), null, NS_WCS);
     List<Element> elements = xpath.evaluate(doc);
     for (Element emt : elements) {
-        System.out.println("XPath has result: " + emt.getName());
+        System.out.println("XPath has result: " + emt.getContent());
     }
-    assertEquals(6, elements.size());
+    assertEquals(7, elements.size());
 
     XPathExpression<Element> xpath2 =
-        XPathFactory.instance().compile("/WCS_Capabilities/ContentMetadata/CoverageOfferingBrief/name", Filters.element());
+        XPathFactory.instance().compile("//wcs:CoverageOfferingBrief/wcs:name", Filters.element(), null, NS_WCS);
     Element emt = xpath2.evaluateFirst(doc);
     assertEquals("Pressure_reduced_to_MSL", emt.getTextTrim());
   }
 
-  @HttpTest(method = Method.GET,
-          path = "/thredds/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=")
+  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=sst")
   public void testDescribeCoverage() throws IOException {
     assertOk(response);
   }
 
-  @HttpTest(method = Method.GET,
-          path = "/thredds/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&REQUEST=GetCoverage&COVERAGE=tos&CRS=EPSG%3a4326&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
+  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&REQUEST=GetCoverage&COVERAGE=sst&CRS=EPSG%3a4326&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
   public void testGetCoverage() throws IOException {
     assertOk(response);
   }
 
- // @org.junit.Test
+ /* @org.junit.Test
   public void testFmrc() throws IOException {
     String dataset = server+"fmrc/NCEP/NAM/CONUS_80km/best.ncd";
     showGetCapabilities(dataset);
@@ -246,6 +250,7 @@ public class TestWcsServer {
     System.out.println(url+"\n");
     String contents = IO.readURLcontentsWithException( url);
     System.out.println(contents);
-  }  
+  }
+   */
 
 }

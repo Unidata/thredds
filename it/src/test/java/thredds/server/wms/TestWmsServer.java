@@ -48,6 +48,7 @@ import com.eclipsesource.restfuse.annotation.HttpTest;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
@@ -69,9 +70,10 @@ public class TestWmsServer {
   @Context
   private Response response; // will be injected after every request
 
-  private String server = TestWithLocalServer.server+ "wms/";
+  private final Namespace NS_WMS = Namespace.getNamespace("wms", "http://www.opengis.net/wms");
 
-  @HttpTest(method = Method.GET, path = "http://localhost:8080/thredds/wms/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc?service=WCS&version=1.0.0&request=GetCapabilities")
+
+  @HttpTest(method = Method.GET, path = "/wms/scanCdmUnitTests/conventions/coards/sst.mnmean.nc?service=WMS&version=1.3.0&request=GetCapabilities")
    public void testCapabilites() throws IOException, JDOMException {
      assertOk(response);
      String xml = response.getBody(String.class);
@@ -79,21 +81,27 @@ public class TestWmsServer {
      SAXBuilder sb = new SAXBuilder();
      Document doc = sb.build(in);
 
-     XPathExpression<Element> xpath = XPathFactory.instance().compile("/WMS_Capabilities/Capability/Layer/Layer/Layer/Name", Filters.element());
+     XPathExpression<Element> xpath = XPathFactory.instance().compile("//wms:Capability/wms:Layer/wms:Layer/wms:Layer", Filters.element(), null, NS_WMS);
      List<Element> elements = xpath.evaluate(doc);
-     for (Element emt : elements) {
-         System.out.println("XPath has result: " + emt.getName());
-     }
-     assertEquals(6, elements.size());
+     assertEquals(1, elements.size());
 
-     XPathExpression<Element> xpath2 =
-         XPathFactory.instance().compile("/WMS_Capabilities/Capability/Layer/Layer/Layer/Name", Filters.element());
+     XPathExpression<Element> xpath2 = XPathFactory.instance().compile("//wms:Capability/wms:Layer/wms:Layer/wms:Layer/wms:Name", Filters.element(), null, NS_WMS);
      Element emt = xpath2.evaluateFirst(doc);
-     assertEquals("Relative_humidity", emt.getTextTrim());
+     assertEquals("sst", emt.getTextTrim());
    }
 
+  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=sst")
+  public void testDescribeCoverage() throws IOException {
+    assertOk(response);
+  }
 
-  //@Test
+  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&REQUEST=GetCoverage&COVERAGE=sst&CRS=EPSG%3a4326&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
+  public void testGetCoverage() throws IOException {
+    assertOk(response);
+  }
+
+
+  /* @Test
   public void testNAM() throws IOException {
     String dataset = server+"testAll/namExtract/20060925_0600.nc";
     showGetCapabilities(dataset);
@@ -168,7 +176,7 @@ public class TestWmsServer {
 
     System.out.println("****************\n");
     //showRead(url);
-  }
+  } */
 
 
 

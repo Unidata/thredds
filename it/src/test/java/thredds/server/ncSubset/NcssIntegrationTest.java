@@ -49,14 +49,8 @@ public class NcssIntegrationTest {
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
-    XPath xPath = XPath.newInstance("/grid/point/data[@name='Temperature_isobaric']");
-    assertEquals(1, xPath.selectNodes(doc).size());
-
     XPathExpression<Element> xpath = XPathFactory.instance().compile("/grid/point/data[@name='Temperature_isobaric']", Filters.element());
     List<Element> elements = xpath.evaluate(doc);
-    for (Element emt : elements) {
-        System.out.println("XPath has result: " + emt.getName());
-    }
     assertEquals(1, elements.size());
   }
 

@@ -51,6 +51,8 @@ import ucar.unidata.util.StringUtil2;
 public class TestDODScompareWithFiles {
   static boolean showCompare = false, showEach = false, showStringValues = false;
   String contentRoot;
+  int fail = 0;
+  int success = 0;
 
   @Before
   public void setup() {
@@ -83,6 +85,9 @@ public class TestDODScompareWithFiles {
     doOne("image/gini/n0r_20041013_1852"); //
     doOne("ldm/grib/AVN_H.wmo"); //
     doOne("AStest/wam/Atl/EPPE_WAM_Atl_200202281500.nc"); // */
+
+    System.out.printf("success = %d fail = %d%n", success, fail);
+    assert fail == 0 : "failed="+fail;
   }
 
   String path = "dodsC/scanCdmUnitTests/";
@@ -95,9 +100,9 @@ public class TestDODScompareWithFiles {
     System.out.println("---------------Reading directory " + dirName);
     File allDir = new File(dirName);
     File[] allFiles = allDir.listFiles();
+    if (allFiles == null) return;
 
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
+    for (File f : allFiles) {
       if (f.isDirectory()) continue;
 
       String name = f.getAbsolutePath();
@@ -106,10 +111,9 @@ public class TestDODScompareWithFiles {
       doOne(name);
     }
 
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
+    for (File f : allFiles) {
       if (f.isDirectory())
-        readAllDir(allFiles[i].getAbsolutePath(), suffix);
+        readAllDir(f.getAbsolutePath(), suffix);
     }
 
   }
@@ -135,6 +139,9 @@ public class TestDODScompareWithFiles {
       boolean ok = mind.compare(ncfile, ncremote, new DodsObjFilter(), false, false, false);
       if (!ok) {
         System.out.printf(" NOT OK%n%s%n", f);
+        fail++;
+      } else {
+        success++;
       }
 
     } finally {
