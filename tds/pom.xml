@@ -343,8 +343,7 @@
           <skip>${skipTests}</skip>
           <testFailureIgnore>true</testFailureIgnore>
           <excludes>
-            <exclude>/thredds/httpunit/*</exclude>
-            <exclude>/thredds/tds/ethan/*</exclude>
+            <exclude>/thredds/tds/**</exclude>
           </excludes>
           <!-- includes>
             <include>thredds/server/catalogservice/**</include>

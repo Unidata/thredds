@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
-import thredds.mock.params.PathInfoParams;
+import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.controller.AbstractFeatureDatasetController;
 import thredds.servlet.DataRootHandler;
@@ -20,7 +20,7 @@ public class DataRootHandlerTest {
 
   @SpringJUnit4ParameterizedClassRunner.Parameters
  	public static List<String[]> getTestParameters(){
- 		return PathInfoParams.getPathInfoAsListOfArrays();
+ 		return GridPathParams.getPathInfoAsListOfArrays();
  	}
   private String pathInfo;
 

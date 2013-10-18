@@ -95,7 +95,7 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
     * @throws ParseException
     */
    @RequestMapping("**")
-   void handleRequest(HttpServletRequest req, HttpServletResponse res,
+   public void handleRequest(HttpServletRequest req, HttpServletResponse res,
                         @Valid NcssParamsBean params,
                         BindingResult validationResult) throws IOException, NcssException, ParseException, InvalidRangeException {
 

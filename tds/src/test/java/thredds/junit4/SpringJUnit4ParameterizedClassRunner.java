@@ -83,6 +83,8 @@ import org.springframework.util.ReflectionUtils;
  * two-argument constructor and the data values in the
  * <code>&#064;Parameters</code> method.
  * </p>
+ *
+ * @see "https://jira.springsource.org/secure/attachment/19038/SpringJUnit4ParameterizedClassRunner.java"
  */
 public class SpringJUnit4ParameterizedClassRunner extends Suite {
 	/**
@@ -110,7 +112,7 @@ public class SpringJUnit4ParameterizedClassRunner extends Suite {
 		 * {@link TestContextManager} to provide Spring testing functionality to
 		 * standard JUnit tests.
 		 * 
-		 * @param clazz the test class to be run
+		 * @param type the test class to be run
 		 * @see #createTestContextManager(Class)
 		 */
 		TestClassRunnerForParameters(Class<?> type,

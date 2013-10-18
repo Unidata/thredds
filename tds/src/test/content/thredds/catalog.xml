@@ -34,11 +34,11 @@
   <dataset name="Test sst" ID="TESTsst" serviceName="all" urlPath="cdmUnitTest/conventions/coards/sst.mnmean.nc" dataType="Grid"/>
 
   <dataset name="Test Hyrax" ID="Hyrax2TDS" serviceName="all" urlPath="Hyrax2TDS/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf" dataType="Grid">
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="http://eosdap.hdfgroup.uiuc.edu:8080/opendap/data/NASAFILES/hdf4/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf" />
+    <ncml:netcdf xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="http://eosdap.hdfgroup.uiuc.edu:8080/opendap/data/NASAFILES/hdf4/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf" />
   </dataset>
 
 
-  <datasetScan name="Test Scan Local" ID="testScanLocal" path="scanLocal" location="content/testdata/">
+  <datasetScan name="Test Scan Local (no ID)" path="scanLocal" location="content/testdata/">
      <metadata inherited="true">
        <serviceName>all</serviceName>
      </metadata>
@@ -48,7 +48,7 @@
    </datasetScan>
 
   <!-- a scan on the entire /upc/share/cdmUnitTest directory; not all services will make sense -->
-  <datasetScan name="Test scan cdmUnitTest" ID="scanCdmUnitTests" path="scanCdmUnitTests" location="${cdmUnitTest}/">
+  <datasetScan name="Test scan cdmUnitTest (ID)" ID="scanCdmUnitTests" path="scanCdmUnitTests" location="${cdmUnitTest}/">
     <metadata inherited="true">
       <serviceName>all</serviceName>
     </metadata>

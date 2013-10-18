@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
-import thredds.mock.params.PathInfoParams;
+import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
@@ -28,7 +28,7 @@ public class DatasetHandlerAdapterTest {
 	@Parameters
 	public static List<String[]> getTestParameters(){
 		
-		return PathInfoParams.getPathInfoAsListOfArrays();
+		return GridPathParams.getPathInfoAsListOfArrays();
  
 	}
 	
