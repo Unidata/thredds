@@ -18,46 +18,36 @@ import java.text.ParseException;
 import java.util.List;
 
 /**
- * Describe
+ * Does the actual response to an ncss request for "discrete sampling geometry" feature type datasets
  *
  * @author caron
  * @since 10/3/13
  */
-public class PointResponder implements NcssResponder {
+public class DsgResponder implements NcssResponder {
 	static private final Logger log = LoggerFactory.getLogger(NcssResponder.class);
 
-  public static PointResponder factory(FeatureDataset fd, NcssParamsBean queryParams, DiskCache2 diskCache, SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException{
+  public static DsgResponder factory(FeatureDataset fd, NcssParamsBean queryParams, DiskCache2 diskCache, SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException{
  		FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
  		List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
     PointFeatureCollection sfc = (PointFeatureCollection) coll.get(0);
     PointWriter writer = PointWriter.factory((FeatureDatasetPoint) fd, sfc, queryParams, diskCache, out, format);
 
- 		return new PointResponder(diskCache, format, out, writer);
+ 		return new DsgResponder(diskCache, format, out, writer);
  	}
 
 	//private DiskCache2 diskCache = null;
-	//private SupportedFormat format;
+	private SupportedFormat format;
 	//private OutputStream out;
 
 	private PointWriter writer;
 
-	private PointResponder(DiskCache2 diskCache, SupportedFormat format, OutputStream out, PointWriter writer) {
+	private DsgResponder(DiskCache2 diskCache, SupportedFormat format, OutputStream out, PointWriter writer) {
 		//this.diskCache = diskCache;
-		//this.format = format;
+		this.format = format;
 		//this.out = out;
 		this.writer = writer;
 	}
 
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * thredds.server.ncSubset.NCSSPointDataStream#pointDataStream(javax.servlet
-	 * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-	 * ucar.nc2.constants.FeatureType, java.lang.String,
-	 * thredds.server.ncSubset.params.ParamsBean)
-	 */
 	@Override
 	public void respond(HttpServletResponse res, FeatureDataset fd, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
 			throws IOException, ParseException, InvalidRangeException, NcssException {
@@ -66,14 +56,6 @@ public class PointResponder implements NcssResponder {
 	}
 
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * thredds.server.ncSubset.NCSSPointDataStream#getResponseHeaders(ucar.nc2
-	 * .ft.FeatureDataset, thredds.server.ncSubset.format.SupportedFormat,
-	 * java.lang.String)
-	 */
 	@Override
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
 		return writer.getHttpHeaders(fd, format, datasetPath);

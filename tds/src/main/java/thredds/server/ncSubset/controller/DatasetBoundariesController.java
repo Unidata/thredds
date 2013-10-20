@@ -118,6 +118,7 @@ public class DatasetBoundariesController extends AbstractFeatureDatasetControlle
     } else {
       sf = operation.getSupportedFormat(params.getAccept());
       if (sf == null) {
+        operation.getSupportedFormat(params.getAccept());
         throw new UnsupportedResponseFormatException("Requested format: " + params.getAccept() + " is not supported for " + operation.getName().toLowerCase());
       }
     }

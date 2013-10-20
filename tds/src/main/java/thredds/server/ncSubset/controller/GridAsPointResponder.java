@@ -48,10 +48,8 @@ import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
-import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
-import thredds.server.ncSubset.format.SupportedOperation;
 import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.view.gridaspoint.PointDataWriter;
 import thredds.server.ncSubset.view.gridaspoint.PointDataWriterFactory;
@@ -84,12 +82,12 @@ public class GridAsPointResponder extends GridDatasetResponder implements NcssRe
 	private DiskCache2 diskCache = null; 
 	private SupportedFormat format;
 	
-  private final PointDataWriter pdw;
+  private final PointDataWriter writer;
 
 	private GridAsPointResponder(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
 		this.diskCache = diskCache;
 		this.format = format;
-    pdw = PointDataWriterFactory.factory(format, out, diskCache);
+    writer = PointDataWriterFactory.factory(format, out, diskCache);
 	}
 
 	/* (non-Javadoc)
@@ -122,9 +120,9 @@ public class GridAsPointResponder extends GridDatasetResponder implements NcssRe
 
     Double vertCoord = queryParams.getVertCoord();
 
- 		if (pdw.header(groupVars, gridDataset, wantedDates, getTimeDimAtts(gridDataset) , point, vertCoord)) {
- 			boolean allPointsRead = pdw.write(groupVars, gridDataset, wantedDates, point, vertCoord);
- 			allDone = pdw.trailer() && allPointsRead;
+ 		if (writer.header(groupVars, gridDataset, wantedDates, getTimeDimAtts(gridDataset) , point, vertCoord)) {
+ 			boolean allPointsRead = writer.write(groupVars, gridDataset, wantedDates, point, vertCoord);
+ 			allDone = writer.trailer() && allPointsRead;
  		}
  		// return allDone;  LOOK
  	}
@@ -176,25 +174,6 @@ public class GridAsPointResponder extends GridDatasetResponder implements NcssRe
  	}
 
 
-	protected SupportedFormat getSupportedFormat(NcssParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException{
-		
-		//Cheking request format...
-		SupportedFormat sf;		
-		if(params.getAccept() == null){
-			//setting the default format
-			sf = operation.getDefaultFormat();
-			params.setAccept(sf.getFormatName());
-		}else{		
-			sf = operation.getSupportedFormat(params.getAccept());
-			if( sf == null ){			
-				throw new UnsupportedResponseFormatException("Requested format: "+params.getAccept()+" is not supported for "+operation.getName().toLowerCase() );
-			}
-		}
-		
-		return sf;		
-	}
-	
-
 	private boolean isPointWithinBoundaries(GridDataset  gridDataset, LatLonPoint point, Map<String, List<String>> groupVars){	
 		//LatLonRect bbox = gds.getBoundingBox();
 		boolean isInData = true;
@@ -223,8 +202,8 @@ public class GridAsPointResponder extends GridDatasetResponder implements NcssRe
 	 */
 	@Override
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath) {
-    pdw.setHTTPHeaders((GridDataset)fd, datasetPath, format.isStream());
-    return pdw.getResponseHeaders();
+    writer.setHTTPHeaders((GridDataset) fd, datasetPath, format.isStream());
+    return writer.getResponseHeaders();
 	}
 
 

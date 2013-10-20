@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Describe
+ * superclass for DSG writers
  *
  * @author caron
  * @since 10/5/13

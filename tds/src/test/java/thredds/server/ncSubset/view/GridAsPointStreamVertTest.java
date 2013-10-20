@@ -38,49 +38,52 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-public class GridAsPointVertStreamTest {
-	
+public class GridAsPointStreamVertTest {
+
 	private PointDataStream pointDataStream;
-	private SupportedFormat supportedFormat;	
+	private SupportedFormat supportedFormat;
 	private String pathInfo;
 	private LatLonPoint point;
+	private Double verticalLevel;
 	
 	private GridDataset gridDataset;
-	//private CalendarDateRange range;
 	private List<CalendarDate> wantedDates;
 	private Map<String,List<String>> vars;
-	private Double vertCoord;	
+	private Double vertCoord;
 	
 	@Parameters
 	public static List<Object[]> getTestParameters(){
 						
 		return Arrays.asList(new Object[][]{  
-				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getGroupedVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0) },
-				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1) },
-				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2) },
+				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1), GridAsPointDataParameters.getVerticalLevels().get(1) },
 				
-				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getGroupedVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0) },
-				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1) },
-				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2)}
+				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1), GridAsPointDataParameters.getVerticalLevels().get(1) }
+
 		});				
 	}
 	
-	public GridAsPointVertStreamTest(SupportedFormat supportedFormat, Map<String, List<String>> vars, String pathInfo, LatLonPoint point){
+	public GridAsPointStreamVertTest(SupportedFormat supportedFormat, Map<String, List<String>> vars, String pathInfo, LatLonPoint point, Double verticalLevel){
+		
 		this.supportedFormat = supportedFormat;
 		this.vars = vars;
 		this.pathInfo = pathInfo;
 		this.point = point;
+		this.verticalLevel = verticalLevel;
 	}
 
 	@Before
-	public void setUp() throws IOException, OutOfBoundariesException, Exception{
+	public void setUp() throws IOException, OutOfBoundariesException, Exception {
 		
     String datasetPath = AbstractFeatureDatasetController.getDatasetPath(this.pathInfo);
 		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);
     assert gridDataset != null;
 
 		List<String> keys = new ArrayList<String>( vars.keySet());		
-		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );		
+		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );
 		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
 		pointDataStream = PointDataStream.factory(supportedFormat, new ByteArrayOutputStream(), diskCache);
 		List<CalendarDate> dates = gridAsPointDataset.getDates();
@@ -90,8 +93,21 @@ public class GridAsPointVertStreamTest {
 		int start = Math.min(randInt, randIntNext);
 		int end = Math.max(randInt, randIntNext);
 		CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));
-		wantedDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range,0);				
-	
+		
+		//CalendarDateRange range = CalendarDateRange.of( dates.get(0), dates.get(0));
+		wantedDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range,0);
+		
+		/*if(verticalLevel >= 0){
+			vertCoords = new ArrayList<Double>();
+			vertCoords.add(verticalLevel);
+		}else{
+			CoordinateAxis1D zAxis = gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
+			double[] dVertLevels=  zAxis.getCoordValues();
+			vertCoords = new ArrayList<Double>();
+			for( Double d : dVertLevels  ) vertCoords.add(d); 
+		}*/
+		
+		
 	}
 	
 	@Test
@@ -99,7 +115,6 @@ public class GridAsPointVertStreamTest {
 		
 		assertTrue( pointDataStream.stream(gridDataset, point, wantedDates, vars, vertCoord) );
 		
-	}
+	}	
 	
-
 }

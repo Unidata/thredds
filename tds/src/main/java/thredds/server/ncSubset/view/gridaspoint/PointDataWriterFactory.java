@@ -14,25 +14,25 @@ import java.io.OutputStream;
  */
 public class PointDataWriterFactory {
 
-  static public PointDataWriter factory(SupportedFormat supportedFormat, OutputStream outputStream, DiskCache2 diskCache) {
+  static public PointDataWriter factory(SupportedFormat wantFormat, OutputStream outputStream, DiskCache2 diskCache) {
 
- 		if( supportedFormat.getFormatName().equals("XML") ){
+ 		if( wantFormat ==  SupportedFormat.XML_FILE || wantFormat ==  SupportedFormat.XML_STREAM){
  		  return XMLPointDataWriter.factory(outputStream);
  		}
 
- 		if( supportedFormat.getFormatName().equals("NETCDF3") ){
+    if( wantFormat ==  SupportedFormat.NETCDF3){
       return NetCDFPointDataWriter.factory(NetcdfFileWriter.Version.netcdf3, outputStream, diskCache);
  		}
 
- 		if( supportedFormat.getFormatName().equals("NETCDF4") ){
+    if( wantFormat ==  SupportedFormat.NETCDF4){
       return NetCDFPointDataWriter.factory(NetcdfFileWriter.Version.netcdf4, outputStream, diskCache);
  		}
 
- 		if( supportedFormat.getFormatName().equals("CSV") ){
+    if( wantFormat ==  SupportedFormat.CSV_FILE ||  wantFormat ==  SupportedFormat.CSV_STREAM){
       return CSVPointDataWriter.factory(outputStream);
  		}
 
- 		return null;
+ 		throw new IllegalStateException("PointDataWriter does not support "+ wantFormat);
 
  	}
 }

@@ -2,7 +2,6 @@ package thredds.server.ncSubset.view.dsg;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import thredds.server.cdmremote.params.CdmrfQueryBean;
 import thredds.server.ncSubset.controller.FeatureDatasetController;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
@@ -29,7 +28,6 @@ import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Format;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -132,20 +130,20 @@ public class PointWriter extends AbstractWriter {
      switch (format) {
        case XML_STREAM:
        case XML_FILE:
-         w = new WriterXML(new PrintWriter(out), format.isStream());
+         w = new WriterXML(new PrintWriter(out), format);
          break;
 
        case CSV_STREAM:
        case CSV_FILE:
-         w = new WriterCSV(new PrintWriter(out), format.isStream());
+         w = new WriterCSV(new PrintWriter(out), format);
          break;
 
        case NETCDF3:
-         w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf3, out);
+         w = new WriterNetcdf(out, format);
          break;
 
        case NETCDF4:
-         w = new WriterNetcdf(NetcdfFileWriter.Version.netcdf4, out);
+         w = new WriterNetcdf(out, format);
          break;
 
        default:
@@ -170,6 +168,7 @@ public class PointWriter extends AbstractWriter {
     Limit counter = new Limit();
     //counter.limit = 150;
 
+    pfc.resetIteration();
     Action act = writer.getAction();
     writer.header();
     scan(pfc, wantRange, null, act, counter);
@@ -279,13 +278,15 @@ public class PointWriter extends AbstractWriter {
 
     abstract HttpHeaders getHttpHeaders(String pathInfo);
 
+    SupportedFormat wantFormat;
     boolean isStream;
     java.io.PrintWriter writer;
     int count = 0;
 
-    Writer(java.io.PrintWriter writer, boolean isStream) {
+    Writer(java.io.PrintWriter writer, SupportedFormat wantFormat) {
       this.writer = writer; // LOOK what about buffering?
-      this.isStream = isStream;
+      this.wantFormat = wantFormat;
+      this.isStream = wantFormat.isStream();
     }
   }
 
@@ -296,12 +297,12 @@ public class PointWriter extends AbstractWriter {
     final NetcdfFileWriter.Version version;
     final OutputStream out;
 
-    WriterNetcdf(NetcdfFileWriter.Version version, OutputStream out) throws IOException {
-      super(null, false);
-      this.version = version;
+    WriterNetcdf(OutputStream out, SupportedFormat wantFormat) throws IOException {
+      super(null, wantFormat);
+      this.version = (wantFormat == SupportedFormat.NETCDF3) ? NetcdfFileWriter.Version.netcdf3 : NetcdfFileWriter.Version.netcdf4;
       this.out = out;
 
-      netcdfResult = diskCache.createUniqueFile("CdmrFeature", ".nc");
+      netcdfResult = diskCache.createUniqueFile("ncssTemp", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
       atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS Feature Collection " + fd.getLocation() ));
       cfWriter = new WriterCFPointCollection(null, netcdfResult.getAbsolutePath(), atts );
@@ -313,12 +314,7 @@ public class PointWriter extends AbstractWriter {
       //String pathInfo = fd.getTitle();
       String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
       String url = NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getServletCachePath() + "/" + fileName;
-      if (version == NetcdfFileWriter.Version.netcdf3)
-        httpHeaders.set("Content-Type", SupportedFormat.NETCDF3.getResponseContentType());
-
-      if (version == NetcdfFileWriter.Version.netcdf4)
-        httpHeaders.set("Content-Type", SupportedFormat.NETCDF4.getResponseContentType());
-
+      httpHeaders.set("Content-Type", wantFormat.getResponseContentType());
       httpHeaders.set("Content-Location", url);
       httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
@@ -329,6 +325,9 @@ public class PointWriter extends AbstractWriter {
     }
 
     public void trailer() {
+      if (!headerWritten)
+        throw new IllegalStateException("no data was written");
+
       try {
         cfWriter.finish();
       } catch (IOException e) {
@@ -358,8 +357,8 @@ public class PointWriter extends AbstractWriter {
   class WriterNcstream extends Writer {
     OutputStream out;
 
-    WriterNcstream(OutputStream os, boolean isStream) throws IOException {
-      super(null, isStream);
+    WriterNcstream(OutputStream os, SupportedFormat wantFormat) throws IOException {
+      super(null, wantFormat);
       out = os;
     }
 
@@ -417,8 +416,8 @@ public class PointWriter extends AbstractWriter {
 
   class WriterRaw extends Writer {
 
-    WriterRaw(final java.io.PrintWriter writer, boolean isStream) {
-      super(writer, isStream);
+    WriterRaw(final java.io.PrintWriter writer, SupportedFormat wantFormat) {
+      super(writer, wantFormat);
     }
 
     public HttpHeaders getHttpHeaders(String pathInfo) {
@@ -448,8 +447,8 @@ public class PointWriter extends AbstractWriter {
   class WriterXML extends Writer {
     XMLStreamWriter staxWriter;
 
-    WriterXML(final java.io.PrintWriter writer, boolean isStream) {
-      super(writer, isStream);
+    WriterXML(final java.io.PrintWriter writer, SupportedFormat wantFormat) {
+      super(writer, wantFormat);
       XMLOutputFactory f = XMLOutputFactory.newInstance();
       try {
         staxWriter = f.createXMLStreamWriter(writer);
@@ -466,7 +465,7 @@ public class PointWriter extends AbstractWriter {
         httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
       }
 
-      httpHeaders.setContentType(MediaType.APPLICATION_XML);
+      httpHeaders.set("Content-Type", wantFormat.getResponseContentType());
       return httpHeaders;
     }
 
@@ -544,8 +543,8 @@ public class PointWriter extends AbstractWriter {
 
   class WriterCSV extends Writer {
 
-    WriterCSV(final java.io.PrintWriter writer, boolean isStream) {
-      super(writer, isStream);
+    WriterCSV(java.io.PrintWriter writer, SupportedFormat wantFormat) {
+      super(writer, wantFormat);
     }
 
     HttpHeaders getHttpHeaders(String pathInfo) {
@@ -556,7 +555,7 @@ public class PointWriter extends AbstractWriter {
         httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
       }
 
-      httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+      httpHeaders.set("Content-Type", wantFormat.getResponseContentType());
       return httpHeaders;
     }
 

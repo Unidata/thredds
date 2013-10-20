@@ -74,7 +74,7 @@ public class TestPointFCsubsetting {
 	private WebApplicationContext wac;
 
 	private String dataset =  "/ncss/testBuoyFeatureCollection/Surface_Buoy_Point_Data_fc.cdmr";
-	private String req =  "?req=point&var=ICE&var=PRECIP_amt&var=PRECIP_amt24&var=T&north=40&west=-170&east=-100&south=-40&time_start=2013-08-04T00:00:00Z&time_end=2013-08-07T00:00:00Z&accept=";
+	private String req =  "?req=point&var=ICE&var=PRECIP_amt&var=PRECIP_amt24&var=T&north=40&west=-170&east=-100&south=-40&time_start=2013-08-04T00:00:00Z&time_end=2013-08-05T00:00:00Z&accept=";
 	private MockMvc mockMvc;
 
   @SpringJUnit4ParameterizedClassRunner.Parameters
@@ -109,63 +109,13 @@ public class TestPointFCsubsetting {
             .andReturn();
 
     MockHttpServletResponse response = result.getResponse();
-    System.out.printf("format=%s status = %d type=%s%n", format, response.getStatus(), response.getContentType());
+    System.out.printf("getSubsettedData format=%s status = %d type=%s%n", format, response.getStatus(), response.getContentType());
     if (response.getStatus() == 200) {
       assertTrue(format.isAlias(response.getContentType()));
     } else {
       System.out.printf(" return = %s%n", response.getContentAsString());
     }
   }
-
-  @Test
-  public void testInvalidDateRangeOnStationDataset() throws Exception{
- 		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
- 				.param("accept", "netcdf")
- 				.param("var", "air_temperature", "dew_point_temperature")
- 				.param("subset", "bb")
- 				.param("north", "43.0")
- 				.param("south", "38.0")
- 				.param("west", "-107.0")
- 				.param("east", "-103.0")
- 				.param("time_start","2013-08-25T06:00:00Z")
- 				.param("time_end","2013-08-26T06:00:00Z");
-
-    org.springframework.test.web.servlet.MvcResult result = this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().is(400))
-            .andReturn();
-		System.out.printf("%s%n", result.getResponse().getContentAsString());
- 	}
-
-  public void getSubsetOnStationDataset() throws Exception{
- 		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
- 				.param("accept", "netcdf")
- 				.param("var", "air_temperature", "dew_point_temperature")
- 				.param("subset", "bb")
- 				.param("north", "43.0")
- 				.param("south", "38.0")
- 				.param("west", "-107.0")
- 				.param("east", "-103.0")
- 				.param("time_start","2006-03-25T00:00:00Z")
- 				.param("time_end","2006-03-28T00:00:00Z");
-
- 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
- 			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() ));
- 	}
-
-	public void getAllStnsOnStationDataset() throws Exception{
-		RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
-				.param("accept", "netcdf")
-				.param("subset", "stns")
-				.param("stns", "all")
-				.param("var", "air_temperature", "dew_point_temperature")
-        .param("time_start","2006-03-25T00:00:00Z")
-        .param("time_end","2006-03-26T00:00:00Z");
-
-
-		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() ));
-
-	}
-
 
 }
 

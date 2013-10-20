@@ -623,6 +623,9 @@ public class StationWriter extends AbstractWriter {
     }
 
     void trailer() throws IOException {
+      if (!headerWritten)
+        throw new IllegalStateException("no data was written");
+
       cfWriter.finish();
       //Copy the file in to the OutputStream
       try {

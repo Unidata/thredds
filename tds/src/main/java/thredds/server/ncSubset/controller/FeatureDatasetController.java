@@ -197,7 +197,7 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
     }
 
     if (ft == FeatureType.POINT) {
-      return PointResponder.factory(fd, queryParams, diskCache, format, out);
+      return DsgResponder.factory(fd, queryParams, diskCache, format, out);
     }
 
     return null;
@@ -299,8 +299,8 @@ public class FeatureDatasetController extends AbstractFeatureDatasetController {
   private void setResponseHeaders(HttpServletResponse response, HttpHeaders httpHeaders) {
     Set<String> keySet = httpHeaders.keySet();
     for (String key : keySet) {
-      if (httpHeaders.containsKey(key)) {
-        response.setHeader(key, httpHeaders.get(key).get(0));
+      if (httpHeaders.containsKey(key)) { // LOOK why test again?
+        response.setHeader(key, httpHeaders.get(key).get(0));  // LOOK why only first one ?
       }
     }
   }

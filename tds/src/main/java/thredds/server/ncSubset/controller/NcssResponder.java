@@ -51,28 +51,8 @@ import ucar.nc2.ft.FeatureDataset;
  */
 public interface NcssResponder {
 
-	/**
-	 * 
-	 * Handles Point Data Request 
-	 * 
-	 * @param res
-	 * @param ft
-	 * @param requestPathInfo
-	 * @param queryParams
-	 * @param format
-	 * @throws IOException
-	 * @throws ParseException
-	 * @throws InvalidRangeException
-	 * @throws NcssException
-	 */
-	public void respond(HttpServletResponse res, FeatureDataset ft, String requestPathInfo, NcssParamsBean queryParams,
-                      SupportedFormat format) throws IOException, ParseException, InvalidRangeException, NcssException;
-	
+	public void respond(HttpServletResponse res, FeatureDataset ft, String requestPathInfo, NcssParamsBean queryParams, SupportedFormat format)
+          throws IOException, ParseException, InvalidRangeException, NcssException;
 
-	/**
-	 * @param fd
-	 * @param format
-	 * @param datasetPath
-	 */
 	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath);
 }

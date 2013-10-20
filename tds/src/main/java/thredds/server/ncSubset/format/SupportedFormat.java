@@ -40,10 +40,10 @@ import java.util.List;
 public enum SupportedFormat {
 	
 	CSV_STREAM("csv", true, "text/plain", "csv"  ),
-	CSV_FILE("csv_(file)", false,  "text/csv"  ),
+	CSV_FILE("csv_file", false,  "text/csv", "csv_file"  ),
 	
 	XML_STREAM("xml", true, "application/xml", "xml"),
-	XML_FILE("xml_(file)", false, "text/xml"),
+	XML_FILE("xml_file", false, "text/xml", "xml_file"),
 	
 	NETCDF3("netcdf", false,  "application/x-netcdf", "netcdf"),
 	NETCDF4("netcdf4", false,  "application/x-netcdf4", "netcdf4"),

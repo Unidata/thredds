@@ -63,78 +63,59 @@ public class FeatureDatasetTypeTest {
 	
 	@Test
 	public void getFDForSingleFileGridDataset() throws IOException{
-		
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		
 		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc");
     assertNotNull(fd);
-
 		assertEquals(FeatureType.GRID, fd.getFeatureType());
-		
 	}
 			
 	@Test
 	public void getFDForSingleFileStationDataset() throws IOException{
-		
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		
 		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc");
 		assertNotNull(fd);
 		assertEquals(FeatureType.STATION, fd.getFeatureType());
-		
-	}	
+	}
 	
 	
 	@Test
 	public void getFDForDatasetScanGridDataset() throws IOException{
-		
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testGridScan/GFS_CONUS_80km_20120227_0000.grib1");
     assertNotNull(fd);
-
 		assertEquals(FeatureType.GRID, fd.getFeatureType());
-		
 	}
 	
 	@Test
 	public void getFDForDatasetScanStationDataset() throws IOException{
-		
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		
 		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testStationScan/Surface_METAR_20130826_0000.nc");
     assertNotNull(fd);
-
 		assertEquals(FeatureType.STATION, fd.getFeatureType());
-		
 	}
 	
 	@Test
 	public void getFDForFeatureCollectionGridDataset() throws IOException{
-		
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		
+		                                                                     //testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd
 		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd");
     assertNotNull(fd);
-
 		assertEquals(FeatureType.GRID, fd.getFeatureType());
-		
 	}
 	
 	@Test
 	public void getFDForFeatureCollectionStationDataset() throws IOException{
-		
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		
 		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testStationFeatureCollection/Metar_Station_Data_fc.cdmr");
     assertNotNull(fd);
-
 		assertEquals(FeatureType.STATION, fd.getFeatureType());
-		
-	}	
+	}
 }

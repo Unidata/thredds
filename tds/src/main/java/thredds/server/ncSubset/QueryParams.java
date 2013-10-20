@@ -53,7 +53,7 @@ import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateType;
 
 /**
- * Query parameter parsing for Netcdf Subset Service
+ * Query parameter parsing for Radar Server
  *
  * @author caron
  * @deprecated use thredds.server.ncSubset.view.*
