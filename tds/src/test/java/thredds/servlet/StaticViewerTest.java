@@ -6,6 +6,7 @@ import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvDatasetImpl;
+import thredds.server.viewer.dataservice.ViewerServiceImpl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,7 +43,7 @@ public class StaticViewerTest
     request.setPathInfo( catPathNoExtension + ".html" );
     request.setParameter( "dataset", "ds1" );
 
-    ViewerLinkProvider sv = new ViewServlet.StaticView();
+    ViewerLinkProvider sv = ViewerServiceImpl.getStaticView();
     List<ViewerLinkProvider.ViewerLink> viewerLinks = sv.getViewerLinks( (InvDatasetImpl) ds1, request );
     assertNotNull( viewerLinks);
     assertEquals( 1, viewerLinks.size());
@@ -74,7 +75,7 @@ public class StaticViewerTest
     request.setPathInfo( catPathNoExtension + ".html" );
     request.setParameter( "dataset", "ds1" );
 
-    ViewerLinkProvider sv = new ViewServlet.StaticView();
+    ViewerLinkProvider sv = ViewerServiceImpl.getStaticView();
     List<ViewerLinkProvider.ViewerLink> viewerLinks = sv.getViewerLinks( (InvDatasetImpl) ds1, request );
     assertNotNull( viewerLinks);
     assertEquals( 1, viewerLinks.size());
@@ -106,7 +107,7 @@ public class StaticViewerTest
     request.setPathInfo( catPathNoExtension + ".html" );
     request.setParameter( "dataset", "ds1" );
 
-    ViewerLinkProvider sv = new ViewServlet.StaticView();
+    ViewerLinkProvider sv = ViewerServiceImpl.getStaticView();
     List<ViewerLinkProvider.ViewerLink> viewerLinks = sv.getViewerLinks( (InvDatasetImpl) ds1, request );
     assertNotNull( viewerLinks);
     assertEquals( 1, viewerLinks.size());

@@ -45,8 +45,7 @@ import ucar.nc2.constants.FeatureType;
  * instructions <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/Viewers.html">here</a>.
  * @author Jon
  */
-public class Godiva2Viewer implements Viewer
-{
+public class Godiva2Viewer implements Viewer {
 
     /**
      * Returns true if this is a gridded dataset that is accessible via WMS.
@@ -64,8 +63,7 @@ public class Godiva2Viewer implements Viewer
       InvAccess access = ds.getAccess(ServiceType.WMS);
       URI dataURI = access.getStandardUri();
       try {
-        URI base = new URI( req.getRequestURL().toString());
-         dataURI = base.resolve( dataURI);
+        URI base = new URI( req.getRequestURL().toString()); dataURI = base.resolve( dataURI);
       } catch (URISyntaxException e) {
         return "Error generating viewer link";
       }

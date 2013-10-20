@@ -71,10 +71,10 @@ public final class ThreddsConfig {
       log.info( "ThreddsConfig: adding contentRoot [" + location + "]." );
     }
 
-    // viewer plug-in
-    for (String className : reader.getRootList("Viewer"))  {
-      ViewServlet.registerViewer(className);
-    }
+    // viewer plug-in LOOK replace!!
+    //for (String className : reader.getRootList("Viewer"))  {
+    //  ViewServlet.registerViewer(className);
+    //}
 
     // datasetSource plug-in
     for (String className : reader.getRootList("datasetSource"))  {

@@ -80,7 +80,7 @@ public class GridAsPointStreamVertTest {
 		
     String datasetPath = AbstractFeatureDatasetController.getDatasetPath(this.pathInfo);
 		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);
-    assert gridDataset != null;
+    assert gridDataset != null : datasetPath;
 
 		List<String> keys = new ArrayList<String>( vars.keySet());		
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );

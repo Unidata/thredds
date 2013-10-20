@@ -29,8 +29,11 @@ import ucar.unidata.util.StringUtil2;
 
 @Service
 public class ViewerServiceImpl implements ViewerService {
-
 	private static Logger log = LoggerFactory.getLogger(ViewerService.class);
+
+  public static ViewerLinkProvider getStaticView() {
+    return new StaticView();
+  }
 
 	private List<Viewer> viewers = new ArrayList<Viewer>();
 	private HashMap<String, String> templates = new HashMap<String, String>();
@@ -128,16 +131,13 @@ public class ViewerServiceImpl implements ViewerService {
 			return ((id != null) && ds.hasAccess());
 		}
 
-		public String getViewerLinkHtml(InvDatasetImpl ds,
-				HttpServletRequest req) {
+		public String getViewerLinkHtml(InvDatasetImpl ds, HttpServletRequest req) {
 			String base = ds.getParentCatalog().getUriString();
 			if (base.endsWith(".html"))
 				base = base.substring(0, base.length() - 5) + ".xml";
 			Formatter query = new Formatter();
 			query.format("<a href='%s/view/ToolsUI.jnlp?", req.getContextPath());
-			query.format(
-					"catalog=%s&amp;dataset=%s'>NetCDF-Java ToolsUI (webstart)</a>",
-					base, ds.getID());
+			query.format("catalog=%s&amp;dataset=%s'>NetCDF-Java ToolsUI (webstart)</a>", base, ds.getID());
 			return query.toString();
 		}
 	}
@@ -156,8 +156,7 @@ public class ViewerServiceImpl implements ViewerService {
 			return true;
 		}
 
-		public String getViewerLinkHtml(InvDatasetImpl ds,
-				HttpServletRequest req) {
+		public String getViewerLinkHtml(InvDatasetImpl ds, HttpServletRequest req) {
 			InvAccess access = getOpendapAccess(ds);
 
 			URI dataURI = access.getStandardUri();
@@ -184,7 +183,7 @@ public class ViewerServiceImpl implements ViewerService {
 		}
 	}
 
-	//StaticView
+	// LOOK whats this for ??
 	private static class StaticView implements ViewerLinkProvider {
 
 		private final String propertyNamePrefix = "viewer";
@@ -193,34 +192,29 @@ public class ViewerServiceImpl implements ViewerService {
 			return hasViewerProperties(ds);
 		}
 
-		public String getViewerLinkHtml(InvDatasetImpl ds,
-				HttpServletRequest req) {
+		public String getViewerLinkHtml(InvDatasetImpl ds, HttpServletRequest req) {
 			List<ViewerLink> viewerLinks = getViewerLinks(ds, req);
 			if (viewerLinks.isEmpty())
 				return null;
 			ViewerLink firstLink = viewerLinks.get(0);
-			return "<a href='" + firstLink.getUrl() + "'>"
-					+ firstLink.getTitle() + "</a>";
+			return "<a href='" + firstLink.getUrl() + "'>" + firstLink.getTitle() + "</a>";
 		}
 
 		@Override
-		public List<ViewerLink> getViewerLinks(InvDatasetImpl ds,
-				HttpServletRequest req) {
+		public List<ViewerLink> getViewerLinks(InvDatasetImpl ds, HttpServletRequest req) {
 			List<InvProperty> viewerProperties = findViewerProperties(ds);
 			if (viewerProperties.isEmpty())
 				return Collections.emptyList();
 			List<ViewerLink> result = new ArrayList<ViewerLink>();
 			for (InvProperty p : viewerProperties) {
-				ViewerLink viewerLink = parseViewerPropertyValue(p.getName(),
-						p.getValue(), ds, req);
+				ViewerLink viewerLink = parseViewerPropertyValue(p.getName(), p.getValue(), ds, req);
 				if (viewerLink != null)
 					result.add(viewerLink);
 			}
 			return result;
 		}
 
-		private ViewerLink parseViewerPropertyValue(String viewerName,
-				String viewerValue, InvDatasetImpl ds, HttpServletRequest req) {
+		private ViewerLink parseViewerPropertyValue(String viewerName, String viewerValue, InvDatasetImpl ds, HttpServletRequest req) {
 			String viewerUrl;
 			String viewerTitle;
 

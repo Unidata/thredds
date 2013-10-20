@@ -43,7 +43,6 @@ import javax.servlet.http.HttpServletRequest;
  * Then all instances of "{param}" will be replaced by subst, and
  * all instances of "{name}" will be replaced by value, etc.
  *
- * @see ViewServlet#registerViewer
  */
 public interface Viewer {
 

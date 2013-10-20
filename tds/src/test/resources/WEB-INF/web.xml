@@ -472,12 +472,6 @@
     <load-on-startup>10</load-on-startup>
   </servlet>
 
-  <!-- servlet>
-    <servlet-name>View</servlet-name>
-    <servlet-class>thredds.servlet.ViewServlet</servlet-class>
-    <load-on-startup>10</load-on-startup>
-  </servlet-->
-
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
   <!-- default servlet -->
