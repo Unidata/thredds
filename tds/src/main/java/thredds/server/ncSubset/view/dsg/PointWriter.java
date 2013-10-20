@@ -1,7 +1,6 @@
 package thredds.server.ncSubset.view.dsg;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import thredds.server.ncSubset.controller.FeatureDatasetController;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
@@ -284,7 +283,7 @@ public class PointWriter extends AbstractWriter {
     int count = 0;
 
     Writer(java.io.PrintWriter writer, SupportedFormat wantFormat) {
-      this.writer = writer; // LOOK what about buffering?
+      this.writer = writer;
       this.wantFormat = wantFormat;
       this.isStream = wantFormat.isStream();
     }
