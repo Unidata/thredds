@@ -1,6 +1,7 @@
 package thredds.server.cdmr;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -33,18 +34,18 @@ public class TestNcstreamCompareWithFiles {
 
     try {
       addFromScan(result, contentRoot +"/netcdf3/", new SuffixFileFilter(".nc"));
-      addFromScan(result, contentRoot +"/netcdf4/", new SuffixFileFilter(".nc"));
+      addFromScan(result, contentRoot + "/netcdf4/", new SuffixFileFilter(".nc"));
 
-      addFromScan(result, contentRoot +"/hdf5/",  new FileFilter() {
+      addFromScan(result, contentRoot + "/hdf5/", new FileFilter() {
         public boolean accept(File pathname) {
           return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
         }
       });
-      addFromScan(result, contentRoot +"/hdf4/",  new FileFilter() {
-         public boolean accept(File pathname) {
-           return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
-         }
-       });
+      addFromScan(result, contentRoot + "/hdf4/", new FileFilter() {
+        public boolean accept(File pathname) {
+          return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
+        }
+      });
       addFromScan(result, contentRoot + "/grib1/", new FileFilter() {
         public boolean accept(File pathname) {
           return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx");
@@ -55,8 +56,8 @@ public class TestNcstreamCompareWithFiles {
           return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx");
         }
       });
-      addFromScan(result, contentRoot +"/gini/", new SuffixFileFilter(".gini"));
-      addFromScan(result, contentRoot +"/gempak/", new SuffixFileFilter(".gem"));
+      addFromScan(result, contentRoot + "/gini/", new SuffixFileFilter(".gini"));
+      addFromScan(result, contentRoot + "/gempak/", new SuffixFileFilter(".gem"));
 
     } catch (IOException e) {
        e.printStackTrace();
@@ -103,11 +104,11 @@ public class TestNcstreamCompareWithFiles {
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
       boolean ok = mind.compare(ncfile, ncremote, new NcstreamObjFilter(), false, false, false);
       if (!ok) {
-        System.out.printf(" NOT OK%n%s%n", f);
         fail++;
       } else {
         success++;
       }
+      Assert.assertTrue(local + " != " + remote, ok);
     } finally {
       if (ncfile != null) ncfile.close();
       if (ncremote != null) ncremote.close();

@@ -134,11 +134,11 @@ public class TestDODScompareWithFiles {
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
       boolean ok = mind.compare(ncfile, ncremote, new DodsObjFilter(), showCompare, showEach, compareData);
       if (!ok) {
-        System.out.printf(" NOT OK%n%s%n", f);
         fail++;
       } else {
         success++;
       }
+      Assert.assertTrue( localPath+ " != "+dodsUrl, ok);
 
     } finally {
       if (ncfile != null) ncfile.close();
