@@ -41,6 +41,7 @@ import java.net.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
@@ -152,7 +153,7 @@ public class DLwriterServlet extends AbstractServlet {
     // validate the catalog
     StringBuilder sb = new StringBuilder();
     if (!catalog.check(sb, false)) {
-      res.setContentType("text/html");
+      res.setContentType(ContentType.html.toString());
       res.setHeader("Validate", "FAIL");
       PrintWriter pw = new PrintWriter(res.getOutputStream());
       showValidationMesssage( catURI.toString(), sb.toString(), pw);
@@ -175,7 +176,7 @@ public class DLwriterServlet extends AbstractServlet {
       writer.writeDatasetEntries(catalog, adnDir, mess);
     }
 
-    res.setContentType("text/plain");
+    res.setContentType(ContentType.html.toString());
     OutputStream out = res.getOutputStream();
     out.write(mess.toString().getBytes(CDM.utf8Charset));
     out.flush();

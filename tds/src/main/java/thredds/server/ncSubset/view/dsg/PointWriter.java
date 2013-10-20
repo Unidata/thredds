@@ -1,7 +1,7 @@
 package thredds.server.ncSubset.view.dsg;
 
 import org.springframework.http.HttpHeaders;
-import thredds.server.ncSubset.controller.FeatureDatasetController;
+import thredds.server.ncSubset.controller.NcssController;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.NcssParamsBean;
@@ -312,7 +312,7 @@ public class PointWriter extends AbstractWriter {
       HttpHeaders httpHeaders = new HttpHeaders();
       //String pathInfo = fd.getTitle();
       String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
-      String url = NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getServletCachePath() + "/" + fileName;
+      String url = NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getServletCachePath() + "/" + fileName;
       httpHeaders.set("Content-Type", wantFormat.getResponseContentType());
       httpHeaders.set("Content-Location", url);
       httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");

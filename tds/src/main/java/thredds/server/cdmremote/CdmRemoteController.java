@@ -33,6 +33,7 @@
 
 package thredds.server.cdmremote;
 
+import thredds.util.ContentType;
 import ucar.nc2.util.EscapeStrings;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
@@ -138,7 +139,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
 
         case form: // LOOK could do a ncss style form
         case cdl:
-          res.setContentType("text/plain");
+          res.setContentType(ContentType.text.toString());
           ncfile.setLocation(path); // hide where the file is stored
           String cdl = ncfile.toString();
           res.setContentLength(cdl.length());
@@ -148,12 +149,12 @@ public class CdmRemoteController extends AbstractCommandController implements La
           break;
 
         case ncml:
-          res.setContentType("application/xml");
+          res.setContentType(ContentType.xml.toString());
           ncfile.writeNcML(out, absPath);
           break;
 
         case header: {
-          res.setContentType("application/octet-stream");
+          res.setContentType(ContentType.binary.toString());
           res.setHeader("Content-Description", "ncstream");
 
           //WritableByteChannel wbc = Channels.newChannel(out);
@@ -163,7 +164,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
         }
 
         default: {
-          res.setContentType("application/octet-stream");
+          res.setContentType(ContentType.binary.toString());
           res.setHeader("Content-Description", "ncstream");
 
           size = 0;

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import thredds.server.viewer.dataservice.ViewerService;
 import thredds.servlet.ServletUtil;
+import thredds.util.ContentType;
 import ucar.unidata.util.StringUtil2;
 
 @Controller
@@ -52,12 +53,13 @@ public class ViewerController {
 	    String strResp = fillTemplate(req, template );
 	    
 	    try{
-	    	res.setContentType("application/x-java-jnlp-file");    	    	    	
+        res.setContentType(ContentType.jnlp.toString());
 	    	ServletUtil.returnString(strResp , res);
-	    }catch (Throwable t) {
-	        log.error(" jnlp="+strResp, t);
-	        if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	      }	
+
+	    } catch (Throwable t) {
+        log.error(" jnlp="+strResp, t);
+        if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      }
 	
 	}
 	

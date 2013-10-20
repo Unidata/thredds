@@ -46,6 +46,7 @@ package thredds.server.radarServer;
 
 import thredds.servlet.*;
 import thredds.catalog.*;
+import thredds.util.ContentType;
 import ucar.nc2.time.CalendarDateRange;
 
 import java.io.*;
@@ -162,7 +163,7 @@ public class RadarServer extends AbstractServlet {
       // default is xml, assume errors will be recorded by logger from this point
       if (!pathInfo.endsWith("html")) {
         pw = res.getWriter();
-        res.setContentType("text/xml; charset=iso-8859-1"); //default
+        res.setContentType(ContentType.xml.toString());
       }
       // radar  query
       if (req.getQueryString() != null) {
@@ -436,7 +437,7 @@ public class RadarServer extends AbstractServlet {
       Document html = transformer.transform(doc);
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       String infoString = fmt.outputString(html);
-      res.setContentType("text/html; charset=iso-8859-1");
+      res.setContentType(ContentType.html.toString());
       pw = res.getWriter();
       pw.println(infoString);
       pw.flush();

@@ -33,6 +33,7 @@
 package thredds.server.wcs.v1_1_0;
 
 import thredds.servlet.ServletUtil;
+import thredds.util.ContentType;
 import thredds.util.Version;
 import thredds.server.wcs.VersionHandler;
 
@@ -99,7 +100,7 @@ public class WCS_1_1_0 implements VersionHandler
                 new thredds.wcs.v1_1_0.GetCapabilities( serverURI, request.getSections(),
                                      getServiceId(), getServiceProvider(),
                                      request.getDataset() );
-        res.setContentType( "text/xml" );
+        res.setContentType(ContentType.xml.toString());
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();
@@ -111,7 +112,7 @@ public class WCS_1_1_0 implements VersionHandler
         thredds.wcs.v1_1_0.DescribeCoverage descCoverage =
                 new thredds.wcs.v1_1_0.DescribeCoverage( serverURI, request.getIdentifierList(),
                                       request.getDataset() );
-        res.setContentType( "text/xml" );
+        res.setContentType(ContentType.xml.toString());
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();
@@ -190,7 +191,7 @@ public class WCS_1_1_0 implements VersionHandler
   public void handleExceptionReport( HttpServletResponse res, thredds.wcs.v1_1_0.WcsException exception )
           throws IOException
   {
-    res.setContentType( "text/xml" ); // 1.0.0 was ("application/vnd.ogc.se_xml" );
+    res.setContentType(ContentType.xml.toString()); // 1.0.0 was ("application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
     thredds.wcs.v1_1_0.ExceptionReport exceptionReport = new thredds.wcs.v1_1_0.ExceptionReport( exception );

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
 import thredds.servlet.UsageLog;
+import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
 import ucar.unidata.util.StringUtil2;
@@ -254,7 +255,7 @@ public class CdmValidatorController extends AbstractController {
       if (wantXml) {
         infoString = info.writeXML();
         res.setContentLength(infoString.length());
-        res.setContentType("text/xml; charset=iso-8859-1");
+        res.setContentType(ContentType.xml.toString());
 
       } else {
         Document xml = info.makeDocument();
@@ -265,7 +266,7 @@ public class CdmValidatorController extends AbstractController {
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(html);
 
-        res.setContentType("text/html; charset=iso-8859-1");
+        res.setContentType(ContentType.html.toString());
       }
 
       res.setContentLength(infoString.length());

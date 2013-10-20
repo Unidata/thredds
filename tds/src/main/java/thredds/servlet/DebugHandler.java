@@ -32,6 +32,8 @@
  */
 package thredds.servlet;
 
+import thredds.util.ContentType;
+
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -51,7 +53,7 @@ public class DebugHandler {
   }
 
   static public void doDebug(HttpServlet thisServlet,  HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    response.setContentType("text/html");
+    response.setContentType(ContentType.html.toString());
     response.setHeader("Content-Description", "thredds_debug");
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();

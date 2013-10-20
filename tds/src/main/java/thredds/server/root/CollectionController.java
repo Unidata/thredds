@@ -25,6 +25,7 @@ import thredds.inventory.MFile;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.DebugHandler;
+import thredds.util.ContentType;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.util.StringUtil2;
 
@@ -124,7 +125,7 @@ public class CollectionController implements InitializingBean{ //extends Abstrac
     	path = path.substring("/admin".length(), path.length());
 
     PrintWriter pw = res.getWriter();
-    res.setContentType("text/html");
+    res.setContentType(ContentType.html.toString());
 
     // find the collection
     String collectName = req.getParameter(COLLECTION);

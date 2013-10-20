@@ -39,10 +39,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -51,10 +49,9 @@ import javax.xml.stream.XMLStreamWriter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import thredds.server.ncSubset.controller.FeatureDatasetController;
+import thredds.server.ncSubset.controller.NcssController;
 import thredds.server.ncSubset.exception.FeaturesNotFoundException;
 import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.NcssParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
@@ -79,9 +76,7 @@ import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -641,7 +636,7 @@ public class StationWriter extends AbstractWriter {
       HttpHeaders httpHeaders = new HttpHeaders();
       //String pathInfo = fd.getTitle();
       String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
-      String url = NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getServletCachePath() + "/" + fileName;
+      String url = NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getServletCachePath() + "/" + fileName;
       if (version == NetcdfFileWriter.Version.netcdf3)
         httpHeaders.set("Content-Type", SupportedFormat.NETCDF3.getResponseContentType());
 

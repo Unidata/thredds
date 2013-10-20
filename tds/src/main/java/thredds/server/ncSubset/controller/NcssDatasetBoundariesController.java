@@ -61,9 +61,9 @@ import ucar.nc2.ft.FeatureDataset;
 @Controller
 @Scope("request")
 @RequestMapping(value = "/ncss/**/datasetBoundaries.xml")
-public class DatasetBoundariesController extends AbstractFeatureDatasetController {
+public class NcssDatasetBoundariesController extends AbstractNcssController {
 
-  static private final Logger log = LoggerFactory.getLogger(DatasetBoundariesController.class);
+  static private final Logger log = LoggerFactory.getLogger(NcssDatasetBoundariesController.class);
 
   @Autowired
   FeatureDatasetService datasetService;

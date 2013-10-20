@@ -86,7 +86,7 @@ public abstract class GridDatasetResponder {
  	}
 
  	public static String buildCacheUrl(String fileName){
- 		 return NcssRequestUtils.getTdsContext().getContextPath() + FeatureDatasetController.getNCSSServletPath() + "/" + fileName;
+ 		 return NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getNCSSServletPath() + "/" + fileName;
  	}
 
 //	private GridDataset gds;

@@ -47,6 +47,7 @@ import thredds.catalog.ThreddsMetadata;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
+import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.thredds.MetadataExtractor;
@@ -103,10 +104,10 @@ public class MetadataController {
       String strResponse;
       if (wantXML) {
         strResponse = writeXML(vars);
-        res.setContentType("text/xml; charset=iso-8859-1");
+        res.setContentType(ContentType.xml.toString());
       } else {
         strResponse = writeHTML(vars);
-        res.setContentType("text/html; charset=iso-8859-1");
+        res.setContentType(ContentType.html.toString());
       }
       res.setContentLength(strResponse.length());
 

@@ -41,6 +41,7 @@ import java.io.OutputStream;
 
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
+import thredds.util.ContentType;
 
 /**
  * _more_
@@ -65,7 +66,7 @@ public class InvCatalogXmlView extends AbstractView
       throw new IllegalArgumentException( "Model must contain an InvCatalogImpl object.");
     InvCatalogImpl cat = (InvCatalogImpl) o;
 
-    res.setContentType( "application/xml" );
+    res.setContentType(ContentType.xml.toString());
     res.setCharacterEncoding( "UTF-8" );
     OutputStream os = null;
     if ( ! req.getMethod().equals( "HEAD" ) )

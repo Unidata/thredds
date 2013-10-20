@@ -71,9 +71,9 @@ import ucar.nc2.util.IO;
  */
 @Controller
 @RequestMapping("/ncss/")
-public class FeatureDatasetController extends AbstractFeatureDatasetController {
+public class NcssController extends AbstractNcssController {
 
-  static private final Logger log = LoggerFactory.getLogger(FeatureDatasetController.class);
+  static private final Logger log = LoggerFactory.getLogger(NcssController.class);
 
   @Autowired
   FeatureDatasetService datasetService;

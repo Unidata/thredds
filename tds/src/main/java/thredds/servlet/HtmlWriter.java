@@ -55,6 +55,7 @@ import thredds.catalog.ServiceType;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.TdsContext;
 import thredds.server.viewer.dataservice.ViewerService;
+import thredds.util.ContentType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -401,7 +402,7 @@ public class HtmlWriter implements InitializingBean {
     String dirHtmlString = getDirectory(path, dir);
 
     res.setContentLength(dirHtmlString.length());
-    res.setContentType("text/html; charset=UTF-8");
+    res.setContentType(ContentType.html.toString());
     PrintWriter writer = res.getWriter();
     writer.write(dirHtmlString);
     writer.flush();
@@ -552,7 +553,7 @@ public class HtmlWriter implements InitializingBean {
     String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
 
     res.setContentLength(catHtmlAsString.length());
-    res.setContentType("text/html; charset=UTF-8");
+    res.setContentType(ContentType.html.toString());
     if (!req.getMethod().equals("HEAD")) {
       PrintWriter writer = res.getWriter();
       writer.write(catHtmlAsString);
@@ -818,7 +819,7 @@ public class HtmlWriter implements InitializingBean {
     String datasetAsHtml = this.convertDatasetToHtml(catURL, dataset, request, isLocalCatalog);
 
     response.setStatus(HttpServletResponse.SC_OK);
-    response.setContentType("text/html; charset=UTF-8");
+    response.setContentType(ContentType.html.toString());
     if (!request.getMethod().equals("HEAD")) {
       PrintWriter pw = response.getWriter();
       pw.write(datasetAsHtml);
@@ -838,7 +839,7 @@ public class HtmlWriter implements InitializingBean {
     String cdmAsString = getCDM(ds);
 
     res.setContentLength(cdmAsString.length());
-    res.setContentType("text/html; charset=UTF-8");
+    res.setContentType(ContentType.html.toString());
     PrintWriter writer = res.getWriter();
 
     writer.write(cdmAsString);

@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import thredds.server.ncSubset.controller.AbstractFeatureDatasetController;
+import thredds.server.ncSubset.controller.AbstractNcssController;
 import thredds.servlet.DatasetHandler;
 import ucar.nc2.dt.GridDataset;
 
@@ -28,7 +28,7 @@ public final class DatasetHandlerAdapter {
 		
 		req.setPathInfo(pathInfo);
 		
-    String datasetPath = AbstractFeatureDatasetController.getDatasetPath(pathInfo);
+    String datasetPath = AbstractNcssController.getDatasetPath(pathInfo);
 		return DatasetHandler.openGridDataset(req, res, datasetPath);
 	}
 

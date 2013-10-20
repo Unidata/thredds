@@ -56,13 +56,13 @@ import thredds.server.ncSubset.exception.NcssException;
  * @author mhermida
  *
  */
-public class AbstractFeatureDatasetController {
+public class AbstractNcssController {
 	
 	protected static final String servletPath = "/ncss/";
 
 	protected static final String servletCachePath = "/cache/ncss";
 	
-	static private final Logger log = LoggerFactory.getLogger(AbstractFeatureDatasetController.class);
+	static private final Logger log = LoggerFactory.getLogger(AbstractNcssController.class);
 	
   protected void handleValidationErrorsResponse(HttpServletResponse response, int status, BindingResult validationResult) {
 
@@ -156,8 +156,8 @@ public class AbstractFeatureDatasetController {
   public static String getDatasetPath(String path) {
 
     // strip off /ncss/
-    if (path.startsWith(FeatureDatasetController.servletPath))
-      path = path.substring(FeatureDatasetController.servletPath.length());
+    if (path.startsWith(NcssController.servletPath))
+      path = path.substring(NcssController.servletPath.length());
 
     // strip off endings
     for (String ending : endings) {

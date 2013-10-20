@@ -34,6 +34,7 @@ package thredds.server.wcs.v1_0_0_Plus;
 
 import thredds.servlet.ServletUtil;
 import thredds.server.wcs.VersionHandler;
+import thredds.util.ContentType;
 import thredds.util.Version;
 
 import javax.servlet.http.HttpServlet;
@@ -95,7 +96,7 @@ public class WcsHandler implements VersionHandler
                                                           serverURI, req, res);
       if ( request.getOperation().equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.GetCapabilities))
       {
-        res.setContentType( "text/xml" );
+        res.setContentType(ContentType.xml.toString());
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();
@@ -104,7 +105,7 @@ public class WcsHandler implements VersionHandler
       }
       else if ( request.getOperation().equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.DescribeCoverage ) )
       {
-        res.setContentType( "text/xml" );
+        res.setContentType(ContentType.xml.toString());
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();

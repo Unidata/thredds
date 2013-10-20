@@ -41,6 +41,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import thredds.util.ContentType;
 import ucar.nc2.util.IO;
 
 /**
@@ -91,7 +92,7 @@ public class AnnotateServlet extends AbstractServlet {
       res.setStatus(HttpServletResponse.SC_OK);
       PrintWriter pw = new PrintWriter(res.getOutputStream());
 
-      res.setContentType("text/html");
+      res.setContentType(ContentType.html.toString());
       pw.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n");
       pw.println("        \"http://www.w3.org/TR/html4/loose.dtd\">\n");
       pw.println("<html>\n");

@@ -67,7 +67,7 @@ public class DatasetBoundariesTest {
 
 	@Before
 	public void setup(){
-		this.mockMvc = webAppContextSetup(this.wac).build(); 
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 	}
 	
 	@Test
@@ -94,10 +94,6 @@ public class DatasetBoundariesTest {
 		
 		this.mockMvc.perform(rb)
             .andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.JSON.getResponseContentType() ) );
-	}
-	
-	private MockMvcBuilder webAppContextSetup(WebApplicationContext wac){
-		return MockMvcBuilders.webAppContextSetup(wac);
 	}
 
 }

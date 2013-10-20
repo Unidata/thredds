@@ -40,6 +40,7 @@ import java.net.URISyntaxException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import thredds.util.ContentType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.IO;
@@ -444,7 +445,7 @@ public class ServletUtil {
 
     // Write the catalog out.
     PrintWriter out = res.getWriter();
-    res.setContentType("text/html");
+    res.setContentType(ContentType.html.toString());
     out.print(htmlResp);
     out.flush();
   }
@@ -533,15 +534,15 @@ public class ServletUtil {
     String filename = file.getPath();
     if (null == contentType) {
       if (filename.endsWith(".html"))
-        contentType = "text/html; charset=iso-8859-1";
+        contentType = ContentType.html.toString();
       else if (filename.endsWith(".xml"))
-        contentType = "text/xml; charset=iso-8859-1";
+        contentType = ContentType.xml.toString();
       else if (filename.endsWith(".txt") || (filename.endsWith(".log")))
-        contentType = CONTENT_TEXT;
+        contentType = ContentType.text.toString();
       else if (filename.indexOf(".log.") > 0)
-        contentType = CONTENT_TEXT;
+        contentType = ContentType.text.toString();
       else if (filename.endsWith(".nc"))
-        contentType = "application/x-netcdf";
+        contentType = ContentType.netcdf.toString();
       else
         contentType = servlet.getServletContext().getMimeType(filename);
 

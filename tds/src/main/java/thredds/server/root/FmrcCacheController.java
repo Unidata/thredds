@@ -46,6 +46,7 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DebugHandler;
+import thredds.util.ContentType;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -106,7 +107,7 @@ public class FmrcCacheController{
     PrintWriter pw = res.getWriter();
 
     if (path.endsWith(STATISTICS)) {
-      res.setContentType("text/plain");
+      res.setContentType(ContentType.text.toString());
       Formatter f = new Formatter();
       monitor.getCacheStatistics(f);
       String s = f.toString();
@@ -125,7 +126,7 @@ public class FmrcCacheController{
       if (null == contents)
         pw.println("<p/> Cant find filename="+fileName+" in collection = "+collectName);
       else {
-        res.setContentType("application/xml");
+        res.setContentType(ContentType.xml.toString());
         pw.println(contents);
       }
       
@@ -136,7 +137,7 @@ public class FmrcCacheController{
     if (collectName != null) {
       String ecollectName = StringUtil2.escape(collectName, "");
       String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ecollectName;
-      res.setContentType("text/html");
+      res.setContentType(ContentType.html.toString());
       pw.println("Files for collection = "+collectName+"");
 
       // allow delete

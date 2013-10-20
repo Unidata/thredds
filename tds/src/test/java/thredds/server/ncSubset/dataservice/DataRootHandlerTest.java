@@ -9,7 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.controller.AbstractFeatureDatasetController;
+import thredds.server.ncSubset.controller.AbstractNcssController;
 import thredds.servlet.DataRootHandler;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class DataRootHandlerTest {
   @Test
   public void testAllRoots() {
     System.out.printf("pathInfo=%s%n", pathInfo);
-    String datasetPath = AbstractFeatureDatasetController.getDatasetPath(this.pathInfo);
+    String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
 		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(datasetPath);
 		assertNotNull(match);
  	}

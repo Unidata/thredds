@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Assert;
 import org.junit.Test;
-import thredds.server.ncSubset.controller.AbstractFeatureDatasetController;
+import thredds.server.ncSubset.controller.AbstractNcssController;
 
 /**
  * 
@@ -53,12 +53,12 @@ public class NcssServletPathTest {
 	
 	@Test
 	public void testServletPath(){
-		Assert.assertEquals(NCSS_SERVLET_PATH, AbstractFeatureDatasetController.getNCSSServletPath());
+		Assert.assertEquals(NCSS_SERVLET_PATH, AbstractNcssController.getNCSSServletPath());
 	}
 	
 	@Test
 	public void testCachePath(){
-		assertEquals(NCSS_CACHE_PATH, AbstractFeatureDatasetController.getServletCachePath());
+		assertEquals(NCSS_CACHE_PATH, AbstractNcssController.getServletCachePath());
 	}	
 
 }

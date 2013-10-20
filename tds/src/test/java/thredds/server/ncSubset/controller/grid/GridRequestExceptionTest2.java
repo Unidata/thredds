@@ -48,7 +48,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.controller.FeatureDatasetController;
+import thredds.server.ncSubset.controller.NcssController;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
 import thredds.server.ncSubset.params.NcssParamsBean;
 
@@ -59,29 +59,29 @@ import thredds.server.ncSubset.params.NcssParamsBean;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class GridRequestExceptionTest2 {
-	
+
 	@Autowired
-	private FeatureDatasetController featureDatasetController;
-	
+	private NcssController featureDatasetController;
+
 	private MockHttpServletResponse response ;
 	private MockHttpServletRequest request;
 
   //   <featureCollection featureType="GRIB" name="GFS_CONUS_80km" path="gribCollection/GFS_CONUS_80km">
 	private String pathInfo="/ncss/gribCollection/GFS_CONUS_80km/best";
-	
+
 	@Before
 	public void setUp() throws IOException{
 
 		response = new MockHttpServletResponse();
 		request = new MockHttpServletRequest();
 		request.setPathInfo(pathInfo);
-		request.setServletPath(pathInfo);		
-		
+		request.setServletPath(pathInfo);
+
 	}
-	
+
 	@Test(expected=RequestTooLargeException.class)
 	public void testRequestTooLargeException() throws Exception{
-			
+
     NcssParamsBean params;
 		BindingResult validationResult;
 		params = new NcssParamsBean();
@@ -97,12 +97,12 @@ public class GridRequestExceptionTest2 {
 
 	@After
 	public void tearDown() throws IOException{
-		
+
 		//GridDataset gds = gridDataController.getGridDataset();
-		//gds.close();		
+		//gds.close();
 		//gds = null;
 		//gridDataController =null;
-		
-	}	
+
+	}
 
 }

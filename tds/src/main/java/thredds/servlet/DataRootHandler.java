@@ -77,10 +77,7 @@ import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.server.config.AllowableService;
 import thredds.server.config.TdsContext;
-import thredds.util.PathAliasReplacement;
-import thredds.util.RequestForwardUtils;
-import thredds.util.StartsWithPathAliasReplacement;
-import thredds.util.TdsPathUtils;
+import thredds.util.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
@@ -1188,7 +1185,7 @@ public final class DataRootHandler implements InitializingBean {
     String result = catFactory.writeXML(cat);
 
     res.setContentLength(result.length());
-    res.setContentType("text/xml");
+    res.setContentType(ContentType.xml.toString());
     res.getOutputStream().write(result.getBytes(CDM.utf8Charset));
   }
 
@@ -1682,7 +1679,7 @@ public final class DataRootHandler implements InitializingBean {
     InvCatalogFactory catFactory = getCatalogFactory(false);
     String catAsString = catFactory.writeXML((InvCatalogImpl) cat);
     PrintWriter out = res.getWriter();
-    res.setContentType("text/xml");
+    res.setContentType(ContentType.xml.toString());
     res.setStatus(HttpServletResponse.SC_OK);
     out.print(catAsString);
     if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): Finished \"" + orgPath + "\".");

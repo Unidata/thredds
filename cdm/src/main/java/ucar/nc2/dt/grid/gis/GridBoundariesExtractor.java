@@ -72,8 +72,8 @@ public final class GridBoundariesExtractor {
 	 * 
 	 * Takes a GridDataset and returns the boundary for the first gridset in the dataset in as a polygon in WKT   
 	 * 
-	 * @param gds
-	 * @return
+	 *
+	 * @return WKT
 	 */
 	public String getDatasetBoundariesWKT(){
 
