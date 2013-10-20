@@ -1,6 +1,9 @@
 package thredds.server.cdmr;
 
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -12,77 +15,80 @@ import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.util.CompareNetcdf2;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
+@RunWith(Parameterized.class)
 public class TestNcstreamCompareWithFiles {
-  String contentRoot = TestDir.cdmUnitTestDir + "formats";
+  static String contentRoot = TestDir.cdmUnitTestDir + "formats";
 
-  @Test
-  public void utestProblem() throws IOException {
-    doOne(contentRoot + "/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf");
+  @Parameterized.Parameters
+  public static List<Object[]> getTestParameters() {
+
+   List<Object[]>  result = new ArrayList<Object[]>(500);
+
+    try {
+      addFromScan(result, contentRoot +"/netcdf3/", new SuffixFileFilter(".nc"));
+      addFromScan(result, contentRoot +"/netcdf4/", new SuffixFileFilter(".nc"));
+
+      addFromScan(result, contentRoot +"/hdf5/",  new FileFilter() {
+        public boolean accept(File pathname) {
+          return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
+        }
+      });
+      addFromScan(result, contentRoot +"/hdf4/",  new FileFilter() {
+         public boolean accept(File pathname) {
+           return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
+         }
+       });
+      addFromScan(result, contentRoot + "/grib1/", new FileFilter() {
+        public boolean accept(File pathname) {
+          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx");
+        }
+      });
+      addFromScan(result, contentRoot + "/grib2/", new FileFilter() {
+        public boolean accept(File pathname) {
+          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx");
+        }
+      });
+      addFromScan(result, contentRoot +"/gini/", new SuffixFileFilter(".gini"));
+      addFromScan(result, contentRoot +"/gempak/", new SuffixFileFilter(".gem"));
+
+    } catch (IOException e) {
+       e.printStackTrace();
+     }
+
+    return result;
   }
 
-  int fail = 0;
-  int success = 0;
-
-  @Test
-  public void testScan() throws IOException {
-    scanDir(contentRoot +"/netcdf3/", ".nc");
-    scanDir(contentRoot +"/netcdf4/", ".nc");
-
-    scanDir(contentRoot +"/hdf5/",  new FileFilter() {
-      public boolean accept(File pathname) {
-        return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
-      }
-    });   // */
-    scanDir(contentRoot +"/hdf4/",  new FileFilter() {
-       public boolean accept(File pathname) {
-         return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
-       }
-     }); 
-    /*  */
-    scanDir(contentRoot + "/grib1/", new FileFilter() {
-      public boolean accept(File pathname) {
-        return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx");
-      }
-    });
-    scanDir(contentRoot + "/grib2/", new FileFilter() {
-      public boolean accept(File pathname) {
-        return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx");
-      }
-    }); //*/
-    scanDir(contentRoot +"/gini/", ".gini");
-    scanDir(contentRoot +"/gempak/", ".gem");
-
-    System.out.printf("success = %d fail = %d%n", success, fail);
-    assert fail == 0 : "failed="+fail;
-  }
-
-  void scanDir(String dirName, final String suffix) throws IOException {
-    scanDir(dirName, new FileFilter() {
-      public boolean accept(File pathname) {
-        return pathname.getPath().endsWith(suffix);
-      }
-    });
-  }
-
-  void scanDir(String dirName, FileFilter ff) throws IOException {
+  static void addFromScan(final List<Object[]> list, String dirName, FileFilter ff) throws IOException {
     TestDir.actOnAll(dirName, ff, new TestDir.Act() {
       public int doAct(String filename) throws IOException {
-        doOne(filename);
+        list.add (new Object[] {filename});
         return 1;
       }
     }, true);
   }
 
-  void doOne(String filename) throws IOException {
+  /////////////////////////////////////////////////////////////
+
+  public TestNcstreamCompareWithFiles(String filename) {
+    this.filename = filename;
+  }
+
+  String filename;
+
+  int fail = 0;
+  int success = 0;
+
+  @Test
+  public void doOne() throws IOException {
     String name = StringUtil2.substitute(filename.substring(contentRoot.length()), "\\", "/");
     String remote = TestWithLocalServer.server + "cdmremote/scanCdmUnitTests/formats" + name;
-    //System.out.printf("---------------------------\n");
-    //System.out.printf("TEST %s and %s%n", filename, remote);
     compareDatasets(filename, remote);
   }
 

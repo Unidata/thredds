@@ -36,11 +36,12 @@ import java.io.*;
 import java.util.*;
 
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
@@ -49,45 +50,46 @@ import ucar.unidata.util.StringUtil2;
  * compare files served through netcdf-DODS server.
  */
 
+@RunWith(Parameterized.class)
 public class TestDODScompareWithFiles {
-  static boolean showCompare = false, showEach = false, showStringValues = false;
-  String contentRoot = TestDir.cdmUnitTestDir + "formats";
+  static boolean showCompare = false, showEach = false, compareData  = false;
+  static String contentRoot = TestDir.cdmUnitTestDir;
 
+   @Parameterized.Parameters
+   public static List<Object[]> getTestParameters() {
+
+    List<Object[]>  result = new ArrayList<Object[]>(20);
+
+    result.add( new Object[]{"conventions/zebra/SPOL_3Volumes.nc"});
+    result.add( new Object[]{"conventions/coards/inittest24.QRIDV07200.ncml"}); //
+    result.add( new Object[]{"conventions/atd/rgg.20020411.000000.lel.ll.nc"}); //
+    result.add( new Object[]{"conventions/awips/awips.nc"}); //
+    result.add( new Object[]{"conventions/cf/ipcc/cl_A1.nc"}); //
+    result.add( new Object[]{"conventions/csm/o3monthly.nc"}); //
+    result.add( new Object[]{"conventions/gdv/OceanDJF.nc"}); //
+    result.add( new Object[]{"conventions/gief/coamps.wind_uv.nc"}); //
+    result.add( new Object[]{"conventions/mars/temp_air_01082000.nc"}); //
+    result.add( new Object[]{"conventions/mm5/n040.nc"}); //
+    result.add( new Object[]{"conventions/nuwg/eta.nc"}); //
+    result.add( new Object[]{"conventions/nuwg/ruc.nc"}); //
+    result.add( new Object[]{"conventions/wrf/wrfout_v2_Lambert.nc"}); //
+    result.add( new Object[]{"conventions/mm5/n040.nc"}); //
+
+    return result;
+ 	}
+
+
+  public TestDODScompareWithFiles(String filename) {
+    this.filename = filename;
+  }
+
+  String filename;
   int fail = 0;
   int success = 0;
 
-  @org.junit.Test
-  public void testCompare() throws IOException {
-    doOne("conventions/zebra/SPOL_3Volumes.nc");
-    doOne("conventions/coards/inittest24.QRIDV07200.ncml"); //
-    doOne("conventions/atd/rgg.20020411.000000.lel.ll.nc"); //
-    doOne("conventions/awips/awips.nc"); //
-    doOne("conventions/cf/ipcc/cl_A1.nc"); //
-    doOne("conventions/csm/o3monthly.nc"); //
-    doOne("conventions/gdv/OceanDJF.nc"); //
-    doOne("conventions/gief/coamps.wind_uv.nc"); //
-    doOne("conventions/mars/temp_air_01082000.nc"); //
-    doOne("conventions/mm5/n040.nc"); //
-    doOne("conventions/nuwg/eta.nc"); //
-    doOne("conventions/nuwg/ruc.nc"); //
-    doOne("conventions/wrf/wrfout_v2_Lambert.nc"); //
-    doOne("conventions/mm5/n040.nc"); //
-
-    /* doOne("grib2/ndfd.wmo");
-    doOne("grib2/eta2.wmo");
-    doOne("image/dmsp/F14200307192230.n.OIS");
-    doOne("image/gini/n0r_20041013_1852-u");
-    doOne("image/gini/n0r_20041013_1852"); //
-    doOne("ldm/grib/AVN_H.wmo"); //
-    doOne("AStest/wam/Atl/EPPE_WAM_Atl_200202281500.nc"); // */
-
-    System.out.printf("success = %d fail = %d%n", success, fail);
-    assert fail == 0 : "failed="+fail;
-  }
-
   String path = "dodsC/scanCdmUnitTests/";
 
-  public void testCompareAll() throws IOException {
+  /* public void testCompareAll() throws IOException {
     readAllDir(contentRoot + "ncml", ".ncml");
   }
 
@@ -103,7 +105,7 @@ public class TestDODScompareWithFiles {
       String name = f.getAbsolutePath();
       if (!name.endsWith(suffix)) continue;
 
-      doOne(name);
+      compare(name);
     }
 
     for (File f : allFiles) {
@@ -111,10 +113,10 @@ public class TestDODScompareWithFiles {
         readAllDir(f.getAbsolutePath(), suffix);
     }
 
-  }
+  } */
 
-
-  private void doOne(String filename) throws IOException {
+  @Test
+  public void compare() throws IOException {
     filename = StringUtil2.replace(filename, '\\', "/");
     String dodsUrl = TestWithLocalServer.server + path + filename;
     String localPath = contentRoot + filename;
@@ -130,7 +132,7 @@ public class TestDODScompareWithFiles {
 
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
-      boolean ok = mind.compare(ncfile, ncremote, new DodsObjFilter(), false, false, false);
+      boolean ok = mind.compare(ncfile, ncremote, new DodsObjFilter(), showCompare, showEach, compareData);
       if (!ok) {
         System.out.printf(" NOT OK%n%s%n", f);
         fail++;
