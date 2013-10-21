@@ -49,7 +49,7 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.inventory.CollectionUpdater;
 import thredds.server.cdmremote.CdmrFeatureController;
-import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncss.format.SupportedFormat;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import thredds.util.LoggerFactorySpecial;

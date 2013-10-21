@@ -33,11 +33,14 @@
 
 package thredds.server.cdmremote;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import thredds.server.AbstractController;
+import thredds.server.ncss.exception.NcssException;
 import thredds.util.ContentType;
 import ucar.nc2.util.EscapeStrings;
-import org.springframework.web.servlet.mvc.AbstractCommandController;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.validation.BindException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
@@ -50,7 +53,9 @@ import thredds.servlet.DatasetHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.*;
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import ucar.ma2.InvalidRangeException;
@@ -65,17 +70,16 @@ import ucar.nc2.ParsedSectionSpec;
  * @author caron
  * @since May 28, 2009
  */
-public class CdmRemoteController extends AbstractCommandController implements LastModified {
+@Controller
+@RequestMapping("/cdmremote/")
+public class CdmRemoteController extends AbstractController implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmRemoteController.class);
   private static boolean debug = false, showTime = false, showReq=false;
 
-  private TdsContext tdsContext;
-  private boolean allow = true;
+  @Autowired
+  TdsContext tdsContext;
 
-  public CdmRemoteController() {
-    setCommandClass(CdmRemoteQueryBean.class);
-    setCommandName("PointQueryBean");
-  }
+  private boolean allow = true;
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
@@ -86,6 +90,12 @@ public class CdmRemoteController extends AbstractCommandController implements La
   }
 
   @Override
+  protected String getControllerPath() { return "/cdmremote/"; }
+
+  @Override
+  protected String[] getEndings() { return new String[0]; }
+
+  @Override
   public long getLastModified(HttpServletRequest req) {
     File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo());
     if ((file != null) && file.exists())
@@ -93,39 +103,40 @@ public class CdmRemoteController extends AbstractCommandController implements La
     return -1;
   }
 
-  @Override
-  protected ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object command, BindException errors) throws Exception {
+  @RequestMapping("**")
+  public void handleRequest(HttpServletRequest req, HttpServletResponse res,
+                       @Valid CdmRemoteQueryBean qb,
+                       BindingResult validationResult) throws IOException, NcssException, ParseException, InvalidRangeException {
 
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      return null;
+      return;
     }
 
-    String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + req.getPathInfo();
-    String path = req.getPathInfo();
+    String datasetPath = getDatasetPath(req);
+    String absPath = getAbsolutePath(req);
 
     if (showReq)
       System.out.printf("CdmRemoteController req=%s%n", absPath+"?"+req.getQueryString());
     if (debug) {
-      System.out.printf(" path=%s%n query=%s%n", path, req.getQueryString());
+      System.out.printf(" path=%s%n query=%s%n", datasetPath, req.getQueryString());
     }
 
     // query validation - first pass
-    CdmRemoteQueryBean qb = (CdmRemoteQueryBean) command;
     if (!qb.validate()) {
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, qb.getErrorMessage());
       if (debug) System.out.printf(" query error= %s %n", qb.getErrorMessage());
-      return null;
+      return;
     }
     if (debug) System.out.printf(" %s%n", qb);
 
     NetcdfFile ncfile = null;
     try {
-      ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+      ncfile = DatasetHandler.getNetcdfFile(req, res, datasetPath);
       if (ncfile == null) {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        log.debug("DatasetHandler.FAIL path={}", path);
-        return null;
+        log.debug("DatasetHandler.FAIL path={}", datasetPath);
+        return;
       }
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
@@ -134,13 +145,14 @@ public class CdmRemoteController extends AbstractCommandController implements La
       switch (qb.getRequestType()) {
         case capabilities:
           sendCapabilities(out, FeatureType.GRID, absPath); // LOOK BAD - must figure out what is the featureType
+          res.setContentType(ContentType.xml.toString());
           res.flushBuffer();
-          return null;
+          return;
 
         case form: // LOOK could do a ncss style form
         case cdl:
           res.setContentType(ContentType.text.toString());
-          ncfile.setLocation(path); // hide where the file is stored
+          ncfile.setLocation(datasetPath); // hide where the file is stored
           String cdl = ncfile.toString();
           res.setContentLength(cdl.length());
           byte[] b = cdl.getBytes("UTF-8");
@@ -178,7 +190,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
 
           if ((query == null) || (query.length() == 0)) {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
-            return null;
+            return;
           }
           query = EscapeStrings.unescapeURLQuery(query);
           StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
@@ -213,11 +225,11 @@ public class CdmRemoteController extends AbstractCommandController implements La
         try {
           ncfile.close();
         } catch (IOException ioe) {
-          log.error("Failed to close = " + path);
+          log.error("Failed to close = " + datasetPath);
         }
     }
 
-    return null;
+    return;
   }
 
   private void sendCapabilities(OutputStream os, FeatureType ft, String absPath) throws IOException {

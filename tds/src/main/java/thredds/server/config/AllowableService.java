@@ -14,15 +14,16 @@ import thredds.servlet.ThreddsConfig;
  * Enum with the services that can be allowed/disallowed in the ThreddsConfig
  * file. Provides static methods that check if a service declared in a catalog
  * is allowed at server level.
- * 
+ * LOOK: is this implemented ??
  * @author mhermida
  * 
  */
 public enum AllowableService {
 
+	CDMREMOTE(InvService.wms, ThreddsConfig.getBoolean("CdmRemote.allow", true)),
+  NCSS(InvService.ncss, ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true)),
 	WMS(InvService.wms, ThreddsConfig.getBoolean("WMS.allow", false)),
   WCS(InvService.wcs, ThreddsConfig.getBoolean("WCS.allow", false)),
-  NCSS(InvService.ncss, ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false)),
   ISO(InvService.iso, ThreddsConfig.getBoolean("NCISO.isoAllow", false)),
   UDDC(InvService.uddc, ThreddsConfig.getBoolean("NCISO.uddcAllow", false)),
   NCML(InvService.ncml, ThreddsConfig.getBoolean("NCISO.ncmlAllow", false));
@@ -30,7 +31,7 @@ public enum AllowableService {
 	private Boolean allowed;
 	private InvService service;
 
-	AllowableService(InvService service, boolean allowed) {
+	private AllowableService(InvService service, boolean allowed) {
 		this.allowed = allowed;
 		this.service = service;
 	}

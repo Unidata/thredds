@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncss.format.SupportedFormat;
 
 @Service
 public final class FormatsAvailabilityService {

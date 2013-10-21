@@ -33,7 +33,7 @@
 package thredds.server.radarServer;
 
 import thredds.catalog.query.Station;
-import thredds.server.ncSubset.QueryParams;
+import thredds.server.ncss.QueryParams;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.DateRange;
 import thredds.servlet.ServletUtil;

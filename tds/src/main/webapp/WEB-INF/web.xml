@@ -104,10 +104,6 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>DLwriter</servlet-name>
   </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>cdmRemote</servlet-name>
-  </filter-mapping>
 
   <!--
   Filter:
@@ -207,10 +203,10 @@
   <servlet>
     <servlet-name>root</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-	<init-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/servlet-context.xml</param-value>
-	</init-param>        
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>/WEB-INF/servlet-context.xml</param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
@@ -254,12 +250,6 @@
 
   <servlet>
     <servlet-name>wms</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>cdmRemote</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
@@ -381,11 +371,6 @@
   <servlet-mapping>
     <servlet-name>FileServer</servlet-name>
     <url-pattern>/fileServer/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>cdmRemote</servlet-name>
-    <url-pattern>/cdmremote/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

@@ -41,7 +41,7 @@ package thredds.server.radarServer;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.server.config.TdsContext;
-import thredds.server.ncSubset.QueryParams;
+import thredds.server.ncss.QueryParams;
 import thredds.servlet.HtmlWriter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
