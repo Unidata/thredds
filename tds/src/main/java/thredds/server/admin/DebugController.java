@@ -30,29 +30,37 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.servlet;
+package thredds.server.admin;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import thredds.servlet.HtmlWriter;
 import thredds.util.ContentType;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
-public class DebugHandler {
+/**
+ * Handle the /admin/debug interface
+ *
+ * @author caron
+ * @since 4.0
+ */
+//
+@Controller
+@RequestMapping(value ="/admin", method=RequestMethod.GET)
+public class DebugController{
 
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( DebugHandler.class );
-  
-  static private List<DebugHandler> dhList = new ArrayList<DebugHandler>();
-
-  static public DebugHandler get( String name) {
-    for (DebugHandler dh : dhList) {
-      if (name.equals( dh.name)) return dh;
-    }
-    return new DebugHandler(name);
-  }
-
-  static public void doDebug(HttpServlet thisServlet,  HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+  @RequestMapping(value={"/debug", "/debug/*"})
+   protected void showDebugPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType(ContentType.html.toString());
     response.setHeader("Content-Description", "thredds_debug");
 
@@ -97,9 +105,9 @@ public class DebugHandler {
           cmd = cmd.substring(0,pos);
         }
 
-        DebugHandler dh = find( dhName);
+        Category dh = find( dhName);
         if (dh == null) {
-          pw.println(" Unknown DebugHandler="+dhName+"=");
+          pw.println(" Unknown Debug Category="+dhName+"=");
         } else {
           Action action = dh.actions.get( cmd);
           if (action == null)
@@ -120,8 +128,8 @@ public class DebugHandler {
     responsePS.flush();
   }
 
-  static private void showDebugActions(HttpServletRequest req, HttpServletResponse res, PrintStream pw) {
-    for (DebugHandler dh : dhList) {
+  private void showDebugActions(HttpServletRequest req, HttpServletResponse res, PrintStream pw) {
+    for (Category dh : dhList) {
       pw.println("<h2>" + dh.name + "</h2>");
 
       for (Action act : dh.actions.values()) {
@@ -133,25 +141,29 @@ public class DebugHandler {
     }
   }
 
-  static private DebugHandler find(String name) {
-    for (DebugHandler dh : dhList) {
+  //////////////////////////////////////////////////////////////////////////////////////////
+
+  static private List<Category> dhList = new ArrayList<Category>();
+  static public Category find(String name) {
+    for (Category dh : dhList) {
       if (dh.name.equals(name))
         return dh;
     }
     return null;
   }
 
-  //////////////////////////////////////////////////////
-  private Map<String, Action> actions = new LinkedHashMap<String, Action>();
-  private String name;
+  static public class Category {
+    private Map<String, Action> actions = new LinkedHashMap<String, Action>();
+    private String name;
 
-  private DebugHandler( String name) {
-    this.name = name;
-    dhList.add( this);
-  }
+   private Category( String name) {
+     this.name = name;
+     dhList.add( this);
+   }
 
-  public void addAction(Action act) {
-    actions.put( act.name, act);
+   public void addAction(DebugController.Action act) {
+     actions.put( act.name, act);
+   }
   }
 
   static public abstract class Action {
@@ -184,5 +196,4 @@ public class DebugHandler {
       this.target = target;
     }
   }
-
 }

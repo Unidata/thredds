@@ -49,6 +49,7 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetFmrc;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetScan;
+import thredds.server.admin.DebugController;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -88,11 +89,11 @@ public class DatasetHandler {
   }
 
   public static void makeDebugActions() {
-    DebugHandler debugHandler = DebugHandler.get("catalogs");
-    DebugHandler.Action act;
+    DebugController.Category debugHandler = DebugController.find("catalogs");
+    DebugController.Action act;
 
-    act = new DebugHandler.Action("showNcml", "Show ncml datasets") {
-      public void doAction(DebugHandler.Event e) {
+    act = new DebugController.Action("showNcml", "Show ncml datasets") {
+      public void doAction(DebugController.Event e) {
         for (Object key : ncmlDatasetHash.keySet()) {
           e.pw.println(" url=" + key);
         }

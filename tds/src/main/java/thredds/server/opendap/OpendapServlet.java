@@ -48,16 +48,14 @@ import java.net.URI;
 
 import opendap.servlet.*;
 import opendap.servlet.AbstractServlet;
+import thredds.server.admin.DebugController;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.EscapeStrings;
 
 /**
@@ -633,12 +631,11 @@ public class OpendapServlet extends AbstractServlet {
   ///////////////////////////////////////////////////////////////////////////////////////////////
   // debugging
   private void makeDebugActions() {
-    DebugHandler debugHandler = DebugHandler.get("ncdodsServer");
-    DebugHandler.Action act;
+    DebugController.Category debugHandler = DebugController.find("ncdodsServer");
+    DebugController.Action act;
 
-
-    act = new DebugHandler.Action("help", "Show help page") {
-      public void doAction(DebugHandler.Event e) {
+    act = new DebugController.Action("help", "Show help page") {
+      public void doAction(DebugController.Event e) {
         try {
           doGetHELP(getRequestState(e.req, e.res));
         } catch (Exception ioe) {
@@ -648,8 +645,8 @@ public class OpendapServlet extends AbstractServlet {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("version", "Show server version") {
-      public void doAction(DebugHandler.Event e) {
+    act = new DebugController.Action("version", "Show server version") {
+      public void doAction(DebugController.Event e) {
         e.pw.println("  version= " + getServerVersion());
       }
     };

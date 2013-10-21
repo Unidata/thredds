@@ -44,6 +44,7 @@
 
 package thredds.server.radarServer;
 
+import thredds.server.admin.DebugController;
 import thredds.servlet.*;
 import thredds.catalog.*;
 import thredds.util.ContentType;
@@ -91,11 +92,11 @@ public class RadarServer extends AbstractServlet {
   }
 
   protected void makeDebugActions() {
-    DebugHandler debugHandler = DebugHandler.get("NetcdfSubsetServer");
-    DebugHandler.Action act;
+    DebugController.Category debugHandler = DebugController.find("RadarServer");
+    DebugController.Action act;
 
-    act = new DebugHandler.Action("showRadar datasets", "Show Radar dataset") {
-      public void doAction(DebugHandler.Event e) {
+    act = new DebugController.Action("showRadar datasets", "Show Radar dataset") {
+      public void doAction(DebugController.Event e) {
         e.pw.println("Radar  Datasets\n");
         for (int j = 0; j < datasets.size(); j++) {
           InvDatasetScan ds = (InvDatasetScan) datasets.get(j);

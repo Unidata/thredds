@@ -75,6 +75,7 @@ import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.crawlabledataset.CrawlableDatasetFile;
+import thredds.server.admin.DebugController;
 import thredds.server.config.AllowableService;
 import thredds.server.config.TdsContext;
 import thredds.util.*;
@@ -1757,8 +1758,8 @@ public final class DataRootHandler implements InitializingBean {
   }
 
   public void makeDebugActions() {
-    DebugHandler debugHandler = DebugHandler.get("catalogs");
-    DebugHandler.Action act;
+    DebugController.Category debugHandler = DebugController.find("catalogs");
+    DebugController.Action act;
     /* act = new DebugHandler.Action("showError", "Show catalog error logs") {
      public void doAction(DebugHandler.Event e) {
        synchronized ( DataRootHandler.this )
@@ -1779,8 +1780,8 @@ public final class DataRootHandler implements InitializingBean {
    };
    debugHandler.addAction( act);  */
 
-    act = new DebugHandler.Action("showStatic", "Show static catalogs") {
-      public void doAction(DebugHandler.Event e) {
+    act = new DebugController.Action("showStatic", "Show static catalogs") {
+      public void doAction(DebugController.Event e) {
         ArrayList<String> list;
         StringBuilder sbuff = new StringBuilder();
         synchronized (DataRootHandler.this) {
@@ -1798,8 +1799,8 @@ public final class DataRootHandler implements InitializingBean {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("showRoots", "Show data roots") {
-      public void doAction(DebugHandler.Event e) {
+    act = new DebugController.Action("showRoots", "Show data roots") {
+      public void doAction(DebugController.Event e) {
         synchronized (DataRootHandler.this) {
           Iterator iter = pathMatcher.iterator();
           while (iter.hasNext()) {
@@ -1823,8 +1824,8 @@ public final class DataRootHandler implements InitializingBean {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("getRoots", "Check data roots") {
-      public void doAction(DebugHandler.Event e) {
+    act = new DebugController.Action("getRoots", "Check data roots") {
+      public void doAction(DebugController.Event e) {
         synchronized (DataRootHandler.this) {
           e.pw.print("<pre>\n");
           Iterator iter = pathMatcher.iterator();
@@ -1853,8 +1854,8 @@ public final class DataRootHandler implements InitializingBean {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("reinit", "Reinitialize") {
-      public void doAction(DebugHandler.Event e) {
+    act = new DebugController.Action("reinit", "Reinitialize") {
+      public void doAction(DebugController.Event e) {
         try {
           singleton.reinit();
           e.pw.println("reinit ok");
