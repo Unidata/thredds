@@ -1,10 +1,7 @@
 package thredds.server.admin;
 
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +19,7 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdater;
 import thredds.inventory.MFile;
+import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
 import thredds.util.ContentType;
@@ -45,13 +42,8 @@ public class CollectionController  {
   private static final String TRIGGER = "trigger";
   private static final String NOCHECK = "nocheck";
   
-  
-  private final TdsContext tdsContext;
-
-  @Autowired 
-  CollectionController(TdsContext _tdsContext) {
-	  this.tdsContext = _tdsContext;
-  }
+  @Autowired
+  private TdsContext tdsContext;
 
   @PostConstruct
   public void afterPropertiesSet(){
@@ -115,10 +107,33 @@ public class CollectionController  {
       }
     };
     debugHandler.addAction(act);
+
+    act = new DebugController.Action("showFmrcCache", "Show FMRC Cache") {
+      public void doAction(DebugController.Event e) {
+        e.pw.println("<p>cache location = "+monitor.getCacheLocation()+"<p>");
+        String statUrl = tdsContext.getContextPath() + PATH + "/"+STATISTICS;
+        e.pw.println("<p/> <a href='" + statUrl + "'>Show Cache Statistics</a>");
+        for (String name : monitor.getCachedCollections()) {
+          String ename = StringUtil2.escape(name, "");
+          String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ename;
+          e.pw.println("<p/> <a href='" + url + "'>" + name + "</a>");
+        }
+      }
+    };
+    debugHandler.addAction(act);
+
+    act = new DebugController.Action("syncFmrcCache", "Flush FMRC Cache to disk") {
+      public void doAction(DebugController.Event e) {
+        monitor.sync();
+        e.pw.println("<p>bdb cache location = "+monitor.getCacheLocation()+"<p> flushed to disk");
+      }
+    };
+    debugHandler.addAction(act);
+
   }
 
   @RequestMapping(value={"/collection", "/collection/trigger"})
-  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+  protected ModelAndView handleCollectionTriggers(HttpServletRequest req, HttpServletResponse res) throws Exception {
     //String path = req.getPathInfo();
     String path = req.getServletPath();
     if (path == null) path = "";
@@ -183,6 +198,81 @@ public class CollectionController  {
       pw.printf("%-100s %-20s %9.3f %s%n", mfile.getPath(), CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified())),
               (double) mfile.getLength() / (1000 * 1000), mfile.getAuxInfo());
     pw.printf("</pre>%n");
+  }
+
+  /////////////////////////////////////////////////////////////
+  // old FmrcController - deprecated
+  private static final String FMRC_PATH = "/admin/fmrcCache";
+  private static final String STATISTICS = "cacheStatistics.txt";
+  private static final String CMD = "cmd";
+  private static final String FILE = "file";
+  private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
+
+  @RequestMapping(value={"/fmrcCache", "/fmrcCache/*"})
+  protected ModelAndView showFmrcCache(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    String path = req.getPathInfo();
+    if (path == null) path = "";
+
+    PrintWriter pw = res.getWriter();
+
+    if (path.endsWith(STATISTICS)) {
+      res.setContentType(ContentType.text.toString());
+      Formatter f = new Formatter();
+      monitor.getCacheStatistics(f);
+      String s = f.toString();
+      pw.println(s);
+      pw.flush();
+      return null;
+    }
+
+    String collectName = req.getParameter(COLLECTION);
+    String fileName = req.getParameter(FILE);
+    String cmd = req.getParameter(CMD);
+
+    // show the file
+    if (fileName != null) {
+      String contents = monitor.getCachedFile(collectName, fileName);
+      if (null == contents)
+        pw.println("<p/> Cant find filename="+fileName+" in collection = "+collectName);
+      else {
+        res.setContentType(ContentType.xml.toString());
+        pw.println(contents);
+      }
+
+      return null;
+    }
+
+    // list the collection
+    if (collectName != null) {
+      String ecollectName = StringUtil2.escape(collectName, "");
+      String url = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ecollectName;
+      res.setContentType(ContentType.html.toString());
+      pw.println("Files for collection = "+collectName+"");
+
+      // allow delete
+      String deleteUrl = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ecollectName+"&"+CMD+"=delete";
+      pw.println("<a href='" + deleteUrl + "'> Delete" + "</a>");
+
+      pw.println("<ol>");
+      for (String filename : monitor.getFilesInCollection(collectName)) {
+        String efileName = StringUtil2.escape(filename, "");
+        pw.println("<li> <a href='" + url + "&"+FILE+"="+efileName + "'>" + filename + "</a>");
+      }
+     pw.println("</ol>");
+    }
+
+    if (cmd != null && cmd.equals("delete")) {
+      try {
+        monitor.deleteCollection(collectName);
+        pw.println("<p/>deleted");
+      } catch (Exception e) {
+        pw.println("<pre>delete failed on collection = "+collectName);
+        e.printStackTrace(pw);
+        pw.println("</pre>");
+      }
+    }
+
+    return null;
   }
 
 }

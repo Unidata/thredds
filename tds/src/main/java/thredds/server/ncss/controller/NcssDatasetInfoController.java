@@ -70,7 +70,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
   private boolean wantXML = false;
   private boolean showForm = false;
   private boolean showPointForm = false;
-  private String requestPathInfo;
+  private String datasetPath;
 
   @Autowired
   private NcssShowFeatureDatasetInfo ncssShowDatasetInfo;
@@ -86,12 +86,11 @@ class NcssDatasetInfoController extends AbstractNcssController {
       throw new UnsupportedOperationException("Invalid info request.");
     }
 
-    String datasetPath = getDatasetPath(req);
-    requestPathInfo = extractRequestPathInfo(datasetPath);
-    FeatureDataset fd = null;
+    extractRequestPathInfo(req.getServletPath());
 
+    FeatureDataset fd = null;
     try {
-      fd = datasetService.findDatasetByPath(req, res, requestPathInfo);
+      fd = datasetService.findDatasetByPath(req, res, datasetPath);
 
       if (fd == null)
         throw new UnsupportedOperationException("Feature Type not supported");
@@ -122,10 +121,10 @@ class NcssDatasetInfoController extends AbstractNcssController {
 
     } else {
       String datasetPath = getDatasetPath(req);
-      requestPathInfo = extractRequestPathInfo(datasetPath);
+      extractRequestPathInfo(datasetPath);
       FeatureDataset fd = null;
       try {
-        fd = datasetService.findDatasetByPath(req, res, requestPathInfo);
+        fd = datasetService.findDatasetByPath(req, res, datasetPath);
 
         if (fd == null)
           throw new UnsupportedOperationException("Feature Type not supported");
@@ -158,36 +157,19 @@ class NcssDatasetInfoController extends AbstractNcssController {
     }
   }
 
-
   private String buildDatasetUrl(String path) {
     if (path.startsWith("/")) path = path.substring(1);
     return NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getNCSSServletPath() + "/" + path;
   }
 
-  String extractRequestPathInfo(String requestPathInfo) {
+  void extractRequestPathInfo(String requestPathInfo) {
 
     // the forms and dataset description
     wantXML = requestPathInfo.endsWith("/dataset.xml");
     showForm = requestPathInfo.endsWith("/dataset.html");
     showPointForm = requestPathInfo.endsWith("/pointDataset.html");
 
-    if (wantXML || showForm || showPointForm) {
-      int len = requestPathInfo.length();
-      if (wantXML)
-        requestPathInfo = requestPathInfo.substring(0, len - 12);
-      else if (showForm)
-        requestPathInfo = requestPathInfo.substring(0, len - 13);
-      else if (showPointForm)
-        requestPathInfo = requestPathInfo.substring(0, len - 18);
-
-      if (requestPathInfo.startsWith("/"))
-        requestPathInfo = requestPathInfo.substring(1);
-    }
-
-
-    this.requestPathInfo = requestPathInfo;
-
-    return requestPathInfo;
+    this.datasetPath =  getDatasetPath(requestPathInfo);
   }
 
   /**

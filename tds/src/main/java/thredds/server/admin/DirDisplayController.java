@@ -57,25 +57,15 @@ import thredds.util.RequestForwardUtils;
  * @author caron
  * @since 4.0
  */
-//public class DirDisplayController extends AbstractController {
 @Controller
 public class DirDisplayController {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( DirDisplayController.class );
 
   @Autowired
   private TdsContext tdsContext;
   
   @Autowired  
   private HtmlWriter htmlWriter;
-
-//  public void setTdsContext(TdsContext tdsContext) {
-//    this.tdsContext = tdsContext;
-//  }
-
-//  public void setHtmlWriter( HtmlWriter htmlWriter ) {
-//    this.htmlWriter = htmlWriter;
-//  }
   
   @RequestMapping("/admin/**")
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -90,7 +80,7 @@ public class DirDisplayController {
     	path = path.substring("/admin".length(), path.length());    
 
     // Don't allow ".." directories in path.
-    if (path.indexOf("/../") != -1
+    if (path.contains("/../")
         || path.equals("..")
         || path.startsWith("../")
         || path.endsWith("/..")) {

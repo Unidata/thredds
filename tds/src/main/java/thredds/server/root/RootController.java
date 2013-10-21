@@ -36,7 +36,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * _more_
+ * Spring Controller redirects "/" to "/catalog.html"
  * 
  * @author edavis
  * @since 4.0
@@ -44,26 +44,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class RootController{
 
-	//@Autowired
-	//private TdsContext tdsContext;
-
-	//public void setTdsContext(TdsContext tdsContext) {
-	//	this.tdsContext = tdsContext;
-	//}
-
 	@RequestMapping(value = "/")
 	public String getRootPage() {
 		return "redirect:/catalog.html";
 	}
 
-//	public long getLastModified(HttpServletRequest req) {
-//		String path = TdsPathUtils.extractPath(req);
-//		File file = tdsContext.getPublicDocFileSource().getFile(path);
-//		if (file == null)
-//			return -1;
-//		long lastModTime = file.lastModified();
-//		if (lastModTime == 0L)
-//			return -1;
-//		return lastModTime;
-//	}
 }

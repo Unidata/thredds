@@ -149,7 +149,7 @@ public class DebugController{
       if (dh.name.equals(name))
         return dh;
     }
-    return null;
+    return new Category(name);
   }
 
   static public class Category {

@@ -39,6 +39,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -78,7 +79,7 @@ import ucar.unidata.util.StringUtil2;
  */
 
 @Component
-public class HtmlWriter implements InitializingBean {
+public class HtmlWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HtmlWriter.class);
 
   private static HtmlWriter singleton;
@@ -95,19 +96,7 @@ public class HtmlWriter implements InitializingBean {
   private HtmlWriter() {
   }
 
-  public void setTdsContext(TdsContext tdsContext) {
-    this.tdsContext = tdsContext;
-  }
-
-  public void setHtmlConfig(HtmlConfig htmlConfig) {
-    this.htmlConfig = htmlConfig;
-  }
-
-  // old
-  public void setSingleton(HtmlWriter self) {
-    this.singleton = self;
-  }
-
+  @PostConstruct
   public void afterPropertiesSet() {
     singleton = this;
   }
@@ -117,20 +106,14 @@ public class HtmlWriter implements InitializingBean {
   }
 
   public String getHtmlDoctypeAndOpenTag() {
-    return new StringBuilder()
-            .append("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'\n")
-            .append("        'http://www.w3.org/TR/html4/loose.dtd'>\n")
-            .append("<html>\n")
-            .toString();
+    return "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'\n" +
+            "        'http://www.w3.org/TR/html4/loose.dtd'>\n" + "<html>\n";
   }
 
   public String getXHtmlDoctypeAndOpenTag() {
-    return new StringBuilder()
-            // .append( "<?xml version='1.0' encoding='utf-8'?>")
-            .append("<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n")
-            .append("        'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n")
-            .append("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>")
-            .toString();
+    return "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n" +
+            "        'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n" +
+            "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>";
   }
 
   //  public static final String UNIDATA_CSS

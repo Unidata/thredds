@@ -69,10 +69,10 @@
    - the request URL query string
    - on all requests except OPeNDAP requests.
   -->
-  <filter-mapping>
+  <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>root</servlet-name>
-  </filter-mapping>
+  </filter-mapping -->
    
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
@@ -200,7 +200,7 @@
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
   <!-- root servlet -->
-  <servlet>
+  <!-- servlet>
     <servlet-name>root</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <init-param>
@@ -208,7 +208,7 @@
       <param-value>/WEB-INF/servlet-context.xml</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.) -->
   <servlet>
@@ -327,10 +327,10 @@
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
   <!-- default servlet -->
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>/</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
   
   <servlet-mapping>
     <servlet-name>catalogService</servlet-name>

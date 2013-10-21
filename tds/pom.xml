@@ -345,6 +345,9 @@
           <excludes>
             <exclude>/thredds/tds/**</exclude>
           </excludes>
+          <additionalClasspathElements>
+            <additionalClasspathElement>${basedir}/src/main/webapp</additionalClasspathElement>
+          </additionalClasspathElements>
           <!-- includes>
             <include>thredds/server/catalogservice/**</include>
             <include>thredds/server/ncSubset/**</include>
