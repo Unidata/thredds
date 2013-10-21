@@ -68,7 +68,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       String format = ds.findAttValueIgnoreCase(null, "Format", null);
       if (format.equals("ARCHIVE2") || format.equals("AR2V0001") || format.equals("CINRAD-SA")
               || format.equals("AR2V0003") || format.equals("AR2V0002") || format.equals("AR2V0004")
-              || format.equals("AR2V0006"))
+              || format.equals("AR2V0006") || format.equals("AR2V0007") )
         return true;
     }
     return false;
