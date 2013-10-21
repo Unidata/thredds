@@ -277,12 +277,16 @@
       </testResource>
       <testResource>
         <filtering>false</filtering>
+        <directory>${basedir}/src/main/webapp</directory>
+      </testResource>
+      <!-- testResource>
+        <filtering>false</filtering>
         <directory>${basedir}/src/main/webapp/WEB-INF/classes</directory>
         <includes>
           <include>ValidationMessages.properties</include>
           <include>log4j2.xml</include>
         </includes>
-      </testResource>
+      </testResource -->
     </testResources>
 
     <plugins>
@@ -347,6 +351,7 @@
           </excludes>
           <additionalClasspathElements>
             <additionalClasspathElement>${basedir}/src/main/webapp</additionalClasspathElement>
+            <additionalClasspathElement>${basedir}/src/main/webapp/WEB-INF/classes</additionalClasspathElement>
           </additionalClasspathElements>
           <!-- includes>
             <include>thredds/server/catalogservice/**</include>
