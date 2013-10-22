@@ -125,9 +125,11 @@ public class NcStream {
 
   static NcStreamProto.Dimension.Builder encodeDim(Dimension dim) {
     NcStreamProto.Dimension.Builder dimBuilder = NcStreamProto.Dimension.newBuilder();
-    dimBuilder.setName(dim.getShortName() == null ? "" : dim.getShortName());
+    if (dim.getShortName() != null)
+      dimBuilder.setName(dim.getShortName());
     dimBuilder.setLength(dim.getLength());
-    if (!dim.isShared()) dimBuilder.setIsPrivate(true);
+    if (!dim.isShared())
+      dimBuilder.setIsPrivate(true);
     if (dim.isVariableLength())
       dimBuilder.setIsVlen(true);
     if (dim.isUnlimited()) dimBuilder.setIsUnlimited(true);
@@ -502,7 +504,7 @@ public class NcStream {
   }
 
   static Dimension decodeDim(NcStreamProto.Dimension dim) {
-    String name = (dim.getName() == null || dim.getName().length() == 0 ? null : dim.getName());
+    String name = (!dim.hasName() || dim.getName().length() == 0 ? null : dim.getName());
     return new Dimension(name, (int) dim.getLength(), !dim.getIsPrivate(), dim.getIsUnlimited(), dim.getIsVlen());
   }
 
@@ -580,10 +582,11 @@ public class NcStream {
 
     List<Dimension> dims = new ArrayList<Dimension>(6);
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : var.getShapeList()) {
-      if (dim.getIsPrivate())
-        dims.add(new Dimension(dim.getName(), (int) dim.getLength(), false, dim.getIsUnlimited(), dim.getIsVlen()));
+      Dimension ncdim = decodeDim(dim);
+      if (!ncdim.isShared())
+        dims.add(ncdim);
       else {
-        Dimension d = g.findDimension(dim.getName());
+        Dimension d = g.findDimension(ncdim.getShortName());
         if (d == null)
           throw new IllegalStateException("Can find shared dimension " + dim.getName());
         dims.add(d);
@@ -615,10 +618,11 @@ public class NcStream {
 
     List<Dimension> dims = new ArrayList<Dimension>(6);
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : s.getShapeList()) {
-      if (dim.getIsPrivate() || dim.getIsVlen())
-        dims.add(new Dimension(dim.getName(), (int) dim.getLength(), false, dim.getIsUnlimited(), dim.getIsVlen()));
+      Dimension ncdim = decodeDim(dim);
+      if (!ncdim.isShared())
+        dims.add(ncdim);
       else {
-        Dimension d = g.findDimension(dim.getName());
+        Dimension d = g.findDimension(ncdim.getShortName());
         if (d == null)
           throw new IllegalStateException("Can find shared dimension " + dim.getName());
         dims.add(d);

@@ -41,6 +41,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.util.Indent;
 
 /**
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
@@ -295,6 +296,26 @@ if(CDMNode.OBJECTHASH) return super.hashCode(); else {
   }
 
   private int hashCode = 0;
+
+  @Override
+  public void hashCodeShow(Indent indent) {
+    System.out.printf("%sAtt hash = %d%n", indent, hashCode());
+    System.out.printf("%s shortName '%s' = %d%n", indent, getShortName(), getShortName() == null ? -1 : getShortName().hashCode());
+    System.out.printf("%s nelems %s%n", indent, nelems);
+    System.out.printf("%s dataType %s%n", indent, getDataType());
+    if (svalue != null)
+      System.out.printf("%s svalue %s = %s%n", indent, svalue, svalue.hashCode());
+    else {
+      indent.incr();
+      for (int i = 0; i < getLength(); i++) {
+        if (isString())
+          System.out.printf("%s value %s = %s%n", indent, getStringValue(i), getStringValue(i).hashCode());
+        else
+          System.out.printf("%s value %s = %s%n", indent, getValue(i), getValue(i).hashCode());
+      }
+      indent.decr();
+    }
+  }
 
   /**
    * CDL representation, not strict

@@ -699,6 +699,12 @@ if(CDMNode.OBJECTHASH) return super.hashCode(); else {
 }
   }
 
+  public void hashCodeShow(Indent indent) {
+    System.out.printf("%sGroup hash = %d%n", indent, hashCode());
+    System.out.printf("%s shortName %s = %d%n", indent, getShortName(), getShortName().hashCode());
+    System.out.printf("%s parentGroup %s = %d%n", indent, getParentGroup(), getParentGroup().hashCode());
+  }
+
   /**
    * Create groups to ensure path is defined
    *

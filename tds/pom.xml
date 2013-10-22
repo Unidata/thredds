@@ -270,24 +270,31 @@
         The second one only contains the public directory and is not filtered.
         BINARY FILES MUST NEVER EVER EVER EVER BE FILTERED    
     -->
-    <testResources>
-      <testResource>
-        <filtering>true</filtering>
-        <directory>${basedir}/src/test/resources</directory>
-      </testResource>
-      <testResource>
+    <resources>
+      <resource>
         <filtering>false</filtering>
         <directory>${basedir}/src/main/webapp</directory>
-      </testResource>
-      <!-- testResource>
-        <filtering>false</filtering>
-        <directory>${basedir}/src/main/webapp/WEB-INF/classes</directory>
-        <includes>
-          <include>ValidationMessages.properties</include>
-          <include>log4j2.xml</include>
-        </includes>
-      </testResource -->
-    </testResources>
+      </resource>
+    </resources>
+
+    <testResources>
+       <testResource>
+         <filtering>true</filtering>
+         <directory>${basedir}/src/test/resources</directory>
+       </testResource>
+       <testResource>
+         <filtering>false</filtering>
+         <directory>${basedir}/src/main/webapp</directory>
+       </testResource>
+       <!-- testResource>
+         <filtering>false</filtering>
+         <directory>${basedir}/src/main/webapp/WEB-INF/classes</directory>
+         <includes>
+           <include>ValidationMessages.properties</include>
+           <include>log4j2.xml</include>
+         </includes>
+       </testResource -->
+     </testResources>
 
     <plugins>
 

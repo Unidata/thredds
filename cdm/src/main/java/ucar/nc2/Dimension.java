@@ -161,6 +161,19 @@ if(CDMNode.OBJECTHASH) return super.hashCode(); else {
   }
   private int hashCode = 0;
 
+  @Override
+  public void hashCodeShow(Indent indent) {
+    System.out.printf("%sDim hash = %d%n", indent, hashCode());
+    System.out.printf("%s shortName '%s' = %d%n", indent, getShortName(), getShortName() == null ? -1 : getShortName().hashCode());
+    System.out.printf("%s getLength %s%n", indent, getLength());
+    System.out.printf("%s isUnlimited %s%n", indent, isUnlimited());
+    System.out.printf("%s isVariableLength %s%n", indent, isVariableLength());
+    System.out.printf("%s isShared %s%n", indent, isShared());
+    if (getGroup() != null)
+      System.out.printf("%s parentGroup %s = %d%n", indent, getGroup(), getGroup().hashCode());
+  }
+
+
   /** CDL representation, not strict. */
   @Override
   public String toString() {

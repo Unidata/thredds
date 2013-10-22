@@ -94,7 +94,6 @@ public class TestNcstreamCompareWithFiles {
   }
 
   private void compareDatasets(String local, String remote) throws IOException {
-    //System.out.printf("--Compare %s to %s%n", local, remote);
     NetcdfFile ncfile = null, ncremote = null;
     try {
       ncfile = NetcdfDataset.openFile(local, null);
@@ -105,6 +104,8 @@ public class TestNcstreamCompareWithFiles {
       boolean ok = mind.compare(ncfile, ncremote, new NcstreamObjFilter(), false, false, false);
       if (!ok) {
         fail++;
+        System.out.printf("--Compare %s to %s%n", local, remote);
+        System.out.printf("  %s%n", f);
       } else {
         success++;
       }

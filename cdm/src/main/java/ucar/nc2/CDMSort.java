@@ -47,5 +47,5 @@ public enum CDMSort {
     VARIABLE, // Atomic
     SEQUENCE,
     STRUCTURE,
-    GROUP;
+    GROUP
 }

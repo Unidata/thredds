@@ -28,7 +28,7 @@ public class OpendapServletTest {
 	private MockServletConfig servletConfig;
 	
 	private OpendapServlet opendapServlet;
-	
+	private String path =  "/thredds/dodsC/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.ascii";
 	
 	@Before
 	public void setUp() throws Exception {
@@ -47,7 +47,6 @@ public class OpendapServletTest {
 		request.setQueryString(mockQueryString);
 		request.setPathInfo("/gribCollection/GFS_CONUS_80km/files/GFS_CONUS_80km_20120229_1200.grib1.ascii");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
 		opendapServlet.doGet(request, response);
     assertEquals(200, response.getStatus());
 

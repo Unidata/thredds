@@ -37,9 +37,9 @@
 		reprojected, and preserve the resolution and accuracy of the original dataset.
 	</p>
 	<p>
-		A Dataset is described by a <a href="#DatasetDescription">Dataset Description</a> XML document, which describes the dataset in enough detail to enable a programmatic client to form valid data requests.
+		As of version 4.4.0 of TDS, NCSS supports spatial and temporal subsetting on collections of grids, stations and points. A Dataset is described by a <a href="#DatasetDescription">Dataset Description</a> XML document, which describes the dataset in enough detail to enable a programmatic client to form valid data requests.
 	</p>
-	<p>NCSS uses HTTP GET with key-value pairs (KVP) which may in any order. The service interface tries to follow <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST design</a>, as well as <a href="https://developers.google.com/kml/">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
+	<p>NCSS uses HTTP GET with key-value pairs (KVP) which may in any order. The service interface follows <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST design</a>, as well as <a href="https://developers.google.com/kml/">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
 	<p>
 		NCSS may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset.
 	</p>
@@ -53,6 +53,25 @@
   </ul>
   <p>&nbsp;</p>
    -->
+  <h2>REST URLs</h2>
+  <pre>http://{host}/{context}/{service}/{dataset}[/dataset.xml | /dataset.html | {?query}]
+
+where
+  {host}     	= server name, eg thredds.ucar.edu
+  {context} 	= &quot;thredds&quot; (usually)
+  {service} 	= &quot;ncss&quot; (always)
+  {dataset} 	= logical path for the dataset, obtained from the catalog
+  dataset.xml = to get the dataset description in xml
+  dataset.html= to get the human-readable web form
+  datasetBoundaries = to get a human-readable description of the bounding boxes
+  {?query}    = the key-value pairs to describe the subset that you want (see below for valid combinations)
+
+examples:
+
+  http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Pacific_40km/best/dataset.html
+  http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&amp;west=-114.841&amp;east=-112.641&amp;south=44.8534
+    &amp;time_start=present&amp;time_duration=PT3H&amp;accept=netcdf
+    &amp;var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground</pre>
   <h2>Dataset Descriptions<a name="DatasetDescription"></a></h2>
   <p>Each dataset has an XML document called the <em><strong>Dataset Description Document</strong></em>. These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients with the necessary information to formulate a valid request and send it to the serve</em>r. <strong>The content of these documents is still evolving.</strong> </p>
   <!-- 
@@ -72,9 +91,15 @@
   <h3>Station Dataset</h3>
   <p>Station datasets contain a collection of point features representing time-series of data points at named locations.
   <ul>
-  	<li>Example <a href="http://thredds-dev.ucar.edu/thredds/cdmrfeature/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr?req=capabilities"><strong>Station Dataset</strong></a> document (<a href="stations/stationsDataset.xml">offline</a> example) </li>
+  	<li>Example <a href="http://thredds-dev.ucar.edu/thredds/cdmrfeature/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr?req=capabilities"><strong>Station Dataset</strong></a> document (<a href="files/stationsDataset.xml">offline</a> example) </li>
   	<li>Station datasets also support <a href="http://thredds.ucar.edu/thredds/cdmrfeature/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr?req=stations&accept=xml" > station list</a> requests. This request will return all the stations within a specified bounding box. </li>
   </ul>
+  <h3>Point Dataset</h3>
+<p>Point datasets contain a collection of point features which can be subset by space and time.
+  <ul>
+    <li>Example <a href="http://thredds-dev.ucar.edu/thredds/cdmrfeature/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr?req=capabilities"><strong>Point  Dataset</strong></a> document (<a href="files/pointDataset.xml">offline</a> example) </li>
+  </ul>
+  <p>&nbsp;</p>
   <hr>   
    
    
@@ -83,7 +108,7 @@
 		</strong>
 	</h2>
 
-	<table>
+	<table width="95%" border="2">
 		<thead>
 			<tr>
 				<th width="143">Parameter Name</th>
@@ -199,13 +224,13 @@
 				<td>Used to specify the returned format. Grid: <em>netCDF</em>, <em>netCDF4</em>. Station and Point:<em> csv, xml, netCDF, netCDF4</em></td>
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
-				<td>grid: <em>netCDF</em>,  point:<em> csv</em></td>
+				<td><p>grid: <em>netCDF; </em>point:<em> csv</em></p></td>
 			</tr>
 			<tr>
 				<td>subset</td>
-				<td>no</td>
+				<td>NOT</td>
 				<td>Used to specify the subsetting type on a station feature. subset=stns means we will provide a station list. </td>
-				<td>Only on station features. Accepted values are stns and bb</td>
+				<td>Only on station datasets. Accepted values are stns and bb</td>
 				<td>&nbsp;</td>
 				<td>Default subset type is bounding box.</td>
 			</tr>
@@ -213,7 +238,7 @@
 				<td>stns</td>
 				<td>no</td>
 				<td>Used when subset=stns to specify the list of stations in the subset.</td>
-				<td>Only on station features.</td>
+				<td>Only on station datasets.</td>
 				<td>&nbsp;</td>
 				<td></td>
 			</tr>						
@@ -226,9 +251,6 @@
 			</tr>
 		</tbody>
 	</table>
-
-
-	<p>As of version 4.4.0 of TDS, NCSS supports spatial and temporal subsetting on collections of grids, stations and points. </p>
 	<p><strong>Variable subsetting:</strong></p>
 	<ul>
 	  <li>For all types, you <strong>must</strong> specify a list of valid variable names.</li>
@@ -246,9 +268,10 @@
     </ul>
     <p><strong>Temporal subsetting:</strong></p>
 <ul>
-      <li>For all types, you may specify a time range or a specific time. If none, return the time closest to the present.</li>
+      <li>For all types, you may specify a time range or a specific time. If none, return the time closest to the present. </li>
       <li>A time range will request all features that intersect the range.</li>
       <li>A time point will request the feature that is closest to that time.</li>
+      <li>If you include <em>temporal=all</em>, then return all times.</li>
 </ul>
 <h2><strong><a name="Subsetting"></a> Subsetting types and use cases </strong>
 </h2>
@@ -301,7 +324,8 @@
     	<li><strong>time_start=present&amp;time_duration=P3D</strong> (get 3 day forecast starting from the present) </li>
     	<li><strong>time_end=present&amp;time_duration=PT3H</strong> (get last 3 hours) </li>
     	<li><strong>time=2007-03-29T12:00:00Z</strong></li>
-    	<li><strong>time=present</strong></li>    	
+    	<li><strong>time=present</strong></li>
+    	<li><strong>temporal=all</strong></li>    	
   	</ul>
 
 

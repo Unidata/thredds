@@ -32,6 +32,8 @@
  */
 package ucar.nc2;
 
+import ucar.nc2.util.Indent;
+
 /**
  * Define a superclass for all the CDM node classes: Group, Dimension, etc.
  * Define the sort of the node {@link CDMSort} so that we can
@@ -44,7 +46,7 @@ package ucar.nc2;
  * @author Heimbigner
  */
 
-public class CDMNode {
+public abstract class CDMNode {
 
   /**
    * DMH - 14/6/2013 It turns out that several classes, notably
@@ -64,7 +66,7 @@ public class CDMNode {
    * if two datasets are the same, but I am not sure where.
    */
 
-  static boolean OBJECTHASH = true; // true=>use Object.hashCode()
+  static boolean OBJECTHASH = false; // true=>use Object.hashCode()
 
   CDMSort sort = null;
   Group group = null;
@@ -281,4 +283,8 @@ public class CDMNode {
     }
     return getShortName(); // default
   }
+
+  // experimental
+  public abstract void hashCodeShow(Indent indent);
+
 }
