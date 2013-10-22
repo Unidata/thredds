@@ -72,9 +72,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    */
   protected NetcdfFile ncfile;
 
-  /** the file we are reading */
-  //protected RandomAccessFile raf;
-
   /**
    * Gempak file reader
    */
@@ -84,11 +81,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    * place to store debug stuff
    */
   protected StringBuilder parseInfo = new StringBuilder();
-
-  /**
-   * data formatter
-   */
-  private DateFormatter dateFormat = new DateFormatter();
 
   /**
    * Float missing attribute
@@ -103,20 +95,17 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
   /**
    * static for shared dimension of length 4
    */
-  protected final static Dimension DIM_LEN8 = new Dimension("len8", 8,
-          true);
+  protected final static Dimension DIM_LEN8 = new Dimension("len8", 8, true);
 
   /**
    * static for shared dimension of length 4
    */
-  protected final static Dimension DIM_LEN4 = new Dimension("len4", 4,
-          true);
+  protected final static Dimension DIM_LEN4 = new Dimension("len4", 4, true);
 
   /**
    * static for shared dimension of length 2
    */
-  protected final static Dimension DIM_LEN2 = new Dimension("len2", 2,
-          true);
+  protected final static Dimension DIM_LEN2 = new Dimension("len2", 2, true);
 
   /**
    * name for the time variable
@@ -205,8 +194,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    */
   private void initTables() {
     try {
-      GempakParameters.addParameters(
-              "resources/nj22/tables/gempak/params.tbl");
+      GempakParameters.addParameters("resources/nj22/tables/gempak/params.tbl");
     } catch (Exception e) {
       System.out.println("unable to init param tables");
     }
@@ -310,11 +298,8 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     Variable var = new Variable(ncfile, null, null, MISSING_VAR);
     var.setDataType(DataType.BYTE);
     var.setDimensions((List<Dimension>) null);
-    var.addAttribute(
-            new Attribute(
-                    "description",
-                    "missing flag - 1 means all params are missing"));
-    var.addAttribute(new Attribute("missing_value", new Byte((byte) 1)));
+    var.addAttribute(new Attribute("description", "missing flag - 1 means all params are missing"));
+    var.addAttribute(new Attribute("missing_value", (byte) 1));
     return var;
   }
 
@@ -325,8 +310,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    * @param dims  Variable dimensions
    * @return the Variable
    */
-  protected Variable makeParamVariable(GempakParameter param,
-                                       List<Dimension> dims) {
+  protected Variable makeParamVariable(GempakParameter param, List<Dimension> dims) {
     Variable var = new Variable(ncfile, null, null, param.getName());
     var.setDataType(DataType.FLOAT);
     var.setDimensions(dims);
@@ -344,12 +328,10 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    */
   protected void addGlobalAttributes() {
     // global stuff
-    ncfile.addAttribute(null,
-            new Attribute("Conventions", getConventions()));
+    ncfile.addAttribute(null, new Attribute("Conventions", getConventions()));
     String fileType = "GEMPAK " + gemreader.getFileType();
     ncfile.addAttribute(null, new Attribute("file_format", fileType));
-    ncfile.addAttribute(null,
-            new Attribute("history", "Direct read of " + fileType + " into NetCDF-Java API"));
+    ncfile.addAttribute(null, new Attribute("history", "Direct read of " + fileType + " into NetCDF-Java API"));
     ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, getCFFeatureType()));
   }
 
@@ -437,18 +419,13 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
           if (varname.equals(GempakStation.STID)) {
             test = stn.getName();
           } else if (varname.equals(GempakStation.STNM)) {
-            ((ArrayInt.D1) varArray).set(index,
-                    // (int) (stn.getSTNM() / 10));
-                    (int) (stn.getSTNM()));
+            ((ArrayInt.D1) varArray).set(index, stn.getSTNM());
           } else if (varname.equals(GempakStation.SLAT)) {
-            ((ArrayFloat.D1) varArray).set(index,
-                    (float) stn.getLatitude());
+            ((ArrayFloat.D1) varArray).set(index, (float) stn.getLatitude());
           } else if (varname.equals(GempakStation.SLON)) {
-            ((ArrayFloat.D1) varArray).set(index,
-                    (float) stn.getLongitude());
+            ((ArrayFloat.D1) varArray).set(index, (float) stn.getLongitude());
           } else if (varname.equals(GempakStation.SELV)) {
-            ((ArrayFloat.D1) varArray).set(index,
-                    (float) stn.getAltitude());
+            ((ArrayFloat.D1) varArray).set(index, (float) stn.getAltitude());
           } else if (varname.equals(GempakStation.STAT)) {
             test = stn.getSTAT();
           } else if (varname.equals(GempakStation.COUN)) {
@@ -610,8 +587,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    */
   protected String getStackTrace() {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    new IllegalArgumentException("").printStackTrace(
-            new PrintStream(baos));
+    new IllegalArgumentException("").printStackTrace(new PrintStream(baos));
     return baos.toString();
   }
 

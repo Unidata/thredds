@@ -135,11 +135,6 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return false;
   }
 
-  /* @Override
-  public boolean sync() throws IOException {
-    return false;
-  } */
-
   /**
    * Get last modified date of underlying file. If changes, will be discarded.
    * @return a sequence number (typically file date), 0 if cannot change

@@ -86,33 +86,14 @@ public class TestNc4IospReading {
     System.out.printf(" java took= %d msecs size=%d%n", took, data.getSize());
 
     ncfile.close();
-
   }
 
   @Test
-  public void readAllNetcdf4() throws IOException {
-    int count = 0;
-    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/", new Hdf5FileFilter(), new MyAct(), true);
-    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
-  }
-
-  @Test
-  public void readAllHDF5() throws IOException {
-    int count = 0;
-    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/", new Hdf5FileFilter(), new MyAct(), true);
-    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
-  }
-
-  // @Test
   public void problem() throws IOException {
-    //String filename = "Q:/cdmUnitTest/formats/hdf5/npoess/GATRO-SATMR_npp_d20020906_t0409572_e0410270_b19646_c20090720223122943227_devl_int.h5";
-    //String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\npoess\\ExampleFiles\\AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5";
-    //String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\npoess\\ExampleFiles\\GDNBF-VNCCO_NPP_d2003125_t101038_e10116_b9_c2005829162517_dev.h5";
-    String filename = "G:/work/robertson/espresso_his_20130913_0000_0007.nc";
+    String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\20130212_CN021_P3_222k_B02_WD7195FBPAT10231Nat_Nat_Std_CHTNWD_OP3_14.mip222k.oschp";
     System.out.printf("***READ %s%n", filename);
     doCompare(filename, false, false, false);
   }
-
 
   @Test
   public void fractalHeapProblem() throws IOException {
@@ -123,29 +104,6 @@ public class TestNc4IospReading {
     NetcdfFile ncfile = NetcdfFile.open(filename);
     assert ncfile.findVariable("h")  != null;
     ncfile.close();
-  }
-
-
-  @Test
-  public void readAllNetcdf3() throws IOException {
-    int count = 0;
-    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", new Hdf5FileFilter(), new MyAct());
-    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
-  }
-
-  private class Hdf5FileFilter implements java.io.FileFilter {
-    public boolean accept(File pathname) {
-      /* java.io.IOException: -101: NetCDF: HDF error
-      	at ucar.nc2.jni.netcdf.Nc4Iosp._open(Nc4Iosp.java:243)
-      	at ucar.nc2.jni.netcdf.Nc4Iosp.open(Nc4Iosp.java:227) */
-      if (pathname.getPath().endsWith("wrf_bdy_par.h5")) return false; // temporary
-      if (pathname.getPath().endsWith("wrf_input_par.h5")) return false; // temporary
-      if (pathname.getPath().endsWith("wrf_out_par.h5")) return false; // temporary
-      if (pathname.getPath().endsWith("time.h5")) return false; // temporary
-      if (pathname.getPath().contains("npoess")) return false; // temporary
-      // if (pathname.getName().endsWith(".xml")) return false;
-      return true;
-    }
   }
 
   public static class Netcdf4ObjectFilter implements CompareNetcdf2.ObjFilter {

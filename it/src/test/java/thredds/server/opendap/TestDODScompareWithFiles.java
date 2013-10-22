@@ -115,6 +115,14 @@ public class TestDODScompareWithFiles {
 
   } */
 
+  // @Test
+  public void problem() throws IOException {
+    String filename = "conventions/nuwg/eta.nc";
+    String dodsUrl = TestWithLocalServer.server + path + filename;
+    String localPath = contentRoot + filename;
+    compareDatasets(dodsUrl, localPath);
+  }
+
   @Test
   public void compare() throws IOException {
     filename = StringUtil2.replace(filename, '\\', "/");
@@ -134,6 +142,8 @@ public class TestDODScompareWithFiles {
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
       boolean ok = mind.compare(ncfile, ncremote, new DodsObjFilter(), showCompare, showEach, compareData);
       if (!ok) {
+        System.out.printf("--Compare %s%n", filename);
+        System.out.printf("  %s%n", f);
         fail++;
       } else {
         success++;
