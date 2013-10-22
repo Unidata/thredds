@@ -108,8 +108,8 @@ public class HdfEos {
     if (smeta == null) return false;
 
     HdfEos fixer = new HdfEos();
-    fixer.amendFromODL(ncfile, smeta);
     fixer.fixAttributes(ncfile.getRootGroup());
+    fixer.amendFromODL(ncfile, smeta);
     return true;
   }
 
@@ -641,7 +641,7 @@ public class HdfEos {
   private void fixAttributes(Group g) {
     for (Variable v : g.getVariables()) {
       for (Attribute a : v.getAttributes()) {
-        if (a.getShortName().equalsIgnoreCase("UNIT"))
+        if (a.getShortName().equalsIgnoreCase("UNIT") || a.getShortName().equalsIgnoreCase("UNITS"))
           a.setShortName(CDM.UNITS);
         if (a.getShortName().equalsIgnoreCase("SCALE_FACTOR"))
           a.setShortName(CDM.SCALE_FACTOR);

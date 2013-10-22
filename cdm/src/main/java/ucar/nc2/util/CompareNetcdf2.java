@@ -407,11 +407,11 @@ public class CompareNetcdf2 {
     boolean ok = true;
 
     for (Object aList1 : list1) {
-      ok &= checkEach(what, (CDMNode) aList1, "file1", list1, "file2", list2, result);
+      ok &= checkEach(what, aList1, "file1", list1, "file2", list2, result);
     }
 
     for (Object aList2 : list2) {
-      ok &= checkEach(what, (CDMNode) aList2, "file2", list2, "file1", list1, result);
+      ok &= checkEach(what, aList2, "file2", list2, "file1", list1, result);
     }
 
     return ok;
@@ -419,7 +419,7 @@ public class CompareNetcdf2 {
 
   // check that want is in both list1 and list2, using object.equals()
 
-  private boolean checkEach(String what, CDMNode want1, String name1, List list1, String name2, List list2, List result) {
+  private boolean checkEach(String what, Object want1, String name1, List list1, String name2, List list2, List result) {
     boolean ok = true;
     try {
       int index2 = list2.indexOf(want1);

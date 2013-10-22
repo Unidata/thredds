@@ -411,7 +411,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public String getUnitsString() {
     String units = null;
-    Attribute att = findAttributeIgnoreCase(CDM.UNITS);
+    Attribute att = findAttribute(CDM.UNITS);
+    if (att == null) att = findAttributeIgnoreCase(CDM.UNITS);
     if ((att != null) && att.isString()) {
       units = att.getStringValue();
       if (units != null) units = units.trim();

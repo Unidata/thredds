@@ -63,7 +63,7 @@ public class TestNcstreamCompareOne {
 
   @Test
    public void problem() throws IOException {
-     String problemFile = contentRoot + "/hdf5/complex/compound_native.h5";
+     String problemFile = contentRoot + "/hdf5/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5";
      String name = StringUtil2.substitute(problemFile.substring(contentRoot.length()), "\\", "/");
      String remote = urlPath + name;
      compareDatasets(problemFile, remote);
