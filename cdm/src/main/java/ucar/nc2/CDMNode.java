@@ -73,7 +73,7 @@ public abstract class CDMNode {
   Structure parentstruct = null;
   boolean immutable = false;
   String shortName = null;
-  String fullName = null; // uses backslash escaping
+  //String fullName = null; // uses backslash escaping
 
   // HACK: sadly, because of the existing class structure,
   // we need to track the original name of a
@@ -241,9 +241,11 @@ public abstract class CDMNode {
    * @return full name with backslash escapes
    */
   public String getFullName() {
+    return NetcdfFile.makeFullName(this);
+    /* getting called before complete
     if (this.fullName == null)
       this.fullName = NetcdfFile.makeFullName(this);
-    return this.fullName;
+    return this.fullName; */
   }
 
   /**

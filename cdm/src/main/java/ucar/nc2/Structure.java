@@ -175,8 +175,7 @@ public class Structure extends Variable {
     members = new ArrayList<Variable>();
     memberHash = new HashMap<String, Variable>(2*vars.size());
     for (Variable v : vars) {
-      members.add(v);
-      memberHash.put( v.getShortName(), v);
+      addMemberVariable(v);
     }
   }
 

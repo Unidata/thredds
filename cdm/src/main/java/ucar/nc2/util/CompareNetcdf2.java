@@ -429,7 +429,7 @@ public class CompareNetcdf2 {
         f.format("  ** %s: %s 0x%x (%s) not in %s %n", what, want1, want1.hashCode(), name1, name2);
         ok = false;
       } else { // found it in second list
-        CDMNode want2 = (CDMNode) list2.get(index2);
+        Object want2 = list2.get(index2);
         int index1 = list1.indexOf(want2);
         if (index1 < 0) { // can this happen ??
           //want2.hashCodeShow(new Indent(2));
