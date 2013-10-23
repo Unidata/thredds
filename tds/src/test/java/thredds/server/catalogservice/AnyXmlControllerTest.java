@@ -10,22 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.mock.web.MockTdsContextLoader;
 
-
-@ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml", "/WEB-INF/catalogService-servlet.xml"}, loader = MockTdsContextLoader.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class AnyXmlControllerTest extends AbstractCatalogServiceTest {
 
   @Autowired
   private LocalCatalogServiceController anyXmlController;
-
-  @Before
-  public void setUp() {
-    anyXmlController.setTdsContext(tdsContext);
-    anyXmlController.setHtmlWriter(htmlWriter);
-  }
 
   public void showCommandTest() throws Exception {
 
@@ -33,7 +28,7 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest {
     request.setServletPath("/testGridScan/catalog.xml");
     MockHttpServletResponse response = new MockHttpServletResponse();
 
-    ModelAndView mv = anyXmlController.handleRequest(request, response);
+    ModelAndView mv = anyXmlController.handleXmlRequest(request, response);
 
     assertViewName(mv, "threddsInvCatXmlView");
     assertAndReturnModelAttributeOfType(mv, "catalog", thredds.catalog.InvCatalogImpl.class);
@@ -55,7 +50,7 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest {
     request.setParameter("dataset", "testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd");
     MockHttpServletResponse response = new MockHttpServletResponse();
 
-    ModelAndView mv = anyXmlController.handleRequest(request, response);
+    ModelAndView mv = anyXmlController.handleXmlRequest(request, response);
     assertViewName(mv, "threddsInvCatXmlView");
     assertAndReturnModelAttributeOfType(mv, "catalog", thredds.catalog.InvCatalogImpl.class);
 
@@ -75,7 +70,7 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest {
 
     MockHttpServletResponse response = new MockHttpServletResponse();
 
-    ModelAndView mv = anyXmlController.handleRequest(request, response);
+    ModelAndView mv = anyXmlController.handleXmlRequest(request, response);
     assertNull(mv);
     assertEquals(400, response.getStatus());
     assertEquals("Bad request: The \"command\" field may not be VALIDATE.", response.getErrorMessage());

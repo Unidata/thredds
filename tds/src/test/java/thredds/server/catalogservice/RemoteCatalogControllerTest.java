@@ -14,12 +14,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.mock.web.MockTdsContextLoader;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {	"/WEB-INF/applicationContext-tdsConfig.xml", "/WEB-INF/catalogService-servlet.xml" }, loader = MockTdsContextLoader.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 
 	//RemoteCatalogRequest parameters:

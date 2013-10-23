@@ -50,98 +50,83 @@ import java.util.HashMap;
 import java.net.URI;
 
 /**
- * _more_
+ * Validate catalog request - could change to @Valid framework
  *
  * @author edavis
  * @since 4.0
  */
-public class CatalogServiceUtils
-{
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( CatalogServiceUtils.class );
+public class CatalogServiceUtils {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogServiceUtils.class);
 
-  private CatalogServiceUtils() {}
+  private CatalogServiceUtils() {
+  }
 
-  public static BindingResult bindAndValidateRemoteCatalogRequest( HttpServletRequest request )
-  {
+  public static BindingResult bindAndValidateRemoteCatalogRequest(HttpServletRequest request) {
     // Bind and validate the request to a RemoteCatalogRequest.
     RemoteCatalogRequest rcr = new RemoteCatalogRequest();
-    RemoteCatalogRequestDataBinder db = new RemoteCatalogRequestDataBinder( rcr, "request" );
-    db.setAllowedFields( new String[]{"catalogUri", "command", "dataset", "verbose", "htmlView"} );
-    db.bind( request );
-    
+    RemoteCatalogRequestDataBinder db = new RemoteCatalogRequestDataBinder(rcr, "request");
+    db.setAllowedFields("catalogUri", "command", "dataset", "verbose", "htmlView");
+    db.bind(request);
+
     BindingResult bindingResult = db.getBindingResult();
-    ValidationUtils.invokeValidator( new RemoteCatalogRequestValidator(), bindingResult.getTarget(), bindingResult );
+    ValidationUtils.invokeValidator(new RemoteCatalogRequestValidator(), bindingResult.getTarget(), bindingResult);
 
     return bindingResult;
   }
 
-  public static BindingResult bindAndValidateLocalCatalogRequest( HttpServletRequest request,
-                                                                  boolean htmlView )
-  {
+  public static BindingResult bindAndValidateLocalCatalogRequest(HttpServletRequest request, boolean htmlView) {
     // Bind and validate the request to a LocalCatalogRequest.
     LocalCatalogRequest rcr = new LocalCatalogRequest();
-    LocalCatalogRequestDataBinder db = new LocalCatalogRequestDataBinder( rcr, "request" );
-    db.setAllowedFields( new String[]{"path", "command", "dataset"} );
-    db.bind( request );
+    LocalCatalogRequestDataBinder db = new LocalCatalogRequestDataBinder(rcr, "request");
+    db.setAllowedFields("path", "command", "dataset");
+    db.bind(request);
 
     BindingResult bindingResult = db.getBindingResult();
     LocalCatalogRequestValidator validator = new LocalCatalogRequestValidator();
-    validator.setHtmlView( htmlView );
-    ValidationUtils.invokeValidator( validator, bindingResult.getTarget(), bindingResult );
+    validator.setHtmlView(htmlView);
+    ValidationUtils.invokeValidator(validator, bindingResult.getTarget(), bindingResult);
 
     return bindingResult;
   }
 
-  public static ModelAndView constructModelForCatalogView( InvCatalog cat, HtmlConfig htmlConfig )
-  {
+  public static ModelAndView constructModelForCatalogView(InvCatalog cat, HtmlConfig htmlConfig) {
     // Hand to catalog view.
     String catName = cat.getName();
     String catUri = cat.getUriString();
-    if ( catName == null )
-    {
+    if (catName == null) {
       List childrenDs = cat.getDatasets();
-      if ( childrenDs.size() == 1 )
-      {
-        InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
+      if (childrenDs.size() == 1) {
+        InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get(0);
         catName = onlyChild.getName();
-      }
-      else
+      } else
         catName = "";
     }
 
     Map<String, Object> model = new HashMap<String, Object>();
-    model.put( "catalog", cat );
-    model.put( "catalogName", HtmlUtils.htmlEscape( catName ) );
-    model.put( "catalogUri", HtmlUtils.htmlEscape( catUri ) );
+    model.put("catalog", cat);
+    model.put("catalogName", HtmlUtils.htmlEscape(catName));
+    model.put("catalogUri", HtmlUtils.htmlEscape(catUri));
 
-    htmlConfig.addHtmlConfigInfoToModel( model );
+    htmlConfig.addHtmlConfigInfoToModel(model);
 
-    return new ModelAndView( "thredds/server/catalog/catalog", model );
+    return new ModelAndView("thredds/server/catalog/catalog", model);
   }
 
-  public static ModelAndView constructValidationMessageModelAndView( URI uri,
-                                                                     String validationMessage,
-                                                                     HtmlConfig htmlConfig )
-  {
+  public static ModelAndView constructValidationMessageModelAndView(URI uri, String validationMessage, HtmlConfig htmlConfig) {
     Map<String, Object> model = new HashMap<String, Object>();
-    model.put( "catalogUrl", uri );
-    model.put( "message", validationMessage );
+    model.put("catalogUrl", uri);
+    model.put("message", validationMessage);
 
-    htmlConfig.addHtmlConfigInfoToModel( model );
-
-    return new ModelAndView( "/thredds/server/catalogservice/validationMessage", model );
+    htmlConfig.addHtmlConfigInfoToModel(model);
+    return new ModelAndView("/thredds/server/catalogservice/validationMessage", model);
   }
 
-  public static ModelAndView constructValidationErrorModelAndView( URI uri,
-                                                                   String validationMessage,
-                                                                   HtmlConfig htmlConfig )
-  {
+  public static ModelAndView constructValidationErrorModelAndView(URI uri, String validationMessage, HtmlConfig htmlConfig) {
     Map<String, Object> model = new HashMap<String, Object>();
-    model.put( "catalogUrl", uri );
-    model.put( "message", validationMessage );
+    model.put("catalogUrl", uri);
+    model.put("message", validationMessage);
 
-    htmlConfig.addHtmlConfigInfoToModel( model );
-
-    return new ModelAndView( "/thredds/server/catalogservice/validationError", model );
+    htmlConfig.addHtmlConfigInfoToModel(model);
+    return new ModelAndView("/thredds/server/catalogservice/validationError", model);
   }
 }

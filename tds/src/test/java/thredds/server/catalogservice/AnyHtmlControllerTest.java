@@ -8,22 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.mock.web.MockTdsContextLoader;
 
 
-@ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml","/WEB-INF/catalogService-servlet.xml" }, loader=MockTdsContextLoader.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 public class AnyHtmlControllerTest extends AbstractCatalogServiceTest{
 
 	@Autowired
 	private LocalCatalogServiceController anyHtmlController;
-
-	@Before
-	public void setUp(){		
-		anyHtmlController.setTdsContext(tdsContext);
-		anyHtmlController.setHtmlWriter(htmlWriter);
-	}
 	
 	public void showCommandTest() throws Exception{
 		
@@ -37,7 +33,7 @@ public class AnyHtmlControllerTest extends AbstractCatalogServiceTest{
 		request.setServletPath("/NCOF/POLCOMS/IRISH_SEA/catalog.html");
         MockHttpServletResponse response = new MockHttpServletResponse();
 		
-        ModelAndView mv =anyHtmlController.handleRequest(request, response);        
+        ModelAndView mv =anyHtmlController.handleHtmlRequest(request, response);
         assertNull( mv );        
         assertEquals(200, response.getStatus() ); 
 	}	
@@ -58,7 +54,7 @@ public class AnyHtmlControllerTest extends AbstractCatalogServiceTest{
 		request.setParameter("dataset", "NCOF/POLCOMS/IRISH_SEA");
         MockHttpServletResponse response = new MockHttpServletResponse();
 		
-        ModelAndView mv =anyHtmlController.handleRequest(request, response);        
+        ModelAndView mv =anyHtmlController.handleHtmlRequest(request, response);
         assertNull( mv );        
         assertEquals(200, response.getStatus() ); 
 	}	
@@ -77,7 +73,7 @@ public class AnyHtmlControllerTest extends AbstractCatalogServiceTest{
 		
         MockHttpServletResponse response = new MockHttpServletResponse();
 		
-        ModelAndView mv =anyHtmlController.handleRequest(request, response);        
+        ModelAndView mv =anyHtmlController.handleHtmlRequest(request, response);
         assertNull( mv );
         assertEquals(400, response.getStatus() );
         assertEquals("Bad request: The \"command\" field may not be VALIDATE." , response.getErrorMessage());

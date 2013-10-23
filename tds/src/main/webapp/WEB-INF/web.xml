@@ -38,10 +38,10 @@
     </init-param>
   </filter>
 
-  <filter>
+  <!-- filter>
     <filter-name>CatalogServiceFilter</filter-name>
     <filter-class>thredds.servlet.filter.CatalogServiceFilter</filter-class>
-  </filter>
+  </filter -->
 
   <filter>
     <filter-name>CookieFilter</filter-name>
@@ -74,10 +74,10 @@
     <servlet-name>root</servlet-name>
   </filter-mapping>
    
-  <filter-mapping>
+  <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>catalogService</servlet-name>
-  </filter-mapping>
+  </filter-mapping -->
     
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
@@ -118,10 +118,10 @@
   <!--
   Filter all requests that contain parameters used by CatalogServices
   -->
-  <filter-mapping>
+  <!-- filter-mapping>
     <filter-name>CatalogServiceFilter</filter-name>
     <servlet-name>catalogService</servlet-name>
-  </filter-mapping>
+  </filter-mapping -->
   
   <!--
   Filter opendap cookies
@@ -210,12 +210,12 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.) -->
+  <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.)
   <servlet>
     <servlet-name>catalogService</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <!-- data services -->
   <!-- NON-SPRING  controllers ands servlets -->
@@ -332,7 +332,7 @@
     <url-pattern>/</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>catalogService</servlet-name>
     <url-pattern>*.xml</url-pattern>
   </servlet-mapping>
@@ -348,14 +348,14 @@
     <servlet-name>catalogService</servlet-name>
     <url-pattern>/remoteCatalogService</url-pattern>
   </servlet-mapping>
-  <servlet-mapping> <!-- For backwards compatibility -->
+  <servlet-mapping>  For backwards compatibility
     <servlet-name>catalogService</servlet-name>
     <url-pattern>/catalogServices</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>catalogService</servlet-name>
     <url-pattern>/remoteCatalogValidation.html</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <!-- data services -->
   <servlet-mapping>

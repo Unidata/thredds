@@ -32,6 +32,9 @@
  */
 package thredds.server.catalogservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
@@ -61,116 +64,169 @@ import java.net.URISyntaxException;
  * Handle all requests for local catalog access and services. Supported
  * services are subsetting of catalogs and HTML views of catalogs (full
  * or subset) and datasets.
- *
+ * <p/>
  * <p>Can also handle non-catalog requests for XML andHTML files in publicDoc FileSource.
- *
+ * <p/>
  * <p>Currently, handles the following TDS requests:
  * <ul>
- *   <li>Mapping="/catalog/*" -- e.g., ServletPath="/catalog" and PathInfo="/some/path/*.html"</li>
- *   <li>Mapping="*.xml"      -- ServletPath="/some/path/*.xml" and PathInfo=null</li>
- *   <li>Mapping="*.html"     -- ServletPath="/some/path/*.html" and PathInfo=null</li>
+ * <li>Mapping="/catalog/*" -- e.g., ServletPath="/catalog" and PathInfo="/some/path/*.html"</li>
+ * <li>Mapping="*.xml"      -- ServletPath="/some/path/*.xml" and PathInfo=null</li>
+ * <li>Mapping="*.html"     -- ServletPath="/some/path/*.html" and PathInfo=null</li>
  * </ul>
  * <p>Note: When "/catalog/*" request paths end in "/", a suffix is appended
  * to the path. The suffix default value is "catalog.html" but can be set in
  * {@link LocalCatalogRequestDataBinder}.
- *
+ * <p/>
  * <p> Uses the following information from an HTTP request:
  * <ul>
- *   <li> The "local catalog path" identifies the local catalog to use. Its
- *     value is either getPathInfo() or getServletPath() depending on how the
- *     requests are mapped to the servlet, see
- *    {@link thredds.util.TdsPathUtils#extractPath(javax.servlet.http.HttpServletRequest)
- *     TdsPathUtils.extractPath()}.</li>
- *   <li>The "local catalog path" extension (which must be either ".xml" or
- *     ".html") determines whether the catalog is displayed with an XML or
- *     an HTML view. [Note: the ".html" ending is replaced with ".xml" when
- *     the path is used to locate the local catalog.]</li>
- *   <li>The "command" parameter must either be empty or have a value of
- *     "SHOW" or "SUBSET", see {@link Command}; </li>
- *   <li>The parameter "dataset" identifies a dataset contained by the
- *     local catalog. </li>
+ * <li> The "local catalog path" identifies the local catalog to use. Its
+ * value is either getPathInfo() or getServletPath() depending on how the
+ * requests are mapped to the servlet, see
+ * {@link thredds.util.TdsPathUtils#extractPath(javax.servlet.http.HttpServletRequest)
+ * TdsPathUtils.extractPath()}.</li>
+ * <li>The "local catalog path" extension (which must be either ".xml" or
+ * ".html") determines whether the catalog is displayed with an XML or
+ * an HTML view. [Note: the ".html" ending is replaced with ".xml" when
+ * the path is used to locate the local catalog.]</li>
+ * <li>The "command" parameter must either be empty or have a value of
+ * "SHOW" or "SUBSET", see {@link Command}; </li>
+ * <li>The parameter "dataset" identifies a dataset contained by the
+ * local catalog. </li>
  * </ul>
- *
+ * <p/>
  * <p>Constraints on the above information:
  * <ul>
- *   <li>The "local catalog path" may end in either ".xml" or ".html" and
- *     must reference an existing local catalog. A ".html" ending is replaced
- *     with ".xml" when the path is used to locate the local catalog. </li>
- *   <li>The "dataset" parameter must either be empty or contain the value
- *     of a dataset ID contained in the catalog.</li>
- *   <li>If the "command" parameter is empty, it will default to "SHOW" if
- *     the "dataset" parameter is empty, otherwise it will default to "SUBSET".</li>
+ * <li>The "local catalog path" may end in either ".xml" or ".html" and
+ * must reference an existing local catalog. A ".html" ending is replaced
+ * with ".xml" when the path is used to locate the local catalog. </li>
+ * <li>The "dataset" parameter must either be empty or contain the value
+ * of a dataset ID contained in the catalog.</li>
+ * <li>If the "command" parameter is empty, it will default to "SHOW" if
+ * the "dataset" parameter is empty, otherwise it will default to "SUBSET".</li>
  * </ul>
- *
+ * <p/>
  * <p>The above information is contained in a {@link LocalCatalogRequest}
  * command object, default values are set during binding by
  * {@link LocalCatalogRequestDataBinder}), and constraints are enforced by
  * {@link LocalCatalogRequestValidator}.
  *
  * @author edavis
- * @since 4.0
  * @see thredds.util.TdsPathUtils#extractPath(javax.servlet.http.HttpServletRequest)
  * @see Command
  * @see LocalCatalogRequest
  * @see LocalCatalogRequestDataBinder
  * @see LocalCatalogRequestValidator
+ * @since 4.0
  */
-public class LocalCatalogServiceController extends AbstractController
-{
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+@Component
+public class LocalCatalogServiceController {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
+  @Autowired
   private TdsContext tdsContext;
+
+  @Autowired
   private HtmlWriter htmlWriter;
 
-  private boolean catalogSupportOnly;
-  private boolean htmlView;
+  private boolean catalogSupportOnly = false;
 
-  public void setTdsContext( TdsContext tdsContext ) {
-    this.tdsContext = tdsContext;
-  }
-
-  public void setHtmlWriter( HtmlWriter htmlWriter ) {
-    this.htmlWriter = htmlWriter;
-  }
-
-  public boolean isCatalogSupportOnly()
-  {
+  public boolean isCatalogSupportOnly() {
     return catalogSupportOnly;
   }
 
-  public void setCatalogSupportOnly( boolean catalogSupportOnly )
-  {
+  // apparently not used
+  public void setCatalogSupportOnly(boolean catalogSupportOnly) {
     this.catalogSupportOnly = catalogSupportOnly;
   }
 
-  public boolean isHtmlView()
-  {
-    return htmlView;
-  }
-
-  public void setHtmlView( boolean htmlView )
-  {
-    this.htmlView = htmlView;
-  }
-
-  protected ModelAndView handleRequestInternal( HttpServletRequest request,
-                                                HttpServletResponse response )
-          throws Exception
-  {
-    try
-    {
+  @RequestMapping("*.xml")
+  protected ModelAndView handleXmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    try {
       // Bind HTTP request to a LocalCatalogRequest.
-      BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( request, this.htmlView );
+      BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest(request, false);
 
       // If any binding or validation errors, return BAD_REQUEST.
-      if ( bindingResult.hasErrors() )
-      {
-        StringBuilder msg = new StringBuilder( "Bad request" );
+      if (bindingResult.hasErrors()) {
+        StringBuilder msg = new StringBuilder("Bad request");
         List<ObjectError> oeList = bindingResult.getAllErrors();
-        for ( ObjectError e : oeList )
-          msg.append( ": " ).append( e.getDefaultMessage() != null ? e.getDefaultMessage() : e.toString() );
-        log.info( "handleRequestInternal(): " + msg );
-        response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
+        for (ObjectError e : oeList)
+          msg.append(": ").append(e.getDefaultMessage() != null ? e.getDefaultMessage() : e.toString());
+        log.info("handleRequestInternal(): " + msg);
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg.toString());
+        return null;
+      }
+
+      // Retrieve the resulting LocalCatalogRequest.
+      LocalCatalogRequest catalogServiceRequest = (LocalCatalogRequest) bindingResult.getTarget();
+
+      // Determine path and catalogPath
+      String catalogPath = catalogServiceRequest.getPath();
+
+      // Check for matching catalog.
+      DataRootHandler drh = DataRootHandler.getInstance();
+
+      InvCatalog catalog = null;
+      String baseUriString = request.getRequestURL().toString();
+      try {
+        catalog = drh.getCatalog(catalogPath, new URI(baseUriString));
+      } catch (URISyntaxException e) {
+        String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
+        log.error("handleRequestInternal(): " + msg);
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
+        return null;
+      }
+
+      // If no catalog found, handle as a publicDoc request.
+      if (catalog == null)
+        return handlePublicDocumentRequest(request, response, catalogPath);
+
+      // Otherwise, handle catalog as indicated by "command".
+      if (catalogServiceRequest.getCommand().equals(Command.SHOW)) {
+        return new ModelAndView("threddsInvCatXmlView", "catalog", catalog);
+
+      } else if (catalogServiceRequest.getCommand().equals(Command.SUBSET)) {
+        String datasetId = catalogServiceRequest.getDataset();
+        InvDataset dataset = catalog.findDatasetByID(datasetId);
+        if (dataset == null) {
+          String msg = "Did not find dataset [" + datasetId + "] in catalog [" + baseUriString + "].";
+          response.sendError(HttpServletResponse.SC_NOT_FOUND, msg);
+          return null;
+        }
+
+        InvCatalog subsetCat = DeepCopyUtils.subsetCatalogOnDataset(catalog, dataset);
+        return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
+
+      } else {
+        String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
+        log.error("handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation.");
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
+        return null;
+      }
+
+    } catch (IOException e) {
+      log.error("handleRequestInternal(): Trouble writing to response.", e);
+      return null;
+    } catch (Throwable e) {
+      log.error("handleRequestInternal(): Problem handling request.", e);
+      if (!response.isCommitted()) response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      return null;
+    }
+  }
+
+  @RequestMapping("*.html")
+  protected ModelAndView handleHtmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    try {
+      // Bind HTTP request to a LocalCatalogRequest.
+      BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest(request, true);
+
+      // If any binding or validation errors, return BAD_REQUEST.
+      if (bindingResult.hasErrors()) {
+        StringBuilder msg = new StringBuilder("Bad request");
+        List<ObjectError> oeList = bindingResult.getAllErrors();
+        for (ObjectError e : oeList)
+          msg.append(": ").append(e.getDefaultMessage() != null ? e.getDefaultMessage() : e.toString());
+        log.info("handleRequestInternal(): " + msg);
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg.toString());
         return null;
       }
 
@@ -179,107 +235,78 @@ public class LocalCatalogServiceController extends AbstractController
 
       // Determine path and catalogPath
       String path = catalogServiceRequest.getPath();
-      String catalogPath = this.htmlView ? path.replaceAll( ".html$", ".xml" ) : path;
+      String catalogPath = path.replaceAll(".html$", ".xml");
 
       // Check for matching catalog.
       DataRootHandler drh = DataRootHandler.getInstance();
 
       InvCatalog catalog = null;
       String baseUriString = request.getRequestURL().toString();
-      try
-      {
-        catalog = drh.getCatalog( catalogPath, new URI( baseUriString ) );
-      }
-      catch ( URISyntaxException e )
-      {
+      try {
+        catalog = drh.getCatalog(catalogPath, new URI(baseUriString));
+      } catch (URISyntaxException e) {
         String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
-        log.error( "handleRequestInternal(): " + msg );
-        response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
+        log.error("handleRequestInternal(): " + msg);
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return null;
       }
 
       // If no catalog found, handle as a publicDoc request.
-      if ( catalog == null )
-        return handlePublicDocumentRequest( request, response, path );
+      if (catalog == null)
+        return handlePublicDocumentRequest(request, response, path);
 
       // Otherwise, handle catalog as indicated by "command".
-      if ( catalogServiceRequest.getCommand().equals( Command.SHOW))
-      {
-        if ( this.htmlView )
-        {
-          int i = this.htmlWriter.writeCatalog( request, response, (InvCatalogImpl) catalog, true );
+      if (catalogServiceRequest.getCommand().equals(Command.SHOW)) {
+          int i = this.htmlWriter.writeCatalog(request, response, (InvCatalogImpl) catalog, true);
           return null;
-          // return constructModelForCatalogView( catalog, this.htmlView );
-        }
-        else
-          return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
-      }
-      else if ( catalogServiceRequest.getCommand().equals( Command.SUBSET ))
-      {
+
+      } else if (catalogServiceRequest.getCommand().equals(Command.SUBSET)) {
         String datasetId = catalogServiceRequest.getDataset();
-        InvDataset dataset = catalog.findDatasetByID( datasetId );
-        if ( dataset == null )
-        {
+        InvDataset dataset = catalog.findDatasetByID(datasetId);
+        if (dataset == null) {
           String msg = "Did not find dataset [" + datasetId + "] in catalog [" + baseUriString + "].";
           //log.info( "handleRequestInternal(): " + msg );
-          response.sendError( HttpServletResponse.SC_NOT_FOUND, msg.toString() );
+          response.sendError(HttpServletResponse.SC_NOT_FOUND, msg);
           return null;
         }
 
-        if ( this.htmlView)
-        {
-          int i = this.htmlWriter.showDataset( baseUriString, (InvDatasetImpl) dataset, request, response, true );
-          return null;
-        }
-        else
-        {
-          InvCatalog subsetCat = DeepCopyUtils.subsetCatalogOnDataset( catalog, dataset );
-          return new ModelAndView( "threddsInvCatXmlView", "catalog", subsetCat );
-        }
-      }
-      else
-      {
+        int i = this.htmlWriter.showDataset(baseUriString, (InvDatasetImpl) dataset, request, response, true);
+        return null;
+
+      } else {
         String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
-        log.error( "handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation." );
-        response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
+        log.error("handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation.");
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return null;
       }
-    }
-    catch ( IOException e )
-    {
-      log.error( "handleRequestInternal(): Trouble writing to response.", e);
+    } catch (IOException e) {
+      log.error("handleRequestInternal(): Trouble writing to response.", e);
       return null;
-    }
-    catch ( Throwable e )
-    {
-      log.error( "handleRequestInternal(): Problem handling request.", e );
-      if ( ! response.isCommitted() ) response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+    } catch (Throwable e) {
+      log.error("handleRequestInternal(): Problem handling request.", e);
+      if (!response.isCommitted()) response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return null;
     }
   }
 
-  private ModelAndView handlePublicDocumentRequest( HttpServletRequest request,
-                                                    HttpServletResponse response,
-                                                    String path )
-          throws IOException, ServletException
-  {
+  private ModelAndView handlePublicDocumentRequest(HttpServletRequest request, HttpServletResponse response, String path)
+          throws IOException, ServletException {
+
     // If not supporting access to public document files, send not found response.
-    if ( this.catalogSupportOnly )
-    {
-      response.sendError( HttpServletResponse.SC_NOT_FOUND );
+    if (this.catalogSupportOnly) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND);
       return null;
     }
 
     // If request doesn't match a known catalog, look for a public document.
-    File publicFile = tdsContext.getPublicDocFileSource().getFile( path );
-    if ( publicFile != null )
-    {
-      return new ModelAndView( "threddsFileView", "file", publicFile );
+    File publicFile = tdsContext.getPublicDocFileSource().getFile(path);
+    if (publicFile != null) {
+      return new ModelAndView("threddsFileView", "file", publicFile);
     }
 
     // If request doesn't match a public document, forward to default dispatcher.
-    RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(),
-                                        request, response );
+    RequestForwardUtils.forwardRequest(path, tdsContext.getDefaultRequestDispatcher(),
+            request, response);
     return null;
   }
 }
