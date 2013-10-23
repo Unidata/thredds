@@ -62,7 +62,8 @@ public class CompareNetcdf2 {
   }
 
   static public interface ObjFilter {
-    boolean attOk(Variable v, Attribute att);
+    boolean attCheckOk(Variable v, Attribute att);
+    boolean varDataTypeCheckOk(Variable v);
   }
 
   /////////
@@ -222,8 +223,8 @@ public class CompareNetcdf2 {
       f.format(" ** names are different %s != %s %n", org.getFullName(), copy.getFullName());
       ok = false;
     }
-    if (org.getDataType() != copy.getDataType()) {
-      f.format(" ** dataTypes are different %s != %s %n", org.getDataType(), copy.getDataType());
+    if (filter.varDataTypeCheckOk(org) && (org.getDataType() != copy.getDataType())) {
+      f.format(" ** %s dataTypes are different %s != %s %n", org.getFullName(), org.getDataType(), copy.getDataType());
       ok = false;
     }
 
@@ -342,12 +343,12 @@ public class CompareNetcdf2 {
 
     String name = v == null ? "global" : "variable " + v.getFullName();
     for (Attribute att1 : list1) {
-      if (filter == null || filter.attOk(v, att1))
+      if (filter == null || filter.attCheckOk(v, att1))
         ok &= checkEach(name, att1, "file1", list1, "file2", list2, null);
     }
 
     for (Attribute att2 : list2) {
-      if (filter == null || filter.attOk(v, att2))
+      if (filter == null || filter.attCheckOk(v, att2))
       ok &= checkEach(name, att2, "file2", list2, "file1", list1, null);
     }
 
@@ -358,8 +359,12 @@ public class CompareNetcdf2 {
     boolean ok = true;
 
     for (Dimension d1 : list1) {
-      if (d1.isShared())
-        ok &= list2.contains(d1);
+      if (d1.isShared()) {
+        boolean hasit = list2.contains(d1);
+        if (!hasit)
+          f.format("  ** Missing dim %s not in file2 %n", d1);
+        ok &= hasit;
+      }
     }
 
     return ok;

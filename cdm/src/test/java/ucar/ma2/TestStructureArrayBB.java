@@ -142,8 +142,6 @@ public class TestStructureArrayBB {
 
 
   private void fill(Array a) {
-    if (a == null)
-      System.out.println("HEY");
     IndexIterator ii = a.getIndexIterator();
     while (ii.hasNext()) {
       ii.getIntNext();

@@ -119,7 +119,7 @@ public class TestNcstreamCompareWithFiles {
   private class NcstreamObjFilter implements CompareNetcdf2.ObjFilter {
 
     @Override
-    public boolean attOk(Variable v, Attribute att) {
+    public boolean attCheckOk(Variable v, Attribute att) {
       // if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getShortName();
 
@@ -127,6 +127,8 @@ public class TestNcstreamCompareWithFiles {
 
       return true;
     }
+
+    @Override public boolean varDataTypeCheckOk(Variable v) { return true; }
 
   }
 

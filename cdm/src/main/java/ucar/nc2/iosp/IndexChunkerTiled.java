@@ -87,7 +87,7 @@ public class IndexChunkerTiled {
     Section intersect = dataSection.intersect(wantSection);
     this.total = intersect.computeSize();
     if (total <= 0) {
-      System.out.println("hey");
+      System.out.println("IndexChunkerTiled HEY");
     }
     assert total > 0;
     int varRank = intersect.getRank();

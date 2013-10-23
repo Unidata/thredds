@@ -1,5 +1,6 @@
 package ucar.nc2.jni.netcdf;
 
+import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 
 import org.junit.Assert;
@@ -7,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
@@ -46,9 +48,8 @@ public class TestNc4JniReadCompare {
     List<Object[]> result = new ArrayList<Object[]>(500);
 
     try {
-      addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf3/", null); // new SuffixFileFilter(".nc"));
-      addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf4/", null); // new SuffixFileFilter(".nc"));
-      // addFromScan(result, TestDir.cdmUnitTestDir + "formats/hdf5/", new Hdf5FileFilter());
+      addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf3/", new NotFileFilter( new SuffixFileFilter(".cdl")));
+      addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf4/", new NotFileFilter( new SuffixFileFilter(".cdl")));
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -137,7 +138,7 @@ public class TestNc4JniReadCompare {
 
   public static class Netcdf4ObjectFilter implements CompareNetcdf2.ObjFilter {
     @Override
-    public boolean attOk(Variable v, Attribute att) {
+    public boolean attCheckOk(Variable v, Attribute att) {
       // if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getShortName();
 
@@ -154,6 +155,13 @@ public class TestNc4JniReadCompare {
       // not implemented yet
       //if (att.getDataType().isEnum()) return false;
 
+      return true;
+    }
+
+    @Override
+    public boolean varDataTypeCheckOk(Variable v) {
+      if (v.getDataType() == DataType.CHAR) return false;    // temp workaround
+      if (v.getDataType() == DataType.STRING) return false;
       return true;
     }
   }

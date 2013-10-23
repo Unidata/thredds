@@ -159,7 +159,7 @@ public class TestDODScompareWithFiles {
   private class DodsObjFilter implements CompareNetcdf2.ObjFilter {
 
     @Override
-    public boolean attOk(Variable v, Attribute att) {
+    public boolean attCheckOk(Variable v, Attribute att) {
       // if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getShortName();
 
@@ -168,6 +168,7 @@ public class TestDODScompareWithFiles {
       return true;
     }
 
+    @Override public boolean varDataTypeCheckOk(Variable v) { return true; }
   }
 
 

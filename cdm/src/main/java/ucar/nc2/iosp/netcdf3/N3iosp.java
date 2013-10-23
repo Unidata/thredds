@@ -438,11 +438,11 @@ public String NC_check_name(String name) {
   // data reading
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
-    if (debugRead) {
+    /* if (debugRead) {
       System.out.printf("debugRead %s %s%n", v2.toStringDebug(), section);
       if (v2.getShortName().equals("cref"))
         System.out.println("HEY");
-    }
+    } */
     if (v2 instanceof Structure)
       return readRecordData((Structure) v2, section);
 

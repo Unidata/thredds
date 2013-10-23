@@ -487,8 +487,6 @@ public class ArrayStructureBB extends ArrayStructure {
       System.out.println("ArrayStructureBB null heap");
       return null;
     }
-    if (index > heap.size())
-      System.out.println("HEY index "+index);
     Object ho = heap.get(index);
     if (ho instanceof ArraySequence)
       return (ArraySequence) heap.get(index);

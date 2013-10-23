@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.hdf4;
 
+import ucar.ma2.ArrayObject;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.dataset.CoordinateSystem;
@@ -143,8 +144,15 @@ public class HdfEos {
 
       // read and parse the ODL
       Array A = structMetadataVar.read();
-      ArrayChar ca = (ArrayChar) A;
-      structMetadata = ca.getString(); // common case only StructMetadata.0, avoid extra copy
+      if (A instanceof ArrayChar.D1) {
+        ArrayChar ca = (ArrayChar) A;
+        structMetadata = ca.getString(); // common case only StructMetadata.0, avoid extra copy
+      } else if (A instanceof ArrayObject.D0) {
+        ArrayObject ao = (ArrayObject) A;
+        structMetadata = (String) ao.getObject(0);
+      } else {
+        log.error("Unsupported array type {} for StructMetadata", A.getElementType());
+      }
 
       if (sbuff != null)
         sbuff.append(structMetadata);

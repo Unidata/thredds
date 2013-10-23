@@ -261,8 +261,6 @@ public class CoverageDatasetImpl implements CoverageDataset {
 
     CoverageSetImpl(CoverageCS ccs) {
       this.ccs = ccs;
-      if (ccs == null)
-        System.out.println("HEY");
     }
 
     @Override

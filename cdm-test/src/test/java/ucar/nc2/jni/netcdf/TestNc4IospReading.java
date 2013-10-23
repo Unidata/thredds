@@ -12,7 +12,6 @@ import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -89,13 +88,6 @@ public class TestNc4IospReading {
   }
 
   @Test
-  public void problem() throws IOException {
-    String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\20130212_CN021_P3_222k_B02_WD7195FBPAT10231Nat_Nat_Std_CHTNWD_OP3_14.mip222k.oschp";
-    System.out.printf("***READ %s%n", filename);
-    doCompare(filename, false, false, false);
-  }
-
-  @Test
   public void fractalHeapProblem() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/espresso_his_20130913_0000_0007.nc";
     System.out.printf("***READ %s%n", filename);
@@ -106,37 +98,12 @@ public class TestNc4IospReading {
     ncfile.close();
   }
 
-  public static class Netcdf4ObjectFilter implements CompareNetcdf2.ObjFilter {
-    @Override
-    public boolean attOk(Variable v, Attribute att) {
-      // if (v != null && v.isMemberOfStructure()) return false;
-      String name = att.getShortName();
-
-      // added by cdm
-      if (name.equals(CDM.CHUNK_SIZE)) return false;
-      if (name.equals(CDM.FILL_VALUE)) return false;
-      if (name.equals("_lastModified")) return false;
-
-      // hidden by nc4
-      if (name.equals(Nc4.NETCDF4_DIMID)) return false;  // preserve the order of the dimensions
-      if (name.equals(Nc4.NETCDF4_COORDINATES)) return false;  // ??
-      if (name.equals(Nc4.NETCDF4_STRICT)) return false;
-
-      // not implemented yet
-      //if (att.getDataType().isEnum()) return false;
-
-      return true;
-    }
+  //@Test
+  public void problem() throws IOException {
+    String filename = "Q:\\cdmUnitTest\\formats\\hdf5\\OMI-Aura_L2G-OMCLDRRG_2007m0105_v003-2008m0105t101212.he5";
+    System.out.printf("***READ %s%n", filename);
+    doCompare(filename, false, false, false);
   }
-
-  private class MyAct implements TestDir.Act {
-    public int doAct(String filename) throws IOException {
-      if (!doCompare(filename, false, false, false))
-        countNotOK++;
-      return 1;
-    }
-  }
-
 
   private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(location);
@@ -146,7 +113,7 @@ public class TestNc4IospReading {
 
     Formatter f= new Formatter();
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
-    boolean ok = tc.compare(ncfile, jni, new Netcdf4ObjectFilter(), showCompare, showEach, compareData);
+    boolean ok = tc.compare(ncfile, jni, new TestNc4JniReadCompare.Netcdf4ObjectFilter(), showCompare, showEach, compareData);
     System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
     if (!ok ||(showCompare && showCompareResults)) System.out.printf("%s%n=====================================%n", f);
     ncfile.close();

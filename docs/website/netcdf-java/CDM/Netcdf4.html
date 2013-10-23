@@ -10,16 +10,13 @@
 <body>
 <h1>Mapping between CDM and netCDF-4 Data Models </h1>
 
-<p><em>last modified: Sept 10, 2013</em></p>
+<p><em>last modified: Oct 22, 2013</em></p>
 
 <p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4
   data model</a>. When reading netCDF-4 files, one is interested in the mapping from netCDF-4 to CDM. This mapping is relatively stable. As of version 4.3, the
   CDM can write to netCDF-4 files, and one is interested in the mapping from CDM to netCDF-4. This mapping is still being developed, eg to give users some
   control where needed.</p>
 <p>NetCDF-4 intentionally supports a simpler data model than HDF5, which means there are HDF5 files that cannot be converted to netCDF-4. See: <a href="http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15">http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15</a></p>
-
-<p>&nbsp;</p>
-
 <h2>DataTypes</h2>
 
 <h3>From netCDF-4 to CDM</h3>
@@ -28,13 +25,13 @@
   <li>A netCDF-4 <em>Enum</em> is a CDM <em>enum1, enum2, </em>or<em> enum4</em> and references a <em>EnumTypedef</em> which holds the (enum, String) map.</li>
   <li>A netCDF-4 <em>Vlen</em> is mapped to a CDM <em>variable length Dimension</em>.</li>
   <li>A netCDF-4 <em>Opaque </em>type is a CDM <em>opaque </em>type, but the length of the data cannot be found until you read the data.</li>
-  <li>NetCDF-4 signed and unsigned <em>byte, short, int, long</em> are mapped to CDM <em>byte, short, int, long</em>. If unsigned, the attribute <strong>_Unsigned
-    = &quot;true&quot; </strong>is added to the CDM Variable.
+  <li>NetCDF-4 signed and unsigned <em>byte, short, int, long</em> are mapped to CDM <em>byte, short, int, long</em>. If unsigned, the attribute <strong><em>_Unsigned
+    = &quot;true&quot;</em> </strong>is added to the CDM Variable.
   </li>
 </ul>
 <h3><strong>From CDM to netCDF-4</strong></h3>
 <ul>
-  <li>A CDM array of Opaque may have a different length for each Opaque object. May have to read to find maximum length, or ???</li>
+  <li>A CDM array of Opaque may have a different length for each Opaque object. May have to read to find maximum length.</li>
 </ul>
 <h2>Type Definitions</h2>
 
@@ -74,17 +71,15 @@
   <li>Attributes on member variables of Structures are made into a compound attribute on the parent Structure.</li>
 </ul>
 <hr/>
-<h2>Differences between netCDF-4 C and Java libraries</h2>
-
-<h3>Fixed length Strings with anonymous dimension</h3>
+<h2>Differences between netCDF-4 C and Java libraries for netCDF4 files</h2>
+<h3>Unsigned types</h3>
 <ul>
-  <li>HDF5 object: type = 3 (String) with a dimension.</li>
-  <li>C library: turns these into variable length Strings</li>
-  <li>Java library: turns these into char arrays, with an anonymous dimension</li>
+  <li>The C library uses unsigned integer types: NC_UBYTE, NC_USHORT, NC_UINT, NC_UINT64.</li>
+  <li>The Java library does not have separate types for unsigned integers, but adds the reserved attribute <em><strong>_Unsigned = &quot;true&quot;</strong></em> when the variable is unsigned. One can check this with Variable.isUnsigned() and Array.isUnsigned(). Conversions done by the library are aware of this convention. The reason for this is that Java does not have unsigned types, and we dont want to double the internal memory requirements by widening the data. </li>
 </ul>
 <h3>Enum Typedefs</h3>
 <ul>
-  <li>If there is a enum typedef that is not used by a variable, it will not show up in the enum typedefs. (bug?)</li>
+  <li>If there is a enum typedef that is not used by a variable, it will not show up in the enum typedefs. </li>
 </ul>
 <h3>Attributes</h3>
 <ul>
@@ -97,7 +92,27 @@
   <li>The C library preserves the creation order of the Dimensions, Variables, Groups and Attributes, while the Java library does not.</li>
 </ul>
 <hr/>
-<h2> Notes</h2>
+<h2> Differences between netCDF-4 C and Java libraries for HDF5 files</h2>
+<h3>Fixed length Strings with anonymous dimension</h3>
+<ul>
+  <li>HDF5 object: type = 3 (String) with a dimension.</li>
+  <li>C library: turns these into variable length Strings</li>
+  <li>Java library: turns these into char arrays, with an anonymous dimension</li>
+</ul>
+<h3>Anonymous dimensions</h3>
+<ul>
+  <li>Java library:  retains anonymous dimensions</li>
+  <li>C library: turn into shared dimensions, by matching on the dimension length</li>
+</ul>
+<h3>Time datatype (HDF type 2)</h3>
+<ul>
+  <li>Java library: turn into a short, int ot long, depending on the precision</li>
+  <li>C library: ignores this type</li>
+</ul>
+<p>&nbsp;</p>
+<hr/>
+<h2> </h2>
+<h2>Notes</h2>
 
 <p>1) char arrays are interpreted as UTF-8 bytes array (Strings) when they are attributes . but data arrays are not, they are run through unsignedToShort() and
   cast to char. this seems like trouble.</p>

@@ -39,21 +39,16 @@
 	<p>
 		As of version 4.4.0 of TDS, NCSS supports spatial and temporal subsetting on collections of grids, stations and points. A Dataset is described by a <a href="#DatasetDescription">Dataset Description</a> XML document, which describes the dataset in enough detail to enable a programmatic client to form valid data requests.
 	</p>
-	<p>NCSS uses HTTP GET with key-value pairs (KVP) which may in any order. The service interface follows <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST design</a>, as well as <a href="https://developers.google.com/kml/">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
-	<p>
-		NCSS may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset.
-	</p>
-	<hr>
-		
-	<!-- 
+	<p>NCSS may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
+	<p>NCSS uses HTTP GET with key-value pairs (KVP) which may in any order. The service interface follows <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST design</a>, as well as <a href="https://developers.google.com/kml/">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. <!-- 
   <p>Currently both Grids and Station data can be used with this service. See:</p>
   <ul>
     <li><a href="StationDataSubsetService.html">NetCDF Subset Service for Point Data</a></li>
     <li><a href="GridDataSubsetService.html">NetCDF Subset Service for Gridded Data</a></li>
   </ul>
   <p>&nbsp;</p>
-   -->
-  <h2>REST URLs</h2>
+   --></p>
+<h3>REST URLs</h3>
   <pre>http://{host}/{context}/{service}/{dataset}[/dataset.xml | /dataset.html | {?query}]
 
 where

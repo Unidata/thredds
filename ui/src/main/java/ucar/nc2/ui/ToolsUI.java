@@ -41,6 +41,7 @@ import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ui.coverage.CoverageDisplay;
 import ucar.nc2.ui.coverage.CoverageTable;
@@ -147,6 +148,7 @@ public class ToolsUI extends JPanel {
   private Hdf5DataPanel hdf5DataPanel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
+  private DatasetViewerPanel nc4viewer;
   private NcStreamPanel ncStreamPanel;
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;
@@ -203,7 +205,7 @@ public class ToolsUI extends JPanel {
     ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
 
     // the widgets in the top level tabbed pane
-    viewerPanel = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("varTable"));
+    viewerPanel = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("varTable"), false);
     tabbedPane.addTab("Viewer", viewerPanel);
 
     // all the other component are deferred construction for fast startup
@@ -354,6 +356,7 @@ public class ToolsUI extends JPanel {
     // nested-2 tab - hdf5
     hdf5TabPane.addTab("HDF5-Objects", new JLabel("HDF5-Objects"));
     hdf5TabPane.addTab("HDF5-Data", new JLabel("HDF5-Data"));
+    hdf5TabPane.addTab("Netcdf4-JNI", new JLabel("Netcdf4-JNI"));
     hdf5TabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = hdf5TabPane.getSelectedComponent();
@@ -609,6 +612,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("HDF5-Data")) {
       hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"));
       c = hdf5DataPanel;
+
+    } else if (title.equals("Netcdf4-JNI")) {
+      nc4viewer = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("nc4viewer"), true);
+      c = nc4viewer;
 
     } else if (title.equals("HDF4")) {
       hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"));
@@ -901,6 +908,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);
+    Nc4Iosp.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
     ucar.nc2.FileWriter.setDebugFlags(debugFlags);
@@ -1062,7 +1070,8 @@ public class ToolsUI extends JPanel {
     if (hdf4Panel != null) hdf4Panel.save();
     if (imagePanel != null) imagePanel.save();
     if (ncdumpPanel != null) ncdumpPanel.save();
-    if (ncStreamPanel != null) ncStreamPanel.save();
+    if (ncdumpPanel != null) ncdumpPanel.save();
+    if (nc4viewer != null) nc4viewer.save();
     if (ncmlEditorPanel != null) ncmlEditorPanel.save();
     if (pointFeaturePanel != null) pointFeaturePanel.save();
     //if (pointObsPanel != null) pointObsPanel.save();
@@ -4896,9 +4905,12 @@ public class ToolsUI extends JPanel {
     DatasetViewer dsViewer;
     JSplitPane split;
     NetcdfFile ncfile = null;
+    boolean jni;
 
-    DatasetViewerPanel(PreferencesExt dbPrefs) {
+    DatasetViewerPanel(PreferencesExt dbPrefs, boolean jni) {
       super(dbPrefs, "dataset:");
+      this.jni = jni;
+
       dsViewer = new DatasetViewer(dbPrefs, fileChooser);
       add(dsViewer, BorderLayout.CENTER);
 
@@ -4933,8 +4945,9 @@ public class ToolsUI extends JPanel {
     }
 
     boolean process(Object o) {
-      String command = (String) o;
+      String location = (String) o;
       boolean err = false;
+      NetcdfFile ncnew = null;
 
       try {
         if (ncfile != null) ncfile.close();
@@ -4942,7 +4955,14 @@ public class ToolsUI extends JPanel {
       }
 
       try {
-        NetcdfFile ncnew = openFile(command, addCoords, null);
+        if (jni) {
+          Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
+          ncnew = new MyNetcdfFile(iosp, location);
+          ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "r");
+          iosp.open(raf, ncnew, null);
+        } else {
+          ncnew = openFile(location, addCoords, null);
+        }
         if (ncnew != null)
           setDataset(ncnew);
 
@@ -4982,6 +5002,14 @@ public class ToolsUI extends JPanel {
     }
 
   }
+
+  private class MyNetcdfFile extends NetcdfFile {
+     private MyNetcdfFile(Nc4Iosp iosp, String location) {
+       super();
+       spi = iosp;
+       this.location = location;
+     }
+   }
 
   ///////////////////////////////////////////////////////////
   private class DatasetWriterPanel extends OpPanel {

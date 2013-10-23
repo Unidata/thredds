@@ -279,8 +279,6 @@ public class ArrayShort extends Array {
   }
 
   public void setLong(int index, long value) {
-    if (index >= storage.length)
-      System.out.println("HEY");
     storage[index] = (short) value;
   }
 

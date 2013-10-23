@@ -120,7 +120,7 @@ second
     System.out.printf("CalendarDate (%10s) %s == %s%n", cal, unit, CalendarDateFormatter.toDateTimeStringISO(cd));
 
     if (cal == Calendar.none)
-      System.out.println("HEY");
+      System.out.println("HEY Calendar.none");
   }
 
   public void testUU() throws Exception {

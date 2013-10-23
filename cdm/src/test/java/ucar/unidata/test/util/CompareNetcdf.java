@@ -325,9 +325,6 @@ public class CompareNetcdf {
   }
 
   static private void compareData(Array data1, Array data2, double tol) {
-    if (data1.getSize() != data2.getSize())
-      System.out.println("HEY");
-
     assert data1.getSize() == data2.getSize();
     assert data1.getElementType() == data2.getElementType() : data1.getElementType() + "!=" + data2.getElementType();
     DataType dt = DataType.getType(data1.getElementType());
@@ -359,8 +356,6 @@ public class CompareNetcdf {
       while (iter1.hasNext() && iter2.hasNext()) {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
-        if (v1 != v2)
-          System.out.println("HEY");
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
     } else if (dt == DataType.BYTE) {
