@@ -79,10 +79,10 @@
     <servlet-name>catalogService</servlet-name>
   </filter-mapping -->
     
-  <filter-mapping>
+  <!--filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>FileServer</servlet-name>
-  </filter-mapping>
+  </filter-mapping-->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>radarServer</servlet-name>
@@ -100,10 +100,10 @@
     <servlet-name>wms</servlet-name>
   </filter-mapping>
   
-  <filter-mapping>
+  <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>DLwriter</servlet-name>
-  </filter-mapping>
+  </filter-mapping -->
 
   <!--
   Filter:
@@ -228,11 +228,11 @@
   </servlet>
 
   <!-- HTTP File server -->
-  <servlet>
+  <!-- servlet>
     <servlet-name>FileServer</servlet-name>
     <servlet-class>thredds.servlet.FileServerServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <!-- Radar Server -->
   <servlet>
@@ -318,11 +318,11 @@
   </servlet> -->
 
   <!-- Setup for the CatalogDL servlet. (Make Digital Library records from a catalog.  -->
-  <servlet>
+  <!-- servlet>
     <servlet-name>DLwriter</servlet-name>
     <servlet-class>thredds.servlet.DLwriterServlet</servlet-class>
     <load-on-startup>10</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
@@ -368,10 +368,10 @@
     <url-pattern>/dodsC/*</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>FileServer</servlet-name>
     <url-pattern>/fileServer/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>RestrictedDataset</servlet-name>
@@ -389,10 +389,10 @@
   </servlet-mapping>
 
   <!-- catalog services -->
-  <servlet-mapping>
+  <!--servlet-mapping>
     <servlet-name>DLwriter</servlet-name>
     <url-pattern>/DLwriter</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <!-- servlet-mapping>
      <servlet-name>View</servlet-name>

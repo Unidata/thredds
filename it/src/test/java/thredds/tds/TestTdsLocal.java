@@ -63,7 +63,7 @@ public class TestTdsLocal {
       boolean isValid = cat.check( buff, false);
       if (!isValid) {
         System.out.println("Validate failed "+ catalogName+" = \n<"+ buff.toString()+">");
-        assert false;
+        assert false : buff.toString();
       } else if (showValidationMessages)
         System.out.println("Validate ok "+ catalogName+" = \n<"+ buff.toString()+">");
       return cat;

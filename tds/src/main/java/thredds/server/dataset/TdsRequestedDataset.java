@@ -29,7 +29,7 @@ public class TdsRequestedDataset
   public TdsRequestedDataset( HttpServletRequest request )
           throws DatasetException
   {
-    path = TdsPathUtils.extractPath( request );
+    path = TdsPathUtils.extractPath( request, null );
     if ( path == null )
     {
       path = ServletUtil.getParameterIgnoreCase( request, "dataset" );

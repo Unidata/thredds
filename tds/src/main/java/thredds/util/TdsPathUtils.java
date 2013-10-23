@@ -40,28 +40,29 @@ import javax.servlet.http.HttpServletRequest;
  * @author edavis
  * @since 4.0
  */
-public class TdsPathUtils
-{
-  private TdsPathUtils() {}
-  
-  public static String extractPath( HttpServletRequest req )
-  {
+public class TdsPathUtils {
+  private TdsPathUtils() {
+  }
+
+  public static String extractPath(HttpServletRequest req, String removePrefix) {
     // For "/<servletPath>/*" style servlet mappings.
     String catPath = req.getPathInfo();
-    if ( catPath == null )
-    {
+    if (catPath == null) {
       // For "*.xml" style servlet mappings.
       catPath = req.getServletPath();
-      if ( ! catPath.contains( "." ))
+      if (!catPath.contains("."))
         return null;
     }
-    if ( catPath.equals( "" ) )
+    if (catPath.equals(""))
       return null;
 
-    if ( catPath.startsWith( "/" ) )
-      catPath = catPath.substring( 1 );
+    if (catPath.startsWith("/"))
+      catPath = catPath.substring(1);
 
-    if ( catPath.equals( "index.html" ) )
+    if (removePrefix != null && catPath.startsWith(removePrefix))
+      catPath = catPath.substring(removePrefix.length());
+
+    if (catPath.equals("index.html"))
       catPath = "catalog.html";
 
 

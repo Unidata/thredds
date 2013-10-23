@@ -1,4 +1,3 @@
-// $Id: DIFWriter.java 48 2006-07-12 16:15:40Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -56,7 +55,7 @@ public class DIFWriter {
   static private String schemaLocation ="http://gcmd.nasa.gov/Aboutus/xml/dif/dif.xsd";
 
   private String fileDir;
-  private StringBuffer messBuffer;
+  private StringBuilder messBuffer;
   private boolean debug = false;
 
   public DIFWriter() {
@@ -70,7 +69,7 @@ public class DIFWriter {
    * @param fileDir write records to this directory. The dataset id is used as the filename, appending "dif.xml"
    * @param mess status messages are appended here
    */
-  public void writeDatasetEntries( InvCatalogImpl cat, String fileDir, StringBuffer mess) {
+  public void writeDatasetEntries( InvCatalogImpl cat, String fileDir, StringBuilder mess) {
     this.fileDir = fileDir;
     this.messBuffer = mess;
 
@@ -111,7 +110,7 @@ public class DIFWriter {
         out.close();
         messBuffer.append(" OK on Write\n");
       } catch (IOException ioe) {
-        messBuffer.append("DIFWriter failed on write "+ioe.getMessage()+"\n");
+        messBuffer.append("DIFWriter failed on write " + ioe.getMessage() + "\n");
         log.error("DIFWriter failed on write "+ioe.getMessage(), ioe);
       }
     }
@@ -123,7 +122,7 @@ public class DIFWriter {
    * @param fileDir write records to this directory. The dataset id is used as the filename, appending "dif.xml"
    * @param mess status messages are appended here
    */
-  public void doOneDataset( InvDataset ds, String fileDir, StringBuffer mess) {
+  public void doOneDataset( InvDataset ds, String fileDir, StringBuilder mess) {
     if (debug) System.out.println("doDataset "+ds.getName());
 
     if (isDatasetUseable( ds, mess)) {
@@ -136,7 +135,7 @@ public class DIFWriter {
         out.close();
         mess.append(" OK on Write\n");
       } catch (IOException ioe) {
-        mess.append("DIFWriter failed on write "+ioe.getMessage()+"\n");
+        mess.append("DIFWriter failed on write " + ioe.getMessage() + "\n");
         log.error("DIFWriter failed on write "+ioe.getMessage(), ioe);
       }
     }
@@ -149,13 +148,13 @@ public class DIFWriter {
    * @param sbuff  put status messages here.
    * @return true if a DIF record can be written
    */
-  public boolean isDatasetUseable(InvDataset ds, StringBuffer sbuff) {
+  public boolean isDatasetUseable(InvDataset ds, StringBuilder sbuff) {
     boolean ok = true;
-    sbuff.append("Dataset "+ ds.getName()+ " id = "+ds.getID()+": ");
+    sbuff.append("Dataset " + ds.getName() + " id = " + ds.getID() + ": ");
 
     if (!ds.isHarvest()) {
       ok = false;
-      sbuff.append( "Dataset "+ ds.getName()+ " id = "+ds.getID()+" has harvest = false\n");
+      sbuff.append("Dataset " + ds.getName() + " id = " + ds.getID() + " has harvest = false\n");
     }
 
     if (ds.getName() == null) {
@@ -195,7 +194,7 @@ public class DIFWriter {
   }
 
 
-  private void writeOneEntry( InvDataset ds, OutputStream out, StringBuffer mess) throws IOException {
+  private void writeOneEntry( InvDataset ds, OutputStream out, StringBuilder mess) throws IOException {
     Element rootElem = new Element("DIF", defNS);
     Document doc = new Document(rootElem);
     writeDataset( ds, rootElem, mess);
@@ -208,7 +207,7 @@ public class DIFWriter {
     fmt.output( doc, out);
   }
 
-  private Iterator translateGribVocabulary(ThreddsMetadata.Variables vs, boolean isGrib1, StringBuffer mess) {
+  private Iterator translateGribVocabulary(ThreddsMetadata.Variables vs, boolean isGrib1, StringBuilder mess) {
     if (vs == null)
       return null;
 
@@ -221,19 +220,17 @@ public class DIFWriter {
     }
 
     // hash on DIF names to eliminate duplicates
-    HashMap hash = new HashMap();
-    List vlist = vs.getVariableList();
-    for (int j = 0; j < vlist.size(); j++) {
-      ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vlist.get(j);
+    Map<String, ThreddsMetadata.Variable> hash = new HashMap<String, ThreddsMetadata.Variable>(100);
+    for (ThreddsMetadata.Variable v : vs.getVariableList()) {
       String fromVocabId = v.getVocabularyId();
       if (fromVocabId == null) {
-        mess.append("** no id for "+v.getName()+"\n");
+        mess.append("** no id for " + v.getName() + "\n");
         continue;
       }
 
-      String toVocabName = vt.translate( fromVocabId);
+      String toVocabName = vt.translate(fromVocabId);
       if (toVocabName == null) {
-        mess.append("** no translation for "+fromVocabId+" == "+v.getVocabularyName()+"\n");
+        mess.append("** no translation for " + fromVocabId + " == " + v.getVocabularyName() + "\n");
         continue;
       }
 
@@ -241,14 +238,14 @@ public class DIFWriter {
       if (hash.get(toVocabName) == null) {
         ThreddsMetadata.Variable transV = new ThreddsMetadata.Variable(v.getName(), v.getDescription(), toVocabName,
                 v.getUnits(), fromVocabId);
-        hash.put( toVocabName, transV);
+        hash.put(toVocabName, transV);
       }
     }
     return hash.values().iterator();
   }
 
 
-  private void writeDataset(InvDataset ds, Element rootElem, StringBuffer mess) {
+  private void writeDataset(InvDataset ds, Element rootElem, StringBuilder mess) {
     String entryId = StringUtil2.allow(ds.getUniqueID(), "_-.", '-');
     rootElem.addContent( new Element("Entry_ID", defNS).addContent(entryId));
     rootElem.addContent( new Element("Entry_Title", defNS).addContent(ds.getFullName()));
@@ -257,9 +254,7 @@ public class DIFWriter {
     ThreddsMetadata.Variables vs = ds.getVariables("DIF");
     boolean hasVocab = (vs != null) && (vs.getVariableList().size() != 0);
     if (hasVocab) {
-      List vlist = vs.getVariableList();
-      for (int j = 0; j < vlist.size(); j++) {
-        ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vlist.get(j);
+      for (ThreddsMetadata.Variable v : vs.getVariableList()) {
         writeVariable( rootElem, v);
       }
     } else {
@@ -285,10 +280,10 @@ public class DIFWriter {
     }
 
     // keywords
-    List list = ds.getKeywords();
+    List<ThreddsMetadata.Vocab> list = ds.getKeywords();
     if (list.size() > 0) {
       for (int i=0; i<list.size(); i++) {
-        ThreddsMetadata.Vocab k = (ThreddsMetadata.Vocab) list.get(i);
+        ThreddsMetadata.Vocab k = list.get(i);
         rootElem.addContent( new Element("Keyword", defNS).addContent( k.getText()));
       }
     }
@@ -357,13 +352,12 @@ public class DIFWriter {
       rootElem.addContent( new Element("Use_Constraints", defNS).addContent(rights));
 
     // data center
-    list = ds.getPublishers();
-    if (list.size() > 0) {
-      for (int i=0; i<list.size(); i++) {
-        ThreddsMetadata.Source p = (ThreddsMetadata.Source) list.get(i);
+    List<ThreddsMetadata.Source> plist = ds.getPublishers();
+    if (plist.size() > 0) {
+      for (ThreddsMetadata.Source p : plist) {
         if (p.getNameVocab().getVocabulary().equalsIgnoreCase("DIF")) {
           Element dataCenter = new Element("Data_Center", defNS);
-          rootElem.addContent( dataCenter);
+          rootElem.addContent(dataCenter);
           writeDataCenter(p, dataCenter);
           break;
         }
@@ -475,7 +469,7 @@ public class DIFWriter {
       System.out.println(" catalog=\n" + fac.writeXML(cat));
 
       DIFWriter w = new DIFWriter();
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       w.writeDatasetEntries( cat, "C:/temp/dif2", sbuff);
       System.out.println(" messages=\n"+sbuff);
     } catch (Exception e) {

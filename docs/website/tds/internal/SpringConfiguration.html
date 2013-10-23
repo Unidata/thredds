@@ -23,10 +23,6 @@
         <td>/fileServer/*</td>
       </tr>
       <tr>
-        <td>WCSServlet</td>
-        <td>/wcs/*</td>
-      </tr>
-      <tr>
         <td>DLWriterServlet</td>
         <td>/DLwriter/*</td>
       </tr>
@@ -46,21 +42,6 @@
         <th width="88">Servlet Name</th>
         <th width="230">Mappings</th>
         <th width="158">Configuration file</th>
-      </tr>
-      <tr>
-        <td>LocalCatalogServiceController</td>
-        <td>catalogService</td>
-        <td>/catalog/*<strong>/</strong>.xml <br />
-          /catalog/*<strong>/</strong>.html</td>
-        <td>catalogService-servlet.xml</td>
-      </tr>
-      <tr>
-        <td>RemoteCatalogServiceController</td>
-        <td>catalogService</td>
-        <td>/catalog/catalogServices <br />
-          /catalog/remoteCatalogService <br />
-          /catalog/remoteCatalogValidation.html</td>
-        <td>catalogService-servlet.xml</td>
       </tr>
       <tr>
         <td>CatalogRadarServerController</td>
@@ -214,6 +195,11 @@
         <td>ViewerController</td>
         <td>launchViewer</td>
         <td>{viewer}.jnlp</td>
+      </tr>
+      <tr>
+        <td>WCSController</td>
+        <td>doGet*</td>
+        <td>/wcs/*</td>
       </tr>
    </tbody>
   </table>

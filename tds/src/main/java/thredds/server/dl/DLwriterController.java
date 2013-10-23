@@ -31,8 +31,11 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.servlet;
+package thredds.server.dl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.catalog.*;
 import thredds.catalog.dl.*;
 
@@ -41,6 +44,10 @@ import java.net.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import thredds.server.config.TdsContext;
+import thredds.servlet.HtmlWriter;
+import thredds.servlet.ServletUtil;
+import thredds.servlet.ThreddsConfig;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
@@ -48,22 +55,28 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * Servlet handles creating DL records.
- *
  */
-public class DLwriterServlet extends AbstractServlet {
+@Controller
+@RequestMapping("/DLwriter")
+public class DLwriterController {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DLwriterController.class);
+  private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
+
+  @Autowired
+  private TdsContext tdsContext;
+
   private String adnDir, difDir;
   private boolean allow, allowRemote;
 
   public void init() throws ServletException {
-    super.init();
-    allow = ThreddsConfig.getBoolean( "DLwriter.allow", false );
-    if ( !allow )
-    {
-      logServerStartup.info( "DLwriterServlet.init(): DLwriter service not enabled in threddsConfig.xml: ");
+    allow = ThreddsConfig.getBoolean("DLwriter.allow", false);
+    if (!allow) {
+      logServerStartup.info("DLwriterServlet.init(): DLwriter service not enabled in threddsConfig.xml: ");
       return;
     }
-    allowRemote = ThreddsConfig.getBoolean( "DLwriter.allowRemote", false );
+    allowRemote = ThreddsConfig.getBoolean("DLwriter.allowRemote", false);
 
+    String contentPath = tdsContext.getContentRootPath();
     adnDir = contentPath + "/adn/";
     difDir = contentPath + "/dif/";
 
@@ -71,19 +84,16 @@ public class DLwriterServlet extends AbstractServlet {
     file.mkdirs();
     file = new File(difDir);
     file.mkdirs();
-    logServerStartup.info( "DLwriterServlet.init() - done: ");
+    logServerStartup.info("DLwriterServlet.init() - done: ");
   }
 
-  protected String getPath() { return "DLwriter/"; }
-  protected void makeDebugActions() {  }
-
+  @RequestMapping("*")
   public void doGet(HttpServletRequest req, HttpServletResponse res)
-                             throws ServletException, IOException {
+          throws ServletException, IOException {
 
-    if ( ! allow )
-    {
-      res.sendError( HttpServletResponse.SC_FORBIDDEN, "DLwriter service not supported" );
-      log.debug( "doGet(): DLwriter service not enabled in threddsConfig.xml.");
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "DLwriter service not supported");
+      log.debug("doGet(): DLwriter service not enabled in threddsConfig.xml.");
       return;
     }
 
@@ -92,34 +102,32 @@ public class DLwriterServlet extends AbstractServlet {
       String type = req.getParameter("type");
       String catURL = req.getParameter("catalog");
       if ((catURL == null) || (catURL.length() == 0))
-        catURL = ServletUtil.getContextPath()+"/idd/models.xml";
-      URI catUri = null;
-      try
-      {
-        catUri = new URI( catURL);
-      }
-      catch ( URISyntaxException e )
-      {
-        res.sendError( HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not a URL." );
-        log.debug( "doGet(): Given catalog URL not a URL", e );
+        catURL = ServletUtil.getContextPath() + "/idd/models.xml";  // LOOK WTF ??
+
+      URI catUri;
+      try {
+        catUri = new URI(catURL);
+
+      } catch (URISyntaxException e) {
+        res.sendError(HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not a URL.");
+        log.debug("doGet(): Given catalog URL not a URL", e);
         return;
       }
-      if ( catUri.isAbsolute())
-      {
-        if ( ! allowRemote )
-        {
-          res.sendError( HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not allowed (remote)." );
-          log.debug( "doGet(): Given catalog URL was absolute, remote catalog handling not enabled.");
+      if (catUri.isAbsolute()) {
+        if (!allowRemote) {
+          res.sendError(HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not allowed (remote).");
+          log.debug("doGet(): Given catalog URL was absolute, remote catalog handling not enabled.");
           return;
         }
       }
+
       // Default "type" parameter to "DIF"
-      boolean isDIF = type == null ? true : type.equals( "DIF" );
-      doit(req, res, catURL, isDIF );
+      boolean isDIF = type == null || type.equals("DIF");
+      doit(req, res, catURL, isDIF);
 
     } catch (Throwable t) {
-      log.error("doGet(): req= "+ServletUtil.getRequest(req)+" got Exception", t);
-      ServletUtil.handleException( t,  res);
+      log.error("doGet(): req= " + ServletUtil.getRequest(req) + " got Exception", t);
+      ServletUtil.handleException(t, res);
     }
   }
 
@@ -127,26 +135,23 @@ public class DLwriterServlet extends AbstractServlet {
           throws IOException {
 
     URI catURI;
-    try
-    {
+    try {
       // Resolve against the request URL.
-      URI reqURI = new URI( req.getRequestURL().toString() );
-      catURI = reqURI.resolve( catURL );
-    }
-    catch ( URISyntaxException e )
-    {
-      res.sendError( HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not a URL." );
-      log.debug( "doGet(): Given catalog URL not a URL", e );
+      URI reqURI = new URI(req.getRequestURL().toString());
+      catURI = reqURI.resolve(catURL);
+    } catch (URISyntaxException e) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not a URL.");
+      log.debug("doGet(): Given catalog URL not a URL", e);
       return;
     }
 
     // parse the catalog
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false);
+    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(false);
     InvCatalogImpl catalog;
     try {
       catalog = catFactory.readXML(catURI);
     } catch (Exception e) {
-      ServletUtil.handleException( e, res);
+      ServletUtil.handleException(e, res);
       return;
     }
 
@@ -156,21 +161,21 @@ public class DLwriterServlet extends AbstractServlet {
       res.setContentType(ContentType.html.toString());
       res.setHeader("Validate", "FAIL");
       PrintWriter pw = new PrintWriter(res.getOutputStream());
-      showValidationMesssage( catURI.toString(), sb.toString(), pw);
+      showValidationMesssage(catURI.toString(), sb.toString(), pw);
       pw.flush();
       return;
     }
 
-    StringBuffer mess = new StringBuffer();
-    mess.append("Catalog " + catURI.toString()+"\n\n");
+    StringBuilder mess = new StringBuilder();
+    mess.append("Catalog ").append(catURI.toString()).append("\n\n");
 
     if (isDIF) {
-      mess.append("DIF records:"+"\n");
+      mess.append("DIF records:" + "\n");
       DIFWriter writer = new DIFWriter();
       writer.writeDatasetEntries(catalog, difDir, mess);
 
     } else { // ADN
-      mess.append("ADN records:"+"\n");
+      mess.append("ADN records:" + "\n");
       ADNWriter writer = new ADNWriter();
       mess.setLength(0);
       writer.writeDatasetEntries(catalog, adnDir, mess);
@@ -191,16 +196,16 @@ public class DLwriterServlet extends AbstractServlet {
     pw.println("</head>");
     pw.println("<body bgcolor=\"#FFF0FF\">");
 
-    pw.println("<h2> Catalog " + catURL+" has validation errors:</h2>");
+    pw.println("<h2> Catalog " + catURL + " has validation errors:</h2>");
 
     pw.println("<b>");
-    pw.println( StringUtil2.quoteHtmlContent(mess));
+    pw.println(StringUtil2.quoteHtmlContent(mess));
     pw.println("</b>");
 
     // show catalog.xml
     pw.println("<hr><pre>");
-    String catString = IO.readURLcontents( catURL);
-    pw.println( StringUtil2.quoteHtmlContent(catString));
+    String catString = IO.readURLcontents(catURL);
+    pw.println(StringUtil2.quoteHtmlContent(catString));
     pw.println("</pre>");
 
     pw.println("</body>");

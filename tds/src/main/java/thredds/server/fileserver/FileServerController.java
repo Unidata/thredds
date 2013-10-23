@@ -30,41 +30,62 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.root;
 
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.ModelAndView;
+package thredds.server.fileserver;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.LastModified;
+import thredds.servlet.DataRootHandler;
+import thredds.servlet.DatasetHandler;
+import thredds.servlet.ServletUtil;
+import thredds.util.TdsPathUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import thredds.server.config.TdsContext;
-import thredds.util.RequestForwardUtils;
-import thredds.util.TdsPathUtils;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.File;
 
 /**
- * _more_
+ * HTTP File Serving
  *
- * @author edavis
- * @since 4.0
+ * handles /fileServer/*
  */
-public class JspController extends AbstractController
-{
-//  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( JspController.class );
+@Controller
+@RequestMapping("/fileServer")
+public class FileServerController implements LastModified {
+  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileServerController.class);
 
-  private TdsContext tdsContext;
+  public long getLastModified(HttpServletRequest req) {
+    File file = getFile( req);
+    if (file == null)
+      return -1;
 
-  public void setTdsContext( TdsContext tdsContext )
-  {
-    this.tdsContext = tdsContext;
+    return file.lastModified();
   }
 
-  protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
-          throws Exception
-  {
-    String path = TdsPathUtils.extractPath( req );
-    RequestForwardUtils.forwardRequest( path, tdsContext.getJspRequestDispatcher(), req, res );
-    return null;
+  @RequestMapping("*")
+  public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    if (!DatasetHandler.resourceControlOk(req, res, null)) {
+      return;
+    }
+
+    File file = getFile( req);
+    ServletUtil.returnFile(null, req, res, file, null);
   }
+
+  private File getFile(HttpServletRequest req) {
+    String reqPath = TdsPathUtils.extractPath(req, "fileServer/");
+    if (reqPath == null) return null;
+
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
+    if (file == null)
+      return null;
+    if (!file.exists())
+      return null;
+
+    return file;
+  }
+
 }

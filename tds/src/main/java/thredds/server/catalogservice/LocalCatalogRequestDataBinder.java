@@ -83,7 +83,9 @@ public class LocalCatalogRequestDataBinder extends DataBinder
 
   public void bind( HttpServletRequest req)
   {
-    String catPath = TdsPathUtils.extractPath( req );
+    String catPath = TdsPathUtils.extractPath( req, "catalog/" );
+    if (catPath.startsWith("catalog/"))
+      catPath = catPath.substring("catalog/".length());
     String command = req.getParameter( FieldInfo.COMMAND.getParameterName() );
     String dataset = req.getParameter( FieldInfo.DATASET.getParameterName() );
 

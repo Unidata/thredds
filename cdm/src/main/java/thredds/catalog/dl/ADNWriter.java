@@ -57,12 +57,12 @@ public class ADNWriter {
   // private static final String schemaLocationLocal = defNS.getURI() + " file://c:/dev/metadata/adn/0.6.50/record.xsd";
 
   private String fileDir;
-  private StringBuffer messBuffer;
+  private StringBuilder messBuffer;
 
   public ADNWriter( ) {
   }
 
-  public void writeDatasetEntries( InvCatalogImpl cat, String fileDir, StringBuffer mess) {
+  public void writeDatasetEntries( InvCatalogImpl cat, String fileDir, StringBuilder mess) {
     this.fileDir = fileDir;
     this.messBuffer = mess;
 
@@ -106,7 +106,7 @@ public class ADNWriter {
     }
   }
 
-  public boolean isDatasetUseable(InvDataset ds, StringBuffer sbuff) {
+  public boolean isDatasetUseable(InvDataset ds, StringBuilder sbuff) {
     boolean ok = true;
     sbuff.append("Dataset "+ ds.getName()+ " id = "+ds.getID()+": ");
 
@@ -437,7 +437,7 @@ public class ADNWriter {
         // System.out.println(" catalog=\n" + fac.writeXML(cat));
 
         ADNWriter w = new ADNWriter();
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         w.writeDatasetEntries( cat, "C:/temp/adn3", sbuff);
         System.out.println(" messages=\n"+sbuff);
 

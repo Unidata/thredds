@@ -1355,7 +1355,9 @@ public final class DataRootHandler implements InitializingBean {
    */
   public boolean processReqForCatalog(HttpServletRequest req, HttpServletResponse res)
           throws IOException, ServletException {
-    String catPath = TdsPathUtils.extractPath(req);
+
+    // LOOK convoluted, clean this up!
+    String catPath = TdsPathUtils.extractPath(req, "catalog/");
     if (catPath == null)
       return false;
 
@@ -1367,8 +1369,7 @@ public final class DataRootHandler implements InitializingBean {
     if (catPath.endsWith("/"))
       catPath += "catalog.html";
 
-    if (!catPath.endsWith(".xml")
-            && !catPath.endsWith(".html"))
+    if (!catPath.endsWith(".xml") && !catPath.endsWith(".html"))
       return false;
 
     // Forward request to the "/catalog" servlet.
