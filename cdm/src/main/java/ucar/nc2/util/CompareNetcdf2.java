@@ -223,7 +223,7 @@ public class CompareNetcdf2 {
       f.format(" ** names are different %s != %s %n", org.getFullName(), copy.getFullName());
       ok = false;
     }
-    if (filter.varDataTypeCheckOk(org) && (org.getDataType() != copy.getDataType())) {
+    if (filter != null && filter.varDataTypeCheckOk(org) && (org.getDataType() != copy.getDataType())) {
       f.format(" ** %s dataTypes are different %s != %s %n", org.getFullName(), org.getDataType(), copy.getDataType());
       ok = false;
     }
