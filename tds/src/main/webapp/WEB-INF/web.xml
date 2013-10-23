@@ -91,10 +91,10 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>RestrictedDataset</servlet-name>
   </filter-mapping>
-  <filter-mapping>
+  <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>wcs</servlet-name>
-  </filter-mapping>  
+  </filter-mapping -->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>wms</servlet-name>
@@ -242,11 +242,11 @@
   </servlet>
 
   <!-- OGC Web Coverage server -->
-  <servlet>
+  <!-- servlet>
     <servlet-name>wcs</servlet-name>
     <servlet-class>thredds.server.wcs.WCSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <servlet>
     <servlet-name>wms</servlet-name>
@@ -378,10 +378,10 @@
     <url-pattern>/restrictedAccess/*</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>wcs</servlet-name>
     <url-pattern>/wcs/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>wms</servlet-name>

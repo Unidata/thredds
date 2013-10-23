@@ -407,6 +407,7 @@ public class ServletUtil {
    */
   public static void sendPermanentRedirect(String targetPath, HttpServletRequest req, HttpServletResponse res)
       throws IOException {
+
     // Absolute URL needed so resolve the target path against the request URL.
     URI uri;
     try {
@@ -453,7 +454,7 @@ public class ServletUtil {
   /**
    * Write a file to the response stream.
    *
-   * @param servlet     called from here
+   * @param servlet     called from this servlet, may be null
    * @param contentPath file root path
    * @param path        file path reletive to the root
    * @param req         the request
@@ -502,7 +503,7 @@ public class ServletUtil {
   /**
    * Write a file to the response stream. Handles Range requests.
    *
-   * @param servlet     called from here
+   * @param servlet     called from this servlet, may be null
    * @param req         the request
    * @param res         the response
    * @param file        to serve
@@ -543,7 +544,7 @@ public class ServletUtil {
         contentType = ContentType.text.toString();
       else if (filename.endsWith(".nc"))
         contentType = ContentType.netcdf.toString();
-      else
+      else if (servlet != null)
         contentType = servlet.getServletContext().getMimeType(filename);
 
       if (contentType == null) contentType = "application/octet-stream";

@@ -43,40 +43,40 @@ import java.io.IOException;
 import thredds.util.Version;
 
 /**
- * Each implementation handles a different version of WCS requests. 
+ * Each implementation handles a different version of WCS requests.
  *
  * @author edavis
  * @since 4.0
  */
-public interface VersionHandler
-{
+public interface VersionHandler {
+
   public Version getVersion();
 
-  public VersionHandler setDiskCache( DiskCache2 diskCache );
+  public VersionHandler setDiskCache(DiskCache2 diskCache);
 
   /**
    * Set whether generated files are deleted immediately after sent (true) or handled by cache (false).
+   * <p/>
+   * Note: currently (2008-03-05), each request generates a unique file. So caching doesn't make much sense.
    *
-   * Note: currently (2008-03-05), each request generates a unique file. So caching doesn't make much sense. 
-   *
-   * @param deleteImmediately if true, delete immediately, otherwise allow cache to handle.   
+   * @param deleteImmediately if true, delete immediately, otherwise allow cache to handle.
    * @return this VersionHandler
    */
-  public VersionHandler setDeleteImmediately( boolean deleteImmediately);
+  public VersionHandler setDeleteImmediately(boolean deleteImmediately);
 
-  public void handleKVP( HttpServlet servlet,
-                         HttpServletRequest req,
-                         HttpServletResponse res )
+  public void handleKVP(HttpServlet servlet,
+                        HttpServletRequest req,
+                        HttpServletResponse res)
           throws ServletException, IOException;
 
-  public void handleExceptionReport( HttpServletResponse res,
-                                     String code, String locator,
-                                     String message )
+  public void handleExceptionReport(HttpServletResponse res,
+                                    String code, String locator,
+                                    String message)
           throws IOException;
 
-  public void handleExceptionReport( HttpServletResponse res,
-                                     String code, String locator,
-                                     Throwable t )
+  public void handleExceptionReport(HttpServletResponse res,
+                                    String code, String locator,
+                                    Throwable t)
           throws IOException;
 
 }
