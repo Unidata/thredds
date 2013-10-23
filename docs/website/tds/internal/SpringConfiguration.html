@@ -103,9 +103,9 @@
   <table border="2">
     <tbody>
       <tr>
-        <th width="206">Controller Class</th>
-        <th width="172">Handler method</th>
-        <th width="426">Mapping</th>
+        <th width="226">Controller Class</th>
+        <th width="152">Handler method</th>
+        <th width="479">Mapping</th>
       </tr>
       <tr>
         <td>RootController</td>
@@ -140,6 +140,19 @@
         <td>DirDisplayController</td>
         <td>handleRequestInternal</td>
         <td>/admin/**</td>
+      </tr>
+      <tr>
+        <td>LocalCatalogServiceController</td>
+        <td>handleXmlRrequest<br />
+        handleHtmlRrequest</td>
+        <td>*.xml <br />
+          *.html</td>
+      </tr>
+      <tr>
+        <td>RemoteCatalogServiceController</td>
+        <td>handleAll</td>
+        <td>          /remoteCatalogService <br />
+          /remoteCatalogValidation.html</td>
       </tr>
       <tr>
         <td>CdmrController</td>
@@ -189,18 +202,13 @@
       </tr>
       <tr>
         <td>ServerInfoController</td>
-        <td>getServerInfoHtml</td>
-        <td>/serverInfo.html</td>
-      </tr>
-      <tr>
-        <td>ServerInfoController</td>
-        <td>getServerInfoXML</td>
-        <td>/serverInfo.xml</td>
-      </tr>
-      <tr>
-        <td>ServerInfoController</td>
-        <td>getServerVersion</td>
-        <td>/serverVersion.txt</td>
+        <td>getServerInfoHtml<br/>
+        getServerInfoXML<br/>
+        getServerVersion</td>
+        <td>/serverInfo.html<br/>
+        /serverInfo.xml<br/>
+        /serverVersion.txt
+        </td>
       </tr>
      <tr>
         <td>ViewerController</td>
@@ -210,5 +218,9 @@
    </tbody>
   </table>
 </div>
+  <h3>Debugging  </h3>
+<p>Look in serverStartup.log and search for messages with &quot;RequestMappingHandlerMapping: Mapped&quot; :</p>
+  <pre>
+  <pre>2013-10-23T13:54:40.342-0600 [     17458][        ] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: Mapped &quot;{[/admin/collection || /admin/collection/trigger],methods=[],params=[],headers=[],consumes=[],produces=[],custom=[]}&quot; onto protected org.springframework.web.servlet.ModelAndView thredds.server.admin.CollectionController.handleCollectionTriggers(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) throws java.lang.Exception   </pre>
 </body>
 </html>

@@ -111,8 +111,8 @@ import java.io.IOException;
  * @since 4.0
  */
 @Component
-@RequestMapping(value = {"/remoteCatalogService", "/remoteCatalogValidation.html","/catalogServices=remoteCatalogController"})
-public class RemoteCatalogServiceController extends AbstractController {
+@RequestMapping(value = {"/remoteCatalogService", "/remoteCatalogValidation.html"})
+public class RemoteCatalogServiceController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
   @Autowired
@@ -122,7 +122,7 @@ public class RemoteCatalogServiceController extends AbstractController {
   private HtmlWriter htmlWriter;
 
   @RequestMapping("**")
-  protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  protected ModelAndView handleAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
     HtmlConfig htmlConfig = this.tdsContext.getHtmlConfig();
 
     try {

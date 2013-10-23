@@ -112,13 +112,13 @@ import java.net.URISyntaxException;
  *
  * @author edavis
  * @see thredds.util.TdsPathUtils#extractPath(javax.servlet.http.HttpServletRequest)
- * @see Command
  * @see LocalCatalogRequest
  * @see LocalCatalogRequestDataBinder
  * @see LocalCatalogRequestValidator
  * @since 4.0
  */
 @Component
+@RequestMapping("*")
 public class LocalCatalogServiceController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 

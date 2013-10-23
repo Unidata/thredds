@@ -70,7 +70,7 @@ import ucar.nc2.util.IO;
  * @author mhermida
  */
 @Controller
-@RequestMapping("/ncss/")
+@RequestMapping("/ncss")
 public class NcssController extends AbstractNcssController {
 
   static private final Logger log = LoggerFactory.getLogger(NcssController.class);

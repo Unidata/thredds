@@ -75,7 +75,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 		request.setParameter(parameterNameVerbose, verbose);
 		
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		ModelAndView mv = remoteCatalogController.handleRequest(request, response);
+		ModelAndView mv = remoteCatalogController.handleAll(request, response);
 		// Must be null
 		assertNull(mv);
 		//and we should have a nice response
@@ -104,7 +104,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 		
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
-		ModelAndView mv  = remoteCatalogController.handleRequest(request, response);
+		ModelAndView mv  = remoteCatalogController.handleAll(request, response);
 		// Must be null
 		assertNull(mv);
 		// and we should have a nice response		
@@ -128,7 +128,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 		request.setParameter(parameterNameVerbose, verbose);		
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
-		ModelAndView mv = remoteCatalogController.handleRequest(request,response);
+		ModelAndView mv = remoteCatalogController.handleAll(request,response);
 		
 		assertViewName(mv, "/thredds/server/catalogservice/validationMessage");		
 		assertModelAttributeAvailable(mv, "catalogUrl");
@@ -142,7 +142,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 		request.setServletPath("/remoteCatalogValidation.html");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		
-		ModelAndView mv = remoteCatalogController.handleRequest(request, response);
+		ModelAndView mv = remoteCatalogController.handleAll(request, response);
 		assertViewName(mv, "/thredds/server/catalogservice/validationForm");
 		
 	}	
