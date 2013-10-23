@@ -638,7 +638,7 @@ public class CatalogEnhancer extends JPanel {
         s = ds.getDocumentation("rights");
         rights = (s != null);
 
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         sbuff.append("DIF:\n");
         dif = difWriter.isDatasetUseable( ds, sbuff);
         sbuff.append("\nADN:\n");

@@ -247,13 +247,12 @@ public class DLCrawler extends JPanel {
   }
 
   private void harvest() {
-     StringBuffer mess = new  StringBuffer();
-     for (int i = 0; i < dsList.size(); i++) {
-       DatasetBean bean =  (DatasetBean) dsList.get(i);
-       InvDataset ds = bean.dataset();
-       if (ds.isHarvest())
-         difWriter.doOneDataset( ds, "C:/temp/dif2/", mess);
-     }
+     StringBuilder mess = new  StringBuilder();
+    for (DatasetBean bean : dsList) {
+      InvDataset ds = bean.dataset();
+      if (ds.isHarvest())
+        difWriter.doOneDataset(ds, "C:/temp/dif2/", mess);
+    }
   }
 
   /* private void setCatalog(InvCatalogImpl catalog) {
@@ -455,7 +454,7 @@ public class DLCrawler extends JPanel {
 
         datasetScan = ds.findProperty("DatasetScan") != null;
 
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         sbuff.append("DIF:\n");
         dif = difWriter.isDatasetUseable( ds, sbuff);
         sbuff.append("\nADN:\n");
