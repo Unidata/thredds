@@ -206,9 +206,18 @@
    </tbody>
   </table>
 </div>
-  <h3>Debugging  </h3>
-<p>Look in serverStartup.log and search for messages with &quot;RequestMappingHandlerMapping: Mapped&quot; :</p>
-  <pre>
-  <pre>2013-10-23T13:54:40.342-0600 [     17458][        ] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: Mapped &quot;{[/admin/collection || /admin/collection/trigger],methods=[],params=[],headers=[],consumes=[],produces=[],custom=[]}&quot; onto protected org.springframework.web.servlet.ModelAndView thredds.server.admin.CollectionController.handleCollectionTriggers(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) throws java.lang.Exception   </pre>
+<h3>Debugging  </h3>
+<p>1) Look in serverStartup.log and search for messages with &quot;RequestMappingHandlerMapping: Mapped&quot; :</p>
+<pre>712013-10-23T13:54:40.342-0600 [     17458][        ] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: Mapped &quot;{[/admin/collection || /admin/collection/trigger],methods=[],params=[],headers=[],consumes=[],produces=[],custom=[]}&quot; onto protected org.springframework.web.servlet.ModelAndView thredds.server.admin.CollectionController.handleCollectionTriggers(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) throws java.lang.Exception 
+</pre>
+<p><br>
+2) set these to debug level:</p>
+<pre> 
+&lt;logger name=&quot;org.springframework.http&quot; level=&quot;info&quot; additivity=&quot;false&quot;&gt;
+  &lt;appender-ref ref=&quot;threddsServlet&quot;/&gt;
+&lt;/logger&gt;
+&lt;logger name=&quot;org.springframework.web&quot; level=&quot;info&quot; additivity=&quot;false&quot;&gt;
+  &lt;appender-ref ref=&quot;threddsServlet&quot;/&gt;
+&lt;/logger&gt;</pre>
 </body>
 </html>

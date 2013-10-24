@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.server.AbstractController;
 import thredds.server.ncss.exception.NcssException;
 import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.util.EscapeStrings;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -97,7 +98,8 @@ public class CdmRemoteController extends AbstractController implements LastModif
 
   @Override
   public long getLastModified(HttpServletRequest req) {
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo());
+    String path = TdsPathUtils.extractPath(req, "wcs/");
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
     if ((file != null) && file.exists())
       return file.lastModified();
     return -1;

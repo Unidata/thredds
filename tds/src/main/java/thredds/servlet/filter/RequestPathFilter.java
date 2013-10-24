@@ -32,6 +32,7 @@
  */
 package thredds.servlet.filter;
 
+import thredds.servlet.ServletUtil;
 import thredds.util.StringValidateEncodeUtils;
 import thredds.util.TdsPathUtils;
 
@@ -83,7 +84,7 @@ public class RequestPathFilter implements javax.servlet.Filter {
       if (StringValidateEncodeUtils.containsAngleBracketCharacters(path)
               || StringValidateEncodeUtils.containsBackslashCharacters(path)
               || !StringValidateEncodeUtils.validPath(path)) {
-        String msg = "Invalid request path [" + StringValidateEncodeUtils.encodeLogMessages(request.getPathInfo()) + "].";
+        String msg = "Invalid request path [" + StringValidateEncodeUtils.encodeLogMessages(ServletUtil.getRequestPath(request)) + "].";
         log.error("doFilter(): " + msg);
         response.sendError(HttpServletResponse.SC_NOT_FOUND, msg);
         return;

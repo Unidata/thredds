@@ -925,7 +925,7 @@ public class ServletUtil {
    * @return parsed request servletPath + pathInfo
    */
   public static String getRequestPath(HttpServletRequest req) {
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     if (req.getServletPath() != null)
       buff.append(req.getServletPath());
     if (req.getPathInfo() != null)

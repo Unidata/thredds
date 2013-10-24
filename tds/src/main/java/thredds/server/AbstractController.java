@@ -36,6 +36,8 @@
 package thredds.server;
 
 import thredds.servlet.ServletUtil;
+import thredds.util.TdsPathUtils;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -50,11 +52,7 @@ public abstract class AbstractController {
   abstract protected String[] getEndings();
 
   public String getDatasetPath(HttpServletRequest req) {
-    String path = req.getServletPath();
-
-    // strip off /controller/
-    if (path.startsWith(getControllerPath()))
-      path = path.substring(getControllerPath().length());
+    String path = TdsPathUtils.extractPath(req, getControllerPath());
 
     // strip off endings
     for (String ending : getEndings()) {

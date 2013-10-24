@@ -138,7 +138,7 @@ public class DatasetHandler {
   }
 
   static public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    return getNetcdfFile( req, res, req.getPathInfo());
+    return getNetcdfFile( req, res, TdsPathUtils.extractPath(req, null));
   }
 
   // return null means request has been handled, and calling routine should exit without further processing
@@ -236,7 +236,7 @@ public class DatasetHandler {
   }
 
   static public InvDatasetFeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {
-	  return getFeatureCollection(req, res, req.getPathInfo());
+	  return getFeatureCollection(req, res, TdsPathUtils.extractPath(req, null));
   }
 
   // return null means request has been handled, and calling routine should exit without further processing

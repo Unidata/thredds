@@ -132,7 +132,7 @@ public class WCSController {
     logServerStartup.info("WCSServlet.destroy() done:");
   }
 
-  @RequestMapping("*")
+  @RequestMapping("**")
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
     // Check whether TDS is configured to support WCS.

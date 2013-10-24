@@ -165,12 +165,12 @@
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <logger name="org.springframework.http" level="debug" additivity="false">
-      <appender-ref ref="serverStartupAppender"/>
+    <logger name="org.springframework.http" level="info" additivity="false">
+      <appender-ref ref="threddsServlet"/>
     </logger>
 
-    <logger name="org.springframework.web" level="debug" additivity="false">
-      <appender-ref ref="serverStartupAppender"/>
+    <logger name="org.springframework.web" level="info" additivity="false">
+      <appender-ref ref="threddsServlet"/>
     </logger>
 
     <logger name="org.springframework" level="info" additivity="false">

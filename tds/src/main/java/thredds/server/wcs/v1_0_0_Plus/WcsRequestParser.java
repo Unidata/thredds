@@ -38,6 +38,7 @@ import thredds.servlet.DatasetHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import thredds.util.TdsPathUtils;
 import ucar.nc2.dt.GridDataset;
 
 import java.util.List;
@@ -66,7 +67,7 @@ public class WcsRequestParser
 
     // General request info
     thredds.wcs.v1_0_0_Plus.WcsRequest.Operation operation;
-    String datasetPath = req.getPathInfo();
+    String datasetPath = TdsPathUtils.extractPath(req, "wcs/");
     GridDataset gridDataset = openDataset( req, res );
     if ( gridDataset == null )
     {
@@ -149,7 +150,7 @@ public class WcsRequestParser
   {
     String datasetURL = ServletUtil.getParameterIgnoreCase( req, "dataset" );
     boolean isRemote = ( datasetURL != null );
-    String datasetPath = isRemote ? datasetURL : req.getPathInfo();
+    String datasetPath = isRemote ? datasetURL : TdsPathUtils.extractPath(req, "wcs/");
 
     GridDataset dataset;
     try

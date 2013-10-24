@@ -32,6 +32,7 @@
  */
 package thredds.server.wcs.v1_0_0_1;
 
+import thredds.util.TdsPathUtils;
 import thredds.wcs.Request;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DatasetHandler;
@@ -72,7 +73,7 @@ public class WcsRequestParser
 
       // General request info
       Request.Operation operation;
-      String datasetPath = req.getPathInfo();
+      String datasetPath = TdsPathUtils.extractPath(req, "wcs/");
       boolean isRemote = false;
       if ( datasetPath == null )
       {

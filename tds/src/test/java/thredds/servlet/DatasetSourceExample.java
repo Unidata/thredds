@@ -1,5 +1,6 @@
 package thredds.servlet;
 
+import thredds.util.TdsPathUtils;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -24,12 +25,12 @@ public class DatasetSourceExample implements thredds.servlet.DatasetSource {
   }
 
   public boolean isMine(HttpServletRequest req) {
-    String path = req.getPathInfo();
+    String path = TdsPathUtils.extractPath(req, null);
     return path.startsWith(prefix);
   }
 
   public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    String path = req.getPathInfo().substring(prefixLen);
+    String path = TdsPathUtils.extractPath(req, prefix);
 
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(path);
     if (match == null) {

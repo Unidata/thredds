@@ -921,7 +921,7 @@ public final class DataRootHandler implements InitializingBean {
    * @return the DataRootMatch, or null if not found
    */
   public DataRootMatch findDataRootMatch(HttpServletRequest req) {
-    String spath = req.getPathInfo();
+    String spath = TdsPathUtils.extractPath(req, null);
 
     if (spath.length() > 0) {
       if (spath.startsWith("/"))
@@ -1153,7 +1153,7 @@ public final class DataRootHandler implements InitializingBean {
    */
   public void handleRequestForProxyDatasetResolverCatalog(HttpServletRequest req, HttpServletResponse res)
           throws IOException {
-    String path = req.getPathInfo();
+    String path = TdsPathUtils.extractPath(req, null);
     if (!isProxyDatasetResolver(path)) {
       String resMsg = "Request <" + path + "> not for proxy dataset resolver.";
       log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
@@ -1613,9 +1613,7 @@ public final class DataRootHandler implements InitializingBean {
    */
   public boolean processReqForLatestDataset(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
           throws IOException {
-    String orgPath = req.getPathInfo();
-    if (orgPath.startsWith("/"))
-      orgPath = orgPath.substring(1);
+    String orgPath = TdsPathUtils.extractPath(req, null);
 
     String path = orgPath;
 

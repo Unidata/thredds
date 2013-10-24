@@ -23,6 +23,7 @@ import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
 import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.util.StringUtil2;
 
@@ -210,7 +211,7 @@ public class CollectionController  {
 
   @RequestMapping(value={"/fmrcCache", "/fmrcCache/*"})
   protected ModelAndView showFmrcCache(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    String path = req.getPathInfo();
+    String path = TdsPathUtils.extractPath(req, "admin/");   // LOOK probably wrong
     if (path == null) path = "";
 
     PrintWriter pw = res.getWriter();
