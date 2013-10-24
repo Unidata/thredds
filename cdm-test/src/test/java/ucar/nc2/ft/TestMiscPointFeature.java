@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
@@ -51,12 +51,9 @@ import ucar.unidata.test.util.TestDir;
 /**
  * @author tkunicki
  */
-public class TestMiscPointFeature extends TestCase {
+public class TestMiscPointFeature {
 
-  public TestMiscPointFeature(String name) {
-    super(name);
-  }
-
+  @Test
   public void testIterator() {
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     FeatureDataset fd = null;
@@ -67,17 +64,13 @@ public class TestMiscPointFeature extends TestCase {
         FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
         FeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);
         if (fc != null && fc instanceof StationTimeSeriesFeatureCollection) {
-          StationTimeSeriesFeatureCollection stsfc =
-                  (StationTimeSeriesFeatureCollection) fc;
+          StationTimeSeriesFeatureCollection stsfc = (StationTimeSeriesFeatureCollection) fc;
           // subset criteria not important, just want to get data
           // into flattened representation
           PointFeatureCollection pfc = stsfc.flatten(
-                  new LatLonRect(
-                          new LatLonPointImpl(-90, -180),
-                          new LatLonPointImpl(90, 180)),
-                  new DateRange(
-                          df.parse("1900-01-01"),
-                          df.parse("2100-01-01")));
+                  new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180)),
+                  new DateRange(df.parse("1900-01-01"), df.parse("2100-01-01")));
+
           PointFeatureIterator pfi = pfc.getPointFeatureIterator(-1);
           try {
             while (pfi.hasNext()) {
@@ -96,8 +89,10 @@ public class TestMiscPointFeature extends TestCase {
       }
     } catch (IOException e) {
       e.printStackTrace();
+      assert false;
     } catch (ParseException e) {
       e.printStackTrace();
+      assert false;
     } finally {
       if (fd != null) {
         try {
@@ -108,6 +103,7 @@ public class TestMiscPointFeature extends TestCase {
     }
   }
 
+  @Test
   public void testGempak() throws Exception {
     String file = TestDir.cdmUnitTestDir +  "formats/gempak/surface/09052812.sf";       // Q:/cdmUnitTest/formats/gempak/surface/09052812.sf
     Formatter buf = new Formatter();
@@ -128,7 +124,7 @@ public class TestMiscPointFeature extends TestCase {
       sample = time < 1;
       FeatureCollection fc = collectionList.get(0);
       PointFeatureCollection collection = null;
-      LatLonRect llr = null; // new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
+      LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
       System.out.println("llr = " + llr);
       if (fc instanceof PointFeatureCollection) {
         collection = (PointFeatureCollection) fc;
@@ -143,16 +139,14 @@ public class TestMiscPointFeature extends TestCase {
         }
         collection = npfc.flatten(llr, (CalendarDateRange) null);
       } else {
-        throw new IllegalArgumentException(
-            "Can't handle collection of type "
-                + fc.getClass().getName());
+        throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
       }
       List pos = new ArrayList(100000);
       List times = new ArrayList(100000);
       PointFeatureIterator dataIterator = collection.getPointFeatureIterator(16384);
 
       while (dataIterator.hasNext()) {
-        PointFeature po = (PointFeature) dataIterator.next();
+        PointFeature po = dataIterator.next();
         pos.add(po);
         times.add(po.getNominalTimeAsDate());
         System.out.println("po = " + po);

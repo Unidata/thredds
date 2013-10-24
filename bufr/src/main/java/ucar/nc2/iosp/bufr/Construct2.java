@@ -290,7 +290,7 @@ class Construct2 {
     }
 
     if (fld.getDesc() != null)
-      v.addAttribute(new Attribute("long_name", fld.getDesc()));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, fld.getDesc()));
 
     if (fld.getUnits() == null) {
       if (warnUnits) log.warn("dataDesc.units == null for " + uname);
@@ -344,30 +344,30 @@ class Construct2 {
       if (nbits < 9) {
         v.setDataType(DataType.BYTE);
         if (nbits == 8) {
-          v.addAttribute(new Attribute("_Unsigned", "true"));
-          v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missingValue(nbits)));
+          v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+          v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) BufrNumbers.missingValue(nbits)));
         } else
-          v.addAttribute(new Attribute("missing_value", (byte) BufrNumbers.missingValue(nbits)));
+          v.addAttribute(new Attribute(CDM.MISSING_VALUE, (byte) BufrNumbers.missingValue(nbits)));
 
       } else if (nbits < 17) {
         v.setDataType(DataType.SHORT);
         if (nbits == 16) {
-          v.addAttribute(new Attribute("_Unsigned", "true"));
-          v.addAttribute(new Attribute("missing_value", (int) BufrNumbers.missingValue(nbits)));
+          v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+          v.addAttribute(new Attribute(CDM.MISSING_VALUE, (int) BufrNumbers.missingValue(nbits)));
         } else
-          v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missingValue(nbits)));
+          v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) BufrNumbers.missingValue(nbits)));
 
       } else if (nbits < 33) {
         v.setDataType(DataType.INT);
         if (nbits == 32) {
-          v.addAttribute(new Attribute("_Unsigned", "true"));
-          v.addAttribute(new Attribute("missing_value", (int) BufrNumbers.missingValue(nbits)));
+          v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+          v.addAttribute(new Attribute(CDM.MISSING_VALUE, (int) BufrNumbers.missingValue(nbits)));
         } else
-          v.addAttribute(new Attribute("missing_value", (int) BufrNumbers.missingValue(nbits)));
+          v.addAttribute(new Attribute(CDM.MISSING_VALUE, (int) BufrNumbers.missingValue(nbits)));
 
       } else {
         v.setDataType(DataType.LONG);
-        v.addAttribute(new Attribute("missing_value", BufrNumbers.missingValue(nbits)));
+        v.addAttribute(new Attribute(CDM.MISSING_VALUE, BufrNumbers.missingValue(nbits)));
       }
 
       // value = scale_factor * packed + add_offset
@@ -379,9 +379,9 @@ class Construct2 {
       int scale10 = dataDesc.scale;
       double scale = (scale10 == 0) ? 1.0 : Math.pow(10.0, -scale10);
       if (scale10 != 0)
-        v.addAttribute(new Attribute("scale_factor", (float) scale));
+        v.addAttribute(new Attribute(CDM.SCALE_FACTOR, (float) scale));
       if (dataDesc.refVal != 0)
-        v.addAttribute(new Attribute("add_offset", (float) scale * dataDesc.refVal));
+        v.addAttribute(new Attribute(CDM.ADD_OFFSET, (float) scale * dataDesc.refVal));
 
     }
 
