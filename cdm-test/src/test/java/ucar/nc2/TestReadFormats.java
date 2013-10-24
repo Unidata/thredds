@@ -104,6 +104,7 @@ public class TestReadFormats {
           countGood++;
         } catch (Throwable t) {
           System.out.printf("  FAIL on %s == %s%n", name, t.getMessage());
+          t.printStackTrace();
           failFiles.add(name) ;
           countFail++;
         } finally {

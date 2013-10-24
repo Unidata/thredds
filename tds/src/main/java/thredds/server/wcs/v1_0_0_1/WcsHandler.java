@@ -95,9 +95,8 @@ public class WcsHandler implements VersionHandler
     try
     {
       URI serverURI = new URI( req.getRequestURL().toString());
-      request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(),
-                                                          serverURI, req, res);
-      if ( request.getOperation().equals( Request.Operation.GetCapabilities))
+      request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(), serverURI, req, res);
+      if (request.getOperation().equals( Request.Operation.GetCapabilities))
       {
         res.setContentType(ContentType.xml.toString());
         res.setStatus( HttpServletResponse.SC_OK );

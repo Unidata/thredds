@@ -45,19 +45,29 @@ public class TdsPathUtils {
 
   // For "removePrefix/path" style servlet mappings.
   public static String extractPath(HttpServletRequest req, String removePrefix) {
+
+    // may be in pathInfo (Servlet) or servletPath (Controller)
     String dataPath = req.getPathInfo();
     if (dataPath == null) {
       dataPath = req.getServletPath();
     }
+    if (dataPath == null)  // not sure if this is possible
+      return null;
 
-    if (removePrefix != null && dataPath.startsWith(removePrefix))
-      dataPath = dataPath.substring(removePrefix.length());
+    // removePrefix or "/"+removePrefix
+    if (removePrefix != null) {
+      if (dataPath.startsWith(removePrefix)) {
+        dataPath = dataPath.substring(removePrefix.length());
+
+      } else if (dataPath.startsWith("/")) {
+        dataPath = dataPath.substring(1);
+        if (dataPath.startsWith(removePrefix))
+          dataPath = dataPath.substring(removePrefix.length());
+      }
+    }
 
     if (dataPath.startsWith("/"))
       dataPath = dataPath.substring(1);
-
-    if (dataPath.equals("index.html"))
-      dataPath = "catalog.html";
 
     return dataPath;
   }

@@ -51,7 +51,7 @@ import thredds.util.TdsPathUtils;
  */
 public class LocalCatalogRequestDataBinder extends DataBinder
 {
-  private String suffixForDirPath = "catalog.html";
+  private static final String suffixForDirPath = "catalog.html";
 
   private static enum FieldInfo
   {
@@ -84,29 +84,24 @@ public class LocalCatalogRequestDataBinder extends DataBinder
   public void bind( HttpServletRequest req)
   {
     String catPath = TdsPathUtils.extractPath( req, "catalog/" );
-    if (catPath.startsWith("catalog/"))
-      catPath = catPath.substring("catalog/".length());
-    String command = req.getParameter( FieldInfo.COMMAND.getParameterName() );
-    String dataset = req.getParameter( FieldInfo.DATASET.getParameterName() );
-
-    MutablePropertyValues values = new MutablePropertyValues();
-
-    // Don't allow null catalog path values.
     if ( catPath == null )
-      catPath = FieldInfo.CATALOG.getDefaultValue();
-    else if ( catPath.endsWith( "/" ) || catPath.equals( "" ))
-      // Append suffix for all directory paths.
-      catPath += this.suffixForDirPath;
+       catPath = FieldInfo.CATALOG.getDefaultValue();
+     else if ( catPath.endsWith( "/" ) || catPath.equals( "" ))
+       catPath += this.suffixForDirPath; // Append suffix for all directory paths.
+    if (catPath.equals("index.html"))
+      catPath = "catalog.html";
 
     // Don't allow null dataset ID values.
+    String dataset = req.getParameter( FieldInfo.DATASET.getParameterName() );
     if ( dataset == null )
       dataset = FieldInfo.DATASET.getDefaultValue();
 
     // Default to SUBSET if a dataset ID is given, otherwise, SHOW.
+    String command = req.getParameter( FieldInfo.COMMAND.getParameterName() );
     if ( command == null  )
-      command = dataset.equals( FieldInfo.DATASET.getDefaultValue())
-                ? Command.SHOW.name() : Command.SUBSET.name();
+      command = dataset.equals( FieldInfo.DATASET.getDefaultValue()) ? Command.SHOW.name() : Command.SUBSET.name();
 
+    MutablePropertyValues values = new MutablePropertyValues();
     values.addPropertyValue( FieldInfo.CATALOG.getPropertyName(), catPath );
     values.addPropertyValue( FieldInfo.COMMAND.getPropertyName(), command );
     values.addPropertyValue( FieldInfo.DATASET.getPropertyName(), dataset );
