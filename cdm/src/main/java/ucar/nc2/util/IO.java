@@ -439,7 +439,7 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public String readFile(String filename) throws IOException {
-    InputStreamReader reader = new InputStreamReader(new FileInputStream(filename), "UTF-8");
+    InputStreamReader reader = new InputStreamReader(new FileInputStream(filename), CDM.utf8Charset);
 
     try {
       StringWriter swriter = new StringWriter(50000);
@@ -460,7 +460,7 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public void writeToFile(String contents, File file) throws IOException {
-    OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+    OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file), CDM.utf8Charset);
     UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(fw);
 
     try {

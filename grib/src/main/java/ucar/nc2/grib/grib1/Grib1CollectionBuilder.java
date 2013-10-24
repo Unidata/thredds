@@ -37,6 +37,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionManagerSingleFile;
 import thredds.inventory.MFile;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.stream.NcStream;
@@ -579,7 +580,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     try {
       //// header message
-      raf.write(getMagicStart().getBytes("UTF-8"));
+      raf.write(getMagicStart().getBytes(CDM.utf8Charset));
       raf.writeInt(version);
       long lenPos = raf.getFilePointer();
       raf.writeLong(0); // save space to write the length of the record section

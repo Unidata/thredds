@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.iosp.bufr.BufrIdentificationSection;
 import ucar.nc2.iosp.bufr.MessageScanner;
@@ -1088,7 +1089,7 @@ public class BufrTables {
 
 
   static private void readWmoCsvTableD(InputStream ios, TableD tableD) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF-8")));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
     int currSeqno = -1;
     TableD.Descriptor currDesc = null;

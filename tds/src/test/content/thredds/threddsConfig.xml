@@ -136,10 +136,5 @@
     <maxSize>1 Gb</maxSize>
   </DiskCache>
 
-  <GribIndexing>
-    <setExtendIndex>false</setExtendIndex>
-    <alwaysUseCache>false</alwaysUseCache>
-  </GribIndexing>
-
 
 </threddsConfig>

@@ -34,11 +34,13 @@
 package ucar.unidata.io;
 
 import net.jcip.annotations.NotThreadSafe;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
 
 import java.io.*;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -1412,7 +1414,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
   }
 
   /**
-   * Read a String of knoen length.
+   * Read a String of known length.
    *
    * @param nbytes number of bytes to read
    * @return String wrapping the bytes.
@@ -1421,7 +1423,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
   public String readString(int nbytes) throws IOException {
     byte[] data = new byte[nbytes];
     readFully(data);
-    return new String(data);
+    return new String(data, CDM.utf8Charset);
   }
 
   //

@@ -112,7 +112,7 @@ public class TestFmrc {
      }
    }
 
-  // @Test
+  @Test
   public void testProblem() throws Exception {
     doOne(TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure_tropopause", 3, 9, 9);
   }
@@ -163,10 +163,8 @@ public class TestFmrc {
       System.out.println(" vertAxes=" + countVertCooordAxes + ((nVertCooordAxes < 0) ? " *" : ""));
     }
 
-    Iterator iter = gridDs.getGridsets().iterator();
-    while (iter.hasNext()) {
-      GridDataset.Gridset gridset = (GridDataset.Gridset) iter.next();
-      gridset.getGeoCoordSystem();
+    for (ucar.nc2.dt.GridDataset.Gridset gridset1 : gridDs.getGridsets()) {
+      gridset1.getGeoCoordSystem();
     }
 
     GridDatatype grid = gridDs.findGridDatatype(gridName);
@@ -188,10 +186,16 @@ public class TestFmrc {
       assert ngrids == countGrids : "Grids " + ngrids + " != " + countGrids;
     //if (ncoordSys >= 0)
     //  assert ncoordSys == countCoordSys : "CoordSys " + ncoordSys + " != " + countCoordSys;
+
+    if (ncoordAxes >= 0 && (ncoordAxes != countCoordAxes)) {
+      for (CoordinateAxis axis : ncd.getCoordinateAxes())
+        System.out.printf("axis= %s%n", axis.getNameAndDimensions());
+    }
+
     if (ncoordAxes >= 0)
       assert ncoordAxes == countCoordAxes : "CoordAxes " + ncoordAxes + " != " + countCoordAxes;
     if (nVertCooordAxes >= 0)
-      assert nVertCooordAxes == countVertCooordAxes : "VertAxes" + nVertCooordAxes + " != " + countVertCooordAxes;
+      assert nVertCooordAxes == countVertCooordAxes : "VertAxes " + nVertCooordAxes + " != " + countVertCooordAxes;
 
     if (nruns >= 0)
       assert runtime.getSize() == nruns : runtime.getSize() + " != " + nruns;

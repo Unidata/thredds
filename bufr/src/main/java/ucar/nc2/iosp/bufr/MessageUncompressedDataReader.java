@@ -37,6 +37,7 @@ import ucar.ma2.*;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -261,7 +262,7 @@ public class MessageUncompressedDataReader {
       if (dkey.type == 1) {
         byte[] vals = readCharData(dkey, reader, req);
         if (out != null) {
-          String s = new String(vals, "UTF-8");
+          String s = new String(vals, CDM.utf8Charset);
           out.f.format("%4d %s read char %s (%s) width=%d end at= 0x%x val=<%s>\n",
                   out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.bitWidth, reader.getPos(), s);
         }

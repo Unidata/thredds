@@ -721,8 +721,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
      * @param cancelTask CancelTask
      * @throws IOException problem opening the file
      */
-    MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf,
-                   String location, CancelTask cancelTask)
+    MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask)
             throws IOException {
       super(spi, raf, location, cancelTask);
     }
