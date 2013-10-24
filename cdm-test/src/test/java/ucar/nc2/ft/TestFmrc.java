@@ -35,8 +35,11 @@ package ucar.nc2.ft;
 import org.junit.Test;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.ma2.Array;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -187,9 +190,21 @@ public class TestFmrc {
     //if (ncoordSys >= 0)
     //  assert ncoordSys == countCoordSys : "CoordSys " + ncoordSys + " != " + countCoordSys;
 
-    if (ncoordAxes >= 0 && (ncoordAxes != countCoordAxes)) {
-      for (CoordinateAxis axis : ncd.getCoordinateAxes())
+    if (ncoordAxes >= 0) { //  && (ncoordAxes != countCoordAxes)) {
+      for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("axis= %s%n", axis.getNameAndDimensions());
+        if (axis.getShortName().startsWith("layer_between")) {
+          CoordinateAxis1D axis1 = (CoordinateAxis1D) axis;
+          Array data = axis.read();
+          NCdumpW.printArray(data);
+          Formatter f = new Formatter();
+          f.format("%n bounds1=");
+          showArray(f, axis1.getBound1());
+          f.format("%n bounds2=");
+          showArray(f, axis1.getBound2());
+          System.out.printf("%s%n", f);
+        }
+      }
     }
 
     if (ncoordAxes >= 0)
@@ -205,6 +220,10 @@ public class TestFmrc {
       assert time.getDimension(1).getLength() == ntimes : " ntimes should be " + ntimes+" actual "+time.getDimension(1).getLength();
 
     gridDs.close();
+  }
+
+  static void showArray(Formatter f, double[] array) {
+    for (double d : array) f.format("%f ", d);
   }
 
   static void doOneBest(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes,

@@ -184,7 +184,8 @@ public class GempakFileReader implements GempakConstants {
     }
 
     dmLabel = new DMLabel();
-    boolean labelOk = dmLabel.init();
+    boolean labelOk = dmLabel.init(!fullCheck);
+    if (!fullCheck) return labelOk;
 
     if (!labelOk) {
       logError("not a GEMPAK file");
@@ -218,8 +219,8 @@ public class GempakFileReader implements GempakConstants {
       logError("Couldn't read file header info");
       return false;
     }
-    return true;
 
+    return true;
   }
 
   /**
@@ -564,7 +565,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to mimic the GEMPAK DMLABL common block
    */
-  protected class DMLabel {
+  class DMLabel {
 
     /**
      * File identifier
@@ -699,11 +700,7 @@ public class GempakFileReader implements GempakConstants {
      * @return true if okay.
      * @throws IOException problem reading the file
      */
-    public boolean init() throws IOException {
-      if (rf == null) {
-        throw new IOException("File is null");
-      }
-
+    boolean init(boolean justCheck) throws IOException {
       rf.order(RandomAccessFile.BIG_ENDIAN);
       if (rf.length() < getOffset(31) + 4) return false;
 
@@ -730,6 +727,8 @@ public class GempakFileReader implements GempakConstants {
       if (!label.equals(DMLABEL)) {
         return false;
       }
+
+      if (justCheck) return true;
 
       int[] words = new int[23];
       DM_RINT(8, words);

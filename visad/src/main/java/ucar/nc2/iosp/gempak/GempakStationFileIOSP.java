@@ -187,12 +187,8 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
   /**
    * Initialize the parameter tables.
    */
-  private void initTables() {
-    try {
+  private void initTables() throws IOException {
       GempakParameters.addParameters("resources/nj22/tables/gempak/params.tbl");
-    } catch (Exception e) {
-      log.error("unable to init param tables");
-    }
   }
 
   /**
