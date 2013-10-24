@@ -19,14 +19,6 @@
         <td>/dodsC/*</td>
       </tr>
       <tr>
-        <td>FileServer</td>
-        <td>/fileServer/*</td>
-      </tr>
-      <tr>
-        <td>DLWriterServlet</td>
-        <td>/DLwriter/*</td>
-      </tr>
-      <tr>
         <td>RestrictedDataset</td>
         <td>/restrictedAccess/*</td>
       </tr>
@@ -154,7 +146,17 @@
         <td>CdmrfController</td>
         <td>dataRequestHandler</td>
         <td>/cdmrfeature/**, params={&quot;req=data&quot;}</td>
-      </tr>    
+      </tr> 
+      <tr>
+        <td>FileServerController</td>
+          <td>doGet</td>
+      <td>/fileServer/*</td>
+      </tr>
+      <tr>
+        <td>DLwriterController</td>
+         <td>doGet</td>
+       <td>/DLwriter/*</td>
+      </tr>   
       <tr>
         <td>MetadataController</td>
         <td>getMetadata</td>
@@ -198,7 +200,7 @@
       </tr>
       <tr>
         <td>WCSController</td>
-        <td>doGet*</td>
+        <td>doGet</td>
         <td>/wcs/*</td>
       </tr>
    </tbody>

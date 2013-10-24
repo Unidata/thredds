@@ -28,7 +28,7 @@
     <property name="suffix" value=".jsp"/>
   </bean>
 
-  <!-- enable @PostConstruct annotation -->
+  <!-- enable @PostConstruct, @PreDestroy annotation -->
   <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
 
   <!-- A Singleton class to populate the Debug methods in DebugHandler -->

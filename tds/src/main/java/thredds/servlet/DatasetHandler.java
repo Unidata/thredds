@@ -51,6 +51,7 @@ import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetScan;
 import thredds.server.admin.DebugController;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
@@ -366,10 +367,7 @@ public class DatasetHandler {
    */
   static public boolean resourceControlOk(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     if (null == reqPath)
-      reqPath = req.getPathInfo();
-
-    if (reqPath.startsWith("/"))
-      reqPath = reqPath.substring(1);
+      reqPath = TdsPathUtils.extractPath(req, null);
 
     // see if its under resource control
     String rc = findResourceControl(reqPath);

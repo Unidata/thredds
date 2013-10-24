@@ -22,7 +22,7 @@
   <!-- Handler Mapping -->
   <!--  In Spring 3.2  DefaultAnnotationHandlerMapping was deprecated in favor of   RequestMappingHandlerMapping-->
   <!--  bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /-->  
-  <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+  <!-- bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" / -->
    
   <!-- tell spring that tds.properties gets read in first and overrides anything else -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

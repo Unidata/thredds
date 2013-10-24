@@ -98,7 +98,7 @@ public class TestCdmRemoteServer2 {
 
   @Test
   public void testUrlReading() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open("/catalog/scanCdmUnitTests/formats/netcdf3/catalog.xml");
+    InvCatalogImpl cat = TestTdsLocal.open("catalog/scanCdmUnitTests/formats/netcdf3/catalog.xml");
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
 
       @Override

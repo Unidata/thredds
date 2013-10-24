@@ -118,7 +118,7 @@ import java.net.URISyntaxException;
  * @since 4.0
  */
 @Component
-@RequestMapping(value = {"/catalog", "**"})
+@RequestMapping(value = {"/catalog/**", "**"})
 public class LocalCatalogServiceController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
@@ -139,7 +139,7 @@ public class LocalCatalogServiceController {
     this.catalogSupportOnly = catalogSupportOnly;
   }
 
-  @RequestMapping(value = {"*/catalog.xml", "*.xml"})
+  @RequestMapping(value = {"catalog.xml", "*.xml"})
   protected ModelAndView handleXmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.
@@ -213,7 +213,7 @@ public class LocalCatalogServiceController {
     }
   }
 
-  @RequestMapping(value = {"*/catalog.html", "*.html"})
+  @RequestMapping(value = {"catalog.html", "*.html"})
   protected ModelAndView handleHtmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.

@@ -58,25 +58,30 @@ public class FileServerController implements LastModified {
   protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileServerController.class);
 
   public long getLastModified(HttpServletRequest req) {
-    File file = getFile( req);
+    String reqPath = TdsPathUtils.extractPath(req, "fileServer/");
+    if (reqPath == null) return -1;
+
+    File file = getFile( reqPath);
     if (file == null)
       return -1;
 
     return file.lastModified();
   }
 
-  @RequestMapping("*")
+  @RequestMapping("**")
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    if (!DatasetHandler.resourceControlOk(req, res, null)) {
+    String reqPath = TdsPathUtils.extractPath(req, "fileServer/");
+    if (reqPath == null) return;
+
+    if (!DatasetHandler.resourceControlOk(req, res, reqPath)) {
       return;
     }
 
-    File file = getFile( req);
+    File file = getFile( reqPath);
     ServletUtil.returnFile(null, req, res, file, null);
   }
 
-  private File getFile(HttpServletRequest req) {
-    String reqPath = TdsPathUtils.extractPath(req, "fileServer/");
+  private File getFile(String reqPath) {
     if (reqPath == null) return null;
 
     File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);

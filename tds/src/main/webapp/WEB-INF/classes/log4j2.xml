@@ -4,7 +4,7 @@
     <property name="tds.content.root.path">../content</property>
     <property name="tds.log.dir">${sys:tds.content.root.path}/thredds/logs</property>
   </properties>
-  
+
   <appenders>
 
     <File name="serverStartupAppender" fileName="${tds.log.dir}/serverStartup.log" append="false">
@@ -59,7 +59,7 @@
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-     <logger name="thredds.servlet.DataRootHandler.catalogInit" level="debug" additivity="false">
+    <logger name="thredds.servlet.DataRootHandler.catalogInit" level="debug" additivity="false">
       <appender-ref ref="catalogInit"/>
     </logger>
 
@@ -148,7 +148,7 @@
     </logger>
     <!-- end fmrc debugging -->
 
-     <!-- WMS stuff has routine higher level of messages -->
+    <!-- WMS stuff has routine higher level of messages -->
     <logger name="uk.ac.rdg.resc.ncwms" level="warn" additivity="false">
       <appender-ref ref="threddsServlet"/>
     </logger>
@@ -165,6 +165,14 @@
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
+    <logger name="org.springframework.http" level="debug" additivity="false">
+      <appender-ref ref="serverStartupAppender"/>
+    </logger>
+
+    <logger name="org.springframework.web" level="debug" additivity="false">
+      <appender-ref ref="serverStartupAppender"/>
+    </logger>
+
     <logger name="org.springframework" level="info" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
@@ -172,7 +180,8 @@
     <!-- All normal logging messages go to threddsServlet.log -->
     <root level="info" additivity="false">
       <appender-ref ref="threddsServlet"/>
-    </root>                                                                                       -
+    </root>
+    -
 
   </loggers>
 
