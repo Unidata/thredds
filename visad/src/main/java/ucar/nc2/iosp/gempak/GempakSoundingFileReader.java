@@ -1,34 +1,36 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ *  *
+ *  *  Portions of this software were developed by the Unidata Program at the
+ *  *  University Corporation for Atmospheric Research.
+ *  *
+ *  *  Access and use of this software shall impose the following obligations
+ *  *  and understandings on the user. The user is granted the right, without
+ *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  *  this software, and any derivative works thereof, and its supporting
+ *  *  documentation for any purpose whatsoever, provided that this entire
+ *  *  notice appears in all copies of the software, derivative works and
+ *  *  supporting documentation.  Further, UCAR requests that the user credit
+ *  *  UCAR/Unidata in any publications that result from the use of this
+ *  *  software or in any product that includes this software. The names UCAR
+ *  *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  *  to endorse or promote any products or commercial entity unless specific
+ *  *  written permission is obtained from UCAR/Unidata. The user also
+ *  *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  *  any support, consulting, training or assistance of any kind with regard
+ *  *  to the use, operation and performance of this software nor to provide
+ *  *  the user with any updates, revisions, new versions or "bug fixes."
+ *  *
+ *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -366,54 +368,6 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
   }
 
   /**
-   * Run the program
-   *
-   * @param args [0] filename (required),
-   *             [1] variable name (X for default),
-   *             [2] X to not list grids
-   * @throws IOException problem reading the file
-   */
-  public static void main(String[] args) throws IOException {
-    if (args.length == 0) {
-      System.out.println("need to supply a GEMPAK sounding file name");
-      System.exit(1);
-    }
-    try {
-      GempakParameters.addParameters(
-              "resources/nj22/tables/gempak/params.tbl");
-    } catch (Exception e) {
-      System.out.println("unable to init param tables");
-    }
-
-    GempakSoundingFileReader gsfr = getInstance(getFile(args[0]), true);
-    System.out.println("Type = " + gsfr.getFileType());
-    gsfr.printFileLabel();
-    gsfr.printKeys();
-    gsfr.printHeaders();
-    gsfr.printParts();
-    gsfr.printDates();
-    gsfr.printStations(false);
-    int row = 1;
-    int col = 1;
-    if (args.length > 1) {
-      row = Integer.parseInt(args[1]);
-    }
-    if (args.length > 2) {
-      try {
-        col = Integer.parseInt(args[2]);
-      } catch (Exception npe) {
-        col = gsfr.findStationIndex(args[2]);
-        if (col == -1) {
-          System.out.println("couldn't find station " + args[2]);
-          System.exit(1);
-        }
-        System.out.println("found station at column " + col);
-      }
-    }
-    gsfr.printOb(row, col);
-  }
-
-  /**
    * This subroutine checks the parts in a sounding data set for the
    * unmerged data types.
    *
@@ -464,6 +418,54 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
       }
     }
     return true;
+  }
+
+  /**
+   * Run the program
+   *
+   * @param args [0] filename (required),
+   *             [1] variable name (X for default),
+   *             [2] X to not list grids
+   * @throws IOException problem reading the file
+   */
+  public static void main(String[] args) throws IOException {
+    if (args.length == 0) {
+      System.out.println("need to supply a GEMPAK sounding file name");
+      System.exit(1);
+    }
+    try {
+      GempakParameters.addParameters(
+              "resources/nj22/tables/gempak/params.tbl");
+    } catch (Exception e) {
+      System.out.println("unable to init param tables");
+    }
+
+    GempakSoundingFileReader gsfr = getInstance(getFile(args[0]), true);
+    System.out.println("Type = " + gsfr.getFileType());
+    gsfr.printFileLabel();
+    gsfr.printKeys();
+    gsfr.printHeaders();
+    gsfr.printParts();
+    gsfr.printDates();
+    gsfr.printStations(false);
+    int row = 1;
+    int col = 1;
+    if (args.length > 1) {
+      row = Integer.parseInt(args[1]);
+    }
+    if (args.length > 2) {
+      try {
+        col = Integer.parseInt(args[2]);
+      } catch (Exception npe) {
+        col = gsfr.findStationIndex(args[2]);
+        if (col == -1) {
+          System.out.println("couldn't find station " + args[2]);
+          System.exit(1);
+        }
+        System.out.println("found station at column " + col);
+      }
+    }
+    gsfr.printOb(row, col);
   }
 
 

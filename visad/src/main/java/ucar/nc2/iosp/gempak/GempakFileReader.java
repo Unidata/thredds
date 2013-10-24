@@ -1,34 +1,36 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ *  *
+ *  *  Portions of this software were developed by the Unidata Program at the
+ *  *  University Corporation for Atmospheric Research.
+ *  *
+ *  *  Access and use of this software shall impose the following obligations
+ *  *  and understandings on the user. The user is granted the right, without
+ *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  *  this software, and any derivative works thereof, and its supporting
+ *  *  documentation for any purpose whatsoever, provided that this entire
+ *  *  notice appears in all copies of the software, derivative works and
+ *  *  supporting documentation.  Further, UCAR requests that the user credit
+ *  *  UCAR/Unidata in any publications that result from the use of this
+ *  *  software or in any product that includes this software. The names UCAR
+ *  *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  *  to endorse or promote any products or commercial entity unless specific
+ *  *  written permission is obtained from UCAR/Unidata. The user also
+ *  *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  *  any support, consulting, training or assistance of any kind with regard
+ *  *  to the use, operation and performance of this software nor to provide
+ *  *  the user with any updates, revisions, new versions or "bug fixes."
+ *  *
+ *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -137,8 +139,7 @@ public class GempakFileReader implements GempakConstants {
    * @return a GempakFileReader
    * @throws IOException problem reading file
    */
-  public static GempakFileReader getInstance(RandomAccessFile raf,
-                                             boolean fullCheck)
+  public static GempakFileReader getInstance(RandomAccessFile raf, boolean fullCheck)
           throws IOException {
     GempakFileReader gfr = new GempakFileReader();
     gfr.init(raf, fullCheck);
@@ -152,18 +153,13 @@ public class GempakFileReader implements GempakConstants {
    * @param fullCheck if true, check entire structure
    * @throws IOException problem reading file
    */
-  public final void init(RandomAccessFile raf, boolean fullCheck)
-          throws IOException {
+  public boolean init(RandomAccessFile raf, boolean fullCheck) throws IOException {
     setByteOrder();
     rf = raf;
+    fileSize = rf.length();
     raf.seek(0);
 
-    boolean ok = init(fullCheck);
-    fileSize = rf.length();
-    if (!ok) {
-      throw new IOException("Unable to open GEMPAK file: "
-              + errorMessage);
-    }
+    return init(fullCheck);
   }
 
   /**
@@ -233,9 +229,7 @@ public class GempakFileReader implements GempakConstants {
    * @return the name of the file
    */
   public String getFilename() {
-    return (rf == null)
-            ? null
-            : rf.getLocation();
+    return (rf == null) ? null : rf.getLocation();
   }
 
 
@@ -272,6 +266,7 @@ public class GempakFileReader implements GempakConstants {
   }
 
   /**
+   * LOOK WTF ??
    * Set the machine type for this system.
    *
    * @see <a href="http://lopica.sourceforge.net/os.html">http://lopica.sourceforge.net/os.html</a>
@@ -1338,7 +1333,7 @@ public class GempakFileReader implements GempakConstants {
     int part = 0;
     if ((parts != null) && !parts.isEmpty()) {
       for (int i = 0; i < parts.size(); i++) {
-        String partName = ((DMPart) parts.get(i)).kprtnm;
+        String partName = parts.get(i).kprtnm;
         if (partName.equals(name)) {
           // gotta add 1 because parts are 1 based
           part = i + 1;
@@ -1358,7 +1353,7 @@ public class GempakFileReader implements GempakConstants {
   public DMPart getPart(String name) {
     if ((parts != null) && !parts.isEmpty()) {
       for (int i = 0; i < parts.size(); i++) {
-        DMPart part = (DMPart) parts.get(i);
+        DMPart part = parts.get(i);
         String partName = part.kprtnm;
         if (partName.equals(name)) {
           return part;

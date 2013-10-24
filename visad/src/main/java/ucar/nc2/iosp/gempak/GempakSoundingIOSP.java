@@ -1,33 +1,36 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ *  *
+ *  *  Portions of this software were developed by the Unidata Program at the
+ *  *  University Corporation for Atmospheric Research.
+ *  *
+ *  *  Access and use of this software shall impose the following obligations
+ *  *  and understandings on the user. The user is granted the right, without
+ *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  *  this software, and any derivative works thereof, and its supporting
+ *  *  documentation for any purpose whatsoever, provided that this entire
+ *  *  notice appears in all copies of the software, derivative works and
+ *  *  supporting documentation.  Further, UCAR requests that the user credit
+ *  *  UCAR/Unidata in any publications that result from the use of this
+ *  *  software or in any product that includes this software. The names UCAR
+ *  *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  *  to endorse or promote any products or commercial entity unless specific
+ *  *  written permission is obtained from UCAR/Unidata. The user also
+ *  *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  *  any support, consulting, training or assistance of any kind with regard
+ *  *  to the use, operation and performance of this software nor to provide
+ *  *  the user with any updates, revisions, new versions or "bug fixes."
+ *  *
+ *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -47,8 +50,6 @@ import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
 
-import visad.util.Trace;
-
 import java.io.IOException;
 
 import java.nio.ByteBuffer;
@@ -64,6 +65,165 @@ import java.util.List;
  * @author dmurray
  */
 public class GempakSoundingIOSP extends GempakStationFileIOSP {
+  /*
+  dmlib.txt:
+                   Sounding (SN) Library
+
+  The sounding library subroutines allow the programmer to access
+  GEMPAK upper-air data files.  These files contain meteorological
+  observations from many locations for different times.  The
+  library contains modules which create and open files and read or
+  write data to these files.
+
+  There are two types of GEMPAK sounding files:  merged and unmerged.
+  Merged files may contain an arbitrary set of parameters which
+  report at every level.  Unmerged files store mandatory and
+  significant data separately in the following parts with the
+  given parameters:
+
+    TTAA  mandatory data below 100 mb  PRES TEMP DWPT DRCT SPED HGHT
+    TTBB  sig temp data below 100 mb   PRES TEMP DWPT
+    PPBB  sig wind data below 100 mb   HGHT DRCT SPED or
+                                       PRES DRCT SPED
+    TTCC  mandatory data above 100 mb  PRES TEMP DWPT DRCT SPED HGHT
+    TTDD  sig temp data above 100 mb   PRES TEMP DWPT
+    PPDD  sig wind data above 100 mb   HGHT DRCT SPED or
+                                       PRES DRCT SPED
+
+  When wind data appear on pressure surfaces, the first pressure is
+  set to the negative of its value as a flag.
+
+  Data that are to be written to an unmerged file must be in the
+  specified order.  When data are returned from an unmerged file,
+  data from all the parts will be merged.  Interpolation will be
+  used to fill in the significant data levels.
+
+  Merged data files can be created using SN_CREF or SN_CRFP;
+  unmerged files can be created using SN_CRUA.  SN_OPNF will open
+  either file type.  SN_RDAT will read data from all files;
+  unmerged data will be returned as a merged data set.  SN_RTYP can
+  be called to determine whether each level is mandatory, significant
+  temperature, or significant wind level data.  SN_MAND can
+  be called to request that only mandatory data below 100 mb be
+  returned when SN_RDAT is called.  SN_WDAT writes to merged files;
+  SN_WPRT writes to unmerged files.
+
+  The subroutines to create or open a sounding file return a file
+  number which must be used in later subroutines to access the file.
+
+  The file GEMPRM.PRM contains the maximum values for array
+  dimensions when using GEMPAK subroutines.  A copy of this file has
+  been included in the appendix for easy reference.  MMFILE is the
+  maximum number of files that can be open.  LLMXTM is the maximum
+  number of times that can be saved in a GEMPAK5 file. The maximum
+  number of stations is LLSTFL and the maximum number of parameters
+  is MMPARM.
+
+  After a file is opened, both the time and station must be selected
+  before data can be read or written.  There are two groups of
+  subroutines that perform this function.
+
+  If data from many stations are to be accessed for a particular
+  time, the time can be set using SN_STIM.  The stations to be
+  selected may be defined using LC_SARE or LC_UARE, which select
+  stations using the GEMPAK variable, AREA.  The LC subroutines may
+  be called before or after SN_STIM.  Stations within the area are
+  returned using SN_SNXT.
+
+  If data for many times at a particular station are required, the
+  station may be selected using SN_TSTN.  The time may then be
+  defined using SN_TTIM.  Alternatively, times may be returned using
+  SN_TNXT.
+
+  All GEMPAK files contain information about the station in station
+  headers.  The station header names, contents, and the data types
+  returned from the SN library are:
+
+          STID    Station identifier            CHARACTER*4
+          STNM    Station number                INTEGER
+          SLAT    Station latitude              REAL
+          SLON    Station longitude             REAL
+          SELV    Station elevation in meters   REAL
+          STAT    State                         CHARACTER*2
+          COUN    Country                       CHARACTER*2
+    STD2	Extended station ID	      CHARACTER*4
+
+  Only SLAT and SLON are required for sounding files.  The other
+  header variables are optional.
+
+  The subroutines SN_FTIM and SN_FSTN can be used to find a time
+  and station in a data set.  They will execute faster than the
+  subroutines above, but can only be used with files where the times
+  are in rows and the stations are in columns (or vice versa).  They were
+  designed to be used in real-time data ingest applications and should
+  not be used for normal applications which use general sounding
+  files.
+
+  Some examples of subroutine sequences for accessing the data follow.
+
+  A sequence of subroutines to retrieve sounding data for many
+  stations at one time is:
+
+          Initialize GEMPAK                       (IN_BDTA)
+
+    Open the file				(SN_OPNF)
+    Define the time				(SN_STIM)
+    Define the area search			(LC_SARE)
+    Loop:
+       Get the next station			(SN_SNXT)
+       Read the data			(SN_RDAT)
+    End loop
+    Close the file				(SN_CLOS)
+
+  A sequence of subroutines to retrieve sounding data for many times
+  at one station is:
+
+    Open the sounding file			(SN_OPNF)
+    Get times in file                       (SN_GTIM)
+    Get times to use                        (TI_FIND)
+    Set the station				(SN_TSTN)
+    Loop:
+       Get the next time			(SN_TTIM)
+       Read the data			(SN_RDAT)
+    End loop
+    Close the file				(SN_CLOS)
+
+  ================================================================================
+
+
+  Also, check out Don's GEMPAK Support reply to Patrick Marsh
+  about the GEMPAK data format:
+
+  http://www.unidata.ucar.edu/support/help/MailArchives/gempak/msg05580.html
+
+  There is some documention in the GEMPAK distribution in the
+  gempak/txt/gemlib directory.
+
+  In particular, dmlib.txt explains the basic DM (Data Management)
+  structure.  The other files explain specific implementations
+  for grids (gdlib.txt), surface (sflib.txt) and sounding (snlib.txt).
+
+  =====
+
+    Another thing is this from an email Michal sent me:
+
+
+  SNLIST functions to look at
+
+  snlpdt.f
+  https://github.com/Unidata/gempak/blob/master/gempak/source/programs/sn/snlist/snlpdt.f
+
+  starting on line 133 is IF/then for different listing routines, SNLWMN, SNLWTM, SNLWSG, etc.
+
+  snlpdt called SN_RPRT to read mandatory level data (merged data uses SN_RDAT)
+  https://github.com/Unidata/gempak/blob/master/gempak/source/snlib/snrprt.f
+
+  DM_RDTR and DM_RFLT are used to read data from DM files
+
+  https://github.com/Unidata/gempak/blob/master/gempak/source/gemlib/dm/dmrdtr.f
+  https://github.com/Unidata/gempak/blob/master/gempak/source/gemlib/dm/dmrflt.f
+
+ */
 
   /**
    * static for shared dimension of length 4
@@ -86,14 +246,14 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    * @return true if a valid Gempak grid file
    * @throws IOException problem reading file
    */
+  @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     if (!super.isValidFile(raf)) {
       return false;
     }
     // TODO:  handle other types of surface files
-    return gemreader.getFileSubType()
-            .equals(GempakSoundingFileReader.MERGED) || gemreader
-            .getFileSubType().equals(GempakSoundingFileReader.UNMERGED);
+    return gemreader.getFileSubType().equals(GempakSoundingFileReader.MERGED) ||
+            gemreader.getFileSubType().equals(GempakSoundingFileReader.UNMERGED);
   }
 
   /**
@@ -101,6 +261,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    *
    * @return the file type id
    */
+  @Override
   public String getFileTypeId() {
     return "GempakSounding";
   }
@@ -110,6 +271,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    *
    * @return the file type description
    */
+  @Override
   public String getFileTypeDescription() {
     return "GEMPAK Sounding Obs Data";
   }
@@ -134,7 +296,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    */
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     if (gemreader == null) {
-      return null;
+      throw new IllegalStateException("reader not initialized");
     }
     return readSoundingData(v2, section, gemreader.getFileSubType().equals(GempakSoundingFileReader.MERGED));
   }
@@ -189,7 +351,6 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         }
       }
       array = abb;
-      Trace.call2("GEMPAKSIOSP: readMergedData");
     }
     return array;
   }
@@ -213,13 +374,12 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    * @param values the values that were read
    * @return the ArraySequence
    */
-  private ArraySequence makeArraySequence(Sequence seq,
-                                          List<GempakParameter> params,
-                                          float[] values) {
+  private ArraySequence makeArraySequence(Sequence seq, List<GempakParameter> params, float[] values) {
 
     if (values == null) {
       return makeEmptySequence(seq);
     }
+
     int numLevels = values.length / params.size();
     StructureMembers members = seq.makeStructureMembers();
     int offset = ArrayStructureBB.setOffsets(members);
@@ -237,48 +397,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         var++;
       }
     }
-    return new ArraySequence(members,
-            new SequenceIterator(numLevels, abb),
-            numLevels);
-  }
-
-  /**
-   * Test this.
-   *
-   * @param args file name
-   * @throws IOException problem reading the file
-   */
-  public static void main(String[] args) throws IOException {
-    IOServiceProvider mciosp = new GempakSoundingIOSP();
-    RandomAccessFile rf = new RandomAccessFile(args[0], "r", 2048);
-    NetcdfFile ncfile = new MakeNetcdfFile(mciosp, rf, args[0], null);
-    if (args.length > 1) {
-      ucar.nc2.FileWriter.writeToFile(ncfile, args[1]);
-    } else {
-      System.out.println(ncfile);
-    }
-  }
-
-  /**
-   * TODO:  generalize this
-   * static class for testing
-   */
-  protected static class MakeNetcdfFile extends NetcdfFile {
-
-    /**
-     * Ctor
-     *
-     * @param spi        IOServiceProvider
-     * @param raf        RandomAccessFile
-     * @param location   location of file?
-     * @param cancelTask CancelTask
-     * @throws IOException problem opening the file
-     */
-    MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf,
-                   String location, CancelTask cancelTask)
-            throws IOException {
-      super(spi, raf, location, cancelTask);
-    }
+    return new ArraySequence(members, new SequenceIterator(numLevels, abb), numLevels);
   }
 
   /**
@@ -566,6 +685,47 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
       siter.finish();
     }
 
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Test this.
+   *
+   * @param args file name
+   * @throws IOException problem reading the file
+   */
+  public static void main(String[] args) throws IOException {
+    IOServiceProvider mciosp = new GempakSoundingIOSP();
+    RandomAccessFile rf = new RandomAccessFile(args[0], "r", 2048);
+    NetcdfFile ncfile = new MakeNetcdfFile(mciosp, rf, args[0], null);
+    if (args.length > 1) {
+      ucar.nc2.FileWriter.writeToFile(ncfile, args[1]);
+    } else {
+      System.out.println(ncfile);
+    }
+  }
+
+  /**
+   * TODO:  generalize this
+   * static class for testing
+   */
+  protected static class MakeNetcdfFile extends NetcdfFile {
+
+    /**
+     * Ctor
+     *
+     * @param spi        IOServiceProvider
+     * @param raf        RandomAccessFile
+     * @param location   location of file?
+     * @param cancelTask CancelTask
+     * @throws IOException problem opening the file
+     */
+    MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf,
+                   String location, CancelTask cancelTask)
+            throws IOException {
+      super(spi, raf, location, cancelTask);
+    }
   }
 }
 

@@ -1,34 +1,36 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ *  *
+ *  *  Portions of this software were developed by the Unidata Program at the
+ *  *  University Corporation for Atmospheric Research.
+ *  *
+ *  *  Access and use of this software shall impose the following obligations
+ *  *  and understandings on the user. The user is granted the right, without
+ *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  *  this software, and any derivative works thereof, and its supporting
+ *  *  documentation for any purpose whatsoever, provided that this entire
+ *  *  notice appears in all copies of the software, derivative works and
+ *  *  supporting documentation.  Further, UCAR requests that the user credit
+ *  *  UCAR/Unidata in any publications that result from the use of this
+ *  *  software or in any product that includes this software. The names UCAR
+ *  *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  *  to endorse or promote any products or commercial entity unless specific
+ *  *  written permission is obtained from UCAR/Unidata. The user also
+ *  *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  *  any support, consulting, training or assistance of any kind with regard
+ *  *  to the use, operation and performance of this software nor to provide
+ *  *  the user with any updates, revisions, new versions or "bug fixes."
+ *  *
+ *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -42,12 +44,9 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
-
-import visad.util.Trace;
 
 import java.io.ByteArrayOutputStream;
 
@@ -66,6 +65,7 @@ import java.util.StringTokenizer;
  * @author dmurray
  */
 public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GempakStationFileIOSP.class);
 
   /**
    * The netCDF file
@@ -85,12 +85,12 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
   /**
    * Float missing attribute
    */
-  protected final static Number RMISS = new Float(GempakConstants.RMISSD);
+  protected final static Number RMISS = GempakConstants.RMISSD;
 
   /**
    * Integer missing attribute
    */
-  protected final static Number IMISS = new Integer(GempakConstants.IMISSD);
+  protected final static Number IMISS = GempakConstants.IMISSD;
 
   /**
    * static for shared dimension of length 4
@@ -143,16 +143,14 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    * @return true if a valid Gempak grid file
    * @throws IOException problem reading file
    */
+  @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     try {
       gemreader = makeStationReader();
-      Trace.call1("GEMPAKSIOSP.isValidFile: reader.init");
-      gemreader.init(raf, false);
-      Trace.call2("GEMPAKSIOSP.isValidFile: reader.init");
+      return gemreader.init(raf, false);
     } catch (Exception ioe) {
       return false;
     }
-    return true;
   }
 
   /**
@@ -171,6 +169,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    * @param cancelTask task for cancelling
    * @throws IOException problem reading file
    */
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
 
     //System.out.printf("GempakSurfaceIOSP open %s (%s) %n", raf.getLocation(), Calendar.getInstance().getTime());
@@ -180,12 +179,8 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     if (gemreader == null) {
       gemreader = makeStationReader();
     }
-    Trace.call1("GEMPAKStationIOSP.open: initTables");
     initTables();
-    Trace.call2("GEMPAKStationIOSP.open: initTables");
-    Trace.call1("GEMPAKStationIOSP.open: reader.init");
     gemreader.init(raf, true);
-    Trace.call2("GEMPAKStationIOSP.open: reader.init");
     buildNCFile();
   }
 
@@ -196,11 +191,11 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     try {
       GempakParameters.addParameters("resources/nj22/tables/gempak/params.tbl");
     } catch (Exception e) {
-      System.out.println("unable to init param tables");
+      log.error("unable to init param tables");
     }
   }
 
-   /**
+  /**
    * Get the detail information
    *
    * @return the detail info
@@ -224,16 +219,12 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
 
     if (gemreader.getInitFileSize() < raf.length()) {
       long start = System.currentTimeMillis();
-      Trace.msg("GEMPAKStationIOSP.sync: file " + raf.getLocation()
+      log.debug("GEMPAKStationIOSP.sync: file " + raf.getLocation()
               + " is bigger: " + raf.length() + " > "
               + gemreader.getInitFileSize());
-      Trace.call1("GEMPAKStationIOSP.sync: reader.init");
       gemreader.init(raf, true);
-      Trace.call2("GEMPAKStationIOSP.sync: reader.init");
-      Trace.call1("GEMPAKStationIOSP.sync: buildNCFile");
       // reconstruct the ncfile objects
       buildNCFile();
-      Trace.call2("GEMPAKSIOSP.sync: buildNCFile");
       //System.out.printf("sync on %s took %d msecs%n", raf.getLocation(), (System.currentTimeMillis()-start));
       return true;
     }
@@ -247,12 +238,10 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    * @throws IOException problem reading the file
    */
   protected void buildNCFile() throws IOException {
-    Trace.call1("GEMPAKSIOSP: buildNCFile");
     ncfile.empty();
     fillNCFile();
     addGlobalAttributes();
     ncfile.finish();
-    Trace.call2("GEMPAKSIOSP: buildNCFile");
     //System.out.println(ncfile);
   }
 
@@ -272,8 +261,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    * @param includeMissing true to include the missing variable
    * @return a Structure
    */
-  protected Structure makeStructure(String partName, List dimensions,
-                                    boolean includeMissing) {
+  protected Structure makeStructure(String partName, List<Dimension> dimensions, boolean includeMissing) {
     List<GempakParameter> params = gemreader.getParameters(partName);
     if (params == null) {
       return null;
@@ -378,8 +366,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    * @param dim      station dimension
    * @return the list of variables
    */
-  protected List<Variable> makeStationVars(List<GempakStation> stations,
-                                           Dimension dim) {
+  protected List<Variable> makeStationVars(List<GempakStation> stations, Dimension dim) {
     int numStations = stations.size();
     boolean useSTID = true;
     for (GempakStation station : stations) {
@@ -477,8 +464,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    * @param firstDim station dimension
    * @return corresponding variable
    */
-  protected Variable makeStationVariable(String varname,
-                                         Dimension firstDim) {
+  protected Variable makeStationVariable(String varname, Dimension firstDim) {
     String longName = varname;
     String unit = null;
     DataType type = DataType.CHAR;

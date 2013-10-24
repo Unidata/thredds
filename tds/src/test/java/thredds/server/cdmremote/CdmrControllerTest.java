@@ -28,7 +28,6 @@ import ucar.nc2.stream.NcStream;
 
 import java.io.ByteArrayInputStream;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
