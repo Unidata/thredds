@@ -14,16 +14,16 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @since 10/23/13
  * @see " http://www.java-allandsundry.com/2012/03/endpoint-documentation-controller-for.html"
  */
-@Controller
+//@Controller
 public class SpringDocController {
   private final RequestMappingHandlerMapping handlerMapping;
 
-  @Autowired
+  //@Autowired
   public SpringDocController(RequestMappingHandlerMapping handlerMapping) {
     this.handlerMapping = handlerMapping;
   }
 
-  @RequestMapping(value = "/requestMaps", method = RequestMethod.GET)
+  //@RequestMapping(value = "/requestMaps", method = RequestMethod.GET)
   public void show(Model model) {
     model.addAttribute("handlerMethods", this.handlerMapping.getHandlerMethods());
   }
