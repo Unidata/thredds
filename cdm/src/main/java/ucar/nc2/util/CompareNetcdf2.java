@@ -118,23 +118,13 @@ public class CompareNetcdf2 {
 
     for (Variable orgV : org.getVariables()) {
       if (orgV.isCoordinateVariable()) continue;
+
       Variable copyVar = copy.findVariable(orgV.getShortName());
       if (copyVar == null) {
         f.format(" MISSING '%s' in 2nd file%n", orgV.getFullName());
         ok = false;
       } else {
-        if (orgV.isUnlimited() != copyVar.isUnsigned()) {
-          f.format(" isUnsigned differs %s != %s%n", orgV.isUnlimited(), copyVar.isUnlimited());
-          ok = false;
-        }
-
-        List<Dimension> dims1 = orgV.getDimensions();
-        List<Dimension> dims2 = copyVar.getDimensions();
-        if (!compare(dims1, dims2)) {
-          f.format(" %s != %s%n", orgV.getNameAndDimensions(), copyVar.getNameAndDimensions());
-        } else {
-          if (showCompare) f.format("   ok %s%n", orgV.getName());
-        }
+        ok &= compareVariables(orgV, copyVar, null, compareData, true);
       }
     }
 
@@ -147,7 +137,6 @@ public class CompareNetcdf2 {
         ok = false;
       }
     }
-
 
     return ok;
   }
@@ -230,6 +219,11 @@ public class CompareNetcdf2 {
     }
     if (filter != null && filter.varDataTypeCheckOk(org) && (org.getDataType() != copy.getDataType())) {
       f.format(" ** %s dataTypes are different %s != %s %n", org.getFullName(), org.getDataType(), copy.getDataType());
+      ok = false;
+    }
+
+    if (org.isUnsigned() != copy.isUnsigned()) {
+      f.format(" isUnsigned differs %s != %s%n", org.isUnsigned(), copy.isUnlimited());
       ok = false;
     }
 

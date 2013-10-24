@@ -213,8 +213,14 @@
   <p>If you have "too many open files" errors, then either theres a file leak (which we
     would like to know about), or you have your file cache limit set too high relative
     to your OS file handle limit.</p>
+  <p>To debug file leaks:</p>
+  <ol>
+    <li>Check number of open files with &quot;ulimit -a&quot;.</li>
+    <li>Restart Tomcat to close open files.</li>
+    <li>Monitor open files with &quot;/usr/proc/bin/pfiles [Tomcat Process ID]&quot;</li>
+    <li>Recreate the problem with minimal number of steps so we can reproduce, then send pfiles output to support.</li>
+  </ol>
 </blockquote>
-
 <hr width="50%" align="left">
 
 <h4>Q: <a name="nonHttpStatusCodes">What do the non-HTTP status codes in the <code>threddsServlet.log</code> files mean?</a></h4>

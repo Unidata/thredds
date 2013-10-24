@@ -116,7 +116,7 @@ public class TestDODScompareWithFiles {
 
   } */
 
-  // @Test
+  @Test
   public void problem() throws IOException {
     String filename = "conventions/nuwg/eta.nc";
     String dodsUrl = TestWithLocalServer.server + path + filename;
@@ -157,7 +157,7 @@ public class TestDODScompareWithFiles {
     }
   }
 
-  private class DodsObjFilter implements CompareNetcdf2.ObjFilter {
+  public static class DodsObjFilter implements CompareNetcdf2.ObjFilter {
 
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {

@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Describe
+ * Just Open  all the files in the formats directory.
  *
  * @author caron
  * @since 2/28/11
@@ -63,7 +63,7 @@ public class TestReadFormats {
 
   @Test
   public void problem() throws IOException {
-    doOne("Q:/cdmUnitTest/formats/gtopo/E020N40.DEM");
+    doOne("Q:/cdmUnitTest/formats/cinrad/CHGZ_2006071512.0300");
   }
 
   private void doOne(String name) throws IOException {

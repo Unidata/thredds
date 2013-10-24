@@ -83,11 +83,10 @@ public class GempakGridServiceProvider extends GridServiceProvider {
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     try {
       gemreader = new GempakGridReader(raf.getLocation());
-      gemreader.init(raf, false);
+      return gemreader.init(raf, false);
     } catch (Exception ioe) {
       return false;
     }
-    return true;
   }
 
   public String getFileTypeId() {
@@ -131,11 +130,8 @@ public class GempakGridServiceProvider extends GridServiceProvider {
    * @param cancelTask cancel task
    * @throws IOException problem reading the file
    */
-  protected void open(GridIndex index, CancelTask cancelTask)
-          throws IOException {
-    GempakLookup lookup =
-            new GempakLookup(
-                    (GempakGridRecord) index.getGridRecords().get(0));
+  protected void open(GridIndex index, CancelTask cancelTask) throws IOException {
+    GempakLookup lookup = new GempakLookup((GempakGridRecord) index.getGridRecords().get(0));
     GridIndexToNC delegate = new GridIndexToNC(index.filename);
     //delegate.setUseDescriptionForVariableName(false);
     delegate.open(index, lookup, 4, ncfile, fmrcCoordSys, cancelTask);

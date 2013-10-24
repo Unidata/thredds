@@ -104,9 +104,7 @@ public class GempakGridReader extends GempakFileReader {
      * @return A GempakGridReader
      * @throws IOException   problem reading file
      */
-    public static GempakGridReader getInstance(RandomAccessFile raf,
-            boolean fullCheck)
-            throws IOException {
+    public static GempakGridReader getInstance(RandomAccessFile raf, boolean fullCheck) throws IOException {
         GempakGridReader ggr = new GempakGridReader(raf.getLocation());
         ggr.init(raf, fullCheck);
         return ggr;

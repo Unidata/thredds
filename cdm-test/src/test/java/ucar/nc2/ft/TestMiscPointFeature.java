@@ -62,7 +62,7 @@ public class TestMiscPointFeature extends TestCase {
     FeatureDataset fd = null;
     try {
       Formatter formatter = new Formatter(System.err);
-      fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, "src/test/data/point/StandardPointFeatureIteratorIssue.ncml", null, formatter);
+      fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "point/StandardPointFeatureIteratorIssue.ncml", null, formatter);
       if (fd != null && fd instanceof FeatureDatasetPoint) {
         FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
         FeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);
