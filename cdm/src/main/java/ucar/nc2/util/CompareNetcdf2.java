@@ -123,12 +123,17 @@ public class CompareNetcdf2 {
         f.format(" MISSING '%s' in 2nd file%n", orgV.getFullName());
         ok = false;
       } else {
+        if (orgV.isUnlimited() != copyVar.isUnsigned()) {
+          f.format(" isUnsigned differs %s != %s%n", orgV.isUnlimited(), copyVar.isUnlimited());
+          ok = false;
+        }
+
         List<Dimension> dims1 = orgV.getDimensions();
         List<Dimension> dims2 = copyVar.getDimensions();
         if (!compare(dims1, dims2)) {
           f.format(" %s != %s%n", orgV.getNameAndDimensions(), copyVar.getNameAndDimensions());
         } else {
-          // f.format("   ok %s%n", orgV.getName());
+          if (showCompare) f.format("   ok %s%n", orgV.getName());
         }
       }
     }

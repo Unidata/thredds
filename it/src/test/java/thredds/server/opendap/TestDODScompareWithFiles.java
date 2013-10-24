@@ -40,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CompareNetcdf2;
@@ -164,6 +165,7 @@ public class TestDODScompareWithFiles {
       String name = att.getShortName();
 
       if (name.equals(_Coordinate.Axes)) return false;
+      if (name.equals(CDM.UNSIGNED)) return false;
 
       return true;
     }
