@@ -36,36 +36,29 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Utilities for extracting path information from request.
+ * Handles servlet and spring controller cases
  *
  * @author edavis
  * @since 4.0
  */
 public class TdsPathUtils {
-  private TdsPathUtils() {
-  }
 
+  // For "removePrefix/path" style servlet mappings.
   public static String extractPath(HttpServletRequest req, String removePrefix) {
-    // For "/<servletPath>/*" style servlet mappings.
-    String catPath = req.getPathInfo();
-    if (catPath == null) {
-      // For "*.xml" style servlet mappings.
-      catPath = req.getServletPath();
-      if (!catPath.contains("."))
-        return null;
+    String dataPath = req.getPathInfo();
+    if (dataPath == null) {
+      dataPath = req.getServletPath();
     }
-    if (catPath.equals(""))
-      return null;
 
-    if (catPath.startsWith("/"))
-      catPath = catPath.substring(1);
+    if (removePrefix != null && dataPath.startsWith(removePrefix))
+      dataPath = dataPath.substring(removePrefix.length());
 
-    if (removePrefix != null && catPath.startsWith(removePrefix))
-      catPath = catPath.substring(removePrefix.length());
+    if (dataPath.startsWith("/"))
+      dataPath = dataPath.substring(1);
 
-    if (catPath.equals("index.html"))
-      catPath = "catalog.html";
+    if (dataPath.equals("index.html"))
+      dataPath = "catalog.html";
 
-
-    return catPath;
+    return dataPath;
   }
 }
