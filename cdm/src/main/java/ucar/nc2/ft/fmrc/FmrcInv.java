@@ -238,6 +238,7 @@ public class FmrcInv {
     return ensCoords;
   }
 
+  // list of unique VertCoord for FmrcInv
   public List<VertCoord> getVertCoords() {
     return vertCoords;
   }
@@ -404,7 +405,7 @@ public class FmrcInv {
         }
       }
       if (vc_union != null) {
-        if (vertList.size() > 0) VertCoord.normalize(vc_union, vertList); // add the other coords
+        VertCoord.normalize(vc_union, vertList); // add the other coords
         vertCoordUnion = VertCoord.findVertCoord(getVertCoords(), vc_union); // now find unique within collection
       }
 
