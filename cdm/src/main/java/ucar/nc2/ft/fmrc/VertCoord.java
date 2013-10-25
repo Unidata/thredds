@@ -237,15 +237,39 @@ public class VertCoord implements Comparable {
       return 0;
     }
 
-    public boolean equals(Object oo) {
+    public boolean equals2(Object oo) {
       if (this == oo) return true;
       if (!(oo instanceof LevelCoord)) return false;
       LevelCoord other = (LevelCoord) oo;
       return (ucar.nc2.util.Misc.closeEnough(value1, other.value1) && ucar.nc2.util.Misc.closeEnough(value2, other.value2));
     }
 
-    public int hashCode() {
+    public int hashCode2() {
       return (int) (value1 * 100000 + value2 * 100);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      LevelCoord that = (LevelCoord) o;
+
+      if (!ucar.nc2.util.Misc.closeEnough(that.value1, value1)) return false;
+      if (!ucar.nc2.util.Misc.closeEnough(that.value2, value2)) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result;
+      long temp;
+      temp = Double.doubleToLongBits(value1);
+      result = (int) (temp ^ (temp >>> 32));
+      temp = Double.doubleToLongBits(value2);
+      result = 31 * result + (int) (temp ^ (temp >>> 32));
+      return result;
     }
   }
 

@@ -184,8 +184,7 @@ public class GempakFileReader implements GempakConstants {
     }
 
     dmLabel = new DMLabel();
-    boolean labelOk = dmLabel.init(!fullCheck);
-    if (!fullCheck) return labelOk;
+    boolean labelOk = dmLabel.init();
 
     if (!labelOk) {
       logError("not a GEMPAK file");
@@ -700,7 +699,7 @@ public class GempakFileReader implements GempakConstants {
      * @return true if okay.
      * @throws IOException problem reading the file
      */
-    boolean init(boolean justCheck) throws IOException {
+    boolean init() throws IOException {
       rf.order(RandomAccessFile.BIG_ENDIAN);
       if (rf.length() < getOffset(31) + 4) return false;
 
@@ -728,8 +727,6 @@ public class GempakFileReader implements GempakConstants {
         return false;
       }
 
-      if (justCheck) return true;
-
       int[] words = new int[23];
       DM_RINT(8, words);
       kversn = words[0];
@@ -753,8 +750,8 @@ public class GempakFileReader implements GempakConstants {
       //kmachn = words[18];  // set above
       kmissd = words[19];
       smissd = DM_RFLT(31);
-      return true;
 
+      return true;
     }
 
     /**

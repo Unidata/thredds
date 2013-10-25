@@ -45,7 +45,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 
 /**
- * Superclass for Gempak grid, MciDAS grid, and GRIB IOSPs
+ * Superclass for Gempak grid, MciDAS grid
  *
  * @author IDV Development Team
  */

@@ -138,7 +138,7 @@ public class GempakGridReader extends GempakFileReader {
   protected boolean init(boolean fullCheck) throws IOException {
 
     boolean ok = super.init(fullCheck);
-    if (!fullCheck || !ok) return ok;
+    if (!ok) return false;
 
     // Modeled after GD_OFIL
     if (dmLabel.kftype != MFGD) {
