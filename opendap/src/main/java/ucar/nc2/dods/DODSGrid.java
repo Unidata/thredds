@@ -34,6 +34,7 @@ package ucar.nc2.dods;
 
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 
 import java.util.*;
@@ -78,7 +79,7 @@ public class DODSGrid extends DODSVariable {
     setDimensions( dims);
     setDataType( DODSNetcdfFile.convertToNCType(array.bt));
     if (DODSNetcdfFile.isUnsigned( array.bt)) {
-      addAttribute(new Attribute("_Unsigned", "true"));
+      addAttribute(new Attribute(CDM.UNSIGNED, "true"));
     }
 
     DODSAttribute att = new DODSAttribute(_Coordinate.Axes, sbuff.toString());

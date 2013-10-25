@@ -34,6 +34,7 @@ package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
@@ -199,7 +200,7 @@ public class Grib1Index extends GribIndex {
     RandomAccessFile raf = null;
     try {
       //// header message
-      fout.write(MAGIC_START.getBytes("UTF-8"));
+      fout.write(MAGIC_START.getBytes(CDM.utf8Charset));
       NcStream.writeVInt(fout, version);
 
       Map<Long, Integer> gdsMap = new HashMap<Long, Integer>();

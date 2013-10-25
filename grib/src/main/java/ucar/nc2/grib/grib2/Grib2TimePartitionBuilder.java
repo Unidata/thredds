@@ -37,6 +37,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.TimePartitionCollection;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
@@ -438,7 +439,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     try {
       //// header message
-      raf.write(MAGIC_START.getBytes("UTF-8"));
+      raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
       raf.writeInt(version);
       raf.writeLong(0); // no record section
 

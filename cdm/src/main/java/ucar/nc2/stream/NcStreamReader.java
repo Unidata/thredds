@@ -75,7 +75,6 @@ public class NcStreamReader {
 
     if (debug) {
       System.out.println("READ header len= " + msize);
-      //System.out.println("READ header= " + new String(m, "UTF-8"));
     }
 
     NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);

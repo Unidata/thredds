@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.point.bufr;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
@@ -107,7 +108,7 @@ public class BufrCdmIndex {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     try {
       //// header message
-      raf.write(MAGIC_START.getBytes("UTF-8"));
+      raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
       raf.writeInt(version);
 
       // build it
@@ -153,7 +154,7 @@ public class BufrCdmIndex {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     try {
       //// header message
-      raf.write(MAGIC_START.getBytes("UTF-8"));
+      raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
       raf.writeInt(version);
 
       // build it

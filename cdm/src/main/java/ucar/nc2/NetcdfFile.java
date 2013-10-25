@@ -764,9 +764,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } else {
 
       // look for dynamically loaded IOSPs
-      Iterator<IOServiceProvider> iterator = ServiceLoader.load(ucar.nc2.iosp.IOServiceProvider.class).iterator(); // LOOK is this expensive ?
-      while (iterator.hasNext()) {
-        IOServiceProvider currentSpi = iterator.next();
+      for (IOServiceProvider currentSpi : ServiceLoader.load(IOServiceProvider.class)) {
         if (currentSpi.isValidFile(raf)) {
           Class c = currentSpi.getClass();
           try {

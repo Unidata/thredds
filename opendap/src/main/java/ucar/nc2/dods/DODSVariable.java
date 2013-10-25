@@ -39,6 +39,7 @@ import ucar.nc2.DODSNode;
 
 
 import opendap.dap.*;
+import ucar.nc2.constants.CDM;
 
 import java.util.*;
 
@@ -70,7 +71,7 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
     this.dodsfile = dodsfile;
     setDataType( DODSNetcdfFile.convertToNCType( dodsScalar));
     if (DODSNetcdfFile.isUnsigned( dodsScalar)) {
-      addAttribute(new DODSAttribute("_Unsigned", "true"));
+      addAttribute(new DODSAttribute(CDM.UNSIGNED, "true"));
     }
 
     // check for netcdf char array
@@ -101,7 +102,7 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
     setDataType( DODSNetcdfFile.convertToNCType( elemType));
     if (DODSNetcdfFile.isUnsigned( elemType)) {
       // create _Unsigned attribute
-      addAttribute(new DODSAttribute("_Unsigned", "true"));
+      addAttribute(new DODSAttribute(CDM.UNSIGNED, "true"));
     }
 
     List<Dimension> dims = dodsfile.constructDimensions( parentGroup, dodsArray);

@@ -36,6 +36,7 @@ package ucar.nc2.iosp.bufr;
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Sequence;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -362,7 +363,7 @@ public class MessageCompressedDataReader {
  
         if (null != out)
           out.f.format("%s read %d %s (%s) bitWidth=%d defValue=%s dataWidth=%d n=%d bitOffset=%d %n",
-                  out.indent(), out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, new String(minValue, "UTF-8"), dataWidth, ndatasets, bitOffset);
+                  out.indent(), out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, new String(minValue, CDM.utf8Charset), dataWidth, ndatasets, bitOffset);
 
         for (int dataset = 0; dataset < ndatasets; dataset++) {
           if (dataWidth == 0) { // use the min value
@@ -384,7 +385,7 @@ public class MessageCompressedDataReader {
                 if (cval < 32 || cval > 126) cval = 0; // printable ascii KLUDGE!
                 iter.setCharNext((char) cval); // ??
               }
-            if (out != null) out.f.format(" %s,", new String(incValue, "UTF-8"));
+            if (out != null) out.f.format(" %s,", new String(incValue, CDM.utf8Charset));
           }
         }
         if (out != null) out.f.format("%n");

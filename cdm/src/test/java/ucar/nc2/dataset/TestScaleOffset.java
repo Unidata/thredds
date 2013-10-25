@@ -69,7 +69,7 @@ public class TestScaleOffset {
     ncfile.addVariable("unpacked", DataType.DOUBLE, "lat lon");
 
     ncfile.addVariable("packed", DataType.SHORT, "lat lon");
-    if (isUnsigned) ncfile.addVariableAttribute("packed", "_Unsigned", "true");
+    if (isUnsigned) ncfile.addVariableAttribute("packed", CDM.UNSIGNED, "true");
     //ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, new Short( (short) -9999));
     ncfile.addVariableAttribute("packed", CDM.SCALE_FACTOR, so.scale);
     ncfile.addVariableAttribute("packed", "add_offset", so.offset);

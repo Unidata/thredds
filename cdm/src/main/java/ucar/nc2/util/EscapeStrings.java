@@ -40,6 +40,7 @@
 
 package ucar.nc2.util;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.net.HTTPSession;
 
 import java.net.*;
@@ -182,8 +183,8 @@ public class EscapeStrings
             StringBuffer out = new StringBuffer();
             int i;
             if (in == null) return null;
-            byte[] utf8 = in.getBytes("UTF-8");
-            byte[] allow8 = allowable.getBytes("UTF-8");
+            byte[] utf8 = in.getBytes(CDM.utf8Charset);
+            byte[] allow8 = allowable.getBytes(CDM.utf8Charset);
             for(byte b: utf8) {
                 if(b == blank && spaceplus) {
                    out.append('+');
@@ -235,7 +236,7 @@ public class EscapeStrings
         try {
             if (in == null) return null;
 
-            byte[] utf8 = in.getBytes("UTF-8");
+            byte[] utf8 = in.getBytes(CDM.utf8Charset);
             byte escape8 = (byte)escape;
             byte[] out = new byte[utf8.length]; // Should be max we need
 
@@ -253,7 +254,7 @@ public class EscapeStrings
                 }
                 out[index8++] = b;
             }
-            return new String(out,0,index8,"UTF-8");
+            return new String(out,0,index8, CDM.utf8Charset);
         } catch(Exception e) {
             return in;
         }

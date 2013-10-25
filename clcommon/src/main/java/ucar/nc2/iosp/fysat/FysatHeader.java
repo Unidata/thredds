@@ -386,7 +386,7 @@ public final class FysatHeader {
 
         var.addAttribute(new Attribute(CF.COORDINATES, "Lon Lat"));
 
-        var.addAttribute(new Attribute("_unsigned", "true"));
+        var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
         var.addAttribute(new Attribute(CDM.UNITS, "percent"));
         // if(var.getDataType() == DataType.BYTE) {
         //     var.addAttribute(new Attribute("_missing_value", new Byte((byte)-1)));
