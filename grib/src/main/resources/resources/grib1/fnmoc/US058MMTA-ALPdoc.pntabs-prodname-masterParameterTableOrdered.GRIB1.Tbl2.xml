@@ -17,8 +17,8 @@
     </entry>
     <entry>
       <grib1Id>002</grib1Id>
-      <fnmocId>pres</fnmocId>
-      <name>pres</name>
+      <fnmocId>pres_reduced</fnmocId>
+      <name>pres_reduced</name>
       <nameFull/>
       <description>The conversion of an observed pressure value to the value it would theortically have at mean sea
         level.
