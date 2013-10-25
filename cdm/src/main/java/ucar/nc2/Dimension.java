@@ -144,7 +144,6 @@ public class Dimension extends CDMNode implements Comparable {
    */
   @Override
   public int hashCode() {
-if(CDMNode.OBJECTHASH) return super.hashCode(); else {
     if (hashCode == 0) {
       int result = 17;
       Group g = getGroup();
@@ -157,7 +156,6 @@ if(CDMNode.OBJECTHASH) return super.hashCode(); else {
       hashCode = result;
     }
     return hashCode;
-}
   }
   private int hashCode = 0;
 
