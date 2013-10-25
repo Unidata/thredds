@@ -388,10 +388,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     List<String> sortedFilenames = new ArrayList<String>(filenames);
 
     // if not increasing (i.e. we WANT newest file listed first), reverse sort
+    Collections.sort(sortedFilenames, String.CASE_INSENSITIVE_ORDER);
     if (this.config.gribConfig != null && !this.config.gribConfig.filesSortIncreasing) {
       Collections.reverse(sortedFilenames);
-    } else {
-      Collections.sort(sortedFilenames,String.CASE_INSENSITIVE_ORDER);
     }
 
     for (String f : sortedFilenames) {

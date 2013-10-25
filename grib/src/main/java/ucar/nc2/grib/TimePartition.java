@@ -344,30 +344,14 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public List<Partition> getPartitions() {
-    /* if (partitions == null) {
-      if (partitionMap == null) {
-        logger.warn("No partitions found for {}", name);
-        return new ArrayList<Partition>();
-      }
-      List<Partition> c = new ArrayList<Partition>(partitionMap.values());
-      Collections.sort(c);  // LOOK - must recover original sort -
-
-      /* if (this.gribConfig != null && this.gribConfig.filesSortIncreasing) {
-          Collections.sort(c);
-      } else {
-          Collections.reverse(c);
-      }
-      partitions = c;
-    } */
     return partitions;
   }
 
   public List<Partition> getPartitionsSorted() {
     List<Partition> c = new ArrayList<Partition>(partitions);
-    if (this.gribConfig != null && this.gribConfig.filesSortIncreasing) {
-        Collections.sort(c);
-    } else {
-        Collections.reverse(c);
+    Collections.sort(c);
+    if (this.gribConfig != null && !this.gribConfig.filesSortIncreasing) {
+      Collections.reverse(c);
     }
     return c;
   }

@@ -197,11 +197,13 @@ public class VertCoord { // implements Comparable<VertCoord> {
   static public class Level implements Comparable<Level> {
     final double value1;
     final double value2;
+    final double mid;
 
     // LOOK - you might need to track isLayer
     public Level(double value1, double value2) {
       this.value1 = value1;
       this.value2 = value2;
+      this.mid = (value2 == 0) ? value1 : (value1 + value2) / 2;
     }
 
     public double getValue1() {
@@ -214,8 +216,11 @@ public class VertCoord { // implements Comparable<VertCoord> {
 
     @Override
     public int compareTo(Level o) {
-      int c1 = Double.compare(value2, o.value2);
-      return (c1 == 0) ? Double.compare(value1, o.value1) : c1;
+      if (mid < o.mid) return -1;
+      if (mid > o.mid) return 1;
+      return 0;
+      //int c1 = Double.compare(value2, o.value2);
+      //return (c1 == 0) ? Double.compare(value1, o.value1) : c1;
     }
 
     @Override

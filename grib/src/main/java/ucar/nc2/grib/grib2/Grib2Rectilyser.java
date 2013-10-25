@@ -241,9 +241,8 @@ public class Grib2Rectilyser {
 
     List<VertCoord.Level> vlist = new ArrayList<VertCoord.Level>(coords);
     Collections.sort(vlist);
-    if (!vertUnit.isPositiveUp()) {
+    if (!vertUnit.isPositiveUp())
       Collections.reverse(vlist);
-    }
 
     return new VertCoord(vlist, vertUnit, isLayer);
   }
