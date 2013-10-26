@@ -207,10 +207,10 @@
 <h4><a name="tooManyFilesOpen"></a>
   Q: Can aggregations of many files cause "too many files open" problems?</h4>
 <blockquote>
-  <p>Aggregations only open one file at a time, and then close it, so this can't cause
+  <p>Union type agregations will open all the files in the aggregation at once. The other types (joinNew, joinExisting)  only open one file at a time, and then close it, so these can't cause
     "too many file" problems.</p>
 
-  <p>If you have "too many open files" errors, then either theres a file leak (which we
+  <p>If you have "too many open files" errors and you are not using large Union aggregations, then either theres a file leak (which we
     would like to know about), or you have your file cache limit set too high relative
     to your OS file handle limit.</p>
   <p>To debug file leaks:</p>

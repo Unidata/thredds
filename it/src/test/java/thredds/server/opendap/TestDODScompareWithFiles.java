@@ -116,7 +116,7 @@ public class TestDODScompareWithFiles {
 
   } */
 
-  //@Test
+  @Test
   public void problem() throws IOException {
     String filename = "conventions/nuwg/eta.nc";
     String dodsUrl = TestWithLocalServer.server + path + filename;

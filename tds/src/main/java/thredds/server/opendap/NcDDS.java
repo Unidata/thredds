@@ -52,14 +52,14 @@ import java.util.*;
 public class NcDDS extends ServerDDS {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
 
-  //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordiinate variables
+  //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordinate variables
   // Track various subsets of the variables
   private Hashtable<String, Variable> coordvars = new Hashtable<String, Variable>(50);
   private Vector<Variable> ddsvars = new Vector<Variable>(50);   // list of currently active variables
   private Hashtable<String, Variable> gridarrays = new Hashtable<String, Variable>(50);
   private Hashtable<String, Variable> used = new Hashtable<String, Variable>(50);
 
-  private Variable findvariable(String name)
+  private Variable findVariable(String name)
   {
       for (Variable v: ddsvars) {
           if(v.getFullName().equals(name)) return v;
@@ -83,7 +83,7 @@ public class NcDDS extends ServerDDS {
     // get coordinate variables
     for (Object o : ncfile.getDimensions()) {
       Dimension dim = (Dimension) o;
-      Variable cv = findvariable(dim.getShortName());
+      Variable cv = findVariable(dim.getShortName());
       if ((cv != null) && cv.isCoordinateVariable()) {
         coordvars.put(dim.getShortName(),cv);
         if (log.isDebugEnabled())
@@ -195,17 +195,15 @@ public class NcDDS extends ServerDDS {
      // isgrid == true
     ArrayList<BaseType> list = new ArrayList<BaseType>();
     list.add(arr); // Array is first element in the list
-    for(Iterator iter = v.getDimensions().iterator();iter.hasNext();) {
-      Dimension dim = (Dimension) iter.next();
+    for (Dimension dim : v.getDimensions()) {
       Variable v1 = used.get(dim.getShortName());
-      assert(v1 != null);
+      assert (v1 != null);
       BaseType bt = null;
       if ((v1.getDataType() == DataType.CHAR))
         bt = (v1.getRank() > 1) ? new NcSDCharArray(v1) : new NcSDString(v1);
       else
         bt = new NcSDArray(v1, createScalarVariable(ncfile, v1));
-      assert(bt != null);
-      list.add(bt) ;
+      list.add(bt);
     }
     return new NcSDGrid(v.getShortName(), list);
   }
@@ -218,14 +216,6 @@ public class NcDDS extends ServerDDS {
     }
     return new NcSDStructure(s, list);
   }
-
-  /*
-  public static String escapeName(String vname) {
-    // vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until opendap code fixed
-    String newname = EscapeStrings.escapeDAPIdentifier(vname);
-      return newname;
-  }
-  */
 
   /**
    * Returns a clone of this <code>?</code>.

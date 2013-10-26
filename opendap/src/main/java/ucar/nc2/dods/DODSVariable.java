@@ -101,7 +101,7 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
     this.dodsfile = dodsfile;
     setDataType( DODSNetcdfFile.convertToNCType( elemType));
     if (DODSNetcdfFile.isUnsigned( elemType)) {
-      // create _Unsigned attribute
+      // create _Unsigned attribute; may be overridden when attributes are read
       addAttribute(new DODSAttribute(CDM.UNSIGNED, "true"));
     }
 

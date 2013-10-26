@@ -238,13 +238,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    */
   public void setUnsigned(boolean b) {
     Attribute att = findAttributeIgnoreCase(CDM.UNSIGNED);
-    if ((att == null && !b) || (att != null && b))
+    if (att == null && !b)
       return; // ok as is
-    if (b) {
-      att = new Attribute(CDM.UNSIGNED, "true");
-      this.addAttribute(att);
-    } else // remove it
-      this.removeAttributeIgnoreCase(CDM.UNSIGNED);
+
+    att = new Attribute(CDM.UNSIGNED, b ? "true" : "false");
+    this.addAttribute(att);
   }
 
   /**

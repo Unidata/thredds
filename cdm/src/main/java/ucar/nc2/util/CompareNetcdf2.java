@@ -223,7 +223,7 @@ public class CompareNetcdf2 {
     }
 
     if (org.isUnsigned() != copy.isUnsigned()) {
-      f.format(" isUnsigned differs %s != %s%n", org.isUnsigned(), copy.isUnlimited());
+      f.format(" %s isUnsigned differs %s != %s%n", org.getFullName(), org.isUnsigned(), copy.isUnsigned());
       ok = false;
     }
 
