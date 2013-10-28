@@ -323,16 +323,6 @@
       <productionStatus>current</productionStatus>
     </entry>
     <entry>
-      <grib1Id>033</grib1Id>
-      <fnmocId>wnd_ucmp_mn_trnc18</fnmocId>
-      <name>wnd_ucmp_mn_trnc18</name>
-      <nameFull/>
-      <description>The estimated mean rate of wind movement in the west-east direction, only spectral waves 0 to 18.
-      </description>
-      <unitsFNMOC>m/s</unitsFNMOC>
-      <productionStatus>deprecated</productionStatus>
-    </entry>
-    <entry>
       <grib1Id>034</grib1Id>
       <fnmocId>wnd_vcmp</fnmocId>
       <name>wnd_vcmp</name>
@@ -342,16 +332,6 @@
       </description>
       <unitsFNMOC>m/s</unitsFNMOC>
       <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>034</grib1Id>
-      <fnmocId>wnd_vcmp_mn_trnc18</fnmocId>
-      <name>wnd_vcmp_mn_trnc18</name>
-      <nameFull/>
-      <description>The estimated mean rate of wind movrement in the south-north direction, only spectral waves 0 to 18.
-      </description>
-      <unitsFNMOC>m/s</unitsFNMOC>
-      <productionStatus>deprecated</productionStatus>
     </entry>
     <entry>
       <grib1Id>035</grib1Id>
@@ -1421,15 +1401,6 @@
       </description>
       <unitsFNMOC>gpm</unitsFNMOC>
       <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>134</grib1Id>
-      <fnmocId>geop_ht_mn_trnc18</fnmocId>
-      <name>geop_ht_mn_trnc18</name>
-      <nameFull/>
-      <description>no definition available</description>
-      <unitsFNMOC>gpm</unitsFNMOC>
-      <productionStatus>deprecated</productionStatus>
     </entry>
     <entry>
       <grib1Id>135</grib1Id>
