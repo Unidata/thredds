@@ -33,9 +33,15 @@
 package thredds.server.catalogservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -55,6 +61,7 @@ import thredds.catalog.InvDataset;
 import thredds.util.RequestForwardUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.net.URI;
@@ -118,7 +125,8 @@ import java.net.URISyntaxException;
  * @since 4.0
  */
 @Component
-@RequestMapping(value = {"/catalog/**", "**"})
+//@RequestMapping(value = {"/**/*.xml", "/*.xml", "/**/*.html", "/*.html"})
+@RequestMapping(value = {"**"})
 public class LocalCatalogServiceController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
@@ -139,7 +147,7 @@ public class LocalCatalogServiceController {
     this.catalogSupportOnly = catalogSupportOnly;
   }
 
-  @RequestMapping(value = {"catalog.xml", "*.xml"})
+  @RequestMapping(value = {"**/*.xml"}, method = RequestMethod.GET)
   protected ModelAndView handleXmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.
@@ -213,7 +221,7 @@ public class LocalCatalogServiceController {
     }
   }
 
-  @RequestMapping(value = {"catalog.html", "*.html"})
+  @RequestMapping(value = {"**/*.html"}, method = RequestMethod.GET)
   protected ModelAndView handleHtmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.
@@ -309,4 +317,15 @@ public class LocalCatalogServiceController {
             request, response);
     return null;
   }
+
+  	// Exception handlers
+	@ExceptionHandler(FileNotFoundException.class)
+	public ResponseEntity<String> handle(FileNotFoundException ncsse) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		return new ResponseEntity<String>(
+				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
+				HttpStatus.NOT_FOUND);
+	}
+
 }

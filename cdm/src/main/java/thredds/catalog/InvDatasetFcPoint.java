@@ -42,7 +42,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     fileService.addService( InvService.opendap);
   }
 
-  private final FeatureDatasetPoint fd;
+  private final FeatureDatasetPoint fd;  // LOOK this stays open
   private final Set<FeatureCollectionConfig.PointDatasetType> wantDatasets;
 
   public InvDatasetFcPoint(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
@@ -51,6 +51,18 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     Formatter errlog = new Formatter();
     try {
       fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(name, fcType.getFeatureType(), dcm, errlog);
+
+      // pull out ACDD metadata and put into the catalog
+      MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(fd.getGlobalAttributes()), this);
+      acdd.extract();
+
+      // pull out catalog BB,  put into the catalog
+      if (fd.getBoundingBox() == null) {
+        thredds.catalog.ThreddsMetadata.GeospatialCoverage coverage = getGeospatialCoverage();
+        if (coverage != null)
+          ((PointDatasetImpl) fd).setBoundingBox(coverage.getBoundingBox()); // override in fd
+      }
+
     } catch (Exception e) {
       // e.printStackTrace(); // not showing up in logs
       throw new RuntimeException("Failed to create InvDatasetFcPoint", e);
@@ -112,15 +124,13 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   protected State checkState() throws IOException {
 
     synchronized (lock) {
-      synchronized (lock) {
-        if (first) {
-          firstInit();
-          dcm.scanIfNeeded(); //always fall through to updateCollection
-          first = false;
-        } else {
-          if (!dcm.scanIfNeeded()) // return is not needed
-            return state;
-        }
+      if (first) {
+        firstInit();
+        dcm.scanIfNeeded(); //always fall through to updateCollection
+        first = false;
+      } else {
+        if (!dcm.scanIfNeeded()) // return is not needed
+          return state;
       }
 
       // copy on write
@@ -172,28 +182,20 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
     String id = getID();
     if (id == null) id = getPath();
-    top.setID(id);
+    //top.setID(id);
 
     // called anytime something changes. may need to do it only once ??
-
-    // pull out ACDD metadata and put into the catalog
-    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(fd.getGlobalAttributes()), this);
-    acdd.extract();
 
     localState.vars = MetadataExtractor.extractVariables(fd);
     localState.dateRange = MetadataExtractor.extractCalendarDateRange(fd);
 
     // coverage can come in the InvDataset metadata, in which case it overrides whats in the files.
     localState.coverage = getGeospatialCoverage();
-    if (localState.coverage != null) {
-      // override in fd
-      ((PointDatasetImpl) fd).setBoundingBox(localState.coverage.getBoundingBox());
-
-    } else { // look for it in the files
+    if (localState.coverage == null) {
       localState.coverage = MetadataExtractor.extractGeospatial(fd);
     }
 
-    // add Variables, GeospatialCoverage, TimeCoverage LOOK doesnt seem to work
+    // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
     if (localState.vars != null) tmi.addVariables(localState.vars);
     if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);

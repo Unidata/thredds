@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         name="anothercat" version="1.0.1">
+
+  <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+  <datasetRoot path="test" location="content/testdata/" />
+
+  <dataset name="Testy Dataset" ID="testyDataset" serviceName="ncdods" urlPath="test/testData2.grib2" dataType="Grid"/>
+
+</catalog>

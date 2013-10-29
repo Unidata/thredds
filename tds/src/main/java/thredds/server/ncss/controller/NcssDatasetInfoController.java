@@ -159,7 +159,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
 
   private String buildDatasetUrl(String path) {
     if (path.startsWith("/")) path = path.substring(1);
-    return NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getNCSSServletPath() + "/" + path;
+    return NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getNCSSServletPath() + path;
   }
 
   void extractRequestPathInfo(String requestPathInfo) {

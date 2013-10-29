@@ -51,6 +51,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import thredds.server.config.FormatsAvailabilityService;
 import thredds.server.config.TdsContext;
 import thredds.server.ncss.dataservice.FeatureDatasetService;
 import thredds.server.ncss.exception.NcssException;
@@ -67,12 +68,14 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 
 /**
+ * Annotated controller for Netcdf Subset Service
+ *
+ * @author jcaron
  * @author mhermida
  */
 @Controller
 @RequestMapping("/ncss")
 public class NcssController extends AbstractNcssController {
-
   static private final Logger log = LoggerFactory.getLogger(NcssController.class);
 
   @Autowired
@@ -153,10 +156,14 @@ public class NcssController extends AbstractNcssController {
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
     SupportedFormat sf = SupportedOperation.GRID_REQUEST.getSupportedFormat(params.getAccept());
-
     NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
     if (sf.equals(SupportedFormat.NETCDF4)) {
-      version = NetcdfFileWriter.Version.netcdf4;
+      if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4))
+        version = NetcdfFileWriter.Version.netcdf4;
+      else {
+        handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, "NetCDF-4 format not available");
+        return;
+      }
     }
 
     GridResponder gds = GridResponder.factory(gridDataset, datasetPath);

@@ -59,7 +59,7 @@ import ucar.nc2.util.DiskCache2;
  * 
  */
 public class StationResponder implements NcssResponder {
-	static private final Logger log = LoggerFactory.getLogger(NcssResponder.class);
+	static private final Logger log = LoggerFactory.getLogger(StationResponder.class);
 
   public static StationResponder factory(FeatureDataset fd, NcssParamsBean queryParams, DiskCache2 diskCache, SupportedFormat format, OutputStream out) throws IOException, ParseException, NcssException{
  		FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;

@@ -1,6 +1,9 @@
 package thredds.server.ncss.validation;
 
+import thredds.server.ncss.format.SupportedFormat;
+import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssParamsBean;
+import ucar.nc2.NetcdfFileWriter;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

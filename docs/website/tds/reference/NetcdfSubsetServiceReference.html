@@ -277,18 +277,25 @@ examples:
 <p>NCSS  provides two types of bounding boxes to subset the data:</p>
 	<ul>
 		<li><span class="bold">Lat/lon bounding box:</span> is specified with the params <em>north, south, east </em>and<em> west.</em> The <em>north </em>and<em> south</em> parameters are latitude values, and must be in units of <em>degrees_north</em> and lie between +/- 90.  The <em>east </em>and<em> west</em> parameters are longitude values with units of <em>degrees_east</em>, and may be positive or negative, and will be interpreted modulo 360. The requested subset starts at the west longitude and goes eastward until the east longitude. Therefore, when crossing the dateline, the west edge may be greater than the east edge. 
-		For grids, if the underlying dataset is on a projection, the minimum enclosing projection bounding box will be calculated and used. The data contained in the intersection of this rectangle with the data is returned.</li>
-		<li><span class="bold">Projection bounding box (only on grid datasets):</span> is specified with the params<em> minx, miny, maxx </em>and<em> maxy</em>. These are projection coordinates; the data contained in the intersection of this rectangle with the data is returned.</li>
+		For grids, if the underlying dataset is on a projection, the minimum enclosing projection bounding box will be calculated and used. The data contained in the intersection of this rectangle with the data is returned. To use, inspect the dataset.xml for the &lt;LatLonBox&gt; elements, which indicate the min and max extensions of the grid, for example:
+        <pre>
+&lt;LatLonBox&gt;<br>  &lt;west&gt;-153.5889&lt;/west&gt;<br>  &lt;east&gt;-48.5984&lt;/east&gt;<br>  &lt;south&gt;11.7476&lt;/south&gt;<br>  &lt;north&gt;57.4843&lt;/north&gt;<br>&lt;/LatLonBox&gt;
+        </pre>
+        </li>
+		<li><span class="bold">Projection bounding box (only on grid datasets):</span> is specified with the params<em> minx, miny, maxx </em>and<em> maxy</em>. These are projection coordinates in km on the projection plane; the data contained in the intersection of this rectangle with the data is returned. To use, inspect the dataset.xml for the &lt;projectionBox&gt; elements, which indicate the min and max extensions of the grid, for example:
+          <pre>
+  &lt;gridSet name=&quot;time layer_between_two_pressure_difference_from_ground_layer y x&quot;&gt;<br>    &lt;projectionBox&gt;<br>      &lt;minx&gt;-4264.248291015625&lt;/minx&gt;<br>      &lt;maxx&gt;3293.955078125&lt;/maxx&gt;<br>      &lt;miny&gt;-872.8428344726562&lt;/miny&gt;<br>      &lt;maxy&gt;4409.772216796875&lt;/maxy&gt;<br>    &lt;/projectionBox&gt;
+    ...<br></pre>
+	  </li>
 	</ul>
-	<p>The boundaries or the extension of the data can be found in the <a href="#DatasetDescription">dataset descriptions</a> in the tags LatLonBox and projectionBox. 
-	Note that the declared LatLonBox is an approximated rectangle to the full extension of the data and there may be points outside of the declared LatLonBox but within the data. So 
+	<p>Note that the declared LatLonBox is an approximated rectangle to the full extension of the data and there may be points outside of the declared LatLonBox but within the data. So 
 	the provided lat/lon bounding box does not necesarily have to intersect it but it has to intersect the actual data.</p>
 	<p>By default, if no spatial subsetting is specified, the service returns all the features in the dataset.</p>
-	<p>Examples of query strings for spatial and coordinate subsetting:</p>
-  	<ul>
-    	<li><strong>Lat/lon bounding box: </strong><strong>north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong></li>
-    	<li><strong>Projection bounding box: </strong><strong>minx=-500&amp;miny=-1600&amp;maxx=500&amp;maxy=0</strong></li>
-  	</ul>	
+	<p>Examples of query strings for spatial and coordinate subsetting:    </p>
+	<ul>
+	  <pre><strong>Lat/lon bounding box:    </strong><strong>north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong>
+<strong>Projection bounding box: </strong><strong>minx=-500&amp;miny=-1600&amp;maxx=500&amp;maxy=0</strong></pre>
+    </ul>	
 	
 	<h3>
 		<strong><a name="Spatial"></a> Point requests </strong>

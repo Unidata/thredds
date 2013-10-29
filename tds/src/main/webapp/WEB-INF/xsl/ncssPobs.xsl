@@ -138,7 +138,7 @@
           </div>
 
           <form id="form" method="GET" action="{capabilities/attribute::location}">
-            <input type="hidden" name="req" value="point" />
+            <input type="hidden" name="req" value="point"/>
             <table class="simple">
               <tr valign="top">
                 <td class="leftCol">
@@ -170,28 +170,20 @@
                         <div class="top">
                           <span>north</span>
                           <br/>
-                          <input type="text" name="north" size="8"
-                                 value="{capabilities/LatLonBox/north}"/>
-                          <input type="hidden" disabled="disabled" name="dis_north" size="8"
-                                 value="{capabilities/LatLonBox/north}"/>
+                          <input type="text" name="north" size="8" value="{capabilities/LatLonBox/north}"/>
+                          <input type="hidden" disabled="disabled" name="dis_north" size="8" value="{capabilities/LatLonBox/north}"/>
                         </div>
                         <div>
                           west
-                          <input type="text" name="west" size="8"
-                                 value="{capabilities/LatLonBox/west}"/>
-                          <input type="hidden" disabled="disabled" name="dis_west" size="8"
-                                 value="{capabilities/LatLonBox/west}"/>
-                          <input type="text" name="east" size="8"
-                                 value="{capabilities/LatLonBox/east}"/>
-                          <input type="hidden" disabled="disabled" name="dis_east" size="8"
-                                 value="{capabilities/LatLonBox/east}"/>
+                          <input type="text" name="west" size="8" value="{capabilities/LatLonBox/west}"/>
+                          <input type="hidden" disabled="disabled" name="dis_west" size="8" value="{capabilities/LatLonBox/west}"/>
+                          <input type="text" name="east" size="8" value="{capabilities/LatLonBox/east}"/>
+                          <input type="hidden" disabled="disabled" name="dis_east" size="8" value="{capabilities/LatLonBox/east}"/>
                           east
                         </div>
                         <div class="top">
-                          <input type="text" name="south" size="8"
-                                 value="{capabilities/LatLonBox/south}"/>
-                          <input type="hidden" disabled="disabled" name="dis_south" size="8"
-                                 value="{capabilities/LatLonBox/south}"/>
+                          <input type="text" name="south" size="8" value="{capabilities/LatLonBox/south}"/>
+                          <input type="hidden" disabled="disabled" name="dis_south" size="8" value="{capabilities/LatLonBox/south}"/>
                           <br/>
                           <span>south</span>
                         </div>
@@ -256,23 +248,19 @@
                     <div id="temporalSubsetWithStride">
                       <!-- Time range -->
                       <div id="timeRangeSubset" class="absoluteTopLeft borderLightGrey">
-                        <label class="sized">Starting:</label>
-                        <input type="text" name="time_start" size="21"
-                               value="{capabilities/TimeSpan/begin}"/>
-                        <input type="hidden" disabled="disabled" name="dis_time_start" size="21"
-                               value="{capabilities/TimeSpan/begin}"/>
-                        <label class="sized">Ending:</label>
-                        <input type="text" name="time_end" size="21"
-                               value="{capabilities/TimeSpan/end}"/>
-                        <input type="hidden" disabled="disabled" name="dis_time_end" size="21"
-                               value="{capabilities/TimeSpan/end}"/>
+                        <label class="sized">Start:</label>
+                        <input type="text" name="time_start" size="21" value="{capabilities/TimeSpan/begin}"/>
+                        <input type="hidden" disabled="disabled" name="dis_time_start" size="21" value="{capabilities/TimeSpan/begin}"/>
+                        <br/>
+                        <label class="sized">End:</label>
+                        <input type="text" name="time_end" size="21" value="{capabilities/TimeSpan/end}"/>
+                        <input type="hidden" disabled="disabled" name="dis_time_end" size="21" value="{capabilities/TimeSpan/end}"/>
                         <br/>
                         <span class="blueLink" id="resetTimeRange">reset to full extension</span>
                       </div>
                       <div id="singleTimeSubset" class="hidden absoluteTopLeft borderLightGrey">
                         <label class="sized">Time:</label>
-                        <input type="text" name="time" size="21" disabled="disabled"
-                               value="{capabilities/TimeSpan/begin}"/>
+                        <input type="text" name="time" size="21" disabled="disabled" value="{capabilities/TimeSpan/begin}"/>
                       </div>
                     </div>
                   </div>

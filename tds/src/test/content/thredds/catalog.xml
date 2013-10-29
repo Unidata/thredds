@@ -151,6 +151,7 @@
 
   <catalogRef xlink:title="Test FMRC" xlink:href="catalogFmrc.xml" name=""/>
   <catalogRef xlink:title="Test GRIB FC" xlink:href="catalogGrib.xml" name=""/>
-  <catalogRef xlink:title="Test Point FC" xlink:href="catalogPoint.xml" name=""/>
+  <catalogRef xlink:title="Test Point FC" xlink:href="pointCatalog.xml" name=""/>
+  <catalogRef xlink:title="somecat" xlink:href="somedir/somecat.xml" name=""/>
 
 </catalog>

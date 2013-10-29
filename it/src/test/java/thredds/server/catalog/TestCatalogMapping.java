@@ -30,12 +30,14 @@ public class TestCatalogMapping {
     result.add(new Object[]{"catalog.xml"});
     result.add(new Object[]{"catalog.html"});
     result.add(new Object[]{"/catalog.html"});
-    result.add(new Object[]{"catalogFmrc.xml"});
-    result.add(new Object[]{"catalogFmrc.html"});
     result.add(new Object[]{"catalog/scanLocal/catalog.html"});
     result.add(new Object[]{"catalog/scanLocal/catalog.xml"});
     result.add(new Object[]{"catalog/scanCdmUnitTests/formats/netcdf3/catalog.xml"});
     result.add(new Object[]{"catalog/scanCdmUnitTests/formats/netcdf3/catalog.html"});
+    result.add(new Object[]{"somedir/somecat.xml"});
+    result.add(new Object[]{"somedir/somecat.html"});
+    result.add(new Object[]{"somedir/anotherdir/anothercat.xml"});
+    result.add(new Object[]{"somedir/anotherdir/anothercat.html"});
     return result;
   }
 
