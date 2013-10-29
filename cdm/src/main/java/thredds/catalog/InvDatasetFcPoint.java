@@ -224,6 +224,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     finish();
   }
 
+  /*
   @Override
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
     return null;
@@ -232,7 +233,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   @Override
   public NetcdfDataset getNetcdfDataset(String matchPath) throws IOException {
     return null;
-  }
+  }   */
 
 
 

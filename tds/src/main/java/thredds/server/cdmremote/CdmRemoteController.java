@@ -42,6 +42,7 @@ import thredds.server.ncss.exception.NcssException;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.util.EscapeStrings;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -147,7 +148,8 @@ public class CdmRemoteController extends AbstractController implements LastModif
 
       switch (qb.getRequestType()) {
         case capabilities:
-          sendCapabilities(out, FeatureType.GRID, absPath); // LOOK BAD - must figure out what is the featureType
+          FeatureType ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ncfile);
+          sendCapabilities(out, ftFromMetadata, absPath); // LOOK BAD - must figure out what is the featureType and save it
           res.setContentType(ContentType.xml.toString());
           res.flushBuffer();
           return;

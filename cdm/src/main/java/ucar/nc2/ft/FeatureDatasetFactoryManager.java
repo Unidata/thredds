@@ -35,6 +35,7 @@ package ucar.nc2.ft;
 
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFileCollectionManager;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -389,7 +390,7 @@ public class FeatureDatasetFactoryManager {
    * @param ncd the dataset
    * @return FeatureType if found, else null
    */
-  static public FeatureType findFeatureType(NetcdfDataset ncd) {
+  static public FeatureType findFeatureType(NetcdfFile ncd) {
     // look for explicit featureType global attribute
     String cdm_datatype = ncd.findAttValueIgnoreCase(null, "cdm_data_type", null);
     if (cdm_datatype == null)

@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.util.ContentType;
 import thredds.util.xml.NcmlParserUtil;
@@ -27,8 +28,10 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
+import java.util.Collection;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
 public class CdmrControllerTest {
@@ -37,13 +40,29 @@ public class CdmrControllerTest {
  	private WebApplicationContext wac;
 
  	private MockMvc mockMvc;
-  private String path = "/cdmremote/NCOF/POLCOMS/IRISH_SEA/files/20060925_0600.nc";
 
  	@Before
  	public void setup(){
  		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
  	}
 
+  @SpringJUnit4ParameterizedClassRunner.Parameters
+ 	public static Collection<Object[]> getTestParameters(){
+ 		return Arrays.asList(new Object[][]{
+            {"/cdmremote/NCOF/POLCOMS/IRISH_SEA/files/20060925_0600.nc", 5, 12, 16, "Precipitable_water(0:1,43:53,20:40)"},        // FMRC
+            {"/cdmremote/testStationFeatureCollection/files/Surface_METAR_20060325_0000.nc", 9, 22, 47, "wind_speed(0:1)"},  // POINT
+    });
+ 	}
+
+  String path, dataReq;
+  int ndims, natts, nvars;
+  public CdmrControllerTest(String path, int ndims, int natts, int nvars, String dataReq) {
+    this.path = path;
+    this.ndims = ndims;
+    this.natts = natts;
+    this.nvars = nvars;
+    this.dataReq = dataReq;
+  }
 
   @Test
    public void cdmRemoteRequestCapabilitiesTest() throws Exception {
@@ -96,9 +115,9 @@ public class CdmrControllerTest {
     Document doc = XmlUtil.getStringResponseAsDoc(result.getResponse());
 
     //Not really checking the content just the number of elements
-    assertEquals(5, NcmlParserUtil.getNcMLElements("netcdf/dimension", doc).size());
-    assertEquals(12, NcmlParserUtil.getNcMLElements("netcdf/attribute", doc).size());
-    assertEquals(16, NcmlParserUtil.getNcMLElements("//variable", doc).size());
+    assertEquals(this.ndims, NcmlParserUtil.getNcMLElements("netcdf/dimension", doc).size());
+    assertEquals(this.natts, NcmlParserUtil.getNcMLElements("netcdf/attribute", doc).size());
+    assertEquals(this.nvars, NcmlParserUtil.getNcMLElements("//variable", doc).size());
    }
 
   @Test
@@ -122,7 +141,7 @@ public class CdmrControllerTest {
    public void cdmRemoteRequestDataTest() throws Exception {
      RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
    				.param("req", "data")
-   				.param("var", "Precipitable_water(0:1,43:53,20:40)");
+   				.param("var", dataReq);
 
      MvcResult result = this.mockMvc.perform( rb )
                .andExpect(MockMvcResultMatchers.status().is(200))
