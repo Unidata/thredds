@@ -599,60 +599,6 @@
       <productionStatus>current</productionStatus>
     </entry>
     <entry>
-      <grib1Id>061</grib1Id>
-      <fnmocId>ttl_prcp_01</fnmocId>
-      <name>ttl_prcp_01</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulates in one hour, for all
-        precipitation types and both convective and non-convective. Here the accumulation starts at the base time and
-        every hour the 'bucket' is
-        emptied and the accumulation starts again (1, 2, 3, ...). Grids are created at each bucket tip.
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>061</grib1Id>
-      <fnmocId>ttl_prcp_03</fnmocId>
-      <name>ttl_prcp_03</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulates in three hours, for all
-        precipitation types and both convective and non-convective.
-        Here the accumulation starts at the base time and every three hours the 'bucket' is emptied and the accumulation
-        starts
-        again (3, 6, 9, ...). Grids are created at each bucket tip.
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>061</grib1Id>
-      <fnmocId>ttl_prcp_06</fnmocId>
-      <name>ttl_prcp_06</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulates in six hours, for all
-        precipitation types and both convective and non-convective. Here the accumulation starts at the base time and
-        every
-        six hours the 'bucket' is emptied and the accumulation starts again (6, 12, 18, ...). Grids are created at each
-        bucket tip.
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>061</grib1Id>
-      <fnmocId>ttl_prcp_12</fnmocId>
-      <name>ttl_prcp_12</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulates in twelve hours, for all
-        precipitation types and both convective and non-convective. Here the accumulation starts at the base time
-        and every twelve hours the 'bucket' is emptied and the accumulation starts again (12, 24, 36, ...). Grids are
-        created at each bucket tip, only.
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
       <grib1Id>062</grib1Id>
       <fnmocId>stab_prcp</fnmocId>
       <name>stab_prcp</name>
@@ -666,42 +612,6 @@
       <productionStatus>current</productionStatus>
     </entry>
     <entry>
-      <grib1Id>062</grib1Id>
-      <fnmocId>stab_prcp_03</fnmocId>
-      <name>stab_prcp_03</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
-        non-convective or stable precipitation source. Here the accumulation starts at the base time and every 3 hours
-        the 'bucket' is emptied and the accumulation starts again (0, 3, 6, 9, ...).
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>062</grib1Id>
-      <fnmocId>stab_prcp_06</fnmocId>
-      <name>stab_prcp_06</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
-        non-convective or stable precipitation source. Here the accumulation starts at the base time and every 6 hours
-        the 'bucket' is emptied and the accumulation starts again (0, 6, 12, 18, ...).
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>062</grib1Id>
-      <fnmocId>stab_prcp_12</fnmocId>
-      <name>stab_prcp_12</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
-        non-convective or stable precipitation source. Here the accumulation starts at the base time and every 12 hours
-        the 'bucket' is emptied and the accumulation starts again (0, 12, 24, 36, ...)
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
       <grib1Id>063</grib1Id>
       <fnmocId>conv_prcp</fnmocId>
       <name>conv_prcp</name>
@@ -710,42 +620,6 @@
         convective precipitation source. Here the accumulation starts at the base time and every 12 hours the 'bucket'
         is emptied and the accumulation starts again (0, 12, 24, 36, ...). A grid is created at each bucket tip and at
         three hour intervals between them. (NOGAPS)
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>063</grib1Id>
-      <fnmocId>conv_prcp_03</fnmocId>
-      <name>conv_prcp_03</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulated in three hours from a
-        convective precipitation source. Here the accumulation starts at the base time and every 3 hours the 'bucket' is
-        emptied and the accumulation starts again (0, 3, 6, 9, ...). A grid is created at each bucket tip.
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>063</grib1Id>
-      <fnmocId>conv_prcp_06</fnmocId>
-      <name>conv_prcp_06</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulated in six hours from a
-        convective precipitation source. Here the accumulation starts at the base time and every 6 hours the 'bucket' is
-        emptied and the accumulation starts again (0, 6, 12, 18, ...). A grid is created at each bucket tip.
-      </description>
-      <unitsFNMOC>kg/m2</unitsFNMOC>
-      <productionStatus>current</productionStatus>
-    </entry>
-    <entry>
-      <grib1Id>063</grib1Id>
-      <fnmocId>conv_prcp_12</fnmocId>
-      <name>conv_prcp_12</name>
-      <nameFull/>
-      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
-        convective precipitation source. Here the accumulation starts at the base time and every 12 hours the 'bucket'
-        is emptied and the accumulation starts again (0, 12, 24, 36, ...). A grid is created at each bucket tip, only.
       </description>
       <unitsFNMOC>kg/m2</unitsFNMOC>
       <productionStatus>current</productionStatus>
