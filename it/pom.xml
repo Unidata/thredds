@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -101,24 +102,24 @@
     </dependency>
 
     <dependency>
-    	<groupId>org.jdom</groupId>
-    	<artifactId>jdom2</artifactId>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
     </dependency>
-    
+
     <dependency>
-    	<groupId>jaxen</groupId>
-    	<artifactId>jaxen</artifactId>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
     </dependency>
-    
+
     <dependency>
-    	<groupId>com.restfuse</groupId>
-    	<artifactId>com.eclipsesource.restfuse</artifactId>
-    	<version>1.0.0</version>
+      <groupId>com.restfuse</groupId>
+      <artifactId>com.eclipsesource.restfuse</artifactId>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -196,54 +197,61 @@
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
         <version>${cargo-plugin.version}</version>
+
         <executions>
           <execution>
-            <id>start-containter</id>
+            <id>start-container</id>
             <phase>pre-integration-test</phase>
             <goals>
               <goal>start</goal>
             </goals>
           </execution>
           <execution>
-            <id>stop-containter</id>
+            <id>stop-container</id>
             <phase>post-integration-test</phase>
             <goals>
               <goal>stop</goal>
             </goals>
           </execution>
         </executions>
+
         <configuration>
           <skip>${skipTests}</skip>
           <container>
             <timeout>300000</timeout>
             <containerId>tomcat7x</containerId>
-            <zipUrlInstaller>                   
-              <url>http://www.us.apache.org/dist/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url>
+            <zipUrlInstaller>
+              <url>http://archive.apache.org/dist/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url>
+              <!-- url>http://www.us.apache.org/dist/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url -->
               <downloadDir>${project.build.directory}/downloads</downloadDir>
               <extractDir>${project.build.directory}/extracts</extractDir>
             </zipUrlInstaller>
+            <output>target/container.log</output>
+            <append>false</append>
             <log>target/cargo.log</log>
-           <logLevel>debug</logLevel>
+            <logLevel>debug</logLevel>
           </container>
+
           <configuration>
             <properties>
               <cargo.jvmargs>-Dtds.content.root.path="/share/testdata/cdmUnitTest/it/content" -Xmx2024m -server -ea</cargo.jvmargs>
               <cargo.servlet.port>8081</cargo.servlet.port>
               <cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
               <cargo.tomcat.shutdown.port>8006</cargo.tomcat.shutdown.port>
-              <!-- cargo.logging>high</cargo.logging -->
+              <cargo.logging>high</cargo.logging>
             </properties>
           </configuration>
-            <deployables>
-              <deployable>
-                <location>${project.basedir}/../tds/target/thredds.war</location>
-                <type>war</type>
-                <pingURL>http://localhost:8081/thredds/catalog.html</pingURL>
-                <properties>
-                  <context>/thredds</context>
-                </properties>
-              </deployable>
-            </deployables>          
+
+          <deployables>
+            <deployable>
+              <location>${project.basedir}/../tds/target/thredds.war</location>
+              <type>war</type>
+              <pingURL>http://localhost:8081/thredds/catalog.html</pingURL>
+              <properties>
+                <context>/thredds</context>
+              </properties>
+            </deployable>
+          </deployables>
         </configuration>
       </plugin>
 
