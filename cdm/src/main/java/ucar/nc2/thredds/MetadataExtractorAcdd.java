@@ -148,15 +148,23 @@ public class MetadataExtractorAcdd {
     Attribute maxAtt = ncfile.get(maxName);
     if (minAtt == null || maxAtt == null) return null;
 
-    double min = minAtt.getNumericValue().doubleValue();
-    double max = maxAtt.getNumericValue().doubleValue();
+    Number minN = minAtt.getNumericValue();
+    Number maxN = maxAtt.getNumericValue();
+    if (minN == null || maxN == null) return null;
+
+    double min = minN.doubleValue();
+    double max = maxN.doubleValue();
     double size = max - min;
     if (isLon && max < min) {
       size += 360;
     }
 
+    double res = Double.NaN;
     Attribute resAtt = ncfile.get(resName);
-    double res = (resAtt == null) ? Double.NaN : resAtt.getNumericValue().doubleValue();
+    if (resAtt != null) {
+      Number result = resAtt.getNumericValue();
+      if (result != null) res = result.doubleValue();
+    }
 
     Attribute unitAtt = ncfile.get(unitsName);
     String units = (unitAtt == null) ? null : unitAtt.getStringValue();

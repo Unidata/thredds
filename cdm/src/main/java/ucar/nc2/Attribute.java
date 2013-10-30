@@ -195,7 +195,7 @@ public class Attribute extends CDMNode {
    * Retrieve numeric value.
    * Equivalent to <code>getNumericValue(0)</code>
    *
-   * @return the first element of the value array, or null if its a String.
+   * @return the first element of the value array, or null if its a String that cant be converted.
    */
   public Number getNumericValue() {
     return getNumericValue(0);

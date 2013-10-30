@@ -189,13 +189,13 @@
       <!-- ===========================================================
          Cargo configuration.
         Runs in the pre-integration-test and post-integration-test phases
-        It uses a new tomcat 7.0.25. It downloads, installs, runs and stops a new tomcat instance on every run.
+        It uses a new tomcat with version ${tomcat7.version} It downloads, installs, runs and stops a new tomcat instance on every run.
          It could also use an existing tomcat instance.
      =========================================================== -->
       <plugin>
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
-        <version>1.4.3</version>
+        <version>${cargo-plugin.version}</version>
         <executions>
           <execution>
             <id>start-containter</id>
@@ -218,7 +218,7 @@
             <timeout>300000</timeout>
             <containerId>tomcat7x</containerId>
             <zipUrlInstaller>                   
-              <url>http://www.us.apache.org/dist/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.tar.gz</url>
+              <url>http://www.us.apache.org/dist/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url>
               <downloadDir>${project.build.directory}/downloads</downloadDir>
               <extractDir>${project.build.directory}/extracts</extractDir>
             </zipUrlInstaller>
