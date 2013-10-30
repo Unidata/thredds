@@ -214,8 +214,6 @@
         </executions>
         <configuration>
           <skip>${skipTests}</skip>
-          <wait>false</wait>
-          <timeout>20000</timeout>
           <container>
             <timeout>300000</timeout>
             <containerId>tomcat7x</containerId>
@@ -224,6 +222,8 @@
               <downloadDir>${project.build.directory}/downloads</downloadDir>
               <extractDir>${project.build.directory}/extracts</extractDir>
             </zipUrlInstaller>
+            <log>target/cargo.log</log>
+           <logLevel>debug</logLevel>
           </container>
           <configuration>
             <properties>
@@ -231,6 +231,7 @@
               <cargo.servlet.port>8081</cargo.servlet.port>
               <cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
               <cargo.tomcat.shutdown.port>8006</cargo.tomcat.shutdown.port>
+              <!-- cargo.logging>high</cargo.logging -->
             </properties>
           </configuration>
             <deployables>
