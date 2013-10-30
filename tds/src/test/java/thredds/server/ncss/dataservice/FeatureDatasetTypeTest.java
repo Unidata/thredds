@@ -36,6 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +47,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.servlet.DataRootHandler;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 
@@ -93,8 +95,18 @@ public class FeatureDatasetTypeTest {
 	public void getFDForDatasetScanStationDataset() throws IOException{
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		
-		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testStationScan/Surface_METAR_20130826_0000.nc");
+
+    String reqPath =  "testStationScan/Surface_METAR_20130826_0000.nc";
+		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, reqPath);
+    if (fd == null) {
+      DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+      if (match == null) {
+        Formatter f = new Formatter();
+        DataRootHandler.getInstance().showRoots(f);
+        System.out.printf("DataRoots%n%s%n", f);
+      }
+
+    }
     assertNotNull(fd);
 		assertEquals(FeatureType.STATION, fd.getFeatureType());
 	}

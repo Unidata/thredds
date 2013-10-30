@@ -44,7 +44,7 @@ import java.util.*;
  * Matching is thread-safe, as long as put() is no longer being called.
  */
 public class PathMatcher {
-
+  static private boolean debug = false;
   private final TreeMap<String, Object> treeMap;
 
   public PathMatcher() {
@@ -102,46 +102,12 @@ public class PathMatcher {
     return null;
   }
 
-
   private class PathComparator implements Comparator<String> {
     public int compare(String s1, String s2) {
       int compare = s2.compareTo( s1); // reverse sort
       if (debug) System.out.println(" compare "+s1+" to "+s2+" = "+compare);
       return compare;
     }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // testing
-  private void doit( String s) {
-    System.out.println(s+" == "+match(s));
-  }
-
-  static private boolean debug = false;
-  static public void main( String[] args) {
-    PathMatcher m = new PathMatcher();
-    m.put("/thredds/dods/test/longer", null);
-    m.put("/thredds/dods/test", null);
-    m.put("/thredds/dods/tester", null);
-    m.put("/thredds/dods/short", null);
-    m.put("/actionable", null);
-    m.put("myworld", null);
-    m.put("mynot", null);
-    m.put("ncmodels", null);
-    m.put("ncmodels/bzipped", null);
-
-
-    m.doit("nope");
-    m.doit("/thredds/dods/test");
-    m.doit("/thredds/dods/test/lo");
-    m.doit("/thredds/dods/test/longer/donger");
-    m.doit("myworldly");
-    m.doit("/my");
-    m.doit("mysnot");
-
-    debug = true;
-    m.doit("ncmodels/canonical");
-
   }
 
 }

@@ -71,7 +71,7 @@ import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
- * _more_
+ * Test DataRootHandler
  *
  * @author edavis
  * @since Mar 21, 2007 1:07:18 PM
@@ -178,11 +178,10 @@ public class TestDataRootHandler
     String dsScanPath = "testNonExistLoc";
     String dsScanLocation = "content/nonExistDir";
 
-    InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
-                                                  dsScanLocation, null, null, null );
+    InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath, dsScanLocation, null, null, null);
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
-    //buildTdsContextAndDataRootHandler();
+    // buildTdsContextAndDataRootHandler();
 
     // Check that bad dsScan wasn't added to DataRootHandler.
     if ( drh.hasDataRootMatch( dsScanPath) )

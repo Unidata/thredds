@@ -171,8 +171,8 @@ public class DatasetHandler {
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 
     // look for an fmrc dataset
-    if ((match != null) && (match.dataRoot.fmrc != null)) {
-      InvDatasetFmrc fmrc = match.dataRoot.fmrc;
+    if ((match != null) && (match.dataRoot.getFmrc() != null)) {
+      InvDatasetFmrc fmrc = match.dataRoot.getFmrc();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFmrc= " + fmrc);
       NetcdfFile ncfile = fmrc.getDataset(match.remaining);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
@@ -180,8 +180,8 @@ public class DatasetHandler {
     }
 
     // look for an feature collection dataset
-    if ((match != null) && (match.dataRoot.featCollection != null)) {
-      InvDatasetFeatureCollection featCollection = match.dataRoot.featCollection;
+    if ((match != null) && (match.dataRoot.getFeatCollection() != null)) {
+      InvDatasetFeatureCollection featCollection = match.dataRoot.getFeatCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFeatureCollection= " + featCollection);
       NetcdfFile ncfile = featCollection.getNetcdfDataset(match.remaining);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
@@ -202,9 +202,9 @@ public class DatasetHandler {
       boolean doCache = true; // hack in a "no cache" option
       org.jdom2.Element netcdfElem = null; // find ncml if it exists
       if (match.dataRoot != null) {
-        doCache = match.dataRoot.cache;
-        InvDatasetScan dscan = match.dataRoot.scan;
-        if (dscan == null) dscan = match.dataRoot.datasetRootProxy;
+        doCache = match.dataRoot.isCache();
+        InvDatasetScan dscan = match.dataRoot.getScan();
+        if (dscan == null) dscan = match.dataRoot.getDatasetRootProxy();
         if (dscan != null)
           netcdfElem = dscan.getNcmlElement();
       }
@@ -253,8 +253,8 @@ public class DatasetHandler {
 
     // look for a feature collection dataset
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
-    if ((match != null) && (match.dataRoot.featCollection != null)) {
-      return match.dataRoot.featCollection;
+    if ((match != null) && (match.dataRoot.getFeatCollection() != null)) {
+      return match.dataRoot.getFeatCollection();
     }
 
     return null;
@@ -301,8 +301,8 @@ public class DatasetHandler {
 
     // first look for a grid feature collection
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
-    if ((match != null) && (match.dataRoot.featCollection != null)) {
-      InvDatasetFeatureCollection featCollection = match.dataRoot.featCollection;
+    if ((match != null) && (match.dataRoot.getFeatCollection() != null)) {
+      InvDatasetFeatureCollection featCollection = match.dataRoot.getFeatCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFeatureCollection= " + featCollection);
       GridDataset gds = featCollection.getGridDataset(match.remaining);
       if (gds == null) throw new FileNotFoundException(reqPath);

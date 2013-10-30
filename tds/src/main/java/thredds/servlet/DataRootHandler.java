@@ -38,14 +38,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -108,7 +101,7 @@ public final class DataRootHandler implements InitializingBean {
   //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
   static private DataRootHandler singleton = null;
   static private final String ERROR = "*** ERROR ";
-  static private final boolean debug = false;
+  static private final boolean debug = true;
 
   /**
    * Initialize the DataRootHandler singleton instance.
@@ -164,8 +157,6 @@ public final class DataRootHandler implements InitializingBean {
   /**
    * Constructor.
    * Managed bean - dont do nuttin else !!
-   *
-   * @param tdsContext
    */
   private DataRootHandler(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
@@ -813,30 +804,26 @@ public final class DataRootHandler implements InitializingBean {
   }
 
   public class DataRoot {
-    String path;         // match this path
-    String dirLocation;  // to this directory
-    InvDatasetScan scan; // the InvDatasetScan that created this (may be null)
-    InvDatasetFmrc fmrc; // the InvDatasetFmrc that created this (may be null)
-    InvDatasetFeatureCollection featCollection; // the InvDatasetFeatureCollection that created this (may be null)
-    boolean cache = true;
+    private String path;         // match this path
+    private String dirLocation;  // to this directory
+    private InvDatasetScan scan; // the InvDatasetScan that created this (may be null)
+    private InvDatasetFmrc fmrc; // the InvDatasetFmrc that created this (may be null)
+    private InvDatasetFeatureCollection featCollection; // the InvDatasetFeatureCollection that created this (may be null)
+    private boolean cache = true;
 
     // Use this to access CrawlableDataset in dirLocation.
     // I.e., used by datasets that reference a <datasetRoot>
-    InvDatasetScan datasetRootProxy;
+    private InvDatasetScan datasetRootProxy;
 
     DataRoot(InvDatasetFeatureCollection featCollection) {
-      this.path = featCollection.getPath();
+      setPath(featCollection.getPath());
       this.featCollection = featCollection;
       this.dirLocation = featCollection.getTopDirectoryLocation();
       show();
     }
 
-    private void show() {
-      if (debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
-    }
-
     DataRoot(InvDatasetFmrc fmrc) {
-      this.path = fmrc.getPath();
+      setPath(fmrc.getPath());
       this.fmrc = fmrc;
 
       InvDatasetFmrc.InventoryParams params = fmrc.getFmrcInventoryParams();
@@ -846,7 +833,7 @@ public final class DataRootHandler implements InitializingBean {
     }
 
     DataRoot(InvDatasetScan scan) {
-      this.path = scan.getPath();
+      setPath(scan.getPath());
       this.scan = scan;
       this.dirLocation =  scan.getScanLocation();
       this.datasetRootProxy = null;
@@ -854,13 +841,23 @@ public final class DataRootHandler implements InitializingBean {
     }
 
     DataRoot(String path, String dirLocation, boolean cache) {
-      this.path = path;
+      setPath(path);
       this.dirLocation =  dirLocation;
       this.cache = cache;
       this.scan = null;
 
       makeProxy();
       show();
+    }
+
+    private void setPath(String path) {
+      // if (path.endsWith("/")) path = path + "/";
+      this.path = path;
+    }
+
+
+    private void show() {
+      if (debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
     }
 
     void makeProxy() {
@@ -870,10 +867,28 @@ public final class DataRootHandler implements InitializingBean {
                          boolean addDatasetSize,
                          CrawlableDatasetSorter sorter, Map proxyDatasetHandlers,
                          List childEnhancerList, CatalogRefExpander catalogRefExpander ) */
-      this.datasetRootProxy = new InvDatasetScan(null, "", this.path, this.dirLocation,
-              null, null, null, null, null, false, null, null, null, null);
+      this.datasetRootProxy = new InvDatasetScan(null, "", this.path, this.dirLocation, null, null, null, null, null, false, null, null, null, null);
     }
 
+    public InvDatasetScan getScan() {
+      return scan;
+    }
+
+    public InvDatasetFmrc getFmrc() {
+      return fmrc;
+    }
+
+    public InvDatasetFeatureCollection getFeatCollection() {
+      return featCollection;
+    }
+
+    public boolean isCache() {
+      return cache;
+    }
+
+    public InvDatasetScan getDatasetRootProxy() {
+      return datasetRootProxy;
+    }
 
     // used by PathMatcher
     public String toString() {
@@ -1755,6 +1770,15 @@ public final class DataRootHandler implements InitializingBean {
   public PathMatcher getPathMatcher() {
     return pathMatcher;
   }
+
+  public void showRoots(Formatter f) {
+    Iterator iter = pathMatcher.iterator();
+    while (iter.hasNext()) {
+      DataRoot ds = (DataRoot) iter.next();
+      f.format(" %s%n", ds.toString2());
+    }
+  }
+
 
   public void makeDebugActions() {
     DebugController.Category debugHandler = DebugController.find("catalogs");

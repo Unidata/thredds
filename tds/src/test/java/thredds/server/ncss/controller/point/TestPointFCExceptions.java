@@ -43,6 +43,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -110,7 +111,8 @@ public class TestPointFCExceptions {
             .param("west", "-107.0")
             .param("east", "-103.0");
 
-    org.springframework.test.web.servlet.MvcResult result = this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().is(400))
+    MvcResult result = this.mockMvc.perform(rb)
+            .andExpect(MockMvcResultMatchers.status().is(400))
             .andReturn();
     System.out.printf("%s%n", result.getResponse().getContentAsString());
   }

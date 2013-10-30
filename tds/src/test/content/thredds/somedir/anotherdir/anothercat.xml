@@ -3,8 +3,8 @@
          name="anothercat" version="1.0.1">
 
   <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
-  <datasetRoot path="test" location="content/testdata/" />
+  <datasetRoot path="testSomeOtherDamnDir" location="content/testdata/" />
 
-  <dataset name="Testy Dataset" ID="testyDataset" serviceName="ncdods" urlPath="test/testData2.grib2" dataType="Grid"/>
+  <dataset name="Testy Dataset" ID="testyDataset" serviceName="ncdods" urlPath="testSomeOtherDamnDir/testData2.grib2" dataType="Grid"/>
 
 </catalog>
