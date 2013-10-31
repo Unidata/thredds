@@ -5,7 +5,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
 import ucar.nc2.Attribute;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
@@ -30,38 +29,27 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcPoint.class);
   static private final String FC = "fc.cdmr";
   static private final InvService collectionService = new InvService("collectionService", ServiceType.COMPOUND.toString(), "", "", "");
-  static private final InvService fileService = new InvService("fileService", ServiceType.COMPOUND.toString(), "", "", "");
+  //static private final InvService fileService = new InvService("fileService", ServiceType.COMPOUND.toString(), "", "", "");
 
   // LOOK ignoring the configured services
   static {
-    collectionService.addService( InvService.cdmrfeature);
+    //collectionService.addService( InvService.cdmrfeature);
     collectionService.addService( InvService.ncss);
     
-    fileService.addService( InvService.cdmremote);
-    fileService.addService( InvService.fileServer);
-    fileService.addService( InvService.opendap);
+    //fileService.addService( InvService.opendap);
+    //fileService.addService( InvService.cdmremote);
+    //fileService.addService( InvService.fileServer);
   }
 
   private final FeatureDatasetPoint fd;  // LOOK this stays open
   private final Set<FeatureCollectionConfig.PointDatasetType> wantDatasets;
 
-  public InvDatasetFcPoint(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
+  InvDatasetFcPoint(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, path, fcType, config);
 
     Formatter errlog = new Formatter();
     try {
       fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(name, fcType.getFeatureType(), dcm, errlog);
-
-      // pull out ACDD metadata and put into the catalog
-      MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(fd.getGlobalAttributes()), this);
-      acdd.extract();
-
-      // pull out catalog BB,  put into the catalog
-      if (fd.getBoundingBox() == null) {
-        thredds.catalog.ThreddsMetadata.GeospatialCoverage coverage = getGeospatialCoverage();
-        if (coverage != null)
-          ((PointDatasetImpl) fd).setBoundingBox(coverage.getBoundingBox()); // override in fd
-      }
 
     } catch (Exception e) {
       // e.printStackTrace(); // not showing up in logs
@@ -69,6 +57,22 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     }
 
     this.wantDatasets = config.pointConfig.datasets;
+  }
+
+  @Override
+  protected void finishConstruction() {
+    super.finishConstruction();
+
+        // pull out ACDD metadata and put into the catalog
+    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(fd.getGlobalAttributes()), this);
+    acdd.extract();
+
+    // pull out catalog BB,  put into the catalog
+    if (fd.getBoundingBox() == null) {
+      thredds.catalog.ThreddsMetadata.GeospatialCoverage coverage = getGeospatialCoverage();
+      if (coverage != null)
+        ((PointDatasetImpl) fd).setBoundingBox(coverage.getBoundingBox()); // override in fd
+    }
   }
 
   @Override

@@ -50,7 +50,9 @@ public class CdmrControllerTest {
  	public static Collection<Object[]> getTestParameters(){
  		return Arrays.asList(new Object[][]{
             {"/cdmremote/NCOF/POLCOMS/IRISH_SEA/files/20060925_0600.nc", 5, 12, 16, "Precipitable_water(0:1,43:53,20:40)"},        // FMRC
-            {"/cdmremote/testStationFeatureCollection/files/Surface_METAR_20060325_0000.nc", 9, 22, 47, "wind_speed(0:1)"},  // POINT
+            {"/cdmremote/testStationFeatureCollection/files/Surface_METAR_20060325_0000.nc", 9, 22, 47, "wind_speed(0:1)"},  // station
+            {"/cdmremote/testBuoyFeatureCollection/files/Surface_Buoy_20130804_0000.nc", 5, 2, 58, "meanWind(0:1)"},  // point
+            {"/cdmremote/testSurfaceSynopticFeatureCollection/files/Surface_Synoptic_20130804_0000.nc", 5, 2, 46, "humidity(0:1)"},  // point
     });
  	}
 
@@ -74,7 +76,7 @@ public class CdmrControllerTest {
                .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.toString()))
                .andReturn();
 
-    System.out.printf("content = %s%n", result.getResponse().getContentAsString());
+    //System.out.printf("content = %s%n", result.getResponse().getContentAsString());
 
     /* String content =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
@@ -96,7 +98,7 @@ public class CdmrControllerTest {
               .andReturn();
 
 
-    System.out.printf("content = %s%n", result.getResponse().getContentAsString());
+    //System.out.printf("content = %s%n", result.getResponse().getContentAsString());
   }
 
   @Test
@@ -110,14 +112,22 @@ public class CdmrControllerTest {
                .andReturn();
 
 
-     System.out.printf("content = %s%n", result.getResponse().getContentAsString());
+    //System.out.printf("content = %s%n", result.getResponse().getContentAsString());
 
     Document doc = XmlUtil.getStringResponseAsDoc(result.getResponse());
 
+    int hasDims = NcmlParserUtil.getNcMLElements("netcdf/dimension", doc).size();
+    int hasAtts = NcmlParserUtil.getNcMLElements("netcdf/attribute", doc).size();
+    int hasVars = NcmlParserUtil.getNcMLElements("//variable", doc).size();
+
+    System.out.printf("ndims = %s%n", hasDims);
+    System.out.printf("natts = %s%n", hasAtts);
+    System.out.printf("nvars = %s%n", hasVars);
+
     //Not really checking the content just the number of elements
-    assertEquals(this.ndims, NcmlParserUtil.getNcMLElements("netcdf/dimension", doc).size());
-    assertEquals(this.natts, NcmlParserUtil.getNcMLElements("netcdf/attribute", doc).size());
-    assertEquals(this.nvars, NcmlParserUtil.getNcMLElements("//variable", doc).size());
+    assertEquals(this.ndims, hasDims);
+    assertEquals(this.natts, hasAtts);
+    assertEquals(this.nvars, hasVars);
    }
 
   @Test

@@ -49,7 +49,7 @@ import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
- * _more_
+ * test dataset scan with subdirs
  *
  * @author edavis
  * @since 4.0
@@ -97,6 +97,8 @@ public class TestDatasetScanExpandSubdirs
     scan.setServiceName( "odap" );
     configRootDs.addDataset( scan );
     assertTrue( configCat.finish());
+
+    System.out.printf("%s%n", InvCatalogFactory.getDefaultFactory(false).writeXML(configCat));
 
     StringBuilder sb = new StringBuilder();
     boolean good = scan.check( sb, true );

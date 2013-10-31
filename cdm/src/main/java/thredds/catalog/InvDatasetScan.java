@@ -778,13 +778,12 @@ public class InvDatasetScan extends InvCatalogRef {
       isValid = false;
     }
 
-
-    if (hasNestedDatasets()) {
+    if (datasets.size() > 0) {
       out.append( "**Error: DatasetScan (" ).append( getFullName() ).append( "): may not have nested datasets\n" );
       isValid = false;
       this.datasets = null;
     }
 
-      return isValid && super.check(out, show);
+    return isValid && super.check(out, show);
   }
 }

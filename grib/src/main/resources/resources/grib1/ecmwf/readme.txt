@@ -36,5 +36,8 @@
  12/5/2011 look closer at the cen074/* tables
   - version 174 and 175 are identical
 
-
-
+10/31/2013
+  1. http://www.ecmwf.int/products/data/software/grib.html
+    "GRIBEX has been replaced by GRIB API. GRIBEX is not available for download and is not maintained nor supported any longer."
+  2. missing params in Q:/support/CarlosMoraga/ECMWF_GNERA_d0001.20121001
+  3. send email to marcos, stephan to try to get canonical ecmwf tables.

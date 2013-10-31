@@ -17,7 +17,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.util.ContentType;
 
 /**
- * Describe
+ * Single problems in cdmremote testing
  *
  * @author caron
  * @since 10/29/13
@@ -31,8 +31,8 @@ public class CdmRemoteProblems {
  	private org.springframework.web.context.WebApplicationContext wac;
 
  	private MockMvc mockMvc;
-  // private String path = "/cdmremote/NCOF/POLCOMS/IRISH_SEA/files/20060925_0600.nc";
-  private String path = "/cdmremote/testStationFeatureCollection/files/Surface_METAR_20060325_0000.nc";
+  // private String path = "/cdmremote/testStationFeatureCollection/files/Surface_METAR_20060325_0000.nc";
+  private String path = "/cdmremote/testBuoyFeatureCollection/files/Surface_Buoy_20130804_0000.nc";
 
  	@Before
  	public void setup(){

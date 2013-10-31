@@ -153,5 +153,6 @@
   <catalogRef xlink:title="Test GRIB FC" xlink:href="catalogGrib.xml" name=""/>
   <catalogRef xlink:title="Test Point FC" xlink:href="pointCatalog.xml" name=""/>
   <catalogRef xlink:title="somecat" xlink:href="somedir/somecat.xml" name=""/>
+  <catalogRef xlink:title="update JoinExisting Agg" xlink:href="catalogUpdateAgg.xml" name=""/>
 
 </catalog>

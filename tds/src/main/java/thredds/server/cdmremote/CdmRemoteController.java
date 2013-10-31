@@ -242,7 +242,8 @@ public class CdmRemoteController extends AbstractController implements LastModif
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", absPath);
     Element elem = new Element("featureDataset");
-    elem.setAttribute("type", ft.toString());
+    if (ft != null)                            // LOOK lame
+      elem.setAttribute("type", ft.toString());
     elem.setAttribute("url", absPath);
     rootElem.addContent(elem);
 

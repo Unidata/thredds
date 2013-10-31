@@ -84,7 +84,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
   private TdsContext tdsContext;
 
   public void afterPropertiesSet(){
-    System.out.printf("CdmInit getContentRootPathAbsolute= %s%n", tdsContext.getContentRootPath());
+    startupLog.info("CdmInit getContentRootPathAbsolute= "+tdsContext.getContentRootPath());
 
     // prefer cdmRemote when available
     ThreddsDataFactory.setPreferCdm(true);

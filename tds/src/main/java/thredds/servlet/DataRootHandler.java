@@ -101,7 +101,7 @@ public final class DataRootHandler implements InitializingBean {
   //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
   static private DataRootHandler singleton = null;
   static private final String ERROR = "*** ERROR ";
-  static private final boolean debug = true;
+  static private final boolean debug = false;
 
   /**
    * Initialize the DataRootHandler singleton instance.
