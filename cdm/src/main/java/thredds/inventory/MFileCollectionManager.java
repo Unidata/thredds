@@ -105,7 +105,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   // this can change = keep under lock
   private Map<String, MFile> map; // current map of MFile in the collection
-  private long lastScanned; // last time scanned
+  private long lastScanned;       // last time scanned
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
 
   // simplified version called from DatasetCollectionManager.open()
@@ -308,6 +308,11 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   @Override
   public long getLastScanned() {
     return lastScanned;
+  }
+
+  @Override
+  public long getLastChanged() {
+    return lastChanged.get();
   }
 
   @Override

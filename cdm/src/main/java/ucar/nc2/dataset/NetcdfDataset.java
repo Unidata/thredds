@@ -1335,7 +1335,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   @Override
   public long getLastModified() {
-    // LOOK agg ??
+    if (agg != null) {
+      return agg.getLastModified();
+    }
 
     return (orgFile != null) ? orgFile.getLastModified() : 0;
   }

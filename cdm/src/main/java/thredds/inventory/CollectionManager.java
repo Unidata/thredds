@@ -113,6 +113,13 @@ public interface CollectionManager {
   public long getLastScanned();
 
   /**
+   * Get the last time the collection changed
+   *
+   * @return msecs since 1970
+   */
+  public long getLastChanged();
+
+  /**
    * Get how often to rescan
    *
    * @return time duration of rescan period, or null if none.

@@ -32,81 +32,137 @@
 
 package ucar.nc2.ncml;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.Test;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.cache.FileCacheable;
 import ucar.unidata.test.util.TestDir;
 
 /**
- * Updating dataset
+ * Updating aggregation
  *
  * @author caron
  * @since Jul 24, 2009
  */
 
-public class TestOffAggUpdating extends TestCase {
+public class TestOffAggUpdating {
+  String dir = TestDir.cdmUnitTestDir + "agg/updating";
+  String location = dir + "agg/updating.ncml";
+  File dirFile = new File(dir);
 
-  public TestOffAggUpdating( String name) {
-    super(name);
-  }
+  String ncml =
+          "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                  "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+                  "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 msec'>\n" +
+                  "         <scan location='" + dir + "' suffix='*.nc' />\n" +
+                  "         <variable name='depth'>\n" +
+                  "           <attribute name='coordinates' value='lon lat'/>\n" +
+                  "         </variable>\n" +
+                  "         <variable name='wvh'>\n" +
+                  "           <attribute name='coordinates' value='lon lat'/>\n" +
+                  "         </variable>\n" +
+                  "       </aggregation>\n" +
+                  "       <attribute name='Conventions' type='String' value='CF-1.0'/>\n" +
+                  "</netcdf>";
 
-  public void testUpdate() throws IOException, InvalidRangeException, InterruptedException {
-    String dir = TestDir.cdmUnitTestDir + "agg/updating";
-    File dirFile = new File(dir);
-    assert dirFile != null;
+  @Before
+  public void setup() {
     assert dirFile.exists();
     assert dirFile.isDirectory();
+    assert dirFile.listFiles() != null;
+  }
 
-    // make sure that the extra file is not in the agg
+  @Test
+  public void testUpdateSync() throws IOException, InvalidRangeException, InterruptedException {
+     // make sure that the extra file is not in the agg
+    removeExtraFile();
+
+    // open the agg
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
+    check(ncfile, 12);
+
+    // now make sure that the extra file is  in the agg
+    addExtraFile();
+
+    // reread
+    ncfile.syncExtend();
+    check(ncfile, 18);
+
+    ncfile.close();
+  }
+
+  @Test
+  public void testUpdateLastModified() throws IOException, InvalidRangeException, InterruptedException {
+     // make sure that the extra file is not in the agg
+    removeExtraFile();
+
+    // open the agg
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
+    long start = ncfile.getLastModified();
+
+    // now make sure that the extra file is  in the agg
+    addExtraFile();
+
+    // reread
+    long end = ncfile.getLastModified();
+    assert (end > start);
+
+    // again
+    long end2 = ncfile.getLastModified();
+    assert (end == end2);
+
+    ncfile.close();
+  }
+
+  @Test
+  public void testUpdateCache() throws IOException, InvalidRangeException, InterruptedException {
+     // make sure that the extra file is not in the agg
+    removeExtraFile();
+
+    // open the agg
+    NetcdfFile ncfile = NetcdfDataset.acquireDataset(new NcmlStringFileFactory(), location, null, -1, null, null);
+
+    check(ncfile, 12);
+
+    // now make sure that the extra file is  in the agg
+    addExtraFile();
+
+    // reread
+    ncfile.syncExtend();
+    check(ncfile, 18);
+
+    ncfile.close();
+  }
+
+
+  private void removeExtraFile() throws IOException {
     for (File f : dirFile.listFiles()) {
       if (f.getName().equals("extra.nc")) {
-        if (!f.renameTo( new File(dirFile, "extra.wait"))) {
+        if (!f.renameTo(new File(dirFile, "extra.wait"))) {
           System.out.printf("Rename fails on %s.extra.nc %n", dirFile);
         }
         break;
       }
     }
+  }
 
-    String ncml =
-      "<?xml version='1.0' encoding='UTF-8'?>\n" +
-      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-      "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 msec'>\n" +
-      "         <scan location='"+dir+"' suffix='*.nc' />\n" +
-      "         <variable name='depth'>\n" +
-      "           <attribute name='coordinates' value='lon lat'/>\n" +
-      "         </variable>\n" +
-      "         <variable name='wvh'>\n" +
-      "           <attribute name='coordinates' value='lon lat'/>\n" +
-      "         </variable>\n" +
-      "       </aggregation>\n" +
-      "       <attribute name='Conventions' type='String' value='CF-1.0'/>\n" +
-      "</netcdf>";
-
-    String location = dir + "agg/updating.ncml";
-    System.out.println(" TestOffAggExistingTimeUnitsChange.testNarrGrib=\n"+ ncml);
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
-
-    check(ncfile, 12);
-
-    // make sure that the extra file is  in the agg
+  private void addExtraFile() throws IOException {
+    // now make sure that the extra file is  in the agg
     for (File f : dirFile.listFiles()) {
       if (f.getName().equals("extra.wait")) {
-        if (!f.renameTo( new File(dirFile, "extra.nc")))
-          System.out.println(" rename fails on "+ f.getPath());
+        if (!f.renameTo(new File(dirFile, "extra.nc")))
+          System.out.println(" rename fails on " + f.getPath());
         break;
       }
     }
-
-    ncfile.syncExtend();
-    check(ncfile, 18);
-
-    ncfile.close();    
   }
 
   private void check(NetcdfFile ncfile, int n) throws IOException, InvalidRangeException {
@@ -118,6 +174,14 @@ public class TestOffAggUpdating extends TestCase {
     v = ncfile.findVariable("eta");
     assert v != null;
     assert v.getRank() == 3 : v.getRank();
+  }
+
+  private class NcmlStringFileFactory implements ucar.nc2.util.cache.FileFactory {
+
+    @Override
+    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      return NcMLReader.readNcML(new StringReader(ncml), location, null);
+    }
   }
 }
 

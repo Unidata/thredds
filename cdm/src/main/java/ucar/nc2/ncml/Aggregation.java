@@ -275,11 +275,21 @@ public abstract class Aggregation {
    */
   public synchronized boolean syncExtend() throws IOException {
     return datasetManager.isScanNeeded() && _sync();
-
   }
 
-  public synchronized boolean sync() throws IOException {
-    return datasetManager.isScanNeeded() && _sync();
+  //public synchronized boolean sync() throws IOException {
+  //  return datasetManager.isScanNeeded() && _sync();
+  //}
+
+  // LOOK could also use syncExtend()
+  public long getLastModified() {
+    try {
+      boolean wantScan = datasetManager.isScanNeeded();
+      datasetManager.scanIfNeeded();
+    } catch (IOException e) {
+      logger.error("Aggregation scan failed, e");
+    }
+    return datasetManager.getLastChanged();
   }
 
   private boolean _sync() throws IOException {
