@@ -1,0 +1,5 @@
+Merge changes from branch A onto branch B in intelliJ
+
+1. make sure you hav all changes locally : VCS / update
+2. checkout branch B
+3.

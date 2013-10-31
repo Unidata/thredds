@@ -105,3 +105,22 @@ notes for tables in fnmoc subdir
     total=15 local = 4 miss=0
 
     Grand total=230 local = 34 missing = 0
+
+10/31/2013 pull request from Ian Will fixing issues with FNMOC grib1 table
+/resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterParameterTableOrdered.GRIB1.Tbl2.xml
+merged into 4.3.20. also add to 4.4.0
+
+explanation from Ian:
+
+"These fixes don't change any parameter mappings. They remove duplicate grib1Id values in the XML, which appear to be clear mistakes in the original XML.
+Duplicate names were listed subsequent to the unqualified name, but the Grib1 logic doesn't appear to expect duplicates and uses the last occurring XML
+entry for a given grib1Id. The removed names were all clearly derived from the first listing (e.g. ttl_prcp, ttl_prcp_01, ttl_prcp_03, ttl_prcp_06,
+ttl_prcp_12 were all listed as unique entries for the same id 61, and ttl_prcp was kept). It appears that the original XML was trying to encode
+certain types of information (like deprecated naming, or nuanced-interpretation) that do not belong in the GRIB parameter table.
+
+The only change that slightly deviates from this pattern was for grib1Id 2 which was listed as "pres," causing conflict with grib1Id 1 which is also
+listed as "pres." The description provided for id 2 indicates that this should be interpreted as pressure reduced to MSL. Thus a variation of the name "pres"
+ was used to differentiate it from parameter 1, avoiding errors when reading GRIB files contain records with both 1 and 2. This interpretation of id 2 is
+ consistent with the old parameter table definitions used in netcdf 4.2.
+
+Summary: These are not new mappings, just fixes to the XML file. "
