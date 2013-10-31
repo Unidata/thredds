@@ -221,7 +221,7 @@
             <timeout>300000</timeout>
             <containerId>tomcat7x</containerId>
             <zipUrlInstaller>
-              <url>http://archive.apache.org/dist/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url>
+              <url>${apache.download}/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url>
               <!-- url>http://www.us.apache.org/dist/tomcat/tomcat-7/v${tomcat7.version}/bin/apache-tomcat-${tomcat7.version}.tar.gz</url -->
               <downloadDir>${project.build.directory}/downloads</downloadDir>
               <extractDir>${project.build.directory}/extracts</extractDir>

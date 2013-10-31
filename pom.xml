@@ -925,6 +925,7 @@
     <maven-war-plugin.version>2.4</maven-war-plugin.version>
 
     <cargo-plugin.version>1.4.5</cargo-plugin.version>
+    <apache.download>http://mirrors.ibiblio.org/apache/</apache.download>
     <tomcat7.version>7.0.47</tomcat7.version>
 
   </properties>
