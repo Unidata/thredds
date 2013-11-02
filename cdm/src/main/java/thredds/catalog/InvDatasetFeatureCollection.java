@@ -44,6 +44,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.log.LoggerFactoryImpl;
 
@@ -363,7 +364,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
     if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
-    //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
+    tmi.setTimeCoverage((DateRange) null); // LOOK
 
     result.addDataset(top);
 

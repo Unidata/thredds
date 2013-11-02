@@ -66,16 +66,29 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   protected void finishConstruction() {
     super.finishConstruction();
 
-        // pull out ACDD metadata and put into the catalog
-    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(fd.getGlobalAttributes()), this);
-    acdd.extract();
+    finish();
 
-    // pull out catalog BB,  put into the catalog
+    ThreddsMetadata tmi = getLocalMetadataInheritable();
+
+    // pull out ACDD metadata from feature collection and put into the catalog
+    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(fd.getGlobalAttributes()), this, tmi);
+    acdd.extract();
+    finish();
+
+    // spatial coverage
     if (fd.getBoundingBox() == null) {
+      // pull out catalog BB, put into the feature collection. this will override ACDD
       thredds.catalog.ThreddsMetadata.GeospatialCoverage coverage = getGeospatialCoverage();
       if (coverage != null)
         ((PointDatasetImpl) fd).setBoundingBox(coverage.getBoundingBox()); // override in fd
+
+    } else if (getGeospatialCoverage() == null) {
+      tmi.setGeospatialCoverage( MetadataExtractor.extractGeospatial(fd));
     }
+
+    tmi.addVariables(MetadataExtractor.extractVariables(fd));
+
+    finish();
   }
 
   @Override
@@ -118,6 +131,12 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
   public void updateCollection(State localState, CollectionManager.Force force) {
     ((UpdateableCollection)fd).update();
+
+    // time coverage = expect it may be changing
+    if (fd.getCalendarDateRange() != null)
+      localState.dateRange = fd.getCalendarDateRange();
+    else if (getTimeCoverage() != null)
+      localState.dateRange = getCalendarDateCoverage();
   }
 
   @Override
@@ -191,21 +210,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     if (id == null) id = getPath();
     //top.setID(id);
 
-    // called anytime something changes. may need to do it only once ??
-
-    localState.vars = MetadataExtractor.extractVariables(fd);
-    localState.dateRange = MetadataExtractor.extractCalendarDateRange(fd);
-
-    // coverage can come in the InvDataset metadata, in which case it overrides whats in the files.
-    localState.coverage = getGeospatialCoverage();
-    if (localState.coverage == null) {
-      localState.coverage = MetadataExtractor.extractGeospatial(fd);
-    }
-
-    // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-    if (localState.vars != null) tmi.addVariables(localState.vars);
-    if (localState.coverage != null) tmi.setGeospatialCoverage(localState.coverage);
     if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
     if (wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.cdmrFeature)) {

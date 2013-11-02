@@ -85,7 +85,7 @@ public class TestPointFCController {
     assert elems.size() == 1;
     Element fdx = elems.get(0);
     assertEquals(fdx.getAttributeValue("type"), this.type);
-    assert fdx.getAttributeValue("url").equals("thredds"+path) : "/thredds"+path;
+    assert fdx.getAttributeValue("url").equals("/thredds"+path) : "/thredds"+path;
 
    }
 

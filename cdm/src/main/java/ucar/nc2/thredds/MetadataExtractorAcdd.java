@@ -1,5 +1,6 @@
 package ucar.nc2.thredds;
 
+import thredds.catalog.InvDataset;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDocumentation;
 import thredds.catalog.ThreddsMetadata;
@@ -23,18 +24,19 @@ public class MetadataExtractorAcdd {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MetadataExtractorAcdd.class);
   private Map<String,Attribute> ncfile;
   private InvDatasetImpl ds;
+  private ThreddsMetadata tmi;
 
-  public MetadataExtractorAcdd(Map<String,Attribute> ncfile, InvDatasetImpl ds) {
+  public MetadataExtractorAcdd(Map<String,Attribute> ncfile, InvDatasetImpl ds, ThreddsMetadata tmi) {
     this.ncfile = ncfile;
+    this.tmi = tmi;
     this.ds = ds;
-    ds.finish();  // make sure ds has been finished
   }
 
   public void extract() {
     extractTimeCoverage();
 
-    if (ds.getGeospatialCoverage() == null) { // thredds metadata takes precedence
-      ds.setGeospatialCoverage( extractGeospatialCoverage());
+    if (tmi.getGeospatialCoverage() == null) { // thredds metadata takes precedence
+      tmi.setGeospatialCoverage( extractGeospatialCoverage());
     }
 
     Attribute att = ncfile.get(ACDD.keywords);
@@ -45,14 +47,14 @@ public class MetadataExtractorAcdd {
       addKeywords(keywordList, keywords_vocabulary);
     }
 
-    if (ds.getAuthority() == null) {  // thredds metadata takes precedence
+    if (tmi.getAuthority() == null) {  // thredds metadata takes precedence
       att = ncfile.get(ACDD.naming_authority);
       if (att != null) {
-        ds.setAuthority(att.getStringValue());
+        tmi.setAuthority(att.getStringValue());
       }
     }
 
-    if (ds.getDataType() == null) { // thredds metadata takes precedence
+    if (tmi.getDataType() == null) { // thredds metadata takes precedence
       att = ncfile.get(ACDD.cdm_data_type);
       if (att != null && att.isString()) {
         String val = att.getStringValue();
@@ -61,7 +63,7 @@ public class MetadataExtractorAcdd {
           CF.FeatureType cf = CF.FeatureType.getFeatureType(val);
           if (cf != null) ft = CF.FeatureType.convert(cf);
         }
-        if (ft != null) ds.setDataType( ft);
+        if (ft != null) tmi.setDataType( ft);
       }
     }
 
@@ -78,9 +80,6 @@ public class MetadataExtractorAcdd {
 
     addSource(true, ACDD.creator_name, ACDD.creator_url, ACDD.creator_email);
     addSource(false, ACDD.publisher_name, ACDD.publisher_url, ACDD.publisher_email);
-
-    // swallow
-    ds.finish();
   }
 
   public void extractTimeCoverage() {
@@ -133,8 +132,7 @@ public class MetadataExtractorAcdd {
 
     try {
       DateRange tc = new DateRange(start, end, duration, resolution);
-      ThreddsMetadata tm = ds.getLocalMetadata();
-      tm.setTimeCoverage(tc);
+      tmi.setTimeCoverage(tc);
 
     } catch (Exception e) {
       log.warn("MetadataExtractorAcdd Cant Calculate DateRange for {} message= {}", ds.getFullName(), e.getMessage());
@@ -189,9 +187,9 @@ public class MetadataExtractorAcdd {
     Attribute att = ncfile.get(docType);
     if (att != null) {
       String docValue = att.getStringValue();
-      String dsValue = ds.getDocumentation(docType);    // metadata/documentation[@type="docType"]
+      String dsValue = tmi.getDocumentation(docType);    // metadata/documentation[@type="docType"]
       if (dsValue == null || !dsValue.equals(docValue))
-        ds.addDocumentation(new InvDocumentation(null, null, null, docType, docValue));
+        tmi.addDocumentation(new InvDocumentation(null, null, null, docType, docValue));
     }
   }
 
@@ -199,18 +197,17 @@ public class MetadataExtractorAcdd {
     Attribute att = ncfile.get(attName);
     if (att != null) {
       String docValue = att.getStringValue();
-      String dsValue = ds.getDocumentation(docType);        // metadata/documentation[@type="docType"]
+      String dsValue = tmi.getDocumentation(docType);        // metadata/documentation[@type="docType"]
       if (dsValue == null || !dsValue.equals(docValue))
-        ds.addDocumentation(new InvDocumentation(null, null, null, docType, docValue));
+        tmi.addDocumentation(new InvDocumentation(null, null, null, docType, docValue));
     }
   }
 
   private void addKeywords(String keywordList, String vocabulary)  {
     String[] keywords = keywordList.split(",");
 
-    ThreddsMetadata tm = ds.getLocalMetadata();
     for (String kw : keywords)
-      tm.addKeyword(new ThreddsMetadata.Vocab(kw, vocabulary));
+      tmi.addKeyword(new ThreddsMetadata.Vocab(kw, vocabulary));
   }
 
   private void addDate(String dateType) {
@@ -218,9 +215,8 @@ public class MetadataExtractorAcdd {
     if (att != null) {
       String dateValue = att.getStringValue();
 
-      ThreddsMetadata tm = ds.getLocalMetadata();
       try {
-        tm.addDate(new DateType(dateValue, null, dateType));
+        tmi.addDate(new DateType(dateValue, null, dateType));
       } catch (Exception e) {
         log.warn("MetadataExtractorAcdd Cant Parse {} date '{}' for {} message= {}", dateType, dateValue, ds.getFullName(), e.getMessage());
       }
@@ -241,11 +237,10 @@ public class MetadataExtractorAcdd {
       ThreddsMetadata.Vocab name = new ThreddsMetadata.Vocab(sourceValue, null);
       ThreddsMetadata.Source src = new ThreddsMetadata.Source(name, url, email);
 
-      ThreddsMetadata tm = ds.getLocalMetadata();
       if (isCreator)
-        tm.addCreator(src);
+        tmi.addCreator(src);
       else
-        tm.addPublisher(src);
+        tmi.addPublisher(src);
     }
   }
 
