@@ -35,7 +35,7 @@ public class TestMetadataExtractor {
 
     InvCatalogImpl cat = new InvCatalogImpl("testAcdd", "1.0.5", new URI("file:baseURI"));
     InvDatasetImpl ds = new InvDatasetImpl(null, "testAcdd");
-    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(ncfile.getGlobalAttributes()), ds);
+    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(ncfile.getGlobalAttributes()), ds, ds.getLocalMetadataInheritable());
     acdd.extract();
     ncfile.close();
 
