@@ -33,11 +33,11 @@ public class ACDD {
   public static final String comment = "comment";         // metadata/documentation
   public static final String date_modified = "date_modified"; // metadata/date[@type="modified"]
 
-  public static final String creator = "creator";         //  metadata/creator
+  public static final String creator_name = "creator_name";         //  metadata/creator
   public static final String creator_email = "creator_email";
   public static final String creator_url = "creator_url";
 
-  public static final String publisher = "publisher";     //  metadata/publisher
+  public static final String publisher_name = "publisher_name";     //  metadata/publisher
   public static final String publisher_email = "publisher_email";
   public static final String publisher_url = "publisher_url";
 

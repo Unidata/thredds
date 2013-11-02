@@ -81,6 +81,7 @@
       <pointConfig datasetTypes="cdmrFeature Files"/>
     </featureCollection>
 
+    <!-- this point to nonexistent directory -->
     <featureCollection name="Upper Air Point Data" harvest="true" featureType="Point" path="testUpperAirFeatureCollection">
        <collection spec="${cdmUnitTest}/ft/point/ldm/upper/Upperair_#yyyyMMdd_HHmm#.nc$"/>
        <update startup="true"/>
@@ -88,8 +89,23 @@
        <pointConfig datasetTypes="cdmrFeature Files"/>
      </featureCollection>
 
-
   </dataset>
+
+  <featureCollection name="Buoy Data" harvest="true" featureType="Station" path="nws/buoy/ncdecoded">
+      <metadata inherited="true">
+          <serviceName>all</serviceName>
+          <keyword>buoy</keyword>
+          <keyword>surface observations</keyword>
+      </metadata>
+
+      <collection spec="Q:/cdmUnitTest/agg/pointFeatureCollection/netCDFbuoydata/.*\.nc$" />
+      <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      <protoDataset choice="Penultimate" />
+      <pointConfig datasetTypes="cdmrFeature Files"/>
+      <!--netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+          <attribute name="Conventions" value="CF-1.6"/>
+      </netcdf-->
+  </featureCollection>
 
 
 </catalog>

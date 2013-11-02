@@ -59,6 +59,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
  * @author mhermida
  *
  */
+@Deprecated // use ncss
 @Controller
 @RequestMapping("/cdmrfeature")
 public class CdmrfController {

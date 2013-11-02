@@ -82,7 +82,7 @@ public class TestPointFCExceptions {
             .param("var", "ICE");
 
     this.mockMvc.perform(rb)
-            .andExpect(MockMvcResultMatchers.status().is(200)); // i guess its ok
+            .andExpect(MockMvcResultMatchers.status().is(200)); // i guess its ok  LOOK
   }
 
   @Test

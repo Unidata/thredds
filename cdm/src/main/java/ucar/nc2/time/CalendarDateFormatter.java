@@ -160,7 +160,7 @@ public class CalendarDateFormatter {
    * @throws IllegalArgumentException if the String is not a valid ISO 8601 date
    * @see "http://www.w3.org/TR/NOTE-datetime"
    */
-  static public CalendarDate isoStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException{
+  static public CalendarDate isoStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException {
 	  DateTime dt = parseIsoTimeString(calt, iso);
     Calendar useCal = Calendar.of(dt.getChronology());
 	  return new CalendarDate(useCal, dt);
@@ -190,7 +190,7 @@ public class CalendarDateFormatter {
     Matcher m = isodatePattern.matcher(iso);
     if (!m.matches()) {
       //System.out.printf("'%s' does not match regexp '%s'%n", dateUnitString, udunitPatternString);
-      throw new IllegalArgumentException(iso + " does not match " + isodatePatternString);
+      throw new IllegalArgumentException(iso + " does not match regexp " + isodatePatternString);
     }
 
     String dateString = m.group(1);
@@ -233,6 +233,9 @@ public class CalendarDateFormatter {
       if ((year == 0) && (calt == Calendar.gregorian)) {
         calt = Calendar.proleptic_gregorian;
       }
+
+      //if (year <  -292275054 || year > 292278993)
+      //  throw new IllegalArgumentException(" incorrect date specification = " + iso);
 
       // Get a DateTime object in this Chronology
       Chronology cron = Calendar.getChronology(calt);
@@ -295,8 +298,7 @@ public class CalendarDateFormatter {
       }
 
       return dt;
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception e) {  // catch random joda exceptions
       throw new IllegalArgumentException("Illegal base time specification: '" + dateString+"' "+e.getMessage());
     }
   }

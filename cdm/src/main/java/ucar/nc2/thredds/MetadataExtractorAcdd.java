@@ -4,34 +4,34 @@ import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDocumentation;
 import thredds.catalog.ThreddsMetadata;
 import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.ACDD;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 
-import java.text.ParseException;
 import java.util.Map;
 
 /**
- * Extract ACDD metaddata from dataset and promote into the catalog objects
+ * Extract ACDD metadata from dataset and promote into the catalog objects
  *
  * @author caron
  * @since 9/14/13
  */
 public class MetadataExtractorAcdd {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MetadataExtractorAcdd.class);
   private Map<String,Attribute> ncfile;
   private InvDatasetImpl ds;
 
   public MetadataExtractorAcdd(Map<String,Attribute> ncfile, InvDatasetImpl ds) {
     this.ncfile = ncfile;
     this.ds = ds;
+    ds.finish();  // make sure ds has been finished
   }
 
   public void extract() {
+    extractTimeCoverage();
 
     if (ds.getGeospatialCoverage() == null) { // thredds metadata takes precedence
       ds.setGeospatialCoverage( extractGeospatialCoverage());
@@ -65,6 +65,7 @@ public class MetadataExtractorAcdd {
       }
     }
 
+    addDocumentation(ACDD.title);
     addDocumentation(ACDD.summary);
     addDocumentation(ACDD.history);
     addDocumentation(ACDD.comment);
@@ -75,8 +76,8 @@ public class MetadataExtractorAcdd {
     addDate(ACDD.date_created);
     addDate(ACDD.date_modified);
 
-    addSource(true, ACDD.creator, ACDD.creator_url, ACDD.creator_email);
-    addSource(false, ACDD.publisher, ACDD.publisher_url, ACDD.publisher_email);
+    addSource(true, ACDD.creator_name, ACDD.creator_url, ACDD.creator_email);
+    addSource(false, ACDD.publisher_name, ACDD.publisher_url, ACDD.publisher_email);
 
     // swallow
     ds.finish();
@@ -87,34 +88,48 @@ public class MetadataExtractorAcdd {
     Attribute endTimeAtt = ncfile.get(ACDD.TIME_END);
     Attribute durationAtt = ncfile.get(ACDD.TIME_DURATION);
     Attribute resAtt = ncfile.get(ACDD.TIME_RESOLUTION);
+    if (startTimeAtt == null && endTimeAtt == null && durationAtt == null) return;
 
+    String dateValue = null;
     DateType start = null;
-    try {
-      start = (startTimeAtt == null) ? null : new DateType(startTimeAtt.getStringValue(), null, null);
-    } catch (ParseException e) {
-      return;
+    if (startTimeAtt != null) {
+      try {
+        dateValue = startTimeAtt.getStringValue();
+        start = new DateType(dateValue, null, null);
+      } catch (Exception e) {
+        log.warn("MetadataExtractorAcdd Cant Parse start date '{}' for {} message= {}", dateValue, ds.getFullName(), e.getMessage());
+      }
     }
 
     DateType end = null;
-    try {
-      end = (endTimeAtt == null) ? null : new DateType(endTimeAtt.getStringValue(), null, null);
-    } catch (ParseException e) {
-      return;
+    if (endTimeAtt != null) {
+      try {
+        dateValue = endTimeAtt.getStringValue();
+        end = new DateType(dateValue, null, null);
+      } catch (Exception e) {
+        log.warn("MetadataExtractorAcdd Cant Parse end date '{}' for {} message= {}", dateValue, ds.getFullName(), e.getMessage());
+      }
     }
 
     TimeDuration duration = null;
-    try {
-      duration = (durationAtt == null) ? null : new TimeDuration(durationAtt.getStringValue());
-    } catch (ParseException e) {
-      return;
-    }
+     if (durationAtt != null) {
+       try {
+         dateValue = durationAtt.getStringValue();
+         duration = new TimeDuration(dateValue);
+       } catch (Exception e) {
+         log.warn("MetadataExtractorAcdd Cant Parse duration '{}' for {} message= {}", dateValue, ds.getFullName(), e.getMessage());
+       }
+     }
 
     TimeDuration resolution = null;
-    try {
-      resolution = (resAtt == null) ? null : new TimeDuration(resAtt.getStringValue());
-    } catch (ParseException e) {
-      return;
-    }
+     if (resAtt != null) {
+       try {
+         dateValue = resAtt.getStringValue();
+         resolution = new TimeDuration(dateValue);
+       } catch (Exception e) {
+         log.warn("MetadataExtractorAcdd Cant Parse resolution '{}' for {} message= {}", dateValue, ds.getFullName(), e.getMessage());
+       }
+     }
 
     try {
       DateRange tc = new DateRange(start, end, duration, resolution);
@@ -122,12 +137,10 @@ public class MetadataExtractorAcdd {
       tm.setTimeCoverage(tc);
 
     } catch (Exception e) {
-      return;
+      log.warn("MetadataExtractorAcdd Cant Calculate DateRange for {} message= {}", ds.getFullName(), e.getMessage());
     }
 
   }
-
-
 
   public ThreddsMetadata.GeospatialCoverage extractGeospatialCoverage() {
     ThreddsMetadata.Range latRange = makeRange( false, ACDD.LAT_MIN, ACDD.LAT_MAX, ACDD.LAT_RESOLUTION, ACDD.LAT_UNITS);
@@ -208,8 +221,8 @@ public class MetadataExtractorAcdd {
       ThreddsMetadata tm = ds.getLocalMetadata();
       try {
         tm.addDate(new DateType(dateValue, null, dateType));
-      } catch (ParseException e) {
-        e.printStackTrace();
+      } catch (Exception e) {
+        log.warn("MetadataExtractorAcdd Cant Parse {} date '{}' for {} message= {}", dateType, dateValue, ds.getFullName(), e.getMessage());
       }
     }
   }
