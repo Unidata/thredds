@@ -106,7 +106,8 @@
 
 <p>If the GRIB Collection index (.ncx) already exists, one can pass that to any of the standard dataset opening classes. In this case, the collection is created
   from reading the ncx file with no checking against the original data file(s). The original data files are only accessed when data is requested from them.</p>
-
+<h3>NcML Aggregation</h3>
+<p>In versions 4.2 and before, Grib files were typically aggregated using NcML Aggregations. While this could work if the GRIB files were truly homogenous, in practice this often has problems; the aggregation would appear ok, but in fact be incorrect in various subtle ways. This was one of the motivations for developing GRIB collections, which collects the GRIB records into multidimensional arrays and mostly ignores which file the GRIB record is contained in. <em>NcML Aggregations on GRIB files are not supported in versions 4.3 and above. You must use GRIB collections</em>.</p>
 <h2>Mapping a GRIB Collection into Multidimensional Variables</h2>
 
 <p>A GRIB file is an unordered collection of GRIB records. A GRIB record consists of a single 2D (x, y) slice of data. The CDM library reads a GRIB file and
@@ -248,7 +249,7 @@ where:
 <hr width="100%"/>
 <address>
   <img src="../../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
-  updated July 2013
+  updated Nov 2013
 </address>
 </body>
 </html>

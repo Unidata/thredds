@@ -53,13 +53,14 @@ import java.util.Set;
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDS.class);
 
-  private EnhancementsImpl proxy;
+  private EnhancementsImpl proxy; // API relies that this cant be null
 
   protected Structure orgVar; // wrap this Variable
   private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
 
   protected StructureDS(NetcdfFile ncfile, Group group, String shortName) {
     super(ncfile, group, null, shortName);
+    this.proxy = new EnhancementsImpl(this);
   }
 
   /**
@@ -149,6 +150,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     createNewCache();
 
     this.orgVar = orgVar;
+    this.proxy = new EnhancementsImpl(this);
   }
 
   // for section and slice and select
@@ -677,6 +679,8 @@ private class Iterator implements StructureDataIterator {
   }
 
   public java.util.List<CoordinateSystem> getCoordinateSystems() {
+    if (proxy == null)
+      System.out.println("HEY");
     return proxy.getCoordinateSystems();
   }
 

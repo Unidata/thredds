@@ -1407,7 +1407,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
           d = new Dimension("", len, false, false, false);
         } catch (Exception e) {
           throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = " + dimString +
-                  " FAILED, dim doesnt exist=" + dimName + " file = " + ncfile.getLocation());
+                  " FAILED, dim doesnt exist=" + dimName + " file = " + ((ncfile == null) ? "null" : ncfile.getLocation()));
         }
       }
       newDimensions.add(d);

@@ -232,6 +232,8 @@ public String NC_check_name(String name) {
     * @return  true if valid name.
     */
    static public boolean isValidNetcdfObjectName(String name) {
+     if (name == null)
+       return false;
      Matcher m = objectNamePattern.matcher(name);
      return m.matches();
    }

@@ -32,7 +32,6 @@
  */
 package ucar.nc2.dataset;
 
-import ucar.nc2.*;
 import ucar.ma2.Range;
 
 import java.util.ArrayList;
