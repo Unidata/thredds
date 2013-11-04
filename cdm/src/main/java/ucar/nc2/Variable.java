@@ -600,6 +600,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     this.enumTypedef = enumTypedef;
   }
 
+  /**
+   * Get the EnumTypedef, only use if getDataType.isEnum()
+   *
+   * @return enumTypedef or null if !getDataType.isEnum()
+   */
   public EnumTypedef getEnumTypedef() {
     return enumTypedef;
   }
@@ -1079,7 +1084,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     Formatter f = new Formatter();
     f.format("Variable %s", getFullName());
     if (ncfile != null) {
-      f.format(" in file %s", ncfile.getLocation());
+      f.format(" in file %s", getDatasetLocation());
       String extra = ncfile.toStringDebug(this);
       if (extra != null)
         f.format(" %s", extra);
@@ -1091,6 +1096,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
 
   protected String extraInfo() {
     return showSize ? " // " + getElementSize() + " " + getSize() : "";
+  }
+
+  public String getDatasetLocation() {
+    if (ncfile != null) return ncfile.getLocation();
+    return "N/A";
   }
 
   /**
@@ -1406,8 +1416,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
           int len = Integer.parseInt(dimName);
           d = new Dimension("", len, false, false, false);
         } catch (Exception e) {
-          throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = " + dimString +
-                  " FAILED, dim doesnt exist=" + dimName + " file = " + ((ncfile == null) ? "null" : ncfile.getLocation()));
+          throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString +
+                  "' FAILED, dim doesnt exist=" + dimName + " file = " + getDatasetLocation());
         }
       }
       newDimensions.add(d);

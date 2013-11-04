@@ -89,7 +89,8 @@ public class Attribute extends CDMNode {
    * @param name name of attribute
    */
   public synchronized void setName(String name) {
-      setShortName(name);
+    if (immutable) throw new IllegalStateException("Cant modify");
+    setShortName(name);
   }
   /**
    * Get the data type of the Attribute value.
@@ -537,6 +538,8 @@ public class Attribute extends CDMNode {
    * @param val value of Attribute
    */
   private void setStringValue(String val) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+
     if (val == null)
       throw new IllegalArgumentException("Attribute value cannot be null");
 
@@ -562,6 +565,8 @@ public class Attribute extends CDMNode {
    * @param arr value of Attribute
    */
   protected void setValues(Array arr) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+
     if (arr == null) {
       dataType = DataType.STRING;
       return;

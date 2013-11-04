@@ -8,9 +8,9 @@
 
 </HEAD>
 <BODY bgColor=#ffffff>
-<h1 align=left>>Annotated Schema for NcML</h1>
+<h1 align=left>Annotated Schema for NcML</h1>
 
-<p align=left><em>for version 4 of the Netcdf-Java/CDM library</em></p>
+<p align=left><em>for version 4.4+ of the Netcdf-Java/CDM library</em></p>
 <hr>
 <p align=left>An <em><strong>NcML document</strong></em> is an XML document (aka an <em>instance</em> document) whose contents are described and constrained by
   <em><strong>NcML Schema-2.2</strong></em>. NcML Schema-2.2 combines the earlier <em>NcML core schema</em> which is an XML description of the netCDF-Java / CDM
@@ -59,28 +59,34 @@
 &lt;xsd:element name=&quot;netcdf&quot;&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;
 
  (1)  &lt;xsd:choice minOccurs=&quot;0&quot;&gt;<br>        &lt;xsd:element name=&quot;readMetadata&quot;/&gt;<br>        &lt;xsd:element name=&quot;explicit&quot;/&gt;<br>      &lt;/xsd:choice&gt;
-<br> (2)  &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br>        &lt;xsd:element ref=&quot;group&quot;/&gt;
+
+ (2)  &lt;xsd:element name=&quot;iospParam&quot; minOccurs=&quot;0&quot; /&gt;
+<br> (3)  &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br>        &lt;xsd:element ref=&quot;group&quot;/&gt;
         &lt;xsd:element ref=&quot;dimension&quot;/&gt;<br>        &lt;xsd:element ref=&quot;variable&quot;/&gt;<br>        &lt;xsd:element ref=&quot;attribute&quot;/&gt;<br>        &lt;xsd:element ref=&quot;remove&quot;/&gt;<br>      &lt;/xsd:choice&gt;
-<br> <font color="#AA0000">(3) &lt;xsd:element ref=&quot;aggregation&quot; minOccurs=&quot;0&quot;/&gt;</font><br>    &lt;/xsd:sequence&gt;
- (4)&lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:anyURI&quot;/&gt;
- (5)&lt;xsd:attribute name=&quot;id&quot; type=&quot;xsd:string&quot;/&gt;
- (6)&lt;xsd:attribute name=&quot;title&quot; type=&quot;xsd:string&quot;/&gt;
- (7)&lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
- (8)&lt;xsd:attribute name=&quot;addRecords&quot; type=&quot;xsd:boolean&quot;/&gt;
- (9)&lt;xsd:attribute name=&quot;iosp&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;iospParam&quot; type=&quot;xsd:string&quot;/&gt;
+<br> <font color="#AA0000">(4)  &lt;xsd:element ref=&quot;aggregation&quot; minOccurs=&quot;0&quot;/&gt;</font><br>    &lt;/xsd:sequence&gt;
+ (5)&lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:anyURI&quot;/&gt;
+ (6)&lt;xsd:attribute name=&quot;id&quot; type=&quot;xsd:string&quot;/&gt;
+ (7)&lt;xsd:attribute name=&quot;title&quot; type=&quot;xsd:string&quot;/&gt;
+ (8)&lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
+ (9)&lt;xsd:attribute name=&quot;addRecords&quot; type=&quot;xsd:boolean&quot;/&gt;
+
+(10)&lt;xsd:attribute name=&quot;iosp&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;iospParam&quot; type=&quot;xsd:string&quot;/&gt;
     &lt;xsd:attribute name=&quot;bufferSize&quot; type=&quot;xsd:int&quot;/&gt;
 
   <font color="#AA0000">&lt;!-- for netcdf elements nested inside of <a href="#aggregation">aggregation</a> elements --&gt;
-    (10)&lt;xsd:attribute name=&quot;ncoords&quot; type=&quot;xsd:string&quot;/&gt;
-    (11)&lt;xsd:attribute name=&quot;coordValue&quot; type=&quot;xsd:string&quot;/&gt;
-    (12)&lt;xsd:attribute name=&quot;section&quot; type=&quot;xsd:string&quot;/&gt;<br>
+(11)&lt;xsd:attribute name=&quot;ncoords&quot; type=&quot;xsd:string&quot;/&gt;
+(12)&lt;xsd:attribute name=&quot;coordValue&quot; type=&quot;xsd:string&quot;/&gt;
+(13)&lt;xsd:attribute name=&quot;section&quot; type=&quot;xsd:string&quot;/&gt;<br>
   </font>&lt;/xsd:complexType&gt;
 &lt;/xsd:element&gt;
+
+
 </pre>
 <OL>
   <LI>A <em><strong>readMetadata</strong></em> (default) or an <em><strong>explicit</strong></em> element comes first. The
     <em><strong>readMetadata</strong></em> element indicates that all the metadata from the referenced dataset will be read in. The
-    <em><strong>explicit</strong></em> element indicates that only the metadata explictly declared in the NcML file will be used.
+  <em><strong>explicit</strong></em> element indicates that only the metadata explictly declared in the NcML file will be used.  
+  <LI>An optional iospParam element. 
   <LI>The <I><strong>netcdf</strong></I> element may contain any number
     (including 0) of elements <I><strong>group, variable</strong></I>, <I><strong>dimension</strong></I>, <I>or<strong> attribute</strong></I> that can appear
     in any order. If you use readMetadata, you can remove specific elements with the <em><strong>remove</strong></em> element.
@@ -114,14 +120,32 @@
     may have multiple values, in which case, blanks and/or commas are used to delineate them, so you cannot use those characters in your coordinate
     values.</font>
   <LI><font color="#990000">The <strong>section</strong> attribute is used only for tiled aggregations, and describes which section of the entire dataset this
-    dataset represents. The section value follows the ucar.ma2.Section <em>section spec</em> (see javadocs), eg &quot;(1:20,:,3)&quot;, parenthesis optional<br>
-  </font>
+  dataset represents. The section value follows the ucar.ma2.Section <em>section spec</em> (see javadocs), eg &quot;(1:20,:,3)&quot;, parenthesis optional</font>
 </OL>
+<p>An example: </p>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; 
+		  location=&quot;C:/dev/github/thredds/cdm/src/test/data/testWrite.nc&quot;&gt;<br>  &lt;dimension name=&quot;lat&quot; length=&quot;64&quot; /&gt;<br>  &lt;dimension name=&quot;lon&quot; length=&quot;128&quot; /&gt;<br>  &lt;dimension name=&quot;names_len&quot; length=&quot;80&quot; /&gt;<br>  &lt;dimension name=&quot;names&quot; length=&quot;3&quot; /&gt;<br>
+  &lt;variable name=&quot;names&quot; type=&quot;char&quot; shape=&quot;names names_len&quot; /&gt;<br> <br>  &lt;variable name=&quot;temperature&quot; shape=&quot;lat lon&quot; type=&quot;double&quot;&gt;<br>    &lt;attribute name=&quot;units&quot; value=&quot;K&quot; /&gt;<br>    &lt;attribute name=&quot;scale&quot; type=&quot;int&quot; value=&quot;1 2 3&quot; /&gt;<br>  &lt;/variable&gt;<br><br>&lt;/netcdf&gt;</pre>
 <h3><B>group Element</B></h3>
 
 <p> A <I><strong>group</strong></I> element represents a netCDF group, a container for <I><strong>variable</strong></I>, <I><strong>dimension</strong></I>,
   <I><strong>attribute</strong></I>, or other <I><strong>group </strong></I>elements. </p>
-<pre>  &lt;xsd:element name=&quot;group&quot;&gt;<br>    &lt;xsd:complexType&gt;<br><font color="#0000FF">(1)</font>   &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br>        &lt;xsd:element ref=&quot;dimension&quot;/&gt;<br>        &lt;xsd:element ref=&quot;variable&quot;/&gt;<br>        &lt;xsd:element ref=&quot;attribute&quot;/&gt;<br>        &lt;xsd:element ref=&quot;group&quot;/&gt;<br>        &lt;xsd:element ref=&quot;remove&quot;/&gt;<br>      &lt;/xsd:choice&gt;<br><font color="#0000FF">(2)</font>   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br><font color="#0000FF">(3)</font>   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;
+<pre>  
+&lt;xsd:element name=&quot;group&quot;&gt;
+  &lt;xsd:complexType&gt;
+(1)&lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+     &lt;xsd:element ref=&quot;enumTypedef&quot;/&gt;
+     &lt;xsd:element ref=&quot;dimension&quot;/&gt;
+     &lt;xsd:element ref=&quot;variable&quot;/&gt;
+     &lt;xsd:element ref=&quot;attribute&quot;/&gt;
+     &lt;xsd:element ref=&quot;group&quot;/&gt;
+     &lt;xsd:element ref=&quot;remove&quot;/&gt;
+   &lt;/xsd:choice&gt;
+
+(2)&lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+(3)&lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+&lt;/xsd:element&gt;
 </pre>
 <OL>
   <LI>The <I><strong>group</strong></I> element may contain any number (including 0) of elements <I><strong>group, variable</strong></I>,
@@ -136,7 +160,7 @@
 <p> The <I><strong>dimension</strong></I> element represents a netCDF dimension, i.e. a named index of
   specified length.</p>
 <pre>  &lt;!-- XML encoding of Dimension object --&gt;
-  &lt;xsd:element name=&quot;dimension&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>(1)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br>(2)   &lt;xsd:attribute name=&quot;length&quot; type=&quot;xsd:nonNegativeInteger&quot;/&gt;<br>(3)   &lt;xsd:attribute name=&quot;isUnlimited&quot; type=&quot;xsd:boolean&quot; default=&quot;false&quot;/&gt;<br>(4)   &lt;xsd:attribute name=&quot;isVariableLength&quot; type=&quot;xsd:boolean&quot; default=&quot;false&quot;/&gt;<br>(5)   &lt;xsd:attribute name=&quot;isShared&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;<br>(6)   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+  &lt;xsd:element name=&quot;dimension&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>(1)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br>(2)   &lt;xsd:attribute name=&quot;length&quot; type=&quot;xsd:string&quot;/&gt;<br>(3)   &lt;xsd:attribute name=&quot;isUnlimited&quot; type=&quot;xsd:boolean&quot; default=&quot;false&quot;/&gt;<br>(4)   &lt;xsd:attribute name=&quot;isVariableLength&quot; type=&quot;xsd:boolean&quot; default=&quot;false&quot;/&gt;<br>(5)   &lt;xsd:attribute name=&quot;isShared&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;<br>(6)   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 
 <OL>
   <LI>The mandatory <I><strong>name</strong></I> attribute must be unique among dimensions within its containing <em><strong>group</strong></em> or <strong><em>netcdf</em></strong>
@@ -145,7 +169,7 @@
     cardinality (number of points) associated with the dimension. Its value can be
     any non negative integer including 0 (since the unlimited dimension in a
     netCDF file may have length 0, corresponding to 0 records).
-  <LI>The attribute <I><strong>isUnlimited</strong> </I>is <em>true</em> only if the dimension can grow (a.k.a the record dimension in NetCDF-3 files), and <em>false</em>
+  A variable length dimension should be given length=&quot;*&quot;.<LI>The attribute <I><strong>isUnlimited</strong> </I>is <em>true</em> only if the dimension can grow (a.k.a the record dimension in NetCDF-3 files), and <em>false</em>
     when the length is fixed at file creation.
   </LI>
   <LI>The attribute <em><strong>isVariableLength</strong></em> is used for <em>variable length</em> data types, where the length is not part of the metadata..
@@ -208,7 +232,7 @@
 <OL>
   <LI>The mandatory <I><strong>name</strong></I> attribute must be unique among attributes within its containing <em><strong>group, variable, </strong></em>or
     <strong><em>netcdf</em></strong> element.
-  <LI>The <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataType">DataTypes</a>.
+  <LI>The <I><strong>type</strong></I> attribute may be <strong>String, byte, short, int, long, float, double</strong><a href="#DataType"></a>.
     If not specified, it defaults to a String.
   <LI>The <I>value </I>attribute contains the actual data of
     the <I>attribute</I> element. In the most common case of single-valued
@@ -225,13 +249,18 @@
 </OL>
 <h3><B>DataType<a name="DataType"></a> Type </B></h3>
 
-<P> The DataType element is an enumerated list of the
-  data types allowed for NcML <I>Variable</I> and <I>Attribute</I> objects. </P>
-<pre>  &lt;xsd:simpleType name=&quot;DataType&quot;&gt;<br>    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;<br>      &lt;xsd:enumeration value=&quot;char&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;byte&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;short&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;int&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;long&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;float&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;double&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;String&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;string&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;Structure&quot;/&gt;<br>    &lt;/xsd:restriction&gt;<br>  &lt;/xsd:simpleType&gt;</pre>
-<ol>
-  <li>Enumeration, Opaque not yet implemented.</li>
-  <li>Unsigned types not yet implemented.</li>
-</ol>
+<P> The DataType Type is an enumerated list of the
+  data types allowed for NcML <I>Variable</I> objects. </P>
+<pre> &lt;xsd:simpleType name=&quot;DataType&quot;&gt;<br>    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;<br>      &lt;xsd:enumeration value=&quot;byte&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;char&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;short&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;int&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;long&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;float&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;double&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;String&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;string&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;Structure&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;Sequence&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;opaque&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;enum1&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;enum2&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;enum4&quot;/&gt;<br>    &lt;/xsd:restriction&gt;<br>  &lt;/xsd:simpleType&gt;</pre>
+<ul>
+  <li>Unsigned integer types (byte, short, int) are indicated with an <em>_Unsigned = &quot;true</em>&quot; attribute on the Variable.</li>
+  <li>A Variable with type enum1. enum2 or enum4 will refer to a <B>enumTypedef</B> object. Call Variable.getEnumTypedef().</li>
+</ul>
+<h3><B>enumTypedef Element </B></h3>
+<P> The enumTypedef element defines an enumeration.</P>
+<pre> &lt;xsd:element name=&quot;enumTypedef&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:sequence&gt;<br>        &lt;xsd:element name=&quot;map&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot;&gt;<br>          &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br>            &lt;xsd:attribute name=&quot;value&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br>          &lt;/xsd:complexType&gt;<br>        &lt;/xsd:element&gt;<br>      &lt;/xsd:sequence&gt;<br>      &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br>      &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; default=&quot;enum1&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+<p>Example:</p>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;Q:/cdmUnitTest/formats/netcdf4/tst/test_enum_type.nc&quot;&gt;<br>  &lt;enumTypedef name=&quot;cloud_class_t&quot; type=&quot;enum1&quot;&gt;<br>    &lt;enum key=&quot;0&quot;&gt;Clear&lt;/enum&gt;<br>    &lt;enum key=&quot;1&quot;&gt;Cumulonimbus&lt;/enum&gt;<br>    &lt;enum key=&quot;2&quot;&gt;Stratus&lt;/enum&gt;<br>    &lt;enum key=&quot;3&quot;&gt;Stratocumulus&lt;/enum&gt;<br>    &lt;enum key=&quot;4&quot;&gt;Cumulus&lt;/enum&gt;<br>    &lt;enum key=&quot;5&quot;&gt;Altostratus&lt;/enum&gt;<br>    &lt;enum key=&quot;6&quot;&gt;Nimbostratus&lt;/enum&gt;<br>    &lt;enum key=&quot;7&quot;&gt;Altocumulus&lt;/enum&gt;<br>    &lt;enum key=&quot;8&quot;&gt;Cirrostratus&lt;/enum&gt;<br>    &lt;enum key=&quot;9&quot;&gt;Cirrocumulus&lt;/enum&gt;<br>    &lt;enum key=&quot;10&quot;&gt;Cirrus&lt;/enum&gt;<br>    &lt;enum key=&quot;255&quot;&gt;Missing&lt;/enum&gt;<br>  &lt;/enumTypedef&gt;<br>  &lt;dimension name=&quot;station&quot; length=&quot;5&quot; /&gt;<br>  &lt;variable name=&quot;primary_cloud&quot; shape=&quot;station&quot; type=&quot;enum1&quot;&gt;<br>    &lt;attribute name=&quot;_FillValue&quot; value=&quot;Missing&quot; /&gt;<br>  &lt;/variable&gt;<br>&lt;/netcdf&gt;</pre>
 <h3><B>remove Element </B></h3>
 
 <P> The remove element is used to remove attribute, dimension, variable or group objects that are in the referenced dataset. Place the remove element in the
@@ -252,7 +281,7 @@
 </ol>
 <h3>logical view Elements</h3>
 
-<p>These allow a variable to be a <em><strong>logical view</strong></em> of the original variable. Implemented in CDM 4.2.</p>
+<p>These allow a variable to be a <em><strong>logical view</strong></em> of the original variable. </p>
 <pre> &lt;!-- logical view: use only a section of original  --&gt;
  &lt;xsd:element name=&quot;logicalSection&quot;&gt;
    &lt;xsd:complexType&gt;
@@ -269,7 +298,7 @@
 </pre>
 so
 <hr>
-<p>Everything following pertains to aggregation, and can be ignored if you are not using aggregation.</p>
+<p><strong><em>Everything following pertains to aggregation, and can be ignored if you are not using aggregation.</em></strong></p>
 
 <h3><a name="aggregation"></a>aggregation Element</h3>
 
@@ -294,7 +323,7 @@ so
 <strong>(7)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
 <strong>(8)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
 (<strong>9)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;<strong>
-  (10)</strong>   &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
+(10)</strong>   &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
 <strong>(11)</strong>   &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
 <strong>(12)</strong>   &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot; /&gt;
 <strong>(13)</strong>   &lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
@@ -304,7 +333,7 @@ so
 <strong>(14)</strong> &lt;xsd:element name=&quot;scanFmrc&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
       &lt;xsd:complexType&gt;
 <strong>(7)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; <strong>
-  (8)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;use=&quot;required&quot;/&gt;
+(8)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;use=&quot;required&quot;/&gt;
 <strong>(9)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
 <strong>(10)</strong>   &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
 <strong>(11)</strong>   &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
@@ -676,7 +705,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <p>&nbsp;</p>
 <address>
   <img src="nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on
-  December 2012
+  November 2013
 </address>
 <p>&nbsp;</p>
 </BODY>

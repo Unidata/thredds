@@ -10,14 +10,12 @@ import org.junit.runners.Parameterized;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -119,7 +117,7 @@ public class TestNcmlWriteAndCompare {
   }
 
 
-  void compareNcML(boolean useRecords, boolean explicit, boolean openDataset) throws IOException {
+  public void compareNcML(boolean useRecords, boolean explicit, boolean openDataset) throws IOException {
 
     if (showFiles) {
       System.out.println("-----------");

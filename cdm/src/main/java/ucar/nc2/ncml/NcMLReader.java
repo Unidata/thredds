@@ -555,8 +555,8 @@ public class NcMLReader {
     }
 
     // see if its new
-    ucar.nc2.Attribute att = findAttribute(refParent, nameInFile);
-    if (att == null) { // new
+    ucar.nc2.Attribute oldatt = findAttribute(refParent, nameInFile);
+    if (oldatt == null) { // new
       if (debugConstruct) System.out.println(" add new att = " + name);
       try {
         ucar.ma2.Array values = readAttributeValues(attElem);
@@ -569,7 +569,7 @@ public class NcMLReader {
 
       if (debugConstruct) System.out.println(" modify existing att = " + name);
       boolean hasValue = attElem.getAttribute("value") != null;
-      if (hasValue) {
+      if (hasValue) {  // has a new value
         try {
           ucar.ma2.Array values = readAttributeValues(attElem);
           addAttribute(parent, new ucar.nc2.Attribute(name, values));
@@ -577,13 +577,21 @@ public class NcMLReader {
           errlog.format("NcML existing Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, parent);
           return;
         }
+
       } else { // use the old values
-        addAttribute(parent, new ucar.nc2.Attribute(name, att.getValues()));
+        Array oldval = oldatt.getValues();
+        if (oldval != null)
+          addAttribute(parent, new ucar.nc2.Attribute(name, oldatt.getValues()));
+        else {  // wierd corner case of attribute with no value - must use the type
+          String typeS = attElem.getAttributeValue("type");
+          DataType type = typeS == null ? DataType.STRING : DataType.getType(typeS);
+          addAttribute(parent, new ucar.nc2.Attribute(name, type));
+        }
       }
 
       // remove the old one ??
       if (newName && !explicit) {
-        removeAttribute(parent, att);
+        removeAttribute(parent, oldatt);
         if (debugConstruct) System.out.println(" remove old att = " + nameInFile);
       }
 
@@ -729,6 +737,59 @@ public class NcMLReader {
   }
 
   /**
+   * Read an NcML enumTypedef element.
+   *
+   * @param g       put enumTypedef into this group
+   * @param refg    parent Group in referenced dataset
+   * @param etdElem ncml enumTypedef element
+   */
+  private void readEnumTypedef(Group g, Group refg, Element etdElem) {
+    String name = etdElem.getAttributeValue("name");
+    if (name == null) {
+      errlog.format("NcML enumTypedef name is required (%s)%n", etdElem);
+      return;
+    }
+    String typeS = etdElem.getAttributeValue("type");
+    DataType baseType = (typeS == null) ? DataType.ENUM1 : DataType.getType(typeS);
+
+    Map<Integer, String> map = new HashMap<Integer, String>(100);
+    for (Element e : etdElem.getChildren("enum", ncNS)) {
+      String key = e.getAttributeValue("key");
+      String value = e.getTextNormalize();
+      if (key == null)
+        errlog.format("NcML enumTypedef enum key attribute is required (%s)%n", e);
+      if (value == null)
+        errlog.format("NcML enumTypedef enum value is required (%s)%n", e);
+      try {
+        int keyi = Integer.parseInt(key);
+        map.put(keyi, value);
+      } catch (Exception e2) {
+        errlog.format("NcML enumTypedef enum key attribute not an integer (%s)%n", e);
+      }
+    }
+
+    EnumTypedef td = new EnumTypedef(name, map, baseType);
+    g.addEnumeration(td);
+
+  }
+
+    // enum Typedef
+  public static Element writeEnumTypedef(EnumTypedef etd, Namespace ns) {
+    Element typeElem = new Element("enumTypedef", ns);
+    typeElem.setAttribute("name", etd.getShortName());
+    typeElem.setAttribute("type", etd.getBaseType().toString());
+    Map<Integer, String> map = etd.getMap();
+    for (Integer key : map.keySet()) {
+      typeElem.addContent(new Element("enum", ns)
+              .setAttribute("key", Integer.toString(key))
+              .setAttribute("value", map.get(key)));
+    }
+
+    return typeElem;
+  }
+
+
+  /**
    * Read the NcML group element, and nested elements.
    *
    * @param newds     new dataset
@@ -785,6 +846,12 @@ public class NcMLReader {
     java.util.List<Element> attList = groupElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
       readAtt(g, refg, attElem);
+    }
+
+    // look for enumTypedef
+    java.util.List<Element> etdList = groupElem.getChildren("enumTypedef", ncNS);
+    for (Element elem : etdList) {
+      readEnumTypedef(g, refg, elem);
     }
 
     // look for dimensions

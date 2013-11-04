@@ -59,13 +59,12 @@ public class EnumTypedef extends CDMNode {
   private DataType basetype;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
-    this(name,map,DataType.ENUM4); //default basetype
+    this(name, map, DataType.ENUM4); //default basetype
   }
 
-  public EnumTypedef(String name, Map<Integer, String> map, DataType basetype)
-  {
+  public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
     super(name);
-    assert(validateMap(map,basetype));
+    assert (validateMap(map, basetype));
     this.map = map;
     setBaseType(basetype); // default
   }
@@ -81,70 +80,74 @@ public class EnumTypedef extends CDMNode {
     }
     return enumStrings;
   }
+
   public Map<Integer, String> getMap() {
     return map;
   }
 
-  public DataType getBaseType() {return this.basetype;}
-  public void setBaseType(DataType basetype)
-  {
-     switch (basetype) {
-     case ENUM1:    
-     case ENUM2:
-     case ENUM4:
-	this.basetype = basetype;
-	break;
-     default: assert(false) : "Illegal Enum basetype";
-     }
+  public DataType getBaseType() {
+    return this.basetype;
+  }
+
+  public void setBaseType(DataType basetype) {
+    switch (basetype) {
+      case ENUM1:
+      case ENUM2:
+      case ENUM4:
+        this.basetype = basetype;
+        break;
+      default:
+        assert (false) : "Illegal Enum basetype";
+    }
   }
 
   public boolean
-  validateMap(Map<Integer, String> map, DataType basetype)
-  {
-     if(map == null || basetype == null) return false;
-     for(Integer I: map.keySet()) {
-        // WARNING, we do not have signed/unsigned info available
-        int i = (int)I;
-        switch (basetype) {
+  validateMap(Map<Integer, String> map, DataType basetype) {
+    if (map == null || basetype == null) return false;
+    for (Integer I : map.keySet()) {
+      // WARNING, we do not have signed/unsigned info available
+      int i = (int) I;
+      switch (basetype) {
         case ENUM1:
-            if(i < Byte.MIN_VALUE || i > UBYTE_MAX)
-                return false;
-            break;
+          if (i < Byte.MIN_VALUE || i > UBYTE_MAX)
+            return false;
+          break;
         case ENUM2:
-           if(i < Short.MIN_VALUE || i > USHORT_MAX)
+          if (i < Short.MIN_VALUE || i > USHORT_MAX)
             return false;
-           break;
+          break;
         case ENUM4:
-            break; // enum4 is always ok
+          break; // enum4 is always ok
         default:
-            return false;
-        }
-     }
-     return true;
+          return false;
+      }
+    }
+    return true;
   }
 
   private boolean
-  IgnoreinRange(int i)
-  {
+  IgnoreinRange(int i) {
     // WARNING, we do not have signed/unsigned info available
-    if(this.basetype == DataType.ENUM1
-       && (i >= Byte.MIN_VALUE || i <= UBYTE_MAX))
-        return true;
-    else if(this.basetype == DataType.ENUM2
-       && (i >= Short.MIN_VALUE || i <= USHORT_MAX))
-        return true;
-    else if(this.basetype == DataType.ENUM4) // always ok
-        return true;
+    if (this.basetype == DataType.ENUM1
+            && (i >= Byte.MIN_VALUE || i <= UBYTE_MAX))
+      return true;
+    else if (this.basetype == DataType.ENUM2
+            && (i >= Short.MIN_VALUE || i <= USHORT_MAX))
+      return true;
+    else if (this.basetype == DataType.ENUM4) // always ok
+      return true;
     else
-        return false;
+      return false;
   }
 
   public String lookupEnumString(int e) {
     String result = map.get(e);
-    return (result == null) ? "Unknown enum value="+e : result;
+    return (result == null) ? "Unknown enum value=" + e : result;
   }
 
-  /** String representation.
+  /**
+   * String representation.
+   *
    * @param strict if true, write in strict adherence to CDL definition.
    * @return CDL representation.
    */
@@ -158,10 +161,17 @@ public class EnumTypedef extends CDMNode {
     String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
     String basetype = "";
     switch (this.basetype) {
-    case ENUM1: basetype = "byte "; break;
-    case ENUM2: basetype = "short "; break;
-    case ENUM4: basetype = ""; break;
-    default: assert false : "Internal error";
+      case ENUM1:
+        basetype = "byte ";
+        break;
+      case ENUM2:
+        basetype = "short ";
+        break;
+      case ENUM4:
+        basetype = "";
+        break;
+      default:
+        assert false : "Internal error";
     }
     out.format("%s%senum %s { ", indent, basetype, name);
     int count = 0;

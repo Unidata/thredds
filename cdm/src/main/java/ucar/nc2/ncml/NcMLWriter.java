@@ -272,71 +272,44 @@ public class NcMLWriter {
     return attElem;
   }
 
-  /* private Element makeCoordSys( CoordinateSystem cs) {
-    Element csElem = new Element("coordinateSystem", ncNS);
-    csElem.setAttribute("name", cs.getName());
-
-    /* ReferenceSystem rs = cs.getReferenceSystem();
-    if (rs != null) {
-      if (commonRS.contains( rs)) {
-        Element rsElem = new Element("referenceSystemRef", ncNS);
-        rsElem.setAttribute("ref", rs.getId());
-        csElem.addContent( rsElem);
-      } else {
-        csElem.addContent( makeReferenceSys(rs, commonHRS));
-      }
-    }
-
-    ArrayList axes = cs.getCoordinateAxes();
-    for (int i=0; i<axes.size(); i++) {
-      Element axisElem = new Element("coordinateAxisRef", ncNS);
-      axisElem.setAttribute("ref", ((VariableEnhanced) axes.get(i)).getName());
-      csElem.addContent( axisElem);
-    }
-
-    ArrayList transforms = cs.getCoordinateTransforms();
-    if (transforms != null)
-    for (int i=0; i<transforms.size(); i++) {
-      CoordinateTransform ct = (CoordinateTransform) transforms.get(i);
-      if (ct == null) continue;
-      Element tElem = new Element("coordinateTransformRef", ncNS);
-      tElem.setAttribute("ref", ct.getName());
-      csElem.addContent( tElem);
-    }
-    return csElem;
-  }
-
-  private Element makeCoordTransform( CoordinateTransform coordTransform) {
-    Element elem = new Element("coordinateTransform", ncNS);
-    elem.setAttribute("name", coordTransform.getName());
-    elem.setAttribute("authority", coordTransform.getAuthority());
-    //if (coordTransform.getReferenceSystem() != null)
-    //  elem.setAttribute("referenceCoordinateSystem", coordTransform.getReferenceSystem().getName());
-    if (coordTransform.getTransformType() != null)
-      elem.setAttribute("transformType", coordTransform.getTransformType().toString());
-
-    ArrayList params = coordTransform.getParameters();
-    for (int i=0; i<params.size(); i++) {
-      ucar.unidata.util.Parameter p = (ucar.unidata.util.Parameter) params.get(i);
-      elem.addContent( makeParameter(p, "parameter"));
-    }
-    return elem;
-  }  */
-
   // shared dimensions
-
   public static Element writeDimension(Dimension dim, Namespace ns) {
     Element dimElem = new Element("dimension", ns);
     dimElem.setAttribute("name", dim.getShortName());
-    dimElem.setAttribute("length", Integer.toString(dim.getLength()));
+    if (dim.isVariableLength())
+      dimElem.setAttribute("length", "*");
+    else
+      dimElem.setAttribute("length", Integer.toString(dim.getLength()));
+
     if (dim.isUnlimited())
       dimElem.setAttribute("isUnlimited", "true");
     if (dim.isVariableLength())
       dimElem.setAttribute("isVariableLength", "true");
+
     return dimElem;
   }
 
+  // enum Typedef
+  public static Element writeEnumTypedef(EnumTypedef etd, Namespace ns) {
+    Element typeElem = new Element("enumTypedef", ns);
+    typeElem.setAttribute("name", etd.getShortName());
+    typeElem.setAttribute("type", etd.getBaseType().toString());
+    Map<Integer, String> map = etd.getMap();
+    for (Integer key : map.keySet()) {
+      typeElem.addContent(new Element("enum", ns)
+              .setAttribute("key", Integer.toString(key))
+              .addContent(map.get(key)));
+    }
+
+    return typeElem;
+  }
+
   private Element writeGroup(Element elem, Group group) {
+
+    // enumTypeDef
+    for (EnumTypedef etd : group.getEnumTypedefs()) {
+      elem.addContent(writeEnumTypedef(etd, ncNS));
+    }
 
     // dimensions
     for (Dimension dim : group.getDimensions()) {
@@ -432,6 +405,8 @@ public class NcMLWriter {
       if (i > 0) buff.append(" ");
       if (dim.isShared())
         buff.append(dim.getShortName());
+      else if (dim.isVariableLength())
+        buff.append("*");
       else
         buff.append(dim.getLength());
     }

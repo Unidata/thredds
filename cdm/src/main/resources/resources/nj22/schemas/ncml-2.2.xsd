@@ -51,11 +51,11 @@
   <xsd:element name="group">
     <xsd:complexType>
       <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="enumTypedef"/>
         <xsd:element ref="dimension"/>
         <xsd:element ref="variable"/>
         <xsd:element ref="attribute"/>
         <xsd:element ref="group"/>
-        <xsd:element ref="enumTypedef"/>
         <xsd:element ref="remove"/>
       </xsd:choice>
       <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -67,7 +67,7 @@
   <xsd:element name="dimension">
     <xsd:complexType>
       <xsd:attribute name="name" type="xsd:token" use="required"/>
-      <xsd:attribute name="length" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="length" type="xsd:string"/>
       <xsd:attribute name="isUnlimited" type="xsd:boolean" default="false"/>
       <xsd:attribute name="isVariableLength" type="xsd:boolean" default="false"/>
       <xsd:attribute name="isShared" type="xsd:boolean" default="true"/>
@@ -140,9 +140,9 @@
  <xsd:element name="enumTypedef">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="map" minOccurs="1" maxOccurs="unbounded">
+        <xsd:element name="enum" minOccurs="1" maxOccurs="unbounded">
           <xsd:complexType mixed="true">
-            <xsd:attribute name="value" type="xsd:string" use="required"/>
+            <xsd:attribute name="key" type="xsd:int" use="required"/>
           </xsd:complexType>
         </xsd:element>
       </xsd:sequence>
