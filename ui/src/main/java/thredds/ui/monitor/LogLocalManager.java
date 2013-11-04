@@ -89,7 +89,7 @@ public class LogLocalManager {
     where = isAccess ? "access" : "thredds";
 
     // default is local time zone
-    filenameDatePos = isAccess ? "access.".length() : "threddsServlet.log.".length();
+    filenameDatePos = isAccess ? "access.".length() : "threddsServlet.".length();
     String format = isAccess ? "yyyy-MM-dd" : "yyyy-MM-dd-HH";
     localFormat = new SimpleDateFormat(format, Locale.US );
   }
@@ -209,7 +209,8 @@ public class LogLocalManager {
 
       } else {
         try {
-          String filenameDate = name.substring( filenameDatePos);
+          int len = name.length();
+          String filenameDate = name.substring( filenameDatePos, len-4);
           return localFormat.parse( filenameDate );
         } catch (Exception e) {
           e.printStackTrace();

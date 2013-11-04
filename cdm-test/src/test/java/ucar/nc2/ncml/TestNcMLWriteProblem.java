@@ -50,8 +50,8 @@ public class TestNcMLWriteProblem {
 
   @Test
   public void problem() throws IOException {
-    String location = TestDir.cdmUnitTestDir + "formats/netcdf4/tst/test_enum_type.nc";
-    TestNcmlWriteAndCompare test = new TestNcmlWriteAndCompare(location);
+    String location = TestDir.cdmUnitTestDir + "conventions/nuwg/ocean.nc";
+    TestNcmlWriteAndCompare test = new TestNcmlWriteAndCompare(location, true);
     test.compareNcML(false, false, false);
   }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <enumTypedef name="cloud_class_t" type="enum1">
+    <enum key="0">Clear</enum>
+    <enum key="1">Cumulonimbus</enum>
+    <enum key="2">Stratus</enum>
+    <enum key="3">Stratocumulus</enum>
+    <enum key="4">Cumulus</enum>
+    <enum key="5">Altostratus</enum>
+    <enum key="6">Nimbostratus</enum>
+    <enum key="7">Altocumulus</enum>
+    <enum key="8">Cirrostratus</enum>
+    <enum key="9">Cirrocumulus</enum>
+    <enum key="10">Cirrus</enum>
+    <enum key="255">Missing</enum>
+  </enumTypedef>
+  <dimension name="station" length="5" />
+  <variable name="primary_cloud" shape="station" type="enum1" typedef="cloud_class_t">
+    <attribute name="_FillValue" value="Missing" />
+    <values>0 1 2 3 4</values>
+  </variable>
+</netcdf>

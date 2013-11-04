@@ -414,8 +414,12 @@ public class NcMLWriter {
     varElem.setAttribute("shape", buff.toString());
 
     DataType dt = var.getDataType();
-    if (dt != null)
+    if (dt != null) {
       varElem.setAttribute("type", dt.toString());
+      if (dt.isEnum())
+        varElem.setAttribute("typedef", var.getEnumTypedef().getShortName());
+    }
+
 
     // attributes
     for (Attribute att : var.getAttributes()) {

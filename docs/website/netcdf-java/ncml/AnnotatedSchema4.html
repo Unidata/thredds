@@ -183,7 +183,7 @@
 <P> A <em><strong>variable</strong></em> element represents a netCDF variable, i.e. a scalar or multidimensional array of
   specified type indexed by 0 or more dimensions.</P>
 <pre>  &lt;xsd:element name=&quot;variable&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:sequence&gt;<br>(1)     &lt;xsd:element ref=&quot;attribute&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br>(2)     &lt;xsd:element ref=&quot;values&quot; minOccurs=&quot;0&quot;/&gt;<br>(3)     &lt;xsd:element ref=&quot;variable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br>(4)     &lt;xsd:element ref=&quot;logicalSection&quot; minOccurs=&quot;0&quot;/&gt;<br>(5)     &lt;xsd:element ref=&quot;logicalSlice&quot; minOccurs=&quot;0&quot;/&gt;<br>(6)     &lt;xsd:element ref=&quot;remove&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br>      &lt;/xsd:sequence&gt;
-<br>(7)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot; /&gt;<br>(8)   &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; use=&quot;required&quot; /&gt;<br>(9)   &lt;xsd:attribute name=&quot;shape&quot; type=&quot;xsd:token&quot; /&gt;<br>(10)  &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+<br>(7)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot; /&gt;<br>(8)   &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; use=&quot;required&quot; /&gt;<br>(9)   &lt;xsd:attribute name=&quot;typedef&quot; type=&quot;xsd:string&quot;/&gt;<br>(10)  &lt;xsd:attribute name=&quot;shape&quot; type=&quot;xsd:token&quot; /&gt;<br>(11)  &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 <OL>
   <LI>A <I><strong>variable</strong></I> element may contain 0 or more <I><strong>attribute</strong></I> elements,
   <LI>The optional<I> <strong>values</strong></I> element is used
@@ -197,6 +197,7 @@
   <LI>The mandatory <I><strong>name</strong></I> attribute must be unique among variables within its containing <em><strong>group, variable, </strong>or
   </em><strong><em>netcdf</em></strong> element.
   <LI>The <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataType">DataTypes</a>.
+  <LI>The typedef is the name of an enumerated Typedef. Can be used only for <strong><em>type=enum1, enum2 </em></strong>or<strong><em> enum4</em></strong>.  
   <LI>The <em><strong>shape</strong></em> attribute lists the names of the dimensions the variable depends on. For a scalar variable, the list will be empty.
     The
     dimension names must be ordered with the slowest varying dimension first (same as in the CDL description).

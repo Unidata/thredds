@@ -943,6 +943,13 @@ public class NcMLReader {
     else
       dtype = refv.getDataType();
 
+    EnumTypedef typedef = null;
+    if (dtype.isEnum()) {
+      String typedefS = varElem.getAttributeValue("typedef");
+      if (typedefS != null)
+        typedef = g.findEnumeration(typedefS);
+    }
+
     String shape = varElem.getAttributeValue("shape");
 
     Variable v;
@@ -956,6 +963,9 @@ public class NcMLReader {
         v.setCachedData(newData, false);
       } */
       v.setDataType(dtype);
+      if (typedef != null)
+        v.setEnumTypedef(typedef);
+
       if (shape != null)
         v.setDimensions(shape); // LOOK check conformable
       if (debugConstruct) System.out.println(" modify existing var = " + nameInFile);
@@ -1104,6 +1114,13 @@ public class NcMLReader {
       throw new IllegalArgumentException("New variable (" + name + ") must have datatype attribute");
     DataType dtype = DataType.getType(type);
 
+    EnumTypedef typedef = null;
+    if (dtype.isEnum()) {
+      String typedefS = varElem.getAttributeValue("typedef");
+      if (typedefS != null)
+        typedef = g.findEnumeration(typedefS);
+    }
+
     String shape = varElem.getAttributeValue("shape");
     if (shape == null)
       shape = ""; // deprecated, prefer explicit ""
@@ -1143,6 +1160,9 @@ public class NcMLReader {
     java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
     for (Element attElem : attList)
       readAtt(v, null, attElem);
+
+    if (typedef != null)
+      v.setEnumTypedef(typedef);
 
     /* now that we have attributes finalized, redo the enhance
     if (enhance && (v instanceof VariableDS))

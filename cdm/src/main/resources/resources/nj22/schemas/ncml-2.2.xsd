@@ -17,6 +17,7 @@
         <xsd:element name="iospParam" minOccurs="0" />
 
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="enumTypedef"/>
           <xsd:element ref="group"/>
           <xsd:element ref="dimension"/>
           <xsd:element ref="variable"/>
@@ -88,6 +89,7 @@
       </xsd:sequence>
       <xsd:attribute name="name" type="xsd:token" use="required"/>
       <xsd:attribute name="type" type="DataType"/>
+      <xsd:attribute name="typedef" type="xsd:string"/>
       <xsd:attribute name="shape" type="xsd:token"/>
       <xsd:attribute name="orgName" type="xsd:string"/>
     </xsd:complexType>

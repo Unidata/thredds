@@ -49,6 +49,7 @@ public interface VariableIF extends VariableSimpleIF {
     public boolean isUnlimited();
     public boolean isUnsigned();
     public ucar.ma2.DataType getDataType();
+    public EnumTypedef getEnumTypedef();
     public int getRank();
     public boolean isScalar();
     public long getSize();

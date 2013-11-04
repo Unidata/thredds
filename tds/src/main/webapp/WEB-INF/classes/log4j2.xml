@@ -86,11 +86,11 @@
 
 
     <!-- featureCollection debugging -->
-    <logger name="thredds.inventory.MFileCollectionManager" level="debug" additivity="false">
+    <logger name="thredds.inventory.MFileCollectionManager" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.inventory.CollectionUpdater" level="debug" additivity="false">
+    <logger name="thredds.inventory.CollectionUpdater" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
@@ -98,15 +98,15 @@
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.grib" level="debug" additivity="false">
+    <logger name="ucar.nc2.grib" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.grib.grib1.Grib1CollectionBuilder" level="debug" additivity="false">
+    <logger name="ucar.nc2.grib.grib1.Grib1CollectionBuilder" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.grib.grib2.Grib2CollectionBuilder" level="debug" additivity="false">
+    <logger name="ucar.nc2.grib.grib2.Grib2CollectionBuilder" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
@@ -114,7 +114,7 @@
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.catalog.InvDatasetFcGrib" level="debug" additivity="false">
+    <logger name="thredds.catalog.InvDatasetFcGrib" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 

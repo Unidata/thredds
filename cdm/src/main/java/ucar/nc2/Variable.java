@@ -1252,18 +1252,23 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     if (immutable) throw new IllegalStateException("Cant modify");
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
+
+    // why is this needed ??
     EnumTypedef etd = getEnumTypedef();
     if (etd != null) {
       DataType etdtype = etd.getBaseType();
-      DataType basetype = null;
+      if (dataType != etdtype)
+        log.error("Variable.setDataType: enum basetype mismatch: {} != {}", etdtype, dataType);
+
+      /* DataType basetype = null;
       if (dataType == DataType.ENUM1) basetype = DataType.BYTE;
       else if (dataType == DataType.ENUM2) basetype = DataType.SHORT;
-      else if (dataType == DataType.ENUM1) basetype = DataType.INT;
+      else if (dataType == DataType.ENUM4) basetype = DataType.INT;
       else basetype = etdtype;
-      if (etdtype != null && basetype != etdtype)
-        log.error("Variable.setDataType: enum basetype mismatch: " + basetype.name());
+
+      if (etdtype != null && dataType != etdtype)
       else
-        etd.setBaseType(basetype);
+        etd.setBaseType(basetype); */
     }
   }
 
