@@ -266,6 +266,17 @@ public abstract class Aggregation {
     closeDatasets();
   }
 
+    // LOOK could also use syncExtend()
+  public long getLastModified() {
+    try {
+      boolean wantScan = datasetManager.isScanNeeded();
+      datasetManager.scanIfNeeded();
+    } catch (IOException e) {
+      logger.error("Aggregation scan failed, e");
+    }
+    return datasetManager.getLastChanged();
+  }
+
   /**
    * Check to see if its time to rescan directory, and if so, rescan and extend dataset if needed.
    * Note that this just calls sync(), so structural metadata may be modified (!!)

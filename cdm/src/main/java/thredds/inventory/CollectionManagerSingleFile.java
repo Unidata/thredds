@@ -69,6 +69,11 @@ public class CollectionManagerSingleFile extends CollectionManagerAbstract {
   }
 
   @Override
+  public long getLastChanged() {
+    return mfile.getLastModified();
+  }
+
+  @Override
   public boolean isScanNeeded() {
     return false;
   }

@@ -311,6 +311,11 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   @Override
+  public long getLastChanged() {
+    return lastChanged.get();
+  }
+
+  @Override
   public boolean scanIfNeeded() throws IOException {
     if (map == null && !isStatic()) return true;
     return isScanNeeded() && scan(true);

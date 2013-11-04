@@ -363,6 +363,11 @@ public class TimePartitionCollection extends MFileCollectionManager {
     }
 
     @Override
+    public long getLastChanged() {
+      return -1;
+    }
+
+    @Override
     public String getRoot() {
       return root;
     }
