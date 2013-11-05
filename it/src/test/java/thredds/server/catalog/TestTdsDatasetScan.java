@@ -84,4 +84,15 @@ public class TestTdsDatasetScan {
     assert !ds.isHarvest();
   }
 
+  @Test
+  public void testNestedDirs() throws IOException {
+    InvCatalog cat = TestTdsLocal.open("catalog/station/profiler/wind/06min/catalog.xml");
+
+    InvDataset top = cat.findDatasetByID("NWS/NPN/6min");
+    List<InvDataset> children = top.getDatasets();
+    assert children.size() == 2 : children.size();
+
+  }
+
+
 }

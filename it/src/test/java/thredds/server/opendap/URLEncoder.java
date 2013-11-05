@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package thredds.tds;
+package thredds.server.opendap;
 
 import java.util.BitSet;
 import java.io.ByteArrayOutputStream;

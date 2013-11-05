@@ -591,7 +591,7 @@ public class InvDatasetScan extends InvCatalogRef {
     InvCatalogImpl catalog;
     try
     {
-      catalog = (InvCatalogImpl) catBuilder.generateCatalog( catalogCrDs );
+      catalog = catBuilder.generateCatalog( catalogCrDs );
     }
     catch ( IOException e )
     {
