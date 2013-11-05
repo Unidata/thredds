@@ -41,7 +41,7 @@ import thredds.catalog.InvCatalogRef;
 import thredds.catalog.InvDataset;
 import thredds.catalog.ServiceType;
 import thredds.catalog.crawl.CatalogCrawler;
-import thredds.tds.TestTdsLocal;
+import thredds.server.catalog.TestTdsLocal;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;

@@ -47,7 +47,7 @@ import org.junit.runner.RunWith;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
 import thredds.TestWithLocalServer;
-import thredds.tds.TestTdsLocal;
+import thredds.server.catalog.TestTdsLocal;
 import thredds.tds.URLEncoder;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;

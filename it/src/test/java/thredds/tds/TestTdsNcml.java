@@ -32,9 +32,9 @@
  */
 package thredds.tds;
 
-import junit.framework.*;
-
+import org.junit.Test;
 import thredds.catalog.*;
+import thredds.server.catalog.TestTdsLocal;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -49,12 +49,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Formatter;
 
-public class TestTdsNcml extends TestCase {
+public class TestTdsNcml {
 
-  public TestTdsNcml( String name) {
-    super(name);
-  }
-
+  @Test
   public void testNcMLinDataset() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);
 

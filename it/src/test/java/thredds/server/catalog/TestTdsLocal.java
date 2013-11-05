@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.tds;
+package thredds.server.catalog;
 
 import org.junit.Test;
 import thredds.TestWithLocalServer;
@@ -38,15 +38,7 @@ import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogFactory;
 
 /**
- * TestSuite that runs all the sample tests for testing the TDS on localhost.
- *
- * The local server should run the catalog at thredds\tds\src\test\data\thredds\catalog.xml.
- * Please keep this updated and checked into svn.
- *
- * Data should be kept in /upc/share/cdmUnitTest/tds
- * To run, use "-Dtds.content.root.path=/$github_root/tds/src/test/data"  on java startup
- *
- * jcaron, resurrected Sep 2010
+ * Test catalog utilities
  */
 public class TestTdsLocal {
   public static boolean showValidationMessages = false;

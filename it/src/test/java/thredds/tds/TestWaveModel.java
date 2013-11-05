@@ -3,6 +3,7 @@ package thredds.tds;
 import junit.framework.TestCase;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
+import thredds.server.catalog.TestTdsLocal;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;

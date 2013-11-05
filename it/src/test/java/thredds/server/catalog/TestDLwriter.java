@@ -32,7 +32,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.tds;
+package thredds.server.catalog;
 
 import junit.framework.*;
 import java.io.IOException;
@@ -51,6 +51,7 @@ public class TestDLwriter extends TestCase {
 
     System.out.println("Response from "+ TestWithLocalServer.server +url);
     String result = IO.readURLcontents(TestWithLocalServer.server +url);
+    assert result != null;
     System.out.println(result);
   }
 }

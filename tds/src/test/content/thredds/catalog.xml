@@ -76,7 +76,7 @@
     <dataType>Grid</dataType>
   </dataset>
 
-  <!-- UNTESTED test NcML in dataset -->
+  <!-- UNTESTED test NcML in dataset LOOK doesnt work -->
   <dataset name="Example NcML Modified - DODS" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
@@ -94,8 +94,7 @@
   <dataset name="Example NcML Modified - cdmremote" ID="ExampleNcMLModified2" urlPath="ExampleNcML2/Modified.nc">
     <serviceName>cdmremote</serviceName>
     <dataType>Grid</dataType>
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc"
-            addRecords="true">
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
       <attribute name="name" value="value"/>
       <variable name="Temperature" orgName="T"/>
       <variable name="ReletiveHumidity" orgName="rh">
@@ -149,6 +148,7 @@
   </dataset>
   <!-- END UNTESTED-->
 
+  <catalogRef xlink:title="Test Enhanced" xlink:href="enhancedCatalog.xml" name=""/>
   <catalogRef xlink:title="Test FMRC" xlink:href="catalogFmrc.xml" name=""/>
   <catalogRef xlink:title="Test GRIB FC" xlink:href="catalogGrib.xml" name=""/>
   <catalogRef xlink:title="Test Point FC" xlink:href="pointCatalog.xml" name=""/>

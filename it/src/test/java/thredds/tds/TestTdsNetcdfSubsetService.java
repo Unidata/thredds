@@ -32,8 +32,7 @@
  */
 package thredds.tds;
 
-import junit.framework.*;
-
+import org.junit.Test;
 import thredds.TestWithLocalServer;
 import ucar.nc2.dataset.*;
 import ucar.nc2.*;
@@ -42,12 +41,9 @@ import ucar.nc2.util.IO;
 import java.io.IOException;
 import java.io.File;
 
-public class TestTdsNetcdfSubsetService extends TestCase {
+public class TestTdsNetcdfSubsetService {
 
-  public TestTdsNetcdfSubsetService( String name) {
-    super(name);
-  }
-
+  @Test
   public void testNetcdfSubsetService() throws IOException {
     String url = "/ncServer/gribCollection/NAM_CONUS_20km_surface_20060316_0000.grib1.nc?grid=K_index&grid=Sweat_index&west=-140&east=-90&north=50&south=20&time_start=3&time_end=12";
     File fileSave = new File("C:/TEMP/testNetcdfSubsetService.nc");

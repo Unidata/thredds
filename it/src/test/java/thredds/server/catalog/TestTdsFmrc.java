@@ -1,6 +1,6 @@
-package thredds.tds;
+package thredds.server.catalog;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
 import ucar.ma2.Array;
@@ -16,19 +16,16 @@ import ucar.nc2.util.CompareNetcdf2;
 import java.io.IOException;
 
 /**
- * Describe
+ * Sanity check on FMRC catalog
  *
  * @author caron
  * @since Sep 24, 2010
  */
-public class TestTdsFmrc extends TestCase {
-
-  public TestTdsFmrc( String name) {
-    super(name);
-  }
+public class TestTdsFmrc {
 
   String catalog = "/catalog/testNAMfmrc/catalog.xml";
 
+  @Test
   public void testFmrc() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(catalog);
 

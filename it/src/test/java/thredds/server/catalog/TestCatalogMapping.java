@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import thredds.catalog.InvCatalogImpl;
-import thredds.tds.TestTdsLocal;
 import ucar.nc2.util.IO;
 
 import java.io.IOException;

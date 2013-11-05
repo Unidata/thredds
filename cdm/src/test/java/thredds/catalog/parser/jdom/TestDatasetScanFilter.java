@@ -32,7 +32,7 @@
  */
 package thredds.catalog.parser.jdom;
 
-import junit.framework.*;
+import org.junit.Test;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.XMLEntityResolver;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
@@ -41,8 +41,9 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.input.SAXBuilder;
 
 import java.io.*;
-import java.util.List;
-import java.util.Iterator;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * _more_
@@ -50,16 +51,9 @@ import java.util.Iterator;
  * @author edavis
  * @since Apr 23, 2007 2:15:04 PM
  */
-public class TestDatasetScanFilter extends TestCase
-{
-  public TestDatasetScanFilter( String name )
-  {
-    super( name );
-  }
+public class TestDatasetScanFilter {
 
-  /**
-   * Test ...
-   */
+  @Test
   public void testFilterReadWriteMatch()
   {
     StringBuffer inFilterAsString = new StringBuffer()

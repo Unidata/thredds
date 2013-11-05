@@ -30,23 +30,19 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.tds;
+package thredds.server.catalog;
 
-import junit.framework.*;
-
+import org.junit.Test;
 import thredds.catalog.*;
 
 import java.io.IOException;
 import java.util.List;
 
-public class TestTdsDatasetScan extends TestCase {
+public class TestTdsDatasetScan {
 
-  public TestTdsDatasetScan( String name) {
-    super(name);
-  }
-
+  @Test
   public void testSort() throws IOException {
-    InvCatalog cat = TestTdsLocal.open("/catalog/testCdmUnitTest/normal/catalog.xml");
+    InvCatalog cat = TestTdsLocal.open("catalog/scanCdmUnitTests/tds/ncep/catalog.xml");
 
     InvDataset last = null;
     for (InvDataset ds : cat.getDatasets()) {
@@ -56,8 +52,9 @@ public class TestTdsDatasetScan extends TestCase {
     }
   }
 
+  @Test
   public void testLatest() throws IOException {
-     InvCatalogImpl cat = TestTdsLocal.open("/catalog/testCdmUnitTest/netcdf/seawifs/latest.xml");
+     InvCatalogImpl cat = TestTdsLocal.open("catalog/testGFSfmrc/files/latest.xml");
      List dss = cat.getDatasets();
      assert (dss.size() == 1);
 
@@ -69,8 +66,9 @@ public class TestTdsDatasetScan extends TestCase {
      assert ds.getDataSize() > 0.0;
    }
 
+  @Test
   public void testHarvest() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open("/catalog/testEnhanced/catalog.xml");
+    InvCatalogImpl cat = TestTdsLocal.open("catalog/testEnhanced/catalog.xml");
     InvDataset dscan = cat.findDatasetByID("testEnhanced");
     assert dscan != null;
     assert dscan.isHarvest();

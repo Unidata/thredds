@@ -107,7 +107,7 @@
   <!-- Enable DLwriter service but disable on remote catalogs.
        -->
   <DLwriter>
-    <allow>false</allow>
+    <allow>true</allow>
     <allowRemote>false</allowRemote>
   </DLwriter>
 

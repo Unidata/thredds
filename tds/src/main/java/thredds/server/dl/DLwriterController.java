@@ -41,6 +41,7 @@ import thredds.catalog.dl.*;
 
 import java.io.*;
 import java.net.*;
+import javax.annotation.PostConstruct;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -68,6 +69,7 @@ public class DLwriterController {
   private String adnDir, difDir;
   private boolean allow, allowRemote;
 
+  @PostConstruct
   public void init() throws ServletException {
     allow = ThreddsConfig.getBoolean("DLwriter.allow", false);
     if (!allow) {
@@ -87,7 +89,7 @@ public class DLwriterController {
     logServerStartup.info("DLwriterServlet.init() - done: ");
   }
 
-  @RequestMapping("*")
+  @RequestMapping("**")
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException {
 

@@ -62,8 +62,8 @@ public class TestInvDatasetScan
   private String dsScanName = "Test Data";
   private String dsScanPath = "testData";
 
-  private String dsScanDir = "src/test/data";
-  //private String dsScanDir = TestDir.cdmLocalTestDataDir;
+  //private String dsScanDir = "src/test/data";
+  private String dsScanDir = TestDir.cdmLocalTestDataDir;
   private String dsScanFilter = ".*\\.nc$";
 
   private String serviceName = "ncdods";
