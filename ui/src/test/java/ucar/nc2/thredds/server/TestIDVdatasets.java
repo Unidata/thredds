@@ -94,20 +94,18 @@ public class TestIDVdatasets {
   }
 
   // breadth first
-  public void extractDatasetInfo(PrintStream out, List datasets, boolean doOneOnly) {
+  public void extractDatasetInfo(PrintStream out, List<InvDataset> datasets, boolean doOneOnly) {
     if (countDone > maxDone) return;
 
-    for (int i = 0; i < datasets.size(); i++) {
-
-      InvDataset ds = (InvDataset) datasets.get(i);
-      out.print(" DATASET "+ds.getName()+" id= "+ds.getID());
+    for (InvDataset ds : datasets) {
+      out.printf(" DATASET '%s' id=%s%n", ds.getName(), ds.getID());
       if (ds instanceof InvCatalogRef) {
         InvCatalogRef catref = (InvCatalogRef) ds;
-        out.print(" catref=" + catref.getURI());
+        out.printf("   catref= %s%n", catref.getURI());
       }
 
       if (ds.getName().equals(skip)) {
-        out.println(" SKIP ");
+        out.println(" *SKIP ");
         continue;
       }
 
@@ -118,7 +116,7 @@ public class TestIDVdatasets {
           try {
             tdata = tdataFactory.openFeatureDataset(ds, null);
             if (tdata.fatalError) {
-              out.println("  *ERROR " + tdata.errLog);
+              out.printf("  *ERROR %s%n", tdata.errLog);
               if (doOneOnly) break;
             }
 
@@ -128,30 +126,31 @@ public class TestIDVdatasets {
             errCount++;
             continue;
           }
+
           int took = (int) (System.currentTimeMillis() - start);
           InvAccess access = tdata.accessUsed;
-          String st = (access == null) ? " UNKNOWN" : access.getService().getServiceType().toString();
+          ServiceType st = (access == null) ? null : access.getService().getServiceType();
 
           if (tdata.featureType == FeatureType.GRID) {
-            out.println(" *Opened " + countDone + " GRID " + tdata.location + " " + st + " (" + took + " msecs)");
+            out.printf(" *Opened %d GRID %s access=%s took %d msecs%n", countDone, tdata.location, st, took);
             if (extract) extractGrid(out, (GridDataset) tdata.featureDataset);
-          } else if (tdata.featureType == FeatureType.POINT) {
-            out.println(" *Opened " + countDone + " TYPE " + ds.getDataType() + " " + tdata.location + " " + st);
-          } else if (tdata.featureType == FeatureType.STATION) {
-            out.println(" *Opened " + countDone + " TYPE " + ds.getDataType() + " " + tdata.location + " " + st);
+          } else  {
+            out.printf(" *Opened %d %s %s access %s took %d msecs%n", countDone, tdata.featureType, tdata.location, st, took);
           }
 
         } finally {
-            try {
-              if ((tdata != null) &&(tdata.featureDataset != null)) tdata.featureDataset.close();
-            } catch (IOException ioe) {
-              ioe.printStackTrace();
-            }
+          try {
+            if ((tdata != null) && (tdata.featureDataset != null)) tdata.featureDataset.close();
+          } catch (IOException ioe) {
+            ioe.printStackTrace();
+          }
         }
 
         countDone++;
         if (countDone > maxDone) return;
         if (doOneOnly) break;
+
+
       } else
         out.println();
     }
@@ -159,8 +158,7 @@ public class TestIDVdatasets {
     if (countDone > maxDone) return;
 
     // recurse
-    for (int i = 0; i < datasets.size(); i++) {
-      InvDataset ds = (InvDataset) datasets.get(i);
+    for (InvDataset ds : datasets) {
       if (ds.getName().equals(skip)) {
         out.println(" SKIP ");
         continue;
@@ -321,7 +319,7 @@ public class TestIDVdatasets {
 
   
   static public void main( String[] args)  throws Exception {
-    String server = "http://thredds.ucar.edu/thredds";
+    String server = "http://thredds-dev.ucar.edu/thredds";
     if (args.length > 0)
       server = args[0];
 
@@ -335,7 +333,7 @@ public class TestIDVdatasets {
 
     //ts.extract(System.out, "http://lead.unidata.ucar.edu:8080/thredds/idv/latestModels.xml", false, null, 0);
 
-    ts.extract(System.out, server + "/idv/models.xml", false, null, 0);
+    ts.extract(System.out, server + "/idd/modelsOther.xml", false, null, 0);
     //ts.extract(System.out, "http://motherlode.ucar.edu:8081/thredds/idv/rt-models.1.0.xml", false, null, 0);
 
     //ts.extract( pout, "http://motherlode.ucar.edu:9080/thredds/catalog.xml", true, "NEXRAD Radar", 0);

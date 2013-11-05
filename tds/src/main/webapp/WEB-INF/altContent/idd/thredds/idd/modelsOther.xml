@@ -145,7 +145,7 @@
 
     </dataset>
 
-    <dataset name="NCDC-NOMADS Climate Forecast System Reanalysis (CFSR)">
+    <!-- dataset name="NCDC-NOMADS Climate Forecast System Reanalysis (CFSR)">
       <metadata inherited="true">
         <dataFormat>GRIB-2</dataFormat>
         <documentation xlink:href="http://nomads.ncdc.noaa.gov/data.php#cfs-reanal-data"
@@ -170,7 +170,6 @@
                     timePartition="directory"
                     dateFormatMark="#timeseries/#yyyyMM"/>
         <update startup="true" trigger="allow" />
-        <!-- tdm startup="true" trigger="allow"/ -->
         <gribConfig>
           <gdsHash from="1450218978" to="1450192070"/>
           <gdsName hash='1450192070' groupName='FLX GaussianT382'/>
@@ -182,7 +181,7 @@
           <intvFilter excludeZero="true"/>
         </gribConfig>
       </featureCollection>
-    </dataset>
+    </dataset -->
 
     <!-- dataset name="Unidata Real-Time Regional Model">
 

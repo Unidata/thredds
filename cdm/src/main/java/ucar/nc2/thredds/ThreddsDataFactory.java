@@ -269,7 +269,7 @@ public class ThreddsDataFactory {
       return result;
     }
 
-    NetcdfDataset ncd = openDataset(invDataset, true, task, result.errLog);
+    NetcdfDataset ncd = openDataset(invDataset, true, task, result);
     if (null != ncd)
       result.featureDataset = FeatureDatasetFactoryManager.wrap(result.featureType, ncd, task, result.errLog);
 

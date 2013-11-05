@@ -36,7 +36,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dt.GridDatatype;
@@ -72,8 +71,6 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   private String catUrl;
   private CatalogCrawler.Type type;
   private boolean skipDatasetScan = false;
-  private boolean skipNexrad = true;
-  private String[] nexrad = new String[] {"nexrad/level3", "nexrad/level2", "terminal/level3"};
 
   private InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
   private ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
@@ -103,15 +100,6 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     @Override
     public boolean skipAll(InvDataset ds) {
       if (skipDatasetScan && (ds instanceof InvCatalogRef) && ds.findProperty("DatasetScan") != null) return true;
-      if (skipNexrad) {
-        String cat = ds.getCatalogUrl();
-        for (String skip : nexrad) {
-          if (cat.contains(skip)) {
-            out.printf("** skip %s%n", cat);
-            return true;
-          }
-        }
-      }
       return false;
     }
   }
@@ -152,10 +140,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     assert countNoOpen == 0;
   }
 
-  public void getDataset3(InvDataset ds, Object context) {
-    System.out.printf("getDataset callback on dataset= %s%n", ds.getName());
-  }
-
+  @Override
   public void getDataset(InvDataset ds, Object context) {
     countDatasets++;
 
