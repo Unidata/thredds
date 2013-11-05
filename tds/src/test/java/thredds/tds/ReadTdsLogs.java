@@ -60,7 +60,7 @@ public class ReadTdsLogs {
 
   ///////////////////////////////////////////////////////
   // multithreading
-  final int nthreads = 6;
+  final int nthreads = 2;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;
@@ -404,7 +404,7 @@ public class ReadTdsLogs {
        continue;
      }   */
 
-      if (!log.path.contains("ncss")) {
+      /* if (!log.path.contains("ncss")) {
         // System.out.println(" *** skip fmrc " + log);
         skip++;
         continue;
@@ -414,7 +414,7 @@ public class ReadTdsLogs {
         // System.out.println(" *** skip fmrc " + log);
         skip++;
         continue;
-      }
+      }  */
 
       if (log.path.indexOf("manager") > 0) {
         skip++;

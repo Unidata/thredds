@@ -86,15 +86,6 @@ public class TestMotherlodeLatest extends TimerTask {
     }
   }
 
-  void doAll() throws IOException {
-
-    for (String model : FmrcDefinition.fmrcDatasets_41) {
-      doOne(model, suffix);
-    }
-    System.out.printf("ALL DONE%n");
-
-  }
-
   private boolean checkRank = false;
   private boolean checkSize = false;
   private boolean readData = true;
@@ -246,7 +237,7 @@ public class TestMotherlodeLatest extends TimerTask {
 
     // /thredds/catalog/grib/NCEP/RAP/CONUS_40km/files/latest.html
     TestMotherlodeLatest testAll = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", latestSuffix);
-    testAll.doAll();
+    //testAll.doAll();
   }
 
 }

@@ -102,7 +102,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
      */
     startupLog.info("CdmInit: set LoggerFactorySpecial with logging directory "+System.getProperty("tds.log.dir"));
     long maxFileSize = ThreddsConfig.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
-    int maxBackupIndex = ThreddsConfig.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 5);
+    int maxBackupIndex = ThreddsConfig.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 10);
     String level = ThreddsConfig.get("FeatureCollection.RollingFileAppender.Level", "INFO");
     LoggerFactory fac = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
     InvDatasetFeatureCollection.setLoggerFactory(fac);

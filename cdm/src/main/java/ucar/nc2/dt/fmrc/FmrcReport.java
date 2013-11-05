@@ -232,26 +232,6 @@ public class FmrcReport {
     }
   }
 
-  static void doit(String dir) throws Exception {
-    ///local/robb/data/NAM_CONUS_12km
-    //FmrcInventory fmrc = FmrcInventory.makeFromDirectory("C:/data/grib/"+dir+"/", "test", null,
-    //        "C:/data/grib/"+dir, "grib1", ForecastModelRunInventory.OPEN_NORMAL);
-    FmrcInventory fmrc = FmrcInventory.makeFromDirectory("/local/robb/data/NAM_CONUS_12km/", "test", null,
-            "/local/robb/data/NAM_CONUS_12km", "grib2", ForecastModelRunInventory.OPEN_NORMAL);
-    FmrcReport report = new FmrcReport();
-    report.report( fmrc, System.out, true);
-  }
-
-  public static void main(String args[]) throws Exception {
-    doit("ruc/c20p");
-    /* doit("ruc/conus40");
-    doit("ruc/c20p");
-    doit("ruc/c20s");
-    doit("nam/c20s");
-    doit("gfs/alaska191");
-    doit("gfs/conus80");  */
-  }
-
 }
 
 

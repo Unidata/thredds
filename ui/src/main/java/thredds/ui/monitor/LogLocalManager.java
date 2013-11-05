@@ -81,7 +81,6 @@ public class LogLocalManager {
 
   private List<FileDateRange> localFiles;
   private SimpleDateFormat localFormat;
-  private int filenameDatePos; // where the date starts in the filename
 
   LogLocalManager(String server, boolean isAccess) {
     this.server = server;
@@ -89,7 +88,6 @@ public class LogLocalManager {
     where = isAccess ? "access" : "thredds";
 
     // default is local time zone
-    filenameDatePos = isAccess ? "access.".length() : "threddsServlet.".length();
     String format = isAccess ? "yyyy-MM-dd" : "yyyy-MM-dd-HH";
     localFormat = new SimpleDateFormat(format, Locale.US );
   }
@@ -209,9 +207,23 @@ public class LogLocalManager {
 
       } else {
         try {
+
+          String filenameDate = null;
           int len = name.length();
-          String filenameDate = name.substring( filenameDatePos, len-4);
+
+          // all: access.2013-07-29.log
+          // 4.3: threddsServlet.log.2013-08-01-14
+          // 4.4: threddsServlet.2013-08-01-14.log
+          if (name.startsWith("access.")) {
+            filenameDate = name.substring("access.".length(), len - 4);
+          } else if (name.startsWith("threddsServlet.log")) {
+            filenameDate = name.substring("threddsServlet.log".length());
+          } else if (name.startsWith("threddsServlet.")) {
+            filenameDate = name.substring("threddsServlet.".length(), len - 4);
+          }
+
           return localFormat.parse( filenameDate );
+
         } catch (Exception e) {
           e.printStackTrace();
           return null;

@@ -583,6 +583,7 @@
       <xsd:element ref="geospatialCoverage"/>
       <xsd:element name="timeCoverage" type="timeCoverageType"/>
       <xsd:element ref="variables"/>
+      <xsd:element ref="variableMap"/>
 
       <xsd:element name="dataType" type="dataTypes"/>
       <xsd:element name="dataFormat" type="dataFormatTypes"/>

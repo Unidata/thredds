@@ -236,7 +236,7 @@ public final class ThreddsWmsController extends AbstractWmsController
     }
     catch ( IOException e ) {
       if ( e.getClass().getName().equals( "org.apache.catalina.connector.ClientAbortException")) {
-        log.error( "dispatchWmsRequest(): ClientAbortException: " + e.getMessage() );
+        log.debug( "dispatchWmsRequest(): ClientAbortException: " + e.getMessage() );
         return null;
       }
       log.error( "dispatchWmsRequest(): IOException: ", e );

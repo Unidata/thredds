@@ -33,7 +33,6 @@
 package ucar.nc2.dt.fmrc;
 
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.util.DiskCache2;
 
 import java.util.*;
 import java.io.*;
@@ -43,12 +42,6 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import thredds.catalog.crawl.CatalogCrawler;
-import thredds.catalog.InvDataset;
-import thredds.catalog.InvAccess;
-import thredds.catalog.ServiceType;
-import thredds.catalog.InvCatalogRef;
-import ucar.unidata.util.StringUtil2;
 
 /**
  * A collection of ForecastModelRun (aka "run").
@@ -1295,7 +1288,7 @@ public class FmrcInventory {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /**
+  /*
    * Create a ForecastModelRun Collection from the files in a directory.
    * @param fmrcDefinitionPath put/look for fmrc definition files in this directory, may be null
    * @param collectionName the definition file = "name.fmrcDefinition.xml";
@@ -1305,7 +1298,7 @@ public class FmrcInventory {
    * @param mode one of the ForecastModelRun.OPEN_ modes
    * @return ForecastModelRunCollection or null if no files exist
    * @throws Exception on bad
-   */
+   *
   public static FmrcInventory makeFromDirectory(String fmrcDefinitionPath, String collectionName,
           ucar.nc2.util.DiskCache2 fmr_cache, String dirName, String suffix, int mode) throws Exception {
 
@@ -1339,113 +1332,11 @@ public class FmrcInventory {
     return fmrCollection;
   }
 
-  private static boolean debugTiming = false;
-  public static void main2(String args[]) throws Exception {
-    String dir = "nam/c20s";
-    FmrcInventory fmrc = makeFromDirectory("R:/testdata/motherlode/grid/inv/new/", "NCEP-NAM-CONUS_20km-surface", null, "C:/data/grib/"+dir, "grib1",
-            ForecastModelRunInventory.OPEN_FORCE_NEW);
-
-    FmrcDefinition def = fmrc.getDefinition();
-    if (null != def) {
-      System.out.println("current definition = "+fmrc.getDefinitionPath());
-      //def.addVertCoordsFromCollectionInventory( fmrc);
-      System.out.println( def.writeDefinitionXML());
-    } else {
-      System.out.println("write definition to "+fmrc.getDefinitionPath());
-      def = new FmrcDefinition();
-      def.makeFromCollectionInventory( fmrc);
-      FileOutputStream fos = new FileOutputStream( fmrc.getDefinitionPath());
-      System.out.println( def.writeDefinitionXML());
-      def.writeDefinitionXML( fos);
-    }
-
-    String varName = "Temperature";
-    System.out.println( fmrc.writeMatrixXML( varName));
-    FileOutputStream fos = new FileOutputStream("C:/data/grib/"+dir+"/fmrcMatrix.xml");
-    fmrc.writeMatrixXML( varName, fos);
-
-    System.out.println( fmrc.writeMatrixXML( null));
-    FileOutputStream fos2 = new FileOutputStream("C:/data/grib/"+dir+"/fmrcMatrixAll.xml");
-    fmrc.writeMatrixXML( null, fos2);
-
-    System.out.println( fmrc.showOffsetHour(varName,"7.0"));
-  }
-
-  ///////////////////////////////////////////////////////////////////////////
-
-  /* private static String[] catalogs  = {
-          "NCEP/DGEX/Alaska_12km",
-          "NCEP/DGEX/CONUS_12km",
-
-          "NCEP/GFS/Alaska_191km",
-          "NCEP/GFS/CONUS_191km",
-          "NCEP/GFS/CONUS_80km",
-          "NCEP/GFS/CONUS_95km",
-          "NCEP/GFS/Global_0p5deg",
-          "NCEP/GFS/Global_2p5deg",
-          "NCEP/GFS/Global_onedeg",
-          "NCEP/GFS/Hawaii_160km",
-          "NCEP/GFS/N_Hemisphere_381km",
-          "NCEP/GFS/Puerto_Rico_191km",
-
-          "NCEP/NAM/Alaska_11km",
-          "NCEP/NAM/Alaska_22km",
-          "NCEP/NAM/Alaska_45km/conduit",
-          "NCEP/NAM/Alaska_45km/noaaport",
-          "NCEP/NAM/Alaska_95km",
-
-          "NCEP/NAM/CONUS_12km",
-          "NCEP/NAM/CONUS_12km/conduit",
-          "NCEP/NAM/CONUS_20km/noaaport",
-          "NCEP/NAM/CONUS_20km/selectsurface",
-          "NCEP/NAM/CONUS_20km/surface",
-          "NCEP/NAM/CONUS_40km/conduit",
-          "NCEP/NAM/CONUS_80km",
-          "NCEP/NAM/Polar_90km",
-
-          "NCEP/NDFD/CONUS_5km", };
-
-  private static String[] catalog24hours  = {
-          // 24 hours
-          "NCEP/RUC/CONUS_80km",
-          "NCEP/RUC2/CONUS_20km/hybrid",
-          "NCEP/RUC2/CONUS_20km/pressure",
-          "NCEP/RUC2/CONUS_20km/surface",
-          "NCEP/RUC2/CONUS_40km",
-  }; */
-
-
-  public static void main(String args[]) throws Exception {  
-    for (String cat : FmrcDefinition.fmrcDatasets) {
-      if (cat.contains("/RUC"))
-        doOne( cat, 72);
-      else
-        doOne( cat, 12);
-    }
-  }
-
-  public static void doOne(String cat, int n) throws Exception {
-    String server = "http://thredds.ucar.edu/thredds/catalog/fmrc/";
-    String writeDir = "D:/temp/modelDef/";
-    new File(writeDir).mkdirs();
-
-    String catName = server + cat + "/files/catalog.xml";
-    FmrcInventory fmrCollection = makeFromCatalog(null, catName, catName, n, ForecastModelRunInventory.OPEN_FORCE_NEW);
-
-    String writeFile = writeDir + StringUtil2.replace(cat, "/", "-") + ".fmrcDefinition.xml";
-    System.out.println("write definition to " + writeFile);
-    FmrcDefinition def = new FmrcDefinition();
-    def.makeFromCollectionInventory(fmrCollection);
-    FileOutputStream fos = new FileOutputStream(writeFile);
-    def.writeDefinitionXML(fos);
-    fos.close();
-  }
-
   /**
     * Create a ForecastModelRun Collection from the datasets in a catalog.
     * @param catURL  scan this catalog
     * @throws Exception on bad
-    */
+    *
    public static void writeDefinitionFromCatalog(String catURL, String collectionName, int maxDatasets) throws Exception {
 
      FmrcInventory fmrCollection = makeFromCatalog( catURL, collectionName, maxDatasets, ForecastModelRunInventory.OPEN_NORMAL);
@@ -1460,7 +1351,7 @@ public class FmrcInventory {
     * Create a ForecastModelRun Collection from the datasets in a catalog.
     * @param catURL  scan this catalog
     * @throws Exception on bad
-    */
+    *
   public static FmrcInventory makeFromCatalog(String catURL, String collectionName, int maxDatasets, int mode) throws Exception {
     DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 0, -1); // dont scour - messes up the TDS!
 
@@ -1549,12 +1440,12 @@ public class FmrcInventory {
       String urlFragment = catalogs[i];
       String catURL = "http://motherlode.ucar.edu:8080/thredds/catalog/model/"+urlFragment+"/catalog.xml";
       makeDefinitionFromCatalog(catURL);
-    } */
+    }
 
     String dir = "nam/conus80";
     FmrcInventory fmrc = makeFromDirectory("C:/temp", "NCEP-NAM-CONUS_80km", null, "C:/data/grib/"+dir, "grib1",
             ForecastModelRunInventory.OPEN_FORCE_NEW);
 
-  }
+  }  */
 
 }
