@@ -69,8 +69,7 @@
     <ol>
       <li>Use the NetCDF-Java library <a href="file:///C|/dev/github/thredds/docs/web/netcdf-java/site/reference/manPages.html#nccopy">nccopy application</a> to
         write the new file, eg:
-        <pre><em><strong></strong>java -Xmx1g -classpath netcdfAll-4.3.jar <strong>ucar.nc2.dataset.NetcdfDataset -in myFile.ncml -out
-          myFile.nc</strong></em></pre>
+        <pre><em><strong></strong>java -Xmx1g -classpath netcdfAll-4.3.jar <strong>ucar.nc2.dataset.NetcdfDataset -in myFile.ncml -out myFile.nc</strong></em></pre>
       </li>
       <li> (or) In the <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">ToolsUI</a> application, open the NcML file in
         the NcML tab. You can create the equivilent binary NetCDF file with the <strong>&quot;Write NetCDF</strong>&quot; button.
@@ -85,27 +84,35 @@ you'll have to read more:
   <li><a href="Tutorial.html">Tutorial</a></li>
   <li><a href="Aggregation.html">Aggregation</a></li>
   <li><a href="Cookbook.html">Cookbook Examples</a></li>
-  <li><a href="AnnotatedSchema.html">Annotated Schema for Netcdf-Java 2.2 </a></li>
   <li><a href="AnnotatedSchema4.html">Annotated Schema for Netcdf-Java 4</a></li>
   <li><a href="http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd">ncml-2.2.xsd</a></li>
 </ul>
 <hr align="left">
 <h2 align="left"><b>Acknowledgments and History</b></h2>
-Earlier work in defining XML representations for netCDF data included Bear Giles DTD and XML tools in March 2000, a proposed DTD by Stefano Nativi and Lorenzo
-Bigagli at the University of Florence in May 2000, and a version developed by John Caron in February 2001.The original NcML working group consisted of John
-Caron (Unidata/UCAR), Luca Cinquini (SCD/NCAR), Ethan Davis (Unidata/UCAR), Bob Drach (PCMDI/LLNL), Stefano Nativi (University of Florence), and Russ Rew
-(Unidata/UCAR).In the first implementation of NcML (version 2.1), there were three parts to NcML with separate schema documents: <i>1) </i><b><i>NcML Core
-  Schema</i></b> represented the existing netCDF-3 data model; <i>2) </i><b><i>NcML Coordinate System</i></b> extended NcML Core Schema and extended the netCDF
-data model to add explicit support for general and georeferencing coordinate systems; 3)<i><b> NcML Dataset</b></i> extended NcML Core Schema to use NcML to
-define a netCDF file, similar to the <b>ncgen</b> command line tool, as well as to redefine, aggregate, and subset existing netCDF files.<b align="left"><i>NcML
-  Coordinate System</i></b> is now superceded by <a href="#ncML-Gml">NcML-GML.</a><b align="left"><i>NcML Core Schema</i></b> and <i><b>NcML Dataset</b></i>
-have been combined into a single <em><strong><a href="#NcML22">NcML Schema</a></strong></em>, and some of the <i><b>NcML Dataset</b></i> syntax and
-functionality has been modified.
+<p>Earlier work in defining XML representations for netCDF data included Bear Giles DTD and XML tools in March 2000, a proposed DTD by Stefano Nativi and Lorenzo
+Bigagli at the University of Florence in May 2000, and a version developed by John Caron in February 2001.</p>
+<p>The original NcML working group consisted of John
+  Caron (Unidata/UCAR), Luca Cinquini (SCD/NCAR), Ethan Davis (Unidata/UCAR), Bob Drach (PCMDI/LLNL), Stefano Nativi (University of Florence), and Russ Rew
+(Unidata/UCAR).</p>
+<p>In the first implementation of NcML (version 2.1), there were three parts to NcML with separate schema documents: </p>
+<ol>
+  <li><b><i>NcML Core
+  Schema</i></b> represented the existing netCDF-3 data model</li>
+  <li><b><i>NcML Coordinate System</i></b> extended NcML Core Schema and extended the netCDF
+  data model to add explicit support for general and georeferencing coordinate systems</li>
+  <li><i><b>NcML Dataset</b></i> extended NcML Core Schema to use NcML to
+  define a netCDF file, similar to the <b>ncgen</b> command line tool, as well as to redefine, aggregate, and subset existing netCDF files.</li>
+</ol>
+<p><b align="left"><i>NcML
+      Coordinate System</i></b> is now superceded by <a href="#ncML-Gml">NcML-GML.</a><b align="left"><i> NcML Core Schema</i></b> and <i><b>NcML Dataset</b></i>
+  have been combined into a single <em><strong><a href="#NcML22">NcML Schema</a></strong></em>, and some of the <i><b>NcML Dataset</b></i> syntax and
+    functionality has been modified.
+</p>
 <hr align="left">
 Please send comments and/or questions to <a href="mailto:support-netcdf-java@support.unidata.ucar.edu">support-netcdf-java@unidata.ucar.edu</a>
 <address>
   <img src="nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov
-  2010
+  2013
 </address>
 </body>
 </html>
