@@ -78,7 +78,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
   @Autowired
   FeatureDatasetService datasetService;
 
-  @RequestMapping(value = {"/ncss/**/dataset.html", "/ncss/**/dataset.xml", "/ncss/**/pointDataset.html"}, params = {"!var"})
+  @RequestMapping(value = {"/ncss/**/dataset.html", "/ncss/**/dataset.xml", "/ncss/**/pointDataset.html", "/ncss/**/pointDataset.xml"}, params = {"!var"})
   void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
     if (!req.getParameterMap().isEmpty()) {
@@ -165,7 +165,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
   void extractRequestPathInfo(String requestPathInfo) {
 
     // the forms and dataset description
-    wantXML = requestPathInfo.endsWith("/dataset.xml");
+    wantXML = requestPathInfo.endsWith("/dataset.xml") || requestPathInfo.endsWith("/pointDataset.xml");
     showForm = requestPathInfo.endsWith("/dataset.html");
     showPointForm = requestPathInfo.endsWith("/pointDataset.html");
 

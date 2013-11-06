@@ -149,13 +149,12 @@ public class AbstractNcssController {
 		return servletCachePath;
 	}
 
-  private static final String[] endings = new String[] {"/dataset.xml", "/dataset.html", "/datasetBoundaries.xml"};
+  private static final String[] endings = new String[] {"/dataset.xml", "/dataset.html", "/pointDataset.html", "/pointDataset.xml", "/datasetBoundaries.xml"};
   public static String getDatasetPath(HttpServletRequest req) {
     return getDatasetPath( req.getServletPath());
   }
 
   public static String getDatasetPath(String path) {
-
     // strip off /ncss/
     if (path.startsWith(NcssController.servletPath))
       path = path.substring(NcssController.servletPath.length());
@@ -169,7 +168,6 @@ public class AbstractNcssController {
       }
     }
 
-    // System.out.printf("datasetPath = %s%n", path);
     return path;
   }
 

@@ -34,91 +34,90 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
 public class GridAsPointDataTest {
 
-	
-	@Autowired
-	private WebApplicationContext wac;
-	
-	private MockMvc mockMvc;		
-	private RequestBuilder requestBuilder;
-	
-	private List<String> vars;
-	private String accept;
-	
-	private LatLonPoint point;
-	private String pathInfo;
-	
-	@Parameters
-	public static List<Object[]> getTestParameters(){
-		
-	
-		return Arrays.asList(new Object[][]{  
-				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0), GridAsPointDataParameters.getVerticalLevels().get(0) },
-				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1), GridAsPointDataParameters.getVerticalLevels().get(1) },
-				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2) },
-				{SupportedFormat.NETCDF3, GridAsPointDataParameters.getVars().get(3) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2) },
-				
-				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0), GridAsPointDataParameters.getVerticalLevels().get(0) },
-				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1), GridAsPointDataParameters.getVerticalLevels().get(1) },
-				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2) },
-				{SupportedFormat.NETCDF4, GridAsPointDataParameters.getVars().get(3) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2) }
 
-		});				
-	}
-	
-	public GridAsPointDataTest(SupportedFormat format, List<String> vars, String pathInfo, LatLonPoint point, Double verticalLevel){
-		
-		this.vars = vars;
-		this.pathInfo = pathInfo;
-		this.point=point;
-		this.accept = format.getAliases().get(0);
-	}
-	
-	@Before
-	public void setUp() throws IOException{
-		
-		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();	
-		String servletPath = pathInfo;
-		
-		//Creates values for param var
-		Iterator<String> it = vars.iterator();
-		String varParamVal = it.next();
-		while(it.hasNext()){
-			String next = it.next();
-			varParamVal =varParamVal+","+next;
-		}
-		
-		//Values for time subsetting
+  @Autowired
+  private WebApplicationContext wac;
+
+  private MockMvc mockMvc;
+  private RequestBuilder requestBuilder;
+
+  private List<String> vars;
+  private String accept;
+
+  private LatLonPoint point;
+  private String pathInfo;
+
+  @Parameters
+  public static List<Object[]> getTestParameters() {
+
+
+    return Arrays.asList(new Object[][]{
+      {SupportedFormat.NETCDF3, GridAsPointDataParameters.getVars().get(0), GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0), GridAsPointDataParameters.getVerticalLevels().get(0)},
+      {SupportedFormat.NETCDF3, GridAsPointDataParameters.getVars().get(1), GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1), GridAsPointDataParameters.getVerticalLevels().get(1)},
+      {SupportedFormat.NETCDF3, GridAsPointDataParameters.getVars().get(2), GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2)},
+      {SupportedFormat.NETCDF3, GridAsPointDataParameters.getVars().get(3), GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2)},
+
+      {SupportedFormat.NETCDF4, GridAsPointDataParameters.getVars().get(0), GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0), GridAsPointDataParameters.getVerticalLevels().get(0)},
+      {SupportedFormat.NETCDF4, GridAsPointDataParameters.getVars().get(1), GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1), GridAsPointDataParameters.getVerticalLevels().get(1)},
+      {SupportedFormat.NETCDF4, GridAsPointDataParameters.getVars().get(2), GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2)},
+      {SupportedFormat.NETCDF4, GridAsPointDataParameters.getVars().get(3), GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2), GridAsPointDataParameters.getVerticalLevels().get(2)}
+
+    });
+  }
+
+  public GridAsPointDataTest(SupportedFormat format, List<String> vars, String pathInfo, LatLonPoint point, Double verticalLevel) {
+
+    this.vars = vars;
+    this.pathInfo = pathInfo;
+    this.point = point;
+    this.accept = format.getAliases().get(0);
+  }
+
+  @Before
+  public void setUp() throws IOException {
+
+    mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    String servletPath = pathInfo;
+
+    //Creates values for param var
+    Iterator<String> it = vars.iterator();
+    String varParamVal = it.next();
+    while (it.hasNext()) {
+      String next = it.next();
+      varParamVal = varParamVal + "," + next;
+    }
+
+    //Values for time subsetting
     String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
-		GridDataset gds = DatasetHandlerAdapter.openGridDataset(datasetPath);
-		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gds, vars);
-		List<CalendarDate> dates = gridAsPointDataset.getDates();		
-		Random rand = new Random();
-		int randInt =     rand.nextInt( dates.size());
-		int randIntNext = rand.nextInt(dates.size());
-		int start = Math.min(randInt, randIntNext);
-		int end = Math.max(randInt, randIntNext);				
-		String startDate= dates.get(start).toString();
-		String endDate= dates.get(end).toString();
+    GridDataset gds = DatasetHandlerAdapter.openGridDataset(datasetPath);
+    GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gds, vars);
+    List<CalendarDate> dates = gridAsPointDataset.getDates();
+    Random rand = new Random();
+    int randInt = rand.nextInt(dates.size());
+    int randIntNext = rand.nextInt(dates.size());
+    int start = Math.min(randInt, randIntNext);
+    int end = Math.max(randInt, randIntNext);
+    String startDate = dates.get(start).toString();
+    String endDate = dates.get(end).toString();
     gds.close();
-		
-		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath)
-				.param("var", varParamVal)
-				.param("latitude", String.valueOf(point.getLatitude()) )
-				.param("longitude", String.valueOf(point.getLongitude() ) )
-				.param("time_start", startDate)
-				.param("time_end", endDate)
-				.param("accept", accept);		
-		
-	}
-	
-	
-	
-	@Test
-	public void shouldGetData() throws Exception{	
-		this.mockMvc.perform(requestBuilder)
-		.andExpect(MockMvcResultMatchers.status().isOk());
-	}	
+
+    requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath)
+            .param("var", varParamVal)
+            .param("latitude", String.valueOf(point.getLatitude()))
+            .param("longitude", String.valueOf(point.getLongitude()))
+            .param("time_start", startDate)
+            .param("time_end", endDate)
+            .param("accept", accept);
+
+  }
+
+
+  @Test
+  public void shouldGetData() throws Exception {
+    this.mockMvc.perform(requestBuilder)
+            .andExpect(MockMvcResultMatchers.status().isOk());
+  }
 }

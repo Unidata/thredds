@@ -62,8 +62,8 @@ public class TestReadFormats {
   }
 
   @Test
-  public void problem() throws IOException {
-    doOne("Q:/cdmUnitTest/formats/cinrad/CHGZ_2006071512.0300");
+  public void readCinrad() throws IOException {
+    doOne(TestDir.cdmUnitTestDir+"formats/cinrad/CHGZ_2006071512.0300");
   }
 
   private void doOne(String name) throws IOException {
