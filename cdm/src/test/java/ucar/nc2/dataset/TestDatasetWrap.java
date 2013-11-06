@@ -43,7 +43,7 @@ import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.TestDir;
 
 /**
- * Describe
+ * Test things are ok when wrapping by a Dataset
  *
  * @author caron
  * @since 11/6/13
@@ -52,11 +52,45 @@ public class TestDatasetWrap {
 
   String filename = TestDir.cdmUnitTestDir + "/ft/profile/sonde/sgpsondewnpnC1.a1.20020507.112400.cdf";
 
-  private NetcdfFile ncfile;
-  private NetcdfDataset ds;
+  @Test
+  public void testMissingDataReplaced() throws Exception {
+    // this one has misssing longitude data, but not getting set to NaN
+    String filename = TestDir.cdmUnitTestDir + "/ft/point/netcdf/Surface_Synoptic_20090921_0000.nc";
+    NetcdfFile ncfile = null;
+    NetcdfDataset ds = null;
+
+    try {
+      ncfile = NetcdfFile.open(filename);
+      ds = NetcdfDataset.openDataset(filename);
+
+      String varName = "Lon";
+      Variable wrap = ds.findVariable(varName);
+      Array data_wrap = wrap.read();
+
+      boolean ok = true;
+      CompareNetcdf2 compare = new CompareNetcdf2();
+
+      assert wrap instanceof CoordinateAxis1D;
+      CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
+
+      ok &= compare.compareData(varName, data_wrap, axis.getCoordValues());
+
+      assert ok;
+    } finally {
+
+      if (ncfile != null) ncfile.close();
+      if (ds != null) ds.close();
+    }
+  }
+
 
   @Test
-  public void testCoordinateWrap() throws Exception {
+  public void testLongitudeWrap() throws Exception {
+    // this one was getting clobbered by longitude wrapping
+    String filename = TestDir.cdmUnitTestDir + "/ft/profile/sonde/sgpsondewnpnC1.a1.20020507.112400.cdf";
+    NetcdfFile ncfile = null;
+    NetcdfDataset ds = null;
+
     try {
       ncfile = NetcdfFile.open(filename);
       ds = NetcdfDataset.openDataset(filename);
@@ -80,8 +114,8 @@ public class TestDatasetWrap {
       assert ok;
     } finally {
 
-      ncfile.close();
-      ds.close();
+      if (ncfile != null) ncfile.close();
+      if (ds != null) ds.close();
     }
   }
 

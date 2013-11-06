@@ -348,6 +348,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       horizYaxis = latAxis = cs.getLatAxis();
       isLatLon = true;
 
+      if (lonAxis instanceof CoordinateAxis1D) {
+        ((CoordinateAxis1D) lonAxis).correctLongitudeWrap();
+      }
+
     } else
       throw new IllegalArgumentException("CoordinateSystem is not geoReferencing");
 

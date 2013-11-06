@@ -56,8 +56,8 @@ import java.util.*;
  * @since 4/6/11
  */
 public class Grib1CollectionBuilder extends GribCollectionBuilder {
-  protected static final int minVersionSingle = 9; // if single file, this version and above is ok
-  protected static final int version = 10;
+  protected static final int minVersionSingle = 11; // if single file, this version and above is ok
+  protected static final int version = 11;
   public static final String MAGIC_START = "Grib1CollectionIndex";
 
   // from a single file, read in the index, create if it doesnt exist or is out of date

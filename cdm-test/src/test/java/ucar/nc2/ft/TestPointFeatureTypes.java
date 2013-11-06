@@ -309,12 +309,8 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
 
-  public void utestGempakProblem() throws Exception {
-    NetcdfFile.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("NetcdfFile/showRequest"));
-
-    testDon2("Y:\\ldm\\gempak\\surface/20091023_sao.gem", true);
-    //testDon2("Q:/cdmUnitTest/formats/gempak/surface/20090521_sao.gem", true);
-    //testPointVsAny("Q:/cdmUnitTest/formats/gempak/surface/20090521_sao.gem", true);
+  public void testProblem() throws Exception {
+    assert 1516 == checkPointDataset(topdir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
   }
 
 

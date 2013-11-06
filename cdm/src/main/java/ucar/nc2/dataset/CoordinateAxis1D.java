@@ -289,8 +289,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdge() on non-numeric");
     if (!wasBoundsDone) makeBounds();
-    if (edge == null)
-      System.out.println("HEY");
     return edge[index];
   }
 
@@ -715,36 +713,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
         isAscending = true;
       else
         isAscending = getCoordValue(0) < getCoordValue(1);
-
-      /* correct non-monotonic longitude coords LOOK cant do - monotonic not required always (eg point data)
-      if (axisType == AxisType.Lon) {
-        boolean monotonic = true;
-        for (int i = 0; i < midpoint.length - 1; i++)
-          monotonic &= isAscending ? midpoint[i] < midpoint[i + 1] : midpoint[i] > midpoint[i + 1];
-
-        if (!monotonic) {
-          boolean cross = false;
-          if (isAscending) {
-            for (int i = 0; i < midpoint.length; i++) {
-              if (cross) midpoint[i] += 360;
-              if (!cross && (i < midpoint.length - 1) && (midpoint[i] > midpoint[i + 1]))
-                cross = true;
-            }
-          } else {
-            for (int i = 0; i < midpoint.length; i++) {
-              if (cross) midpoint[i] -= 360;
-              if (!cross && (i < midpoint.length - 1) && (midpoint[i] < midpoint[i + 1]))
-                cross = true;
-            }
-          }
-          // LOOK - need to make sure we get stuff from the cache
-          Array cachedData = Array.factory(DataType.DOUBLE, getShape(), midpoint);
-          if (getDataType() != DataType.DOUBLE)
-            cachedData = MAMath.convert(cachedData, getDataType());
-          setCachedData(cachedData);
-        }
-      } */
-
       //  calcIsRegular(); */
     } else
 
@@ -755,6 +723,49 @@ public class CoordinateAxis1D extends CoordinateAxis {
       readCharValues();
       wasRead = true;
     }
+  }
+
+  // turns longitude coordinate into monotonic, dealing with possible wrap.
+  public void correctLongitudeWrap() {
+    // correct non-monotonic longitude coords
+    if (axisType != AxisType.Lon) {
+      return;
+    }
+
+    if (!wasRead)
+      doRead();
+
+    boolean monotonic = true;
+    for (int i = 0; i < midpoint.length - 1; i++)
+      monotonic &= isAscending ? midpoint[i] < midpoint[i + 1] : midpoint[i] > midpoint[i + 1];
+
+    if (!monotonic) {
+      boolean cross = false;
+      if (isAscending) {
+        for (int i = 0; i < midpoint.length; i++) {
+          if (cross) midpoint[i] += 360;
+          if (!cross && (i < midpoint.length - 1) && (midpoint[i] > midpoint[i + 1]))
+            cross = true;
+        }
+      } else {
+        for (int i = 0; i < midpoint.length; i++) {
+          if (cross) midpoint[i] -= 360;
+          if (!cross && (i < midpoint.length - 1) && (midpoint[i] < midpoint[i + 1]))
+            cross = true;
+        }
+      }
+
+      // LOOK - need to make sure we get stuff from the cache
+      Array cachedData = Array.factory(DataType.DOUBLE, getShape(), midpoint);
+      if (getDataType() != DataType.DOUBLE)
+        cachedData = MAMath.convert(cachedData, getDataType());
+      setCachedData(cachedData);
+
+      if (!isInterval) {
+        makeEdges();
+      }
+    }
+
   }
 
   // only used if String
@@ -795,7 +806,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     int count = 0;
     Array data;
     try {
-      setUseNaNs(false); // missing values not allowed
+      // setUseNaNs(false); // missing values not allowed LOOK not true for point data !!
       data = read();
       // if (!hasCachedData()) setCachedData(data, false); //cache data for subsequent reading
     } catch (IOException ioe) {

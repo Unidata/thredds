@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>clcommon</artifactId>
-  <name>client side common library</name>
+  <name>client side common library. java.awt dependencies</name>
 
   <dependencies>
 
