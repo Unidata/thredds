@@ -474,18 +474,29 @@ public class CompareNetcdf2 {
     if (showCompare) f.format("   ok%n");
   }
 
-  public boolean compareData(String name, Array data1, Array data2, boolean justOne) {
-    return compareData(name, data1, data2, TOL, justOne);
+  public boolean compareData(String name, Array data1, double[] data2) {
+    Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
+    return compareData(name, data1, data2a, TOL, false, false);
   }
 
-  private boolean compareData(String name, Array data1, Array data2, double tol, boolean justOne) {
+  public boolean compareData(String name, double[] data1, double[] data2) {
+    Array data1a = Array.factory(DataType.DOUBLE, new int[] {data1.length}, data1);
+    Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
+    return compareData(name, data1a, data2a, TOL, false, false);
+  }
+
+  public boolean compareData(String name, Array data1, Array data2, boolean justOne) {
+    return compareData(name, data1, data2, TOL, justOne, true);
+  }
+
+  private boolean compareData(String name, Array data1, Array data2, double tol, boolean justOne, boolean testTypes) {
     boolean ok = true;
     if (data1.getSize() != data2.getSize()) {
       f.format(" DIFF %s: size %d !== %d%n", name, data1.getSize(), data2.getSize());
       ok = false;
     }
 
-    if (data1.getElementType() != data2.getElementType()) {
+    if (testTypes && data1.getElementType() != data2.getElementType()) {
       f.format(" DIFF %s: element type %s !== %s%n", name, data1.getElementType(), data2.getElementType());
       ok = false;
     }
@@ -573,7 +584,7 @@ public class CompareNetcdf2 {
       StructureMembers.Member m2 = sm2.findMember(m1.getName());
       Array data1 = sdata1.getArray(m1);
       Array data2 = sdata2.getArray(m2);
-      ok &= compareData(m1.getName(), data1, data2, tol, justOne);
+      ok &= compareData(m1.getName(), data1, data2, tol, justOne, true);
     }
 
     return ok;

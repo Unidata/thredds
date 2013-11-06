@@ -43,12 +43,14 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.NCdump;
 import ucar.nc2.grib.grib2.Grib2Iosp;
 import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import ucar.nc2.constants.FeatureType;
+import ucar.unidata.test.util.CompareNetcdf;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.PrintWriter;
@@ -746,9 +748,13 @@ public class TestSubset {
     dataset.close();
   }
 
+  // this one has the coordinate bounds set in the file
   @Test
   public void testSubsetCoordEdges() throws Exception {
     NetcdfDataset fooDataset = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "dataset/subsetCoordEdges.ncml");
+    System.out.printf("Open %s%n", fooDataset.getLocation());
+    CompareNetcdf2 compare = new CompareNetcdf2();
+    boolean ok = true;
 
     try {
       GridDataset fooGridDataset = new GridDataset(fooDataset);
@@ -760,25 +766,29 @@ public class TestSubset {
       CoordinateAxis1D fooLatAxis = (CoordinateAxis1D) fooGrid.getCoordinateSystem().getYHorizAxis();
       CoordinateAxis1D fooLonAxis = (CoordinateAxis1D) fooGrid.getCoordinateSystem().getXHorizAxis();
 
-      // Expected: [0.0, 31.0, 59.0, 90.0, 120.0]
-      // Actual:   [0.0, 31.0, 59.0, 90.0, 120.0]
       System.out.println("mid time= " + Arrays.toString(fooTimeAxis.getCoordValues()));
       System.out.println("edge time= " + Arrays.toString(fooTimeAxis.getCoordEdges()));
       System.out.println();
+      ok &= compare.compareData("time getCoordValues", fooTimeAxis.getCoordValues(), new double[] {15.5, 45.0, 74.5, 105.0});
+      ok &= compare.compareData("time getCoordEdges", fooTimeAxis.getCoordEdges(), new double[] {0.0, 31.0, 59.0, 90.0, 120.0});
 
       // Expected: [-90.0, -18.0, 36.0, 72.0, 90.0]
       // Actual:   [-90.0, -18.0, 36.0, 72.0, 90.0]
       System.out.println("mid lat= " + Arrays.toString(fooLatAxis.getCoordValues()));
       System.out.println("edge lat= " + Arrays.toString(fooLatAxis.getCoordEdges()));
       System.out.println();
+      ok &= compare.compareData("lat getCoordValues", fooLatAxis.getCoordValues(), new double[] {-54.0, 9.0, 54.0, 81.0});
+      ok &= compare.compareData("lat getCoordEdges", fooLatAxis.getCoordEdges(), new double[] {-90.0, -18.0, 36.0, 72.0, 90.0});
 
       // Expected: [0.0, 36.0, 108.0, 216.0, 360.0]
       // Actual:   [0.0, 36.0, 108.0, 216.0, 360.0]
       System.out.println("mid lon= " + Arrays.toString(fooLonAxis.getCoordValues()));
       System.out.println("edge lon= " + Arrays.toString(fooLonAxis.getCoordEdges()));
       System.out.println();
+      ok &= compare.compareData("lon getCoordValues", fooLonAxis.getCoordValues(), new double[] {18.0, 72.0, 162.0, 288.0});
+      ok &= compare.compareData("lon getCoordEdges", fooLonAxis.getCoordEdges(), new double[] {0.0, 36.0, 108.0, 216.0, 360.0});
 
-
+      // take mid range for all of the 3 coordinates
       Range middleRange = new Range(1, 2);
       GridDatatype fooSubGrid = fooGrid.makeSubset(null, null, middleRange, null, middleRange, middleRange);
 
@@ -788,35 +798,34 @@ public class TestSubset {
 
       // Expected: [31.0, 59.0, 90.0]
       // Actual:   [30.25, 59.75, 89.25]
-      System.out.println("mid time= " + Arrays.toString(fooSubTimeAxis.getCoordValues()));
-      System.out.println("edge time= " + Arrays.toString(fooSubTimeAxis.getCoordEdges()));
-      compare(fooSubTimeAxis.getCoordEdges(), new double[] {31.0, 59.0, 90.0} );
+      System.out.println("subset mid time= " + Arrays.toString(fooSubTimeAxis.getCoordValues()));
+      System.out.println("subset edge time= " + Arrays.toString(fooSubTimeAxis.getCoordEdges()));
+      ok &= compare.compareData("subset time getCoordValues", fooSubTimeAxis.getCoordValues(), new double[] {45.0, 74.5});
+      ok &= compare.compareData("subset time getCoordEdges", fooSubTimeAxis.getCoordEdges(), new double[] {31.0, 59.0, 90.0});
       System.out.println();
 
       // Expected: [-18.0, 36.0, 72.0]
       // Actual:   [-13.5, 31.5, 76.5]
-      System.out.println("mid lat= " + Arrays.toString(fooSubLatAxis.getCoordValues()));
-      System.out.println("edge lat= " + Arrays.toString(fooSubLatAxis.getCoordEdges()));
-      compare(fooSubLatAxis.getCoordEdges(), new double[] {-18.0, 36.0, 72.0} );
+      System.out.println("subset mid lat= " + Arrays.toString(fooSubLatAxis.getCoordValues()));
+      System.out.println("subset edge lat= " + Arrays.toString(fooSubLatAxis.getCoordEdges()));
+      ok &= compare.compareData("subset lat getCoordValues", fooSubLatAxis.getCoordValues(), new double[] {9.0, 54.0} );
+      ok &= compare.compareData("subset lat getCoordEdges", fooSubLatAxis.getCoordEdges(), new double[] {-18.0, 36.0, 72.0} );
       System.out.println();
 
       // Expected: [36.0, 108.0, 216.0]
       // Actual:   [27.0, 117.0, 207.0]
-      System.out.println("mid lon= " + Arrays.toString(fooSubLonAxis.getCoordValues()));
-      System.out.println("edge lon= " + Arrays.toString(fooSubLonAxis.getCoordEdges()));
-      compare(fooSubLonAxis.getCoordEdges(), new double[] {36.0, 108.0, 216.0} );
+      System.out.println("subset mid lon= " + Arrays.toString(fooSubLonAxis.getCoordValues()));
+      System.out.println("subset edge lon= " + Arrays.toString(fooSubLonAxis.getCoordEdges()));
+      ok &= compare.compareData("subset lon getCoordValues", fooSubLonAxis.getCoordValues(), new double[] {72.0, 162.0, } );
+      ok &= compare.compareData("subset lon getCoordEdges", fooSubLonAxis.getCoordEdges(), new double[] {36.0, 108.0, 216.0} );
       System.out.println();
+
+      assert ok : "not ok";
 
     } finally {
       fooDataset.close();
     }
-  }
 
-  private void compare(double[] d1, double[] d2) {
-    System.out.println(" should be= " + Arrays.toString(d2));
-    assert d1.length == d2.length;
-    for (int i=0; i<d1.length; i++)
-      assert d1[i] == d2[i];
   }
 
   public void utestScaleOffset() throws Exception {

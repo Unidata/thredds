@@ -321,12 +321,18 @@ public class CompareNetcdf {
   }
 
   static public void compareData(Array data1, Array data2) {
-    compareData(data1, data2, TOL);
+    compareData(data1, data2, TOL, true);
   }
 
-  static private void compareData(Array data1, Array data2, double tol) {
+  static public void compareData(Array data1, double[] data2) {
+    Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
+    compareData( data1, data2a, TOL, false);
+  }
+
+  static private void compareData(Array data1, Array data2, double tol, boolean checkType) {
     assert data1.getSize() == data2.getSize();
-    assert data1.getElementType() == data2.getElementType() : data1.getElementType() + "!=" + data2.getElementType();
+    if (checkType)
+      assert data1.getElementType() == data2.getElementType() : data1.getElementType() + "!=" + data2.getElementType();
     DataType dt = DataType.getType(data1.getElementType());
 
     IndexIterator iter1 = data1.getIndexIterator();
@@ -381,7 +387,7 @@ public class CompareNetcdf {
       StructureMembers.Member m2 = sm2.findMember(m1.getName());
       Array data1 = sdata1.getArray(m1);
       Array data2 = sdata2.getArray(m2);
-      compareData( data1, data2, tol);
+      compareData( data1, data2, tol, true);
     }
 
   }

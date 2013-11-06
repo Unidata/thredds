@@ -98,15 +98,15 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   }
 
   @Override
-  public CoordinateAxis1D section(Range r) throws InvalidRangeException {
-    CoordinateAxis1D s = super.section(r);
+  public CoordinateAxis1DTime section(Range r) throws InvalidRangeException {
+    CoordinateAxis1DTime s = (CoordinateAxis1DTime) super.section(r);
     List<CalendarDate> cdates = getCalendarDates();
 
     List<CalendarDate> cdateSection = new ArrayList<CalendarDate>(cdates.size());
     for (int i = r.first(), j = 0; i <= r.last(); i += r.stride(), ++j) {
       cdateSection.add(cdates.get(i));
     }
-    ((CoordinateAxis1DTime)s).cdates = cdateSection;
+    s.cdates = cdateSection;
     return s;
   }
 

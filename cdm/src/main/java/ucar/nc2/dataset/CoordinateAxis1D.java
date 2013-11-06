@@ -42,6 +42,7 @@ import ucar.unidata.util.Format;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -92,13 +93,36 @@ public class CoordinateAxis1D extends CoordinateAxis {
     vds.setCaching(true);
   }
 
+  /**
+   * Copy constructor
+   * @param ncd ok to reparent
+   * @param org copy from here
+   */
   CoordinateAxis1D(NetcdfDataset ncd, CoordinateAxis1D org) {
-    //super(ncd, org.getParentGroup(), org.getShortName(), org.getDataType(), org.getDimensionsString(),
-    //        org.getUnitsString(), org.getDescription());
     super(ncd, org);
     this.orgName = org.orgName;
     this.cache = new Variable.Cache(); // decouple cache
-    org.setCaching(true);    
+    org.setCaching(true);
+
+    // copy rest of state
+    this.increment = org.getIncrement();
+    this.isAscending = org.isAscending;
+    this.isInterval = org.isInterval();
+    this.isRegular = org.isRegular();
+
+    this.wasBoundsDone = org.wasBoundsDone;
+    this.wasCalcRegular = org.wasCalcRegular;
+    this.wasRead = org.wasRead;
+
+    this.midpoint = org.getCoordValues();
+    if (isInterval) {
+      this.bound1 = org.getBound1();
+      this.bound2 = org.getBound2();
+    } else {
+      this.edge = org.getCoordEdges();
+    }
+
+    this.names = org.names;
   }
 
   /**
@@ -127,7 +151,52 @@ public class CoordinateAxis1D extends CoordinateAxis {
    */
   public CoordinateAxis1D section(Range r) throws InvalidRangeException {
     Section section = new Section().appendRange(r);
-    return (CoordinateAxis1D) section(section);
+    CoordinateAxis1D result = (CoordinateAxis1D) section(section);
+    int len = r.length();
+
+    // deal with the midpoints, bounds
+    double[] new_mids = new double[len];
+    for (int idx = 0; idx < len; idx++) {
+      int old_idx = r.element(idx);
+      new_mids[idx] = midpoint[old_idx];
+    }
+    result.midpoint = new_mids;
+
+    if (isInterval) {
+      double[] new_bound1 = new double[len];
+      double[] new_bound2 = new double[len];
+      double[] new_edge = new double[len+1];
+      for (int idx = 0; idx < len; idx++) {
+        int old_idx = r.element(idx);
+        new_bound1[idx] = bound1[old_idx];
+        new_bound2[idx] = bound2[old_idx];
+        new_edge[idx] = bound1[old_idx];
+        new_edge[idx+1] = bound2[old_idx]; // all but last are overwritten
+      }
+      result.bound1 = new_bound1;
+      result.bound2 = new_bound2;
+      result.edge = new_edge;
+
+    } else {
+      double[] new_edge = new double[len+1];
+      for (int idx = 0; idx < len; idx++) {
+        int old_idx = r.element(idx);
+        new_edge[idx] = edge[old_idx];
+        new_edge[idx+1] = edge[old_idx+1]; // all but last are overwritten
+      }
+      result.edge = new_edge;
+    }
+
+    if (names != null) {
+      String[] new_names = new String[len];
+      for (int idx = 0; idx < len; idx++) {
+        int old_idx = r.element(idx);
+        new_names[idx] = names[old_idx];
+      }
+      result.names = new_names;
+    }
+
+    return result;
   }
 
   // for section and slice
@@ -221,6 +290,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdge() on non-numeric");
     if (!wasBoundsDone) makeBounds();
+    if (edge == null)
+      System.out.println("HEY");
     return edge[index];
   }
 
@@ -865,7 +936,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @return List of ucar.nc2.util.NamedObject, or empty list.
    */
   public List<NamedObject> getNames() {
-    int n = (int) getDimension(0).getLength();
+    int n = getDimension(0).getLength();
     List<NamedObject> names = new ArrayList<NamedObject>(n);
     for (int i = 0; i < n; i++)
       names.add(new ucar.nc2.util.NamedAnything(getCoordName(i), getUnitsString()));
