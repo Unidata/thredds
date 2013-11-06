@@ -59,253 +59,219 @@ import java.util.List;
  * @author edavis
  * @since Feb 23, 2005T4:23:04 PM
  */
-public class TestTrajectoryObsDataset
-{
-  static void assertTrajectoryObsDatasetInfoAsExpected( TrajectoryObsDataset trajDs,
-                                                        TestTrajectoryObsDataset.TrajDatasetInfo trajDsInfo )
-          throws IOException
-  {
+public class TestTrajectoryObsDataset {
+  static void assertTrajectoryObsDatasetInfoAsExpected(TrajectoryObsDataset trajDs,
+                                                       TestTrajectoryObsDataset.TrajDatasetInfo trajDsInfo)
+          throws IOException {
     // Check TypedDataset stuff.
-    assertTrue( "Title <" + trajDs.getTitle() + "> is not as expected <" + trajDsInfo.getTitle() + ">.",
-                (trajDsInfo.getTitle() == null
-                    ? trajDs.getTitle() == null
-                    : trajDsInfo.getTitle().equals( trajDs.getTitle())) );
-    assertTrue( "Description <" + trajDs.getDescription() + "> is not as expected <" + trajDsInfo.getDescription() + ">.",
-                ( trajDsInfo.getDescription() == null
-                  ? trajDs.getDescription() == null
-                  : trajDsInfo.getDescription().equals( trajDs.getDescription() ) ) );
-    assertTrue( "Dataset location URI <" + trajDs.getLocationURI() + "> not as expected <" + trajDsInfo.getLocationURI() + ">.",
-                new File( trajDsInfo.getLocationURI()).toURI().equals( new File( trajDs.getLocationURI()).toURI() ) );
-    assertTrue( "Start date <" + trajDs.getStartDate() + " - " + trajDs.getStartDate().getTime() + "> not as expected <" + trajDsInfo.getStartDateLong() + ">.",
-                trajDs.getStartDate().getTime() == trajDsInfo.getStartDateLong() );
-    assertTrue( "End date <" + trajDs.getEndDate() + " - " + trajDs.getEndDate().getTime() + "> not as expected <" + trajDsInfo.getEndDateLong() + ">.",
-                trajDs.getEndDate().getTime() == trajDsInfo.getEndDateLong() );
-    assertTrue( "Bounding box <" + trajDs.getBoundingBox() + "> not as expteced <" + trajDsInfo.getBb() + ">.",
-                ( trajDsInfo.getBb() == null
-                    ? trajDs.getBoundingBox() == null
-                    : trajDsInfo.getBb().equals( trajDs.getBoundingBox() ) ) );
+    assertTrue("Title <" + trajDs.getTitle() + "> is not as expected <" + trajDsInfo.getTitle() + ">.",
+            (trajDsInfo.getTitle() == null ? trajDs.getTitle() == null : trajDsInfo.getTitle().equals(trajDs.getTitle())));
+
+    assertTrue("Description <" + trajDs.getDescription() + "> is not as expected <" + trajDsInfo.getDescription() + ">.",
+            (trajDsInfo.getDescription() == null ? trajDs.getDescription() == null : trajDsInfo.getDescription().equals(trajDs.getDescription())));
+
+    assertTrue("Dataset location URI <" + trajDs.getLocationURI() + "> not as expected <" + trajDsInfo.getLocationURI() + ">.",
+            new File(trajDsInfo.getLocationURI()).toURI().equals(new File(trajDs.getLocationURI()).toURI()));
+
+    assertTrue("Start date <" + trajDs.getStartDate() + " - " + trajDs.getStartDate().getTime() + "> not as expected <" + trajDsInfo.getStartDateLong() + ">.",
+            trajDs.getStartDate().getTime() == trajDsInfo.getStartDateLong());
+
+    assertTrue("End date <" + trajDs.getEndDate() + " - " + trajDs.getEndDate().getTime() + "> not as expected <" + trajDsInfo.getEndDateLong() + ">.",
+            trajDs.getEndDate().getTime() == trajDsInfo.getEndDateLong());
+
+    assertTrue("Bounding box <" + trajDs.getBoundingBox() + "> not as expteced <" + trajDsInfo.getBb() + ">.",
+            (trajDsInfo.getBb() == null ? trajDs.getBoundingBox() == null : trajDsInfo.getBb().equals(trajDs.getBoundingBox())));
 
     // Check global attributes from TypedDataset.
     List globalAtts = trajDs.getGlobalAttributes();
-    assertTrue( "Global attributes list is null.",
-                globalAtts != null );
+    assertTrue("Global attributes list is null.", globalAtts != null);
     // assertTrue( "Number of global attributes <" + globalAtts.size() + "> not as expected <" + trajDsInfo.getNumGlobalAtts() + ">.", globalAtts.size() == trajDsInfo.getNumGlobalAtts() );
 
-    Attribute gatt = trajDs.findGlobalAttributeIgnoreCase( trajDsInfo.getExampGlobalAttName() );
-    assertTrue( "Global attribute \"" + trajDsInfo.getExampGlobalAttName() + "\" <" + gatt.getStringValue() + "> does not contain expected substring <" + trajDsInfo.getExampGlobalAttValSubstring() + ">.",
-                gatt.getStringValue().indexOf( trajDsInfo.getExampGlobalAttValSubstring() ) != -1 );
+    Attribute gatt = trajDs.findGlobalAttributeIgnoreCase(trajDsInfo.getExampGlobalAttName());
+    assertTrue("Global attribute \"" + trajDsInfo.getExampGlobalAttName() + "\" <" + gatt.getStringValue() + "> does not contain expected substring <" + trajDsInfo.getExampGlobalAttValSubstring() + ">.",
+            gatt.getStringValue().contains(trajDsInfo.getExampGlobalAttValSubstring()));
 
     // Check data variables from TypedDataset.
     List dataVars = trajDs.getDataVariables();
-    assertTrue( "Data vars list is null.",
-                dataVars != null );
-    assertTrue( "Size of data vars list <" + dataVars.size() + "> not as expected <" + trajDsInfo.getNumVars() + ">.",
-                dataVars.size() == trajDsInfo.getNumVars() );
-    VariableSimpleIF tdv = trajDs.getDataVariable( trajDsInfo.getExampleVarName() );
-    assertTrue( "Variable \"" + trajDsInfo.getExampleVarName() + "\" not found.",
-                tdv != null );
-    assertTrue( "Variable name <" + tdv.getShortName() + "> not as expected <" + trajDsInfo.getExampleVarName() + ">.",
-                tdv.getShortName().equals( trajDsInfo.getExampleVarName() ) );
-    assertTrue( "Variable description <" + tdv.getDescription() + "> not as expected <" + trajDsInfo.getExampleVarDescription() + ">.",
-                tdv.getDescription().equals( trajDsInfo.getExampleVarDescription() ) );
-    assertTrue( "Variable units <" + tdv.getUnitsString() + "> not convertable to <" + trajDsInfo.getExampleVarUnitsString() + ">.",
-                tdv.getUnitsString().equals( trajDsInfo.getExampleVarUnitsString() ) ||
-                SimpleUnit.isCompatible( tdv.getUnitsString(), trajDsInfo.getExampleVarUnitsString() ) );
-    assertTrue( "Variable rank <" + tdv.getRank() + "> not as expected <" + trajDsInfo.getExampleVarRank() + ">.",
-                tdv.getRank() == trajDsInfo.getExampleVarRank() );
-    assertTrue( "Variable shape <" + toStringIntArray( tdv.getShape() ) + "> not as expected <" + toStringIntArray( trajDsInfo.getExampleVarShape() ) + ">.",
-                compareIntArray( tdv.getShape(), trajDsInfo.getExampleVarShape() ) );
-    assertTrue( "Variable data type <" + tdv.getDataType() + "> not as expected <" + trajDsInfo.getExampleVarDataType() + ">.",
-                tdv.getDataType().equals( DataType.getType( trajDsInfo.getExampleVarDataType()) ) );
-    assertTrue( "Num variable attributes <" + tdv.getAttributes().size() + "> not as expected <" + trajDsInfo.getExampleVarNumAtts() + ">.",
-                tdv.getAttributes().size() == trajDsInfo.getExampleVarNumAtts() );
+    assertTrue("Data vars list is null.", dataVars != null);
+    assertTrue("Size of data vars list <" + dataVars.size() + "> not as expected <" + trajDsInfo.getNumVars() + ">.",
+            dataVars.size() == trajDsInfo.getNumVars());
+    VariableSimpleIF tdv = trajDs.getDataVariable(trajDsInfo.getExampleVarName());
+    assertTrue("Variable \"" + trajDsInfo.getExampleVarName() + "\" not found.", tdv != null);
+    assertTrue("Variable name <" + tdv.getShortName() + "> not as expected <" + trajDsInfo.getExampleVarName() + ">.",
+            tdv.getShortName().equals(trajDsInfo.getExampleVarName()));
+    assertTrue("Variable description <" + tdv.getDescription() + "> not as expected <" + trajDsInfo.getExampleVarDescription() + ">.",
+            tdv.getDescription().equals(trajDsInfo.getExampleVarDescription()));
+    assertTrue("Variable units <" + tdv.getUnitsString() + "> not convertable to <" + trajDsInfo.getExampleVarUnitsString() + ">.",
+            tdv.getUnitsString().equals(trajDsInfo.getExampleVarUnitsString()) || SimpleUnit.isCompatible(tdv.getUnitsString(), trajDsInfo.getExampleVarUnitsString()));
+    assertTrue("Variable rank <" + tdv.getRank() + "> not as expected <" + trajDsInfo.getExampleVarRank() + ">.",
+            tdv.getRank() == trajDsInfo.getExampleVarRank());
+    assertTrue("Variable shape <" + toStringIntArray(tdv.getShape()) + "> not as expected <" + toStringIntArray(trajDsInfo.getExampleVarShape()) + ">.",
+            compareIntArray(tdv.getShape(), trajDsInfo.getExampleVarShape()));
+    assertTrue("Variable data type <" + tdv.getDataType() + "> not as expected <" + trajDsInfo.getExampleVarDataType() + ">.",
+            tdv.getDataType().equals(DataType.getType(trajDsInfo.getExampleVarDataType())));
+    assertTrue("Num variable attributes <" + tdv.getAttributes().size() + "> not as expected <" + trajDsInfo.getExampleVarNumAtts() + ">.",
+            tdv.getAttributes().size() == trajDsInfo.getExampleVarNumAtts());
 
     // Check the underlying nc file.
-    assertTrue( "Underlying netCDF file <" + trajDs.getNetcdfFile().getLocation() + "> not as expected <" + trajDsInfo.getLocationURI() + ">.",
-                new File( trajDs.getNetcdfFile().getLocation()).toURI().equals( new File( trajDsInfo.getLocationURI()).toURI() ) );
+    assertTrue("Underlying netCDF file <" + trajDs.getNetcdfFile().getLocation() + "> not as expected <" + trajDsInfo.getLocationURI() + ">.",
+            new File(trajDs.getNetcdfFile().getLocation()).toURI().equals(new File(trajDsInfo.getLocationURI()).toURI()));
 
     // Check trajectory stuff.
     List trajNames = trajDs.getTrajectoryIds();
-    assertTrue( "Number of trajectory names <" + trajNames.size() + "> more than expected <" + trajDsInfo.getNumTrajs() + ">.",
-                trajNames.size() == trajDsInfo.getNumTrajs() );
-    TrajectoryObsDatatype traj1 = trajDs.getTrajectory( trajDsInfo.getExTrajId() );
-    assertTrue( "Trajectory name <" + traj1.getId() + "> not as expected <" + trajDsInfo.getExTrajId() + ">.",
-                ( trajDsInfo.getExTrajId() == null
-                  ? traj1.getId() == null
-                  : trajDsInfo.getExTrajId().equals( traj1.getId() ) ) );
+    assertTrue("Number of trajectory names <" + trajNames.size() + "> more than expected <" + trajDsInfo.getNumTrajs() + ">.",
+            trajNames.size() == trajDsInfo.getNumTrajs());
+    TrajectoryObsDatatype traj1 = trajDs.getTrajectory(trajDsInfo.getExTrajId());
+    assertTrue("Trajectory name <" + traj1.getId() + "> not as expected <" + trajDsInfo.getExTrajId() + ">.",
+            (trajDsInfo.getExTrajId() == null ? traj1.getId() == null : trajDsInfo.getExTrajId().equals(traj1.getId())));
 
-    assertTrue( "Trajectory description <" + traj1.getDescription() + "> not as expected <" + trajDsInfo.getExTrajDesc() + ">.",
-                ( trajDsInfo.getExTrajDesc() == null
-                  ? traj1.getDescription() == null
-                  : trajDsInfo.getExTrajDesc().equals( traj1.getDescription() ) ) );
+    assertTrue("Trajectory description <" + traj1.getDescription() + "> not as expected <" + trajDsInfo.getExTrajDesc() + ">.",
+            (trajDsInfo.getExTrajDesc() == null ? traj1.getDescription() == null : trajDsInfo.getExTrajDesc().equals(traj1.getDescription())));
 
-    assertTrue( "Number of points in trajectory <" + traj1.getNumberPoints() + "> not as expected <" + trajDsInfo.getExTrajNumPoints() + ">.",
-                traj1.getNumberPoints() == trajDsInfo.getExTrajNumPoints() );
+    assertTrue("Number of points in trajectory <" + traj1.getNumberPoints() + "> not as expected <" + trajDsInfo.getExTrajNumPoints() + ">.",
+            traj1.getNumberPoints() == trajDsInfo.getExTrajNumPoints());
 
     // Check start and end values of time, lat, lon, and elev.
     Date startDate = null, endDate = null;
     double startLat = 0, startLon = 0, startElev = 0;
     double endLat = 0, endLon = 0, endElev = 0;
 
-    try
-    {
-      startDate = traj1.getTime( 0 );
-      startLat = traj1.getLatitude( 0 );
-      startLon = traj1.getLongitude( 0 );
-      startElev = traj1.getElevation( 0 );
-      endDate = traj1.getTime( traj1.getNumberPoints() - 1 );
-      endLat = traj1.getLatitude( traj1.getNumberPoints() - 1 );
-      endLon = traj1.getLongitude( traj1.getNumberPoints() - 1 );
-      endElev = traj1.getElevation( traj1.getNumberPoints() - 1 );
+    try {
+      startDate = traj1.getTime(0);
+      startLat = traj1.getLatitude(0);
+      startLon = traj1.getLongitude(0);
+      startElev = traj1.getElevation(0);
+      endDate = traj1.getTime(traj1.getNumberPoints() - 1);
+      endLat = traj1.getLatitude(traj1.getNumberPoints() - 1);
+      endLon = traj1.getLongitude(traj1.getNumberPoints() - 1);
+      endElev = traj1.getElevation(traj1.getNumberPoints() - 1);
+
+    } catch (IOException e) {
+      assertTrue("Couldn't read first/last time, lat, lon, elev from trajectory.", false);
     }
-    catch ( IOException e )
-    {
-      assertTrue( "Couldn't read first/last time, lat, lon, elev from trajectory.", false );
-    }
-    assertTrue( "Traj start date <" + startDate + " - " + startDate.getTime() + "> not as expected <" + trajDsInfo.getStartDateLong() + ">.",
-                startDate.getTime() == trajDsInfo.getStartDateLong() );
-    assertTrue( "Traj end date <" + endDate + " - " + endDate.getTime() + "> not as expected <" + trajDsInfo.getEndDateLong() + ">.",
-                endDate.getTime() == trajDsInfo.getEndDateLong() );
 
-    assertTrue( "Start latitude <" + startLat + "> not as expected <" + trajDsInfo.getExampleTrajStartLat() + ">.",
-                doubleWithinEpsilon( startLat, trajDsInfo.getExampleTrajStartLat(), 0.0001 ) );
-    assertTrue( "End latitude <" + endLat + "> not as expected <" + trajDsInfo.getExampleTrajEndLat() + ">.",
-                doubleWithinEpsilon( endLat, trajDsInfo.getExampleTrajEndLat(), 0.0001 ) );
+    assertTrue("Traj start date <" + startDate + " - " + startDate.getTime() + "> not as expected <" + trajDsInfo.getStartDateLong() + ">.",
+            startDate.getTime() == trajDsInfo.getStartDateLong());
 
-    assertTrue( "Start longitude <" + startLon + "> not as expected <" + trajDsInfo.getExampleTrajStartLon() + ">.",
-                doubleWithinEpsilon( startLon, trajDsInfo.getExampleTrajStartLon(), 0.0001 ) );
-    assertTrue( "End longitude <" + endLon + "> not as expected <" + trajDsInfo.getExampleTrajEndLon() + ">.",
-                doubleWithinEpsilon( endLon, trajDsInfo.getExampleTrajEndLon(), 0.0001 ) );
+    assertTrue("Traj end date <" + endDate + " - " + endDate.getTime() + "> not as expected <" + trajDsInfo.getEndDateLong() + ">.",
+            endDate.getTime() == trajDsInfo.getEndDateLong());
 
-    assertTrue( "Start elevation <" + startElev + "> not as expected <" + trajDsInfo.getExampleTrajStartElev() + ">.",
-                doubleWithinEpsilon( startElev, trajDsInfo.getExampleTrajStartElev(), 0.0001 ) );
-    assertTrue( "End elevation <" + endElev + "> not as expected <" + trajDsInfo.getExampleTrajEndElev() + ">.",
-                doubleWithinEpsilon( endElev, trajDsInfo.getExampleTrajEndElev(), 0.0001 ) );
+    assertTrue("Start latitude <" + startLat + "> not as expected <" + trajDsInfo.getExampleTrajStartLat() + ">.",
+            doubleWithinEpsilon(startLat, trajDsInfo.getExampleTrajStartLat(), 0.0001));
+
+    assertTrue("End latitude <" + endLat + "> not as expected <" + trajDsInfo.getExampleTrajEndLat() + ">.",
+            doubleWithinEpsilon(endLat, trajDsInfo.getExampleTrajEndLat(), 0.0001));
+
+    assertTrue("Start longitude <" + startLon + "> not as expected <" + trajDsInfo.getExampleTrajStartLon() + ">.",
+            doubleWithinEpsilon(startLon, trajDsInfo.getExampleTrajStartLon(), 0.0001));
+
+    assertTrue("End longitude <" + endLon + "> not as expected <" + trajDsInfo.getExampleTrajEndLon() + ">.",
+            doubleWithinEpsilon(endLon, trajDsInfo.getExampleTrajEndLon(), 0.0001));
+
+    assertTrue("Start elevation <" + startElev + "> not as expected <" + trajDsInfo.getExampleTrajStartElev() + ">.",
+            doubleWithinEpsilon(startElev, trajDsInfo.getExampleTrajStartElev(), 0.0001));
+
+    assertTrue("End elevation <" + endElev + "> not as expected <" + trajDsInfo.getExampleTrajEndElev() + ">.",
+            doubleWithinEpsilon(endElev, trajDsInfo.getExampleTrajEndElev(), 0.0001));
 
     // Check the first and last values of the example variable.
     Object exampleVarStartVal = null;
     Object exampleVarEndVal = null;
-    try
-    {
-      Array array = traj1.getData( 0, trajDsInfo.getExampleVarName() );
-      exampleVarStartVal = array.getObject( array.getIndex());
-      array = traj1.getData( traj1.getNumberPoints() - 1, trajDsInfo.getExampleVarName() );
-      exampleVarEndVal = array.getObject( array.getIndex());
+    try {
+      Array array = traj1.getData(0, trajDsInfo.getExampleVarName());
+      exampleVarStartVal = array.getObject(array.getIndex());
+      array = traj1.getData(traj1.getNumberPoints() - 1, trajDsInfo.getExampleVarName());
+      exampleVarEndVal = array.getObject(array.getIndex());
+
+    } catch (Exception e) {
+      assertTrue("Failed to read start and end values of " + trajDsInfo.getExampleVarName() + ": " + e.getMessage(), false);
     }
-    catch ( Exception e )
-    {
-      assertTrue( "Failed to read start and end values of " + trajDsInfo.getExampleVarName() + ": " + e.getMessage(),
-                  false );
-    }
-    assertTrue( "Example variable \"" + trajDsInfo.getExampleVarName()
-                + "\" start value <" + exampleVarStartVal + "> not as expected <" + trajDsInfo.getExampleVarStartVal() + "> or " +
-                "end value <" + exampleVarEndVal + "> not as expected <" + trajDsInfo.getExampleVarEndVal() + ">.",
-                doubleWithinEpsilon( ((Float) trajDsInfo.getExampleVarStartVal()).doubleValue(), ((Float) exampleVarStartVal).doubleValue(), 0.0001)
-                && doubleWithinEpsilon( ((Float) trajDsInfo.getExampleVarEndVal()).doubleValue(), ((Float) exampleVarEndVal).doubleValue(), 0.0001 ) );
+
+    assertTrue("Example variable \"" + trajDsInfo.getExampleVarName()
+            + "\" start value <" + exampleVarStartVal + "> not as expected <" + trajDsInfo.getExampleVarStartVal() + "> or " +
+            "end value <" + exampleVarEndVal + "> not as expected <" + trajDsInfo.getExampleVarEndVal() + ">.",
+            doubleWithinEpsilon(((Float) trajDsInfo.getExampleVarStartVal()).doubleValue(), ((Float) exampleVarStartVal).doubleValue(), 0.0001)
+                    && doubleWithinEpsilon(((Float) trajDsInfo.getExampleVarEndVal()).doubleValue(), ((Float) exampleVarEndVal).doubleValue(), 0.0001));
 //    assertTrue( "Variables' first two values <" + windSpd[0] + "," + windSpd[1] + "> not as expected <" + varVals[0] + "," + varVals[1] + ">.",
 //                windSpd[0] == varVals[0] && windSpd[1] == varVals[1] );
 
     // Test with getPointObsData()
     PointObsDatatype pointOb;
-    try
-    {
-      pointOb = (PointObsDatatype) traj1.getPointObsData( 0 );
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException on call to getPointObsData(0): " + e.getMessage(),
-                  false);
+    try {
+      pointOb = traj1.getPointObsData(0);
+    } catch (IOException e) {
+      assertTrue("IOException on call to getPointObsData(0): " + e.getMessage(), false);
       return;
     }
-    assertTrue( "Start time (getPointObsData) <" + pointOb.getNominalTimeAsDate().getTime() + "> not as expected <" + trajDsInfo.getStartDateLong() + ">.",
-                pointOb.getNominalTimeAsDate().getTime() == trajDsInfo.getStartDateLong() );
-    assertTrue( "Start lat (getPointObsData) <" + pointOb.getLocation().getLatitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartLat() + ">.",
-                doubleWithinEpsilon( pointOb.getLocation().getLatitude(), trajDsInfo.getExampleTrajStartLat(), 0.0001 ) );
-    assertTrue( "Start lon (getPointObsData) <" + pointOb.getLocation().getLongitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartLon() + ">.",
-                doubleWithinEpsilon( pointOb.getLocation().getLongitude(), trajDsInfo.getExampleTrajStartLon(), 0.0001 ) );
-    assertTrue( "Start alt (getPointObsData) <" + pointOb.getLocation().getAltitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartElev() + ">.",
-                doubleWithinEpsilon( pointOb.getLocation().getAltitude(), trajDsInfo.getExampleTrajStartElev(), 0.0001 ) );
+
+    assertTrue("Start time (getPointObsData) <" + pointOb.getNominalTimeAsDate().getTime() + "> not as expected <" + trajDsInfo.getStartDateLong() + ">.",
+            pointOb.getNominalTimeAsDate().getTime() == trajDsInfo.getStartDateLong());
+    assertTrue("Start lat (getPointObsData) <" + pointOb.getLocation().getLatitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartLat() + ">.",
+            doubleWithinEpsilon(pointOb.getLocation().getLatitude(), trajDsInfo.getExampleTrajStartLat(), 0.0001));
+    assertTrue("Start lon (getPointObsData) <" + pointOb.getLocation().getLongitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartLon() + ">.",
+            doubleWithinEpsilon(pointOb.getLocation().getLongitude(), trajDsInfo.getExampleTrajStartLon(), 0.0001));
+    assertTrue("Start alt (getPointObsData) <" + pointOb.getLocation().getAltitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartElev() + ">.",
+            doubleWithinEpsilon(pointOb.getLocation().getAltitude(), trajDsInfo.getExampleTrajStartElev(), 0.0001));
 
     // Test with
     StructureData sdata;
-    try
-    {
-      sdata = traj1.getData( 0);
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException on getData(0): " + e.getMessage(),
-                  false);
+    try {
+      sdata = traj1.getData(0);
+    } catch (IOException e) {
+      assertTrue("IOException on getData(0): " + e.getMessage(), false);
+      return;
+    } catch (InvalidRangeException e) {
+      assertTrue("InvalidRangeException on getData(0): " + e.getMessage(), false);
       return;
     }
-    catch ( InvalidRangeException e )
-    {
-      assertTrue( "InvalidRangeException on getData(0): " + e.getMessage(),
-                  false );
-      return;
-    }
-    assertTrue( "Null StructureData from getData(0).",
-                sdata != null);
+    assertTrue("Null StructureData from getData(0).", sdata != null);
 
     // Test with getDataIterator()
     DataIterator it;
-    try
-    {
-      it = traj1.getDataIterator( 0);
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException on call to trajectory.getDataIterator(): " + e.getMessage(),
-                  false);
+    try {
+      it = traj1.getDataIterator(0);
+    } catch (IOException e) {
+      assertTrue("IOException on call to trajectory.getDataIterator(): " + e.getMessage(), false);
       return;
     }
-    if ( it == null)
-    {
-      System.out.println( "Null trajectory iterator, skipping iterator tests." );
+    if (it == null) {
+      System.out.println("Null trajectory iterator, skipping iterator tests.");
+      return;
+    }
+    if (!it.hasNext()) {
+      assertTrue("First call to Iterator.hasNext() returned false.", false);
       return;
     }
 
-    if ( ! it.hasNext() )
-    {
-      assertTrue( "First call to Iterator.hasNext() returned false.",
-                  false );
-      return;
-    }
     pointOb = (PointObsDatatype) it.nextData();
-    assertTrue( "Start time (iterator) <" + pointOb.getNominalTimeAsDate().getTime() + "> not as expected <" + trajDsInfo.getStartDateLong() + ">.",
-                pointOb.getNominalTimeAsDate().getTime() == trajDsInfo.getStartDateLong() );
-    assertTrue( "Start lat (iterator) <" + pointOb.getLocation().getLatitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartLat() + ">.",
-                doubleWithinEpsilon( pointOb.getLocation().getLatitude(), trajDsInfo.getExampleTrajStartLat(), 0.0001 ) );
-    assertTrue( "Start lon (iterator) <" + pointOb.getLocation().getLongitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartLon() + ">.",
-                doubleWithinEpsilon( pointOb.getLocation().getLongitude(), trajDsInfo.getExampleTrajStartLon(), 0.0001 ) );
-    assertTrue( "Start alt (iterator) <" + pointOb.getLocation().getAltitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartElev() + ">.",
-                doubleWithinEpsilon( pointOb.getLocation().getAltitude(), trajDsInfo.getExampleTrajStartElev(), 0.0001 ) );
+    assertTrue("Start time (iterator) <" + pointOb.getNominalTimeAsDate().getTime() + "> not as expected <" + trajDsInfo.getStartDateLong() + ">.",
+            pointOb.getNominalTimeAsDate().getTime() == trajDsInfo.getStartDateLong());
+    assertTrue("Start lat (iterator) <" + pointOb.getLocation().getLatitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartLat() + ">.",
+            doubleWithinEpsilon(pointOb.getLocation().getLatitude(), trajDsInfo.getExampleTrajStartLat(), 0.0001));
+    assertTrue("Start lon (iterator) <" + pointOb.getLocation().getLongitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartLon() + ">.",
+            doubleWithinEpsilon(pointOb.getLocation().getLongitude(), trajDsInfo.getExampleTrajStartLon(), 0.0001));
+    assertTrue("Start alt (iterator) <" + pointOb.getLocation().getAltitude() + "> not as expected <" + trajDsInfo.getExampleTrajStartElev() + ">.",
+            doubleWithinEpsilon(pointOb.getLocation().getAltitude(), trajDsInfo.getExampleTrajStartElev(), 0.0001));
   }
 
-  private static boolean compareIntArray( int[] array1, int[] array2 )
-  {
-    return ( TestTrajectoryObsDataset.toStringIntArray( array1 ).equals( TestTrajectoryObsDataset.toStringIntArray( array2 ) ) );
+  private static boolean compareIntArray(int[] array1, int[] array2) {
+    return (TestTrajectoryObsDataset.toStringIntArray(array1).equals(TestTrajectoryObsDataset.toStringIntArray(array2)));
   }
 
-  private static String toStringIntArray( int[] array )
-  {
+  private static String toStringIntArray(int[] array) {
     int size = array.length;
-    StringBuffer rep = new StringBuffer( "int[]=(" )
-            .append( size ).append( "){" );
-    for ( int i = 0; i < size; i++ )
-    {
-      rep.append( array[i] ).append( "," );
+    StringBuffer rep = new StringBuffer("int[]=(").append(size).append("){");
+    for (int i = 0; i < size; i++) {
+      rep.append(array[i]).append(",");
     }
-    return ( rep.toString() );
+    return (rep.toString());
   }
 
-  private static boolean doubleWithinEpsilon( double value, double target, double epsilon )
-  {
-    return ( target - epsilon <= value && value <= target + epsilon );
+  private static boolean doubleWithinEpsilon(double value, double target, double epsilon) {
+    return (target - epsilon <= value && value <= target + epsilon);
   }
 
-  static class TrajDatasetInfo
-  {
+  static class TrajDatasetInfo {
     private String title;
     private String description;
     private String locationURI;
@@ -339,17 +305,16 @@ public class TestTrajectoryObsDataset
     private float exampleTrajStartElev;
     private float exampleTrajEndElev;
 
-    public TrajDatasetInfo( String title, String description, String locationURI,
-                     long startDateLong, long endDateLong, LatLonRect bb,
-                     int numGlobalAtts, String exampGlobalAttName, String exampGlobalAttVal,
-                     int numVars, String exampleVarName, String exampleVarDescription, String exampleVarUnitsString,
-                     int exampleVarRank, int[] exampleVarShape, String exampleVarDataType, int exampleVarNumAtts,
-                     Object exampleVarStartVal, Object exampleVarEndVal,
-                     int numTrajs, String exTrajId, String exTrajDesc, int exTrajNumPoints,
-                     float exampleTrajStartLat, float exampleTrajEndLat,
-                     float exampleTrajStartLon, float exampleTrajEndLon,
-                     float exampleTrajStartElev, float exampleTrajEndElev )
-    {
+    public TrajDatasetInfo(String title, String description, String locationURI,
+                           long startDateLong, long endDateLong, LatLonRect bb,
+                           int numGlobalAtts, String exampGlobalAttName, String exampGlobalAttVal,
+                           int numVars, String exampleVarName, String exampleVarDescription, String exampleVarUnitsString,
+                           int exampleVarRank, int[] exampleVarShape, String exampleVarDataType, int exampleVarNumAtts,
+                           Object exampleVarStartVal, Object exampleVarEndVal,
+                           int numTrajs, String exTrajId, String exTrajDesc, int exTrajNumPoints,
+                           float exampleTrajStartLat, float exampleTrajEndLat,
+                           float exampleTrajStartLon, float exampleTrajEndLon,
+                           float exampleTrajStartElev, float exampleTrajEndElev) {
       this.title = title;
       this.description = description;
       this.locationURI = locationURI;
@@ -384,153 +349,123 @@ public class TestTrajectoryObsDataset
       this.exampleTrajEndElev = exampleTrajEndElev;
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
       return title;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
       return description;
     }
 
-    public String getLocationURI()
-    {
+    public String getLocationURI() {
       return locationURI;
     }
 
-    public void setLocationURI( String locationURI )
-    {
+    public void setLocationURI(String locationURI) {
       this.locationURI = locationURI;
     }
 
-    public long getStartDateLong()
-    {
+    public long getStartDateLong() {
       return startDateLong;
     }
 
-    public long getEndDateLong()
-    {
+    public long getEndDateLong() {
       return endDateLong;
     }
 
-    public LatLonRect getBb()
-    {
+    public LatLonRect getBb() {
       return bb;
     }
 
-    public int getNumGlobalAtts()
-    {
+    public int getNumGlobalAtts() {
       return numGlobalAtts;
     }
 
-    public String getExampGlobalAttName()
-    {
+    public String getExampGlobalAttName() {
       return exampGlobalAttName;
     }
 
-    public String getExampGlobalAttValSubstring()
-    {
+    public String getExampGlobalAttValSubstring() {
       return exampGlobalAttValSubstring;
     }
 
-    public int getNumVars()
-    {
+    public int getNumVars() {
       return numVars;
     }
 
-    public String getExampleVarName()
-    {
+    public String getExampleVarName() {
       return exampleVarName;
     }
 
-    public String getExampleVarDescription()
-    {
+    public String getExampleVarDescription() {
       return exampleVarDescription;
     }
 
-    public String getExampleVarUnitsString()
-    {
+    public String getExampleVarUnitsString() {
       return exampleVarUnitsString;
     }
 
-    public int getExampleVarRank()
-    {
+    public int getExampleVarRank() {
       return exampleVarRank;
     }
 
-    public int getExampleVarNumAtts()
-    {
+    public int getExampleVarNumAtts() {
       return exampleVarNumAtts;
     }
 
-    public String getExampleVarDataType()
-    {
+    public String getExampleVarDataType() {
       return exampleVarDataType;
     }
 
-    public int[] getExampleVarShape()
-    {
+    public int[] getExampleVarShape() {
       return exampleVarShape;
     }
 
-    public int getNumTrajs()
-    {
+    public int getNumTrajs() {
       return numTrajs;
     }
 
-    public String getExTrajId()
-    {
+    public String getExTrajId() {
       return exTrajId;
     }
 
-    public String getExTrajDesc()
-    {
+    public String getExTrajDesc() {
       return exTrajDesc;
     }
 
-    public int getExTrajNumPoints()
-    {
+    public int getExTrajNumPoints() {
       return exTrajNumPoints;
     }
 
-    public float getExampleTrajStartLat()
-    {
+    public float getExampleTrajStartLat() {
       return exampleTrajStartLat;
     }
 
-    public float getExampleTrajEndLat()
-    {
+    public float getExampleTrajEndLat() {
       return exampleTrajEndLat;
     }
 
-    public float getExampleTrajStartLon()
-    {
+    public float getExampleTrajStartLon() {
       return exampleTrajStartLon;
     }
 
-    public float getExampleTrajEndLon()
-    {
+    public float getExampleTrajEndLon() {
       return exampleTrajEndLon;
     }
 
-    public float getExampleTrajStartElev()
-    {
+    public float getExampleTrajStartElev() {
       return exampleTrajStartElev;
     }
 
-    public float getExampleTrajEndElev()
-    {
+    public float getExampleTrajEndElev() {
       return exampleTrajEndElev;
     }
 
-    public Object getExampleVarStartVal()
-    {
+    public Object getExampleVarStartVal() {
       return exampleVarStartVal;
     }
 
-    public Object getExampleVarEndVal()
-    {
+    public Object getExampleVarEndVal() {
       return exampleVarEndVal;
     }
   }

@@ -34,6 +34,7 @@
 package ucar.nc2.dt.trajectory;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import ucar.nc2.dt.TrajectoryObsDataset;
@@ -56,38 +57,28 @@ import java.io.File;
  * @author edavis
  * @since Feb 22, 2005T22:33:51 PM
  */
-public class TestARMTrajectoryObsDataset
-{
+public class TestARMTrajectoryObsDataset {
   private TrajectoryObsDataset me;
-
-  private String testFilePath = TestDir.cdmUnitTestDir + "ft/profile/sonde";
-  private String testDataFileName = "sgpsondewnpnC1.a1.20020507.112400.cdf";
 
   /**
    * Test ...
    */
   @Test
   public void testARM() throws IOException {
-    String location = testFilePath + "/" + testDataFileName;
-    assertTrue( "Test file <" + location + "> does not exist.",
-                new File( location ).exists() );
+    String location = TestDir.cdmUnitTestDir + "ft/profile/sonde/sgpsondewnpnC1.a1.20020507.112400.cdf";
+    assertTrue("Test file <" + location + "> does not exist.", new File(location).exists());
 
-    try
-    {
+    try {
       //me = TrajectoryObsDatasetFactory.open( location);
       StringBuilder errlog = new StringBuilder();
       me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
-    }
-    catch ( IOException e )
-    {
+
+    } catch (IOException e) {
       String tmpMsg = "Couldn't create TrajectoryObsDataset from ARM sonde file <" + location + ">: " + e.getMessage();
-      assertTrue( tmpMsg,
-                  false);
+      assertTrue(tmpMsg, false);
     }
-    assertTrue( "Null TrajectoryObsDataset after open <" + location + "> ",
-                me != null );
-    assertTrue( "Dataset <" + location + "> not a ARMTrajectoryObsDataset.",
-                me instanceof ARMTrajectoryObsDataset);
+    assertTrue("Null TrajectoryObsDataset after open <" + location + "> ", me != null);
+    assertTrue("Dataset <" + location + "> not a ARMTrajectoryObsDataset.", me instanceof ARMTrajectoryObsDataset);
 
     String dsTitle = null;
     String dsDescrip = null;
@@ -105,11 +96,12 @@ public class TestARMTrajectoryObsDataset
     int[] exampleVarShape = new int[]{};
     String exampleVarDataType = DataType.FLOAT.toString();
     int exampleVarNumAtts = 4;
-    Float exampleVarStartVal = new Float( 21.0f );
-    Float exampleVarEndVal = new Float( -49.1f );
+    Float exampleVarStartVal = new Float(21.0f);
+    Float exampleVarEndVal = new Float(-49.1f);
     int numTrajs = 1;
     String exampleTrajId = "trajectory data";
     String exampleTrajDesc = null;
+
     int exampleTrajNumPoints = 2951;
     float exampleTrajStartLat = 36.61f;
     float exampleTrajEndLat = 37.12618f;
@@ -117,6 +109,7 @@ public class TestARMTrajectoryObsDataset
     float exampleTrajEndLon = -96.28289f;
     float exampleTrajStartElev = 315.0f;
     float exampleTrajEndElev = 26771.0f;
+
     TestTrajectoryObsDataset.TrajDatasetInfo trajDsInfo =
             new TestTrajectoryObsDataset.TrajDatasetInfo(
                     dsTitle, dsDescrip, location,
@@ -128,56 +121,39 @@ public class TestARMTrajectoryObsDataset
                     numTrajs, exampleTrajId, exampleTrajDesc, exampleTrajNumPoints,
                     exampleTrajStartLat, exampleTrajEndLat, exampleTrajStartLon, exampleTrajEndLon, exampleTrajStartElev, exampleTrajEndElev);
 
-    TestTrajectoryObsDataset.assertTrajectoryObsDatasetInfoAsExpected( me, trajDsInfo );
+    TestTrajectoryObsDataset.assertTrajectoryObsDatasetInfoAsExpected(me, trajDsInfo);
 
-    TrajectoryObsDatatype traj = me.getTrajectory( exampleTrajId);
+    TrajectoryObsDatatype traj = me.getTrajectory(exampleTrajId);
 
     // Test that "alt" units gets changed to "meters"
     // ... from getPointObsData(0)
     PointObsDatatype pointOb;
-    try
-    {
-      pointOb = (PointObsDatatype) traj.getPointObsData( 0 );
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException on call to getPointObsData(0): " + e.getMessage(),
-                  false );
+    try {
+      pointOb = traj.getPointObsData(0);
+    } catch (IOException e) {
+      assertTrue("IOException on call to getPointObsData(0): " + e.getMessage(), false);
       return;
     }
     StructureData sdata;
-    try
-    {
+    try {
       sdata = pointOb.getData();
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException on getData(): " + e.getMessage(),
-                  false);
+    } catch (IOException e) {
+      assertTrue("IOException on getData(): " + e.getMessage(), false);
       return;
     }
 
-    String u = sdata.findMember( "alt").getUnitsString();
-    assert u.equals( "meters") : "traj.getPointObsData().getData().findMember( \"alt\") units <" + u + "> not as expected";
+    String u = sdata.findMember("alt").getUnitsString();
+    assert u.equals("meters") : "traj.getPointObsData().getData().findMember( \"alt\") units <" + u + "> not as expected";
     //assertTrue( "traj.getPointObsData().getData().findMember( \"alt\") units <" + u + "> not as expected <meters>.",
     //            u.equals( "meters") );
 
     // ... from getData(0)
-    try
-    {
-      sdata = traj.getData( 0 );
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException on getData(0): " + e.getMessage(),
-                  false );
-      return;
-    }
-    catch ( InvalidRangeException e )
-    {
-      assertTrue( "InvalidRangeException on getData(0): " + e.getMessage(),
-                  false );
-      return;
+    try {
+      sdata = traj.getData(0);
+    } catch (IOException e) {
+      assertTrue("IOException on getData(0): " + e.getMessage(), false);
+    } catch (InvalidRangeException e) {
+      assertTrue("InvalidRangeException on getData(0): " + e.getMessage(), false);
     }
     //u = sdata.findMember( "alt" ).getUnitsString();
     //assertTrue( "traj.getData().findMember( \"alt\") units <" + u + "> not as expected <meters>.",

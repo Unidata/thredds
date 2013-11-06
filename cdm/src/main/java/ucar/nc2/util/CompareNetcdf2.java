@@ -489,6 +489,10 @@ public class CompareNetcdf2 {
     return compareData(name, data1, data2, TOL, justOne, true);
   }
 
+  public boolean compareData(String name, Array data1, Array data2) {
+    return compareData(name, data1, data2, TOL, false, true);
+  }
+
   private boolean compareData(String name, Array data1, Array data2, double tol, boolean justOne, boolean testTypes) {
     boolean ok = true;
     if (data1.getSize() != data2.getSize()) {

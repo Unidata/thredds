@@ -110,19 +110,18 @@ public class CoordinateAxis1D extends CoordinateAxis {
     this.isInterval = org.isInterval();
     this.isRegular = org.isRegular();
 
-    this.wasBoundsDone = org.wasBoundsDone;
-    this.wasCalcRegular = org.wasCalcRegular;
-    this.wasRead = org.wasRead;
-
     this.midpoint = org.getCoordValues();
+    this.edge = org.getCoordEdges();
+    this.names = org.names;
+
     if (isInterval) {
       this.bound1 = org.getBound1();
       this.bound2 = org.getBound2();
-    } else {
-      this.edge = org.getCoordEdges();
     }
 
-    this.names = org.names;
+    this.wasBoundsDone = org.wasBoundsDone;
+    this.wasCalcRegular = org.wasCalcRegular;
+    this.wasRead = org.wasRead;
   }
 
   /**
@@ -717,7 +716,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       else
         isAscending = getCoordValue(0) < getCoordValue(1);
 
-      // correct non-monotonic longitude coords
+      /* correct non-monotonic longitude coords LOOK cant do - monotonic not required always (eg point data)
       if (axisType == AxisType.Lon) {
         boolean monotonic = true;
         for (int i = 0; i < midpoint.length - 1; i++)
@@ -744,10 +743,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
             cachedData = MAMath.convert(cachedData, getDataType());
           setCachedData(cachedData);
         }
-      }
+      } */
 
-      //  calcIsRegular();
-    } else if (getDataType() == DataType.STRING) {
+      //  calcIsRegular(); */
+    } else
+
+    if (getDataType() == DataType.STRING) {
       readStringValues();
       wasRead = true;
     } else {
