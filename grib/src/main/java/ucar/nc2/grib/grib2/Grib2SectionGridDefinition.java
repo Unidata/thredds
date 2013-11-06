@@ -52,7 +52,7 @@ public class Grib2SectionGridDefinition {
 
     // octets 13-14
     raf.skipBytes(7);
-    templateNumber = GribNumbers.int2(raf);
+    templateNumber = GribNumbers.uint2(raf);
 
     // read in whole GDS as byte[]
     rawData = new byte[length];
@@ -67,7 +67,7 @@ public class Grib2SectionGridDefinition {
    */
   public Grib2SectionGridDefinition(byte[] rawData) {
     this.rawData = rawData;
-    this.templateNumber = GribNumbers.int2( getOctet(13), getOctet(14) );
+    this.templateNumber = GribNumbers.uint2( getOctet(13), getOctet(14) );
     this.startingPosition = -1;
   }
 

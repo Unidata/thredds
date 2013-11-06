@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib;
 
+import ucar.ma2.DataType;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 
@@ -72,6 +73,18 @@ public final class GribNumbers {
   }
 
   /**
+    * Convert unsigned bytes into an integer.
+    *
+    * @param raf read one byte from here
+    * @return integer value
+    * @throws IOException on read error
+    */
+   public static int uint(RandomAccessFile raf) throws IOException {
+     int a = raf.read();
+     return (int) DataType.unsignedByteToShort((byte) a);
+   }
+
+   /**
    * convert 2 bytes to a signed integer.
    *
    * @param a first byte
@@ -279,13 +292,13 @@ public final class GribNumbers {
    * @param v convert byte to signed int
    * @return signed int
    */
-  public static final int convertSignedByte(byte v) {
+  public static int convertSignedByte(byte v) {
     int sign = ((v & 0x80) != 0) ? -1 : 1;
     int value = v & 0x7f;
     return sign * value;
   }
 
-  public static final int convertSignedByte2(byte v) {
+  public static int convertSignedByte2(byte v) {
     return (v >= 0) ? (int) v : -(128 + v);
   }
 
@@ -295,6 +308,10 @@ public final class GribNumbers {
       System.out.printf("%d == %d == %d == %s%n", b, convertSignedByte(b), convertSignedByte2(b), Long.toHexString((long) i));
       assert convertSignedByte(b) == convertSignedByte2(b) : convertSignedByte(b) +"!=" +convertSignedByte2(b);
     }
+
+    int val = (int) DataType.unsignedByteToShort((byte) -200);
+    int val2 = DataType.unsignedShortToInt((short) -200);
+    System.out.printf("%d != %d%n", val, val2);
   }
 
 }

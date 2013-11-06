@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
+import ucar.ma2.DataType;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -69,7 +70,7 @@ public class Grib1SectionGridDefinition {
 
     // octet 6
     raf.skipBytes(2);
-    gridTemplate = raf.read();
+    gridTemplate = GribNumbers.uint(raf);
 
     // read in whole GDS as byte[]
     rawData = new byte[length];
