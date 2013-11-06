@@ -32,23 +32,21 @@
  */
 package ucar.nc2;
 
-import junit.framework.*;
-
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.util.*;
 
 /** Test remote netcdf over HTTP in the JUnit framework. */
 
-public class TestHTTP extends TestCase {
+public class TestHTTP  {
   String testDir= "http://thredds.ucar.edu/thredds/";
 
-  public TestHTTP( String name) {
-    super(name);
-  }
-   
+
+  @Test
   public void testNC2() throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(testDir+"mydata1.nc");
     assert ncfile != null;
@@ -79,7 +77,7 @@ public class TestHTTP extends TestCase {
     assert( !att.isArray());
     assert( 1 == att.getLength());
     assert( 1.2f == att.getNumericValue().floatValue());
-    assert( close(1.2, att.getNumericValue().doubleValue()));
+    assert( Misc.closeEnough(1.2, att.getNumericValue().doubleValue()));
 
     att = temp.findAttribute("versionI");
     assert( null != att);
@@ -118,10 +116,10 @@ public class TestHTTP extends TestCase {
     System.out.println( "*****************  Test HTTP done");
   }
 
-  boolean close( double d1, double d2) {
+  /* boolean close( double d1, double d2) {
     //System.out.println(d1+" "+d2);
     return Math.abs((d1-d2)/d1) < 1.0e-5;
-  }
+  } */
 
   public List<String> makeList() throws IOException {
     ArrayList<String> list = new ArrayList<String>();

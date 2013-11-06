@@ -479,8 +479,8 @@ public class TestSubset {
   }
 
   @Test
-  public void testBBSubset() throws Exception {   // http://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best.html
-    GridDataset dataset = GridDataset.open(         "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best");
+  public void testBBSubset() throws Exception {
+    GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best");
     GeoGrid grid = dataset.findGridByName("Pressure_surface");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -507,10 +507,10 @@ public class TestSubset {
     dataset.close();
   }
 
-  // NCEP-NAM-CONUS_40km-conduit messed up right now
-  public void utestBBSubset2() throws Exception {
-    GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_40km/conduit/NCEP-NAM-CONUS_40km-conduit_best.ncd");
-    GeoGrid grid = dataset.findGridByName("Pressure");
+  @Test
+  public void testBBSubset2() throws Exception {
+    GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best");
+    GeoGrid grid = dataset.findGridByName("Pressure_hybrid");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
@@ -730,40 +730,6 @@ public class TestSubset {
     dataset.close();
   }
 
-  public void utestNcmlRangeSubset() throws Exception {
-    String filename = "D:/test/ncom_agg6.ncml";
-    GridDataset dataset = GridDataset.open(filename);
-    GeoGrid grid = dataset.findGridByName("water_temp");
-    assert null != grid;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-
-    System.out.println("original bbox= " + gcs.getBoundingBox());
-    System.out.println("lat/lon bbox= " + gcs.getLatLonBoundingBox());
-
-    /*   tRange: 31:31
-     zRange: 0:0
-    yRange: 1:559
-    zRange: 1:399 */
-    GridDatatype subset = grid.makeSubset(null, null, new Range(31, 31), new Range(0, 0), new Range(1, 559), new Range(1, 399));
-    assert subset != null;
-    GridCoordSystem gcs2 = subset.getCoordinateSystem();
-    assert null != gcs2;
-
-    System.out.println("result lat/lon bbox= " + gcs2.getLatLonBoundingBox());
-    System.out.println("result bbox= " + gcs2.getBoundingBox());
-
-    Array data = subset.readVolumeData(0);
-    int[] shape = data.getShape();
-    assert shape.length == 3;
-    assert shape[0] == 1;
-    assert shape[1] == 559;
-    assert shape[2] == 399;
-
-
-    dataset.close();
-  }
-
   @Test
   public void testFindVerticalCoordinate() throws Exception {
     String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
@@ -780,12 +746,15 @@ public class TestSubset {
     dataset.close();
   }
 
-  public void utestSubsetCoordEdges() throws Exception {
+  @Test
+  public void testSubsetCoordEdges() throws Exception {
     NetcdfDataset fooDataset = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "dataset/subsetCoordEdges.ncml");
 
     try {
       GridDataset fooGridDataset = new GridDataset(fooDataset);
+
       GridDatatype fooGrid = fooGridDataset.findGridDatatype("foo");
+      assert fooGrid != null;
 
       CoordinateAxis1D fooTimeAxis = fooGrid.getCoordinateSystem().getTimeAxis1D();
       CoordinateAxis1D fooLatAxis = (CoordinateAxis1D) fooGrid.getCoordinateSystem().getYHorizAxis();

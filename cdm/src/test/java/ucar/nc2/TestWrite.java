@@ -1010,28 +1010,6 @@ public class TestWrite {
     System.out.println("*****************Test Write done on " + filename);
   }
 
-  public void utestDennisCode() throws IOException, InvalidRangeException {
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew("location");
-    ArrayInt data = new ArrayInt(new int[]{4});
-    Index ima = data.getIndex();
-    data.setInt(ima.set(0), (int) 1);
-    data.setInt(ima.set(1), (int) 2);
-    data.setInt(ima.set(2), (int) 3);
-    data.setInt(ima.set(3), (int) 4);
-    int[] origin = new int[]{0};
-    ncfile.write("v", origin, data);
-  }
-
-  public void utestDennisCode2() throws IOException, InvalidRangeException {
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew("location");
-    ArrayInt.D1 data = new ArrayInt.D1(4);
-    data.setInt(0, 1);
-    data.setInt(1, 2);
-    data.setInt(2, 3);
-    data.setInt(3, 4);
-    ncfile.write("v", data);
-  }
-
   // fix for bug introduced 2/9/10, reported by Christian Ward-Garrison cwardgar@usgs.gov
   @Test
   public void testRecordSizeBug() throws IOException, InvalidRangeException {

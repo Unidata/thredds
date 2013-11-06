@@ -1253,7 +1253,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
 
-    // why is this needed ??
+    /* why is this needed ??
     EnumTypedef etd = getEnumTypedef();
     if (etd != null) {
       DataType etdtype = etd.getBaseType();
@@ -1268,8 +1268,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
 
       if (etdtype != null && dataType != etdtype)
       else
-        etd.setBaseType(basetype); */
-    }
+        etd.setBaseType(basetype);
+    }  */
   }
 
   /**

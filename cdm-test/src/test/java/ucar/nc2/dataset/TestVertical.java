@@ -191,9 +191,9 @@ public class TestVertical extends TestCase {
 
   // TestAll.upcShareDir + /testdata2/grid/netcdf/wrf/wrfout_v2_Lambert.nc
 
-  public void utestStride() throws java.io.IOException, InvalidRangeException {
-    String url= "dods://lead4.unidata.ucar.edu:8080/thredds/dodsC/model/UCAR/UNIDATA/WRF/STEERED/wrfout_d01_2006-04-20_00_00_00.nc";
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( url);
+  public void testStride() throws java.io.IOException, InvalidRangeException {
+    String filename= TestDir.cdmUnitTestDir + "/conventions/wrf/wrfout_d01_2006-03-08_21-00-00";
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( filename);
 
     GridDatatype grid = gds.findGridDatatype("T");
     assert grid != null;
@@ -214,9 +214,9 @@ public class TestVertical extends TestCase {
     for (int i = 0; i < 3; i++)
       System.out.println(" shape " + i + " = " + shape[i]);
 
-    assert shape[0] == 30;
-    assert shape[1] == 143/2 + 1;
-    assert shape[2] == 143/4 + 1;
+    assert shape[0] == 44;
+    assert shape[1] == 399/2 + 1;
+    assert shape[2] == 399/4 + 1;
 
     gds.close();
   }

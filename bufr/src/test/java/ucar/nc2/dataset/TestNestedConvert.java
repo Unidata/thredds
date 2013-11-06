@@ -32,6 +32,9 @@
  */
 package ucar.nc2.dataset;
 
+import org.junit.Test;
+import ucar.ma2.StructureDataIterator;
+import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.bufr.BufrIosp2;
@@ -50,35 +53,52 @@ import java.io.IOException;
  */
 public class TestNestedConvert {
 
+  @Test
   public void testNestedTable() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmLocalTestDataDir + "dataset/nestedTable.bufr";  // LOOK cant find
+    String filename = TestDir.cdmLocalTestDataDir + "dataset/nestedTable.bufr";
     NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDataset.openFile(filename, null);
-    Structure outer = (Structure) ncfile.findVariable(BufrIosp2.obsRecord);
-    StructureData data = outer.readStructure(0);
-    //NCdumpW.printStructureData( new PrintWriter(System.out), data);
+    System.out.printf("Open %s%n", ncfile.getLocation());
+    Sequence outer = (Sequence) ncfile.findVariable(BufrIosp2.obsRecord);
+    assert outer != null;
 
-    assert data.getScalarShort("Latitude") == 32767;
+    StructureDataIterator iter = outer.getStructureIterator();
+    StructureData data = null;
+    if (iter.hasNext())
+      data = iter.next();
 
-    ArrayStructure as = data.getArrayStructure("struct1");
+    assert data != null;
+    assert data.getScalarShort("Latitude_coarse_accuracy") == 32767;
+
+    ArrayStructure as = data.getArrayStructure("Geopotential");
     assert as != null;
     assert as.getScalarShort(0, as.findMember("Wind_speed")) == 61;
 
+    iter.finish();
     ncfile.close();
   }
 
-  public void utestNestedTableEnhanced() throws IOException, InvalidRangeException {
+  @Test
+  public void testNestedTableEnhanced() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmLocalTestDataDir + "dataset/nestedTable.bufr";
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    Structure outer = (Structure) ncd.findVariable(BufrIosp2.obsRecord);
-    StructureData data = outer.readStructure(0);
-    //NCdumpW.printStructureData( new PrintWriter(System.out), data);
+    NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    System.out.printf("Open %s%n", ncfile.getLocation());
+    SequenceDS outer = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
+    assert outer != null;
 
-    assert Double.isNaN( data.getScalarFloat("Latitude"));
+    StructureDataIterator iter = outer.getStructureIterator();
+    StructureData data = null;
+    if (iter.hasNext())
+      data = iter.next();
 
-    ArrayStructure as = data.getArrayStructure("struct1");
+    assert data != null;
+    assert Double.isNaN( data.getScalarFloat("Latitude_coarse_accuracy"));
+
+    ArrayStructure as = data.getArrayStructure("Geopotential");
     assert as != null;
     assert Misc.closeEnough(as.getScalarFloat(0, as.findMember("Wind_speed")), 6.1);
 
-    ncd.close();
+    iter.finish();
+    ncfile.close();
   }
+
 }

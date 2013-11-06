@@ -277,7 +277,7 @@ public class TestProjections extends TestCase {
     ncd.close();
   }
 
-  public void utestPSscaleFactor() throws IOException {
+  public void testPSscaleFactor() throws IOException {
     String filename = testDir+ "stereographic/foster.grib2";
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
     GridDataset gds = new GridDataset(ncd);

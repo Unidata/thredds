@@ -126,38 +126,6 @@ public class TestMisc extends TestCase {
     }
   }
 
-  // Xiaoshen.Li@noaa.gov
-  public void utestModifyNCfile() throws IOException, InvalidRangeException {
-    final String inputFileName = "C:/tmp/input.nc";
-
-    final String outputFileName = "C:/tmp/output.nc";
-
-    final NetcdfFileWriteable writableFile = NetcdfFileWriteable.openExisting(inputFileName);
-
-    writableFile.setRedefineMode(true);
-
-    final Variable ffgVariable = writableFile.findVariable("FFG");
-    final Array ffgVarArray = ffgVariable.read();
-    final Index ffgIndex = ffgVarArray.getIndex();
-
-    writableFile.setName(outputFileName);
-//setName() is deprecated. If commented out this method, "input.nc" will be overwritten
-    writableFile.create();
-
-    //re-set variable FFG values
-    ffgVarArray.setDouble(ffgIndex.set(0), 10.1);
-    ffgVarArray.setDouble(ffgIndex.set(1), 10.2);
-    ffgVarArray.setDouble(ffgIndex.set(2), 10.3);
-    ffgVarArray.setDouble(ffgIndex.set(3), 10.4);
-
-    // writableFile.write("FFG", ffgVarArray);
-
-    writableFile.flush();
-
-    writableFile.close();
-
-  }
-
   public static void main(String[] args) {
     String s1 = "CoastWatch/MODSCW/closest_chlora/Mean/CB05/P2009190";
     String s2 = "CoastWatch/MODSCW/closest_chlora/Mean/SE05/P2009190";
