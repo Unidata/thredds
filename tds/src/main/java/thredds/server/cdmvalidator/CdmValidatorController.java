@@ -255,7 +255,7 @@ public class CdmValidatorController extends AbstractController {
       if (wantXml) {
         infoString = info.writeXML();
         res.setContentLength(infoString.length());
-        res.setContentType(ContentType.xml.toString());
+        res.setContentType(ContentType.xml.getContentHeader());
 
       } else {
         Document xml = info.makeDocument();
@@ -266,7 +266,7 @@ public class CdmValidatorController extends AbstractController {
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(html);
 
-        res.setContentType(ContentType.html.toString());
+        res.setContentType(ContentType.html.getContentHeader());
       }
 
       res.setContentLength(infoString.length());

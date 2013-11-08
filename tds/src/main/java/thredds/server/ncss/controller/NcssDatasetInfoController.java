@@ -100,9 +100,9 @@ class NcssDatasetInfoController extends AbstractNcssController {
       res.setContentLength(strResponse.length());
 
       if (wantXML)
-        res.setContentType(ContentType.xml.toString());
+        res.setContentType(ContentType.xml.getContentHeader());
       else
-        res.setContentType(ContentType.html.toString());
+        res.setContentType(ContentType.html.getContentHeader());
 
       writeResponse(strResponse, res);
 
@@ -148,7 +148,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         String infoString = fmt.outputString(doc);
 
-        res.setContentType(ContentType.xml.toString());
+        res.setContentType(ContentType.xml.getContentHeader());
         writeResponse(infoString, res);
 
       } finally {

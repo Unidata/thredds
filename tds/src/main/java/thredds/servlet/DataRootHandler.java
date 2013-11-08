@@ -1201,8 +1201,9 @@ public final class DataRootHandler implements InitializingBean {
     String result = catFactory.writeXML(cat);
 
     res.setContentLength(result.length());
-    res.setContentType(ContentType.xml.toString());
-    res.getOutputStream().write(result.getBytes(CDM.utf8Charset));
+    res.setContentType(ContentType.xml.getContentHeader());
+    PrintWriter pw = res.getWriter();
+    pw.write(result);
   }
 
   /**
@@ -1693,9 +1694,9 @@ public final class DataRootHandler implements InitializingBean {
     // Send latest.xml catalog as response.
     InvCatalogFactory catFactory = getCatalogFactory(false);
     String catAsString = catFactory.writeXML((InvCatalogImpl) cat);
-    PrintWriter out = res.getWriter();
-    res.setContentType(ContentType.xml.toString());
+    res.setContentType(ContentType.xml.getContentHeader());
     res.setStatus(HttpServletResponse.SC_OK);
+    PrintWriter out = res.getWriter();
     out.print(catAsString);
     if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): Finished \"" + orgPath + "\".");
     return true;

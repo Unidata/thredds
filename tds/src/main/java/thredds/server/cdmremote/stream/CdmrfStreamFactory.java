@@ -64,154 +64,150 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * @author mhermida
- *
  */
 public final class CdmrfStreamFactory {
 
-	private static final Logger log = org.slf4j.LoggerFactory.getLogger(CdmrfStreamFactory.class);	
-	
-	private static CdmrfStreamFactory INSTANCE;
-	
-	private DiskCache2 cdmrCache;
-	
-	private CdmrfStreamFactory(DiskCache2 cdmrCache){
-		this.cdmrCache = cdmrCache;
-	}
-	
-	public static CdmrfStreamFactory getInstance(TdsContext tdsContext){
-		if(INSTANCE == null){			
-		    String dir = ThreddsConfig.get("CdmRemote.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
-		    int scourSecs = ThreddsConfig.getSeconds("CdmRemote.scour", 30 * 60);
-		    int maxAgeSecs = ThreddsConfig.getSeconds("CdmRemote.maxAge", 60 * 60);
-		    DiskCache2 cdmrCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);		    			
-			INSTANCE = new CdmrfStreamFactory(cdmrCache);												
-		} 
-		return INSTANCE;
-	}
-	
-	public void headerStream(String absPath, HttpServletResponse res, FeatureDatasetPoint fdp, CdmrfQueryBean query) throws IOException{
-		
-	    OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-	    res.setContentType(ContentType.binary.toString());
-	    res.setHeader("Content-Description", "ncstream");
-	    
-	    NetcdfFile ncfile = fdp.getNetcdfFile(); // LOOK will fail
-	    NcStreamWriter ncWriter = new NcStreamWriter(ncfile, absPath);
+  private static final Logger log = org.slf4j.LoggerFactory.getLogger(CdmrfStreamFactory.class);
 
-	    long size = ncWriter.sendHeader(out);
-	    NcStream.writeVInt(out, 0);
+  private static CdmrfStreamFactory INSTANCE;
 
-	    out.flush();
-	    res.flushBuffer();		
-		
-		
-	}
-	
-	public void dataStream(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrfQueryBean qb) throws IOException{
-		
-	    switch (fdp.getFeatureType()) {
-	      case POINT:
-	        pointDataStream(req, res, fdp, path, qb);
-	        break;
-	      case STATION:
-	        stationDataStream(req, res, fdp, path, qb);
-	        break;
-	    }		
-		
-	}
-	
-	private void pointDataStream(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrfQueryBean qb) throws IOException{
-		
-	    List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
-	    PointFeatureCollection pfc = (PointFeatureCollection) coll.get(0);
-	    PointWriter pointWriter = new PointWriter(fdp, pfc, qb, cdmrCache);
+  private DiskCache2 cdmrCache;
 
-	    // query validation - second pass
-	    if (!pointWriter.validate(res)) {
-	      return;
-	    }
+  private CdmrfStreamFactory(DiskCache2 cdmrCache) {
+    this.cdmrCache = cdmrCache;
+  }
 
-	    // set content type, description
-	    //res.setContentType(getContentType(qb));
-	    res.setContentType( qb.getResponseType().toString() );
-	    //if (null != getContentDescription(qb))
-	    //  res.setHeader("Content-Description", getContentDescription(qb));
+  public static CdmrfStreamFactory getInstance(TdsContext tdsContext) {
+    if (INSTANCE == null) {
+      String dir = ThreddsConfig.get("CdmRemote.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
+      int scourSecs = ThreddsConfig.getSeconds("CdmRemote.scour", 30 * 60);
+      int maxAgeSecs = ThreddsConfig.getSeconds("CdmRemote.maxAge", 60 * 60);
+      DiskCache2 cdmrCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
+      INSTANCE = new CdmrfStreamFactory(cdmrCache);
+    }
+    return INSTANCE;
+  }
 
-	    // special handling for netcdf files
-	    CdmrfQueryBean.ResponseType resType = qb.getResponseType();
-	    if (resType == CdmrfQueryBean.ResponseType.netcdf) {
-	      if (path.startsWith("/")) path = path.substring(1);
-	      path = StringUtil2.replace(path, "/", "-");
-	      res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
+  public void headerStream(String absPath, HttpServletResponse res, FeatureDatasetPoint fdp, CdmrfQueryBean query) throws IOException {
 
-	      File file = pointWriter.writeNetcdf();
-	      //ServletUtil.returnFile(req, res, file, getContentType(qb));
-	      ServletUtil.returnFile(req, res, file, "application/x-netcdf");
-	      if (!file.delete()) {
-	        log.warn("file delete failed =" + file.getPath());
-	      }
+    res.setContentType(ContentType.binary.getContentHeader());
+    res.setHeader("Content-Description", "ncstream");
+
+    NetcdfFile ncfile = fdp.getNetcdfFile(); // LOOK will fail
+    NcStreamWriter ncWriter = new NcStreamWriter(ncfile, absPath);
+
+    OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
+    long size = ncWriter.sendHeader(out);
+    NcStream.writeVInt(out, 0);
+
+    out.flush();
+    res.flushBuffer();
+  }
+
+  public void dataStream(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrfQueryBean qb) throws IOException {
+
+    switch (fdp.getFeatureType()) {
+      case POINT:
+        pointDataStream(req, res, fdp, path, qb);
+        break;
+      case STATION:
+        stationDataStream(req, res, fdp, path, qb);
+        break;
+    }
+
+  }
+
+  private void pointDataStream(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrfQueryBean qb) throws IOException {
+
+    List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
+    PointFeatureCollection pfc = (PointFeatureCollection) coll.get(0);
+    PointWriter pointWriter = new PointWriter(fdp, pfc, qb, cdmrCache);
+
+    // query validation - second pass
+    if (!pointWriter.validate(res)) {
+      return;
+    }
+
+    // set content type, description
+    //res.setContentType(getContentType(qb));
+    res.setContentType(qb.getResponseType().toString());
+    //if (null != getContentDescription(qb))
+    //  res.setHeader("Content-Description", getContentDescription(qb));
+
+    // special handling for netcdf files
+    CdmrfQueryBean.ResponseType resType = qb.getResponseType();
+    if (resType == CdmrfQueryBean.ResponseType.netcdf) {
+      if (path.startsWith("/")) path = path.substring(1);
+      path = StringUtil2.replace(path, "/", "-");
+      res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
+
+      File file = pointWriter.writeNetcdf();
+      //ServletUtil.returnFile(req, res, file, getContentType(qb));
+      ServletUtil.returnFile(req, res, file, "application/x-netcdf");
+      if (!file.delete()) {
+        log.warn("file delete failed =" + file.getPath());
+      }
 
 
+    } else {
 
-	    } else {
+      // otherwise stream it out
+      PointWriter.Writer w = pointWriter.write(res);
+    }
+  }
 
-	      // otherwise stream it out
-	      PointWriter.Writer w = pointWriter.write(res);		
-	    }	
-	}
-	
-	private void stationDataStream(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrfQueryBean qb) throws IOException{
-	    long start = 0;
-	    //if (showTime) {
-	    //  start = System.currentTimeMillis();
-	    //  ucar.unidata.io.RandomAccessFile.setDebugAccess(true);  // LOOK !!
-	    //}
+  private void stationDataStream(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrfQueryBean qb) throws IOException {
+    long start = 0;
+    //if (showTime) {
+    //  start = System.currentTimeMillis();
+    //  ucar.unidata.io.RandomAccessFile.setDebugAccess(true);  // LOOK !!
+    //}
 
-	    List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
-	    StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
+    List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
+    StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
 
-	    StationWriter stationWriter = new StationWriter(fdp, sfc, qb, cdmrCache);
-	    if (!stationWriter.validate(res)) {
-	      return; // error was sent
-	    }
+    StationWriter stationWriter = new StationWriter(fdp, sfc, qb, cdmrCache);
+    if (!stationWriter.validate(res)) {
+      return; // error was sent
+    }
 
-	    // set content type, description
-	    //res.setContentType(getContentType(qb));
-	    res.setContentType(qb.getResponseType().toString());
-	    
-	    //if (null != getContentDescription(qb))
-	    //  res.setHeader("Content-Description", getContentDescription(qb));
+    // set content type, description
+    //res.setContentType(getContentType(qb));
+    res.setContentType(qb.getResponseType().toString());
 
-	    // special handling for netcdf files
-	    CdmrfQueryBean.ResponseType resType = qb.getResponseType();
-	    if (resType == CdmrfQueryBean.ResponseType.netcdf) {
-	      if (path.startsWith("/")) path = path.substring(1);
-	      path = StringUtil2.replace(path, "/", "-");
-	      res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
+    //if (null != getContentDescription(qb))
+    //  res.setHeader("Content-Description", getContentDescription(qb));
 
-	      File file = stationWriter.writeNetcdf();
-	      //ServletUtil.returnFile(req, res, file, getContentType(qb));
-	      ServletUtil.returnFile(req, res, file, "application/x-netcdf");
-	      if (!file.delete()) {
-	        log.warn("file delete failed =" + file.getPath());
-	      }
+    // special handling for netcdf files
+    CdmrfQueryBean.ResponseType resType = qb.getResponseType();
+    if (resType == CdmrfQueryBean.ResponseType.netcdf) {
+      if (path.startsWith("/")) path = path.substring(1);
+      path = StringUtil2.replace(path, "/", "-");
+      res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
 
-	      //if (showTime) {
-	      //  long took = System.currentTimeMillis() - start;
-	      //  System.out.println("\ntotal response took = " + took + " msecs");
-	      //}
+      File file = stationWriter.writeNetcdf();
+      //ServletUtil.returnFile(req, res, file, getContentType(qb));
+      ServletUtil.returnFile(req, res, file, "application/x-netcdf");
+      if (!file.delete()) {
+        log.warn("file delete failed =" + file.getPath());
+      }
 
-	      //return null;
-	    }
+      //if (showTime) {
+      //  long took = System.currentTimeMillis() - start;
+      //  System.out.println("\ntotal response took = " + took + " msecs");
+      //}
 
-	    // otherwise stream it out
-	    StationWriter.Writer w = stationWriter.write(res);
+      //return null;
+    }
 
-	    //if (showTime) {
-	    //  long took = System.currentTimeMillis() - start;
-	    //  System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
-	    //          ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
-	    //  ucar.unidata.io.RandomAccessFile.setDebugAccess(false);  // LOOK !!
-	    //}		
-	}
+    // otherwise stream it out
+    StationWriter.Writer w = stationWriter.write(res);
+
+    //if (showTime) {
+    //  long took = System.currentTimeMillis() - start;
+    //  System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
+    //          ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+    //  ucar.unidata.io.RandomAccessFile.setDebugAccess(false);  // LOOK !!
+    //}
+  }
 }

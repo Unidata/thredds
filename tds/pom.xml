@@ -271,12 +271,12 @@
         The second one only contains the public directory and is not filtered.
         BINARY FILES MUST NEVER EVER EVER EVER BE FILTERED    
     -->
-    <resources>
+    <!-- resources>
       <resource>
         <filtering>false</filtering>
         <directory>${basedir}/src/main/webapp</directory>
       </resource>
-    </resources>
+    </resources -->
 
     <testResources>
        <testResource>
@@ -361,26 +361,7 @@
             <additionalClasspathElement>${basedir}/src/main/webapp</additionalClasspathElement>
             <additionalClasspathElement>${basedir}/src/main/webapp/WEB-INF/classes</additionalClasspathElement>
           </additionalClasspathElements>
-          <!-- includes>
-            <include>thredds/server/catalogservice/**</include>
-            <include>thredds/server/ncSubset/**</include>
-            <include>thredds/server/config/**</include>
-            <include>thredds/servlet/**</include>
-          </includes -->
         </configuration>
-        <!-- executions>
-                    <execution>
-                      <id>surefire-it</id>
-                      <phase>integration-test</phase>
-                      <goals>
-                          <goal>test</goal>
-                      </goals>
-                      <configuration>
-                        <skip>false</skip>
-                        <test>TestCdmRemoteServer</test>
-                      </configuration>
-                  </execution>
-                  </executions-->
       </plugin>
 
       <!-- plugin>

@@ -142,8 +142,8 @@ public class CollectionController  {
     if(path.startsWith("/admin") )
     	path = path.substring("/admin".length(), path.length());
 
+    res.setContentType(ContentType.html.getContentHeader());
     PrintWriter pw = res.getWriter();
-    res.setContentType(ContentType.html.toString());
 
     // find the collection
     String collectName = req.getParameter(COLLECTION);
@@ -214,13 +214,12 @@ public class CollectionController  {
     String path = TdsPathUtils.extractPath(req, "admin/");   // LOOK probably wrong
     if (path == null) path = "";
 
-    PrintWriter pw = res.getWriter();
-
     if (path.endsWith(STATISTICS)) {
-      res.setContentType(ContentType.text.toString());
+      res.setContentType(ContentType.text.getContentHeader());
       Formatter f = new Formatter();
       monitor.getCacheStatistics(f);
       String s = f.toString();
+      PrintWriter pw = res.getWriter();
       pw.println(s);
       pw.flush();
       return null;
@@ -233,10 +232,13 @@ public class CollectionController  {
     // show the file
     if (fileName != null) {
       String contents = monitor.getCachedFile(collectName, fileName);
-      if (null == contents)
+      if (null == contents) {
+        res.setContentType(ContentType.html.getContentHeader());
+        PrintWriter pw = res.getWriter();
         pw.println("<p/> Cant find filename="+fileName+" in collection = "+collectName);
-      else {
-        res.setContentType(ContentType.xml.toString());
+      }  else {
+        res.setContentType(ContentType.xml.getContentHeader());
+        PrintWriter pw = res.getWriter();
         pw.println(contents);
       }
 
@@ -247,7 +249,9 @@ public class CollectionController  {
     if (collectName != null) {
       String ecollectName = StringUtil2.escape(collectName, "");
       String url = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ecollectName;
-      res.setContentType(ContentType.html.toString());
+      res.setContentType(ContentType.html.getContentHeader());
+      PrintWriter pw = res.getWriter();
+
       pw.println("Files for collection = "+collectName+"");
 
       // allow delete
@@ -263,6 +267,9 @@ public class CollectionController  {
     }
 
     if (cmd != null && cmd.equals("delete")) {
+      res.setContentType(ContentType.html.getContentHeader());
+      PrintWriter pw = res.getWriter();
+
       try {
         monitor.deleteCollection(collectName);
         pw.println("<p/>deleted");

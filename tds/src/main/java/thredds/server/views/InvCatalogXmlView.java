@@ -66,8 +66,7 @@ public class InvCatalogXmlView extends AbstractView
       throw new IllegalArgumentException( "Model must contain an InvCatalogImpl object.");
     InvCatalogImpl cat = (InvCatalogImpl) o;
 
-    res.setContentType(ContentType.xml.toString());
-    res.setCharacterEncoding( "UTF-8" );
+    res.setContentType(ContentType.xml.getContentHeader());
     OutputStream os = null;
     if ( ! req.getMethod().equals( "HEAD" ) )
     {

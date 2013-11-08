@@ -53,7 +53,7 @@ public class ViewerController {
 	    String strResp = fillTemplate(req, template );
 	    
 	    try{
-        res.setContentType(ContentType.jnlp.toString());
+        res.setContentType(ContentType.jnlp.getContentHeader());
 	    	ServletUtil.returnString(strResp , res);
 
 	    } catch (Throwable t) {

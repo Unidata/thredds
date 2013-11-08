@@ -385,7 +385,7 @@ public class HtmlWriter {
     String dirHtmlString = getDirectory(path, dir);
 
     res.setContentLength(dirHtmlString.length());
-    res.setContentType(ContentType.html.toString());
+    res.setContentType(ContentType.html.getContentHeader());
     PrintWriter writer = res.getWriter();
     writer.write(dirHtmlString);
     writer.flush();
@@ -536,7 +536,7 @@ public class HtmlWriter {
     String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
 
     res.setContentLength(catHtmlAsString.length());
-    res.setContentType(ContentType.html.toString());
+    res.setContentType(ContentType.html.getContentHeader());
     if (!req.getMethod().equals("HEAD")) {
       PrintWriter writer = res.getWriter();
       writer.write(catHtmlAsString);
@@ -802,7 +802,7 @@ public class HtmlWriter {
     String datasetAsHtml = this.convertDatasetToHtml(catURL, dataset, request, isLocalCatalog);
 
     response.setStatus(HttpServletResponse.SC_OK);
-    response.setContentType(ContentType.html.toString());
+    response.setContentType(ContentType.html.getContentHeader());
     if (!request.getMethod().equals("HEAD")) {
       PrintWriter pw = response.getWriter();
       pw.write(datasetAsHtml);
@@ -822,7 +822,7 @@ public class HtmlWriter {
     String cdmAsString = getCDM(ds);
 
     res.setContentLength(cdmAsString.length());
-    res.setContentType(ContentType.html.toString());
+    res.setContentType(ContentType.html.getContentHeader());
     PrintWriter writer = res.getWriter();
 
     writer.write(cdmAsString);

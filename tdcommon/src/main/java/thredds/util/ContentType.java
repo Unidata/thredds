@@ -42,26 +42,32 @@ package thredds.util;
  * @since 10/20/13
  */
 public enum ContentType {
-  binary("application/octet-stream"),
-  csv("text/csv; charset=UTF-8"),
-  html("text/html; charset=UTF-8"),
-  jnlp("application/x-java-jnlp-file"),
-  json("application/json"),
-  netcdf("application/x-netcdf"),
-  netcdf4("application/x-netcdf4"),
-  ogc_exception("application/vnd.ogc.se_xml"),
-  text("text/plain; charset=UTF-8"),
-  xml("application/xml; charset=UTF-8");
+  binary("application/octet-stream", null),
+  csv("text/csv", "UTF-8"),
+  html("text/html", "UTF-8"),
+  jnlp("application/x-java-jnlp-file", null),
+  json("application/json", null),
+  netcdf("application/x-netcdf", null),
+  netcdf4("application/x-netcdf4", null),
+  ogc_exception("application/vnd.ogc.se_xml", "UTF-8"),
+  text("text/plain", "UTF-8"),
+  xml("application/xml", "UTF-8");
   // xml_app("text/xml; charset=UTF-8");
 
   private final String name;
+  private final String charset;
 
-  private ContentType(String name) {
+  private ContentType(String name, String charset) {
     this.name = name;
+    this.charset = charset;
   }
 
   @Override
   public String toString() {
     return name;
+  }
+
+  public String getContentHeader() {
+    return (charset == null) ? name : name + "; charset=" + charset;
   }
 }

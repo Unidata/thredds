@@ -46,6 +46,7 @@ import thredds.util.ContentType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -61,7 +62,7 @@ public class DebugController{
 
   @RequestMapping(value={"/debug", "/debug/*"})
    protected void showDebugPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType(ContentType.html.toString());
+    response.setContentType(ContentType.html.getContentHeader());
     response.setHeader("Content-Description", "thredds_debug");
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();

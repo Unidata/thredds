@@ -90,9 +90,9 @@ public class AnnotateServlet extends AbstractServlet {
       }
 
       res.setStatus(HttpServletResponse.SC_OK);
+      res.setContentType(ContentType.html.getContentHeader());
       PrintWriter pw = new PrintWriter(res.getOutputStream());
 
-      res.setContentType(ContentType.html.toString());
       pw.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n");
       pw.println("        \"http://www.w3.org/TR/html4/loose.dtd\">\n");
       pw.println("<html>\n");

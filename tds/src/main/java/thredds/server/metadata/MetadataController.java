@@ -104,10 +104,10 @@ public class MetadataController {
       String strResponse;
       if (wantXML) {
         strResponse = writeXML(vars);
-        res.setContentType(ContentType.xml.toString());
+        res.setContentType(ContentType.xml.getContentHeader());
       } else {
         strResponse = writeHTML(vars);
-        res.setContentType(ContentType.html.toString());
+        res.setContentType(ContentType.html.getContentHeader());
       }
       res.setContentLength(strResponse.length());
 

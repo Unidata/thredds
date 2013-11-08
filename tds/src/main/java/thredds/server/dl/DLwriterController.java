@@ -160,7 +160,7 @@ public class DLwriterController {
     // validate the catalog
     StringBuilder sb = new StringBuilder();
     if (!catalog.check(sb, false)) {
-      res.setContentType(ContentType.html.toString());
+      res.setContentType(ContentType.html.getContentHeader());
       res.setHeader("Validate", "FAIL");
       PrintWriter pw = new PrintWriter(res.getOutputStream());
       showValidationMesssage(catURI.toString(), sb.toString(), pw);
@@ -183,7 +183,7 @@ public class DLwriterController {
       writer.writeDatasetEntries(catalog, adnDir, mess);
     }
 
-    res.setContentType(ContentType.html.toString());
+    res.setContentType(ContentType.html.getContentHeader());
     OutputStream out = res.getOutputStream();
     out.write(mess.toString().getBytes(CDM.utf8Charset));
     out.flush();

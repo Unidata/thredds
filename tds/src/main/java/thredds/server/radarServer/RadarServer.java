@@ -163,8 +163,8 @@ public class RadarServer extends AbstractServlet {
       }
       // default is xml, assume errors will be recorded by logger from this point
       if (!pathInfo.endsWith("html")) {
+        res.setContentType(ContentType.xml.getContentHeader());
         pw = res.getWriter();
-        res.setContentType(ContentType.xml.toString());
       }
       // radar  query
       if (req.getQueryString() != null) {
@@ -438,7 +438,7 @@ public class RadarServer extends AbstractServlet {
       Document html = transformer.transform(doc);
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       String infoString = fmt.outputString(html);
-      res.setContentType(ContentType.html.toString());
+      res.setContentType(ContentType.html.getContentHeader());
       pw = res.getWriter();
       pw.println(infoString);
       pw.flush();

@@ -143,45 +143,53 @@ public class CdmRemoteController extends AbstractController implements LastModif
         return;
       }
 
-      OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
       long size = -1;
 
       switch (qb.getRequestType()) {
-        case capabilities:
+        case capabilities: {
+          res.setContentType(ContentType.xml.getContentHeader());
+          PrintWriter pw = res.getWriter();
+
           FeatureType ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ncfile);
-          sendCapabilities(out, ftFromMetadata, absPath); // LOOK BAD - must figure out what is the featureType and save it
-          res.setContentType(ContentType.xml.toString());
+          sendCapabilities(pw, ftFromMetadata, absPath); // LOOK BAD - must figure out what is the featureType and save it
           res.flushBuffer();
           return;
+        }
 
         case form: // LOOK could do a ncss style form
-        case cdl:
-          res.setContentType(ContentType.text.toString());
+        case cdl:  {
+          res.setContentType(ContentType.text.getContentHeader());
+          PrintWriter pw = res.getWriter();
+
           ncfile.setLocation(datasetPath); // hide where the file is stored
           String cdl = ncfile.toString();
           res.setContentLength(cdl.length());
-          byte[] b = cdl.getBytes(CDM.utf8Charset);
-          out.write(b);
-          size = b.length;
+          pw.write(cdl);
+          size = cdl.length();
           break;
+        }
 
-        case ncml:
-          res.setContentType(ContentType.xml.toString());
-          ncfile.writeNcML(out, absPath);
+        case ncml: {
+          res.setContentType(ContentType.xml.getContentHeader());
+          PrintWriter pw = res.getWriter();
+          ncfile.writeNcML(pw, absPath);
           break;
+        }
 
         case header: {
-          res.setContentType(ContentType.binary.toString());
+          res.setContentType(ContentType.binary.getContentHeader());
           res.setHeader("Content-Description", "ncstream");
 
+          OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
           //WritableByteChannel wbc = Channels.newChannel(out);
           NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
           size = ncWriter.sendHeader(out);
+          out.flush();
           break;
         }
 
         default: {
-          res.setContentType(ContentType.binary.toString());
+          res.setContentType(ContentType.binary.getContentHeader());
           res.setHeader("Content-Description", "ncstream");
 
           size = 0;
@@ -197,16 +205,18 @@ public class CdmRemoteController extends AbstractController implements LastModif
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
             return;
           }
+
+          OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
           query = EscapeStrings.unescapeURLQuery(query);
           StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
             size += ncWriter.sendData(cer.v, cer.section, out, false);
           }
+          out.flush();
         }
       } // end switch on req type
 
-      out.flush();
       res.flushBuffer();
       if (showReq)
         System.out.printf("CdmRemoteController ok, size=%s%n", size);
@@ -234,10 +244,9 @@ public class CdmRemoteController extends AbstractController implements LastModif
         }
     }
 
-    return;
   }
 
-  private void sendCapabilities(OutputStream os, FeatureType ft, String absPath) throws IOException {
+  private void sendCapabilities(PrintWriter pw, FeatureType ft, String absPath) throws IOException {
     Element rootElem = new Element("cdmRemoteCapabilities");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", absPath);
@@ -248,7 +257,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
     rootElem.addContent(elem);
 
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(doc, os);
+    fmt.output(doc, pw);
   }
 
   /*  private ModelAndView sendCapabilities(HttpServletResponse res, NetcdfFile ncfile, String absPath, PointQueryBean query) throws IOException {

@@ -93,7 +93,7 @@ public class GridAsPointRequestExceptionsTest {
 		this.mockMvc.perform(requestBuilder).andExpect(new ResultMatcher(){
 			public void match(MvcResult result) throws Exception{
 				Exception ex =  result.getResolvedException();
-				assertTrue( ex instanceof  VariableNotContainedInDatasetException);
+				assert ( ex instanceof  VariableNotContainedInDatasetException) : ex.getMessage();
 			}
 		} );
 
@@ -114,7 +114,7 @@ public class GridAsPointRequestExceptionsTest {
 		this.mockMvc.perform(requestBuilder).andExpect(new ResultMatcher(){
 			public void match(MvcResult result) throws Exception{
 				Exception ex =  result.getResolvedException();
-				assertTrue( ex instanceof OutOfBoundariesException);
+				assert ( ex instanceof OutOfBoundariesException) : ex.getMessage();
 			}
 		} );
 		

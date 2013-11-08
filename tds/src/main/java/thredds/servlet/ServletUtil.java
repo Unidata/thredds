@@ -445,8 +445,8 @@ public class ServletUtil {
     log.info( "sendPermanentRedirect(): redirect to " + absolutePath);
 
     // Write the catalog out.
+    res.setContentType(ContentType.html.getContentHeader());
     PrintWriter out = res.getWriter();
-    res.setContentType(ContentType.html.toString());
     out.print(htmlResp);
     out.flush();
   }
@@ -535,19 +535,21 @@ public class ServletUtil {
     String filename = file.getPath();
     if (null == contentType) {
       if (filename.endsWith(".html"))
-        contentType = ContentType.html.toString();
+        contentType = ContentType.html.getContentHeader();
       else if (filename.endsWith(".xml"))
-        contentType = ContentType.xml.toString();
+        contentType = ContentType.xml.getContentHeader();
       else if (filename.endsWith(".txt") || (filename.endsWith(".log")))
-        contentType = ContentType.text.toString();
+        contentType = ContentType.text.getContentHeader();
       else if (filename.indexOf(".log.") > 0)
-        contentType = ContentType.text.toString();
+        contentType = ContentType.text.getContentHeader();
       else if (filename.endsWith(".nc"))
-        contentType = ContentType.netcdf.toString();
+        contentType = ContentType.netcdf.getContentHeader();
+      else if (filename.endsWith(".nc4"))
+        contentType = ContentType.netcdf4.getContentHeader();
       else if (servlet != null)
         contentType = servlet.getServletContext().getMimeType(filename);
 
-      if (contentType == null) contentType = "application/octet-stream";
+      if (contentType == null) contentType = ContentType.binary.getContentHeader();
     }
 
     returnFile(req, res, file, contentType);

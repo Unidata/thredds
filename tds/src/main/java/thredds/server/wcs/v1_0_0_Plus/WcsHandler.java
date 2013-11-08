@@ -96,7 +96,7 @@ public class WcsHandler implements VersionHandler
                                                           serverURI, req, res);
       if ( request.getOperation().equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.GetCapabilities))
       {
-        res.setContentType(ContentType.xml.toString());
+        res.setContentType(ContentType.xml.getContentHeader());
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();
@@ -105,7 +105,7 @@ public class WcsHandler implements VersionHandler
       }
       else if ( request.getOperation().equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.DescribeCoverage ) )
       {
-        res.setContentType(ContentType.xml.toString());
+        res.setContentType(ContentType.xml.getContentHeader());
         res.setStatus( HttpServletResponse.SC_OK );
 
         PrintWriter pw = res.getWriter();
@@ -177,7 +177,7 @@ public class WcsHandler implements VersionHandler
   public void handleExceptionReport( HttpServletResponse res, thredds.wcs.v1_0_0_Plus.WcsException exception )
           throws IOException
   {
-    res.setContentType(ContentType.ogc_exception.toString());
+    res.setContentType(ContentType.ogc_exception.getContentHeader());
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
     thredds.wcs.v1_0_0_Plus.ExceptionReport exceptionReport = new thredds.wcs.v1_0_0_Plus.ExceptionReport( exception );
