@@ -49,6 +49,7 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.DiskCache2;
 
 /**
@@ -85,9 +86,8 @@ public class WCS_1_1_0 implements VersionHandler {
     return this;
   }
 
-  public void handleKVP(HttpServlet servlet2, HttpServletRequest req, HttpServletResponse res)
-          throws IOException //, ServletException
-  {
+  public void handleKVP(HttpServlet servlet2, HttpServletRequest req, HttpServletResponse res) throws IOException  {
+
     try {
       URI serverURI = new URI(req.getRequestURL().toString());
       thredds.wcs.v1_1_0.Request request = WcsRequestParser.parseRequest(this.getVersion().getVersionString(), req, res);
@@ -102,16 +102,19 @@ public class WCS_1_1_0 implements VersionHandler {
         PrintWriter pw = res.getWriter();
         getCapabilities.writeCapabilitiesReport(pw);
         pw.flush();
+
       } else if (request.getOperation().equals(thredds.wcs.v1_1_0.Request.Operation.DescribeCoverage)) {
         thredds.wcs.v1_1_0.DescribeCoverage descCoverage =
                 new thredds.wcs.v1_1_0.DescribeCoverage(serverURI, request.getIdentifierList(),
                         request.getDataset());
         res.setContentType(ContentType.xml.toString());
         res.setStatus(HttpServletResponse.SC_OK);
+        res.setCharacterEncoding(CDM.UTF8);
 
         PrintWriter pw = res.getWriter();
         descCoverage.writeDescribeCoverageDoc(pw);
         pw.flush();
+
       } else if (request.getOperation().equals(thredds.wcs.v1_1_0.Request.Operation.GetCoverage)) {
         // ToDo Handle multi-part MIME response
         thredds.wcs.v1_1_0.GetCoverage getCoverage =
@@ -129,15 +132,19 @@ public class WCS_1_1_0 implements VersionHandler {
 
           ServletUtil.returnFile(null, "", covFile.getPath(), req, res, "application/netcdf");
           if (deleteImmediately) covFile.delete();
+
         } else {
           log.error("handleKVP(): Failed to create coverage file" + (covFile == null ? "" : (": " + covFile.getAbsolutePath())));
           throw new thredds.wcs.v1_1_0.WcsException("Problem creating requested coverage.");
         }
       }
+
     } catch (thredds.wcs.v1_1_0.WcsException e) {
       handleExceptionReport(res, e);
+
     } catch (URISyntaxException e) {
       handleExceptionReport(res, new thredds.wcs.v1_1_0.WcsException("Bad URI: " + e.getMessage()));
+
     } catch (Throwable t) {
       log.error("Unknown problem.", t);
       handleExceptionReport(res, new thredds.wcs.v1_1_0.WcsException("Unknown problem", t));

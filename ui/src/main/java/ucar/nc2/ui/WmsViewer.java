@@ -218,17 +218,14 @@ public class WmsViewer extends JPanel {
       if (statusCode >= 300)
         throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-      String contents = IO.readContents(method.getResponseBodyAsStream());
-      info.append(contents);
-
-      StringBufferInputStream is = new StringBufferInputStream(contents);
       SAXBuilder builder = new SAXBuilder();
-      org.jdom2.Document tdoc = builder.build(is);
+      org.jdom2.Document tdoc = builder.build(method.getResponseAsStream());
       org.jdom2.Element root = tdoc.getRootElement();
       parseGetCapabilities(root);
 
     } catch (Exception e) {
       info.append(e.getMessage());
+      JOptionPane.showMessageDialog(this, "Failed "+e.getMessage());
       return false;
 
     } finally {
@@ -341,6 +338,7 @@ public class WmsViewer extends JPanel {
 
     } catch (Exception e) {
       info.append(e.getMessage());
+      JOptionPane.showMessageDialog(this, "Failed "+e.getMessage());
       return false;
 
     } finally {

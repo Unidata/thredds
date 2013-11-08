@@ -41,6 +41,7 @@ import java.nio.charset.Charset;
  * @since 12/20/11
  */
 public interface CDM {
+  public static final String UTF8 = "UTF-8";
   public static final Charset utf8Charset = Charset.forName("UTF-8");
 
   // structural

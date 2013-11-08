@@ -33,22 +33,24 @@
 
 package thredds.server.ncss.format;
 
+import thredds.util.ContentType;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public enum SupportedFormat {
 	
-	CSV_STREAM("csv", true, "text/plain", "csv"  ),
-	CSV_FILE("csv_file", false,  "text/csv", "csv_file"  ),
+	CSV_STREAM("csv", true, ContentType.csv.toString(), "csv"  ),
+	CSV_FILE("csv_file", false,  ContentType.csv.toString(), "csv_file"  ),
 	
-	XML_STREAM("xml", true, "application/xml", "xml"),
-	XML_FILE("xml_file", false, "text/xml", "xml_file"),
+	XML_STREAM("xml", true, ContentType.xml.toString(), "xml"),
+	XML_FILE("xml_file", false, ContentType.xml.toString(), "xml_file"),
 	
-	NETCDF3("netcdf", false,  "application/x-netcdf", "netcdf"),
-	NETCDF4("netcdf4", false,  "application/x-netcdf4", "netcdf4"),
-	JSON("json", false, "application/json", "json", "geojson"),
-	WKT("wkt", false, "text/plain", "wkt");
+	NETCDF3("netcdf", false,  ContentType.netcdf.toString(), "netcdf"),
+	NETCDF4("netcdf4", false,  ContentType.netcdf4.toString(), "netcdf4"),
+	JSON("json", false, ContentType.json.toString(), "json", "geojson"),
+	WKT("wkt", false, ContentType.text.toString(), "wkt");
 	
 	/*
 	 * First alias is used as content-type in the http headers

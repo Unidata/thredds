@@ -177,7 +177,7 @@ public class WcsHandler implements VersionHandler
   public void handleExceptionReport( HttpServletResponse res, thredds.wcs.v1_0_0_Plus.WcsException exception )
           throws IOException
   {
-    res.setContentType( "application/vnd.ogc.se_xml" );
+    res.setContentType(ContentType.ogc_exception.toString());
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
     thredds.wcs.v1_0_0_Plus.ExceptionReport exceptionReport = new thredds.wcs.v1_0_0_Plus.ExceptionReport( exception );

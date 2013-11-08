@@ -43,11 +43,16 @@ package thredds.util;
  */
 public enum ContentType {
   binary("application/octet-stream"),
+  csv("text/csv; charset=UTF-8"),
   html("text/html; charset=UTF-8"),
   jnlp("application/x-java-jnlp-file"),
+  json("application/json"),
   netcdf("application/x-netcdf"),
-  text("text/plain; charset=utf-8"),
-  xml("text/xml; charset=iso-8859-1");
+  netcdf4("application/x-netcdf4"),
+  ogc_exception("application/vnd.ogc.se_xml"),
+  text("text/plain; charset=UTF-8"),
+  xml("application/xml; charset=UTF-8");
+  // xml_app("text/xml; charset=UTF-8");
 
   private final String name;
 

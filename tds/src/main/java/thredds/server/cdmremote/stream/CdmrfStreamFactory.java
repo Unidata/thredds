@@ -51,6 +51,7 @@ import thredds.server.cdmremote.params.CdmrfQueryBean;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
+import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -91,12 +92,7 @@ public final class CdmrfStreamFactory {
 	public void headerStream(String absPath, HttpServletResponse res, FeatureDatasetPoint fdp, CdmrfQueryBean query) throws IOException{
 		
 	    OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-	    //res.setContentType(getContentType(query));
-	    //if (null != getContentDescription(query))
-	    //  res.setHeader("Content-Description", getContentDescription(query));
-
-	    //res.setContentType("application/x-netcdf"); //??	    
-	    res.setContentType("application/octet-stream"); 
+	    res.setContentType(ContentType.binary.toString());
 	    res.setHeader("Content-Description", "ncstream");
 	    
 	    NetcdfFile ncfile = fdp.getNetcdfFile(); // LOOK will fail
