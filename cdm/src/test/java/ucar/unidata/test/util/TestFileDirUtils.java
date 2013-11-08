@@ -92,6 +92,10 @@ public class TestFileDirUtils
     if ( ! success )
       return null;
 
+// ToDo Should use exceptions here rather than depend on org.junit
+//    if ( lastModTime > 0 && ! newDir.setLastModified( lastModTime ))
+//      throw new IOException( String.format( "Failed to set lastModified time on directory [%s].", newDir.getPath()) );
+
     if ( lastModTime > 0 )
       assertTrue( "Failed to set lastModified time on directory [" + newDir.getPath() + "].",
                   newDir.setLastModified( lastModTime ));

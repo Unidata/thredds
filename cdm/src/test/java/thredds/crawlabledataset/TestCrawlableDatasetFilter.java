@@ -71,7 +71,11 @@ public class TestCrawlableDatasetFilter
     assertTrue( tmpTestDataDir.canRead());
     assertTrue( tmpTestDataDir.canWrite());
 
-    tmpTestDataCrDs = createCrawlableDataset( tmpTestDataDir.getPath(), tmpTestDataDir.getName());
+  }
+
+  public void createEtaDirWithCvsAndDotGitDirs( File targetDir) {
+
+    tmpTestDataCrDs = createCrawlableDataset( targetDir.getPath(), targetDir.getName());
 
     List<String> dirNamesToIgnore = new ArrayList<String>();
     dirNamesToIgnore.add("CVS");
@@ -84,10 +88,10 @@ public class TestCrawlableDatasetFilter
     dataFileNames.add("2004050412_eta_211.nc");
 
     for ( String dirName : dirNamesToIgnore )
-      TestFileDirUtils.addDirectory( tmpTestDataDir, dirName);
+      TestFileDirUtils.addDirectory( targetDir, dirName);
 
     for ( String fileName : dataFileNames )
-      TestFileDirUtils.addFile( tmpTestDataDir, fileName );
+      TestFileDirUtils.addFile( targetDir, fileName );
 
     allFiles_FullPathNames = new ArrayList<String>();
     dataFiles_FullPathNames = new ArrayList<String>();
@@ -104,16 +108,85 @@ public class TestCrawlableDatasetFilter
   }
 
   @Test
+  public void testDatafilesInDateTimeNestedDirs() {
+    File tmpTestDir = TestFileDirUtils.addDirectory( tmpTestDataDir, "testDatafilesInDateTimeNestedDirs" );
+    assertNotNull(tmpTestDir);
+    assertTrue( tmpTestDir.exists());
+    assertTrue( tmpTestDir.canRead());
+    assertTrue( tmpTestDir.canWrite());
+
+    File profilesDir = TestFileDirUtils.addDirectory( tmpTestDir, "profiles");
+    File firstDayDir = TestFileDirUtils.addDirectory( profilesDir, "20131106");
+
+    TestFileDirUtils.addFile( firstDayDir, "PROFILER_wind_06min_20131106_2341.nc");
+    TestFileDirUtils.addFile( firstDayDir, "PROFILER_wind_06min_20131106_2348.nc");
+    TestFileDirUtils.addFile( firstDayDir, "PROFILER_wind_06min_20131106_2354.nc");
+
+    File secondDayDir = TestFileDirUtils.addDirectory( profilesDir, "20131107");
+    TestFileDirUtils.addFile( secondDayDir, "PROFILER_wind_06min_20131107_0001.nc");
+    TestFileDirUtils.addFile( secondDayDir, "PROFILER_wind_06min_20131107_0008.nc");
+    TestFileDirUtils.addFile( secondDayDir, "PROFILER_wind_06min_20131107_0014.nc");
+
+    // Construct filter
+    List<MultiSelectorFilter.Selector> selectors = new ArrayList<MultiSelectorFilter.Selector>();
+    selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( ".*"), true, true, false ) );
+    CrawlableDatasetFilter me = new MultiSelectorFilter( selectors );
+    assertTrue( me != null );
+
+    CrawlableDataset profilesCrDs = createCrawlableDataset( profilesDir.getPath(), profilesDir.getName());
+
+    // Get filtered list of datasets.
+    List<CrawlableDataset> list = null;
+    try {
+      list = profilesCrDs.listDatasets( me);
+    } catch ( IOException e ) {
+      fail(String.format( "IOException listing children of the CrDs [%s]: %s", profilesCrDs.getName(), e.getMessage()));
+      return;
+    }
+
+    int expectedNumDs = 2;
+    assertEquals( "Number of datasets", expectedNumDs, list.size());
+
+    List<CrawlableDataset> subChildren = null;
+    String atomicChildrenMatchPattern = "PROFILER_wind_06min_2013110[67]_[0-9]{4}\\.nc";
+
+    for ( CrawlableDataset curCrDs : list ) {
+      String crDsName = curCrDs.getName();
+      assertTrue( String.format( "CrDs name [%s] not as expected [%s or %s].", crDsName, "20131106", "20131107"),
+                  crDsName.equals( "20131106" ) || crDsName.equals( "20131107" ));
+      try {
+        subChildren = curCrDs.listDatasets( me );
+      } catch ( IOException e ) {
+        fail(String.format( "IOException listing children of the CrDs [%s]: %s", curCrDs.getName(), e.getMessage()));
+        return;
+      }
+      assertEquals( "Number of CrDs children", 3, subChildren.size());
+      for ( CrawlableDataset curSubCrDs: subChildren ) {
+        assertTrue( String.format( "CrDs [%s] does not match pattern [%s]", curSubCrDs.getName(), atomicChildrenMatchPattern),
+                    curSubCrDs.getName().matches( atomicChildrenMatchPattern ));
+      }
+    }
+  }
+
+  @Test
   public void testRegExpIncludeAll()
   {
+    File tmpTestDir = TestFileDirUtils.addDirectory( tmpTestDataDir, "testRegExpIncludeAll" );
+    assertNotNull(tmpTestDir);
+    assertTrue( tmpTestDir.exists());
+    assertTrue( tmpTestDir.canRead());
+    assertTrue( tmpTestDir.canWrite());
+
+    createEtaDirWithCvsAndDotGitDirs( tmpTestDir );
+
     // Construct filter
-    List selectors = new ArrayList();
+    List<MultiSelectorFilter.Selector> selectors = new ArrayList<MultiSelectorFilter.Selector>();
     selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( ".*"), true, true, false ) );
     CrawlableDatasetFilter me = new MultiSelectorFilter( selectors );
     assertTrue( me != null );
 
     // Get filtered list of datasets.
-    List list = null;
+    List<CrawlableDataset> list = null;
     try {
       list = tmpTestDataCrDs.listDatasets( me);
     } catch ( IOException e ) {
@@ -121,11 +194,9 @@ public class TestCrawlableDatasetFilter
       return;
     }
 
-    int expectedNumDs = 4;
+    int expectedNumDs = 6;
     assertEquals( "Number of datasets", expectedNumDs, list.size());
-    for ( Iterator it = list.iterator(); it.hasNext(); )
-    {
-      CrawlableDataset curCd = (CrawlableDataset) it.next();
+    for ( CrawlableDataset curCd: list ) {
       assertTrue("Result path [" + curCd.getPath() + "] not as expected [" + allFiles_FullPathNames + "].",
           allFiles_FullPathNames.contains(curCd.getPath()));
     }
@@ -133,43 +204,59 @@ public class TestCrawlableDatasetFilter
   }
 
   @Test
-  public void testRegExpIncludeNcExcludeCVS()
+  public void testRegExpIncludeNcExcludeCvsExcludeDotGit()
   {
+    File tmpTestDir = TestFileDirUtils.addDirectory( tmpTestDataDir, "testRegExpIncludeNcExcludeCVS" );
+    assertNotNull(tmpTestDir);
+    assertTrue( tmpTestDir.exists());
+    assertTrue( tmpTestDir.canRead());
+    assertTrue( tmpTestDir.canWrite());
+
+    createEtaDirWithCvsAndDotGitDirs( tmpTestDir );
+
     // Construct filter
-    List selectors = new ArrayList();
+    List<MultiSelectorFilter.Selector> selectors = new ArrayList<MultiSelectorFilter.Selector>();
     selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( ".*nc$"), true, true, false ) );
     selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( "CVS"), false, false, true ) );
+    selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( "\\.git"), false, false, true ) );
     CrawlableDatasetFilter me = new MultiSelectorFilter( selectors );
     assertTrue( me != null );
 
     // Get filtered list of datasets.
-    List list = null;
+    List<CrawlableDataset> list = null;
     try {
       list = tmpTestDataCrDs.listDatasets( me );
     } catch ( IOException e ) {
       fail(String.format( "IOException getting children datasets [%s]: %s", tmpTestDataCrDs.getName(), e.getMessage()));
     }
     assertEquals( "Number of datasets", 4, list.size());
-    for ( Iterator it = list.iterator(); it.hasNext(); )
-    {
-      CrawlableDataset curCd = (CrawlableDataset) it.next();
+    for ( CrawlableDataset curCd: list ) {
       assertTrue("Result path [" + curCd.getPath() + "] not as expected ]" + dataFiles_FullPathNames + "].",
           dataFiles_FullPathNames.contains(curCd.getPath()));
     }
   }
 
   @Test
-  public void testWildcardIncludeNcExcludeCVS()
+  public void testWildcardIncludeNcExcludeCvsExcludeDotGit()
   {
+    File tmpTestDir = TestFileDirUtils.addDirectory( tmpTestDataDir, "testWildcardIncludeNcExcludeCVS" );
+    assertNotNull(tmpTestDir);
+    assertTrue( tmpTestDir.exists());
+    assertTrue( tmpTestDir.canRead());
+    assertTrue( tmpTestDir.canWrite());
+
+    createEtaDirWithCvsAndDotGitDirs( tmpTestDir );
+
     // Construct filter
-    List selectors = new ArrayList();
-    selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "*.nc$"), true, true, false ) );
+    List<MultiSelectorFilter.Selector> selectors = new ArrayList<MultiSelectorFilter.Selector>();
+    selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "*.nc"), true, true, false ) );
     selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "CVS"), false, false, true ) );
+    selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( ".git"), false, false, true ) );
     CrawlableDatasetFilter me = new MultiSelectorFilter( selectors );
     assertTrue( me != null );
 
     // Get filtered list of datasets.
-    List list = null;
+    List<CrawlableDataset> list = null;
     try {
       list = tmpTestDataCrDs.listDatasets( me );
     } catch ( IOException e ) {
@@ -178,9 +265,7 @@ public class TestCrawlableDatasetFilter
     }
 
     assertEquals( "Number of datasets", 4, list.size());
-    for ( Iterator it = list.iterator(); it.hasNext(); )
-    {
-      CrawlableDataset curCd = (CrawlableDataset) it.next();
+    for ( CrawlableDataset curCd: list ) {
       assertTrue("Result path [" + curCd.getPath() + "] not as expected [" + dataFiles_FullPathNames + "].",
           dataFiles_FullPathNames.contains(curCd.getPath()));
     }

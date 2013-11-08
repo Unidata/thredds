@@ -50,31 +50,46 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
 {
 
   private final List<Selector> selectorGroup;
-  private final boolean containsIncluders;
-  private final boolean containsExcluders;
+  private final boolean containsAtomicIncluders;
+  private final boolean containsAtomicExcluders;
+  private final boolean containsCollectionIncluders;
+  private final boolean containsCollectionExcluders;
 
   public MultiSelectorFilter( List<Selector> selectorGroup )
   {
     if ( selectorGroup == null || selectorGroup.isEmpty() ) {
       this.selectorGroup = Collections.emptyList();
-      this.containsIncluders = false;
-      this.containsExcluders = false;
+      this.containsAtomicIncluders = false;
+      this.containsAtomicExcluders = false;
+      this.containsCollectionIncluders = false;
+      this.containsCollectionExcluders = false;
     }
     else {
-      boolean anyIncluders = false;
-      boolean anyExcluders = false;
+      boolean anyAtomicIncluders = false;
+      boolean anyAtomicExcluders = false;
+      boolean anyCollectionIncluders = false;
+      boolean anyCollectionExcluders = false;
       List<Selector> tmpSelectorGroup = new ArrayList<Selector>();
       for ( Selector curSelector : selectorGroup ) {
-        if ( curSelector.isIncluder() )
-          anyIncluders = true;
-        else
-          anyExcluders = true;
-        tmpSelectorGroup.add( curSelector);
+        if ( curSelector.isIncluder() ) {
+          if ( curSelector.isApplyToAtomicDataset())
+            anyAtomicIncluders = true;
+          if ( curSelector.isApplyToCollectionDataset())
+            anyCollectionIncluders = true;
+        } else { // curSelector.isExcluder()
+          if ( curSelector.isApplyToAtomicDataset())
+            anyAtomicExcluders = true;
+          if ( curSelector.isApplyToCollectionDataset())
+            anyCollectionExcluders = true;
+        }
+          tmpSelectorGroup.add( curSelector);
       }
 
       this.selectorGroup = tmpSelectorGroup;
-      this.containsIncluders = anyIncluders;
-      this.containsExcluders = anyExcluders;
+      this.containsAtomicIncluders = anyAtomicIncluders;
+      this.containsAtomicExcluders = anyAtomicExcluders;
+      this.containsCollectionIncluders = anyCollectionIncluders;
+      this.containsCollectionExcluders = anyCollectionExcluders;
     }
   }
 
@@ -82,20 +97,34 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
   {                         
     if ( selector == null ) {
       this.selectorGroup = Collections.emptyList();
-      this.containsIncluders = false;
-      this.containsExcluders = false;
+      this.containsAtomicIncluders = false;
+      this.containsAtomicExcluders = false;
+      this.containsCollectionIncluders = false;
+      this.containsCollectionExcluders = false;
     }
-    else{
-      boolean anyIncluders = false;
-      boolean anyExcluders = false;
-      if ( selector.isIncluder() )
-        anyIncluders = true;
-      else
-        anyExcluders = true;
+    else {
+      boolean anyAtomicIncluders = false;
+      boolean anyAtomicExcluders = false;
+      boolean anyCollectionIncluders = false;
+      boolean anyCollectionExcluders = false;
+
+      if ( selector.isIncluder() ){
+        if ( selector.isApplyToAtomicDataset())
+          anyAtomicIncluders = true;
+        if ( selector.isApplyToCollectionDataset())
+          anyCollectionIncluders = true;
+      } else { // curSelector.isExcluder()
+        if ( selector.isApplyToAtomicDataset())
+          anyAtomicExcluders = true;
+        if ( selector.isApplyToCollectionDataset())
+          anyCollectionExcluders = true;
+      }
 
       this.selectorGroup = Collections.singletonList( selector);
-      this.containsIncluders = anyIncluders;
-      this.containsExcluders = anyExcluders;
+      this.containsAtomicIncluders = anyAtomicIncluders;
+      this.containsAtomicExcluders = anyAtomicExcluders;
+      this.containsCollectionIncluders = anyCollectionIncluders;
+      this.containsCollectionExcluders = anyCollectionExcluders;
     }
   }
 
@@ -112,6 +141,16 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
     if ( this.selectorGroup.isEmpty() )
       return true;
 
+    if ( dataset.isCollection()) {
+      // If no collection selectors, accept all collection datasets.
+      if ( ! this.containsCollectionIncluders && ! this.containsCollectionExcluders )
+        return true;
+    } else {
+      // If no atomic selectors, accept all atomic datasets.
+      if ( ! this.containsAtomicIncluders && ! this.containsAtomicExcluders )
+        return true;
+    }
+
     boolean include = false;
     boolean exclude = false;
 
@@ -126,18 +165,35 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
       }
     }
 
-    // If have only inclusion Selectors, accept any dataset that is explicitly included.
-    if ( this.containsIncluders && ! this.containsExcluders )
-      return include;
+    // Deal with atomic datasets
+    if( ! dataset.isCollection() ) {
+      // If have only inclusion Selectors, accept any dataset that is explicitly included.
+      if ( this.containsAtomicIncluders && ! this.containsAtomicExcluders )
+        return include;
 
-    // If have only exclusion Selectors, accept any dataset not explicitly excluded.
-    if ( this.containsExcluders && ! this.containsIncluders )
-      return ! exclude;
+      // If have only exclusion Selectors, accept any dataset not explicitly excluded.
+      if ( this.containsAtomicExcluders && ! this.containsAtomicIncluders )
+        return ! exclude;
 
-    // If have both inclusion and exclusion Selectors, accept datasets that are
-    // explicitly included but not explicitly excluded.
-    if ( this.containsIncluders && this.containsExcluders && include )
-      return ! exclude;
+      // If have both inclusion and exclusion Selectors, accept datasets that are
+      // explicitly included but not explicitly excluded.
+      if ( this.containsAtomicIncluders && this.containsAtomicExcluders && include )
+        return ! exclude;
+    // Deal with collection datasets
+    } else {
+      // If have only inclusion Selectors, accept any dataset that is explicitly included.
+      if ( this.containsCollectionIncluders && ! this.containsCollectionExcluders )
+        return include;
+
+      // If have only exclusion Selectors, accept any dataset not explicitly excluded.
+      if ( this.containsCollectionExcluders && ! this.containsCollectionIncluders )
+        return ! exclude;
+
+      // If have both inclusion and exclusion Selectors, accept datasets that are
+      // explicitly included but not explicitly excluded.
+      if ( this.containsCollectionIncluders && this.containsCollectionExcluders && include )
+        return ! exclude;
+    }
 
     // Otherwise, don't accept.
     return false;
