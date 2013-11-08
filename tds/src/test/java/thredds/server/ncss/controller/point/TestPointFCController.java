@@ -69,7 +69,7 @@ public class TestPointFCController {
     RequestBuilder rb = MockMvcRequestBuilders.get(xmlpath).servletPath(xmlpath);
     MvcResult result = this.mockMvc.perform(rb)
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.header().string("content-type", ContentType.xml.toString()))
+            .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
             .andReturn();
 
     String ress = result.getResponse().getContentAsString();
@@ -95,7 +95,7 @@ public class TestPointFCController {
     RequestBuilder rb = MockMvcRequestBuilders.get(htmlpath).servletPath(htmlpath);
     MvcResult result = this.mockMvc.perform(rb)
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.header().string("content-type", ContentType.html.toString()))
+            .andExpect(MockMvcResultMatchers.content().contentType(ContentType.html.getContentHeader()))
             .andReturn();
 
     System.out.printf("%s%n", result.getResponse().getContentAsString());

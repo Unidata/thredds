@@ -48,6 +48,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.format.SupportedFormat;
+import thredds.util.ContentType;
 
 /**
  * @author mhermida
@@ -82,7 +83,7 @@ public class DatasetBoundariesTest {
 		
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path);
 		this.mockMvc.perform(rb)
-            .andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.WKT.getResponseContentType() ) );
+            .andExpect(MockMvcResultMatchers.header().string(ContentType.HEADER, SupportedFormat.WKT.getResponseContentType() ) );
 	}
 	
 	@Test
@@ -92,7 +93,7 @@ public class DatasetBoundariesTest {
             .param("accept", "json");
 		
 		this.mockMvc.perform(rb)
-            .andExpect(MockMvcResultMatchers.header().string("content-type", SupportedFormat.JSON.getResponseContentType() ) );
+            .andExpect(MockMvcResultMatchers.header().string(ContentType.HEADER, SupportedFormat.JSON.getResponseContentType() ) );
 	}
 
 }

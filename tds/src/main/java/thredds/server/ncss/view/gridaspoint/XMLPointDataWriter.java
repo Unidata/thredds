@@ -53,6 +53,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import thredds.server.ncss.util.NcssRequestUtils;
+import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
@@ -512,7 +513,8 @@ class XMLPointDataWriter implements PointDataWriter {
 			httpHeaders.set("Content-Location", pathInfo );
 			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
 		}	
-		httpHeaders.setContentType(MediaType.APPLICATION_XML);
+    httpHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
+		//httpHeaders.setContentType(MediaType.APPLICATION_XML);
 	}
 
 	private void writeDataTag(XMLStreamWriter writer,

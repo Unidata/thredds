@@ -56,6 +56,7 @@ import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.server.ncss.view.gridaspoint.NetCDFPointDataWriter;
+import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
@@ -638,10 +639,10 @@ public class StationWriter extends AbstractWriter {
       String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
       String url = NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getServletCachePath() + "/" + fileName;
       if (version == NetcdfFileWriter.Version.netcdf3)
-        httpHeaders.set("Content-Type", SupportedFormat.NETCDF3.getResponseContentType());
+        httpHeaders.set(ContentType.HEADER, ContentType.netcdf.getContentHeader());
 
       if (version == NetcdfFileWriter.Version.netcdf4)
-        httpHeaders.set("Content-Type", SupportedFormat.NETCDF4.getResponseContentType());
+        httpHeaders.set(ContentType.HEADER, ContentType.netcdf4.getContentHeader());
 
       httpHeaders.set("Content-Location", url);
       httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
@@ -811,7 +812,8 @@ public class StationWriter extends AbstractWriter {
         httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
       }
 
-      httpHeaders.setContentType(MediaType.APPLICATION_XML);
+      httpHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
+      // httpHeaders.setContentType(MediaType.APPLICATION_XML);
       return httpHeaders;
     }
 
@@ -895,7 +897,7 @@ public class StationWriter extends AbstractWriter {
         httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
       }
 
-      httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+      httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
       return httpHeaders;
     }
 

@@ -7,6 +7,7 @@ import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.server.ncss.view.gridaspoint.NetCDFPointDataWriter;
+import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
@@ -313,7 +314,7 @@ public class PointWriter extends AbstractWriter {
       //String pathInfo = fd.getTitle();
       String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
       String url = NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getServletCachePath() + "/" + fileName;
-      httpHeaders.set("Content-Type", wantFormat.getResponseContentType());
+      httpHeaders.set(ContentType.HEADER, wantFormat.getResponseContentType());
       httpHeaders.set("Content-Location", url);
       httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
@@ -464,7 +465,7 @@ public class PointWriter extends AbstractWriter {
         httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".xml\"");
       }
 
-      httpHeaders.set("Content-Type", wantFormat.getResponseContentType());
+      httpHeaders.set(ContentType.HEADER, wantFormat.getResponseContentType());
       return httpHeaders;
     }
 
@@ -554,7 +555,7 @@ public class PointWriter extends AbstractWriter {
         httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
       }
 
-      httpHeaders.set("Content-Type", wantFormat.getResponseContentType());
+      httpHeaders.set(ContentType.HEADER, wantFormat.getResponseContentType());
       return httpHeaders;
     }
 

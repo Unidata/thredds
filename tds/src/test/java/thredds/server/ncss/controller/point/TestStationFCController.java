@@ -53,6 +53,7 @@ import org.springframework.web.context.WebApplicationContext;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.exception.FeaturesNotFoundException;
 import thredds.server.ncss.format.SupportedFormat;
+import thredds.util.ContentType;
 
 import static org.junit.Assert.assertTrue;
 
@@ -101,7 +102,7 @@ public class TestStationFCController {
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.CSV_STREAM.getResponseContentType()));
+			.andExpect(MockMvcResultMatchers.content().contentType(ContentType.csv.getContentHeader()));
 	}
 
 	@Test
@@ -115,7 +116,7 @@ public class TestStationFCController {
 				.param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-		.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() )) ;
+		.andExpect(MockMvcResultMatchers.content().contentType( ContentType.netcdf.getContentHeader() )) ;
 	}
 
 	@Test
@@ -150,7 +151,7 @@ public class TestStationFCController {
  				.param("time_end","2006-03-28T00:00:00Z");
 
  		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
- 			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() ));
+ 			.andExpect(MockMvcResultMatchers.content().contentType( ContentType.netcdf.getContentHeader() ));
  	}
 
 	@Test
@@ -165,7 +166,7 @@ public class TestStationFCController {
 
 
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() ));
+			.andExpect(MockMvcResultMatchers.content().contentType( ContentType.netcdf.getContentHeader() ));
 
 	}
 

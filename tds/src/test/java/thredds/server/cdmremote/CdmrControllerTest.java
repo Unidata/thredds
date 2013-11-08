@@ -73,7 +73,7 @@ public class CdmrControllerTest {
 
      MvcResult result = this.mockMvc.perform( rb )
                .andExpect(MockMvcResultMatchers.status().is(200))
-               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.toString()))
+               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
                .andReturn();
 
     //System.out.printf("content = %s%n", result.getResponse().getContentAsString());
@@ -94,7 +94,7 @@ public class CdmrControllerTest {
 
     MvcResult result = this.mockMvc.perform( rb )
               .andExpect(MockMvcResultMatchers.status().is(200))
-              .andExpect(MockMvcResultMatchers.content().contentType(ContentType.text.toString()))
+              .andExpect(MockMvcResultMatchers.content().contentType(ContentType.text.getContentHeader()))
               .andReturn();
 
 
@@ -108,7 +108,7 @@ public class CdmrControllerTest {
 
      MvcResult result = this.mockMvc.perform( rb )
                .andExpect(MockMvcResultMatchers.status().is(200))
-               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.toString()))
+               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
                .andReturn();
 
 
@@ -137,7 +137,7 @@ public class CdmrControllerTest {
 
      MvcResult result = this.mockMvc.perform( rb )
                .andExpect(MockMvcResultMatchers.status().is(200))
-               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.binary.toString()))
+               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.binary.getContentHeader()))
                .andReturn();
 
         //response is a ncstream

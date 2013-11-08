@@ -54,6 +54,8 @@ public enum ContentType {
   xml("application/xml", "UTF-8");
   // xml_app("text/xml; charset=UTF-8");
 
+  public final static String HEADER = "Content-Type";
+
   private final String name;
   private final String charset;
 

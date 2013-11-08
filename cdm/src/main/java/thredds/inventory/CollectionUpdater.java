@@ -254,19 +254,24 @@ public enum CollectionUpdater {
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
+      CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
+      org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
+      if (manager == null) {
+        loggerfc.error("UpdateCollection failed: no manager object on {}", context);
+        return;
+      }
+
       try {
-        CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
-        org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
         String groupName = context.getTrigger().getKey().getGroup();
         if (groupName.equals("nocheck")) {
           loggerfc.info("UpdateCollection {} nocheck", manager.getCollectionName());
-          manager.updateNocheck(); // update(CollectionManager.Force.nocheck)
+          manager.updateNocheck();
         } else {
           loggerfc.debug("UpdateCollection {} scan(true)", manager.getCollectionName());
           manager.scan(true);
         }
       } catch (Throwable e) {
-        logger.error("UpdateCollectionJob.execute failed", e);
+        loggerfc.error("UpdateCollectionJob.execute failed collection=" + manager.getCollectionName(), e);
       }
     }
   }
@@ -276,17 +281,18 @@ public enum CollectionUpdater {
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
+      CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
+      org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
+      if (manager == null) {
+        loggerfc.error("Update resetProto failed: no manager object on {}", context);
+        return;
+      }
+
       try {
-        CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
-        org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
-        if (manager == null) {
-          loggerfc.error("Update resetProto failed: no manager object on {}", context);
-          return;
-        }
-        logger.info("ResetProto for {}", manager.getCollectionName());
+        loggerfc.info("ResetProto for {}", manager.getCollectionName());
         manager.resetProto();
       } catch (Throwable e) {
-        logger.error("ChangeProtoJob.execute failed", e);
+        loggerfc.error("ChangeProtoJob.execute failed collection=" + manager.getCollectionName(), e);
       }
     }
   }

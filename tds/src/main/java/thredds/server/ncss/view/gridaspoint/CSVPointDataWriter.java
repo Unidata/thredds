@@ -50,6 +50,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import thredds.server.ncss.util.NcssRequestUtils;
+import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -452,7 +453,8 @@ class CSVPointDataWriter implements PointDataWriter  {
 				httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
 			}			
 			
-			httpHeaders.setContentType( MediaType.TEXT_PLAIN );
+      httpHeaders.set(ContentType.HEADER, ContentType.csv.getContentHeader());
+			//httpHeaders.setContentType( MediaType.TEXT_PLAIN );
 		}
 		headersSet = true;
 	}	

@@ -50,6 +50,7 @@ import thredds.server.ncss.controller.GridDatasetResponder;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.view.gridaspoint.netcdf.CFPointWriterWrapper;
 import thredds.server.ncss.view.gridaspoint.netcdf.CFPointWriterWrapperFactory;
+import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
@@ -203,7 +204,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
     if (version == NetcdfFileWriter.Version.netcdf4)
       contentType = SupportedFormat.NETCDF4.getResponseContentType();
 
-    httpHeaders.set("Content-Type", contentType);
+    httpHeaders.set(ContentType.HEADER, contentType);
     httpHeaders.set("Content-Location", url);
     httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
   }

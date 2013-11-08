@@ -59,6 +59,7 @@ import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssParamsBean;
+import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
@@ -171,7 +172,7 @@ public class NcssController extends AbstractNcssController {
 
     // Headers...
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.set("Content-Type", sf.getResponseContentType());
+    httpHeaders.set(ContentType.HEADER, sf.getResponseContentType());
     setResponseHeaders(res, httpHeaders);
     IO.copyFileB(netcdfResult, res.getOutputStream(), 60000);
     res.flushBuffer();

@@ -182,9 +182,8 @@ public class ListenerManager {
         logger.error("ListenerManager IllegalArgumentException", e);
         iter.remove();
       } catch (InvocationTargetException e) {
-        logger.error("ListenerManager InvocationTargetException on " + method+ " threw exception " + e.getTargetException(), e);
-        //iter.remove();
-        //e.printStackTrace();
+        // logger.error("ListenerManager InvocationTargetException on " + method+ " threw exception " + e.getTargetException(), e);
+        throw new RuntimeException(e.getCause()); // pass exception to the caller of sendEvent()
       }
     }
   }
