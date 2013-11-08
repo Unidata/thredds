@@ -37,4 +37,8 @@
     <constructor-arg value="60"/>
   </bean>
 
+   <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
+     <entry key="cdmUnitTest" value="Q:/cdmUnitTest"/>
+   </util:map>
+
 </beans>

@@ -72,7 +72,6 @@ import thredds.server.admin.DebugController;
 import thredds.server.config.AllowableService;
 import thredds.server.config.TdsContext;
 import thredds.util.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil2;
@@ -166,51 +165,11 @@ public final class DataRootHandler implements InitializingBean {
 
   }
 
-  //private PathAliasReplacement contentPathAliasReplacement2 = null;
-  //private PathAliasReplacement iddDataRootPathAliasReplacement2 = null;
-  //private List<PathAliasReplacement> dataRootLocAliasExpanders2 = Collections.emptyList();
-
-  /* public void setDataRootLocationAliasExpanders(List<PathAliasReplacement> dataRootLocAliasExpanders) {
-    if (dataRootLocAliasExpanders != null)
-      this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>(dataRootLocAliasExpanders);
-    this.updateFullDataRootLocationAliasExpanders(this.dataRootLocAliasExpanders);
-  }
-
-  public List<PathAliasReplacement> getDataRootLocationAliasExpanders() {
-    return Collections.unmodifiableList(this.dataRootLocAliasExpanders);
-  } */
-
-  /* private void updateFullDataRootLocationAliasExpanders(List<PathAliasReplacement> list) {
-    this.dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
-    this.dataRootLocationAliasExpanders.add(this.contentPathAliasReplacement);
-    if (iddDataRootPathAliasReplacement != null)
-      this.dataRootLocationAliasExpanders.add(this.iddDataRootPathAliasReplacement);
-    if (list != null && !list.isEmpty())
-      this.dataRootLocationAliasExpanders.addAll(list);
-  } */
-
   //Set method must be called so annotation at method level rather than property level
   @Resource(name = "dataRootLocationAliasExpanders")
   public void setDataRootLocationAliasExpanders(Map<String, String> aliases) {
-    for (String key : aliases.keySet()) {
-      String value = aliases.get(key);
-      if (value == null || value.isEmpty()) continue;
-      StartsWithPathAliasReplacement alias = new StartsWithPathAliasReplacement("${" + key + "}", value);
-      dataRootLocationAliasExpanders.add(alias);
-      if (debug) System.out.printf("DataRootHandler alias= %s%n", alias);
-    }
+    dataRootLocationAliasExpanders = PathAliasReplacementImpl.makePathAliasReplacements(aliases);
   }
-
-  /* private String expandAlias(String org) {
-    if (org == null) return null;
-    String path = StringUtils.cleanPath(org);
-    for (PathAliasReplacement e : dataRootLocationAliasExpanders)  {
-      String result = e.replaceIfMatch(path);
-      if (result != null) return result;
-    }
-    return null;
-  } */
-
 
   //////////////////////////////////////////////
 
@@ -222,14 +181,7 @@ public final class DataRootHandler implements InitializingBean {
 
     // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
     String contentReplacementPath = StringUtils.cleanPath(tdsContext.getPublicDocFileSource().getFile("").getPath());
-    dataRootLocationAliasExpanders.add(new StartsWithPathAliasReplacement("content", contentReplacementPath));
-
-    /* String iddDataRootReplacementPath = ThreddsConfig.get("DataRoots.idd", null);
-    if (iddDataRootReplacementPath != null) {
-      iddDataRootReplacementPath = StringUtils.cleanPath(iddDataRootReplacementPath);
-      this.iddDataRootPathAliasReplacement = new StartsWithPathAliasReplacement("${iddDataRoot}", iddDataRootReplacementPath);
-    }
-    this.updateFullDataRootLocationAliasExpanders(null);  */
+    dataRootLocationAliasExpanders.add(new PathAliasReplacementImpl("content", contentReplacementPath));
 
     //this.contentPath = this.tdsContext.
     this.initCatalogs();

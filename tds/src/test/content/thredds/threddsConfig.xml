@@ -76,6 +76,14 @@
     <maxFileDownloadSize>52428800</maxFileDownloadSize>
   </NetcdfSubsetService>
 
+  <FeatureCollection>
+     <RollingFileAppender>
+       <MaxFileSize>10 MB</MaxFileSize>
+       <MaxBackups>50</MaxBackups>
+       <Level>DEBUG</Level>
+     </RollingFileAppender>
+  </FeatureCollection>
+
   <WCS>
     <allow>true</allow>
     <allowRemote>false</allowRemote>
@@ -110,18 +118,6 @@
     <allow>true</allow>
     <allowRemote>false</allowRemote>
   </DLwriter>
-
-  <!-- Enable DqcService.
-   -->
-  <DqcService>
-    <allow>false</allow>
-  </DqcService>
-
-  <!-- Viewer>my.package.MyViewer</Viewer -->
-
-  <FmrcInventory>
-    <openType>XML_ONLY</openType>
-  </FmrcInventory>
 
   <!-- nj22Config
     <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>

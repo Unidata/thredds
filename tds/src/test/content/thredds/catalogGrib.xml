@@ -14,7 +14,6 @@
 
   <!-- test GRIB collection  -->
   <featureCollection featureType="GRIB" name="GFS_CONUS_80km" path="gribCollection/GFS_CONUS_80km">
-    <!--featureCollection featureType="GRIB" name="GFS_CONUS_80km" path="GFS_CONUS_80km/tests"-->
     <dataFormat>GRIB-1</dataFormat>
     <metadata inherited="true">
       <serviceName>all</serviceName>
@@ -28,9 +27,10 @@
       </documentation>
     </metadata>
 
-    <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" olderThan="10 min"/>
+    <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" />
     <update startup="true" trigger="allow"/>
-    <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+    <tdm startup="true" rescan="0 0/5 * * * ? *" trigger="allow"/>
+    <gribConfig datasetTypes="Best LatestFile Files" />
 
   </featureCollection>
 

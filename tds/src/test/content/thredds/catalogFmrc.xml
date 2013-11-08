@@ -17,7 +17,7 @@
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
   </service>
 
-  <featureCollection featureType="FMRC" name="GFS_CONUS_80km_FMRC" path="testGFSfmrc">
+  <featureCollection featureType="FMRC" name="GFS_CONUS_80km_nc" path="testGFSfmrc">
 
     <metadata inherited="true">
       <serviceName>all</serviceName>

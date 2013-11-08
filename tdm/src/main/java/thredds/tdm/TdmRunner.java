@@ -48,6 +48,8 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 
 import thredds.util.LoggerFactorySpecial;
+import thredds.util.PathAliasReplacement;
+import thredds.util.PathAliasReplacementImpl;
 import thredds.util.ThreddsConfigReader;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.TimePartition;
@@ -140,6 +142,11 @@ public class TdmRunner {
       session.setUserAgent("tdmRunner");
       servers.add(new Server(name, session));
     }
+  }
+
+  List<PathAliasReplacement> aliasExpanders;
+  public void setPathAliasReplacements(List<PathAliasReplacement> aliasExpanders) {
+    this.aliasExpanders = aliasExpanders;
   }
 
   boolean init() {
@@ -391,7 +398,7 @@ public class TdmRunner {
 
   void start() throws IOException {
     System.out.printf("Tdm startup at %s%n", new Date());
-    CatalogReader reader = new CatalogReader(catalog);
+    CatalogReader reader = new CatalogReader(catalog, aliasExpanders);
     List<InvDatasetFeatureCollection> fcList = reader.getFcList();
 
     if (showOnly) {
@@ -434,8 +441,13 @@ public class TdmRunner {
   public static void main(String args[]) throws IOException, InterruptedException {
     ApplicationContext springContext = new FileSystemXmlApplicationContext("classpath:resources/application-config.xml");
     TdmRunner driver = (TdmRunner) springContext.getBean("testDriver");
+
+    Map<String, String> aliases = (Map<String, String> ) springContext.getBean("dataRootLocationAliasExpanders");
+    List<PathAliasReplacement> aliasExpanders = PathAliasReplacementImpl.makePathAliasReplacements(aliases);
+    driver.setPathAliasReplacements( aliasExpanders);
+
     //RandomAccessFile.setDebugLeaks(true);
-    HTTPSession.setGlobalUserAgent("TDM v4.3");
+    HTTPSession.setGlobalUserAgent("TDM v4.4");
     // GribCollection.getDiskCache2().setNeverUseCache(true);
     String logLevel = "INFO";
     String contentDir;
