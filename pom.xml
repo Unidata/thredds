@@ -875,7 +875,7 @@
 	<uk.ac.rdg.resc.version>1.0.tds.4.4.20130918.0800-SNAPSHOT</uk.ac.rdg.resc.version>
 	  
     <org.geotoolkit.version>3.21</org.geotoolkit.version>
-    <eds.threddsIso.version>2.3</eds.threddsIso.version>
+    <eds.threddsIso.version>2.3.1</eds.threddsIso.version>
 
     <atg.taglib.json.version>0.4.1</atg.taglib.json.version>
     <cas.version>3.1.10</cas.version>
