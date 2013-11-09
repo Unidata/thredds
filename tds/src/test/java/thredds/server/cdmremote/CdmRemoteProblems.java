@@ -47,7 +47,7 @@ public class CdmRemoteProblems {
 
      MvcResult result = this.mockMvc.perform( rb )
                .andExpect(MockMvcResultMatchers.status().is(200))
-               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.toString()))
+               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
                .andReturn();
 
     System.out.printf("content = %s%n", result.getResponse().getContentAsString());

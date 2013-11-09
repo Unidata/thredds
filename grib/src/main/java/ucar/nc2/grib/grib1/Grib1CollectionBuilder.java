@@ -447,7 +447,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     createIndex(indexFile, groups, files);
 
     long took = System.currentTimeMillis() - start;
-    if (logger.isDebugEnabled()) logger.debug("That took {} msecs", took);
+    if (logger.isDebugEnabled())
+      logger.debug("That took {} msecs", took);
     return true;
   }
 

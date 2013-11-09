@@ -57,6 +57,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.net.*;
 
 import java.io.ByteArrayOutputStream;
@@ -157,8 +158,16 @@ public class TdmRunner {
     }
     ThreddsConfigReader reader = new ThreddsConfigReader(configFile.getPath(), log);
 
-    // LOOK factor out of tds
-    // new for 4.3.15: grib index file placement, using DiskCache2
+   // LOOK following has been duplicated from tds cdmInit
+
+    // 4.3.17
+    long maxFileSize = reader.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
+    int maxBackupIndex = reader.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 10);
+    String level = reader.get("FeatureCollection.RollingFileAppender.Level", "INFO");
+    LoggerFactory fac = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
+    InvDatasetFeatureCollection.setLoggerFactory(fac);
+
+    /* 4.3.15: grib index file placement, using DiskCache2  */
     String gribIndexDir = reader.get("GribIndex.dir", new File(contentDir, "/cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = reader.getBoolean("GribIndex.alwaysUse", false);
     String gribIndexPolicy = reader.get("GribIndex.policy", null);
@@ -503,7 +512,6 @@ public class TdmRunner {
       }
     }
 
-    InvDatasetFeatureCollection.setLoggerFactory(new LoggerFactorySpecial(1000 * 1000, 5, logLevel));
     CollectionUpdater.INSTANCE.setTdm(true);
 
     if (driver.init()) {
