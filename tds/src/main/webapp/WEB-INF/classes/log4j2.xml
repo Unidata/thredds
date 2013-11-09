@@ -86,7 +86,7 @@
 
 
     <!-- featureCollection -->
-    <logger name="thredds.inventory.MFileCollectionManager" level="info" additivity="false">
+    <logger name="thredds.inventory.MFileCollectionManager" level="debug" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 

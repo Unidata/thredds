@@ -96,15 +96,15 @@ public class TimedCollection {
       } else if (datasets.size() > 1) {
 
         for (int i = 0; i < datasets.size() - 1; i++) {
-          Dataset d1 = (Dataset) datasets.get(i);
-          Dataset d2 = (Dataset) datasets.get(i + 1);
+          Dataset d1 =  datasets.get(i);
+          Dataset d2 =  datasets.get(i + 1);
           d1.setDateRange(CalendarDateRange.of(d1.start, d2.start));
           if (i == datasets.size() - 2) // last one
             d2.setDateRange(new CalendarDateRange(d2.start, d1.getDateRange().getDurationInSecs()));
         }
 
-        Dataset first = (Dataset) datasets.get(0);
-        Dataset last = (Dataset) datasets.get(datasets.size() - 1);
+        Dataset first =  datasets.get(0);
+        Dataset last =  datasets.get(datasets.size() - 1);
         dateRange = CalendarDateRange.of(first.getDateRange().getStart(), last.getDateRange().getEnd());
       }
     }
