@@ -254,7 +254,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
    * Constructor, default buffer size.
    *
    * @param location location of the file
-   * @param mode     same as for java.io.RandomAccessFile
+   * @param mode     same as for java.io.RandomAccessFile, usually "r" or "rw"
    * @throws IOException on open error
    */
   public RandomAccessFile(String location, String mode) throws IOException {

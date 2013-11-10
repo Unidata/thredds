@@ -38,6 +38,7 @@ package thredds.filesystem;
 import thredds.inventory.MCollection;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +47,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
- * Use Java 7
+ * Use Java 7 NIO for scanning the file system
  *
  * @author caron
  * @since 11/8/13
@@ -268,6 +269,10 @@ public class ControllerOS7 implements MController {
     }
   }
 
+
+  //////////////////////////////////////////////////////////////////
+  // playing around with NIO
+
   public static class PrintFiles extends SimpleFileVisitor<Path> {
     private int countFiles;
     private int countDirs;
@@ -324,19 +329,103 @@ public class ControllerOS7 implements MController {
     }
   }
 
-  private static void test() throws IOException {
+  private static void walkFileTree() throws IOException {
     Path dir = Paths.get("B:/ndfd/");
 
     long start = System.currentTimeMillis();
     PrintFiles pf = new PrintFiles();
+    EnumSet<FileVisitOption> opts = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
     Files.walkFileTree(dir, pf);
     long took = (System.currentTimeMillis() - start) / 1000;
     System.out.printf("took %s secs%n", took);
     System.out.printf("%s%n", pf);
   }
 
+  /////////////////////////////////////////////////////////////
+
+  private class MyFilter implements DirectoryStream.Filter<Path> {
+    @Override
+    public boolean accept(Path entry) throws IOException {
+      return !entry.endsWith(".gbx9") && !entry.endsWith(".ncx");
+    }
+  }
+
+  private void show(Path p, BasicFileAttributes attr) {
+    System.out.printf("File: %s%n", p);
+    System.out.println("    creationTime: " + attr.creationTime());
+    System.out.println("  lastAccessTime: " + attr.lastAccessTime());
+    System.out.println("lastModifiedTime: " + attr.lastModifiedTime());
+
+    System.out.println("   isDirectory: " + attr.isDirectory());
+    System.out.println("       isOther: " + attr.isOther());
+    System.out.println(" isRegularFile: " + attr.isRegularFile());
+    System.out.println("isSymbolicLink: " + attr.isSymbolicLink());
+    System.out.println("size: " + attr.size());
+    System.out.println("--------------------");
+  }
+
+  private int countFiles;
+  private int countDirs;
+  private int countOther;
+  private int countSyms;
+  long start = System.currentTimeMillis();
+
+  private void visitFile(Path file, BasicFileAttributes attr) {
+    if (attr.isSymbolicLink()) {
+      countSyms++;
+    } else if (attr.isRegularFile()) {
+      countFiles++;
+    } else {
+      countOther++;
+    }
+    if (countFiles % 10000 == 0) {
+      double took = (System.currentTimeMillis() - start);
+      double rate = countFiles / took;
+      double drate = countDirs / took;
+      System.out.printf("%s file rate=%f/msec drate=%f/msec%n", countFiles, rate, drate);
+    }
+  }
+
+  private void dirStream(Path dir) throws IOException {
+    try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir, new MyFilter())) {
+      for (Path p : ds) {
+        BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
+        visitFile(p, attr);
+        if (attr.isDirectory()) {
+          countDirs++;
+          dirStream(p);
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private static void dirStream() throws IOException {
+    Path dir = Paths.get("B:/ndfd/");
+
+    long start = System.currentTimeMillis();
+    ControllerOS7 c = new ControllerOS7();
+    c.dirStream(dir);
+    long took = (System.currentTimeMillis() - start) / 1000;
+    System.out.printf("took %s secs%n", took);
+  }
+
   public static void main(String[] args) throws IOException {
-    test();
+    // dirStream();
+
+    Path firstPath = Paths.get("/200901/20090101/LEHZ97_KNHC_200901011102").getParent();
+    for (int i=0; i< firstPath.getNameCount(); i++)
+      System.out.printf("  %s%n", firstPath.getName(i));
+
+    Path currentBasePath = Paths.get("B:/ndfd/ncdc1Year-20090101.ncx").getParent();
+    for (int i=0; i< currentBasePath.getNameCount(); i++)
+       System.out.printf("  %s%n", currentBasePath.getName(i));
+
+    //Path rel =  currentBasePath.relativize(firstPath);
+    //Path rel2 =  firstPath.relativize(currentBasePath);
+    Path res =  currentBasePath.resolve(firstPath);
+    System.out.printf("res=%s%n", res);
   }
 
 }

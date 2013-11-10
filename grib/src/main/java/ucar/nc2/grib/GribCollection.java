@@ -194,7 +194,7 @@ public abstract class GribCollection implements FileCacheable {
 
   ////////////////////////////////////////////////////////////////
   protected final String name;
-  protected final File directory;
+  protected File directory;
   protected final FeatureCollectionConfig.GribConfig gribConfig;
   protected final boolean isGrib1;
 
@@ -327,6 +327,10 @@ public abstract class GribCollection implements FileCacheable {
 
   public File getDirectory() {
     return directory;
+  }
+
+  public void setDirectory(File directory) {
+    this.directory = directory;
   }
 
   protected GribCollection(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1) {
@@ -762,7 +766,7 @@ public abstract class GribCollection implements FileCacheable {
       sb.append(", ntimes=").append(ntimes);
       sb.append(", nverts=").append(nverts);
       sb.append(", nens=").append(nens);
-      sb.append(", records=").append(records == null ? "null" : Arrays.asList(records).toString());
+      //sb.append(", records=").append(records == null ? "null" : Arrays.asList(records).toString());
       sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
       sb.append('}');
       return sb.toString();
@@ -865,7 +869,6 @@ public abstract class GribCollection implements FileCacheable {
     sb.append("{\n name='").append(name).append('\'');
     sb.append("\n directory=").append(directory);
     sb.append("\n isGrib1=").append(isGrib1);
-    sb.append("\n version=").append(version);
     sb.append("\n center=").append(center);
     sb.append("\n subcenter=").append(subcenter);
     sb.append("\n master=").append(master);

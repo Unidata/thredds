@@ -193,18 +193,18 @@ public class GribCollectionIndexPanel extends JPanel {
     timeCoordTable = new BeanTableSorted(TimeCoordBean.class, (PreferencesExt) prefs.node("TimeCoordBean"), false, "Time Coordinates", "TimeCoord", null);
     varPopup = new PopupMenu(timeCoordTable.getJTable(), "Options");
 
-    varPopup.addAction("Show", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        TimeCoordBean bean = (TimeCoordBean) timeCoordTable.getSelectedBean();
-        if (bean != null) {
-          infoPopup.setText(bean.tc.toString());
-          infoPopup.gotoTop();
-          infoWindow.show();
-        }
-      }
-    });
+    varPopup.addAction("Show Coord", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         TimeCoordBean bean = (TimeCoordBean) timeCoordTable.getSelectedBean();
+         if (bean != null) {
+           infoPopup.setText(bean.tc.toString());
+           infoPopup.gotoTop();
+           infoWindow.show();
+         }
+       }
+     });
 
-    /////////////////////////////////////////
+     /////////////////////////////////////////
     // the info windows
     infoPopup = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoPopup);
@@ -315,21 +315,8 @@ public class GribCollectionIndexPanel extends JPanel {
     if (gc != null) gc.close();
     magic = null;
 
-    RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
-    raf.seek(0);
-    byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.getBytes().length];
-    raf.read(b);
-    magic = new String(b);
-    if (magic.equals(Grib2CollectionBuilder.MAGIC_START))
-      gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf, null, logger);
-    else if (magic.equals(Grib1CollectionBuilder.MAGIC_START))
-      gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf, null, logger);
-    else if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START))
-      gc = Grib2TimePartitionBuilder.createFromIndex(indexFile, null, raf, logger);
-    else if (magic.equals(Grib1TimePartitionBuilder.MAGIC_START))
-      gc = Grib1TimePartitionBuilder.createFromIndex(indexFile, null, raf, logger);
-
-    else
+    gc = GribCdmIndex.openCdmIndex(indexFile, logger);
+    if (gc == null)
       throw new IOException("Not a grib collection index file ="+magic);
 
     List<GroupBean> groups = new ArrayList<GroupBean>();
@@ -403,7 +390,24 @@ public class GribCollectionIndexPanel extends JPanel {
       return group.gdsHash;
     }
 
-    public String getDescription() {
+    public int getNFiles() {
+      return group.filenose.length;
+    }
+
+    public int getNTimes() {
+      return group.timeCoords.size();
+    }
+
+    public int getNVerts() {
+      return group.vertCoords.size();
+    }
+
+    public int getNVars() {
+      return group.varIndex.size();
+    }
+
+
+  public String getDescription() {
       return group.getDescription();
     }
 
@@ -595,7 +599,7 @@ public class GribCollectionIndexPanel extends JPanel {
            return;
          }
 
-         f.format("%s%n", v.toStringComplete());
+         f.format("%s%n%n", v.toStringComplete());
          f.format(" isTimeInterval=%s hasVert=%s%n", tcoord.isInterval(), (vcoord != null));
          f.format(" Show records (file,pos)%n");
 

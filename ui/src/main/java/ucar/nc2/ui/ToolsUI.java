@@ -121,11 +121,12 @@ public class ToolsUI extends JPanel {
   private BufrCdmIndexPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmrFeature cdmremotePanel;
+  private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
   private CoveragePanel coveragePanel;
   private DatasetViewerPanel viewerPanel;
   private DatasetWriterPanel writerPanel;
-  private FeatureCollectionPanel fcPanel;
+  private DirectoryPartitionPanel dirPartPanel;
   private FeatureScanPanel ftPanel;
   private FmrcPanel fmrcPanel;
   private FmrcCollectionPanel fmrcCollectionPanel;
@@ -163,7 +164,7 @@ public class ToolsUI extends JPanel {
 
   private JTabbedPane tabbedPane;
   private JTabbedPane iospTabPane, bufrTabPane, grib2TabPane, grib1TabPane, hdf5TabPane;
-  private JTabbedPane ftTabPane;
+  private JTabbedPane ftTabPane, fcTabPane;
   private JTabbedPane fmrcTabPane;
   private JTabbedPane ncmlTabPane;
 
@@ -200,6 +201,7 @@ public class ToolsUI extends JPanel {
     grib1TabPane = new JTabbedPane(JTabbedPane.TOP);
     bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
     ftTabPane = new JTabbedPane(JTabbedPane.TOP);
+    fcTabPane = new JTabbedPane(JTabbedPane.TOP);
     fmrcTabPane = new JTabbedPane(JTabbedPane.TOP);
     hdf5TabPane = new JTabbedPane(JTabbedPane.TOP);
     ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
@@ -243,29 +245,7 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addTab("NcStream", new JLabel("NcStream"));
     iospTabPane.addTab("CdmrFeature", new JLabel("CdmrFeature"));
-    iospTabPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        Component c = iospTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = iospTabPane.getSelectedIndex();
-          String title = iospTabPane.getTitleAt(idx);
-          makeComponent(iospTabPane, title);
-        }
-      }
-    });
-    iospTabPane.addComponentListener(new ComponentAdapter() {
-      public void componentShown(ComponentEvent e) {
-        Component c = iospTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = iospTabPane.getSelectedIndex();
-          String title = iospTabPane.getTitleAt(idx);
-          makeComponent(iospTabPane, title);
-        } else if (c instanceof JTabbedPane) {
-          c.setVisible(false);
-          c.setVisible(true);
-        }
-      }
-    });
+    addListeners(iospTabPane);
 
     // nested-2 tab - bufr
     bufrTabPane.addTab("BUFR", new JLabel("BUFR"));
@@ -274,26 +254,7 @@ public class ToolsUI extends JPanel {
     bufrTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
     bufrTabPane.addTab("BUFR-CODES", new JLabel("BUFR-CODES"));
     bufrTabPane.addTab("BufrReports", new JLabel("BufrReports"));
-    bufrTabPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        Component c = bufrTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = bufrTabPane.getSelectedIndex();
-          String title = bufrTabPane.getTitleAt(idx);
-          makeComponent(bufrTabPane, title);
-        }
-      }
-    });
-    bufrTabPane.addComponentListener(new ComponentAdapter() {
-      public void componentShown(ComponentEvent e) {
-        Component c = bufrTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = bufrTabPane.getSelectedIndex();
-          String title = bufrTabPane.getTitleAt(idx);
-          makeComponent(bufrTabPane, title);
-        }
-      }
-    });
+    addListeners(bufrTabPane);
 
     // nested-2 tab - grib-2
     grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2collection"));
@@ -306,170 +267,75 @@ public class ToolsUI extends JPanel {
     grib2TabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
     grib2TabPane.addTab("GRIB2-TABLES", new JLabel("GRIB2-TABLES"));
     grib2TabPane.addTab("GRIB-RENAME", new JLabel("GRIB-RENAME"));
-    grib2TabPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        Component c = grib2TabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = grib2TabPane.getSelectedIndex();
-          String title = grib2TabPane.getTitleAt(idx);
-          makeComponent(grib2TabPane, title);
-        }
-      }
-    });
-    grib2TabPane.addComponentListener(new ComponentAdapter() {
-      public void componentShown(ComponentEvent e) {
-        Component c = grib2TabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = grib2TabPane.getSelectedIndex();
-          String title = grib2TabPane.getTitleAt(idx);
-          makeComponent(grib2TabPane, title);
-        }
-      }
-    });
+    addListeners(grib2TabPane);
 
     // nested-2 tab - grib-1
     grib1TabPane.addTab("GRIB1collection", new JLabel("GRIB1collection"));
     grib1TabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
     grib1TabPane.addTab("GRIB1-REPORT", new JLabel("GRIB1-REPORT"));
     grib1TabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
-    grib1TabPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        Component c = grib1TabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = grib1TabPane.getSelectedIndex();
-          String title = grib1TabPane.getTitleAt(idx);
-          makeComponent(grib1TabPane, title);
-        }
-      }
-    });
-    grib1TabPane.addComponentListener(new ComponentAdapter() {
-      public void componentShown(ComponentEvent e) {
-        Component c = grib1TabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = grib1TabPane.getSelectedIndex();
-          String title = grib1TabPane.getTitleAt(idx);
-          makeComponent(grib1TabPane, title);
-        }
-      }
-    });
+    addListeners(grib1TabPane);
 
     // nested-2 tab - hdf5
     hdf5TabPane.addTab("HDF5-Objects", new JLabel("HDF5-Objects"));
     hdf5TabPane.addTab("HDF5-Data", new JLabel("HDF5-Data"));
     hdf5TabPane.addTab("Netcdf4-JNI", new JLabel("Netcdf4-JNI"));
-    hdf5TabPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        Component c = hdf5TabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = hdf5TabPane.getSelectedIndex();
-          String title = hdf5TabPane.getTitleAt(idx);
-          makeComponent(hdf5TabPane, title);
-        }
-      }
-    });
-    hdf5TabPane.addComponentListener(new ComponentAdapter() {
-      public void componentShown(ComponentEvent e) {
-        Component c = hdf5TabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = hdf5TabPane.getSelectedIndex();
-          String title = hdf5TabPane.getTitleAt(idx);
-          makeComponent(hdf5TabPane, title);
-        }
-      }
-    });
+    addListeners(hdf5TabPane);
 
     // nested tab - features
     ftTabPane.addTab("Grids", new JLabel("Grids"));
     ftTabPane.addTab("Coverages", new JLabel("Coverages"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
-    //ftTabPane.addTab("PointObs", new JLabel("PointObs"));
-    //ftTabPane.addTab("StationObs", new JLabel("StationObs"));
-    //ftTabPane.addTab("Trajectory", new JLabel("Trajectory"));
     ftTabPane.addTab("Images", new JLabel("Images"));
     ftTabPane.addTab("Radial", new JLabel("Radial"));
-    ftTabPane.addTab("FeatureCollection", new JLabel("FeatureCollection"));
     ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
-    ftTabPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        Component c = ftTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = ftTabPane.getSelectedIndex();
-          String title = ftTabPane.getTitleAt(idx);
-          makeComponent(ftTabPane, title);
-        }
-      }
-    });
-    ftTabPane.addComponentListener(new ComponentAdapter() {
-      public void componentShown(ComponentEvent e) {
-        Component c = ftTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = ftTabPane.getSelectedIndex();
-          String title = ftTabPane.getTitleAt(idx);
-          makeComponent(ftTabPane, title);
-        }
-      }
-    });
+    ftTabPane.addTab("FeatureCollection", fcTabPane);
+    addListeners(ftTabPane);
+
+    // nested tab - feature collection
+    fcTabPane.addTab("DirectoryPartition", new JLabel("DirectoryPartition"));
+    fcTabPane.addTab("CollectionSpec", new JLabel("CollectionSpec"));
+    addListeners(fcTabPane);
 
     // nested tab - fmrc
-    //fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
-    //fmrcImplPanel = new FmrcImplPanel((PreferencesExt) mainPrefs.node("fmrcImpl"));
     fmrcTabPane.addTab("Fmrc", new JLabel("Fmrc"));
     fmrcTabPane.addTab("Collections", new JLabel("Collections"));
-    //fmrcTabPane.addTab("FmrcImpl", new JLabel("FmrcImpl"));
-    //fmrcTabPane.addTab("Inventory", new JLabel("Inventory"));
-    fmrcTabPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        Component c = fmrcTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = fmrcTabPane.getSelectedIndex();
-          String title = fmrcTabPane.getTitleAt(idx);
-          makeComponent(fmrcTabPane, title);
-        }
-      }
-    });
-    fmrcTabPane.addComponentListener(new ComponentAdapter() {
-      public void componentShown(ComponentEvent e) {
-        Component c = fmrcTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = fmrcTabPane.getSelectedIndex();
-          String title = fmrcTabPane.getTitleAt(idx);
-          makeComponent(fmrcTabPane, title);
-        }
-      }
-    });
+    addListeners(fmrcTabPane);
 
     // nested tab - ncml
-    //ncmlPanel = new NcmlPanel((PreferencesExt) mainPrefs.node("NcML"));
-    //ncmlTabPane.addTab("NcML", ncmlPanel);
     ncmlTabPane.addTab("NcmlEditor", new JLabel("NcmlEditor"));
     ncmlTabPane.addTab("Aggregation", new JLabel("Aggregation"));
-    ncmlTabPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        Component c = ncmlTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = ncmlTabPane.getSelectedIndex();
-          String title = ncmlTabPane.getTitleAt(idx);
-          makeComponent(ncmlTabPane, title);
-        }
-      }
-    });
-    ncmlTabPane.addComponentListener(new ComponentAdapter() {
-      public void componentShown(ComponentEvent e) {
-        Component c = ncmlTabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = ncmlTabPane.getSelectedIndex();
-          String title = ncmlTabPane.getTitleAt(idx);
-          makeComponent(ncmlTabPane, title);
-        }
-      }
-    });
+    addListeners(ncmlTabPane);
 
     // dynamic proxy for DebugFlags
     debugFlags = (DebugFlags) java.lang.reflect.Proxy.newProxyInstance(DebugFlags.class.getClassLoader(), new Class[]{DebugFlags.class}, new DebugProxyHandler());
 
     makeMenuBar();
     setDebugFlags();
+  }
+
+  private void addListeners(final JTabbedPane tabPane ) {
+    tabPane.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        Component c = tabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = tabPane.getSelectedIndex();
+          String title = tabPane.getTitleAt(idx);
+          makeComponent(tabPane, title);
+        }
+      }
+    });
+    tabPane.addComponentListener(new ComponentAdapter() {
+      public void componentShown(ComponentEvent e) {
+        Component c = tabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = tabPane.getSelectedIndex();
+          String title = tabPane.getTitleAt(idx);
+          makeComponent(tabPane, title);
+        }
+      }
+    });
   }
 
   // deferred creation of components to minimize startup
@@ -516,6 +382,14 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("CdmrFeature")) {
       cdmremotePanel = new CdmrFeature((PreferencesExt) mainPrefs.node("CdmrFeature"));
       c = cdmremotePanel;
+
+    } else if (title.equals("CollectionSpec")) {
+      fcPanel = new CollectionSpecPanel((PreferencesExt) mainPrefs.node("collSpec"));
+      c = fcPanel;
+
+    } else if (title.equals("DirectoryPartition")) {
+      dirPartPanel = new DirectoryPartitionPanel((PreferencesExt) mainPrefs.node("dirPartition"));
+      c = dirPartPanel;
 
     } else if (title.equals("NcStream")) {
       ncStreamPanel = new NcStreamPanel((PreferencesExt) mainPrefs.node("NcStream"));
@@ -588,10 +462,6 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("FeatureScan")) {
       ftPanel = new FeatureScanPanel((PreferencesExt) mainPrefs.node("ftPanel"));
       c = ftPanel;
-
-    } else if (title.equals("FeatureCollection")) {
-      fcPanel = new FeatureCollectionPanel((PreferencesExt) mainPrefs.node("fcPanel"));
-      c = fcPanel;
 
     } else if (title.equals("GeoTiff")) {
       geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
@@ -1001,7 +871,7 @@ public class ToolsUI extends JPanel {
       }
     };
     boolean strictMode = Grib1ParamTables.isStrict();
-    a.putValue(BAMutil.STATE, new Boolean(strictMode));
+    a.putValue(BAMutil.STATE, strictMode);
     BAMutil.setActionPropertiesToggle(a, null, "strict", strictMode, 'S', -1);
     BAMutil.addActionToMenu(ncMenu, a);
 
@@ -1016,7 +886,7 @@ public class ToolsUI extends JPanel {
     };
     // ToolsUI default is to regularize the FMRC
     FeatureCollectionConfig.setRegularizeDefault(true);
-    a.putValue(BAMutil.STATE, new Boolean(true));
+    a.putValue(BAMutil.STATE, true);
     BAMutil.setActionPropertiesToggle(a, null, "regularize", true, 'R', -1);
     BAMutil.addActionToMenu(ncMenu, a);
 
@@ -1028,7 +898,7 @@ public class ToolsUI extends JPanel {
     };
     // ToolsUI default is to use cdmRemote access
     ThreddsDataFactory.setPreferCdm(true);
-    a.putValue(BAMutil.STATE, new Boolean(true));
+    a.putValue(BAMutil.STATE, true);
     BAMutil.setActionPropertiesToggle(a, null, "preferCdm", true, 'P', -1);
     BAMutil.addActionToMenu(ncMenu, a);
   }
@@ -1043,11 +913,12 @@ public class ToolsUI extends JPanel {
     if (bufrReportPanel != null) bufrReportPanel.save();
     if (bufrCodePanel != null) bufrCodePanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
+    if (coveragePanel != null) coveragePanel.save();
     if (cdmremotePanel != null) cdmremotePanel.save();
+    if (dirPartPanel != null) dirPartPanel.save();
     if (bufrCdmIndexPanel != null) bufrCdmIndexPanel.save();
     if (gribCdmIndexPanel != null) gribCdmIndexPanel.save();
     if (fmrcCollectionPanel != null) fmrcCollectionPanel.save();
-    if (coveragePanel != null) coveragePanel.save();
     if (fcPanel != null) fcPanel.save();
     if (ftPanel != null) ftPanel.save();
     if (fmrcPanel != null) fmrcPanel.save();
@@ -5142,12 +5013,12 @@ public class ToolsUI extends JPanel {
 
   }
 
-  private class FeatureCollectionPanel extends OpPanel {
-    FeatureCollectionTable table;
+  private class CollectionSpecPanel extends OpPanel {
+    CollectionSpecTable table;
 
-    FeatureCollectionPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "collection:", true, false);
-      table = new FeatureCollectionTable(prefs);
+    CollectionSpecPanel(PreferencesExt dbPrefs) {
+      super(dbPrefs, "collection spec:", true, false);
+      table = new CollectionSpecTable(prefs);
       add(table, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
@@ -5156,6 +5027,63 @@ public class ToolsUI extends JPanel {
           Formatter f = new Formatter();
           try {
             table.showCollection(f);
+          } catch (Exception e1) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+            e1.printStackTrace(new PrintStream(bos));
+            f.format("%s", bos.toString());
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      if (command == null) return false;
+
+      try {
+        table.setCollection(command);
+        return true;
+
+      } catch (Exception ioe) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+        ioe.printStackTrace();
+        ioe.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailTA.gotoTop();
+        detailWindow.show();
+      }
+
+      return false;
+    }
+
+    void closeOpenFiles() {
+    }
+
+    void save() {
+      table.save();
+      super.save();
+    }
+  }
+
+  private class DirectoryPartitionPanel extends OpPanel {
+    DirectoryPartitionViewer table;
+
+    DirectoryPartitionPanel(PreferencesExt dbPrefs) {
+      super(dbPrefs, "collection:", true, false);
+      table = new DirectoryPartitionViewer(prefs, fileChooser);
+      add(table, BorderLayout.CENTER);
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            table.showDetail(f);
           } catch (Exception e1) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
             e1.printStackTrace(new PrintStream(bos));

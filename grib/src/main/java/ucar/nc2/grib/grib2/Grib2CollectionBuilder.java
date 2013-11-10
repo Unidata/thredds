@@ -226,9 +226,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       File dir = gc.getDirectory();
       String dirname = proto.getDirName();
       if (dir != null && !dir.getPath().equals(dirname)) {
-        logger.debug("Grib2Collection {}: has different directory= {} than index= {} ", gc.getName(), dir.getPath(), dirname);
+        logger.info("Grib2Collection {}: has different directory= {} than index= {} ", gc.getName(), dir.getPath(), dirname);
         //return false;
       }
+      gc.setDirectory(new File(proto.getDirName()));
 
       // switch from files to mfiles in version 12
       if (!(this instanceof Grib2TimePartitionBuilder)) {
@@ -278,6 +279,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     } catch (Throwable t) {
       logger.error("Error reading index " + raf.getLocation(), t);
+      t.printStackTrace();
       return false;
     }
   }
@@ -420,6 +422,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
+
   ///////////////////////////////////////////////////
   // create the index
 
@@ -546,6 +549,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return false;
   }
 
+
+  ///////////////////////////////////////////////////
+  // heres where the actual writing is
+
   /*
    MAGIC_START
    version
@@ -555,7 +562,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  private void createIndex(File indexFile, List<Group> groups, List<MFile> files) throws IOException {
+  private boolean createIndex(File indexFile, List<Group> groups, List<MFile> files) throws IOException {
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
@@ -576,6 +583,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       raf.writeLong(0); // save space to write the length of the record section
       long countBytes = 0;
       int countRecords = 0;
+
       for (Group g : groups) {
         g.fileSet = new HashSet<Integer>();
         for (Grib2Rectilyser.VariableBag vb : g.rect.getGribvars()) {
@@ -589,8 +597,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           countRecords += vb.recordMap.length;
         }
       }
+
       long bytesPerRecord = countBytes / ((countRecords == 0) ? 1 : countRecords);
-      if (logger.isDebugEnabled()) logger.debug("  write RecordMaps: bytes = {} record = {} bytesPerRecord={}", new Object[] {countBytes, countRecords, bytesPerRecord});
+      if (logger.isDebugEnabled()) logger.debug("  write RecordMaps: bytes = {} record = {} bytesPerRecord={}", countBytes, countRecords, bytesPerRecord);
 
       if (first == null) {
         deleteOnClose = true;
@@ -616,6 +625,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
       for (Group g : groups)
         indexBuilder.addGroups(writeGroupProto(g));
+
 
       /* int count = 0;
       for (DatasetCollectionManager dcm : collections) {
@@ -649,7 +659,175 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       if (deleteOnClose && !indexFile.delete())
         logger.error(" gc2 cant deleteOnClose index file {}", indexFile.getPath());
     }
+
+    return true;
   }
+
+  /*
+
+
+  // read in the index, index raf already open
+  static public boolean moveCdmIndex(File currentIndexFile, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(currentIndexFile.getPath(), directory, config, logger);
+    return builder.moveIndex(currentIndexFile, raf);
+  }
+
+    ///////////////////////////////////////////////////
+  // move index
+  private boolean moveIndex(File currentIndexFile, RandomAccessFile raf) throws IOException {
+
+    File currentBase = currentIndexFile.getParentFile();
+
+    List<MFile> oldFiles = gc.getFiles();
+    if (oldFiles.size() == 0) return false;
+
+    MFile first = oldFiles.get(0);
+    String firstS = first.getPath();
+    int pos = firstS.lastIndexOf("/");
+    String oldParent = first.getPath().substring(0, pos);  // remove the filename
+
+    boolean ok = true;
+    for (MFile f : oldFiles) {
+      if (!f.getPath().startsWith(oldParent)) {
+        System.out.printf("BAD %s not start with %s%n", f.getPath(), oldParent);
+        ok = false;
+      }
+    }
+
+    if (!ok) return false;
+
+    String oldReletivePath = first.getPath().substring(1,pos);  // remove first line and the filename
+    File newParent = new File(currentBase, oldReletivePath);
+    gc.setDirectory(newParent); // not sure about groups
+    File indexFile = new File(newParent, currentIndexFile.getName());
+
+    return createIndex(indexFile, null, gc.getGroups(), oldFiles);
+  }
+
+    private boolean createIndex(File indexFile, List<Group> groups, List<GribCollection.GroupHcs> groupHcs, List<MFile> files) throws IOException {
+    Grib2Record first = null; // take global metadata from here
+    boolean deleteOnClose = false;
+
+    if (indexFile.exists()) {
+      if (!indexFile.delete()) {
+        logger.error("gc2 cant delete index file {}", indexFile.getPath());
+      }
+    }
+    logger.debug(" createIndex for {}", indexFile.getPath());
+
+    RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw");
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    try {
+      //// header message
+      raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
+      raf.writeInt(version);
+      long lenPos = raf.getFilePointer();
+      raf.writeLong(0); // save space to write the length of the record section
+      long countBytes = 0;
+      int countRecords = 0;
+
+      if (groups != null) {
+        for (Group g : groups) {
+          g.fileSet = new HashSet<Integer>();
+          for (Grib2Rectilyser.VariableBag vb : g.rect.getGribvars()) {
+            if (first == null) first = vb.first;
+            GribCollectionProto.VariableRecords vr = writeRecordsProto(vb, g.fileSet);
+            byte[] b = vr.toByteArray();
+            vb.pos = raf.getFilePointer();
+            vb.length = b.length;
+            raf.write(b);
+            countBytes += b.length;
+            countRecords += vb.recordMap.length;
+          }
+        }
+      } else {
+        for (GribCollection.GroupHcs g : groupHcs) {
+          g.fileSet = new HashSet<Integer>();
+          for (Grib2Rectilyser.VariableBag vb : g.rect.getGribvars()) {
+            if (first == null) first = vb.first;
+            GribCollectionProto.VariableRecords vr = writeRecordsProto(vb, g.fileSet);
+            byte[] b = vr.toByteArray();
+            vb.pos = raf.getFilePointer();
+            vb.length = b.length;
+            raf.write(b);
+            countBytes += b.length;
+            countRecords += vb.recordMap.length;
+          }
+        }
+
+      }
+
+      long bytesPerRecord = countBytes / ((countRecords == 0) ? 1 : countRecords);
+      if (logger.isDebugEnabled()) logger.debug("  write RecordMaps: bytes = {} record = {} bytesPerRecord={}", countBytes, countRecords, bytesPerRecord);
+
+      if (first == null) {
+        deleteOnClose = true;
+        logger.error("GribCollection {}: has no files", gc.getName());
+        throw new IOException("GribCollection " + gc.getName() + " has no files");
+      }
+
+      long pos = raf.getFilePointer();
+      raf.seek(lenPos);
+      raf.writeLong(countBytes);
+      raf.seek(pos); // back to the output.
+
+      GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
+      indexBuilder.setName(gc.getName());
+      indexBuilder.setDirName(gc.getDirectory().getPath());
+
+      // directory and mfile list
+      indexBuilder.setDirName(gc.getDirectory().getPath());
+      List<GribCollectionBuilder.GcMFile> gcmfiles = GribCollectionBuilder.makeFiles(gc.getDirectory(), files);
+      for (GribCollectionBuilder.GcMFile gcmfile : gcmfiles) {
+        indexBuilder.addMfiles(gcmfile.makeProto());
+      }
+
+      if (groups != null) {
+        for (Group g : groups)
+          indexBuilder.addGroups(writeGroupProto(g));
+
+      }  else {
+        for (GribCollection.GroupHcs g : groupHcs)
+          indexBuilder.addGroups(writeGroupProto(g));
+      }
+
+
+      // int count = 0;
+      for (DatasetCollectionManager dcm : collections) {
+        indexBuilder.addParams(makeParamProto(new Parameter("spec" + count, dcm.())));
+        count++;
+      }
+
+      // what about just storing first ??
+      Grib2SectionIdentification ids = first.getId();
+      indexBuilder.setCenter(ids.getCenter_id());
+      indexBuilder.setSubcenter(ids.getSubcenter_id());
+      indexBuilder.setMaster(ids.getMaster_table_version());
+      indexBuilder.setLocal(ids.getLocal_table_version());
+
+      Grib2Pds pds = first.getPDS();
+      indexBuilder.setGenProcessType(pds.getGenProcessType());
+      indexBuilder.setGenProcessId(pds.getGenProcessId());
+      indexBuilder.setBackProcessId(pds.getBackProcessId());
+
+      GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
+      byte[] b = index.toByteArray();
+      NcStream.writeVInt(raf, b.length); // message size
+      raf.write(b);  // message  - all in one gulp
+      logger.debug("  write GribCollectionIndex= {} bytes", b.length);
+
+    } finally {
+      logger.debug("  file size =  {} bytes", raf.length());
+      if (raf != null) raf.close();
+
+            // remove it on failure
+      if (deleteOnClose && !indexFile.delete())
+        logger.error(" gc2 cant deleteOnClose index file {}", indexFile.getPath());
+    }
+
+    return true;
+  }
+   */
 
   /* private void createIndexForGroup(Group group, ArrayList<String> filenames) throws IOException {
     Grib2Record first = null; // take global metadata from here

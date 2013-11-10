@@ -59,7 +59,7 @@ import java.util.List;
  * @author caron
  * @since 4/9/13
  */
-public class FeatureCollectionTable  extends JPanel {
+public class CollectionSpecTable extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted ftTable;
@@ -70,7 +70,7 @@ public class FeatureCollectionTable  extends JPanel {
   private List<MFile> fileList;
   private MFileCollectionManager dcm;
 
-  public FeatureCollectionTable(PreferencesExt prefs) {
+  public CollectionSpecTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
     ftTable = new BeanTableSorted(Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
