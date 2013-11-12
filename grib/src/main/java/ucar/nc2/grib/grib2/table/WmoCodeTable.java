@@ -340,7 +340,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   private TableEntry add(String line, String code, String meaning, String unit, String status) {
-   TableEntry te = new TableEntry(line, code, meaning, unit, status);
+    TableEntry te = new TableEntry(line, code, meaning, unit, status);
     entries.add(te);
     return te;
   }
@@ -444,9 +444,9 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     TableEntry(String line, String code, String meaning, String unit, String status) {
       this.line = Integer.parseInt(line);
       this.code = code;
-      this.meaning = meaning;
+      this.meaning = StringUtil2.filter7bits(meaning);
       this.status = status;
-      this.unit = unit;
+      this.unit = StringUtil2.filter7bits(unit);
 
       try {
         int pos = code.indexOf('-');

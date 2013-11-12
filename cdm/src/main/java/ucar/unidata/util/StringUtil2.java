@@ -160,23 +160,45 @@ public class StringUtil2 {
   }
 
   /**
+    * Remove all but printable ascii
+    *
+    * @param s filter this string
+    * @return filtered string.
+    */
+   static public String filter7bits(String s) {
+     if (s == null) return null;
+     char[] bo = new char[s.length()];
+     int count = 0;
+     for (int i = 0; i < s.length(); i++) {
+       char c = s.charAt(i);
+       if ((c < 128) && (c > 31) || ((c == '\n') || (c == '\t'))) {
+         bo[count++] = c;
+       }
+     }
+
+     return new String(bo, 0, count);
+   }
+
+
+  /*
    * Remove all but printable 7bit ascii
    *
    * @param s filter this string
    * @return filtered string.
-   */
+   *
   static public String filter7bits(String s) {
+    if (s == null) return null;
     byte[] b = s.getBytes(CDM.utf8Charset);
     byte[] bo = new byte[b.length];
     int count = 0;
-    for (int i = 0; i < s.length(); i++) {
+    for (int i = 0; i < b.length; i++) {
       if ((b[i] < 128) && (b[i] > 31) || ((b[i] == '\n') || (b[i] == '\t'))) {
         bo[count++] = b[i];
       }
     }
 
     return new String(bo, 0, count);
-  }
+  } */
 
   // remove leading and trailing blanks
   // remove control characters (< 0x20)
@@ -818,36 +840,6 @@ public class StringUtil2 {
     System.out.println(" StringUtil unescape <string>");
   }
 
-  public static void main3(String args[]) {
-    if (args.length < 2) {
-      showUsage();
-      return;
-    }
-
-    if (args[0].equalsIgnoreCase("escape")) {
-      String ok = (args.length > 2)
-              ? args[2]
-              : "";
-      System.out.println(" escape(" + args[1] + "," + ok + ")= "
-              + StringUtil2.escape(args[1], ok));
-    } else if (args[0].equalsIgnoreCase("unescape")) {
-      System.out.println(" unescape(" + args[1] + ")= "
-              + StringUtil2.unescape(args[1]));
-    } else {
-      showUsage();
-    }
-  }
-
-  public static void main(String args[]) {
-    byte[] b = new byte[]{10};
-    //String s = new String(b);
-    String s = "\n";
-    System.out.printf("quoteXmlAttribute(%s) == %s%n", s, StringUtil2.quoteXmlAttribute(s));
-    String s2 = StringUtil2.quoteXmlAttribute(s);
-    System.out.printf("unquoteXmlAttribute(%s) == '%s'%n", s2, StringUtil2.unquoteXmlAttribute(s2));
-  }
-
-
   ////////////////////////////////////////
   // not used apparently
 
@@ -938,6 +930,33 @@ public class StringUtil2 {
     }
     return buff.toString();
   }
+
+  public static void main3(String args[]) {
+    if (args.length < 2) {
+      showUsage();
+      return;
+    }
+
+    if (args[0].equalsIgnoreCase("escape")) {
+      String ok = (args.length > 2)
+              ? args[2]
+              : "";
+      System.out.println(" escape(" + args[1] + "," + ok + ")= "
+              + StringUtil2.escape(args[1], ok));
+    } else if (args[0].equalsIgnoreCase("unescape")) {
+      System.out.println(" unescape(" + args[1] + ")= "
+              + StringUtil2.unescape(args[1]));
+    } else {
+      showUsage();
+    }
+  }
+
+  public static void main(String args[]) {
+    String s = "Level of 0°C isotherm";
+    System.out.printf("filter7bits(%s) == %s%n", s, StringUtil2.filter7bits(s));
+  }
+
+
 
 
 }
