@@ -94,7 +94,8 @@ public class TestDcm {
     //public FeatureCollectionConfig(String name, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String recheckAfter,
     //                               String timePartition, String useIndexOnlyS, Element innerNcml) {
 
-    FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", FeatureCollectionType.FMRC, TestDir.cdmUnitTestDir + "agg/updating/.*nc$",
+    FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", "path", FeatureCollectionType.FMRC,
+            TestDir.cdmUnitTestDir + "agg/updating/.*nc$",
             null, "10 sec", null, null, null, null);
 
     assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");

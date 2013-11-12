@@ -125,7 +125,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
-      createPartitionedIndex();  // LOOK at this point we are going to remake the whole thing
+      createPartitionedIndex(null);  // LOOK at this point we are going to remake the whole thing
       readIndex(idx.getPath()); // read back in index
       return true;
     }
@@ -165,7 +165,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   ///////////////////////////////////////////////////
   // create the index
 
-  public boolean createPartitionedIndex() throws IOException {
+  public boolean createPartitionedIndex(Formatter f) throws IOException {
     long start = System.currentTimeMillis();
 
     // create partitions based on TimePartitionCollections object
@@ -201,7 +201,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     // check consistency across vert and ens coords
     // also replace variables  in canonGc with partitioned variables
     // partition index is used - do not resort partitions
-    Formatter f = new Formatter();
+    if (f == null) f = new Formatter();
     GribCollection canonGc = checkPartitions(canon, f);
     if (canonGc == null) {
       logger.error(" Partition check failed, index not written on {} message = {}", tp.getName(), f.toString());
@@ -281,7 +281,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
           VertCoord vc1 = vi1.getVertCoord();
           VertCoord vc2 = vi2.getVertCoord();
           if ((vc1 == null) != (vc2 == null)) {
-            vc1 = vi1.getVertCoord();
+            vc1 = vi1.getVertCoord();   // debug
             vc2 = vi2.getVertCoord();
             f.format("   ERR Vert coordinates existence on variable %s in %s doesnt match%n",  vi2, tpp.getName());
             ok = false;

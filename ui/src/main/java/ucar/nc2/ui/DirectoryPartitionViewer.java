@@ -4,14 +4,10 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerRO;
 import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.MFile;
-import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryPartitionBuilder;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -24,17 +20,18 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.List;
 
@@ -57,7 +54,7 @@ public class DirectoryPartitionViewer extends JPanel {
   private JPanel tablePanel;
   private JSplitPane mainSplit;
 
-  private PartitionTreeBrowser fileBrowser;
+  private PartitionTreeBrowser partitionTreeBrowser;
   private NCdumpPane dumpPane;
 
   private TextHistoryPane infoTA;
@@ -66,19 +63,19 @@ public class DirectoryPartitionViewer extends JPanel {
 
   public DirectoryPartitionViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
-    fileBrowser = new PartitionTreeBrowser();
+    partitionTreeBrowser = new PartitionTreeBrowser();
     cdmIndexTables = new GribCdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
     partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"), buttPanel);
 
     setLayout(new BorderLayout());
 
     tablePanel = new JPanel(new BorderLayout());
-    tablePanel.add(fileBrowser.fileView, BorderLayout.NORTH);
+    tablePanel.add(partitionTreeBrowser.view, BorderLayout.NORTH);
     // tablePanel.add(cdmIndexTables, BorderLayout.CENTER);   LOOK flip back and forth ??
     tablePanel.add(partitionsTable, BorderLayout.CENTER);
     current = partitionsTable;
 
-    JScrollPane treeScroll = new JScrollPane(fileBrowser.tree);
+    JScrollPane treeScroll = new JScrollPane(partitionTreeBrowser.tree);
 
     mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, treeScroll, tablePanel);
     mainSplit.setDividerLocation(prefs.getInt("mainSplit", 100));
@@ -107,9 +104,10 @@ public class DirectoryPartitionViewer extends JPanel {
   }
 
   private Component current;
+
   private void swap(Component want) {
     if (current == want) return;
-    tablePanel.remove( current);
+    tablePanel.remove(current);
     tablePanel.add(want, BorderLayout.CENTER);
     tablePanel.revalidate();
     current = want;
@@ -120,17 +118,17 @@ public class DirectoryPartitionViewer extends JPanel {
   ////////////////////////////////////////////////
 
   public void setCollection(String name) {
-    File f = new File(name);
-    if (!f.exists()) return;
-    if (f.isDirectory()) {
-      fileBrowser.setRoot(f);
+    Path f = Paths.get(name);
+    if (!Files.exists(f)) return;
+    if (Files.isDirectory(f)) {
+      partitionTreeBrowser.setRoot(f);
       return;
     }
 
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(f);
+      doc = builder.build(f.toFile());
     } catch (Exception e) {
       javax.swing.JOptionPane.showMessageDialog(this, "Error parsing featureCollection: " + e.getMessage());
       return;
@@ -144,13 +142,13 @@ public class DirectoryPartitionViewer extends JPanel {
     Formatter errlog = new Formatter();
     config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
     CollectionSpecParser spec = new CollectionSpecParser(config.spec, errlog);
-    fileBrowser.setRoot(new File(spec.getRootDir()));
+    partitionTreeBrowser.setRoot(Paths.get(spec.getRootDir()));
   }
 
-  private void moveCdmIndexFile(File indexFile) throws IOException {
+  private void moveCdmIndexFile(NodeInfo indexFile) throws IOException {
     GribCollection gc = null;
     try {
-      boolean ok = GribCdmIndex.moveCdmIndex(indexFile, logger);
+      boolean ok = GribCdmIndex.moveCdmIndex(indexFile.dir.toString(), logger);
       Formatter f = new Formatter();
       f.format("moved success=%s", ok);
       infoTA.setText(f.toString());
@@ -161,7 +159,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
   }
 
-  private void moveCdmIndexAll(File indexFile) {
+  /* private void moveCdmIndexAll(NodeInfo indexFile) {
     Formatter out = new Formatter();
     infoWindow.show();
 
@@ -181,11 +179,11 @@ public class DirectoryPartitionViewer extends JPanel {
     infoTA.setText(out.toString());
     infoTA.gotoTop();
     infoWindow.show();
-  }
+  } */
 
-  private void showCdmIndexFile(File topDir) throws IOException {
+  private void cmdShowIndex(NodeInfo node) throws IOException {
 
-    String indexFilename;
+    /* String indexFilename;
 
     if (topDir.isDirectory()) {
       DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(collectionName, topDir.getPath());
@@ -199,14 +197,16 @@ public class DirectoryPartitionViewer extends JPanel {
 
     } else {
       indexFilename = topDir.getPath();
-    }
+    } */
+
+    if (!node.hasIndex) return;
 
     // this opens the index file and constructs a GribCollection
-    cdmIndexTables.setIndexFile(indexFilename);
+    cdmIndexTables.setIndexFile(node.part.getIndex());
     swap(cdmIndexTables);
   }
 
-  private void showChildrenIndex(File topDir) {
+ /*  private void showChildrenIndex(NodeInfo topDir) {
     if (!topDir.isDirectory()) {
       JOptionPane.showMessageDialog(this, topDir.getPath() + " not a directory: ");
       return;
@@ -254,75 +254,115 @@ public class DirectoryPartitionViewer extends JPanel {
     } catch (Throwable t) {
       JOptionPane.showMessageDialog(this, topDir + " showPartitions failed: " + t.getMessage());
     }
-  }
+  }  */
 
 
-  private void makeIndex(File topDir) {
+  private void cmdMakeIndex(NodeInfo node) {
     Formatter out = new Formatter();
     try {
-      boolean ok = GribCdmIndex.makeDirectoryPartitionIndex(config, topDir, out);
-      out.format("%s makeIndex success=%s%n", topDir, ok);
+      boolean ok = GribCdmIndex.makeDirectoryPartitionIndex(config, node.dir.toFile(), out);
+      out.format("%s makeIndex success=%s%n", node, ok);
       infoTA.appendLine(out.toString());
       infoTA.gotoTop();
       infoWindow.show();
 
-      if (ok) showCdmIndexFile(topDir);
+      if (ok) {
+        node.refresh();
+        cmdShowIndex(node);
+      }
 
     } catch (Throwable t) {
-      JOptionPane.showMessageDialog(this, topDir + " makeIndex failed: " + t.getMessage());
+      JOptionPane.showMessageDialog(this, node + " makeIndex failed: " + t.getMessage());
+    }
+  }
+
+  private class NodeInfo {
+    Path dir;
+    DirectoryPartitionBuilder part;
+    boolean hasIndex;
+
+    NodeInfo(Path dir) {
+      this.dir = dir;
+
+      try {
+        part = new DirectoryPartitionBuilder(collectionName, dir, null);
+        hasIndex = part.getIndex() != null;
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    NodeInfo(DirectoryPartitionBuilder part) {
+      this.part = part;
+      this.dir = part.getDir();
+      this.hasIndex = part.getIndex() != null;
+    }
+
+    List<NodeInfo> getChildren() {
+      List<NodeInfo> result = new ArrayList<>(100);
+      try {
+        for (DirectoryPartitionBuilder child : part.constructChildren(new GribCdmIndex())) {
+          result.add(new NodeInfo(child));
+        }
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      return result;
+    }
+
+    void refresh() {
+      try {
+        this.hasIndex = part.findIndex();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("NodeInfo{");
+      sb.append("dir=").append(dir);
+      sb.append('}');
+      return sb.toString();
     }
   }
 
   private class PartitionTreeBrowser {
-    private FileSystemView fileSystemView;
+    //private FileSystemView fileSystemView;
+    private Icon dirIcon, fileIcon;
 
-    private File currentFile; // currently selected File.
+    private NodeInfo currentNode;
     JTree tree;  // File-system tree. Built Lazily
     private DefaultTreeModel treeModel;
     private JProgressBar progressBar;
 
     /* File details. */
-    JPanel fileView;
-    private JLabel fileName;
+    JPanel view;
+    private JLabel nodeName;
     private JTextField path;
     private JLabel date;
     private JLabel size;
     private JCheckBox readable;
     private JCheckBox writable;
-    private JCheckBox executable;
     private JRadioButton isDirectory;
     private JRadioButton isFile;
 
-    public void setRoot(File rootDir) {
-      if (!rootDir.isDirectory()) return;
+    public void setRoot(Path rootDir) {
+      if (!Files.isDirectory(rootDir)) return;
 
       DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-      root.setUserObject(rootDir);
-
-      for (File file : rootDir.listFiles()) {
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode(file);
-        root.add(node);
-      }
-
+      root.setUserObject(new NodeInfo(rootDir));
       treeModel = new DefaultTreeModel(root);
       tree.setModel(treeModel);
       tree.setSelectionInterval(0, 0);
     }
 
-    /* ListenerManager lm = new ListenerManager("ucar.nc2.ui.event.ActionValueListener", "ucar.nc2.ui.event.ActionValueEvent", "actionPerformed");
-
-    public void addActionValueListener(ActionValueListener l) {
-      lm.addListener(l);
-    } */
-
     public PartitionTreeBrowser() {
-      fileSystemView = FileSystemView.getFileSystemView();
-      makeGui();
-    }
+      dirIcon = UIManager.getIcon("FileView.directoryIcon");
+      fileIcon = UIManager.getIcon("FileView.fileIcon");
 
-    private void makeGui() {
-
-      // the File tree
       DefaultMutableTreeNode root = new DefaultMutableTreeNode();
       treeModel = new DefaultTreeModel(root);
 
@@ -330,11 +370,13 @@ public class DirectoryPartitionViewer extends JPanel {
         public void valueChanged(TreeSelectionEvent tse) {
           DefaultMutableTreeNode node = (DefaultMutableTreeNode) tse.getPath().getLastPathComponent();
           showChildren(node);
-          setFileDetails((File) node.getUserObject());
+          currentNode = (NodeInfo) node.getUserObject();
+          setFileDetails(currentNode);
         }
       };
 
-      // show the file system roots.
+
+      /* show the file system roots.
       File[] roots = fileSystemView.getRoots();
       for (File fileSystemRoot : roots) {
         DefaultMutableTreeNode node = new DefaultMutableTreeNode(fileSystemRoot);
@@ -345,22 +387,26 @@ public class DirectoryPartitionViewer extends JPanel {
             node.add(new DefaultMutableTreeNode(file));
           }
         }
-        //
-      }
+
+      } */
 
       tree = new JTree(treeModel);
-      tree.setRootVisible(false);
+      tree.setRootVisible(true);
       tree.addTreeSelectionListener(treeSelectionListener);
       tree.setCellRenderer(new FileTreeCellRenderer());
       tree.expandRow(0);
-      JScrollPane treeScroll = new JScrollPane(tree);
+      // tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+      tree.setToggleClickCount(1);
 
       // as per trashgod tip
       tree.setVisibleRowCount(15);
 
+      JScrollPane treeScroll = new JScrollPane(tree);
       Dimension preferredSize = treeScroll.getPreferredSize();
       Dimension widePreferred = new Dimension(200, (int) preferredSize.getHeight());
       treeScroll.setPreferredSize(widePreferred);
+
+      makePopups();
 
       /////////////////////
       // details for a File
@@ -374,8 +420,8 @@ public class DirectoryPartitionViewer extends JPanel {
       filePanel.add(fileDetailsValues, BorderLayout.CENTER);
 
       fileDetailsLabels.add(new JLabel("File", JLabel.TRAILING));
-      fileName = new JLabel();
-      fileDetailsValues.add(fileName);
+      nodeName = new JLabel();
+      fileDetailsValues.add(nodeName);
       fileDetailsLabels.add(new JLabel("Path/name", JLabel.TRAILING));
       path = new JTextField(5);
       path.setEditable(false);
@@ -397,7 +443,7 @@ public class DirectoryPartitionViewer extends JPanel {
       flags.add(isFile);
       fileDetailsValues.add(flags);
 
-      JToolBar toolBar = makeButtonBar();
+      //JToolBar toolBar = makeButtonBar();
 
       flags.add(new JLabel("::  Flags"));
       readable = new JCheckBox("Read  ");
@@ -407,10 +453,6 @@ public class DirectoryPartitionViewer extends JPanel {
       writable = new JCheckBox("Write  ");
       writable.setMnemonic('w');
       flags.add(writable);
-
-      executable = new JCheckBox("Execute");
-      executable.setMnemonic('x');
-      flags.add(executable);
 
       int count = fileDetailsLabels.getComponentCount();
       for (int ii = 0; ii < count; ii++) {
@@ -430,24 +472,32 @@ public class DirectoryPartitionViewer extends JPanel {
       //////////////
       // put together the fileView
 
-      fileView = new JPanel(new BorderLayout(3, 3));
-      fileView.add(toolBar, BorderLayout.NORTH);
-      fileView.add(filePanel, BorderLayout.CENTER);
-      fileView.add(progressBar, BorderLayout.EAST);
+      view = new JPanel(new BorderLayout(3, 3));
+      //view.add(toolBar, BorderLayout.NORTH);
+      view.add(progressBar, BorderLayout.NORTH);
+      view.add(filePanel, BorderLayout.CENTER);
     }
 
-    private JToolBar makeButtonBar() {
+    private void makePopups() {
+
+      PopupMenu varPopup = new PopupMenu(tree, "Options");
+      varPopup.addAction("Make Partition", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          cmdMakeIndex(currentNode);
+        }
+      });
+
       //////////////
       // toolbar
 
       JToolBar toolBar = new JToolBar();
       toolBar.setFloatable(false);  // mnemonics stop working in a floated toolbar
 
-      JButton moveIndexButt = new JButton("Move");
+      /* JButton moveIndexButt = new JButton("Move");
       moveIndexButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent ae) {
           try {
-            moveCdmIndexFile(currentFile);
+            moveCdmIndexFile(currentNode);
           } catch (Throwable t) {
             showThrowable(t);
           }
@@ -460,7 +510,7 @@ public class DirectoryPartitionViewer extends JPanel {
       moveAllButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent ae) {
           try {
-            moveCdmIndexAll(currentFile);
+            moveCdmIndexAll(currentNode);
           } catch (Throwable t) {
             showThrowable(t);
           }
@@ -473,7 +523,7 @@ public class DirectoryPartitionViewer extends JPanel {
       showFileButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent ae) {
           try {
-            showCdmIndexFile(currentFile);
+            showCdmIndexFile(currentNode);
           } catch (Throwable t) {
             showThrowable(t);
           }
@@ -486,7 +536,7 @@ public class DirectoryPartitionViewer extends JPanel {
       showIndexButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent ae) {
           try {
-            showChildrenIndex(currentFile);
+            showChildrenIndex(currentNode);
           } catch (Throwable t) {
             showThrowable(t);
           }
@@ -499,7 +549,7 @@ public class DirectoryPartitionViewer extends JPanel {
       showPartButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent ae) {
           try {
-            showPartitions(currentFile);
+            showPartitions(currentNode);
           } catch (Throwable t) {
             showThrowable(t);
           }
@@ -512,16 +562,15 @@ public class DirectoryPartitionViewer extends JPanel {
       makeIndexButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent ae) {
           try {
-            makeIndex(currentFile);
+            makeIndex(currentNode);
           } catch (Throwable t) {
             showThrowable(t);
           }
           repaint();
         }
       });
-      toolBar.add(makeIndexButt);
+      toolBar.add(makeIndexButt); */
 
-      return toolBar;
     }
 
     private void showThrowable(Throwable t) {
@@ -544,27 +593,37 @@ public class DirectoryPartitionViewer extends JPanel {
       progressBar.setVisible(true);
       progressBar.setIndeterminate(true);
 
-      SwingWorker<Void, File> worker = new SwingWorker<Void, File>() {
+      final List<NodeInfo> result = new ArrayList<>(100);
+      NodeInfo uobj = (NodeInfo) node.getUserObject();
+      if (uobj.hasIndex) {
+        for (NodeInfo child : uobj.getChildren()) {
+          result.add(child);
+        }
+
+      } else {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(uobj.dir)) {
+          for (Path child : stream) {
+            if (Files.isDirectory(child))
+              result.add(new NodeInfo(child));
+          }
+        } catch (IOException ioe) {
+          ioe.printStackTrace();
+        }
+      }
+
+      if (result.size() == 0) return;
+
+      SwingWorker<Void, NodeInfo> worker = new SwingWorker<Void, NodeInfo>() {
         @Override
         public Void doInBackground() {
-          File file = (File) node.getUserObject();
-          if (file.isDirectory()) {
-            System.out.printf("%s getFiles%n", file);
-            File[] files = fileSystemView.getFiles(file, true); //!!
-            if (node.isLeaf()) {
-              for (File child : files) {
-                //if (child.isDirectory()) {
-                publish(child);
-                //}
-              }
-            }
-          }
+          for (NodeInfo child : result)
+            publish(child);
           return null;
         }
 
         @Override
-        protected void process(List<File> chunks) {
-          for (File child : chunks) {
+        protected void process(List<NodeInfo> chunks) {
+          for (NodeInfo child : chunks) {
             node.add(new DefaultMutableTreeNode(child));
           }
         }
@@ -576,31 +635,29 @@ public class DirectoryPartitionViewer extends JPanel {
           tree.setEnabled(true);
         }
       };
+
       worker.execute();
     }
 
     /**
      * Update the File details view with the details of this File.
      */
-    private void setFileDetails(File file) {
-      currentFile = file;
-      Icon icon = fileSystemView.getSystemIcon(file);
-      fileName.setIcon(icon);
-      fileName.setText(fileSystemView.getSystemDisplayName(file));
-      path.setText(file.getPath());
-      date.setText(new Date(file.lastModified()).toString());
-      size.setText(file.length() + " bytes");
-      readable.setSelected(file.canRead());
-      writable.setSelected(file.canWrite());
-      executable.setSelected(file.canExecute());
-      isDirectory.setSelected(file.isDirectory());
-
-      isFile.setSelected(file.isFile());
-
-      JFrame f = (JFrame) getTopLevelAncestor();
-      if (f != null) {
-        f.setTitle(fileSystemView.getSystemDisplayName(file));
+    private void setFileDetails(NodeInfo node) {
+      BasicFileAttributes attr = null;
+      try {
+        attr = Files.readAttributes(node.dir, BasicFileAttributes.class);
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       }
+
+      nodeName.setIcon(attr.isDirectory() ? dirIcon : fileIcon);
+      nodeName.setText(node.dir.toString());
+      path.setText(node.dir.toString());
+      date.setText(attr.lastModifiedTime().toString());
+      size.setText(attr.size() + " bytes");
+      readable.setSelected(Files.isReadable(node.dir));
+      writable.setSelected(Files.isWritable(node.dir));
+      isDirectory.setSelected(attr.isDirectory());
 
       repaint();
     }
@@ -610,16 +667,11 @@ public class DirectoryPartitionViewer extends JPanel {
      */
     private class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 
-      private static final long serialVersionUID = -7799441088157759804L;
-
-      private FileSystemView fileSystemView;
-
       private JLabel label;
 
       FileTreeCellRenderer() {
         label = new JLabel();
         label.setOpaque(true);
-        fileSystemView = FileSystemView.getFileSystemView();
       }
 
       @Override
@@ -633,10 +685,12 @@ public class DirectoryPartitionViewer extends JPanel {
               boolean hasFocus) {
 
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-        File file = (File) node.getUserObject();
-        label.setIcon(fileSystemView.getSystemIcon(file));
-        label.setText(fileSystemView.getSystemDisplayName(file));
-        label.setToolTipText(file.getPath());
+        NodeInfo uobj = (NodeInfo) node.getUserObject();
+
+        if (uobj != null) {
+          label.setIcon(uobj.hasIndex ? fileIcon : dirIcon);
+          label.setText(uobj.hasIndex ? uobj.part.getIndex().toString() : uobj.dir.toString());
+        }
 
         if (selected) {
           label.setBackground(backgroundSelectionColor);
@@ -651,7 +705,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private class PartitionsTable extends JPanel {
     private PreferencesExt prefs;
@@ -775,15 +829,15 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     void addGribCollection(GribCollection gc) {
-     for (GribCollection.GroupHcs g : gc.getGroups()) {
-       GroupsBean bean = groupsBeans.get(g.getId());
-       if (bean == null) {
-         bean = new GroupsBean(g);
-         groupsBeans.put(g.getId(), bean);
-       }
-       bean.addGroup(g, gc.getLocation());
-     }
-     groupsTable.setBeans( new ArrayList<>(groupsBeans.values()));
+      for (GribCollection.GroupHcs g : gc.getGroups()) {
+        GroupsBean bean = groupsBeans.get(g.getId());
+        if (bean == null) {
+          bean = new GroupsBean(g);
+          groupsBeans.put(g.getId(), bean);
+        }
+        bean.addGroup(g, gc.getLocation());
+      }
+      groupsTable.setBeans(new ArrayList<>(groupsBeans.values()));
     }
 
     void showVariableDifferences(GroupBean bean1, GroupBean bean2, Formatter f) {
@@ -800,7 +854,7 @@ public class DirectoryPartitionViewer extends JPanel {
   }
 
   private class RangeTracker {
-    int min,max;
+    int min, max;
 
     RangeTracker(int value) {
       this.min = value;
@@ -837,7 +891,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     public void addGroup(GribCollection.GroupHcs g, String partitionName) {
-      beans.add( new GroupBean(g, partitionName));
+      beans.add(new GroupBean(g, partitionName));
       nvars.add(g.varIndex.size());
       nfiles.add(g.filenose.length);
       ntimes.add(g.timeCoords.size());
@@ -925,7 +979,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 
   public class VarBean {
     GribCollection.VariableIndex v;

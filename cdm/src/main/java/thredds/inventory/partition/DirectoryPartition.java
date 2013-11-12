@@ -34,7 +34,7 @@ public class DirectoryPartition extends TimePartitionCollection {
   public Iterable<CollectionManagerRO> makePartitions() throws IOException {
 
     DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(topCollection, topDir, null);
-    builder.constructChildren(null, indexReader);
+    builder.constructChildren(indexReader);
 
     List<CollectionManagerRO> result = new ArrayList<>();
     for (DirectoryPartitionBuilder child : builder.children) {

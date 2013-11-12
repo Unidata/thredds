@@ -52,6 +52,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
@@ -311,6 +312,10 @@ public class GribCdmIndexPanel extends JPanel {
   GribCollection gc;
   FeatureCollectionConfig.GribConfig config = null;
   String magic;
+
+  public void setIndexFile(Path indexFile) throws IOException {
+    setIndexFile(indexFile.toString());
+  }
 
   public void setIndexFile(String indexFile) throws IOException {
     if (gc != null) gc.close();

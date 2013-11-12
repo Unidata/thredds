@@ -87,46 +87,52 @@ public class DirectoryPartitionBuilder {
     dirLastModified = attr.lastModifiedTime();
 
     // see if we can find the index
+    findIndex();
+  }
 
+  public boolean findIndex() throws IOException {
     Path indexPath = Paths.get(dir.toString(), collectionName+NCX_SUFFIX);
     if (Files.exists(indexPath)) {
       this.index = indexPath;
-      attr = Files.readAttributes(indexPath, BasicFileAttributes.class);
+      BasicFileAttributes attr = Files.readAttributes(indexPath, BasicFileAttributes.class);
       this.indexLastModified = attr.lastModifiedTime();
       this.indexSize = attr.size();
+      return true;
     }
+    return false;
   }
 
-  public void constructChildren(CollectionManager.Force force, IndexReader indexReader) throws IOException {
-    boolean hasIndex = false;
+  public List<DirectoryPartitionBuilder> constructChildren(IndexReader indexReader) throws IOException {
     if (index != null) {
-      hasIndex = indexReader.readChildren(index, new AddChild());
-    }
+      if (!indexReader.readChildren(index, new AddChild()))
+        return children; // empty
 
-    if (!hasIndex) {
+    } else {
       scanForChildren();
 
       for (DirectoryPartitionBuilder c : children)
-        c.constructChildren(force, indexReader);
+        c.constructChildren(indexReader);
     }
+
+    return children;
   }
 
   // add a child partition from the index file
   private class AddChild implements IndexReader.AddChildCallback {
     public void addChild(String dirName, String filename, long lastModified) throws IOException {
-      Path childPath = Paths.get(dirName, filename);
+      Path childPath = Paths.get(filename);
       DirectoryPartitionBuilder child = new DirectoryPartitionBuilder(topCollectionName, childPath, lastModified);
       children.add(child);
     }
   }
 
+  // coming in from the index
   private DirectoryPartitionBuilder(String topCollectionName, Path indexFile, long indexLastModified) throws IOException {
     this.topCollectionName = topCollectionName;
     this.index = indexFile;
     this.indexLastModified = FileTime.fromMillis(indexLastModified);
 
-    int last = indexFile.getNameCount()-1;
-    this.dir = indexFile.subpath(0, last);
+    this.dir = indexFile.getParent();
     this.collectionName = makePartitionName(topCollectionName, dir);
 
     BasicFileAttributes attr = Files.readAttributes(this.dir, BasicFileAttributes.class);
