@@ -296,7 +296,7 @@ public abstract class Grib2Pds {
     return applyScaleFactor(scale, value);
   }
 
-  protected  int getStatisticalProcessType() {
+  public int getStatisticalProcessType() {
     if (!(this instanceof PdsInterval)) return -1;
     PdsInterval pint = (PdsInterval) this;
     TimeInterval[] ti = pint.getTimeIntervals();

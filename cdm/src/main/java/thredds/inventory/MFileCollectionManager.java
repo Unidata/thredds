@@ -153,6 +153,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     // static means never rescan on checkState; let it be externally triggered.
     if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null) &&  (config.updateConfig.deleteAfter == null))
       setStatic(true);
+
+    if (this.auxInfo == null) this.auxInfo = new HashMap<>(10);
+    this.auxInfo.put(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
   }
 
 

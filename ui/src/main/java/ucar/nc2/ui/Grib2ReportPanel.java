@@ -8,7 +8,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -21,18 +20,16 @@ import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribIosp;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribVariableRenamer;
-import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
-import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;

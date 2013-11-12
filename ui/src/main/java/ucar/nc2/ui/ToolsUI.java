@@ -2751,7 +2751,7 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class GribCdmIndexPanel extends OpPanel {
-    ucar.nc2.ui.GribCollectionIndexPanel gribTable;
+    ucar.nc2.ui.GribCdmIndexPanel gribTable;
 
     void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
@@ -2759,7 +2759,7 @@ public class ToolsUI extends JPanel {
 
     GribCdmIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
-      gribTable = new ucar.nc2.ui.GribCollectionIndexPanel(prefs, buttPanel);
+      gribTable = new ucar.nc2.ui.GribCdmIndexPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
     }
 
@@ -5075,10 +5075,10 @@ public class ToolsUI extends JPanel {
 
     DirectoryPartitionPanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "collection:", true, false);
-      table = new DirectoryPartitionViewer(prefs, fileChooser);
+      table = new DirectoryPartitionViewer(prefs, buttPanel);
       add(table, BorderLayout.CENTER);
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
@@ -5094,7 +5094,7 @@ public class ToolsUI extends JPanel {
           detailWindow.show();
         }
       });
-      buttPanel.add(infoButton);
+      buttPanel.add(infoButton); */
 
     }
 

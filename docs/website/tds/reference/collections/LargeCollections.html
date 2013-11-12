@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>Very Large Collections</title>
+  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<h1>Very Large Collections</h1>
+<hr/>
+
+<body>
+<p>Very Large Collections - say more than 250,000 files (?)</p>
+<h3>Scanning directories </h3>
+<ul>
+  <li>Windows NTFS single local drive : 4000 entries / sec when file entries are not cached in OS.</li>
+  <li>So in one minute, 60 x 4000 = 240,000 files.</li>
+</ul>
+<h3>Principles</h3>
+<ul>
+  <li>atomic granule is the file. addd and delete  files, do not append to a file and expect software to efficiently detect this</li>
+  <li>minimize the number of files by making the files large. 100M - 2 Gbytes is reasonable for todays hardware.</li>
+  <li>optimize directory structure - put homogenous files in a directory, divided by time. </li>
+  <li>Build heirarchies of directories. eg year/month/day</li>
+  <li>Dont put more than 1000 files in a directory. Really maximum 10,000.
+</li>
+</ul>
+<p>&nbsp;</p>
+<h2>Directory partitions</h2>
+<p>Can take advantage of  heirarchies of directories. eg year/month/day, and minimizes what needs to be rebuilt when files are added or changed.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Notes</p>
+<ul>
+  <li>do not change the collectionName, else all indices have to be recomputed.</li>
+  <li>&lt;featureCollection&gt; featureType=&quot;GRIB1&quot; or &quot;GRIB2&quot; instead of &quot;GRIB&quot; , or can we auto-detect ?</li>
+  <li>&lt;gribConfig&gt; has stuff that must be in the ncx.</li>
+  <li>startup=&quot;never&quot;</li>
+  <li>timePartition=&quot;directory&quot;</li>
+</ul>
+</body>
+</html>

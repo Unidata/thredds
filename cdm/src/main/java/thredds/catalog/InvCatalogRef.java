@@ -79,8 +79,8 @@ public class InvCatalogRef extends InvDatasetImpl {
    * @param title  : display name of collection
    * @param href   : URL to another catalog
    */
-  public InvCatalogRef(InvDatasetImpl parent, String title, String href) {
-    super(parent, title);
+  public InvCatalogRef(InvDatasetImpl parent, String name, String href) {
+    super(parent, name);
     this.href = href.trim();
   }
 

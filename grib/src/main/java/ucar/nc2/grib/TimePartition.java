@@ -34,9 +34,10 @@ package ucar.nc2.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.TimePartitionCollection;
+import thredds.inventory.CollectionManagerRO;
+import thredds.inventory.partition.TimePartitionCollection;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
-import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
+import ucar.nc2.grib.grib2.builder.Grib2TimePartitionBuilder;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
@@ -140,7 +141,7 @@ public abstract class TimePartition extends GribCollection {
     }
 
     // null if it came from the index
-    public CollectionManager getDcm() {
+    public CollectionManagerRO getDcm() {
       return dcm;            // in GribCollection
     }
 
@@ -171,10 +172,10 @@ public abstract class TimePartition extends GribCollection {
 
     /////////////////////////////////////////////
     // only used during creation of index
-    private CollectionManager dcm;
+    private CollectionManagerRO dcm;
 
     // constructor from a TimePartition object
-    public Partition(CollectionManager dcm) {
+    public Partition(CollectionManagerRO dcm) {
       this.dcm = dcm;
       this.name = dcm.getCollectionName();
       this.directory = dcm.getRoot();
@@ -272,7 +273,7 @@ public abstract class TimePartition extends GribCollection {
     partitions.add(partition);
   }
 
-  public void addPartition(CollectionManager dcm) {
+  public void addPartition(CollectionManagerRO dcm) {
     Partition partition = new Partition(dcm);
     partitionMap.put(dcm.getCollectionName(), new Partition(dcm));
     partitions.add(partition);

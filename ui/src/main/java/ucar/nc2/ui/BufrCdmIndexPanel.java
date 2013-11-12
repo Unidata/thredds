@@ -57,7 +57,7 @@ import java.util.List;
  * @since 6/29/11
  */
 public class BufrCdmIndexPanel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollectionIndexPanel.class);
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BufrCdmIndexPanel.class);
 
   private PreferencesExt prefs;
 

@@ -33,13 +33,14 @@
 package ucar.nc2.grib.grib2;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.filesystem.MFileOS;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilderFromIndex;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -133,7 +134,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
       } else if (arg.equalsIgnoreCase("-read")) {
         File f = new File(args[i+1]);
         RandomAccessFile raf = new RandomAccessFile(f.getPath(), "r");
-        GribCollection gc = Grib2CollectionBuilder.createFromIndex(f.getName(), f.getParentFile(), raf, null, logger);
+        GribCollection gc = Grib2CollectionBuilderFromIndex.createFromIndex(f.getName(), f.getParentFile(), raf, null, logger);
         gc.showIndex(new Formatter(System.out));
         break;
       }

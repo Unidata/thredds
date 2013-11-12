@@ -1,16 +1,22 @@
 package ucar.nc2.ui;
 
-import ucar.ma2.Array;
-import ucar.nc2.*;
-import ucar.nc2.grib.GribCdmIndex;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.ui.event.ActionValueEvent;
-import ucar.nc2.ui.event.ActionValueListener;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
+import thredds.catalog.parser.jdom.FeatureCollectionReader;
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionManagerRO;
+import thredds.inventory.CollectionSpecParser;
+import thredds.inventory.MFile;
+import thredds.inventory.partition.DirectoryPartition;
+import thredds.inventory.partition.DirectoryPartitionBuilder;
+import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib2.Grib2TimePartition;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.widget.*;
-import ucar.nc2.util.ListenerManager;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.util.prefs.ui.Debug;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -27,9 +33,9 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Formatter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -41,35 +47,36 @@ import java.util.List;
 public class DirectoryPartitionViewer extends JPanel {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DirectoryPartitionViewer.class);
 
-  private FileManager fileChooser;
-
   private PreferencesExt prefs;
-  private NetcdfFile ds;
 
-  private List<NestedTable> nestedTableList = new ArrayList<NestedTable>();
-  private BeanTableSorted attTable;
+  private FeatureCollectionConfig config;
+  private String collectionName = "ncdc1year";
+  private GribCdmIndexPanel cdmIndexTables;
+  private PartitionsTable partitionsTable;
 
   private JPanel tablePanel;
   private JSplitPane mainSplit;
 
-  private JComponent currentComponent;
   private PartitionTreeBrowser fileBrowser;
   private NCdumpPane dumpPane;
 
   private TextHistoryPane infoTA;
   private StructureTable dataTable;
-  private IndependentWindow infoWindow, dataWindow, dumpWindow, attWindow;
+  private IndependentWindow infoWindow, dataWindow, dumpWindow;
 
-  public DirectoryPartitionViewer(PreferencesExt prefs, FileManager fileChooser) {
+  public DirectoryPartitionViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
-    this.fileChooser = fileChooser;
     fileBrowser = new PartitionTreeBrowser();
+    cdmIndexTables = new GribCdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
+    partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"), buttPanel);
 
     setLayout(new BorderLayout());
 
     tablePanel = new JPanel(new BorderLayout());
-    setNestedTable(0, null);
     tablePanel.add(fileBrowser.fileView, BorderLayout.NORTH);
+    // tablePanel.add(cdmIndexTables, BorderLayout.CENTER);   LOOK flip back and forth ??
+    tablePanel.add(partitionsTable, BorderLayout.CENTER);
+    current = partitionsTable;
 
     JScrollPane treeScroll = new JScrollPane(fileBrowser.tree);
 
@@ -95,19 +102,49 @@ public class DirectoryPartitionViewer extends JPanel {
 
   public void save() {
     if (mainSplit != null) prefs.putInt("mainSplit", mainSplit.getDividerLocation());
+    cdmIndexTables.save();
+    partitionsTable.save();
   }
+
+  private Component current;
+  private void swap(Component want) {
+    if (current == want) return;
+    tablePanel.remove( current);
+    tablePanel.add(want, BorderLayout.CENTER);
+    tablePanel.revalidate();
+    current = want;
+    repaint();
+  }
+
 
   ////////////////////////////////////////////////
-
-  public void showDetail(Formatter f) {
-  }
 
   public void setCollection(String name) {
     File f = new File(name);
     if (!f.exists()) return;
-    if (!f.isDirectory()) return;
+    if (f.isDirectory()) {
+      fileBrowser.setRoot(f);
+      return;
+    }
 
-    fileBrowser.setRoot(f);
+    org.jdom2.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(f);
+    } catch (Exception e) {
+      javax.swing.JOptionPane.showMessageDialog(this, "Error parsing featureCollection: " + e.getMessage());
+      return;
+    }
+
+    if (true) {
+      XMLOutputter xmlOut = new XMLOutputter();
+      System.out.println(xmlOut.outputString(doc));
+    }
+
+    Formatter errlog = new Formatter();
+    config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
+    CollectionSpecParser spec = new CollectionSpecParser(config.spec, errlog);
+    fileBrowser.setRoot(new File(spec.getRootDir()));
   }
 
   private void moveCdmIndexFile(File indexFile) throws IOException {
@@ -124,563 +161,125 @@ public class DirectoryPartitionViewer extends JPanel {
     }
   }
 
-  private void showCdmIndexFile(File indexFile) throws IOException {
-    GribCollection gc = null;
-    try {
-      gc = GribCdmIndex.openCdmIndex(indexFile.getPath(), logger);
-      Formatter f = new Formatter();
-      gc.showIndex(f);
-      infoTA.setText(f.toString());
-      infoTA.gotoTop();
-      infoWindow.show();
-    } finally {
-      if (gc != null) gc.close();
-    }
-  }
+  private void moveCdmIndexAll(File indexFile) {
+    Formatter out = new Formatter();
+    infoWindow.show();
 
-
-  private void setSelected(Variable v) {
-
-    List<Variable> vchain = new ArrayList<Variable>();
-    vchain.add(v);
-
-    Variable vp = v;
-    while (vp.isMemberOfStructure()) {
-      vp = vp.getParentStructure();
-      vchain.add(0, vp); // reverse
-    }
-
-    for (int i = 0; i < vchain.size(); i++) {
-      vp = vchain.get(i);
-      NestedTable ntable = setNestedTable(i, vp.getParentStructure());
-      ntable.setSelected(vp);
-    }
-
-  }
-
-  private NestedTable setNestedTable(int level, Structure s) {
-    NestedTable ntable;
-    if (nestedTableList.size() < level + 1) {
-      ntable = new NestedTable(level);
-      nestedTableList.add(ntable);
-
-    } else {
-      ntable = nestedTableList.get(level);
-    }
-
-    if (s != null) // variables inside of records
-      ntable.table.setBeans(getStructureVariables(s));
-
-    ntable.show();
-    return ntable;
-  }
-
-  private void hideNestedTable(int level) {
-    int n = nestedTableList.size();
-    for (int i = n - 1; i >= level; i--) {
-      NestedTable ntable = nestedTableList.get(i);
-      ntable.hide();
-    }
-  }
-
-  private class NestedTable {
-    int level;
-    PreferencesExt myPrefs;
-
-    BeanTableSorted table; // always the left component
-    JSplitPane split = null; // right component (if exists) is the nested dataset.
-    int splitPos = 100;
-    boolean isShowing = false;
-
-    NestedTable(int level) {
-      this.level = level;
-      myPrefs = (PreferencesExt) prefs.node("NestedTable" + level);
-
-      table = new BeanTableSorted(VariableBean.class, myPrefs, false);
-
-      JTable jtable = table.getJTable();
-      ucar.nc2.ui.widget.PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
-      csPopup.addAction("Show Declaration", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          showDeclaration(table, false);
-        }
-      });
-      csPopup.addAction("Show NcML", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          showDeclaration(table, true);
-        }
-      });
-      csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          dumpData(table);
-        }
-      });
-      if (level == 0) {
-        csPopup.addAction("Data Table", new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-            dataTable(table);
-          }
-        });
-      }
-
-      // get selected variable, see if its a structure
-      table.addListSelectionListener(new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
-          Variable v = getCurrentVariable(table);
-          if ((v != null) && (v instanceof Structure)) {
-            hideNestedTable(NestedTable.this.level + 2);
-            setNestedTable(NestedTable.this.level + 1, (Structure) v);
-
-          } else {
-            hideNestedTable(NestedTable.this.level + 1);
-          }
-          //if (eventsOK) datasetTree.setSelected( v);
-        }
-      });
-
-      // layout
-      if (currentComponent == null) {
-        currentComponent = table;
-        tablePanel.add(currentComponent, BorderLayout.CENTER);
-        isShowing = true;
-
-      } else {
-        split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, currentComponent, table);
-        splitPos = myPrefs.getInt("splitPos" + level, 500);
-        if (splitPos > 0)
-          split.setDividerLocation(splitPos);
-
-        show();
-      }
-    }
-
-    void show() {
-      if (isShowing) return;
-
-      tablePanel.remove(currentComponent);
-      split.setLeftComponent(currentComponent);
-      split.setDividerLocation(splitPos);
-      currentComponent = split;
-      tablePanel.add(currentComponent, BorderLayout.CENTER);
-      tablePanel.revalidate();
-      isShowing = true;
-    }
-
-    void hide() {
-      if (!isShowing) return;
-      tablePanel.remove(currentComponent);
-
-      if (split != null) {
-        splitPos = split.getDividerLocation();
-        currentComponent = (JComponent) split.getLeftComponent();
-        tablePanel.add(currentComponent, BorderLayout.CENTER);
-      }
-
-      tablePanel.revalidate();
-      isShowing = false;
-    }
-
-    void setSelected(Variable vs) {
-
-      List beans = table.getBeans();
-      for (Object bean1 : beans) {
-        VariableBean bean = (VariableBean) bean1;
-        if (bean.vs == vs) {
-          table.setSelectedBean(bean);
-          return;
-        }
-      }
-    }
-
-    void saveState() {
-      table.saveState(false);
-      if (split != null) myPrefs.putInt("splitPos" + level, split.getDividerLocation());
-    }
-  }
-
-  /* public void showTreeViewWindow() {
-    if (treeWindow == null) {
-      datasetTree = new DatasetTreeView();
-      treeWindow = new IndependentWindow("TreeView", datasetTree);
-      treeWindow.setIconImage(thredds.ui.BAMutil.getImage("netcdfUI"));
-      treeWindow.setBounds( (Rectangle) prefs.getBean("treeWindow", new Rectangle( 150, 100, 400, 700)));
-    }
-
-    datasetTree.setDataset( ds);
-    treeWindow.show();
-  } */
-
-  private void showDeclaration(BeanTableSorted from, boolean isNcml) {
-    Variable v = getCurrentVariable(from);
-    if (v == null) return;
-    infoTA.clear();
-    if (isNcml) {
-      Formatter out = new Formatter();
+    for (File f : indexFile.getParentFile().listFiles()) {
+      if (!f.getName().endsWith(".ncx")) continue;
+      GribCollection gc = null;
       try {
-        NCdumpW.writeNcMLVariable(v, out);
-      } catch (IOException e) {
-        e.printStackTrace();
+        boolean ok = GribCdmIndex.moveCdmIndex(f, logger);
+        out.format("%s moved success=%s%n", f.getPath(), ok);
+        infoTA.appendLine(f.getPath() + " moved success=" + ok);
+
+      } catch (Throwable t) {
+        out.format("%s moved failed=%s%n", f.getPath(), t.getMessage());
       }
-      infoTA.appendLine(out.toString());
-
-    } else {
-      infoTA.appendLine(v.toString());
     }
 
-    if (Debug.isSet("Xdeveloper")) {
-      infoTA.appendLine("\n");
-      infoTA.appendLine("FULL NAME = " + v.getFullName());
-      infoTA.appendLine("\n");
-      infoTA.appendLine(v.toStringDebug());
-    }
+    infoTA.setText(out.toString());
     infoTA.gotoTop();
-    infoWindow.setTitle("Variable Info");
     infoWindow.show();
   }
 
-  private void dumpData(BeanTableSorted from) {
-    Variable v = getCurrentVariable(from);
-    if (v == null) return;
+  private void showCdmIndexFile(File topDir) throws IOException {
 
-    dumpPane.clear();
-    String spec;
+    String indexFilename;
 
-    try {
-      spec = ParsedSectionSpec.makeSectionSpecString(v, null);
-      dumpPane.setContext(ds, spec);
+    if (topDir.isDirectory()) {
+      DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(collectionName, topDir.getPath());
+      Path indexPath = builder.getIndex();
+      if (indexPath == null) {
+        JOptionPane.showMessageDialog(this, "No index found in " + topDir);
+        return;
+      }
+      fileBrowser.setFileDetails(indexPath.toFile());
+      indexFilename = indexPath.toString();
 
-    } catch (Exception ex) {
-      StringWriter s = new StringWriter();
-      ex.printStackTrace(new PrintWriter(s));
-      dumpPane.setText(s.toString());
+    } else {
+      indexFilename = topDir.getPath();
     }
 
-    dumpWindow.show();
+    // this opens the index file and constructs a GribCollection
+    cdmIndexTables.setIndexFile(indexFilename);
+    swap(cdmIndexTables);
   }
 
-  /* private void showMissingData(BeanTableSorted from) {
-    VariableBean vb = (VariableBean) from.getSelectedBean();
-    if (vb == null) return;
-    Variable v = vb.vs;
-    if ((v != null) && (v.getDataType() == ucar.nc2.DataType.STRUCTURE)) {
-      showMissingStructureData( (Structure) v);
+  private void showChildrenIndex(File topDir) {
+    if (!topDir.isDirectory()) {
+      JOptionPane.showMessageDialog(this, topDir.getPath() + " not a directory: ");
+      return;
     }
-    if (!vb.vs.hasMissing()) return;
 
-    int count = 0, total = 0;
-    infoTA.clear();
-    infoTA.appendLine( v.toString());
+    Formatter out = new Formatter();
     try {
+      boolean ok = GribCdmIndex.showDirectoryPartitionIndex(collectionName, topDir, out);
+      out.format("%s showChildrenIndex success=%s%n", topDir.getPath(), ok);
+      infoTA.appendLine(out.toString());
+      infoTA.gotoTop();
+      infoWindow.show();
 
-      Array data = null;
-      if (v.isMemberOfStructure())
-        data = v.readAllStructures((List)null, true);
-      else
-        data = v.read();
+    } catch (Throwable t) {
+      JOptionPane.showMessageDialog(this, topDir.getPath() + " showChildrenIndex failed: " + t.getMessage());
+    }
+  }
 
-      IndexIterator iter = data.getIndexIterator();
-      while (iter.hasNext()) {
-        if (vb.vs.isMissing( iter.getDoubleNext()))
-          count++;
-        total++;
+
+  private void showPartitions(File topDir) {
+    Formatter out = new Formatter();
+    try {
+      GribCdmIndex indexWriter = new GribCdmIndex();
+      Path topPath = Paths.get(topDir.getPath());
+      DirectoryPartition dpart = new DirectoryPartition(config, topPath, indexWriter, out, logger);
+
+      Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), topDir, config.gribConfig, logger);
+      for (CollectionManagerRO dcm : dpart.makePartitions()) {
+        tp.addPartition(dcm);
       }
 
-      double p = ((100.0 * count) / total);
-      infoTA.appendLine( " missing values = "+count);
-      infoTA.appendLine( " total values = "+total);
-      infoTA.appendLine( " percent missing values = "+ Format.d(p, 2) +" %");
-
-    } catch( InvalidRangeException e ) {
-      infoTA.appendLine( "ERROR= "+e.getMessage());
-    } catch( IOException ioe ) {
-      infoTA.appendLine( "ERROR= "+ioe.getMessage());
-    }
-    infoTA.gotoTop();
-    infoWindow.showIfNotIconified();
-  }
-
-  private void showMissingStructureData(Structure s) {
-    ArrayList members = new ArrayList();
-    List allMembers = s.getVariables();
-    for (int i=0; i<allMembers.size(); i++) {
-      Variable vs = (Variable) allMembers.get(i);
-      if (vs.hasMissing())
-        members.add( vs);
-    }
-
-    if (members.size() == 0) return;
-    int[] count = new int[ members.size()];
-    int[] total = new int[ members.size()];
-
-    infoTA.clear();
-    try {
-
-     Structure.Iterator iter = s.getStructureIterator();
-     while (iter.hasNext()) {
-       StructureData sdata = iter.next();
-
-       for (int i=0; i<members.size(); i++) {
-         Variable vs = (Variable) members.get(i);
-
-         Array data = sdata.findMemberArray( vs.getShortName());
-         IndexIterator dataIter = data.getIndexIterator();
-         while (dataIter.hasNext()) {
-           if (vs.isMissing(dataIter.getDoubleNext()))
-             count[i]++;
-           total[i]++;
-         }
-       }
-     }
-     int countAll = 0, totalAll = 0;
-     infoTA.appendLine("      name                missing   total     percent missing");
-     for (int i=0; i<members.size(); i++) {
-       Variable vs = (Variable) members.get(i);
-       double p = ( (100.0 * count[i]) / total[i]);
-       infoTA.appendLine(Format.s(vs.getShortName(), 25) +
-                         " "+ Format.i(count[i], 7) +
-                         "   "+ Format.i(total[i], 7) +
-                         "   "+ Format.d(p, 2) + "%");
-       countAll += count[i];
-       totalAll += total[i];
-     }
-
-     infoTA.appendLine("");
-     double p = ( (100.0 * countAll) / totalAll);
-     infoTA.appendLine(Format.s("TOTAL ALL", 25) +
-                       " "+ Format.i(countAll, 7) +
-                       "   "+ Format.i(totalAll, 7) +
-                       "   "+ Format.d(p, 2) + "%");
-
-    } catch( IOException ioe ) {
-      infoTA.appendLine( "ERROR= "+ioe.getMessage());
-    }
-    infoTA.gotoTop();
-    infoWindow.showIfNotIconified();
-  } */
-
-  private void dataTable(BeanTableSorted from) {
-    VariableBean vb = (VariableBean) from.getSelectedBean();
-    if (vb == null) return;
-    Variable v = vb.vs;
-    if (v instanceof Structure) {
-      try {
-        dataTable.setStructure((Structure) v);
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
-    } else return;
-
-    dataWindow.show();
-  }
-
-  private Variable getCurrentVariable(BeanTableSorted from) {
-    VariableBean vb = (VariableBean) from.getSelectedBean();
-    if (vb == null) return null;
-    return vb.vs;
-  }
-
-  public List<VariableBean> getVariableBeans(NetcdfFile ds) {
-    List<VariableBean> vlist = new ArrayList<VariableBean>();
-    for (Variable v : ds.getVariables()) {
-      vlist.add(new VariableBean(v));
-    }
-    return vlist;
-  }
-
-  public List<VariableBean> getStructureVariables(Structure s) {
-    List<VariableBean> vlist = new ArrayList<VariableBean>();
-    for (Variable v : s.getVariables()) {
-      vlist.add(new VariableBean(v));
-    }
-    return vlist;
-  }
-
-  public class VariableBean {
-    // static public String editableProperties() { return "title include logging freq"; }
-    private Variable vs;
-    private String name, dimensions, desc, units, dataType, shape;
-    private String coordSys;
-
-    // no-arg constructor
-    public VariableBean() {
-    }
-
-    // create from a dataset
-    public VariableBean(Variable vs) {
-      this.vs = vs;
-      //vs = (v instanceof VariableEnhanced) ? (VariableEnhanced) v : new VariableStandardized( v);
-
-      setName(vs.getShortName());
-      setDescription(vs.getDescription());
-      setUnits(vs.getUnitsString());
-      setDataType(vs.getDataType().toString());
-
-      //Attribute csAtt = vs.findAttribute("_coordSystems");
-      //if (csAtt != null)
-      //  setCoordSys( csAtt.getStringValue());
-
-      // collect dimensions
-      StringBuilder lens = new StringBuilder();
-      StringBuilder names = new StringBuilder();
-      java.util.List dims = vs.getDimensions();
-      for (int j = 0; j < dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
-        if (j > 0) {
-          lens.append(",");
-          names.append(",");
+      partitionsTable.clear();
+      for (TimePartition.Partition tpp : tp.getPartitions()) {
+        try {
+          GribCollection gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists
+          partitionsTable.addGribCollection(gc);
+          gc.close(); // ??
+        } catch (Throwable t) {
+          logger.error(" Failed to open partition " + tpp.getName(), t);
         }
-        String name = dim.isShared() ? dim.getShortName() : "anon";
-        names.append(name);
-        lens.append(dim.getLength());
       }
-      setDimensions(names.toString());
-      setShape(lens.toString());
+
+      swap(partitionsTable);
+
+    } catch (Throwable t) {
+      JOptionPane.showMessageDialog(this, topDir + " showPartitions failed: " + t.getMessage());
     }
-
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-
-    public String getGroup() {
-      return vs.getParentGroup().getFullName();
-    }
-
-    public String getDimensions() {
-      return dimensions;
-    }
-
-    public void setDimensions(String dimensions) {
-      this.dimensions = dimensions;
-    }
-
-    /* public boolean isCoordVar() { return isCoordVar; }
-    public void setCoordVar(boolean isCoordVar) { this.isCoordVar = isCoordVar; }
-
-    /* public boolean isAxis() { return axis; }
-    public void setAxis(boolean axis) { this.axis = axis; }
-
-    public boolean isGeoGrid() { return isGrid; }
-    public void setGeoGrid(boolean isGrid) { this.isGrid = isGrid; }
-
-    public String getAxisType() { return axisType; }
-    public void setAxisType(String axisType) { this.axisType = axisType; } */
-
-    //public String getCoordSys() { return coordSys; }
-    //public void setCoordSys(String coordSys) { this.coordSys = coordSys; }
-
-    /* public String getPositive() { return positive; }
-    public void setPositive(String positive) { this.positive = positive; }
-
-    */
-
-    public String getDescription() {
-      return desc;
-    }
-
-    public void setDescription(String desc) {
-      this.desc = desc;
-    }
-
-    public String getUnits() {
-      return units;
-    }
-
-    public void setUnits(String units) {
-      this.units = units;
-    }
-
-    public String getDataType() {
-      return dataType;
-    }
-
-    public void setDataType(String dataType) {
-      this.dataType = dataType;
-    }
-
-    public String getShape() {
-      return shape;
-    }
-
-    public void setShape(String shape) {
-      this.shape = shape;
-    }
-
-    /** Get hasMissing */
-    // public boolean getHasMissing() { return hasMissing; }
-    /** Set hasMissing */
-    // public void setHasMissing( boolean hasMissing) { this.hasMissing = hasMissing; }
-
   }
 
-  public class AttributeBean {
-    private Attribute att;
 
-    // no-arg constructor
-    public AttributeBean() {
+  private void makeIndex(File topDir) {
+    Formatter out = new Formatter();
+    try {
+      boolean ok = GribCdmIndex.makeDirectoryPartitionIndex(config, topDir, out);
+      out.format("%s makeIndex success=%s%n", topDir, ok);
+      infoTA.appendLine(out.toString());
+      infoTA.gotoTop();
+      infoWindow.show();
+
+      if (ok) showCdmIndexFile(topDir);
+
+    } catch (Throwable t) {
+      JOptionPane.showMessageDialog(this, topDir + " makeIndex failed: " + t.getMessage());
     }
-
-    // create from a dataset
-    public AttributeBean(Attribute att) {
-      this.att = att;
-    }
-
-    public String getName() {
-      return att.getShortName();
-    }
-
-    public String getValue() {
-      Array value = att.getValues();
-      return NCdumpW.printArray(value, null, null);
-    }
-
   }
 
-  class PartitionTreeBrowser {
-
-    /**
-     * Title of the application
-     */
-    // public static final String APP_TITLE = "FileBro";
-    /**
-     * Used to open/edit/print files.
-     */
-    //private Desktop desktop;
-    /**
-     * Provides nice icons and names for files.
-     */
+  private class PartitionTreeBrowser {
     private FileSystemView fileSystemView;
 
-    /**
-     * currently selected File.
-     */
-    private File currentFile;
-
-    /**
-     * Main GUI container
-     */
-    // private JPanel gui;
-
-    /**
-     * File-system tree. Built Lazily
-     */
-    JTree tree;
+    private File currentFile; // currently selected File.
+    JTree tree;  // File-system tree. Built Lazily
     private DefaultTreeModel treeModel;
-
-    /**
-     * Directory listing
-     */
-    //private JTable table;
     private JProgressBar progressBar;
-    /**
-     * Table model for File[].
-     */
-
-    /* File controls. */
-    private JButton openFile;
 
     /* File details. */
     JPanel fileView;
@@ -710,18 +309,18 @@ public class DirectoryPartitionViewer extends JPanel {
       tree.setSelectionInterval(0, 0);
     }
 
-    ListenerManager lm = new ListenerManager("ucar.nc2.ui.event.ActionValueListener", "ucar.nc2.ui.event.ActionValueEvent", "actionPerformed");
+    /* ListenerManager lm = new ListenerManager("ucar.nc2.ui.event.ActionValueListener", "ucar.nc2.ui.event.ActionValueEvent", "actionPerformed");
 
     public void addActionValueListener(ActionValueListener l) {
       lm.addListener(l);
-    }
+    } */
 
     public PartitionTreeBrowser() {
       fileSystemView = FileSystemView.getFileSystemView();
       makeGui();
     }
 
-    private void makeGui () {
+    private void makeGui() {
 
       // the File tree
       DefaultMutableTreeNode root = new DefaultMutableTreeNode();
@@ -765,14 +364,14 @@ public class DirectoryPartitionViewer extends JPanel {
 
       /////////////////////
       // details for a File
-      JPanel fileMainDetails = new JPanel(new BorderLayout(4, 2));
-      fileMainDetails.setBorder(new EmptyBorder(0, 6, 0, 6));
+      JPanel filePanel = new JPanel(new BorderLayout(4, 2));
+      filePanel.setBorder(new EmptyBorder(0, 6, 0, 6));
 
       JPanel fileDetailsLabels = new JPanel(new GridLayout(0, 1, 2, 2));
-      fileMainDetails.add(fileDetailsLabels, BorderLayout.WEST);
+      filePanel.add(fileDetailsLabels, BorderLayout.WEST);
 
       JPanel fileDetailsValues = new JPanel(new GridLayout(0, 1, 2, 2));
-      fileMainDetails.add(fileDetailsValues, BorderLayout.CENTER);
+      filePanel.add(fileDetailsValues, BorderLayout.CENTER);
 
       fileDetailsLabels.add(new JLabel("File", JLabel.TRAILING));
       fileName = new JLabel();
@@ -798,39 +397,7 @@ public class DirectoryPartitionViewer extends JPanel {
       flags.add(isFile);
       fileDetailsValues.add(flags);
 
-      //////////////
-      // toolbar
-
-      JToolBar toolBar = new JToolBar();
-      toolBar.setFloatable(false);  // mnemonics stop working in a floated toolbar
-
-      JButton locateFile = new JButton("Move");
-      locateFile.setMnemonic('l');
-      locateFile.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent ae) {
-          try {
-            moveCdmIndexFile(currentFile);
-          } catch (Throwable t) {
-            showThrowable(t);
-          }
-          repaint();
-        }
-      });
-      toolBar.add(locateFile);
-
-      openFile = new JButton("Show");
-      openFile.setMnemonic('o');
-      openFile.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent ae) {
-          try {
-            showCdmIndexFile(currentFile);
-          } catch (Throwable t) {
-            showThrowable(t);
-          }
-          repaint();
-        }
-      });
-      toolBar.add(openFile);
+      JToolBar toolBar = makeButtonBar();
 
       flags.add(new JLabel("::  Flags"));
       readable = new JCheckBox("Read  ");
@@ -865,8 +432,96 @@ public class DirectoryPartitionViewer extends JPanel {
 
       fileView = new JPanel(new BorderLayout(3, 3));
       fileView.add(toolBar, BorderLayout.NORTH);
-      fileView.add(fileMainDetails, BorderLayout.CENTER);
+      fileView.add(filePanel, BorderLayout.CENTER);
       fileView.add(progressBar, BorderLayout.EAST);
+    }
+
+    private JToolBar makeButtonBar() {
+      //////////////
+      // toolbar
+
+      JToolBar toolBar = new JToolBar();
+      toolBar.setFloatable(false);  // mnemonics stop working in a floated toolbar
+
+      JButton moveIndexButt = new JButton("Move");
+      moveIndexButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent ae) {
+          try {
+            moveCdmIndexFile(currentFile);
+          } catch (Throwable t) {
+            showThrowable(t);
+          }
+          repaint();
+        }
+      });
+      toolBar.add(moveIndexButt);
+
+      JButton moveAllButt = new JButton("MoveAll");
+      moveAllButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent ae) {
+          try {
+            moveCdmIndexAll(currentFile);
+          } catch (Throwable t) {
+            showThrowable(t);
+          }
+          repaint();
+        }
+      });
+      toolBar.add(moveAllButt);
+
+      JButton showFileButt = new JButton("Show");
+      showFileButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent ae) {
+          try {
+            showCdmIndexFile(currentFile);
+          } catch (Throwable t) {
+            showThrowable(t);
+          }
+          repaint();
+        }
+      });
+      toolBar.add(showFileButt);
+
+      JButton showIndexButt = new JButton("Show Children");
+      showIndexButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent ae) {
+          try {
+            showChildrenIndex(currentFile);
+          } catch (Throwable t) {
+            showThrowable(t);
+          }
+          repaint();
+        }
+      });
+      toolBar.add(showIndexButt);
+
+      JButton showPartButt = new JButton("Show Partitions");
+      showPartButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent ae) {
+          try {
+            showPartitions(currentFile);
+          } catch (Throwable t) {
+            showThrowable(t);
+          }
+          repaint();
+        }
+      });
+      toolBar.add(showPartButt);
+
+      JButton makeIndexButt = new JButton("Make Partition");
+      makeIndexButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent ae) {
+          try {
+            makeIndex(currentFile);
+          } catch (Throwable t) {
+            showThrowable(t);
+          }
+          repaint();
+        }
+      });
+      toolBar.add(makeIndexButt);
+
+      return toolBar;
     }
 
     private void showThrowable(Throwable t) {
@@ -894,11 +549,12 @@ public class DirectoryPartitionViewer extends JPanel {
         public Void doInBackground() {
           File file = (File) node.getUserObject();
           if (file.isDirectory()) {
+            System.out.printf("%s getFiles%n", file);
             File[] files = fileSystemView.getFiles(file, true); //!!
             if (node.isLeaf()) {
               for (File child : files) {
                 //if (child.isDirectory()) {
-                  publish(child);
+                publish(child);
                 //}
               }
             }
@@ -992,6 +648,380 @@ public class DirectoryPartitionViewer extends JPanel {
 
         return label;
       }
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  private class PartitionsTable extends JPanel {
+    private PreferencesExt prefs;
+
+    private BeanTableSorted groupsTable, groupTable, varTable, fileTable;
+    private JSplitPane split, split2, split3;
+
+    private IndependentWindow fileWindow;
+
+    public PartitionsTable(PreferencesExt prefs, JPanel buttPanel) {
+      this.prefs = prefs;
+
+      PopupMenu varPopup;
+
+      ////////////////
+      groupsTable = new BeanTableSorted(GroupsBean.class, (PreferencesExt) prefs.node("GroupsBean"), false, "Groups", "GribCollection.GroupHcs", null);
+      groupsTable.addListSelectionListener(new ListSelectionListener() {
+        public void valueChanged(ListSelectionEvent e) {
+          GroupsBean bean = (GroupsBean) groupsTable.getSelectedBean();
+          if (bean != null)
+            setGroups(bean);
+        }
+      });
+
+      groupTable = new BeanTableSorted(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "Partitions for this Group", "GribCollection.GroupHcs", null);
+      groupTable.addListSelectionListener(new ListSelectionListener() {
+        public void valueChanged(ListSelectionEvent e) {
+          GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+          if (bean != null)
+            setGroup(bean.group);
+        }
+      });
+
+      varPopup = new PopupMenu(groupTable.getJTable(), "Options");
+      varPopup.addAction("Show Files Used", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+          if (bean != null) {
+            if (bean.group != null)
+              showFiles(bean.group.getFiles());
+          }
+        }
+      });
+      varPopup.addAction("Show Variable Difference", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          List<GroupBean> beans = (List<GroupBean>) groupTable.getSelectedBeans();
+          if (beans.size() == 2) {
+            Formatter f = new Formatter();
+            showVariableDifferences(beans.get(0), beans.get(1), f);
+            infoTA.setText(f.toString());
+            infoTA.gotoTop();
+            infoWindow.show();
+          }
+        }
+      });
+
+      varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
+
+      varPopup = new PopupMenu(varTable.getJTable(), "Options");
+      varPopup.addAction("Show Variable", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          VarBean bean = (VarBean) varTable.getSelectedBean();
+          if (bean != null) {
+            infoTA.setText(bean.v.toStringComplete());
+            infoTA.gotoTop();
+            infoWindow.show();
+          }
+        }
+      });
+
+      fileTable = new BeanTableSorted(FileBean.class, (PreferencesExt) prefs.node("FileBean"), false, "Files", "Files", null);
+      fileWindow = new IndependentWindow("Files Used", BAMutil.getImage("netcdfUI"), fileTable);
+      fileWindow.setBounds((Rectangle) prefs.getBean("DetailWindowBounds", new Rectangle(300, 300, 500, 300)));
+
+      /////////////////////////////////////////
+      setLayout(new BorderLayout());
+
+      split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, groupsTable, groupTable);
+      split.setDividerLocation(prefs.getInt("splitPos2", 600));
+
+      split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, varTable);
+      split.setDividerLocation(prefs.getInt("splitPos", 900));
+      add(split, BorderLayout.CENTER);
+    }
+
+    public void save() {
+      groupsTable.saveState(false);
+      groupTable.saveState(false);
+      varTable.saveState(false);
+      if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
+      if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+      if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
+    }
+
+    private void setGroups(GroupsBean groups) {
+      groupTable.setBeans(groups.beans);
+    }
+
+    private void setGroup(GribCollection.GroupHcs group) {
+      List<VarBean> vars = new ArrayList<>();
+      for (GribCollection.VariableIndex v : group.varIndex)
+        vars.add(new VarBean(v, group));
+      varTable.setBeans(vars);
+    }
+
+    private void showFiles(List<MFile> files) {
+      if (files == null) return;
+
+      int count = 0;
+      List<FileBean> beans = new ArrayList<>();
+      for (MFile mfile : files)
+        beans.add(new FileBean(mfile, count++));
+      fileTable.setBeans(beans);
+      fileWindow.show();
+    }
+
+    Map<String, GroupsBean> groupsBeans = new HashMap<>(25);
+
+    void clear() {
+      groupsBeans = new HashMap<>(25);
+    }
+
+    void addGribCollection(GribCollection gc) {
+     for (GribCollection.GroupHcs g : gc.getGroups()) {
+       GroupsBean bean = groupsBeans.get(g.getId());
+       if (bean == null) {
+         bean = new GroupsBean(g);
+         groupsBeans.put(g.getId(), bean);
+       }
+       bean.addGroup(g, gc.getLocation());
+     }
+     groupsTable.setBeans( new ArrayList<>(groupsBeans.values()));
+    }
+
+    void showVariableDifferences(GroupBean bean1, GroupBean bean2, Formatter f) {
+      f.format("Compare %s to %s%n", bean1.getPartition(), bean2.getPartition());
+      for (GribCollection.VariableIndex var1 : bean1.group.varIndex) {
+        if (bean2.group.findVariableByHash(var1.cdmHash) == null)
+          f.format("Var1 %s missing in partition 2%n", var1.id());
+      }
+      for (GribCollection.VariableIndex var2 : bean2.group.varIndex) {
+        if (bean1.group.findVariableByHash(var2.cdmHash) == null)
+          f.format("Var2 %s missing in partition 1%n", var2.id());
+      }
+    }
+  }
+
+  private class RangeTracker {
+    int min,max;
+
+    RangeTracker(int value) {
+      this.min = value;
+      this.max = value;
+    }
+
+    void add(int value) {
+      min = Math.min(min, value);
+      max = Math.max(max, value);
+    }
+
+    public String toString() {
+      Formatter f = new Formatter();
+      if (min == max) f.format("%3d", min);
+      else f.format("%3d - %3d", min, max);
+      return f.toString();
+    }
+  }
+
+  public class GroupsBean {
+    GribCollection.GroupHcs group;
+    List<GroupBean> beans = new ArrayList<>(50);
+    RangeTracker nvars, nfiles, ntimes, nverts;
+
+    public GroupsBean(GribCollection.GroupHcs g) {
+      this.group = g;
+      nvars = new RangeTracker(g.varIndex.size());
+      nfiles = new RangeTracker(g.filenose.length);
+      ntimes = new RangeTracker(g.timeCoords.size());
+      nverts = new RangeTracker(g.vertCoords.size());
+    }
+
+    public GroupsBean() {
+    }
+
+    public void addGroup(GribCollection.GroupHcs g, String partitionName) {
+      beans.add( new GroupBean(g, partitionName));
+      nvars.add(g.varIndex.size());
+      nfiles.add(g.filenose.length);
+      ntimes.add(g.timeCoords.size());
+      nverts.add(g.vertCoords.size());
+    }
+
+    public int getNPartitions() {
+      return beans.size();
+    }
+
+    public String getGroupId() {
+      return group.getId();
+    }
+
+    public int getGdsHash() {
+      return group.gdsHash;
+    }
+
+    public String getNVars() {
+      return nvars.toString();
+    }
+
+    public String getNFiles() {
+      return nfiles.toString();
+    }
+
+    public String getNTimes() {
+      return ntimes.toString();
+    }
+
+    public String getNVerts() {
+      return nverts.toString();
+    }
+
+  }
+
+
+  public class GroupBean {
+    String partitionName;
+    GribCollection.GroupHcs group;
+
+    public GroupBean(GribCollection.GroupHcs g, String partitionName) {
+      this.group = g;
+      this.partitionName = partitionName;
+    }
+
+    public GroupBean() {
+    }
+
+    public String getGroupId() {
+      return group.getId();
+    }
+
+    public int getGdsHash() {
+      return group.gdsHash;
+    }
+
+    public int getNFiles() {
+      return group.filenose.length;
+    }
+
+    public int getNTimes() {
+      return group.timeCoords.size();
+    }
+
+    public int getNVerts() {
+      return group.vertCoords.size();
+    }
+
+    public int getNVars() {
+      return group.varIndex.size();
+    }
+
+
+    public String getPartition() {
+      return partitionName;
+    }
+
+    void showFilesUsed(Formatter f) {
+      List<MFile> files = group.getFiles();
+      for (MFile file : files) {
+        f.format(" %s%n", file.getName());
+      }
+    }
+
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
+
+  public class VarBean {
+    GribCollection.VariableIndex v;
+    GribCollection.GroupHcs group;
+
+    public VarBean() {
+    }
+
+    public VarBean(GribCollection.VariableIndex v, GribCollection.GroupHcs group) {
+      this.v = v;
+      this.group = group;
+    }
+
+    public int getTimeCoord() {
+      return v.timeIdx;
+    }
+
+    public boolean getTimeIntv() {
+      return (v.getTimeCoord() == null) ? false : v.getTimeCoord().isInterval();
+    }
+
+    public boolean getVertLayer() {
+      return (v.getVertCoord() == null) ? false : v.getVertCoord().isLayer();
+    }
+
+    public int getVertCoord() {
+      return v.vertIdx;
+    }
+
+    public int getEnsCoord() {
+      return v.ensIdx;
+    }
+
+    public int getLevelType() {
+      return v.levelType;
+    }
+
+    public int getIntvType() {
+      return v.intvType;
+    }
+
+    public int getProbType() {
+      return v.probType;
+    }
+
+    public int getEnsType() {
+      return v.ensDerivedType;
+    }
+
+    public int getGenType() {
+      return v.genProcessType;
+    }
+
+    public String getIntvName() {
+      return v.intvName;
+    }
+
+    public String getProbName() {
+      return v.probabilityName;
+    }
+
+    public int getHash() {
+      return v.cdmHash;
+    }
+
+    public String getGroupId() {
+      return group.getId();
+    }
+
+    public String getVariableId() {
+      return v.discipline + "-" + v.category + "-" + v.parameter;
+    }
+  }
+
+  public class FileBean {
+    MFile mfile;
+    int count;
+
+    public FileBean() {
+    }
+
+    public FileBean(MFile mfile, int count) {
+      this.mfile = mfile;
+      this.count = count;
+    }
+
+    public int getCount() {
+      return count;
+    }
+
+    public String getName() {
+      return mfile.getName();
+    }
+
+    public String getLastModified() {
+      return CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified()));
     }
   }
 }

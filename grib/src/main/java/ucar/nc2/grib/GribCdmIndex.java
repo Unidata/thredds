@@ -1,11 +1,17 @@
 package ucar.nc2.grib;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionManager;
+import thredds.inventory.partition.DirectoryPartition;
+import thredds.inventory.partition.DirectoryPartitionBuilder;
+import thredds.inventory.partition.IndexReader;
+import thredds.inventory.partition.PartitionManager;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
-import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
-import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
+import ucar.nc2.grib.grib2.builder.*;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -16,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -24,10 +31,53 @@ import java.util.List;
  * @author caron
  * @since 11/9/13
  */
-public class GribCdmIndex {
+public class GribCdmIndex implements IndexReader {
+  static private final Logger logger = LoggerFactory.getLogger(GribCdmIndex.class);
+
+  // show DirectoryPartition Index for everything under the topDir
+  static public boolean showDirectoryPartitionIndex(String collectionName, File topDir, Formatter out) throws IOException {
+    DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(collectionName, topDir.getPath());
+    builder.constructChildren(CollectionManager.Force.nocheck, new GribCdmIndex());
+    builder.show(out);
+    return true;
+  }
+
+
+  // make DirectoryPartition Index for everything under the topDir
+  static public boolean makeDirectoryPartitionIndex(FeatureCollectionConfig config, File topDir, Formatter out) throws IOException {
+    GribCdmIndex indexWriter = new GribCdmIndex();
+    Path topPath = Paths.get(topDir.getPath());
+    DirectoryPartition dpart = new DirectoryPartition( config, topPath, indexWriter, out, logger);
+
+    Grib2DirectoryPartitionBuilder builder = new Grib2DirectoryPartitionBuilder(dpart.getCollectionName(), topPath, dpart, logger);
+
+    return builder.createPartitionedIndex();
+
+    // first find all the children
+    //DirectoryPartitionBuilder dirPart = new DirectoryPartitionBuilder(collectionName, topDir.getPath());
+    //dirPart.constructChildren(CollectionManager.Force.nocheck, indexWriter);
+
+    // now construct the index
+    //Grib2DirectoryPartitionBuilder builder = new Grib2DirectoryPartitionBuilder();
+    //builder.createIndex(dirPart);
+    //dirPart.show(out);
+  }
+
+  @Override
+  public boolean readChildren(Path indexFile, AddChildCallback callback) throws IOException {
+    RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r");
+    if (openIndex(raf, logger)) {
+      String dirName = gribCollectionIndex.getDirName();
+      for (GribCollectionProto.Partition part : gribCollectionIndex.getPartitionsList()) {
+        callback.addChild(dirName, part.getFilename(), part.getLastModified());
+      }
+      return true;
+    }
+    return false;
+  }
 
   // open GribCollection. caller must close
-  static public GribCollection openCdmIndex(String indexFile, Logger logger) throws IOException {
+  static public GribCollection openCdmIndex(String indexFile, FeatureCollectionConfig.GribConfig config, Logger logger) throws IOException {
     GribCollection gc = null;
     String magic = null;
     RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
@@ -40,13 +90,13 @@ public class GribCdmIndex {
 
       switch (magic) {
         case Grib2CollectionBuilder.MAGIC_START:
-          gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf, null, logger);
+          gc = Grib2CollectionBuilderFromIndex.createFromIndex(indexFile, null, raf, config, logger);
           break;
         case Grib1CollectionBuilder.MAGIC_START:
-          gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf, null, logger);
+          gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf, config, logger);
           break;
         case Grib2TimePartitionBuilder.MAGIC_START:
-          gc = Grib2TimePartitionBuilder.createFromIndex(indexFile, null, raf, logger);
+          gc = Grib2TimePartitionBuilderFromIndex.createFromIndex(indexFile, null, raf, logger);
           break;
         case Grib1TimePartitionBuilder.MAGIC_START:
           gc = Grib1TimePartitionBuilder.createFromIndex(indexFile, null, raf, logger);
@@ -225,6 +275,43 @@ public class GribCdmIndex {
     }
   }
 
+  private boolean openIndex(RandomAccessFile indexRaf, Logger logger) {
+    try {
+      indexRaf.order(RandomAccessFile.BIG_ENDIAN);
+      indexRaf.seek(0);
 
+      //// header message
+      magic = new byte[Grib2CollectionBuilder.MAGIC_START.getBytes().length];   // they are all the same
+      indexRaf.read(magic);
+
+      version = indexRaf.readInt();
+
+      long recordLength = indexRaf.readLong();
+      if (recordLength > Integer.MAX_VALUE) {
+        logger.error("Grib2Collection {}: invalid recordLength size {}", indexRaf.getLocation(), recordLength);
+        return false;
+      }
+      indexRaf.skipBytes(recordLength);
+
+      int size = NcStream.readVInt(indexRaf);
+      if ((size < 0) || (size > 100 * 1000 * 1000)) {
+        logger.warn("Grib2Collection {}: invalid index size {}", indexRaf.getLocation(), size);
+        return false;
+      }
+
+      byte[] m = new byte[size];
+      indexRaf.readFully(m);
+      gribCollectionIndex = GribCollectionProto.GribCollectionIndex.parseFrom(m);
+      return true;
+
+    } catch (Throwable t) {
+      logger.error("Error reading index " + indexRaf.getLocation(), t);
+      return false;
+    }
+  }
+
+  void createIndex(DirectoryPartitionBuilder dirPart) {
+
+  }
 
 }

@@ -36,6 +36,7 @@ import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
+import thredds.inventory.partition.TimePartitionCollection;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
@@ -105,7 +106,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     Formatter errlog = new Formatter();
     if (config.timePartition != null) {
-      this.dcm = TimePartitionCollection.factory(config, errlog, logger);
+      this.dcm = TimePartitionCollection.factory(config, topDirectory, new GribCdmIndex(), errlog, logger);
       this.dcm.setChangeChecker(GribIndex.getChangeChecker());
     } else {
       this.dcm = new MFileCollectionManager(config, errlog, logger);
@@ -234,6 +235,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     } else {
       GribCollection previous = localState.gribCollection;
       localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, logger);
+
       localState.timePartition = null;
       if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
       logger.debug("{}: GribCollection object was recreated", getName());

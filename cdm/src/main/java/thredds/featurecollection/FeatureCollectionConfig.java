@@ -79,7 +79,7 @@ public class FeatureCollectionConfig {
   //////////////////////////////////////////////
 
   public FeatureCollectionType type;
-  public String name, spec, dateFormatMark, olderThan, timePartition;
+  public String name, path, spec, dateFormatMark, olderThan, timePartition;
   public UpdateConfig tdmConfig;
   public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
@@ -92,9 +92,8 @@ public class FeatureCollectionConfig {
   public FeatureCollectionConfig() {
   }
 
-  // <collection spec="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$"
-  //          name="WEST-CONUS_4km" olderThan="1 min" recheckAfter="15 min" />
-  public FeatureCollectionConfig(String name, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String recheckAfter,
+  public FeatureCollectionConfig(String name, String path, FeatureCollectionType fcType, String spec,
+                                 String dateFormatMark, String olderThan, String recheckAfter,
                                  String timePartition, String useIndexOnlyS, Element innerNcml) {
     this.name = name;
     this.type = fcType;

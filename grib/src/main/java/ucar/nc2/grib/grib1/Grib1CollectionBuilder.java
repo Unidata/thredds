@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib1;
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionManagerRO;
 import thredds.inventory.CollectionManagerSingleFile;
 import thredds.inventory.MFile;
 import ucar.nc2.constants.CDM;
@@ -79,7 +80,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
   // from a collection, read in the index, create if it doesnt exist or is out of date
   // assume that the CollectionManager is up to date, eg doesnt need to be scanned
-  static public GribCollection factory(CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection factory(CollectionManagerRO dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm, logger);
     builder.readOrCreateIndex(force);
     return builder.gc;
@@ -122,7 +123,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
-  private Grib1CollectionBuilder(CollectionManager dcm, org.slf4j.Logger logger) {
+  private Grib1CollectionBuilder(CollectionManagerRO dcm, org.slf4j.Logger logger) {
     super(dcm, false, logger);
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), config);
@@ -198,7 +199,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       }
 
       gc.version = raf.readInt();
-      boolean versionOk = isSingleFile ? gc.version >= minVersionSingle : gc.version == version;
+      boolean versionOk = isSingleFile ? gc.version >= minVersionSingle : gc.version >= version;
       if (!versionOk) {
         logger.warn("Grib1Collection {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, version, raf.getLocation());
         return false;
@@ -249,7 +250,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
             for (int i = 0; i < n; i++)
               files.add(new GribCollectionBuilder.GcMFile(dir, proto.getFiles(i), -1));
             gc.setFiles(files);
-            if (dcm != null) dcm.setFiles(files);
+            // if (dcm != null) dcm.setFiles(files);  // LOOK !!
           }
 
         } else {
@@ -262,7 +263,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
             for (int i = 0; i < n; i++)
               files.add(new GribCollectionBuilder.GcMFile(dir, proto.getMfiles(i)));
             gc.setFiles(files);
-            if (dcm != null) dcm.setFiles(files);
+            // if (dcm != null) dcm.setFiles(files);  // LOOK !!
           }
         }
       }

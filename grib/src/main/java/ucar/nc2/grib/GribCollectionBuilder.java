@@ -1,11 +1,9 @@
 package ucar.nc2.grib;
 
 import thredds.inventory.*;
-import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,12 +16,11 @@ import java.util.List;
  */
 public class GribCollectionBuilder {
 
-  // private final List<CollectionManager> collections = new ArrayList<CollectionManager>(); // are there every more than one ?
-  protected final CollectionManager dcm; // may be null, when read in from index
+  protected final CollectionManagerRO dcm; // may be null, when read in from index
   protected final boolean isSingleFile;
   protected final org.slf4j.Logger logger;
 
-  protected GribCollectionBuilder(CollectionManager dcm, boolean isSingleFile, org.slf4j.Logger logger) {
+  protected GribCollectionBuilder(CollectionManagerRO dcm, boolean isSingleFile, org.slf4j.Logger logger) {
     // assert dcm != null;
     this.dcm = dcm;
     this.isSingleFile = isSingleFile;

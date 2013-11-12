@@ -34,7 +34,6 @@
 package thredds.catalog.parser.jdom;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.featurecollection.FeatureCollectionType;
 import thredds.util.PathAliasReplacement;
 import thredds.catalog.*;
 import thredds.crawlabledataset.*;
@@ -335,99 +334,14 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   protected InvDatasetImpl readFeatureCollection( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
-    String name = dsElem.getAttributeValue("name");
-    String path = dsElem.getAttributeValue("path");
-    String fcTypeS = dsElem.getAttributeValue("featureType");
 
-    FeatureCollectionType fcType = FeatureCollectionType.valueOf(fcTypeS);
-    if (fcType == null) {
-      logger.error( "featureCollection "+name+" must have a valid FeatureCollectionType attribute, found '"+fcTypeS+"'");
-      return null;
-    }
-
-    // collection element required
-    Element collElem = dsElem.getChild( "collection", defNS );
-    if (collElem == null) {
-      logger.error( "featureCollection "+name+" must have a <collection> element." );
-      return null;
-    }
-    String specName = collElem.getAttributeValue("name");
-    if (specName == null) specName = name; // If missing, the Feature Collection name is used.
-    // String spec = collElem.getAttributeValue("spec");
-    String spec = expandAliasForCollectionSpec(collElem.getAttributeValue("spec")); // LOOK
-    String timePartition = collElem.getAttributeValue("timePartition");
-    String dateFormatMark = collElem.getAttributeValue("dateFormatMark");
-    String olderThan = collElem.getAttributeValue("olderThan");
-    String useIndexOnly = collElem.getAttributeValue("useIndexOnly");
-    String recheckAfter = collElem.getAttributeValue("recheckAfter");
-    if (recheckAfter == null)
-       recheckAfter = collElem.getAttributeValue("recheckEvery"); // old name
-    if (spec == null) {
-      logger.error( "featureCollection "+name+" must have a spec attribute." );
-      return null;
-    }
-    String collName = (specName != null) ? specName : name;
-    Element innerNcml = dsElem.getChild( "netcdf", ncmlNS );
-    FeatureCollectionConfig config = new FeatureCollectionConfig(collName, fcType, spec, dateFormatMark, olderThan, recheckAfter,
-            timePartition, useIndexOnly, innerNcml);
-
-    Element tdmElem = dsElem.getChild( "tdm", defNS );
-    if (tdmElem != null)
-      config.tdmConfig = readUpdateElement( tdmElem);
-    Element updateElem = dsElem.getChild( "update", defNS );
-    if (updateElem != null)
-      config.updateConfig = readUpdateElement( updateElem);
-
-    // protoDataset element optional
-    Element protoElem = dsElem.getChild( "protoDataset", defNS );
-    if (protoElem != null) {
-      String choice = protoElem.getAttributeValue("choice");
-      String change = protoElem.getAttributeValue("change");
-      String param = protoElem.getAttributeValue("param");
-      Element ncmlElem = protoElem.getChild( "netcdf", ncmlNS );
-      config.protoConfig = new FeatureCollectionConfig.ProtoConfig(choice, change, param, ncmlElem);
-    }
-
-    // fmrcConfig element optional
-    Element fmrcElem = dsElem.getChild( "fmrcConfig", defNS );
-    if (fmrcElem != null) {
-      String regularize = fmrcElem.getAttributeValue("regularize");
-      config.fmrcConfig = new FeatureCollectionConfig.FmrcConfig(regularize);
-
-      String datasetTypes = fmrcElem.getAttributeValue("datasetTypes");
-      if (null != datasetTypes)
-        config.fmrcConfig.addDatasetType(datasetTypes);
-
-      List<Element> bestElems = fmrcElem.getChildren( "dataset", defNS );
-      for (Element best : bestElems) {
-        String bestName = best.getAttributeValue("name");
-        String offs = best.getAttributeValue("offsetsGreaterEqual");
-        double off = Double.parseDouble(offs);
-        config.fmrcConfig.addBestDataset(bestName, off);
-      }
-    }
-
-    // pointConfig element optional
-    Element pointElem = dsElem.getChild( "pointConfig", defNS );
-    if (pointElem != null) {
-      String datasetTypes = pointElem.getAttributeValue("datasetTypes");
-      if (null != datasetTypes)
-        config.pointConfig.addDatasetType(datasetTypes);
-    }
-
-    // gribConfig element optional
-    Element gribConfig = dsElem.getChild( "gribConfig", defNS );
-    if (gribConfig != null) {
-      config.gribConfig.configFromXml(gribConfig, defNS);
-    }
-
-    // dome reading - do anything needed
-    config.finish();
+    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(dsElem);
+    config.spec = expandAliasForCollectionSpec(config.spec);
 
     try {
-      InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory( parent, name, path, fcType, config);
+      InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory( parent, config.name, config.path, config.type, config);
       if (ds == null) {
-        logger.error( "featureCollection "+name+" has fatal error ");
+        logger.error( "featureCollection "+config.name+" has fatal error ");
         return null;
       }
       // regular dataset elements
@@ -435,7 +349,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return ds;
 
     } catch (Exception e) {
-      logger.error( "featureCollection "+name+" has fatal error, skipping ", e);
+      logger.error( "featureCollection "+config.name+" has fatal error, skipping ", e);
       return null;
     }
 

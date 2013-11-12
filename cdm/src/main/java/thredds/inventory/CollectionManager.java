@@ -79,11 +79,12 @@ The XML Schema:
  * @author caron
  * @since Jan 19, 2010
  */
-public interface CollectionManager {
+public interface CollectionManager extends CollectionManagerRO {
 
-  public enum Force {always, // force new index
-                     test,   // test if new index is needed
-                     nocheck } // if index exists, use it
+  public enum Force {always,  // force new index
+                     test,    // test if new index is needed
+                     nocheck, // if index exists, use it
+                     never }  // only use existing
 
   /**
    * The name of the collection

@@ -47,6 +47,7 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 
+import thredds.inventory.partition.TimePartitionCollection;
 import thredds.util.LoggerFactorySpecial;
 import thredds.util.PathAliasReplacement;
 import thredds.util.PathAliasReplacementImpl;

@@ -159,12 +159,12 @@ public class StringUtil2 {
     return sb.toString();
   }
 
-  /**
+  /*
    * Remove all but printable 7bit ascii
    *
    * @param s filter this string
    * @return filtered string.
-   */
+   *
   static public String filter7bits(String s) {
     byte[] b = s.getBytes(CDM.utf8Charset);
     byte[] bo = new byte[b.length];
@@ -176,7 +176,27 @@ public class StringUtil2 {
     }
 
     return new String(bo, 0, count);
-  }
+  } */
+
+  /**
+    * Remove all but printable ascii
+    *
+    * @param s filter this string
+    * @return filtered string.
+    */
+   static public String filter7bits(String s) {
+     if (s == null) return null;
+     char[] bo = new char[s.length()];
+     int count = 0;
+     for (int i = 0; i < s.length(); i++) {
+       char c = s.charAt(i);
+       if ((c < 128) && (c > 31) || ((c == '\n') || (c == '\t'))) {
+         bo[count++] = c;
+       }
+     }
+
+     return new String(bo, 0, count);
+   }
 
   // remove leading and trailing blanks
   // remove control characters (< 0x20)

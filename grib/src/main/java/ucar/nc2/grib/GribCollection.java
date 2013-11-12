@@ -35,10 +35,12 @@ package ucar.nc2.grib;
 import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionManagerRO;
 import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
-import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilderFromIndex;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -96,7 +98,7 @@ public abstract class GribCollection implements FileCacheable {
     return getDiskCache2().getFile(path);
   }
 
-  static public File getIndexFile(CollectionManager dcm) {
+  static public File getIndexFile(CollectionManagerRO dcm) {
     File idxFile = new File(new File(dcm.getRoot()), dcm.getCollectionName() + NCX_IDX);
     return getIndexFile( idxFile.getPath());
   }
@@ -177,14 +179,22 @@ public abstract class GribCollection implements FileCacheable {
    * @return GribCollection
    * @throws IOException on io error
    */
-  static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
-    if (isGrib1) return Grib1CollectionBuilder.factory(dcm, force, logger);
-    return Grib2CollectionBuilder.factory(dcm, force, logger);
+  static public GribCollection factory(boolean isGrib1, CollectionManagerRO dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+    if (isGrib1) {
+      return Grib1CollectionBuilder.factory(dcm, force, logger);
+    }
+
+    if (force == CollectionManager.Force.never) {
+      FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+      return Grib2CollectionBuilderFromIndex.createFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
+    } else {
+      return Grib2CollectionBuilder.factory(dcm, force, logger);
+    }
   }
 
   static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     if (isGrib1) return Grib1CollectionBuilder.createFromIndex(name, directory, raf, config, logger);
-    return Grib2CollectionBuilder.createFromIndex(name, directory, raf, config, logger);
+    return Grib2CollectionBuilderFromIndex.createFromIndex(name, directory, raf, config, logger);
   }
 
   static public boolean update(boolean isGrib1, CollectionManager dcm, org.slf4j.Logger logger) throws IOException {
@@ -274,6 +284,12 @@ public abstract class GribCollection implements FileCacheable {
       indexFile = getDiskCache2().getFile(f.getPath()); // diskCcahe manages where the index file lives
     }
     return indexFile;
+  }
+
+  static public File getIndexFile(String name, File directory) {
+    String nameNoBlanks = StringUtil2.replace(name, ' ', "_");
+    File f = new File(directory, nameNoBlanks + NCX_IDX);
+    return getDiskCache2().getFile(f.getPath()); // diskCcahe manages where the index file lives
   }
 
   public File makeNewIndexFile(org.slf4j.Logger logger) {
