@@ -198,7 +198,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       }
 
       gc.version = raf.readInt();
-      boolean versionOk = isSingleFile ? gc.version >= minVersionSingle : gc.version == version;
+      boolean versionOk = isSingleFile ? gc.version >= minVersionSingle : gc.version >= version;
       if (!versionOk) {
         logger.warn("Grib1Collection {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, version, raf.getLocation());
         return false;
