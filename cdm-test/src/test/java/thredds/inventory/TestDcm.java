@@ -69,7 +69,7 @@ public class TestDcm {
     }
   }
 
-  @Test
+  //@Test
   public void testScanOlderThan() throws IOException, InterruptedException {
     Formatter f = new Formatter(System.out);
     MFileCollectionManager dcm = MFileCollectionManager.open(TestDir.cdmUnitTestDir + "agg/updating/.*nc$", null, f);
@@ -89,7 +89,7 @@ public class TestDcm {
     }
   }
 
-  @Test
+  //@Test
   public void testScanFromConfig() throws IOException {
     //public FeatureCollectionConfig(String name, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String recheckAfter,
     //                               String timePartition, String useIndexOnlyS, Element innerNcml) {
