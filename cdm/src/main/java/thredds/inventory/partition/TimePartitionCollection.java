@@ -56,11 +56,12 @@ public class TimePartitionCollection extends MFileCollectionManager implements P
 
   static public PartitionManager factory(FeatureCollectionConfig config, String topDir, IndexReader indexReader, Formatter errlog, org.slf4j.Logger logger) {
     if (config.timePartition == null)
-      throw new IllegalArgumentException("Must specify time partition spec = "+ config.spec);
+      throw new IllegalArgumentException("Must specify time partition in config = " + config.name);
 
     if (config.timePartition.equalsIgnoreCase("directory")) {
       Path topPath = Paths.get(topDir);
-      return new DirectoryPartition(config, topPath, indexReader, errlog, logger);
+      return new DirectoryPartitionCollection(config, topPath, indexReader, errlog, logger);
+
     } else {
       return new TimePartitionCollection(config, errlog, logger);
     }

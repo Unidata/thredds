@@ -6,7 +6,7 @@ import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.MFile;
-import thredds.inventory.partition.DirectoryPartitionBuilder;
+import thredds.inventory.partition.DirectoryPartition;
 import ucar.nc2.grib.*;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.widget.*;
@@ -278,14 +278,14 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private class NodeInfo {
     Path dir;
-    DirectoryPartitionBuilder part;
+    DirectoryPartition part;
     boolean hasIndex;
 
     NodeInfo(Path dir) {
       this.dir = dir;
 
       try {
-        part = new DirectoryPartitionBuilder(collectionName, dir, null);
+        part = new DirectoryPartition(collectionName, dir, null);
         hasIndex = part.getIndex() != null;
 
       } catch (IOException e) {
@@ -293,7 +293,7 @@ public class DirectoryPartitionViewer extends JPanel {
       }
     }
 
-    NodeInfo(DirectoryPartitionBuilder part) {
+    NodeInfo(DirectoryPartition part) {
       this.part = part;
       this.dir = part.getDir();
       this.hasIndex = part.getIndex() != null;
@@ -302,7 +302,7 @@ public class DirectoryPartitionViewer extends JPanel {
     List<NodeInfo> getChildren() {
       List<NodeInfo> result = new ArrayList<>(100);
       try {
-        for (DirectoryPartitionBuilder child : part.constructChildren(new GribCdmIndex())) {
+        for (DirectoryPartition child : part.constructChildren(new GribCdmIndex())) {
           result.add(new NodeInfo(child));
         }
 

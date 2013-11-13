@@ -3,11 +3,9 @@ package ucar.nc2.grib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
 import thredds.inventory.partition.DirectoryPartition;
-import thredds.inventory.partition.DirectoryPartitionBuilder;
+import thredds.inventory.partition.DirectoryPartitionCollection;
 import thredds.inventory.partition.IndexReader;
-import thredds.inventory.partition.PartitionManager;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
@@ -36,7 +34,7 @@ public class GribCdmIndex implements IndexReader {
 
   // show DirectoryPartition Index for everything under the topDir
   static public boolean showDirectoryPartitionIndex(String collectionName, File topDir, Formatter out) throws IOException {
-    DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(collectionName, topDir.getPath());
+    DirectoryPartition builder = new DirectoryPartition(collectionName, topDir.getPath());
     builder.constructChildren(new GribCdmIndex());
     builder.show(out);
     return true;
@@ -47,7 +45,7 @@ public class GribCdmIndex implements IndexReader {
   static public boolean makeDirectoryPartitionIndex(FeatureCollectionConfig config, File topDir, Formatter out) throws IOException {
     GribCdmIndex indexWriter = new GribCdmIndex();
     Path topPath = Paths.get(topDir.getPath());
-    DirectoryPartition dpart = new DirectoryPartition( config, topPath, indexWriter, out, logger);
+    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, topPath, indexWriter, out, logger);
 
     Grib2DirectoryPartitionBuilder builder = new Grib2DirectoryPartitionBuilder(dpart.getCollectionName(), topPath, dpart, logger);
 
