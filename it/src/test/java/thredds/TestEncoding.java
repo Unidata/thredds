@@ -88,8 +88,10 @@ public class TestEncoding {
 
       assert (statusCode == 200) : statusCode;
       byte[] content = method.getResponseAsBytes();
-      ByteArrayInputStream bin = new ByteArrayInputStream(content);
+      assert content.length > 1000;
+      //System.out.printf("%s%n", new String(content, "UTF-8"));
 
+      ByteArrayInputStream bin = new ByteArrayInputStream(content);
       try {
         SAXBuilder builder = new SAXBuilder();
         org.jdom2.Document tdoc = builder.build(bin);
