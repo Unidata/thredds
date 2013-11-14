@@ -34,6 +34,7 @@ package thredds.inventory;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 // import thredds.inventory.bdb.MetadataManager;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.ListenerManager;
 import ucar.unidata.util.StringUtil2;
@@ -50,10 +51,25 @@ import java.util.*;
 public abstract class CollectionManagerAbstract implements CollectionManager {
   static private org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
+  static public final String CATALOG = "catalog:";
+  static public final String LIST = "list:";
+
+    // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
+  static public CollectionManager open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
+    if (collectionSpec.startsWith(CATALOG))
+      return new CatalogCollectionManager(collectionName, collectionSpec, olderThan, errlog);
+    else if (collectionSpec.startsWith(LIST))
+      return new ListCollectionManager(collectionName, collectionSpec, olderThan, errlog);
+    else
+      return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
+  }
+
   static public String cleanName(String name) {
     if (name == null) return null;
     return StringUtil2.replace(name.trim(), ' ', "_");  // LOOK must be ok in URL - probably not sufficient here
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   protected String collectionName;
   protected final org.slf4j.Logger logger;
@@ -64,6 +80,10 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   protected Map<String, Object> auxInfo; // lazy init
   private ListenerManager lm; // lazy init
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
+
+  // these actually dont change, but are not set in the constructor
+  protected DateExtractor dateExtractor;
+  protected CalendarDate startCollection;
 
   protected CollectionManagerAbstract( String collectionName, org.slf4j.Logger logger) {
     this.collectionName =  cleanName(collectionName);
@@ -91,15 +111,18 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   }
 
   @Override
-  public long getOlderThanFilterInMSecs() {
-    return -1;
-  }
-
-  @Override
   public void close() {
     if (store != null) store.close();
   }
 
+
+  @Override
+  public boolean scanIfNeeded() throws IOException {
+    // if (map == null && !isStatic()) return true;
+    return isScanNeeded() && scan(false);
+  }
+
+  @Override
   public List<String> getFilenames() {
     List<String> result = new ArrayList<String>();
     for (MFile f: getFiles())
@@ -107,11 +130,27 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
     return result;
   }
 
+  @Override
   public MFile getLatestFile() {
     MFile result = null;
     for (MFile f: getFiles()) // only have an Iterable
       result = f;
     return result;
+  }
+
+  @Override
+  public CalendarDate extractRunDate(MFile mfile) {
+    return (dateExtractor == null) ? null : dateExtractor.getCalendarDate(mfile);
+  }
+
+  @Override
+  public boolean hasDateExtractor() {
+    return (dateExtractor != null);
+  }
+
+  @Override
+  public CalendarDate getStartCollection() {
+    return startCollection;
   }
 
   ////////////////////////
@@ -133,7 +172,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
 
   @Override
   public void putAuxInfo(String key, Object value) {
-    if (auxInfo == null) auxInfo = new HashMap<String, Object>();
+    if (auxInfo == null) auxInfo = new HashMap<>();
     auxInfo.put(key, value);
   }
 

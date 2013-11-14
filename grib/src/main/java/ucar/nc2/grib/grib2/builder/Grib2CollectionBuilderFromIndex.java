@@ -1,5 +1,7 @@
 package ucar.nc2.grib.grib2.builder;
 
+import org.jdom2.input.SAXBuilder;
+import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManagerRO;
 import thredds.inventory.MFile;
@@ -66,6 +68,9 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   }
 
   protected boolean readIndex(RandomAccessFile raf) {
+    System.out.printf("Grib2CollectionBuilderFromIndex readIndex %s%n", raf.getLocation());
+    long start = System.currentTimeMillis();
+
     gc.setIndexRaf(raf); // LOOK leaving the raf open in the GribCollection
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -163,6 +168,9 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
         return false;
       }
 
+          // do it
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("  that took %s msecs%n", took);
       return true;
 
     } catch (Throwable t) {
@@ -170,6 +178,8 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       t.printStackTrace();
       return false;
     }
+
+
   }
 
   protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto, String dirname) {
@@ -180,7 +190,9 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     // NOOP
   }
 
+  int groupno = 0;
   GribCollection.GroupHcs readGroup(GribCollectionProto.Group p, GribCollection.GroupHcs group) throws IOException {
+    System.out.printf("Grib2CollectionBuilderFromIndex readGroup %d%n", groupno++);
 
     byte[] rawGds = p.getGds().toByteArray();
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
@@ -289,6 +301,32 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
     return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
             ensDerivedType, probType, probabilityName, genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+  }
+
+  public static void main(String[] args) throws IOException {
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilderFromIndex.class);
+
+    File cat = new File ("B:/ndfd/catalog.xml");
+    org.jdom2.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(cat);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
+    for (int i=0; i<31; i++) {
+      Formatter f= new Formatter();
+      File dir = new File ("B:/ndfd/200906/2009060");
+      FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
+      RandomAccessFile raf = new RandomAccessFile("B:\\ndfd\\200906\\20090601\\ncdc1Year-20090601.ncx", "r");
+
+      long start = System.currentTimeMillis();
+      Grib2CollectionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("that took %s msecs%n", took);
+    }
   }
 
 }

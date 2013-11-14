@@ -60,8 +60,6 @@ import thredds.inventory.filter.*;
  */
 @ThreadSafe
 public class MFileCollectionManager extends CollectionManagerAbstract {
-  static public final String CATALOG = "catalog:";
-
   static private MController controller;
 
   /**
@@ -79,11 +77,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public MFileCollectionManager open(String collectionName, String olderThan, Formatter errlog) throws IOException {
-    if (collectionName.startsWith(CATALOG))
-      return new CatalogCollectionManager(collectionName);
-    else
-      return new MFileCollectionManager(collectionName, olderThan, errlog);
+  static public MFileCollectionManager open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
+    return new MFileCollectionManager(collectionName, collectionSpec, olderThan, errlog);
   }
 
   // retrofit to Aggregation
@@ -92,10 +87,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   ////////////////////////////////////////////////////////////////////
-
-  // these actually dont change, but are not set in the constructor
-  protected DateExtractor dateExtractor;
-  protected CalendarDate startPartition;
 
   // these are final
   private final List<MCollection> scanList = new ArrayList<MCollection>(); // an MCollection is a collection of managed files
@@ -109,8 +100,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
 
   // simplified version called from DatasetCollectionManager.open()
-  private MFileCollectionManager(String collectionSpec, String olderThan, Formatter errlog) {
-    super(collectionSpec, null);
+  private MFileCollectionManager(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
+    super(collectionName, null);
     CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
     this.recheck = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
@@ -212,18 +203,13 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   public MFileCollectionManager(String name, MCollection mc, CalendarDate startPartition, org.slf4j.Logger logger) {
     super(name, logger);
-    this.startPartition = startPartition;
+    this.startCollection = startPartition;
     this.scanList.add(mc);
 
     this.rootDir = mc.getDirectoryName();
     this.recheck = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.olderThanInMsecs = -1;
-  }
-
-  @Override
-  public CalendarDate getStartCollection() {
-    return startPartition;
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -303,7 +289,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     return rootDir;
   }
 
-  @Override
   public long getOlderThanFilterInMSecs() {
     return olderThanInMsecs;
   }
@@ -316,12 +301,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   @Override
   public long getLastChanged() {
     return lastChanged.get();
-  }
-
-  @Override
-  public boolean scanIfNeeded() throws IOException {
-    // if (map == null && !isStatic()) return true;
-    return isScanNeeded() && scan(false);
   }
 
   protected boolean hasScans() {
@@ -469,7 +448,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     return changed;
   }
 
-  @Override
   public void setFiles(Iterable<MFile> files) {
     Map<String, MFile> newMap = new HashMap<String, MFile>();
     for (MFile file : files)
@@ -506,11 +484,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     public int compare(MFile m1, MFile m2) {
       return extractRunDateWithError(m1).compareTo(extractRunDateWithError(m2));
     }
-  }
-
-  @Override
-  public CalendarDate extractRunDate(MFile mfile) {
-    return (dateExtractor == null) ? null : dateExtractor.getCalendarDate(mfile);
   }
 
   private CalendarDate extractRunDateWithError(MFile mfile) {

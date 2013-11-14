@@ -77,34 +77,35 @@ public class GribCdmIndexPanel extends JPanel {
   public GribCdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-    infoButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        Formatter f = new Formatter();
-        f.format("magic=%s%n", magic);
-        gc.showIndex(f);
-        infoTA.setText(f.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
-      }
-    });
-    buttPanel.add(infoButton);
+    if (buttPanel != null) {
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          showInfo(f);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
 
 
-    AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
-    filesButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        /* Formatter f = new Formatter();
-        showFiles(f);
-        infoTA.setText(f.toString());
-        infoTA.gotoTop();
-        infoWindow.show(); */
+      AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
+      filesButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          /* Formatter f = new Formatter();
+          showFiles(f);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show(); */
 
-        if (gc != null)
-          showFiles(gc.getFiles());
-      }
-    });
-    buttPanel.add(filesButton);
+          if (gc != null)
+            showFiles(gc.getFiles());
+        }
+      });
+      buttPanel.add(filesButton);
+    }
 
     ////////////////////////////
 
@@ -244,6 +245,12 @@ public class GribCdmIndexPanel extends JPanel {
   public void closeOpenFiles() throws IOException {
     if (gc != null) gc.close();
     gc = null;
+  }
+
+  public void showInfo(Formatter f) {
+    if (gc == null) return;
+    f.format("magic=%s%n", magic);
+    gc.showIndex(f);
   }
 
   private void compareFiles(Formatter f) throws IOException {

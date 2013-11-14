@@ -38,8 +38,10 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.ft.fmrc.Fmrc;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Date;
+import java.util.List;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
@@ -51,69 +53,76 @@ import thredds.catalog.crawl.CatalogCrawler;
  * @since Jan 14, 2010
  */
 @ThreadSafe
-public class CatalogCollectionManager extends MFileCollectionManager implements CatalogCrawler.Listener {
+public class CatalogCollectionManager extends CollectionManagerAbstract implements CatalogCrawler.Listener {
   private final String catalogUrl;
+  private long lastScanned;
   private boolean debug = false;
+  private List<MFile> mfiles;
 
-  public CatalogCollectionManager(String collection) {
-    super(collection, null);
+  public CatalogCollectionManager(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
+    super(collectionName, null);
 
-    if (collection.startsWith(MFileCollectionManager.CATALOG))
-      collection = collection.substring(MFileCollectionManager.CATALOG.length());
+    if (collectionSpec.startsWith(MFileCollectionManager.CATALOG))
+      collectionSpec = collectionSpec.substring(MFileCollectionManager.CATALOG.length());
 
-    int pos = collection.indexOf('?');
+    int pos = collectionSpec.indexOf('?');
     if (pos > 0) {
-      this.dateExtractor = new DateExtractorFromName(collection.substring(pos+1), true);
-      collection = collection.substring(0,pos);
+      this.dateExtractor = new DateExtractorFromName(collectionSpec.substring(pos+1), true);  // WTF ?
+      collectionSpec = collectionSpec.substring(0,pos);
     }
 
-    this.catalogUrl = collection;
+    this.catalogUrl = collectionSpec;
   }
 
   @Override
-  protected boolean hasScans() {
-    return true;
+  public String getRoot() {
+    return null;
   }
 
   @Override
-  protected void reallyScan(java.util.Map<String, MFile> map) throws IOException {
+  public long getLastScanned() {
+    return lastScanned;
+  }
+
+  @Override
+  public long getLastChanged() {
+    return 0;
+  }
+
+  @Override
+  public boolean isScanNeeded() {
+    return (mfiles == null); // LOOK
+  }
+
+  @Override
+  public boolean scan(boolean sendEvent) throws IOException {
+   mfiles = new ArrayList<>(100);
+
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     InvCatalogImpl cat = catFactory.readXML(catalogUrl);
     StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
     if (!isValid) {
       logger.warn("Catalog invalid= "+catalogUrl+" validation output= "+ buff);
-      return;
+      return false;
     }
 
     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, this);
     long start = System.currentTimeMillis();
     try {
-      crawler.crawl(cat, null, null, map);
+      crawler.crawl(cat, null, null, null);
     } finally {
       long took = (System.currentTimeMillis() - start);
       if (debug) System.out.format("***Done " + catalogUrl + " took = " + took + " msecs\n");
     }
-  }
 
-  @Override
-  public void getDataset(InvDataset ds, Object context) {
-
-    if (ds.hasAccess()) {
-      ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
-      InvAccess access = tdataFactory.chooseDatasetAccess(ds.getAccess());
-      MFileRemote mfile = new MFileRemote(access);
-      if (mfile.getPath().endsWith(".xml")) return; // eliminate latest.xml  LOOK kludge-o-rama
-      java.util.Map<String, MFile> map = (java.util.Map<String, MFile>) context;
-      map.put(mfile.getPath(), mfile);
-      if (debug) System.out.format("add %s %n", mfile.getPath());
-    }
-
-  }
-
-  @Override
-  public boolean getCatalogRef(InvCatalogRef dd, Object context) {
+    lastScanned = System.currentTimeMillis();
     return true;
+  }
+
+  @Override
+  public Iterable<MFile> getFiles() {
+    return mfiles == null ? new ArrayList<MFile>() : mfiles;
   }
 
   private class MFileRemote implements MFile {
@@ -170,12 +179,36 @@ public class CatalogCollectionManager extends MFileCollectionManager implements 
     }
   }
 
+  ///////////////////////////////
+  // CatalogCrawler.Listener
+
+  @Override
+  public void getDataset(InvDataset ds, Object context) {
+
+    if (ds.hasAccess()) {
+      ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
+      InvAccess access = tdataFactory.chooseDatasetAccess(ds.getAccess());
+      MFileRemote mfile = new MFileRemote(access);
+      if (mfile.getPath().endsWith(".xml")) return; // eliminate latest.xml  LOOK kludge-o-rama
+      mfiles.add(mfile);
+      if (debug) System.out.format("add %s %n", mfile.getPath());
+    }
+
+  }
+
+
+  @Override
+  public boolean getCatalogRef(InvCatalogRef dd, Object context) {
+    return true;
+  }
+
+
   public static void main(String arg[]) throws IOException {
+    Formatter errlog = new Formatter();
     String catUrl = "http://thredds.ucar.edu/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml";
-    CatalogCollectionManager man = new CatalogCollectionManager(catUrl);
+    CatalogCollectionManager man = new CatalogCollectionManager("test", catUrl, null, errlog);
     man.debug = true;
     man.scan(true);
-    Formatter errlog = new Formatter();
     Fmrc fmrc = Fmrc.open(MFileCollectionManager.CATALOG+catUrl, errlog);
     System.out.printf("errlog = %s %n", errlog);
   }

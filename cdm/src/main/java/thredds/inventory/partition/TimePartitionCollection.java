@@ -98,7 +98,7 @@ public class TimePartitionCollection extends MFileCollectionManager implements P
         CalendarDate start = dmf.cdate.truncate(period.getField()); // start on a boundary
         CalendarDate end = start.add( period);
         String name = collectionName + "-"+ cdf.toString(dmf.cdate);   // LOOK
-        if (startPartition == null) startPartition = start; // grab the first one
+        if (startCollection == null) startCollection = start; // grab the first one
 
         curr = new TimePartitionCollectionManager(name, start, end, getRoot());
         result.add(curr);

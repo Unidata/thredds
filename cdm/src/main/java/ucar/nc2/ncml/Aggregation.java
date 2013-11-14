@@ -229,7 +229,7 @@ public abstract class Aggregation {
 
   // experimental
   public void addCollection(String spec, String olderThan) throws IOException {
-    datasetManager = MFileCollectionManager.open(spec, olderThan, null);
+    datasetManager = MFileCollectionManager.open(spec, spec, olderThan, null); // LOOK no name
  }
 
   public void setModifications(Element ncmlMods) {

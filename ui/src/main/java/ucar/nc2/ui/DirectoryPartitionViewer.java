@@ -4,10 +4,14 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionManagerRO;
 import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.DirectoryPartition;
+import thredds.inventory.partition.DirectoryPartitionCollection;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -26,6 +30,7 @@ import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -60,12 +65,23 @@ public class DirectoryPartitionViewer extends JPanel {
   private TextHistoryPane infoTA;
   private StructureTable dataTable;
   private IndependentWindow infoWindow, dataWindow, dumpWindow;
+  private List<String> gribCollectionFiles = new ArrayList<>();
 
   public DirectoryPartitionViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
     partitionTreeBrowser = new PartitionTreeBrowser();
-    cdmIndexTables = new GribCdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
-    partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"), buttPanel);
+    cdmIndexTables = new GribCdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), null);
+    partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
+
+    if (buttPanel != null) {
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          showInfo();
+        }
+      });
+      buttPanel.add(infoButton);
+    }
 
     setLayout(new BorderLayout());
 
@@ -114,6 +130,21 @@ public class DirectoryPartitionViewer extends JPanel {
     repaint();
   }
 
+  public void showInfo() {
+    Formatter f = new Formatter();
+    if (current == partitionsTable) {
+      partitionsTable.showGroupDiffs(f);
+    } else if (current == cdmIndexTables) {
+      cdmIndexTables.showInfo(f);
+    } else {
+      return;
+    }
+
+    infoTA.setText(f.toString());
+    infoTA.gotoTop();
+    infoWindow.show();
+  }
+
 
   ////////////////////////////////////////////////
 
@@ -143,6 +174,17 @@ public class DirectoryPartitionViewer extends JPanel {
     config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
     CollectionSpecParser spec = new CollectionSpecParser(config.spec, errlog);
     partitionTreeBrowser.setRoot(Paths.get(spec.getRootDir()));
+  }
+
+  // LOOK - shouldnt this be done in the swing dispatch or something ??
+  private void cmdSendGribCollection() {
+    if (gribCollectionFiles.size() == 0) return;
+    Formatter f = new Formatter();
+    f.format("list:");
+    for (String s : gribCollectionFiles) {
+      f.format("%s;", s);
+    }
+    DirectoryPartitionViewer.this.firePropertyChange("openGrib2Collection", null, f.toString());
   }
 
   private void moveCdmIndexFile(NodeInfo indexFile) throws IOException {
@@ -181,31 +223,6 @@ public class DirectoryPartitionViewer extends JPanel {
     infoWindow.show();
   } */
 
-  private void cmdShowIndex(NodeInfo node) throws IOException {
-
-    /* String indexFilename;
-
-    if (topDir.isDirectory()) {
-      DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(collectionName, topDir.getPath());
-      Path indexPath = builder.getIndex();
-      if (indexPath == null) {
-        JOptionPane.showMessageDialog(this, "No index found in " + topDir);
-        return;
-      }
-      fileBrowser.setFileDetails(indexPath.toFile());
-      indexFilename = indexPath.toString();
-
-    } else {
-      indexFilename = topDir.getPath();
-    } */
-
-    if (!node.hasIndex) return;
-
-    // this opens the index file and constructs a GribCollection
-    cdmIndexTables.setIndexFile(node.part.getIndex());
-    swap(cdmIndexTables);
-  }
-
  /*  private void showChildrenIndex(NodeInfo topDir) {
     if (!topDir.isDirectory()) {
       JOptionPane.showMessageDialog(this, topDir.getPath() + " not a directory: ");
@@ -223,39 +240,67 @@ public class DirectoryPartitionViewer extends JPanel {
     } catch (Throwable t) {
       JOptionPane.showMessageDialog(this, topDir.getPath() + " showChildrenIndex failed: " + t.getMessage());
     }
+  } */
+
+
+  private void cmdShowPartitions(final NodeInfo node) {
+    // long running task in background thread
+    Thread background = new Thread() {
+       public void run() {
+
+         Formatter out = new Formatter();
+         try {
+           GribCdmIndex indexWriter = new GribCdmIndex();
+           DirectoryPartitionCollection dpart = new DirectoryPartitionCollection(config, node.dir, indexWriter, out, logger);
+
+           Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), node.dir.toFile(), config.gribConfig, logger);
+           for (CollectionManagerRO dcm : dpart.makePartitions()) {
+             tp.addPartition(dcm);
+           }
+
+           final List<GribCollection> gclist = new ArrayList<>();
+           for (TimePartition.Partition tpp : tp.getPartitions()) {
+             try {
+               GribCollection gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists
+               gclist.add(gc);
+               gc.close(); // ??
+
+             } catch (Throwable t) {
+               out.format("Failed to open partition %s%n", tpp.getName());
+               logger.error(" Failed to open partition " + tpp.getName(), t);
+             }
+           }
+
+           // switch back to Swing event thread to manipulate GUI
+           SwingUtilities.invokeLater(new Runnable() {
+               public void run() {
+                 partitionsTable.clear();
+                 for (GribCollection gc : gclist)
+                   partitionsTable.addGribCollection(gc);
+                 swap(partitionsTable);
+               }
+             }
+           );
+
+         } catch (Throwable t) {
+           JOptionPane.showMessageDialog(DirectoryPartitionViewer.this, node.dir + " showPartitions failed: " + t.getMessage());
+         }
+       }
+     };
+
+    background.start();
   }
 
-
-  private void showPartitions(File topDir) {
-    Formatter out = new Formatter();
+  private void cmdShowIndex(NodeInfo node) {
     try {
-      GribCdmIndex indexWriter = new GribCdmIndex();
-      Path topPath = Paths.get(topDir.getPath());
-      DirectoryPartition dpart = new DirectoryPartition(config, topPath, indexWriter, out, logger);
-
-      Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), topDir, config.gribConfig, logger);
-      for (CollectionManagerRO dcm : dpart.makePartitions()) {
-        tp.addPartition(dcm);
-      }
-
-      partitionsTable.clear();
-      for (TimePartition.Partition tpp : tp.getPartitions()) {
-        try {
-          GribCollection gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists
-          partitionsTable.addGribCollection(gc);
-          gc.close(); // ??
-        } catch (Throwable t) {
-          logger.error(" Failed to open partition " + tpp.getName(), t);
-        }
-      }
-
-      swap(partitionsTable);
+      // this opens the index file and constructs a GribCollection
+      cdmIndexTables.setIndexFile(node.part.getIndex());
+      swap(cdmIndexTables);
 
     } catch (Throwable t) {
-      JOptionPane.showMessageDialog(this, topDir + " showPartitions failed: " + t.getMessage());
+      JOptionPane.showMessageDialog(this, node + " makeIndex failed: " + t.getMessage());
     }
-  }  */
-
+  }
 
   private void cmdMakeIndex(NodeInfo node) {
     Formatter out = new Formatter();
@@ -487,11 +532,28 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       });
 
-      //////////////
+      varPopup.addAction("Show Partition", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          cmdShowIndex(currentNode);
+        }
+      });
+
+      varPopup.addAction("Summarize Children Partitions", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          // do this in another Thread
+          new Thread() {
+            public void run() {
+              cmdShowPartitions(currentNode);
+            }
+          }.start();
+        }
+      });
+
+       //////////////
       // toolbar
 
-      JToolBar toolBar = new JToolBar();
-      toolBar.setFloatable(false);  // mnemonics stop working in a floated toolbar
+      //JToolBar toolBar = new JToolBar();
+      //toolBar.setFloatable(false);  // mnemonics stop working in a floated toolbar
 
       /* JButton moveIndexButt = new JButton("Move");
       moveIndexButt.addActionListener(new ActionListener() {
@@ -715,7 +777,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
     private IndependentWindow fileWindow;
 
-    public PartitionsTable(PreferencesExt prefs, JPanel buttPanel) {
+    public PartitionsTable(PreferencesExt prefs) {
       this.prefs = prefs;
 
       PopupMenu varPopup;
@@ -777,6 +839,35 @@ public class DirectoryPartitionViewer extends JPanel {
       });
 
       fileTable = new BeanTableSorted(FileBean.class, (PreferencesExt) prefs.node("FileBean"), false, "Files", "Files", null);
+      varPopup = new PopupMenu(fileTable.getJTable(), "Options");
+      varPopup.addAction("Open in Grib2Collection", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          FileBean bean = (FileBean) fileTable.getSelectedBean();
+          if (bean == null) return;
+          DirectoryPartitionViewer.this.firePropertyChange("openGrib2Collection", null, bean.getPath());
+        }
+      });
+      varPopup.addAction("Add File to Grib2Collection", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          FileBean bean = (FileBean) fileTable.getSelectedBean();
+          if (bean == null) return;
+          gribCollectionFiles.add(bean.getPath());
+        }
+      });
+      varPopup.addAction("Clear Grib2Collection", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          FileBean bean = (FileBean) fileTable.getSelectedBean();
+          if (bean == null) return;
+          gribCollectionFiles = new ArrayList<>();
+        }
+      });
+      varPopup.addAction("Send Grib2Collection", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          cmdSendGribCollection();
+        }
+      });
+
+
       fileWindow = new IndependentWindow("Files Used", BAMutil.getImage("netcdfUI"), fileTable);
       fileWindow.setBounds((Rectangle) prefs.getBean("DetailWindowBounds", new Rectangle(300, 300, 500, 300)));
 
@@ -822,20 +913,80 @@ public class DirectoryPartitionViewer extends JPanel {
       fileWindow.show();
     }
 
-    Map<String, GroupsBean> groupsBeans = new HashMap<>(25);
+    private class Groups implements Comparable<Groups> {
+      String groupId;
+      SortedSet<String> parts = new TreeSet<>();
 
+      private Groups(String id) {
+        this.groupId = id;
+      }
+
+      @Override
+      public int compareTo(Groups o2) {
+        return groupId.compareTo(o2.groupId);
+      }
+    }
+
+    void showGroupDiffs(Formatter out) {
+      Map<Integer, Groups> map = new HashMap<>(100);
+
+      for (GroupsBean gsbean : groupsBeans.values()) {
+        for (GroupBean gbean : gsbean.beans) {
+          Groups gs = map.get(gbean.getGdsHash());
+          if (gs == null) {
+            gs = new Groups(gsbean.getGroupId());
+            map.put(gbean.getGdsHash(), gs);
+          }
+          gs.parts.add(gbean.getPartition());
+        }
+      }
+
+      List<Groups> groups = new ArrayList<>(map.values());
+      Collections.sort(groups);
+
+      out.format("=======================Groups%n");
+      for (Groups gs : groups) {
+        if (gs.parts.size() < partitionsAll.size()) {
+          out.format("%s Missing partitions:%n", gs.groupId);
+          for (String p : partitionsAll) {
+            if (!gs.parts.contains(p))
+              out.format("   %s%n", p);
+          }
+        }
+      }
+
+      out.format("=======================Partitions%n");
+      for (String p : partitionsAll) {
+        out.format("%s Missing groups:%n", p);
+        for (Groups gs : groups) {
+            if (!gs.parts.contains(p))
+              out.format("   %s%n", gs.groupId);
+          }
+        }
+
+    }
+
+    Map<String, GroupsBean> groupsBeans = new HashMap<>(50);
+    SortedSet<String> partitionsAll = new TreeSet<>();
     void clear() {
-      groupsBeans = new HashMap<>(25);
+      groupsBeans = new HashMap<>(50);
+      partitionsAll = new TreeSet<>();
     }
 
     void addGribCollection(GribCollection gc) {
+      String partitionName = gc.getLocation();
+      int pos = partitionName.lastIndexOf("/");
+      if (pos < 0) pos = partitionName.lastIndexOf("\\");
+      if (pos > 0) partitionName = partitionName.substring(0, pos);
+      partitionsAll.add(partitionName);
+
       for (GribCollection.GroupHcs g : gc.getGroups()) {
         GroupsBean bean = groupsBeans.get(g.getId());
         if (bean == null) {
           bean = new GroupsBean(g);
           groupsBeans.put(g.getId(), bean);
         }
-        bean.addGroup(g, gc.getLocation());
+        bean.addGroup(g, partitionName);
       }
       groupsTable.setBeans(new ArrayList<>(groupsBeans.values()));
     }
@@ -1074,7 +1225,11 @@ public class DirectoryPartitionViewer extends JPanel {
       return mfile.getName();
     }
 
-    public String getLastModified() {
+    public String getPath() {
+       return mfile.getPath();
+     }
+
+     public String getLastModified() {
       return CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified()));
     }
   }

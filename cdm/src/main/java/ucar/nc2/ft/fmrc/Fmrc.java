@@ -80,7 +80,7 @@ public class Fmrc {
    */
   public static Fmrc open(String collection, Formatter errlog) throws IOException {
     if (collection.startsWith(MFileCollectionManager.CATALOG)) {
-      CatalogCollectionManager manager = new CatalogCollectionManager(collection);
+      CatalogCollectionManager manager = new CatalogCollectionManager(collection, collection, null, errlog);
       return new Fmrc(manager, new FeatureCollectionConfig());
 
     } else if (collection.endsWith(".ncml")) {
@@ -96,7 +96,8 @@ public class Fmrc {
 
   public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) throws IOException {
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
-      CatalogCollectionManager manager = new CatalogCollectionManager(config.spec);
+      String name = config.name != null ? config.name : config.spec;
+      CatalogCollectionManager manager = new CatalogCollectionManager(name, config.spec, null, errlog);
       return new Fmrc(manager, config);
     }
 
@@ -118,7 +119,7 @@ public class Fmrc {
   private volatile long lastProtoChanged;
 
   private Fmrc(String collectionSpec, Formatter errlog) throws IOException {
-    this.manager = MFileCollectionManager.open(collectionSpec, null, errlog);
+    this.manager = MFileCollectionManager.open(collectionSpec, collectionSpec, null, errlog);  // LOOK no name
     this.config = new FeatureCollectionConfig();
     this.config.spec = collectionSpec;
   }

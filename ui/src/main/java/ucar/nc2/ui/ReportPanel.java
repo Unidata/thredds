@@ -1,8 +1,6 @@
 package ucar.nc2.ui;
 
-import thredds.inventory.CollectionManager;
-import thredds.inventory.MFile;
-import thredds.inventory.MFileCollectionManager;
+import thredds.inventory.*;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 
@@ -62,7 +60,7 @@ public class ReportPanel extends JPanel {
    CollectionManager getCollection(String spec, Formatter f) {
      CollectionManager dc = null;
      try {
-       dc = MFileCollectionManager.open(spec, null, f);
+       dc = MFileCollectionManager.open(spec, spec, null, f);
        dc.scan(false);
 
      } catch (Exception e) {

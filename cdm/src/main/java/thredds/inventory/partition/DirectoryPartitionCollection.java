@@ -29,6 +29,10 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
     this.collectionName = DirectoryPartition.makePartitionName(collectionName, topDir);
   }
 
+  public String getCollectionName() {
+    return topCollection;
+  }
+
   @Override
   public Iterable<CollectionManagerRO> makePartitions() throws IOException {
 

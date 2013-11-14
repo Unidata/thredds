@@ -35,6 +35,7 @@ package thredds.inventory;
 /**
  * Inventory "Managed File". An abstraction for java.io.File.
  * Replaces Crawlable Dataset.
+ * LOOK: could we use Path instead ??
  *
  * @author caron
  * @since Jun 30, 2009

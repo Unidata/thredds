@@ -32,6 +32,8 @@
 
 package ucar.nc2.ui;
 
+import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionManagerAbstract;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.*;
@@ -273,9 +275,9 @@ public class GribFilesPanel extends JPanel {
       this.spec = spec;
 
       Formatter f = new Formatter();
-      MFileCollectionManager dc = null;
+      CollectionManager dc = null;
       try {
-        dc = MFileCollectionManager.open(spec, null, f);
+        dc = MFileCollectionManager.open(spec, spec, null, f);
         dc.scan(false);
         fileList = dc.getFiles();
 

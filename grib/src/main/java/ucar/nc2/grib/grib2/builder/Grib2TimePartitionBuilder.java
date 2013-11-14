@@ -52,7 +52,7 @@ import java.util.*;
 
 /**
  * Builds Collections of Grib2 Time Partitioned Collections.
- * TimePartition objects from special ncx file, which starts with TimePartion.MAGIC_STARTP.
+ * TimePartition objects from special ncx file, which starts with TimePartion.MAGIC_START.
  * Writes index files from TimePartitionCollections, from which it builds collections of GribCollection.
  *
  * @author caron
@@ -202,6 +202,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     // also replace variables  in canonGc with partitioned variables
     // partition index is used - do not resort partitions
     if (f == null) f = new Formatter();
+    checkGroups(canon, f, true);
     GribCollection canonGc = checkPartitions(canon, f);
     if (canonGc == null) {
       logger.error(" Partition check failed, index not written on {} message = {}", tp.getName(), f.toString());
@@ -239,7 +240,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // hash proto variables for quick lookup
-      Map<Integer, GribCollection.VariableIndex> check = new HashMap<>(firstGroup.varIndex.size());
+      Map<Integer, GribCollection.VariableIndex> check = new HashMap<>(2*firstGroup.varIndex.size());
       List<GribCollection.VariableIndex> varIndexP = new ArrayList<>(firstGroup.varIndex.size());
       for (GribCollection.VariableIndex vi : firstGroup.varIndex) {
         TimePartition.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, npart);
@@ -259,7 +260,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
         GribCollection gc = tpp.gc;
         int groupIdx = gc.findGroupIdxById(firstGroup.getId());
         if (groupIdx < 0) {
-          f.format(" Cant find group %s in partition %s%n", gname, tpp.getName());
+          f.format(" Cant find canonical group %s in partition %s%n", gname, tpp.getName());
           //ok = false;
           continue;
         }
@@ -316,6 +317,29 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       return canonGc;
     } else {
       return null;
+    }
+  }
+
+  private class Groups {
+    GribCollection.GroupHcs g;
+    List<TimePartition.Partition> parts = new ArrayList<>();
+  }
+
+  private void checkGroups(TimePartition.Partition canon, Formatter f, boolean show) throws IOException {
+    List<TimePartition.Partition> partitions = tp.getPartitions();
+
+    Map<Integer, Groups> map = new HashMap<>(100);
+
+    for (TimePartition.Partition tpp : partitions) {
+      GribCollection gc = tpp.gc;
+      for (GribCollection.GroupHcs g : gc.getGroups()) {
+        Groups gs = map.get(g.gdsHash);
+        if (gs == null) {
+          gs = new Groups();
+          map.put(g.gdsHash, gs);
+        }
+        gs.parts.add(tpp);
+      }
     }
   }
 

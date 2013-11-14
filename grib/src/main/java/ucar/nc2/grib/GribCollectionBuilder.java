@@ -32,9 +32,12 @@ public class GribCollectionBuilder {
     String dirPath = StringUtil2.replace(directory.getPath(), '\\', "/");
 
     for (MFile file : files) {
-      assert file.getPath().startsWith(dirPath) : file.getPath()+" != "+dirPath;
-      String name = file.getPath().substring(dirPath.length());
-      result.add( new GcMFile(directory, name, file.getLastModified()));
+      String reletiveName;
+      if (file.getPath().startsWith(dirPath))
+        reletiveName = file.getPath().substring(dirPath.length());
+      else
+        reletiveName = file.getPath();
+      result.add( new GcMFile(directory, reletiveName, file.getLastModified()));
     }
     return result;
   }

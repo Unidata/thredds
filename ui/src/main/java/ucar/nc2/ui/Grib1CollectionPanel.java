@@ -32,6 +32,8 @@
 
 package ucar.nc2.ui;
 
+import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionManagerAbstract;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.GdsHorizCoordSys;
@@ -356,7 +358,7 @@ public class Grib1CollectionPanel extends JPanel {
   }
 
   public boolean writeIndex(Formatter f) throws IOException {
-    MFileCollectionManager dcm = scanCollection(spec, f);
+    CollectionManager dcm = scanCollection(spec, f);
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -489,7 +491,7 @@ public class Grib1CollectionPanel extends JPanel {
 
   ///////////////////////////////////////////////////////////////////////////////////
   private String spec;
-  private MFileCollectionManager dcm;
+  private CollectionManager dcm;
   private List<MFile> fileList;
 
   public void setCollection(String spec) throws IOException {
@@ -523,10 +525,10 @@ public class Grib1CollectionPanel extends JPanel {
     gds1Table.setBeans(gdsList);
   }
 
-  private MFileCollectionManager scanCollection(String spec, Formatter f) {
-    MFileCollectionManager dc = null;
+  private CollectionManager scanCollection(String spec, Formatter f) {
+    CollectionManager dc = null;
     try {
-      dc = MFileCollectionManager.open(spec, null, f);
+      dc = MFileCollectionManager.open(spec, spec, null, f);
       dc.scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFiles());
       return dc;

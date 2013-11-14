@@ -32,8 +32,7 @@
 
 package ucar.nc2.ui;
 
-import thredds.inventory.MFileCollectionManager;
-import thredds.inventory.MFile;
+import thredds.inventory.*;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
@@ -417,7 +416,7 @@ public class Grib2CollectionPanel extends JPanel {
   ///////////////////////////////////////////////
 
   private String spec;
-  private MFileCollectionManager dcm;
+  private CollectionManager dcm;
   private List<MFile> fileList;
   private Grib2Customizer cust;
   private Grib2Rectilyser rect2;
@@ -511,10 +510,10 @@ public class Grib2CollectionPanel extends JPanel {
     }
   }
 
-  private MFileCollectionManager scanCollection(String spec, Formatter f) {
-    MFileCollectionManager dc = null;
+  private CollectionManager scanCollection(String spec, Formatter f) {
+    CollectionManager dc;
     try {
-      dc = MFileCollectionManager.open(spec, null, f);
+      dc = CollectionManagerAbstract.open("Grib2CollectionPanel", spec, null, f);
       dc.scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFiles());
       return dc;
@@ -571,7 +570,7 @@ public class Grib2CollectionPanel extends JPanel {
   } */
 
   public boolean writeIndex(Formatter f) throws IOException {
-    MFileCollectionManager dcm = scanCollection(spec, f);
+    CollectionManager dcm = scanCollection(spec, f);
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));

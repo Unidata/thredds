@@ -171,7 +171,7 @@ public interface CollectionManager extends CollectionManagerRO {
   /**
    *   dcm must be updated when index is read in
    */
-  public void setFiles(Iterable<MFile> files);
+  //public void setFiles(Iterable<MFile> files);
 
   /**
    * Use the date extractor to extract the date from the filename.
@@ -217,7 +217,7 @@ public interface CollectionManager extends CollectionManagerRO {
    * Really this is handled by the manager, but this is exposed so that others (eg DatasetScan) can be consistent.
    * @return olderThan" amount in seconds, or < 0 to mean this filter is not present
    */
-  public long getOlderThanFilterInMSecs();
+  //public long getOlderThanFilterInMSecs();
 
   public List<String> getFilenames();
   public MFile getLatestFile();

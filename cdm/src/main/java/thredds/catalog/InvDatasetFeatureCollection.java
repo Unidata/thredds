@@ -198,7 +198,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     Formatter errlog = new Formatter();
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
-      dcm = new CatalogCollectionManager(config.spec);
+      dcm = new CatalogCollectionManager(collectionName, config.spec, null, errlog);
     } else {
       dcm = new MFileCollectionManager(config, errlog, this.logger);
     }

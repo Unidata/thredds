@@ -33,10 +33,7 @@
 
 package ucar.nc2.ui;
 
-import thredds.inventory.CollectionSpecParser;
-import thredds.inventory.DateExtractorFromName;
-import thredds.inventory.MFile;
-import thredds.inventory.MFileCollectionManager;
+import thredds.inventory.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -242,7 +239,7 @@ public class CollectionSpecTable extends JPanel {
   private MFileCollectionManager scanCollection(String spec, Formatter f) {
     MFileCollectionManager dc = null;
     try {
-      dc = MFileCollectionManager.open(spec, null, f);
+      dc = MFileCollectionManager.open(spec, spec, null, f);
       dc.scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFiles());
 

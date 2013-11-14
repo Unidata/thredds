@@ -32,8 +32,6 @@
 
 package thredds.inventory;
 
-import ucar.nc2.time.CalendarDate;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,11 +77,6 @@ public class CollectionManagerSingleFile extends CollectionManagerAbstract {
   }
 
   @Override
-  public boolean scanIfNeeded() throws IOException {
-    return false;
-  }
-
-  @Override
   public boolean scan(boolean sendEvent) throws IOException {
     return false;
   }
@@ -95,28 +88,4 @@ public class CollectionManagerSingleFile extends CollectionManagerAbstract {
     return list;
   }
 
-  @Override
-  public void setFiles(Iterable<MFile> files) {
-    int count = 0;
-    for (MFile f : files) {
-      this.mfile = f;
-      count++;
-    }
-    assert count == 1;
-  }
-
-  @Override
-  public CalendarDate extractRunDate(MFile mfile) {
-    return null;
-  }
-
-  @Override
-  public boolean hasDateExtractor() {
-    return false;
-  }
-
-  @Override
-  public CalendarDate getStartCollection() {
-    return null;
-  }
 }

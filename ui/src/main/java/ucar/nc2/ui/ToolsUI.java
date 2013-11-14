@@ -133,14 +133,14 @@ public class ToolsUI extends JPanel {
   private GeoGridPanel gridPanel;
   private GeotiffPanel geotiffPanel;
   private GribCdmIndexPanel gribCdmIndexPanel;
+  private GribCodePanel gribCodePanel;
   private GribFilesPanel gribFilesPanel;
   private GribIndexPanel gribIdxPanel;
   private GribRenamePanel gribVariableRenamePanel;
-  private Grib2CollectionPanel gribNewPanel;
-  private Grib1CollectionPanel grib1RawPanel;
-  private Grib1ReportPanel grib1ReportPanel;
-  private GribCodePanel gribCodePanel;
   private GribTemplatePanel gribTemplatePanel;
+  private Grib2CollectionPanel grib2CollectionPanel;
+  private Grib1CollectionPanel grib1CollectionPanel;
+  private Grib1ReportPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2TablePanel grib2TablePanel;
   private Grib2ReportPanel grib2ReportPanel;
@@ -396,16 +396,16 @@ public class ToolsUI extends JPanel {
       c = ncStreamPanel;
 
     } else if (title.equals("GRIB1collection")) {
-      grib1RawPanel = new Grib1CollectionPanel((PreferencesExt) mainPrefs.node("grib1raw"));
-      c = grib1RawPanel;
+      grib1CollectionPanel = new Grib1CollectionPanel((PreferencesExt) mainPrefs.node("grib1raw"));
+      c = grib1CollectionPanel;
 
     } else if (title.equals("GRIB-FILES")) {
       gribFilesPanel = new GribFilesPanel((PreferencesExt) mainPrefs.node("gribFiles"));
       c = gribFilesPanel;
 
     } else if (title.equals("GRIB2collection")) {
-      gribNewPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
-      c = gribNewPanel;
+      grib2CollectionPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
+      c = grib2CollectionPanel;
 
     } else if (title.equals("GRIB2data")) {
       grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
@@ -529,7 +529,7 @@ public class ToolsUI extends JPanel {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
           if (e.getPropertyName().equals("InvAccess")) {
             thredds.catalog.InvAccess access = (thredds.catalog.InvAccess) e.getNewValue();
-            setThreddsDatatype(access);
+            jumptoThreddsDatatype(access);
           }
           if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
             thredds.catalog.InvDataset ds = (thredds.catalog.InvDataset) e.getNewValue();
@@ -924,12 +924,12 @@ public class ToolsUI extends JPanel {
     if (fmrcPanel != null) fmrcPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribFilesPanel != null) gribFilesPanel.save();
-    if (gribNewPanel != null) gribNewPanel.save();
+    if (grib2CollectionPanel != null) grib2CollectionPanel.save();
     if (grib2DataPanel != null) grib2DataPanel.save();
     if (gribCodePanel != null) gribCodePanel.save();
     if (gribIdxPanel != null) gribIdxPanel.save();
     if (gribTemplatePanel != null) gribTemplatePanel.save();
-    if (grib1RawPanel != null) grib1RawPanel.save();
+    if (grib1CollectionPanel != null) grib1CollectionPanel.save();
     if (grib1ReportPanel != null) grib1ReportPanel.save();
     if (grib2ReportPanel != null) grib2ReportPanel.save();
     if (grib1TablePanel != null) grib1TablePanel.save();
@@ -999,20 +999,20 @@ public class ToolsUI extends JPanel {
     ftTabPane.setSelectedComponent(pointFeaturePanel);
   }
 
-  private void openGrib2n(String collection) {
+  private void openGrib2Collection(String collection) {
     makeComponent(grib2TabPane, "GRIB2collection");
-    gribNewPanel.setCollection(collection);
+    grib2CollectionPanel.setCollection(collection);
     tabbedPane.setSelectedComponent(iospTabPane);
     iospTabPane.setSelectedComponent(grib2TabPane);
-    grib2TabPane.setSelectedComponent(gribNewPanel);
+    grib2TabPane.setSelectedComponent(grib2CollectionPanel);
   }
 
   private void openGrib1Raw(String filename) {
     makeComponent(grib1TabPane, "GRIB-RAW");
-    grib1RawPanel.process(filename);
+    grib1CollectionPanel.process(filename);
     tabbedPane.setSelectedComponent(iospTabPane);
     iospTabPane.setSelectedComponent(grib1TabPane);
-    grib1TabPane.setSelectedComponent(grib1RawPanel);
+    grib1TabPane.setSelectedComponent(grib1CollectionPanel);
   }
 
   private void openGridDataset(String datasetName) {
@@ -1085,7 +1085,7 @@ public class ToolsUI extends JPanel {
         JOptionPane.showMessageDialog(null, "Unknown datatype");
         return;
       }
-      setThreddsDatatype(threddsData);
+      jumptoThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
@@ -1095,7 +1095,7 @@ public class ToolsUI extends JPanel {
   }
 
   // jump to the appropriate tab based on datatype of InvAccess
-  private void setThreddsDatatype(thredds.catalog.InvAccess invAccess) {
+  private void jumptoThreddsDatatype(thredds.catalog.InvAccess invAccess) {
     if (invAccess == null) return;
 
     thredds.catalog.InvService s = invAccess.getService();
@@ -1122,7 +1122,7 @@ public class ToolsUI extends JPanel {
 
     try {
       ThreddsDataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invAccess, null);
-      setThreddsDatatype(threddsData);
+      jumptoThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
@@ -1131,22 +1131,8 @@ public class ToolsUI extends JPanel {
 
   }
 
-  /* jump to the appropriate tab based on datatype of InvDataset
-  private void setThreddsDatatype(String dataset) {
-
-    try {
-      ThreddsDataFactory.Result threddsData = threddsDataFactory.openDatatype(dataset, null);
-      setThreddsDatatype(threddsData);
-
-    } catch (IOException ioe) {
-      JOptionPane.showMessageDialog(null, "Error on setThreddsDataset = " + ioe.getMessage());
-    }
-
-  }  */
-
   // jump to the appropriate tab based on datatype of threddsData
-
-  private void setThreddsDatatype(ThreddsDataFactory.Result threddsData) {
+  private void jumptoThreddsDatatype(ThreddsDataFactory.Result threddsData) {
 
     if (threddsData.fatalError) {
       JOptionPane.showMessageDialog(this, "Cant open dataset=" + threddsData.errLog);
@@ -1185,6 +1171,7 @@ public class ToolsUI extends JPanel {
 
     }
   }
+
 
   /* jump to the appropriate tab based on datatype of NetcdfDataset
   private void setDataset(thredds.catalog.DataType dtype, NetcdfDataset ds) {
@@ -2488,9 +2475,9 @@ public class ToolsUI extends JPanel {
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openGrib2n")) {
+          if (e.getPropertyName().equals("openGrib2Collection")) {
             String collectionName = (String) e.getNewValue();
-            openGrib2n(collectionName);
+            openGrib2Collection(collectionName);
           }
         }
       });
@@ -2633,9 +2620,9 @@ public class ToolsUI extends JPanel {
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openGrib2n")) {
+          if (e.getPropertyName().equals("openGrib2Collection")) {
             String collectionName = (String) e.getNewValue();
-            openGrib2n(collectionName);
+            openGrib2Collection(collectionName);
           }
         }
       });
@@ -5078,23 +5065,14 @@ public class ToolsUI extends JPanel {
       table = new DirectoryPartitionViewer(prefs, buttPanel);
       add(table, BorderLayout.CENTER);
 
-      /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
-          try {
-            table.showDetail(f);
-          } catch (Exception e1) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-            e1.printStackTrace(new PrintStream(bos));
-            f.format("%s", bos.toString());
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
+      table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+        if (e.getPropertyName().equals("openGrib2Collection")) {
+          String collectionName = (String) e.getNewValue();
+          openGrib2Collection(collectionName);
+        }
         }
       });
-      buttPanel.add(infoButton); */
 
     }
 
