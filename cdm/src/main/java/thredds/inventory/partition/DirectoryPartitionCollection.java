@@ -10,6 +10,7 @@ import java.util.*;
 
 /**
  * A TimePartition that uses directories to do the partitioning.
+ * Intended for very large collections - must be careful to not scan more than one directory at a time.
  *
  * @author caron
  * @since 11/9/13
@@ -26,7 +27,7 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
     this.indexReader = indexReader;
     this.type = Type.directory;
     this.topCollection = this.collectionName;
-    this.collectionName = DirectoryPartition.makePartitionName(collectionName, topDir);
+    this.collectionName = DirectoryCollection.makeCollectionName(collectionName, topDir);
   }
 
   public String getCollectionName() {

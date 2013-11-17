@@ -32,7 +32,6 @@
 
 package thredds.inventory;
 
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 
 import java.io.IOException;
@@ -86,18 +85,7 @@ public interface CollectionManager extends CollectionManagerRO {
                      nocheck, // if index exists, use it
                      never }  // only use existing
 
-  /**
-   * The name of the collection
-   * @return name of the collection
-   */
-  public String getCollectionName();
 
-  /**
-   * Get common root directory of all MFiles in the collection - may be null
-   *
-   * @return root directory name, or null.
-   */
-  public String getRoot();
 
   /**
    * static means doesnt need to be monitored for changes; can be externally triggered, or read in at startup.
@@ -159,47 +147,6 @@ public interface CollectionManager extends CollectionManagerRO {
    */
   public void updateNocheck() throws IOException;
 
-  /**
-   * Get the current collection of MFile.
-   * You must call scan() first - this does not call scan().
-   * if hasDateExtractor() == true, these will be sorted by Date, otherwise by path.
-   *
-   * @return current collection of MFile as an Iterable. May be empty, not null.
-   */
-  public Iterable<MFile> getFiles();
-
-  /**
-   *   dcm must be updated when index is read in
-   */
-  //public void setFiles(Iterable<MFile> files);
-
-  /**
-   * Use the date extractor to extract the date from the filename.
-   * Only call if hasDateExtractor() == true.
-   *
-   * @param mfile extract from here
-   * @return Date, or null if none
-   */
-  public CalendarDate extractRunDate(MFile mfile);
-
-  /**
-   * Does this CollectionManager have the ability to extract a date from the MFile ?
-   * @return true if CollectionManager has a DateExtractor
-   */
-  public boolean hasDateExtractor();
-
-  /**
-   * The starting date of the collection.
-   * Only call if hasDateExtractor() == true.
-   * @return starting date of the collection
-   */
-  public CalendarDate getStartCollection();
-
-  /**
-   * Close and release any resources. Do not make further calls on this object.
-   */
-  public void close();
-
   //////////////////////////////
   // these 2 are kind of kludges
 
@@ -220,7 +167,6 @@ public interface CollectionManager extends CollectionManagerRO {
   //public long getOlderThanFilterInMSecs();
 
   public List<String> getFilenames();
-  public MFile getLatestFile();
 
   ////////////////////////////////////////////////////
   // set Strategy for checking if MFile has changed
@@ -232,12 +178,6 @@ public interface CollectionManager extends CollectionManagerRO {
 
   public void setChangeChecker(ChangeChecker strategy);
 
-  ////////////////////////////////////////////////////
-  // ability to pass arbitrary information to users of the collection manager. kind of a kludge
-
-  public Object getAuxInfo(String key);
-
-  public void putAuxInfo(String key, Object value);
 
   /////////////////////////////////////////////////////
 

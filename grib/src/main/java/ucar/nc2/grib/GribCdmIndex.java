@@ -5,10 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.filesystem.MFileOS;
+import thredds.filesystem.ControllerOS7;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionManagerRO;
+import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
-import thredds.inventory.MFileCollectionManager;
+import thredds.inventory.partition.DirectoryCollection;
 import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryPartitionCollection;
 import thredds.inventory.partition.IndexReader;
@@ -39,6 +41,104 @@ import java.util.List;
 public class GribCdmIndex implements IndexReader {
   static private final Logger logger = LoggerFactory.getLogger(GribCdmIndex.class);
 
+  /**
+   * Rewrite all the ncx indices in a directory, and the collection for that directory
+   * @param config FeatureCollectionConfig
+   * @param dirPath directory path
+   * @throws IOException
+   */
+  static public void rewriteIndexesFilesAndCollection(FeatureCollectionConfig config, Path dirPath) throws IOException {
+    long start = System.currentTimeMillis();
+    String what;
+
+    String collectionName = DirectoryCollection.makeCollectionName(config.name, dirPath);
+    Path idxFile = DirectoryCollection.makeCollectionIndexPath(config.name, dirPath);
+    if (Files.exists(idxFile)) {
+      what = "IndexRead";
+      // read collection index
+      try (GribCollection gc = Grib2CollectionBuilderFromIndex.createFromIndex(collectionName, dirPath.toFile(), config.gribConfig, logger)) {
+        for (MFile mfile : gc.getFiles()) {
+          GribCollection gcNested = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, CollectionManager.Force.always, config.gribConfig, logger);
+          gcNested.close();
+        }
+      }
+
+    } else {
+      what = "DirectoryScan";
+      // collection index doesnt exists, so we have to scan
+      DirectoryCollection controller = new DirectoryCollection(config.name, dirPath, logger);
+      for (MFile mfile : controller) {
+        GribCollection gcNested = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, CollectionManager.Force.always, config.gribConfig, logger);
+        gcNested.close();
+      }
+    }
+
+    // redo collection index
+    DirectoryCollection dpart = new DirectoryCollection( config.name, dirPath, logger);
+    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+    GribCollection gcNew = Grib2CollectionBuilder.factory(dpart, CollectionManager.Force.always, logger);
+    gcNew.close();
+
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("%s %s took %s msecs%n", collectionName, what, took);
+  }
+
+  /**
+   * Rewrite all the ncx indices for all the files in a partition
+   * @param config FeatureCollectionConfig
+   * @param dirPath directory path
+   * @throws IOException
+   */
+  static public void rewriteIndexesPartition(FeatureCollectionConfig config, Path dirPath) throws IOException {
+    GribCdmIndex indexWriter = new GribCdmIndex();
+    Formatter errlog = new Formatter();
+    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, dirPath, indexWriter, errlog, logger);
+    String errs = errlog.toString();
+    if (errs.length() > 0)
+      System.out.printf("%s%n", errs);
+
+    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+
+    for (CollectionManagerRO part : dpart.makePartitions()) {
+      Path partPath = Paths.get(part.getRoot());
+      rewriteIndexesFilesAndCollection(config, partPath);
+    }
+
+    Grib2TimePartition tp =  Grib2TimePartitionBuilder.factory(dpart, CollectionManager.Force.always, logger);
+    tp.close();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // make Grib Collection Index for one Directory
+  static public GribCollection makeGribCollectionIndexOneDirectory(FeatureCollectionConfig config, CollectionManager.Force force, File topDir, Formatter out) throws IOException {
+    Path topPath = Paths.get(topDir.getPath());
+    String collectionName = DirectoryCollection.makeCollectionName(config.name, topPath);
+    DirectoryCollection dpart = new DirectoryCollection( collectionName, topPath, logger);
+    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+
+    return Grib2CollectionBuilder.factory(dpart, force, logger);
+  }
+
+    // make DirectoryPartition Index for one Time partition Directory and its children GribCollections
+  static public Grib2TimePartition makeTimePartitionIndexOneDirectory(FeatureCollectionConfig config, CollectionManager.Force force, File topDir, Formatter out) throws IOException {
+    GribCdmIndex indexWriter = new GribCdmIndex();
+    Path topPath = Paths.get(topDir.getPath());
+    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, topPath, indexWriter, out, logger);
+    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+
+    for (CollectionManagerRO part : dpart.makePartitions()) {
+      GribCollection gc = Grib2CollectionBuilder.factory(part, force, logger);
+      gc.close();
+    }
+
+    return Grib2TimePartitionBuilder.factory(dpart, force, logger);
+  }
+
+  ////////////////////////////////////////////////////////////
+
   // show DirectoryPartition Index for everything under the topDir
   static public boolean showDirectoryPartitionIndex(String collectionName, File topDir, Formatter out) throws IOException {
     DirectoryPartition builder = new DirectoryPartition(collectionName, topDir.getPath());
@@ -56,32 +156,6 @@ public class GribCdmIndex implements IndexReader {
 
     Grib2DirectoryPartitionBuilder builder = new Grib2DirectoryPartitionBuilder(dpart.getCollectionName(), topPath, dpart, logger);
     return builder.createPartitionedIndex(out);
-  }
-
-  // make DirectoryPartition Index for one GribCollection
-  static public GribCollection makeDirectoryCollectionIndex(FeatureCollectionConfig config, CollectionManager.Force force, File topDir, Formatter out) throws IOException {
-    GribCdmIndex indexWriter = new GribCdmIndex();
-    Path topPath = Paths.get(topDir.getPath());
-    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, topPath, indexWriter, out, logger);
-    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
-
-    return Grib2CollectionBuilder.factory(dpart, force, logger);
-  }
-
-  @Override
-  public boolean readChildren(Path indexFile, AddChildCallback callback) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r");
-    GribCollectionType type = getType(raf);
-    if (type == GribCollectionType.Partition1 || type == GribCollectionType.Partition2) {
-      if (openIndex(raf, logger)) {
-        String dirName = gribCollectionIndex.getDirName();
-        for (GribCollectionProto.Partition part : gribCollectionIndex.getPartitionsList()) {
-          callback.addChild(dirName, part.getFilename(), part.getLastModified());
-        }
-        return true;
-      }
-    }
-    return false;
   }
 
   // open GribCollection. caller must close
@@ -194,6 +268,24 @@ public class GribCdmIndex implements IndexReader {
   private byte[] magic;
   private int version;
   private GribCollectionProto.GribCollectionIndex gribCollectionIndex;
+
+
+  @Override
+  public boolean readChildren(Path indexFile, AddChildCallback callback) throws IOException {
+    try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {  // note try-with-resource
+      GribCollectionType type = getType(raf);
+      if (type == GribCollectionType.Partition1 || type == GribCollectionType.Partition2) {
+        if (openIndex(raf, logger)) {
+          String dirName = gribCollectionIndex.getDirName();
+          for (GribCollectionProto.Partition part : gribCollectionIndex.getPartitionsList()) {
+            callback.addChild(dirName, part.getFilename(), part.getLastModified());
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+  }
 
   private String computeNewDir(String oldDir, List<ucar.nc2.grib.GribCollectionProto.MFile> oldFiles, List<String> newFiles) throws IOException {
     String oldDir2 = StringUtil2.replace(oldDir, '\\', "/");
@@ -388,6 +480,7 @@ public class GribCdmIndex implements IndexReader {
   }
 
   public static void main(String[] args) throws IOException {
+    // need to configure the loggers
 
     File cat = new File("B:/ndfd/catalog.xml");
     org.jdom2.Document doc;
@@ -398,23 +491,12 @@ public class GribCdmIndex implements IndexReader {
       e.printStackTrace();
       return;
     }
+    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
 
     long start = System.currentTimeMillis();
 
-    String topFilename = "B:/ndfd/200901/20090101/ncdc1Year-20090101.ncx";
-    File topDir = new File("B:/ndfd/200901/20090101");
-    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
-
-    /* GribCollection gc = readGc(topDir, topFilename, config);
-    for (MFile mfile : gc.getFiles()) {
-      rewriteGcFromSingle(mfile, config);
-    }
-    gc.close(); */
-
-    Formatter errlog = new Formatter();
-    GribCollection gc = makeDirectoryCollectionIndex(config, CollectionManager.Force.always, topDir, errlog);
-    gc.close();
-    System.out.printf("result = %s%n", errlog);
+    Path topPath = Paths.get("B:/ndfd/200906");
+    rewriteIndexesPartition(config, topPath);
 
 
     //MFileCollectionManager dcm = new MFileCollectionManager(config, errlog, logger);

@@ -30,9 +30,13 @@ import java.util.*;
  */
 public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
-  protected static final int minVersionSingle = 11;
-  protected static final int version = 12;
-  private static final boolean showFiles = false;
+
+  // read in the index, open raf
+  static public GribCollection createFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+    File idxFile = GribCollection.getIndexFile(name, directory);
+    RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
+    return createFromIndex(name, directory, raf, config, logger);
+  }
 
   // read in the index, index raf already open
   static public GribCollection createFromIndex(String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
@@ -40,13 +44,6 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     if (builder.readIndex(raf))
       return builder.gc;
     throw new IOException("Reading index failed"); // or return null ??
-  }
-
-  // read in the index, open raf
-  static public GribCollection createFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
-    File idxFile = GribCollection.getIndexFile(name, directory);
-    RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
-    return createFromIndex(name, directory, raf, config, logger);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -71,8 +68,6 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   }
 
   protected boolean readIndex(RandomAccessFile raf) {
-    System.out.printf("Grib2CollectionBuilderFromIndex readIndex %s%n", raf.getLocation());
-    long start = System.currentTimeMillis();
 
     gc.setIndexRaf(raf); // LOOK leaving the raf open in the GribCollection
     try {
@@ -86,9 +81,9 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       }
 
       gc.version = raf.readInt();
-      boolean versionOk = isSingleFile ? gc.version >= minVersionSingle : gc.version >= version;
+      boolean versionOk = isSingleFile ? gc.version >= Grib2CollectionBuilder.minVersionSingle : gc.version >= Grib2CollectionBuilder.version;
       if (!versionOk) {
-        logger.warn("Grib2Collection {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, version, raf.getLocation());
+        logger.warn("Grib2Collection {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionBuilder.version, raf.getLocation());
         return false;
       }
 
@@ -171,9 +166,6 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
         return false;
       }
 
-      // do it
-      long took = System.currentTimeMillis() - start;
-      System.out.printf("  that took %s msecs%n", took);
       return true;
 
     } catch (Throwable t) {
@@ -181,8 +173,6 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       t.printStackTrace();
       return false;
     }
-
-
   }
 
   protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto, String dirname) {
@@ -192,8 +182,6 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   protected void readTimePartitions(GribCollection.GroupHcs group, GribCollectionProto.Group proto) {
     // NOOP
   }
-
-  int groupno = 0;
 
   GribCollection.GroupHcs readGroup(GribCollectionProto.Group p, GribCollection.GroupHcs group) throws IOException {
     //System.out.printf("Grib2CollectionBuilderFromIndex readGroup %d%n", groupno++);

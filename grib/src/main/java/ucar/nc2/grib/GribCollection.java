@@ -66,7 +66,7 @@ import java.util.*;
  * @since 4/6/11
  */
 @ThreadSafe
-public abstract class GribCollection implements FileCacheable {
+public abstract class GribCollection implements FileCacheable, AutoCloseable {
   public static final String NCX_IDX = ".ncx";
   public static final long MISSING_RECORD = -1;
 
@@ -286,10 +286,10 @@ public abstract class GribCollection implements FileCacheable {
     return indexFile;
   }
 
-  static public File getIndexFile(String name, File directory) {
-    String nameNoBlanks = StringUtil2.replace(name, ' ', "_");
+  static public File getIndexFile(String collectionName, File directory) {
+    String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
     File f = new File(directory, nameNoBlanks + NCX_IDX);
-    return getDiskCache2().getFile(f.getPath()); // diskCcahe manages where the index file lives
+    return getDiskCache2().getFile(f.getPath()); // diskCache manages where the index file lives
   }
 
   public File makeNewIndexFile(org.slf4j.Logger logger) {

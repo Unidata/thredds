@@ -73,7 +73,7 @@ import java.nio.channels.WritableByteChannel;
  */
 
 @NotThreadSafe
-public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
+public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, AutoCloseable {
 
   static public final int BIG_ENDIAN = 0;
   static public final int LITTLE_ENDIAN = 1;

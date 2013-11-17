@@ -38,9 +38,7 @@ package thredds.filesystem;
 import thredds.inventory.MCollection;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
-import ucar.unidata.util.StringUtil2;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -62,40 +60,23 @@ public class ControllerOS7 implements MController {
 
   @Override
   public Iterator<MFile> getInventoryAll(MCollection mc, boolean recheck) {
-    String path = mc.getDirectoryName();
-    if (path.startsWith("file:")) {
-      path = path.substring(5);
-    }
-
-    File cd = new File(path);
-    if (!cd.exists()) return null;
-    if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIteratorAll(cd), false);
+    return null;
   }
 
   @Override
-  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck) throws IOException {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
     }
 
-    File cd = new File(path);
-    if (!cd.exists()) return null;
-    if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIterator(cd), false);  // removes subdirs
+    Path cd = Paths.get(path);
+    if (!Files.exists(cd)) return null;
+    return new MFileIterator(cd, new CollectionFilter(mc));  // removes subdirs
   }
 
   public Iterator<MFile> getSubdirs(MCollection mc, boolean recheck) {
-    String path = mc.getDirectoryName();
-    if (path.startsWith("file:")) {
-      path = path.substring(5);
-    }
-
-    File cd = new File(path);
-    if (!cd.exists()) return null;
-    if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIterator(cd), true);  // return only subdirs
+    return null;
   }
 
 
@@ -105,128 +86,40 @@ public class ControllerOS7 implements MController {
 
   ////////////////////////////////////////////////////////////
 
-  // handles filtering and removing/including subdirectories
-  private class FilteredIterator implements Iterator<MFile> {
-    private Iterator<MFile> orgIter;
-    private MCollection mc;
-    private boolean wantDirs;
+  private class CollectionFilter implements DirectoryStream.Filter<Path> {
+    MCollection mc; // LOOK not used yet
 
-    private MFile next;
-
-    FilteredIterator(MCollection mc, Iterator<MFile> iter, boolean wantDirs) {
-      this.orgIter = iter;
+    private CollectionFilter(MCollection mc) {
       this.mc = mc;
-      this.wantDirs = wantDirs;
     }
 
-    public boolean hasNext() {
-      next = nextFilteredFile();  /// 7
-      return (next != null);
-    }
-
-    public MFile next() {
-      return next;
-    }
-
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-
-    private MFile nextFilteredFile() {
-      if (orgIter == null) return null;
-      if (!orgIter.hasNext()) return null;
-
-      MFile pdata = orgIter.next();
-      while ((pdata.isDirectory() != wantDirs) || !mc.accept(pdata)) {  // skip directories, and filter
-        if (!orgIter.hasNext()) return null;  /// 6
-        pdata = orgIter.next();
-      }
-      return pdata;
+    @Override
+    public boolean accept(Path entry) throws IOException {
+      return !entry.endsWith(".gbx9") && !entry.endsWith(".ncx");
     }
   }
 
   // returns everything in the current directory
   private class MFileIterator implements Iterator<MFile> {
-    List<File> files;
-    int count = 0;
+    Iterator<Path> dirStream;
 
-    MFileIterator(File dir) {
-      File[] f = dir.listFiles();
-      if (f == null) { // null on i/o error
-        logger.warn("I/O error on " + dir.getPath());
-        throw new IllegalStateException("dir.getPath() returned null on " + dir.getPath());
-      } else
-        files = Arrays.asList(f);
-    }
-
-    MFileIterator(List<File> files) {
-      this.files = files;
+    MFileIterator(Path dir, DirectoryStream.Filter<Path> filter) throws IOException {
+      if (filter != null)
+        dirStream = Files.newDirectoryStream(dir, filter).iterator();
+      else
+        dirStream = Files.newDirectoryStream(dir).iterator();
     }
 
     public boolean hasNext() {
-      return count < files.size();
+      return dirStream.hasNext();
     }
 
     public MFile next() {
-      File cfile = files.get(count++);
-      return new MFileOS(cfile);
-    }
-
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-  }
-
-  // recursively scans everything in the directory and in subdirectories, depth first (leaves before subdirs)
-  private class MFileIteratorAll implements Iterator<MFile> {
-    Queue<Traversal> traverse;
-    Traversal currTraversal;
-    Iterator<MFile> currIter;
-
-    MFileIteratorAll(File top) {
-      traverse = new LinkedList<Traversal>();
-      currTraversal = new Traversal(top);
-    }
-
-    public boolean hasNext() {
-      if (currIter == null) {
-        currIter = getNextIterator();
-        if (currIter == null) {
-          return false;
-        }
-      }
-
-      if (!currIter.hasNext()) {
-        currIter = getNextIterator(); /// 5
-        return hasNext();
-      }
-
-      return true;
-    }
-
-    public MFile next() {
-      return currIter.next();
-    }
-
-    private Iterator<MFile> getNextIterator() {
-
-      if (!currTraversal.leavesAreDone) {
-        currTraversal.leavesAreDone = true;
-        return new MFileIterator(currTraversal.fileList); // look for leaves in the current directory. may be empty.
-
-      } else {
-        if ((currTraversal.subdirIterator != null) && currTraversal.subdirIterator.hasNext()) { // has subdirs
-          File nextDir = currTraversal.subdirIterator.next(); /// NCDC gets null
-
-          traverse.add(currTraversal); // keep track of current traversal
-          currTraversal = new Traversal(nextDir);   /// 2
-          return getNextIterator();
-
-        } else {
-          if (traverse.peek() == null) return null;
-          currTraversal = traverse.remove();
-          return getNextIterator();  // 3 and 4  iteration
-        }
+      try {
+        return new MFileOS7(dirStream.next());
+      } catch (IOException e) {
+        e.printStackTrace();  // LOOK we should pass this exception up
+        throw new RuntimeException(e);
       }
     }
 
@@ -234,41 +127,6 @@ public class ControllerOS7 implements MController {
       throw new UnsupportedOperationException();
     }
   }
-
-  // traversal of one directory
-  private class Traversal {
-    File dir; // top directory
-    List<File> fileList;  // list of files
-    Iterator<File> subdirIterator;  // list of subdirs
-    boolean leavesAreDone = false;   // when all the files are done, start on the subdirs
-
-    Traversal(File dir) {
-      this.dir = dir;
-
-      fileList = new ArrayList<File>();
-      if (dir == null) return;  // LOOK WHY
-      if (dir.listFiles() == null) return;
-
-      if (logger.isTraceEnabled()) logger.trace("List Directory " + dir);
-      List<File> subdirList = new ArrayList<File>();
-      for (File f : dir.listFiles()) {  /// 1
-        if (f == null) {
-          logger.warn("  NULL FILE " + f + " in directory " + dir);
-          continue;
-        }
-        if (logger.isTraceEnabled()) logger.trace("  File " + f);
-
-        if (f.isDirectory())
-          subdirList.add(f);
-        else
-          fileList.add(f);
-      }
-
-      if (subdirList.size() > 0)
-        this.subdirIterator = subdirList.iterator();
-    }
-  }
-
 
   //////////////////////////////////////////////////////////////////
   // playing around with NIO
@@ -342,6 +200,7 @@ public class ControllerOS7 implements MController {
   }
 
   /////////////////////////////////////////////////////////////
+
 
   private class MyFilter implements DirectoryStream.Filter<Path> {
     @Override

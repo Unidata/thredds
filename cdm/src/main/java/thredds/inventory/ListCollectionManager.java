@@ -13,7 +13,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * CollectionManager that is initialized by specific list of MFiles.
  *
  * @author caron
  * @since 11/13/13

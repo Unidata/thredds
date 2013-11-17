@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 /**
@@ -43,7 +44,7 @@ import java.util.Iterator;
 public interface MController {
 
   /**
-   * Returns all leaves in collection, resursing into subdirectories.
+   * Returns all leaves in collection, recursing into subdirectories.
    * @param mc defines the collection to scan
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
@@ -56,7 +57,7 @@ public interface MController {
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
    */
-  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck);
+  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck) throws IOException;
 
   /**
    * Returns all subdirectories in top collection.

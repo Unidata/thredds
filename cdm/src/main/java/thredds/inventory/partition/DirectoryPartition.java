@@ -17,28 +17,14 @@ import java.util.List;
 
 /**
  * Each Partition is associated with one directory, and one ncx index.
- * Can be a tree.
+ * If there are subdirectories, these are children DirectoryPartitions.
  *
  * @author caron
  * @since 11/10/13
  */
 public class DirectoryPartition {
 
-  /**
-   * Create standard name = topCollectionName + last directory
-   * @param topCollectionName from config, name of the collection
-   * @param dir directory for this
-   * @return  standard p[artition name, to name the index file
-   */
-  static String makePartitionName(String topCollectionName, Path dir) {
-    int last = dir.getNameCount()-1;
-    Path lastDir = dir.getName(last);
-    String lastDirName = lastDir.toString();
-    return topCollectionName +"-" + lastDirName;
-  }
-
-  private final String NCX_SUFFIX = ".ncx";
-  private final boolean debug = true;
+  private final boolean debug = false;
 
   private final String topCollectionName;  // collection name
   private final String partitionName;      // partition name
@@ -108,7 +94,7 @@ public class DirectoryPartition {
   public DirectoryPartition(String topCollectionName, Path dir, BasicFileAttributes attr) throws IOException {
     this.topCollectionName = topCollectionName;
     this.dir = dir;
-    this.partitionName = makePartitionName(topCollectionName, dir);
+    this.partitionName = DirectoryCollection.makeCollectionName(topCollectionName, dir);
 
     if (attr == null)
       attr = Files.readAttributes(this.dir, BasicFileAttributes.class);
@@ -126,7 +112,7 @@ public class DirectoryPartition {
    * @throws IOException
    */
   public boolean findIndex() throws IOException {
-    Path indexPath = Paths.get(dir.toString(), partitionName + NCX_SUFFIX);
+    Path indexPath = Paths.get(dir.toString(), partitionName + DirectoryCollection.NCX_SUFFIX);
     if (Files.exists(indexPath)) {
       this.index = indexPath;
       BasicFileAttributes attr = Files.readAttributes(indexPath, BasicFileAttributes.class);
@@ -183,11 +169,11 @@ public class DirectoryPartition {
     this.indexLastModified = FileTime.fromMillis(indexLastModified);
 
     this.dir = indexFile.getParent();
-    this.partitionName = makePartitionName(topCollectionName, dir);
+    this.partitionName = DirectoryCollection.makeCollectionName(topCollectionName, dir);
 
     BasicFileAttributes attr = Files.readAttributes(this.dir, BasicFileAttributes.class);
     if (!attr.isDirectory())
-      throw new IllegalArgumentException("DirectoryPartitionBuilder needs a directory");
+      throw new IllegalArgumentException("DirectoryPartition needs a directory");
     dirLastModified = attr.lastModifiedTime();
   }
 
@@ -195,7 +181,7 @@ public class DirectoryPartition {
    * Scan for subdirectories, make each into a DirectoryPartitionBuilder and add as a child
    */
   private void scanForChildren() {
-    if (debug) System.out.printf("%nDirectoryPartitionBuilder %s%n", dir);
+    if (debug) System.out.printf("%DirectoryPartition %s%n", dir);
 
     int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir)) {
@@ -204,7 +190,8 @@ public class DirectoryPartition {
         if (attr.isDirectory()) {
           children.add(new DirectoryPartition(topCollectionName, p, attr));
         }
-        if (debug && (count++ % 100 == 0)) System.out.printf("%d ", count);
+        if (debug && (count % 100 == 0)) System.out.printf("%d ", count);
+        count++;
       }
     } catch (IOException e) {
       e.printStackTrace();

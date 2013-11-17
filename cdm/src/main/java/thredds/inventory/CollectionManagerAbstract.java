@@ -86,7 +86,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   protected CalendarDate startCollection;
 
   protected CollectionManagerAbstract( String collectionName, org.slf4j.Logger logger) {
-    this.collectionName =  cleanName(collectionName);
+    this.collectionName = cleanName(collectionName);
     this.logger = logger != null ? logger : defaultLog;
     // this.logger = loggerFactory.getLogger("fc."+this.collectionName); // seperate log file for each feature collection (!!)
   }

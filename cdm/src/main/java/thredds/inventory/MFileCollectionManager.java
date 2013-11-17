@@ -533,11 +533,12 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   protected void reallyScan(java.util.Map<String, MFile> map) throws IOException {
     getController(); // make sure a controller is instantiated
-    long start = System.currentTimeMillis();
 
     // run through all scanners and collect MFile instances into the Map
     int count = 0;
     for (MCollection mc : scanList) {
+      long start = System.currentTimeMillis();
+      System.out.printf("MFileCollectionManager reallyScan %s%n", mc.getDirectoryName());
 
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
       Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);  /// NCDC wants subdir /global/nomads/nexus/gfsanl/**/gfsanl_3_.*\.grb$
@@ -552,11 +553,14 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
         map.put(mfile.getPath(), mfile);
         count++;
       }
-    }
 
-    if (logger.isDebugEnabled()) {
+
       long took = (System.currentTimeMillis() - start) / 1000;
-      logger.debug("{} : was scanned nfiles= {} took={} secs", collectionName, count, took);
+      System.out.printf("MFileCollectionManager reallyScan %s took %d secs%n", collectionName, took);
+      if (logger.isDebugEnabled()) {
+        long took2 = (System.currentTimeMillis() - start) / 1000;
+        logger.debug("{} : was scanned nfiles= {} took={} secs", collectionName, count, took2);
+     }
     }
 
     if (map.size() == 0) {
