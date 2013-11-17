@@ -62,7 +62,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   public static final String MAGIC_START = "Grib2CollectionIndex";
   protected static final int minVersionSingle = 11;
   protected static final int version = 12;
-  private static final boolean showFiles = false;
+  private static final boolean showFiles = true;
 
     // called by tdm
   static public boolean update(CollectionManagerRO dcm, org.slf4j.Logger logger) throws IOException {
@@ -478,8 +478,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     //intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
     //useGenType = (config == null) || (config.useGenType == null) ? false : config.useGenType;
 
+    int total = 0;
     for (MFile mfile : dcm.getFiles()) {
-      if (showFiles) logger.debug("{}: {}", fileno, mfile.getPath());
+      //if (showFiles) logger.debug("{}: {}", fileno, mfile.getPath());
 
       Grib2Index index = null;
       try {
@@ -489,6 +490,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       } catch (IOException ioe) {
         logger.error("Grib2CollectionBuilder "+gc.getName()+" : reading/Creating gbx9 index for file "+ mfile.getPath()+" failed", ioe);
         continue;
+      }
+      if (showFiles) {
+        int n = index.getNRecords();
+        total += n;
+        System.out.printf("Open %d %s number of records = %d (%d) %n", fileno, mfile.getPath(), n, total);
       }
 
       for (Grib2Record gr : index.getRecords()) {

@@ -1,14 +1,21 @@
 package ucar.nc2.grib;
 
+import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.filesystem.MFileOS;
+import thredds.inventory.CollectionManager;
+import thredds.inventory.MFile;
+import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryPartitionCollection;
 import thredds.inventory.partition.IndexReader;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
+import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.grib.grib2.builder.*;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
@@ -48,17 +55,17 @@ public class GribCdmIndex implements IndexReader {
     DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, topPath, indexWriter, out, logger);
 
     Grib2DirectoryPartitionBuilder builder = new Grib2DirectoryPartitionBuilder(dpart.getCollectionName(), topPath, dpart, logger);
-
     return builder.createPartitionedIndex(out);
+  }
 
-    // first find all the children
-    //DirectoryPartitionBuilder dirPart = new DirectoryPartitionBuilder(collectionName, topDir.getPath());
-    //dirPart.constructChildren(CollectionManager.Force.nocheck, indexWriter);
+  // make DirectoryPartition Index for one GribCollection
+  static public GribCollection makeDirectoryCollectionIndex(FeatureCollectionConfig config, CollectionManager.Force force, File topDir, Formatter out) throws IOException {
+    GribCdmIndex indexWriter = new GribCdmIndex();
+    Path topPath = Paths.get(topDir.getPath());
+    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, topPath, indexWriter, out, logger);
+    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
-    // now construct the index
-    //Grib2DirectoryPartitionBuilder builder = new Grib2DirectoryPartitionBuilder();
-    //builder.createIndex(dirPart);
-    //dirPart.show(out);
+    return Grib2CollectionBuilder.factory(dpart, force, logger);
   }
 
   @Override
@@ -138,6 +145,8 @@ public class GribCdmIndex implements IndexReader {
       }
     return null;
   }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
 
     // move index to be a directory partition
   static public boolean moveCdmIndex(String indexFilename, Logger logger) throws IOException {
@@ -337,6 +346,83 @@ public class GribCdmIndex implements IndexReader {
       logger.error("Error reading index " + indexRaf.getLocation(), t);
       return false;
     }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  private static GribCollection readGc(File dir, String filename, FeatureCollectionConfig config) throws IOException {
+    long start = System.currentTimeMillis();
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    GribCollection gc = Grib2CollectionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("readGc GC %s took %s msecs%n", filename, took);
+    return gc;
+  }
+
+
+  private static void rewriteGc(CollectionManager dcm, FeatureCollectionConfig config) throws IOException {
+    dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+    long start = System.currentTimeMillis();
+    GribCollection gc = Grib2CollectionBuilder.factory(dcm, CollectionManager.Force.always, logger);
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("rewriteGc GC %s took %s msecs%n", dcm.getCollectionName(), took);
+    gc.close();
+  }
+
+  private static void rewriteGcFromSingle(MFile mfile, FeatureCollectionConfig config) throws IOException {
+    long start = System.currentTimeMillis();
+    GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, CollectionManager.Force.always, config.gribConfig, logger);
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("rewriteGcFromSingle GC %s took %s msecs%n", mfile, took);
+    gc.close();
+  }
+
+  private static Grib2TimePartition doOnePart(File dir, String filename, FeatureCollectionConfig config) throws IOException {
+    long start = System.currentTimeMillis();
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, logger);  // LOOK why no config ??
+    //GribCollection gc = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("that took %s msecs%n", took);
+    return tp;
+  }
+
+  public static void main(String[] args) throws IOException {
+
+    File cat = new File("B:/ndfd/catalog.xml");
+    org.jdom2.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(cat);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
+    long start = System.currentTimeMillis();
+
+    String topFilename = "B:/ndfd/200901/20090101/ncdc1Year-20090101.ncx";
+    File topDir = new File("B:/ndfd/200901/20090101");
+    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
+
+    /* GribCollection gc = readGc(topDir, topFilename, config);
+    for (MFile mfile : gc.getFiles()) {
+      rewriteGcFromSingle(mfile, config);
+    }
+    gc.close(); */
+
+    Formatter errlog = new Formatter();
+    GribCollection gc = makeDirectoryCollectionIndex(config, CollectionManager.Force.always, topDir, errlog);
+    gc.close();
+    System.out.printf("result = %s%n", errlog);
+
+
+    //MFileCollectionManager dcm = new MFileCollectionManager(config, errlog, logger);
+    //rewriteGc(dcm, config);
+    //System.out.printf("result = %s%n", errlog);
+
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("that all took %s msecs%n", took);
   }
 
 }

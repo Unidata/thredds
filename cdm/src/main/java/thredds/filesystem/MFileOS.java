@@ -113,4 +113,13 @@ public class MFileOS implements MFile {
   public void setAuxInfo(Object auxInfo) {
     this.auxInfo = auxInfo;
   }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("MFileOS{");
+    sb.append("file=").append(file.getPath());
+    sb.append(", lastModified=").append(lastModified);
+    sb.append('}');
+    return sb.toString();
+  }
 }

@@ -1,6 +1,8 @@
 package ucar.nc2.grib.grib2.builder;
 
 import org.jdom2.input.SAXBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManagerRO;
@@ -9,6 +11,7 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Collection;
 import ucar.nc2.grib.grib2.Grib2Gds;
 import ucar.nc2.grib.grib2.Grib2SectionGridDefinition;
+import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
@@ -76,7 +79,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
-     //// header message
+      //// header message
       if (!NcStream.readAndTest(raf, getMagicStart().getBytes())) {
         logger.error("Grib2Collection {}: invalid index", gc.getName());
         return false;
@@ -168,7 +171,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
         return false;
       }
 
-          // do it
+      // do it
       long took = System.currentTimeMillis() - start;
       System.out.printf("  that took %s msecs%n", took);
       return true;
@@ -191,8 +194,9 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   }
 
   int groupno = 0;
+
   GribCollection.GroupHcs readGroup(GribCollectionProto.Group p, GribCollection.GroupHcs group) throws IOException {
-    System.out.printf("Grib2CollectionBuilderFromIndex readGroup %d%n", groupno++);
+    //System.out.printf("Grib2CollectionBuilderFromIndex readGroup %d%n", groupno++);
 
     byte[] rawGds = p.getGds().toByteArray();
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
@@ -253,14 +257,14 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
       for (int i = 0; i < pc.getValuesCount(); i++)
         coords.add(new TimeCoord.Tinv((int) pc.getValues(i), (int) pc.getBound(i)));
-      TimeCoord tc =  new TimeCoord(pc.getCode(), pc.getUnit(), coords);
-      return tc.setIndex( pc.getIndex());
+      TimeCoord tc = new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      return tc.setIndex(pc.getIndex());
     } else {
       List<Integer> coords = new ArrayList<Integer>(pc.getValuesCount());
       for (float value : pc.getValuesList())
         coords.add((int) value);
-      TimeCoord tc =  new TimeCoord(pc.getCode(), pc.getUnit(), coords);
-      return tc.setIndex( pc.getIndex());
+      TimeCoord tc = new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      return tc.setIndex(pc.getIndex());
     }
   }
 
@@ -303,10 +307,31 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
             ensDerivedType, probType, probabilityName, genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
-  public static void main(String[] args) throws IOException {
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilderFromIndex.class);
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  static private final Logger logger = LoggerFactory.getLogger(Grib2CollectionBuilderFromIndex.class);
 
-    File cat = new File ("B:/ndfd/catalog.xml");
+  private static GribCollection doOne(File dir, String filename, FeatureCollectionConfig config) throws IOException {
+    long start = System.currentTimeMillis();
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    GribCollection gc = Grib2CollectionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("that took %s msecs%n", took);
+    return gc;
+  }
+
+  private static Grib2TimePartition doOnePart(File dir, String filename, FeatureCollectionConfig config) throws IOException {
+    long start = System.currentTimeMillis();
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, logger);  // LOOK why no config ??
+    //GribCollection gc = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("that took %s msecs%n", took);
+    return tp;
+  }
+
+  public static void main(String[] args) throws IOException {
+
+    File cat = new File("B:/ndfd/catalog.xml");
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -316,18 +341,25 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       return;
     }
 
-    for (int i=0; i<31; i++) {
-      Formatter f= new Formatter();
-      File dir = new File ("B:/ndfd/200906/2009060");
-      FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
-      RandomAccessFile raf = new RandomAccessFile("B:\\ndfd\\200906\\20090601\\ncdc1Year-20090601.ncx", "r");
+    long start = System.currentTimeMillis();
 
-      long start = System.currentTimeMillis();
-      Grib2CollectionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
-      long took = System.currentTimeMillis() - start;
-      System.out.printf("that took %s msecs%n", took);
+    File dir = new File("B:/ndfd/200901/");
+    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
+
+    Grib2TimePartition tp = doOnePart(dir, "B:/ndfd/200901/ncdc1Year-200901.ncx", config);
+
+    for (TimePartition.Partition part : tp.getPartitions()) {
+      long start2 = System.currentTimeMillis();
+      GribCollection gc = part.getGribCollection();
+      System.out.printf("%s%n", gc);
+      gc.close();
+      long took2 = System.currentTimeMillis() - start2;
+      System.out.printf("that took %s msecs%n", took2);
     }
-  }
+    tp.close();
 
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("that all took %s msecs%n", took);
+  }
 }
 

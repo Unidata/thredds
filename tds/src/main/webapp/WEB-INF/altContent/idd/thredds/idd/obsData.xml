@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-         xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server - Station Data"
-         version="1.0.2">
+         xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS Data Server - Station Data"
+         version="1.0.5">
   <service name="latest" serviceType="Resolver" base=""/>
 
   <service name="all" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
@@ -14,7 +15,7 @@
 
 
   <service name="forBufr" serviceType="Compound" base="">
-    <service name="ncstream" serviceType="NetcdfStream" base="/thredds/ncstream/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>

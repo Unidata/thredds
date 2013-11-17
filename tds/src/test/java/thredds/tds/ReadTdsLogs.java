@@ -661,7 +661,7 @@ public class ReadTdsLogs {
   }
 
   static String serverLive = null; // "http://motherlode.ucar.edu:8080";
-  static String serverTest = "http://thredds-test.ucar.edu";
+  static String serverTest = "http://thredds-dev.ucar.edu";
 
   public static void main(String args[]) throws IOException {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));

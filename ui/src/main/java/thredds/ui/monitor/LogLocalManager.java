@@ -216,8 +216,8 @@ public class LogLocalManager {
           // 4.4: threddsServlet.2013-08-01-14.log
           if (name.startsWith("access.")) {
             filenameDate = name.substring("access.".length(), len - 4);
-          } else if (name.startsWith("threddsServlet.log")) {
-            filenameDate = name.substring("threddsServlet.log".length());
+          } else if (name.startsWith("threddsServlet.log.")) {
+            filenameDate = name.substring("threddsServlet.log.".length());
           } else if (name.startsWith("threddsServlet.")) {
             filenameDate = name.substring("threddsServlet.".length(), len - 4);
           }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-         xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.2">
+         xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server - FNMOC Model Data" version="1.0.5">
 
   <service name="latest" serviceType="Resolver" base=""/>
 
@@ -30,9 +30,8 @@
       <documentation type="processing_level">Read by CDM Grib Collection.</documentation>
 
       <creator>
-        <name vocabulary="DIF">Fleet Numerical Meteorology and Oceanography Center(FNMOC)
-        </name>
-        <contact url="http://gcmd.nasa.gov/Aboutus/software_docs/help_guide.html" email="http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso"/>
+        <name vocabulary="DIF">Fleet Numerical Meteorology and Oceanography Center(FNMOC)</name>
+        <contact url="http://www.usno.navy.mil/FNMOC/" email="http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso"/>
       </creator>
       <publisher>
         <name vocabulary="ADN">University Corporation for Atmospheric Research (UCAR)/Unidata</name>
@@ -40,7 +39,7 @@
       </publisher>
       <timeCoverage>
         <end>present</end>
-        <duration>45 days</duration>
+        <duration>14 days</duration>
       </timeCoverage>
     </metadata>
 

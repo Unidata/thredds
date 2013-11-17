@@ -170,6 +170,10 @@ public class GribCollectionBuilder {
       //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public File getDirectory() {
+      return directory;
+    }
+
     @Override
     public String toString() {
       final StringBuilder sb = new StringBuilder();

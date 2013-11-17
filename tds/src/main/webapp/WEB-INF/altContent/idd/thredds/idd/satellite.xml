@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server" version="1.0.2">
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+         name="THREDDS Data Server - Satellite Data" version="1.0.5">
   <service name="all" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
