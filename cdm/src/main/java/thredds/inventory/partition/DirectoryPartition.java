@@ -57,6 +57,10 @@ public class DirectoryPartition {
     return children;
   }
 
+  public boolean hasChildren() {
+    return (children != null) && children.size() > 0;
+  }
+
   // LOOK
   public Iterable<MFile> getFiles() {
     return null;
@@ -124,13 +128,13 @@ public class DirectoryPartition {
   }
 
   /**
+   * Find all children directories. Recurse.
+   *
    * Look for children by:
    * <ol>
    *   <li>If index exists , use the children inside there./li>
    *   <li>(or) scan the directory for children partitions</li>
    * </ol>
-   *
-   * Note that this is not recursive.
    *
    * @param indexReader  this reads the index, and calls AddChild.addchild() fro each child
    * @return children, may be empty but not null

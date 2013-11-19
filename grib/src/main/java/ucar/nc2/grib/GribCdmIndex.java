@@ -96,81 +96,72 @@ public class GribCdmIndex implements IndexReader {
   }
 
   /**
+   * Rewrite all the ncx indices for all the directories in a directory partition, resursing thjrough all subcirectoies
+   * @param config FeatureCollectionConfig
+   * @throws IOException
+   */
+  static public void rewriteIndexesPartitionRecurse(DirectoryPartitionCollection dpart, FeatureCollectionConfig config) throws IOException {
+    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+
+    // do its children
+    for (CollectionManagerRO part : dpart.makePartitions()) {
+      if (part instanceof DirectoryPartitionCollection) {
+        rewriteIndexesPartitionRecurse((DirectoryPartitionCollection) part, config);
+      } else {
+        Path partPath = Paths.get(part.getRoot());
+        rewriteIndexesFilesAndCollection(config, partPath);
+      }
+    }
+
+    // do this partition
+    try (Grib2TimePartition tp =  Grib2TimePartitionBuilder.factory(dpart, CollectionManager.Force.always, logger)) {}
+  }
+
+  /**
    * Rewrite all the ncx indices for all the directories in a directory partition
    * @param config FeatureCollectionConfig
    * @param dirPath directory path
    * @throws IOException
    */
-  static public void rewriteIndexesPartition(FeatureCollectionConfig config, Path dirPath) throws IOException {
-    GribCdmIndex indexWriter = new GribCdmIndex();
+  static public void rewriteIndexesPartitionAll(FeatureCollectionConfig config, Path dirPath) throws IOException {
+    GribCdmIndex indexReader = new GribCdmIndex();
     Formatter errlog = new Formatter();
-    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, dirPath, indexWriter, errlog, logger);
+    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, dirPath, indexReader, errlog, logger);
+    String errs = errlog.toString();
+    if (errs.length() > 0)
+      System.out.printf("%s%n", errs);
+
+    rewriteIndexesPartitionRecurse(dpart, config);
+  }
+
+  // make Grib Collection Index for one Directory
+  // not sure if force works other than always
+  static public GribCollection makeGribCollectionIndexOneDirectory(FeatureCollectionConfig config, CollectionManager.Force force, Path topPath) throws IOException {
+    DirectoryCollection dpart = new DirectoryCollection( config.name, topPath, logger);
+    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+    return Grib2CollectionBuilder.factory(dpart, force, logger);
+  }
+
+  // make TimePartition Index for one Time partition Directory whose children are GribCollections or TimePartitions
+  // not sure if force works other than always
+  static public Grib2TimePartition makeTimePartitionIndex(FeatureCollectionConfig config, CollectionManager.Force force, Path topPath) throws IOException {
+    GribCdmIndex indexWriter = new GribCdmIndex();
+
+    Formatter errlog = new Formatter();
+    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, topPath, indexWriter, errlog, logger);
     String errs = errlog.toString();
     if (errs.length() > 0)
       System.out.printf("%s%n", errs);
 
     dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
-
-    for (CollectionManagerRO part : dpart.makePartitions()) {
-      Path partPath = Paths.get(part.getRoot());
-      rewriteIndexesFilesAndCollection(config, partPath);
-    }
-
-    try (Grib2TimePartition tp =  Grib2TimePartitionBuilder.factory(dpart, CollectionManager.Force.always, logger)) {}
+    return Grib2TimePartitionBuilder.factory(dpart, force, logger);
   }
-
-  /* static public void rewriteIndexesPartitionRecursive(FeatureCollectionConfig config, DirectoryPartition dpart) throws IOException {
-    GribCdmIndex indexWriter = new GribCdmIndex();
-    Formatter errlog = new Formatter();
-    //DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, dirPath, indexWriter, errlog, logger);
-    String errs = errlog.toString();
-    if (errs.length() > 0)
-      System.out.printf("rewriteIndexesPartitionRecursive2 ERRORS %s%n", errs);
-
-    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
-
-    for (DirectoryPartitionCollection part : dpart.makePartitionCollections()) {
-      rewriteIndexesPartitionRecursive(config, part);
-    }
-
-    for (CollectionManagerRO part : dpart.makePartitions()) {
-      Path partPath = Paths.get(part.getRoot());
-      rewriteIndexesFilesAndCollection(config, partPath);
-    }
-
-    try (Grib2TimePartition tp =  Grib2TimePartitionBuilder.factory(dpart, CollectionManager.Force.always, logger)) {}
-  }
-
-  // pass in topDir, recurse through all nested directories, rewriting all ncx
-  static public void rewriteIndexesPartitionRecursive(FeatureCollectionConfig config, Path dirPath) throws IOException {
-    GribCdmIndex indexWriter = new GribCdmIndex();
-    Formatter errlog = new Formatter();
-    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, dirPath, indexWriter, errlog, logger);
-    String errs = errlog.toString();
-    if (errs.length() > 0)
-      System.out.printf("rewriteIndexesPartitionRecursive ERRORS %s%n", errs);
-
-    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
-
-    for (CollectionManagerRO part : dpart.makePartitions()) {
-      Path partPath = Paths.get(part.getRoot());
-      rewriteIndexesPartitionRecursive(config, partPath);
-    }
-
-    try (Grib2TimePartition tp =  Grib2TimePartitionBuilder.factory(dpart, CollectionManager.Force.always, logger)) {}
-  }  */
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    // make Grib Collection Index for one Directory
-  static public GribCollection makeGribCollectionIndexOneDirectory(FeatureCollectionConfig config, CollectionManager.Force force, Path topPath, Formatter out) throws IOException {
-    DirectoryCollection dpart = new DirectoryCollection( config.name, topPath, logger);
-    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
-    return Grib2CollectionBuilder.factory(dpart, force, logger);
-  }
 
     // make DirectoryPartition Index for one Time partition Directory and its children GribCollections
   static public Grib2TimePartition makeTimePartitionIndexOneDirectoryAll(FeatureCollectionConfig config, CollectionManager.Force force, Path topPath, Formatter out) throws IOException {
@@ -186,19 +177,7 @@ public class GribCdmIndex implements IndexReader {
     return Grib2TimePartitionBuilder.factory(dpart, force, logger);
   }
 
-    // make DirectoryPartition Index for one Time partition Directory and its children GribCollections
-  static public Grib2TimePartition makeTimePartitionIndexOneDirectory(FeatureCollectionConfig config, Path topPath) throws IOException {
-    GribCdmIndex indexWriter = new GribCdmIndex();
 
-    Formatter errlog = new Formatter();
-    DirectoryPartitionCollection dpart = new DirectoryPartitionCollection( config, topPath, indexWriter, errlog, logger);
-    String errs = errlog.toString();
-    if (errs.length() > 0)
-      System.out.printf("%s%n", errs);
-
-    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
-    return Grib2TimePartitionBuilder.factory(dpart, CollectionManager.Force.always, logger);
-  }
 
   ////////////////////////////////////////////////////////////
 
@@ -241,7 +220,7 @@ public class GribCdmIndex implements IndexReader {
           gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf, config, logger);
           break;
         case Grib2TimePartitionBuilder.MAGIC_START:
-          gc = Grib2TimePartitionBuilderFromIndex.createFromIndex(indexFile, null, raf, logger);
+          gc = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(indexFile, null, raf, logger);
           break;
         case Grib1TimePartitionBuilder.MAGIC_START:
           gc = Grib1TimePartitionBuilder.createFromIndex(indexFile, null, raf, logger);
@@ -535,7 +514,7 @@ public class GribCdmIndex implements IndexReader {
   private static Grib2TimePartition doOnePart(File dir, String filename, FeatureCollectionConfig config) throws IOException {
     long start = System.currentTimeMillis();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, logger);  // LOOK why no config ??
+    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex("test", dir, raf, logger);  // LOOK why no config ??
     //GribCollection gc = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
     long took = System.currentTimeMillis() - start;
     System.out.printf("that took %s msecs%n", took);
@@ -558,16 +537,20 @@ public class GribCdmIndex implements IndexReader {
 
     long start = System.currentTimeMillis();
 
-    Formatter errlog = new Formatter();
+    /* Formatter errlog = new Formatter();
     Path topPath = Paths.get("B:/ndfd/200901/20090101");
     GribCollection gc = makeGribCollectionIndexOneDirectory(config, CollectionManager.Force.always, topPath, errlog);
     System.out.printf("%s%n", errlog);
-    gc.close();
+    gc.close(); */
 
 
     //Path topPath = Paths.get("B:/ndfd/200906");
-    //makeTimePartitionIndexOneDirectory(config, topPath);
-     //rewriteIndexesPartition(config, topPath);
+    // rewriteIndexesPartitionAll(config, topPath);
+    //Grib2TimePartition tp = makeTimePartitionIndexOneDirectory(config, CollectionManager.Force.always, topPath);
+    //tp.close();
+
+    Path topPath = Paths.get("B:/ndfd/");
+    rewriteIndexesPartitionAll(config, topPath);
 
     long took = System.currentTimeMillis() - start;
     System.out.printf("that all took %s msecs%n", took);

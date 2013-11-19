@@ -80,6 +80,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   protected Map<String, Object> auxInfo; // lazy init
   private ListenerManager lm; // lazy init
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
+  private boolean isPartition; // true if partition, else GribCollection
 
   // these actually dont change, but are not set in the constructor
   protected DateExtractor dateExtractor;
@@ -89,6 +90,14 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
     this.collectionName = cleanName(collectionName);
     this.logger = logger != null ? logger : defaultLog;
     // this.logger = loggerFactory.getLogger("fc."+this.collectionName); // seperate log file for each feature collection (!!)
+  }
+
+  public boolean isPartition() {
+    return isPartition;
+  }
+
+  public void setPartition(boolean partition) {
+    isPartition = partition;
   }
 
   @Override

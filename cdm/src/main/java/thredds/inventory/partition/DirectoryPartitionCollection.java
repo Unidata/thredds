@@ -20,11 +20,13 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
   final String topCollection;
   final IndexReader indexReader;
   final Path topDir;
+  final Formatter errlog;
 
   public DirectoryPartitionCollection(FeatureCollectionConfig config, Path topDir, IndexReader indexReader, Formatter errlog, org.slf4j.Logger logger) {
     super(config, errlog, logger);
     this.topDir = topDir;
     this.indexReader = indexReader;
+    this.errlog = errlog;
     this.type = Type.directory;
 
     // corrections - lame
@@ -45,11 +47,20 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
 
     List<CollectionManagerRO> result = new ArrayList<>();
     for (DirectoryPartition child : builder.getChildren()) {
-      // String name = collectionName+"-"+mfile.getName();
-      DirectoryPartitionManager dcm = new DirectoryPartitionManager(child);
-      result.add(dcm);
+      if (child.hasChildren()) {
+        result.add(makeChildCollection(child)); // nested
+
+      } else {
+        result.add(new DirectoryPartitionManager(child));
+      }
     }
 
+    return result;
+  }
+
+  private DirectoryPartitionCollection makeChildCollection(DirectoryPartition dp) {
+    DirectoryPartitionCollection result =  new DirectoryPartitionCollection(this.config, dp.getDir(), this.indexReader, this.errlog, this.logger);
+    result.setPartition(true);
     return result;
   }
 
@@ -108,6 +119,11 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
     public void putAuxInfo(String key, Object value) {
       if (auxInfo == null) auxInfo = new HashMap<>(10);
       auxInfo.put(key, value);
+    }
+
+    @Override
+    public boolean isPartition() {
+      return false;
     }
 
     @Override

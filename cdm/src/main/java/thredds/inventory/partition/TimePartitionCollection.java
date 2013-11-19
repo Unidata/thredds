@@ -187,6 +187,11 @@ public class TimePartitionCollection extends MFileCollectionManager implements P
     }
 
     @Override
+    public boolean isPartition() {
+      return true;
+    }
+
+    @Override
     public String getCollectionName() {
       return name;
     }

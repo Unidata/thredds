@@ -10,6 +10,8 @@ import ucar.nc2.time.CalendarDate;
  */
 public interface CollectionManagerRO {
 
+  public boolean isPartition();
+
   /**
    * The name of the collection
    * @return name of the collection

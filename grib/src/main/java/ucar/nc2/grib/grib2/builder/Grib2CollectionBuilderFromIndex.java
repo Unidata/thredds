@@ -76,7 +76,9 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
       //// header message
       if (!NcStream.readAndTest(raf, getMagicStart().getBytes())) {
-        logger.error("Grib2Collection {}: invalid index", gc.getName());
+        raf.seek(0);
+        NcStream.readAndTest(raf, getMagicStart().getBytes()); // debug
+        logger.error("Grib2Collection {}: invalid index magic", gc.getName());
         return false;
       }
 
@@ -92,7 +94,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
       int size = NcStream.readVInt(raf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
-        logger.warn("Grib2Collection {}: invalid index ", gc.getName());
+        logger.warn("Grib2Collection {}: invalid index size", gc.getName());
         return false;
       }
 
@@ -310,7 +312,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   private static Grib2TimePartition doOnePart(File dir, String filename, FeatureCollectionConfig config) throws IOException {
     long start = System.currentTimeMillis();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, logger);  // LOOK why no config ??
+    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex("test", dir, raf, logger);  // LOOK why no config ??
     //GribCollection gc = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
     long took = System.currentTimeMillis() - start;
     System.out.printf("that took %s msecs%n", took);

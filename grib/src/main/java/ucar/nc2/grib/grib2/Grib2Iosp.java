@@ -352,7 +352,7 @@ public class Grib2Iosp extends GribIosp {
       String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName();
 
       if (isTimePartitioned) {
-        timePartition = Grib2TimePartitionBuilderFromIndex.createFromIndex(name, null, raf, logger);
+        timePartition = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(name, null, raf, logger);
         gribCollection = timePartition;
       } else {
         gribCollection = Grib2CollectionBuilderFromIndex.createFromIndex(name, null, raf, gribConfig, logger);

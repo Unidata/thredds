@@ -18,8 +18,15 @@ import java.util.*;
  */
 public class Grib2TimePartitionBuilderFromIndex extends Grib2CollectionBuilderFromIndex {
 
+    // read in the index, open raf
+  static public GribCollection createTimePartitionFromIndex(String name, File directory, org.slf4j.Logger logger) throws IOException {
+    File idxFile = GribCollection.getIndexFile(name, directory);
+    RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
+    return createTimePartitionFromIndex(name, directory, raf, logger);
+  }
+
   // read in the index, index raf already open
-  static public Grib2TimePartition createFromIndex(String name, File directory, RandomAccessFile raf, org.slf4j.Logger logger) throws IOException {
+  static public Grib2TimePartition createTimePartitionFromIndex(String name, File directory, RandomAccessFile raf, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilderFromIndex builder = new Grib2TimePartitionBuilderFromIndex(name, directory, null, logger);
     if (builder.readIndex(raf)) {
       return builder.tp;

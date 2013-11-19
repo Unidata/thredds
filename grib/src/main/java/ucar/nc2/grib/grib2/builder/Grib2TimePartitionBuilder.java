@@ -63,7 +63,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   static private final boolean trace = false;
 
   // called by tdm
-  static public boolean update(TimePartitionCollection tpc, org.slf4j.Logger logger) throws IOException {
+  static public boolean update(PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     if (!builder.needsUpdate()) return false;
     builder.readOrCreateIndex(CollectionManager.Force.always);
@@ -72,7 +72,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   }
 
     // read in the index, create if it doesnt exist or is out of date
-  static public Grib2TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public Grib2TimePartition factory(PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.readOrCreateIndex(force);
     return builder.tp;
@@ -101,7 +101,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   //////////////////////////////////////////////////////////////////////////////////
 
   private final PartitionManager tpc; // defines the partition
-  private final Grib2TimePartition tp;  // build this object
+  private Grib2TimePartition tp;  // build this object
 
   protected Grib2TimePartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(tpc, false, logger);
@@ -115,7 +115,6 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     this.tpc = tpc;
   }
 
-  // old
   private boolean readOrCreateIndex(CollectionManager.Force ff) throws IOException {
     File idx = gc.getIndexFile();
 
@@ -125,13 +124,14 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
-      if (createPartitionedIndex(null)) {  // LOOK at this point we are going to remake the whole thing
+      if (createPartitionedIndex(null)) {  // write index
         return readIndex(idx.getPath()); // read back in index
       }
     }
     return false;
   }
 
+  // LOOK not sure if this works
   private boolean needsUpdate(long collectionLastModified) throws IOException {
     CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
     for (CollectionManagerRO dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
@@ -153,9 +153,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   }
 
   private boolean readIndex(RandomAccessFile indexRaf) throws IOException {
-    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     try {
-      gc = Grib2TimePartitionBuilderFromIndex.createFromIndex(this.name, this.directory, indexRaf, config, logger);
+      this.tp = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, logger);
+      this.gc = tp;
       return true;
     } catch (IOException ioe) {
       return false;
@@ -176,7 +176,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     List<TimePartition.Partition> bad = new ArrayList<>();
     for (TimePartition.Partition tpp : tp.getPartitions()) {
       try {
-        tpp.gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists
+        tpp.gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists  LOOK force ??
         if (trace) logger.debug(" Open partition {}", tpp.getDcm().getCollectionName());
       } catch (Throwable t) {
         logger.error(" Failed to open partition " + tpp.getName(), t);

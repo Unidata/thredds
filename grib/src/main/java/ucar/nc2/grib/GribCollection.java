@@ -37,10 +37,15 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionManagerRO;
 import thredds.inventory.MFile;
+import thredds.inventory.partition.PartitionManager;
+import thredds.inventory.partition.TimePartitionCollection;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
+import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilderFromIndex;
+import ucar.nc2.grib.grib2.builder.Grib2TimePartitionBuilder;
+import ucar.nc2.grib.grib2.builder.Grib2TimePartitionBuilderFromIndex;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -171,7 +176,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Create a GribCollection from a collection of grib files
+   * Create a GribCollection from a collection of grib files, or a TimePartition from a collection of GribCollection index files
    *
    * @param isGrib1 true if files are grib1, else grib2
    * @param dcm     the file collection : assume its been scanned
@@ -181,14 +186,26 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
    */
   static public GribCollection factory(boolean isGrib1, CollectionManagerRO dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     if (isGrib1) {
-      return Grib1CollectionBuilder.factory(dcm, force, logger);
+      if (dcm.isPartition())
+        return Grib1TimePartitionBuilder.factory(dcm, force, logger);
+      else
+        return Grib1CollectionBuilder.factory(dcm, force, logger);
     }
 
-    if (force == CollectionManager.Force.never) {
-      FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-      return Grib2CollectionBuilderFromIndex.createFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
+    // grib2
+    if (dcm.isPartition()) {
+      if (force == CollectionManager.Force.never) {  // LOOK not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
+        return Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), logger);
+      } else {
+        return Grib2TimePartitionBuilder.factory((PartitionManager) dcm, force, logger);
+      }
     } else {
-      return Grib2CollectionBuilder.factory(dcm, force, logger);
+      if (force == CollectionManager.Force.never) {
+        FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+        return Grib2CollectionBuilderFromIndex.createFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
+      } else {
+        return Grib2CollectionBuilder.factory(dcm, force, logger);
+      }
     }
   }
 
