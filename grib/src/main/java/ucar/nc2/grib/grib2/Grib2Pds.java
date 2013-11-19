@@ -60,6 +60,8 @@ public abstract class Grib2Pds {
         return new Grib2Pds15(input);
       case 30:
         return new Grib2Pds30(input);
+      case 31:
+        return new Grib2Pds31(input);
       case 48:
         return new Grib2Pds48(input);
       default:
@@ -1197,7 +1199,78 @@ public abstract class Grib2Pds {
     public double value; // value of central wave number of band nb (units: m**-1)
   }
 
-  //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Product definition template 4.31 - satellite product
+     */
+    static private class Grib2Pds31 extends Grib2Pds {
+
+        static int octetsPerBand = 11;
+
+        Grib2Pds31(byte[] input) throws IOException {
+            super(input);
+        }
+
+        // LOOK - could put this into a dummy superclass in case others need
+
+        @Override
+        public int getTimeUnit() {
+            return 0;
+        }
+
+        @Override
+        public int getForecastTime() {
+            return 0;
+        }
+
+        /**
+         * Observation generating process identifier (defined by originating centre)
+         *
+         * @return GenProcess
+         */
+        public int getGenProcessId() {
+            return getOctet(13);
+        }
+
+        /**
+         * Number of contributing spectral bands (NB)
+         *
+         * @return Number of contributing spectral
+         */
+        public int getNumSatelliteBands() {
+            return getOctet(14);
+        }
+
+        /**
+         * SatelliteBand
+         *
+         * @return SatelliteBands
+         */
+        public SatelliteBand[] getSatelliteBands() {
+            int nb = getNumSatelliteBands();
+            SatelliteBand[] result = new SatelliteBand[nb];
+            int pos = 15;
+            for (int i = 0; i < nb; i++) {
+                SatelliteBand sb = new SatelliteBand();
+                sb.number = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
+                sb.series = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
+                sb.instrumentType = GribNumbers.int2(getOctet(pos + 4), getOctet(pos + 5));
+                int scaleFactor = getOctetSigned(pos + 6);
+                int svalue = GribNumbers.int4(getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9), getOctet(pos + 10));
+                sb.value = applyScaleFactor(scaleFactor, svalue);
+                pos += octetsPerBand;
+                result[i] = sb;
+            }
+            return result;
+        }
+
+        public int templateLength() {
+            return 14 + getNumSatelliteBands() * octetsPerBand;
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
 
   /* Product definition template 4.48 – analysis or forecast at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol
   Octet No. Contents
