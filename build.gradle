@@ -41,7 +41,8 @@ subprojects {
               'Implementation-Vendor': 'UCAR/Unidata',
               'Implementation-Vendor-Id': 'edu.ucar',
               'Built-On': new Date(),
-              'Build-Jdk': System.properties['java.version']
+              'Build-Jdk': System.properties['java.version'],
+              'Permissions': 'all-permissions'
     }
   }
 

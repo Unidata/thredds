@@ -99,17 +99,48 @@
     <td>&quot;catalog.html&quot;</td>
   </tr>
 </table>
-<!--
+<h3>Content Root</h3>
+<p><strong>tds.content.root.path</strong> must be found before anything else is done.</p>
+<p>Typical case is that Tomcat is started from {tomcat_home}/bin, and the content root is {tomcat_home}/content/thredds</p>
+<h3>Catalog Substitution</h3>
+<p>Spring /src/main/webapp/WEB-INF/applicationContext-tdsConfig.xml</p>
+<pre>&lt;util:map id=&quot;dataRootLocationAliasExpanders&quot; map-class=&quot;java.util.HashMap&quot;&gt;
+  &lt;entry key=&quot;cdmUnitTest&quot; value=&quot;${tds.dir.cdmUnitTest}&quot;/&gt;
+&lt;/util:map&gt;</pre>
+<p><!--
 tds.content.startup.path=WEB-INF/altContent/startup
 tds.content.idd.path=WEB-INF/altContent/idd/thredds
 tds.content.motherlode.path=WEB-INF/altContent/motherlode/thredds
 
 tds.install.url=catalog.html
--->
+--> will find the named property (in this example,<em> tds.dir.cdmUnitTest</em>) and make a map and inject into DataRootHandler class:</p>
+<pre> @Resource(name = &quot;dataRootLocationAliasExpanders&quot;)
+ public void setDataRootLocationAliasExpanders(Map&lt;String, String&gt; aliases) {
+   for (String key : aliases.keySet()) {
+     String value = aliases.get(key);
+     if (value == null || value.isEmpty()) continue;
+     StartsWithPathAliasReplacement alias = new StartsWithPathAliasReplacement(&quot;${&quot; + key + &quot;}&quot;, value);
+     dataRootLocationAliasExpanders.add(alias);
+   }
+ }</pre>
+<p>if the root starts starts with ${key}, the value is substituted in the following places:</p>
+<ol>
+  <li>when DataRootHandler.addRoot is called</li>
+  <li>The dataRootLocationAliasExpanders are injected into InvCatalogFactory10:
+    <ol>
+      <li>readFeatureCollection() : spec string</li>
+      <li>readDatasetFmrc : location</li>
+      <li>readDatasetRoot : location / dirLocation</li>
+      <li>readDatasetScan : dirLocation</li>
+      <li>readDatasetScanNew : location</li>
+    </ol>
+  </li>
+</ol>
+<p>Note that the FeatureCollectionConfig objects themselves are not modified. Problem here with TDS</p>
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">
-  This document is maintained by Unidata and was last updated July 2011.
+  This document is maintained by Unidata and was last updated November 2013.
   Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

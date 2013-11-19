@@ -153,6 +153,11 @@ The XML Schema:
     names. <em>Use this OR a date extractor in the specification string, but not both.</em></li>
   <li><strong>timePartition</strong> (optional): This defines the time intervals from which the collection is partitioned. This is used for very large datasets.
     Use this with caution, as it has far reaching effects on how your data is presented.
+  The values may be the string <em>directory</em> or a time period like <em>day</em>, <em>month</em>, <em>year</em>.
+  <ol>
+    <li><strong>Time period:</strong> all files are scanned in, then divided into partitions based on the time period.</li>
+    <li><strong>Directory: </strong>the files must be divided into subdirectories of the root. All the files that pass the filter are scanned in and made into a time partition. This is much faster when there are many files (&gt; 1M).</li>
+  </ol>
   </li>
 </ol>
 <h3>Date Extractor<a name="dateExtractor" id="dateExtractor"></a></h3>

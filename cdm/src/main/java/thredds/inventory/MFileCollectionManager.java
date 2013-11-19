@@ -557,8 +557,10 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   protected void reallyScan(java.util.Map<String, MFile> map) throws IOException {
     getController(); // make sure a controller is instantiated
+    long start = System.currentTimeMillis();
 
     // run through all scanners and collect MFile instances into the Map
+    int count = 0;
     for (MCollection mc : scanList) {
 
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
@@ -568,14 +570,17 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
         continue;
       }
 
-      int count = 0;
       while (iter.hasNext()) {
         MFile mfile = iter.next();
         mfile.setAuxInfo(mc.getAuxInfo());
         map.put(mfile.getPath(), mfile);
         count++;
       }
-      logger.debug("{} : was scanned nfiles= {} ", collectionName, count);
+    }
+
+    if (logger.isDebugEnabled()) {
+      long took = (System.currentTimeMillis() - start) / 1000;
+      logger.debug("{} : was scanned nfiles= {} took={} secs", collectionName, count, took);
     }
 
     if (map.size() == 0) {

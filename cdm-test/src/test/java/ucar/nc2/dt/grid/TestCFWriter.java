@@ -33,6 +33,8 @@
 package ucar.nc2.dt.grid;
 
 import junit.framework.TestCase;
+import ucar.nc2.Variable;
+import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.test.util.TestDir;
@@ -74,5 +76,44 @@ public class TestCFWriter extends TestCase {
     result.close();
 
   }
+
+  public void testSizeEstimate() throws Exception {
+    String fileIn = TestDir.cdmUnitTestDir + "ft/grid/testCFwriter.nc";
+
+    ucar.nc2.dt.grid.GridDataset gds = GridDataset.open(fileIn);
+    List<String> gridList = new ArrayList<String>();
+    for  (GridDatatype grid : gds.getGrids()) {
+      Variable v = grid.getVariable();
+      System.out.printf("  %20s == %d%n", grid.getName(), v.getSize() * v.getElementSize());
+      gridList.add(grid.getName());
+    }
+
+    CFGridWriter writer = new CFGridWriter();
+    //  makeGridFileSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList,
+    //			LatLonRect llbb, int horizStride, Range zRange, CalendarDateRange dateRange, int stride_time, boolean addLatLon)
+    long totalSize = writer.makeGridFileSizeEstimate(gds, gridList, (LatLonRect) null, 1, null, null, 1, false);
+    long subsetSize = writer.makeGridFileSizeEstimate(gds, gridList, new LatLonRect(new LatLonPointImpl(30, -109), 10, 50), 1, null, null, 1, false);
+
+    System.out.printf("total size  = %d%n", totalSize);
+    System.out.printf("subset size = %d%n", subsetSize);
+    assert subsetSize < totalSize;
+
+    String varName = "Temperature";
+    gridList = new ArrayList<String>();
+    gridList.add(varName);
+
+    totalSize = writer.makeGridFileSizeEstimate(gds, gridList, (LatLonRect) null, 1, null, null, 1, false);
+    subsetSize = writer.makeGridFileSizeEstimate(gds, gridList, new LatLonRect(new LatLonPointImpl(30, -109), 10, 50), 1, null, null, 1, false);
+
+    System.out.printf("total size Temp only  = %d%n", totalSize);
+    System.out.printf("subset size Temp only = %d%n", subsetSize);
+    assert subsetSize < totalSize;
+
+    gds.close();
+
+
+  }
+
+
 
 }

@@ -41,37 +41,47 @@
   <loggers>
 
     <logger name="thredds.tdm" level="info" additivity="false">
-      <appender-ref ref="consoleLogger"/>
+      <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="ucar.nc2.grib" level="info" additivity="false">
-      <appender-ref ref="consoleLogger"/>
+    <logger name="ucar.nc2.grib.grib1.Grib1CollectionBuilder" level="debug" additivity="false">
+      <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="thredds.inventory" level="info" additivity="false">
-      <appender-ref ref="consoleLogger"/>
+    <logger name="ucar.nc2.grib.grib2.Grib2CollectionBuilder" level="debug" additivity="false">
+      <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="thredds.inventory.CollectionUpdater" level="info" additivity="false">
-      <appender-ref ref="consoleLogger"/>
+    <logger name="thredds.inventory" level="debug" additivity="false">
+      <!-- appender-ref ref="consoleLogger"/ -->
+      <appender-ref ref="fileLogger"/>
+    </logger>
+
+    <logger name="thredds.inventory.CollectionUpdater" level="debug" additivity="false">
+      <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
 
     <logger name="thredds.catalog.InvDatasetFeatureCollection" level="info" additivity="false">
-      <appender-ref ref="consoleLogger"/>
+      <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
 
     <logger name="thredds.catalog.InvDatasetFcGrib" level="info" additivity="false">
-      <appender-ref ref="consoleLogger"/>
+      <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <root level="warn" additivity="false">
-      <appender-ref ref="consoleLogger"/>
+    <!-- shut the f*** up -->
+    <logger name="org.apache.commons.httpclient" level="error" additivity="false">
+      <appender-ref ref="fileLogger"/>
+    </logger>
+
+    <root level="info" additivity="false">
+      <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </root>
 

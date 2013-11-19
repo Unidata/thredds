@@ -145,44 +145,6 @@
 
     </dataset>
 
-    <!-- dataset name="NCDC-NOMADS Climate Forecast System Reanalysis (CFSR)">
-      <metadata inherited="true">
-        <dataFormat>GRIB-2</dataFormat>
-        <documentation xlink:href="http://nomads.ncdc.noaa.gov/data.php#cfs-reanal-data"
-                       xlink:title="NOMADS CFSR Page"/>
-        <creator>
-          <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
-          <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
-        </creator>
-
-        <documentation type="summary">The NCEP Climate Forecast System Reanalysis (CFSR) was designed and executed as a global,
-          high resolution, coupled atmosphere-ocean-land surface-sea ice system to provide the best estimate of the state of
-          these coupled domains over the 31-year period of 1979 to 2009.  This is a small part of that for testing.
-        </documentation>
-      </metadata>
-
-      <featureCollection name="NCDC-CFSR-TimeSeries" featureType="GRIB" harvest="true" path="grib/NCDC/CFSR/TimeSeries">
-        <metadata inherited="true">
-          <documentation type="summary">Hourly time series dataset</documentation>
-        </metadata>
-
-        <collection spec="/data/thredds/ncdc/cfsr/timeseries/**/.*grb2$"
-                    timePartition="directory"
-                    dateFormatMark="#timeseries/#yyyyMM"/>
-        <update startup="true" trigger="allow" />
-        <gribConfig>
-          <gdsHash from="1450218978" to="1450192070"/>
-          <gdsName hash='1450192070' groupName='FLX GaussianT382'/>
-          <gdsName hash='2079260842' groupName='FLX GaussianT62'/>
-          <gdsName hash='-175190888' groupName='OCN LatLon0p5'/>
-          <gdsName hash='823344589' groupName='OCN LatLon1p0'/>
-          <gdsName hash='-1857264615' groupName='PGB LatLon0p5'/>
-          <gdsName hash='-829780679' groupName='PGB LatLon2p5'/>
-          <intvFilter excludeZero="true"/>
-        </gribConfig>
-      </featureCollection>
-    </dataset -->
-
     <!-- dataset name="Unidata Real-Time Regional Model">
 
       <metadata inherited="true">

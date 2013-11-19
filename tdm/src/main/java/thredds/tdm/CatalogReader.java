@@ -36,6 +36,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import thredds.catalog.*;
+import thredds.util.PathAliasReplacement;
 import ucar.nc2.time.CalendarDate;
 
 import java.io.*;
@@ -78,7 +79,9 @@ public class CatalogReader {
     }
   }  */
 
-  public CatalogReader(Resource catR) {
+  List<PathAliasReplacement> aliasExpanders;
+  public CatalogReader(Resource catR, List<PathAliasReplacement> aliasExpanders) {
+    this.aliasExpanders = aliasExpanders;
     try {
       log.info("\n**************************************\nCatalog init " + catR + "\n[" + CalendarDate.present() + "]");
       initCatalog(catR, true);
@@ -99,6 +102,8 @@ public class CatalogReader {
     staticCatalogHash.add(path);
 
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true); // always validate the config catalogs
+    factory.setDataRootLocationAliasExpanders(aliasExpanders);
+
     InvCatalogImpl cat = readCatalog(factory, catR);
     if (cat == null) {
       log.warn("initCatalog(): failed to read catalog <" + catR + ">.");

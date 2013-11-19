@@ -115,8 +115,8 @@ public class FeatureDatasetTypeTest {
 	public void getFDForFeatureCollectionGridDataset() throws IOException{
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		                                                                     //testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd
-		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd");
+
+		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testGFSfmrc/GFS_CONUS_80km_nc_best.ncd");
     assertNotNull(fd);
 		assertEquals(FeatureType.GRID, fd.getFeatureType());
 	}

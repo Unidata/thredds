@@ -34,123 +34,171 @@ package thredds.crawlabledataset.mock;
 
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
+import thredds.crawlabledataset.CrawlableDatasetUtils;
 
 import java.util.*;
 import java.io.IOException;
 
+/**
+ * Basic mock for CrawlableDataset.
+ *
+ * Path separator is slash ("/"). Path must start with separator and must
+ * have at least one path segment.
+ */
 public class MockCrawlableDataset implements CrawlableDataset
 {
-  private final String path;
-  private final String name;
-  private final int lastPathSegmentSeparatorIndx;
+  private String path;
+  private String name;
 
   private Date lastModified = null;
   private long length = -1;
   private boolean exists = true;
 
-  private final boolean isCollection;
+  private boolean isCollection;
+  private CrawlableDataset parent;
+  private List<CrawlableDataset> childrenList;
+  private Map<String,CrawlableDataset> childrenMap; // Used only to ensure unique child name (all else uses childrenList)
 
-  public MockCrawlableDataset( String path, boolean isCollection )
-  {
-    this( new MockCrDsInfo( path, true, isCollection,  null, -1));
+  public MockCrawlableDataset( String path, boolean isCollection ) {
+    this( path, null, -1, isCollection);
   }
 
-  public MockCrawlableDataset( MockCrDsInfo crDsInfo )
-  {
-    if ( crDsInfo == null )
-      throw new IllegalArgumentException( "CrawlableDataset info must not be null.");
+  public MockCrawlableDataset( String path, Date lastModified, long length, boolean isCollection ) {
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments(path);
+    if ( ! CrawlableDatasetUtils.isValidAbsolutePath(pathSegments)
+        && ! CrawlableDatasetUtils.isValidRelativePath( pathSegments))
+      throw new IllegalArgumentException( String.format( "Ill-formed path [%s]", path));
+    this.path = path;
+    this.name = pathSegments[ pathSegments.length - 1 ];
 
-    if ( crDsInfo.getPath() == null || crDsInfo.getPath().equals( "" ) )
-      throw new IllegalArgumentException( "Path must not be null or empty." );
-    this.path = crDsInfo.getPath();
+    this.lastModified = lastModified;
+    this.length = length;
+    this.isCollection = isCollection;
+  }
 
-    lastPathSegmentSeparatorIndx = this.path.lastIndexOf( "/" );
-    if ( lastPathSegmentSeparatorIndx == -1 )
-      this.name = this.path;
-    else
-    {
-      this.name = this.path.substring( lastPathSegmentSeparatorIndx + 1 );
-      if ( this.name.equals( "" ) )
-        throw new IllegalArgumentException( "Path [" + path + "] must not end with a slash (\"/\")" );
-      if ( !this.path.endsWith( "/" + this.name ) )
-        throw new IllegalArgumentException( "Path [" + this.path + "] must end with name [" + this.name + "]." );
+  public void setParent( MockCrawlableDataset parent ) {
+    this.parent = parent;
+  }
+
+  /**
+   * Add a child (or replace existing one with same name).
+   * @param child the CrDs to add.
+   * @return true if the list of children has changed.
+   */
+  public boolean addChild( MockCrawlableDataset child ) {
+    if ( child == null || ! this.isCollection )
+      return false;
+    if ( this.childrenMap == null ) {
+      this.childrenMap = new HashMap<String, CrawlableDataset>();
+      this.childrenList = new ArrayList<CrawlableDataset>();
     }
-
-    this.exists = crDsInfo.isExists();
-    this.isCollection = crDsInfo.isCollection();
-    this.lastModified = crDsInfo.getLastModified();
-    this.length = crDsInfo.getLength();
+    CrawlableDataset prevCrDs = this.childrenMap.put(child.getName(), child);
+    if ( prevCrDs != null )
+      this.childrenList.remove( prevCrDs);
+    return this.childrenList.add( child);
   }
 
-  public Object getConfigObject()
-  {
-    return null;
+  public boolean removeChild( String childName ) {
+    if ( childName == null || ! this.isCollection )
+      return false;
+    if ( this.childrenMap == null || this.childrenMap.isEmpty() )
+      return false;
+    CrawlableDataset prevCrDs = this.childrenMap.remove( childName);
+
+    return prevCrDs != null && this.childrenList.remove(prevCrDs);
   }
 
-  public String getPath()
-  {
-    return path;
-  }
-
-  public String getName()
-  {
-    return name;
-  }
-
-  public CrawlableDataset getParentDataset()
-  {
-    if ( this.lastPathSegmentSeparatorIndx == -1 )
-      return null;
-    return new MockCrawlableDataset( this.path.substring( 0, lastPathSegmentSeparatorIndx ), true );
-  }
-
-  public boolean exists()
-  {
-    return this.exists;
-  }
-
-  public void setExists( boolean exists)
-  {
+  public void setExists( boolean exists) {
     this.exists = exists;
   }
 
-  public boolean isCollection()
-  {
+  public Object getConfigObject() {
+    return null;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public CrawlableDataset getParentDataset() {
+    return this.parent;
+  }
+
+  public boolean exists() {
+    return this.exists;
+  }
+
+  public boolean isCollection() {
     return this.isCollection;
   }
 
-  public CrawlableDataset getDescendant( String relativePath )
-  {
-    return null;
+  public CrawlableDataset getDescendant( String relativePath ) {
+    if ( ! this.isCollection )
+      throw new IllegalStateException( "Dataset not a collection.");
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( relativePath);
+    if ( ! CrawlableDatasetUtils.isValidRelativePath( pathSegments))
+      throw new IllegalArgumentException( String.format( "Ill-formed relative path [%s]", path));
+
+    boolean singleLevelPath = pathSegments.length == 1;
+
+    CrawlableDataset curCrDs = this.childrenMap.get( pathSegments[0]);
+    if ( curCrDs != null ) {
+      if ( singleLevelPath )
+        return curCrDs;
+      return curCrDs.getDescendant( CrawlableDatasetUtils.stepDownRelativePath(pathSegments));
+    } else {
+      curCrDs = new MockCrawlableDataset( this.getPath() + "/" + pathSegments[0], singleLevelPath);
+      ((MockCrawlableDataset)curCrDs).setExists( false);
+      if ( singleLevelPath )
+        return curCrDs;
+      return curCrDs.getDescendant( CrawlableDatasetUtils.stepDownRelativePath(pathSegments));
+    }
   }
 
-  public List<CrawlableDataset> listDatasets() throws IOException
-  {
-    return null;
+  public List<CrawlableDataset> listDatasets() throws IOException {
+    if ( ! this.isCollection )
+      throw new IllegalStateException( "Dataset not a collection.");
+    if ( this.childrenList == null || this.childrenList.isEmpty())
+      return Collections.emptyList();
+    return Collections.unmodifiableList( this.childrenList);
   }
 
-  public List<CrawlableDataset> listDatasets( CrawlableDatasetFilter filter ) throws IOException
+  public List<CrawlableDataset> listDatasets( CrawlableDatasetFilter filter )
+      throws IOException
   {
-    return null;
+    if ( filter == null )
+      return this.listDatasets();
+
+    if ( ! this.isCollection )
+      throw new IllegalStateException( "Dataset not a collection.");
+    if ( this.childrenList == null || this.childrenList.isEmpty())
+      return Collections.emptyList();
+
+    List<CrawlableDataset> matchingChildren = new ArrayList<CrawlableDataset>();
+    for ( CrawlableDataset curCrDs : this.childrenList) {
+      if ( filter.accept( curCrDs))
+        matchingChildren.add( curCrDs);
+    }
+    return matchingChildren;
   }
 
-  public long length()
-  {
+  public long length() {
     return this.length;
   }
 
-  public void setLength( long length )
-  {
+  public void setLength( long length ) {
     this.length = length;
   }
 
-  public Date lastModified() // or long milliseconds?
-  {
+  public Date lastModified() { // or long milliseconds?
     return this.lastModified;
   }
 
-  public void setLastModified( Date lastModified)
-  {
+  public void setLastModified( Date lastModified) {
     this.lastModified = lastModified;
   }
 }

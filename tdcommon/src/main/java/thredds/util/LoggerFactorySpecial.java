@@ -2,11 +2,11 @@ package thredds.util;
 
 import org.apache.logging.log4j.*;
 import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.NullConfiguration;
+import org.apache.logging.log4j.core.config.*;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.util.StringUtil2;
@@ -174,10 +174,18 @@ public class LoggerFactorySpecial implements LoggerFactory {
               config);
       app.start();
 
-      org.apache.logging.log4j.core.Logger log4j = (org.apache.logging.log4j.core.Logger) LogManager.getLogger(name);
+      LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+      Configuration conf = ctx.getConfiguration();
+      LoggerConfig lconf = conf.getLoggerConfig(name);
+      lconf.setAdditive(false); // otherwise, it also gets sent to root logger (threddsServlet.log)
+      lconf.setLevel(level);
+      lconf.addAppender(app, level, null);
+      ctx.updateLoggers(conf);
+
+      /* org.apache.logging.log4j.core.Logger log4j = (org.apache.logging.log4j.core.Logger) LogManager.getLogger(name);
       log4j.addAppender(app);
       log4j.setLevel(level);
-      log4j.setAdditive(false); // otherwise, it also gets sent to root logger (threddsServlet.log)
+      log4j.setAdditive(false); // otherwise, it also gets sent to root logger (threddsServlet.log)   */
 
       startupLog.info("LoggerFactorySpecial add logger= {} file= {}", name, fileName);
 

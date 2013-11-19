@@ -47,7 +47,7 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest {
     MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testGFSfmrc/catalog.xml");
     request.setServletPath("/testGFSfmrc/catalog.xml");
     //request.setParameter("command", "subset");
-    request.setParameter("dataset", "testGFSfmrc/GFS_CONUS_80km_FMRC_best.ncd");
+    request.setParameter("dataset", "testGFSfmrc/GFS_CONUS_80km_nc_best.ncd");
     MockHttpServletResponse response = new MockHttpServletResponse();
 
     ModelAndView mv = anyXmlController.handleXmlRequest(request, response);

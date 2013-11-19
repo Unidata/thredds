@@ -1,4 +1,4 @@
-package thredds.server.cdmremote;
+package thredds.server.radar;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.util.ContentType;
 
 /**
- * Single problems in cdmremote testing
+ * Single problems in radarServer testing
  *
  * @author caron
  * @since 10/29/13
@@ -25,32 +25,30 @@ import thredds.util.ContentType;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
-public class CdmRemoteProblems {
+public class TestRadarServerProblem {
 
   @Autowired
- 	private org.springframework.web.context.WebApplicationContext wac;
+  private org.springframework.web.context.WebApplicationContext wac;
 
- 	private MockMvc mockMvc;
-  // private String path = "/cdmremote/testStationFeatureCollection/files/Surface_METAR_20060325_0000.nc";
-  private String path = "/cdmremote/testBuoyFeatureCollection/files/Surface_Buoy_20130804_0000.nc";
+  private MockMvc mockMvc;
+  private String path = "/radarServer/nexrad/level3/IDD/stations.xml";
 
- 	@Before
- 	public void setup(){
- 		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
- 	}
+  @Before
+  public void setup() {
+    this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+  }
 
 
   @Test
-   public void cdmRemoteRequestCapabilitiesTest() throws Exception {
-     RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
-   				.param("req", "capabilities");
+  public void cdmRemoteRequestCapabilitiesTest() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path);
 
-     MvcResult result = this.mockMvc.perform( rb )
-               .andExpect(MockMvcResultMatchers.status().is(200))
-               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
-               .andReturn();
+    MvcResult result = this.mockMvc.perform(rb)
+            .andExpect(MockMvcResultMatchers.status().is(200))
+            .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
+            .andReturn();
 
     System.out.printf("content = %s%n", result.getResponse().getContentAsString());
-   }
+  }
 
 }

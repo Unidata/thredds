@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import org.junit.Test;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import ucar.nc2.util.Misc;
@@ -50,7 +51,7 @@ import java.util.List;
  */
 public class TestDcm {
 
-  //@Test
+  @Test
   public void testScan() throws IOException {
     // count scanned files
     Formatter f = new Formatter(System.out);
@@ -61,10 +62,10 @@ public class TestDcm {
 
     // check date extractor
     int count = 0;
-    String[] result = new String[] {"2000-01-18T12:00:00.000Z", "2000-01-19T00:00:00.000Z", "2000-01-20T12:00:00.000Z"};
+    String[] result = new String[] {"2000-01-18T12:00:00", "2000-01-19T00:00:00", "2000-01-20T12:00:00"};
     for (MFile mfile : dcm.getFiles()) {
       System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractRunDate(mfile));
-      assert dcm.extractRunDate(mfile).toString().equals(result[count++]);
+      assert dcm.extractRunDate(mfile).toString().startsWith(result[count++]);
     }
   }
 

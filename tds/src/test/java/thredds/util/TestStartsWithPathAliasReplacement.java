@@ -50,21 +50,21 @@ public class TestStartsWithPathAliasReplacement extends TestCase
 
   public void testNullCtorParams()
   {
-    try { new StartsWithPathAliasReplacement( null, null);}
+    try { new PathAliasReplacementImpl( null, null);}
     catch ( IllegalArgumentException e ) { return ;}
     fail( "Did not throw expected IllegalArgumentException.");
   }
 
   public void testNullFirstCtorParam()
   {
-    try { new StartsWithPathAliasReplacement( null, "/some/path/");}
+    try { new PathAliasReplacementImpl( null, "/some/path/");}
     catch ( IllegalArgumentException e ) { return ;}
     fail( "Did not throw expected IllegalArgumentException.");
   }
 
   public void testNullSecondCtorParam()
   {
-    try { new StartsWithPathAliasReplacement( "alias/path/", null);}
+    try { new PathAliasReplacementImpl( "alias/path/", null);}
     catch ( IllegalArgumentException e ) { return ;}
     fail( "Did not throw expected IllegalArgumentException.");
   }
@@ -76,7 +76,7 @@ public class TestStartsWithPathAliasReplacement extends TestCase
 
     String alias = "alias/";
     String replacementPath = "/replacement/path/";
-    StartsWithPathAliasReplacement swpar = new StartsWithPathAliasReplacement( alias, replacementPath);
+    PathAliasReplacementImpl swpar = new PathAliasReplacementImpl( alias, replacementPath);
     assertTrue( "Given path [" + testPath + "] does not start with alias [" + swpar.getAlias() + "].",
                 swpar.containsPathAlias( testPath ));
     assertTrue( "Alias replacement on given path [" + testPath + "] not as expected [" + expectedPath + "].",
@@ -84,7 +84,7 @@ public class TestStartsWithPathAliasReplacement extends TestCase
 
     alias = "alias";
     replacementPath = "/replacement/path/";
-    swpar = new StartsWithPathAliasReplacement( alias, replacementPath);
+    swpar = new PathAliasReplacementImpl( alias, replacementPath);
     assertTrue( "Given path [" + testPath + "] does not start with alias [" + swpar.getAlias() + "].",
                 swpar.containsPathAlias( testPath ));
     assertTrue( "Alias replacement on given path [" + testPath + "] not as expected [" + expectedPath + "].",
@@ -92,7 +92,7 @@ public class TestStartsWithPathAliasReplacement extends TestCase
 
     alias = "alias/";
     replacementPath = "/replacement/path";
-    swpar = new StartsWithPathAliasReplacement( alias, replacementPath);
+    swpar = new PathAliasReplacementImpl( alias, replacementPath);
     assertTrue( "Given path [" + testPath + "] does not start with alias [" + swpar.getAlias() + "].",
                 swpar.containsPathAlias( testPath ));
     assertTrue( "Alias replacement on given path [" + testPath + "] not as expected [" + expectedPath + "].",
@@ -100,7 +100,7 @@ public class TestStartsWithPathAliasReplacement extends TestCase
 
     alias = "alias";
     replacementPath = "/replacement/path";
-    swpar = new StartsWithPathAliasReplacement( alias, replacementPath);
+    swpar = new PathAliasReplacementImpl( alias, replacementPath);
     assertTrue( "Given path [" + testPath + "] does not start with alias [" + swpar.getAlias() + "].",
                 swpar.containsPathAlias( testPath ));
     assertTrue( "Alias replacement on given path [" + testPath + "] not as expected [" + expectedPath + "].",
@@ -110,7 +110,7 @@ public class TestStartsWithPathAliasReplacement extends TestCase
 
     alias = "a/multi/segment/alias";
     replacementPath = "/replacement/path";
-    swpar = new StartsWithPathAliasReplacement( alias, replacementPath);
+    swpar = new PathAliasReplacementImpl( alias, replacementPath);
     assertTrue( "Given path [" + testPath + "] does not start with alias [" + swpar.getAlias() + "].",
                 swpar.containsPathAlias( testPath ));
     assertTrue( "Alias replacement on given path [" + testPath + "] not as expected [" + expectedPath + "].",
@@ -120,7 +120,7 @@ public class TestStartsWithPathAliasReplacement extends TestCase
 
     alias = "/slash/starting/multi/segment/alias";
     replacementPath = "/replacement/path";
-    swpar = new StartsWithPathAliasReplacement( alias, replacementPath);
+    swpar = new PathAliasReplacementImpl( alias, replacementPath);
     assertTrue( "Given path [" + testPath + "] does not start with alias [" + swpar.getAlias() + "].",
                 swpar.containsPathAlias( testPath ));
     assertTrue( "Alias replacement on given path [" + testPath + "] not as expected [" + expectedPath + "].",

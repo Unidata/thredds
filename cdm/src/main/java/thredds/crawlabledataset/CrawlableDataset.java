@@ -126,11 +126,12 @@ public interface CrawlableDataset {
   public boolean isCollection();
 
   /**
-   * A factory method for getting a descendant of this datasets.
+   * Return the requested descendant of this dataset.
    *
-   * @param relativePath the path relative to this dataset of the requested dataset.
+   * @param relativePath the path, relative to this dataset, of the requested dataset.
    * @return the requested descendant of this dataset.
    * @throws IllegalArgumentException if the relative path is not relative (e.g., starts with a slash ("/")).
+   * @throws IllegalStateException if this dataset is not a collection, the isCollection() method should be used to check.
    */
   public CrawlableDataset getDescendant(String relativePath);
 

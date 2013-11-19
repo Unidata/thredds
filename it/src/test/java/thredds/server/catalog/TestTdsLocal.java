@@ -58,6 +58,7 @@ public class TestTdsLocal {
         assert false : buff.toString();
       } else if (showValidationMessages)
         System.out.println("Validate ok "+ catalogName+" = \n<"+ buff.toString()+">");
+
       return cat;
 
     } catch (Exception e) {

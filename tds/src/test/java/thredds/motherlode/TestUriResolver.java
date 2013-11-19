@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -29,57 +30,49 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package thredds.motherlode;
 
-package thredds.crawlabledataset.mock;
+import junit.framework.*;
+import org.junit.*;
+import thredds.util.HttpUriResolver;
+import thredds.util.HttpUriResolverFactory;
 
-import java.util.Date;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
- * _more_
+ * Test HttpUriResolverFactory
  *
  * @author edavis
  * @since 4.0
  */
-public class MockCrDsInfo
-{
-  private final String path;
-  private final boolean exists;
-  private final boolean isCollection;
-  private final Date lastModified;
-  private final long length;
+public class TestUriResolver { //} extends TestCase {
 
-  public MockCrDsInfo( String path, boolean exists, boolean isCollection,
-                       Date lastModified, long length )
-  {
-    this.path = path;
-    this.exists = exists;
-    this.isCollection = isCollection;
-    this.lastModified = lastModified;
-    this.length = length;
+  @org.junit.Test
+  public void testOne() {
+    URI uri = null;
+    try {
+      uri = new URI(TestMotherlodePing.server+"/thredds/catalog.xml");
+    } catch (URISyntaxException e) {
+      fail();
+    }
+    HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver(uri);
+    InputStream resp = null;
+    try {
+      httpUriResolver.makeRequest();
+      resp = httpUriResolver.getResponseBodyAsInputStream();
+      if (-1 == resp.read())
+        fail("");
+    } catch (IOException e) {
+      fail(e.getMessage());
+    }
+    assertTrue("URI resolved to null string.", resp != null);
   }
 
-  public String getPath()
-  {
-    return path;
-  }
-
-  public boolean isExists()
-  {
-    return exists;
-  }
-
-  public boolean isCollection()
-  {
-    return isCollection;
-  }
-
-  public Date getLastModified()
-  {
-      return this.lastModified;
-  }
-
-  public long getLength()
-  {
-    return length;
-  }
 }
