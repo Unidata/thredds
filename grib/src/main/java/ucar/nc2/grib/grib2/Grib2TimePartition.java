@@ -46,7 +46,7 @@ import java.io.IOException;
  * @author caron
  * @since 1/4/12
  */
-public class Grib2TimePartition extends TimePartition {
+public class Grib2TimePartition extends TimePartition implements AutoCloseable {
 
   public Grib2TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm, org.slf4j.Logger logger) {
     super(name, directory, dcm, false, logger);

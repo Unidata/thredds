@@ -47,6 +47,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Iterator;
 
 /**
@@ -55,7 +56,7 @@ import java.util.Iterator;
  * @author caron
  * @since 11/16/13
  */
-public class DirectoryCollection extends CollectionManagerAbstract implements CollectionManagerRO, Iterable<MFile> {
+public class DirectoryCollection extends CollectionManagerAbstract implements CollectionManagerRO, Iterable<MFile>, AutoCloseable {
   static private final Logger logger = LoggerFactory.getLogger(DirectoryCollection.class);
   static public final String NCX_SUFFIX = ".ncx";
 
@@ -88,11 +89,10 @@ public class DirectoryCollection extends CollectionManagerAbstract implements Co
   final String topCollection;
   final Path topDir;
 
-  public DirectoryCollection(String collectionName, Path topDir, org.slf4j.Logger logger) {
-    super(collectionName, logger);
-
+  public DirectoryCollection(String topCollectionName, Path topDir, org.slf4j.Logger logger) {
+    super(topCollectionName, logger);
+    this.topCollection = cleanName(topCollectionName);
     this.topDir = topDir;
-    this.topCollection = this.collectionName;  // lame
     this.collectionName = makeCollectionName(collectionName, topDir);
   }
 
@@ -121,6 +121,8 @@ public class DirectoryCollection extends CollectionManagerAbstract implements Co
     return false;
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
   @Override
   public Iterable<MFile> getFiles() {
     return this;
@@ -129,30 +131,46 @@ public class DirectoryCollection extends CollectionManagerAbstract implements Co
   @Override
   public Iterator<MFile> iterator() {
     try {
-      return new MFileIterator(topDir, new MyFilter());
+      if (currIterator != null) currIterator.close();
+      currIterator = new MFileIterator(topDir, new MyFilter());
+      return currIterator;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
+  private MFileIterator currIterator; // lame
+  public void close() {
+    super.close();
+    if (currIterator != null)
+      try {
+        currIterator.close();
+      } catch (IOException e) {
+        e.printStackTrace();  // lame
+      }
+  }
+
   // returns everything in the current directory
   private class MFileIterator implements Iterator<MFile> {
-    Iterator<Path> dirStream;
+    DirectoryStream<Path> dirStream;
+    Iterator<Path> dirStreamIterator;
 
     MFileIterator(Path dir, DirectoryStream.Filter<Path> filter) throws IOException {
       if (filter != null)
-        dirStream = Files.newDirectoryStream(dir, filter).iterator();
+        dirStream = Files.newDirectoryStream(dir, filter);
       else
-        dirStream = Files.newDirectoryStream(dir).iterator();
+        dirStream = Files.newDirectoryStream(dir);
+
+      dirStreamIterator = dirStream.iterator();
     }
 
     public boolean hasNext() {
-      return dirStream.hasNext();
+      return dirStreamIterator.hasNext();
     }
 
     public MFile next() {
       try {
-        return new MFileOS7(dirStream.next());
+        return new MFileOS7(dirStreamIterator.next());
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -161,8 +179,13 @@ public class DirectoryCollection extends CollectionManagerAbstract implements Co
     public void remove() {
       throw new UnsupportedOperationException();
     }
-  }
 
+    // better alternative is for caller to send in callback (Visitor pattern)
+    // then we could use the try-with-resource
+    public void close() throws IOException {
+      dirStream.close();
+    }
+  }
 
   private class MyFilter implements DirectoryStream.Filter<Path> {
     @Override
@@ -171,6 +194,26 @@ public class DirectoryCollection extends CollectionManagerAbstract implements Co
       return !last.endsWith(".gbx9") && !last.endsWith(".ncx");
     }
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  // this idiom keeps the iterator from esccaping, so that we can use try-with-resource, and ensure it closes. like++
+  public void iterateOverMFileCollection(Visitor visit) throws IOException {
+    try (DirectoryStream<Path> ds = Files.newDirectoryStream(topDir, new MyFilter())) {
+      for (Path p : ds) {
+        BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
+        if (!attr.isDirectory())
+          visit.consume(new MFileOS7(p));
+      }
+    }
+  }
+
+  public interface Visitor {
+     public void consume(MFile mfile);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // test
 
   private static void dirStream() throws IOException {
     Path topDir = Paths.get("B:/ndfd/200901/20090101");

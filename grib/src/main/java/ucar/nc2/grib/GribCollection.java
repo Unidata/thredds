@@ -485,13 +485,13 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     private String makeId() {
       // check for user defined group names
       String result = null;
-      if (gribConfig != null && gribConfig.gdsNamer != null)
+      /* if (gribConfig != null && gribConfig.gdsNamer != null)
         result = gribConfig.gdsNamer.get(gdsHash);
       if (result != null) {
         StringBuilder sb = new StringBuilder(result);
         StringUtil2.replace(sb, ". :", "p--");
         return sb.toString();
-      }
+      }  */
       /* if (gribConfig != null && gribConfig.groupNamer != null) { LOOK not implemented
         MFile mfile = files.get(filenose[0]);
         //File firstFile = new File(mfile.getPath());
@@ -563,7 +563,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public List<MFile> getFiles() {
-      List<MFile> result = new ArrayList<MFile>();
+      List<MFile> result = new ArrayList<>();
       for (int fileno : filenose)
         result.add(files.get(fileno));
       Collections.sort(result);
@@ -762,7 +762,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       sb.append("VariableIndex");
       sb.append("{tableVersion=").append(tableVersion);
       sb.append(", discipline=").append(discipline);
-      sb.append(", discipline=").append(discipline);
       sb.append(", category=").append(category);
       sb.append(", parameter=").append(parameter);
       sb.append(", levelType=").append(levelType);
@@ -787,6 +786,17 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       sb.append('}');
       return sb.toString();
     }
+
+    public String toStringShort() {
+      Formatter sb = new Formatter();
+      sb.format("Variable {%d-%d-%d", discipline, category, parameter);
+      if (vertIdx>=0) sb.format(" level=%d", vertIdx);
+      if (intvName != null && intvName.length() > 0) sb.format(" intv=%s", intvName);
+      if (probabilityName != null && probabilityName.length() > 0) sb.format(" prob=%s", probabilityName);
+      sb.format(" cdmHash=%d}", cdmHash);
+      return sb.toString();
+    }
+
 
     public Record[] getRecords() throws IOException {
       readRecords();

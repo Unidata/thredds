@@ -59,7 +59,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
     if (collectionSpec.startsWith(CATALOG))
       return new CatalogCollectionManager(collectionName, collectionSpec, olderThan, errlog);
     else if (collectionSpec.startsWith(LIST))
-      return new ListCollectionManager(collectionName, collectionSpec, olderThan, errlog);
+      return new CollectionManagerList(collectionName, collectionSpec, olderThan, errlog);
     else
       return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
   }

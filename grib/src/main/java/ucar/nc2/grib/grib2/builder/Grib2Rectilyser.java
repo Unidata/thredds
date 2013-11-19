@@ -232,15 +232,17 @@ public class Grib2Rectilyser {
     VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
     boolean isLayer = Grib2Utils.isLayer(vb.first);
 
-    Set<VertCoord.Level> coords = new HashSet<VertCoord.Level>();
+    Set<VertCoord.Level> coords = new HashSet<>();
 
     for (Record r : vb.atomList) {
       Grib2Pds pds = r.gr.getPDS();
-      r.vcCoord = new VertCoord.Level(pds.getLevelValue1(), pds.getLevelValue2());
+      boolean hasLevel2 = pds.getLevelType2() != GribNumbers.MISSING;
+      double level2val =  hasLevel2 ?  pds.getLevelValue2() :  GribNumbers.UNDEFINEDD;
+      r.vcCoord = new VertCoord.Level(pds.getLevelValue1(), level2val);
       coords.add(r.vcCoord);
     }
 
-    List<VertCoord.Level> vlist = new ArrayList<VertCoord.Level>(coords);
+    List<VertCoord.Level> vlist = new ArrayList<>(coords);
     Collections.sort(vlist);
     if (!vertUnit.isPositiveUp())
       Collections.reverse(vlist);

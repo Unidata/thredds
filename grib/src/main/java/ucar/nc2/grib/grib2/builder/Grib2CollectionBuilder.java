@@ -225,9 +225,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     long start = System.currentTimeMillis();
 
-    ArrayList<MFile> files = new ArrayList<MFile>();
+    List<MFile> files = new ArrayList<>();
     List<Group> groups = makeAggregatedGroups(files);
-    createIndex(indexFile, groups, files);
+    List<MFile> allFiles = Collections.unmodifiableList(files);
+    createIndex(indexFile, groups, allFiles);
 
     long took = System.currentTimeMillis() - start;
     logger.debug("That took {} msecs", took);
@@ -238,7 +239,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  private List<Group> makeAggregatedGroups(List<MFile> files) throws IOException {
+  private List<Group> makeAggregatedGroups(List<MFile> allFiles) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<String, Boolean> pdsConvert = null;
 
@@ -264,7 +265,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       Grib2Index index;
       try {
         index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, !isSingleFile, mfile, config, CollectionManager.Force.test, logger);
-        files.add(mfile);  // add on success
+        allFiles.add(mfile);  // add on success
 
       } catch (IOException ioe) {
         logger.error("Grib2CollectionBuilder "+gc.getName()+" : reading/Creating gbx9 index for file "+ mfile.getPath()+" failed", ioe);
@@ -307,7 +308,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
       g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, pdsConvert);
-      g.rect.make(stats, files);
+      g.rect.make(stats, Collections.unmodifiableList(allFiles));
     }
 
     // debugging and validation
@@ -360,7 +361,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  private boolean createIndex(File indexFile, List<Group> groups, List<MFile> files) throws IOException {
+  private boolean createIndex(File indexFile, List<Group> groups, Collection<MFile> files) throws IOException {
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 

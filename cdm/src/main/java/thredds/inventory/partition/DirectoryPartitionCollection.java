@@ -26,11 +26,14 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
     this.topDir = topDir;
     this.indexReader = indexReader;
     this.type = Type.directory;
+
+    // corrections - lame
     this.topCollection = this.collectionName;
     this.collectionName = DirectoryCollection.makeCollectionName(collectionName, topDir);
+    this.rootDir = topDir.toString();
   }
 
-  public String getCollectionName() {
+  public String getTopCollectionName() {
     return topCollection;
   }
 
@@ -49,6 +52,22 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
 
     return result;
   }
+
+  /* @Override
+  public Iterable<DirectoryPartitionCollection> makePartitionCollections() throws IOException {
+
+    DirectoryPartition builder = new DirectoryPartition(topCollection, topDir, null);
+    builder.constructChildren(indexReader);
+
+    List<DirectoryPartitionCollection> result = new ArrayList<>();
+    for (DirectoryPartition child : builder.getChildren()) {
+      // String name = collectionName+"-"+mfile.getName();
+      DirectoryPartitionCollection dcm = new DirectoryPartitionCollection(child);
+      result.add(dcm);
+    }
+
+    return result;
+  }  */
 
   // adapter of DirectoryPartitionBuilder to CollectionManagerRO
   // claim to fame is that it scans files on demand

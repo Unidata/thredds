@@ -18,10 +18,10 @@ import java.util.List;
  * @author caron
  * @since 11/13/13
  */
-public class ListCollectionManager extends CollectionManagerAbstract {
+public class CollectionManagerList extends CollectionManagerAbstract {
   private List<MFile> mfiles = new ArrayList<>();
 
-  public ListCollectionManager(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
+  public CollectionManagerList(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
     super(collectionName, null);
 
     if (collectionSpec.startsWith(MFileCollectionManager.LIST))

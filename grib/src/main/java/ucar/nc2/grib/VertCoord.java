@@ -203,7 +203,7 @@ public class VertCoord { // implements Comparable<VertCoord> {
     public Level(double value1, double value2) {
       this.value1 = value1;
       this.value2 = value2;
-      this.mid = (value2 == 0) ? value1 : (value1 + value2) / 2;
+      this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
     }
 
     public double getValue1() {
@@ -226,7 +226,8 @@ public class VertCoord { // implements Comparable<VertCoord> {
     @Override
     public boolean equals(Object oo) {
       if (this == oo) return true;
-      if (!(oo instanceof Level)) return false;
+      if (!(oo instanceof Level))
+        return false;
       Level other = (Level) oo;
       return (ucar.nc2.util.Misc.closeEnough(value1, other.value1) && ucar.nc2.util.Misc.closeEnough(value2, other.value2));
     }

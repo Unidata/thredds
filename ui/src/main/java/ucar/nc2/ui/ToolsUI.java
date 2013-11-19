@@ -84,6 +84,8 @@ import thredds.inventory.bdb.MetadataManager;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -2747,6 +2749,15 @@ public class ToolsUI extends JPanel {
     GribCdmIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
       gribTable = new ucar.nc2.ui.GribCdmIndexPanel(prefs, buttPanel);
+      gribTable.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("openGrib2Collection")) {
+            String collectionName = (String) e.getNewValue();
+            openGrib2Collection(collectionName);
+          }
+        }
+      });
+
       add(gribTable, BorderLayout.CENTER);
     }
 

@@ -453,7 +453,6 @@ public abstract class Grib2Pds {
      */
     public double getLevelValue2() {
       return getScaledValue(30);
-
     }
 
     /**

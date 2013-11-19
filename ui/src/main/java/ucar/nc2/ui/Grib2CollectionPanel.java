@@ -1144,9 +1144,9 @@ public class Grib2CollectionPanel extends JPanel {
       return gr.getGDSsection().getGDS().hashCode();
     }
 
-    /* public long getHash() {
-      return gr.cdmVariableHash();
-    }  */
+   public long getCdmHash() {
+     return rect2.cdmVariableHash(gr, 0);
+    }
 
     public long getIntvHash() {
       if (pds.isTimeInterval()) {

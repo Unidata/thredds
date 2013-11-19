@@ -5,6 +5,7 @@ import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class GribCollectionBuilder {
     this.logger = logger;
   }
 
-  public static List<GribCollectionBuilder.GcMFile> makeFiles(File directory, List<thredds.inventory.MFile> files) {
-    List<GribCollectionBuilder.GcMFile> result = new ArrayList<GcMFile>(files.size());
+  public static List<GribCollectionBuilder.GcMFile> makeFiles(File directory, Collection<MFile> files) {
+    List<GribCollectionBuilder.GcMFile> result = new ArrayList<>(files.size());
     String dirPath = StringUtil2.replace(directory.getPath(), '\\', "/");
 
     for (MFile file : files) {
@@ -41,69 +42,6 @@ public class GribCollectionBuilder {
     }
     return result;
   }
-
-  /* needed ?
-  // list of files is only changed by setFiles()
-  public static class GcCollectionManager extends CollectionManagerAbstract {
-    private List<MFile> files;
-    private String dirName;
-
-    GcCollectionManager(String collectionNameName) {
-      super(collectionNameName);
-      setStatic(true);
-    }
-
-    public void setFiles(String dirName, List<MFile> files) {
-      this.dirName = dirName;
-      this.files = files;
-    }
-
-    @Override
-    public String getRoot() {
-      return dirName;
-    }
-
-    @Override
-    public long getLastScanned() {
-      return 0;
-    }
-
-    @Override
-    public boolean isScanNeeded() {
-      return false;
-    }
-
-    @Override
-    public boolean scanIfNeeded() throws IOException {
-      return false;
-    }
-
-    @Override
-    public boolean scan(boolean sendEvent) throws IOException {
-      return false;
-    }
-
-    @Override
-    public Iterable<MFile> getFiles() {
-      return files;
-    }
-
-    @Override
-    public CalendarDate extractRunDate(MFile mfile) {
-      return null;
-    }
-
-    @Override
-    public boolean hasDateExtractor() {
-      return false;
-    }
-
-    @Override
-    public CalendarDate getStartCollection() {
-      return null;
-    }
-  }  */
-
 
   public static class GcMFile implements thredds.inventory.MFile {
     public final File directory;

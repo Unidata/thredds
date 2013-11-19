@@ -51,8 +51,11 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
@@ -68,11 +71,12 @@ public class GribCdmIndexPanel extends JPanel {
 
   private PreferencesExt prefs;
 
-  private BeanTableSorted groupTable, varTable, vertCoordTable, timeCoordTable, fileTable;
+  private BeanTableSorted groupTable, varTable, vertCoordTable, timeCoordTable;
   private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow, fileWindow;
+  private IndependentWindow infoWindow;
+  private MFileTable fileTable;
 
   public GribCdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -101,7 +105,7 @@ public class GribCdmIndexPanel extends JPanel {
           infoWindow.show(); */
 
           if (gc != null)
-            showFiles(gc.getFiles());
+            showFiles(gc, null);
         }
       });
       buttPanel.add(filesButton);
@@ -125,15 +129,8 @@ public class GribCdmIndexPanel extends JPanel {
     varPopup.addAction("Show Files Used", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
-        if (bean != null) {
-          /* Formatter f= new Formatter();
-          bean.showFilesUsed(f);
-          infoTA.setText(f.toString());
-          infoTA.gotoTop();
-          infoWindow.show(); */
-
-          if (bean.group != null)
-            showFiles(bean.group.getFiles());
+        if (bean != null && bean.group != null) {
+            showFiles(gc, bean.group);
         }
       }
     });
@@ -160,6 +157,15 @@ public class GribCdmIndexPanel extends JPanel {
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Send Files to Grib2Collection", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        VarBean bean = (VarBean) varTable.getSelectedBean();
+        if (bean != null) {
+          bean.sendFilesToGrib2Collection();
         }
       }
     });
@@ -192,27 +198,20 @@ public class GribCdmIndexPanel extends JPanel {
        }
      });
 
-    fileTable = new BeanTableSorted(FileBean.class, (PreferencesExt) prefs.node("FileBean"), false, "Files", "Files", null);
-     varPopup = new PopupMenu(fileTable.getJTable(), "Options");
-
-     varPopup.addAction("Show File", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          FileBean bean = (FileBean) fileTable.getSelectedBean();
-          if (bean != null) {
-            // showFile(bean.name);
-          }
-        }
-      });
-
+       // file popup window
+    fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
+    fileTable.addPropertyChangeListener(new PropertyChangeListener() {
+      @Override
+      public void propertyChange(PropertyChangeEvent evt) {
+        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+      }
+    });
 
      /////////////////////////////////////////
     // the info windows
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
-
-    fileWindow = new IndependentWindow("Files Used", BAMutil.getImage("netcdfUI"), fileTable);
-    fileWindow.setBounds((Rectangle) prefs.getBean("DetailWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     setLayout(new BorderLayout());
 
@@ -226,7 +225,6 @@ public class GribCdmIndexPanel extends JPanel {
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     add(split, BorderLayout.CENTER);
-
   }
 
   public void save() {
@@ -234,9 +232,8 @@ public class GribCdmIndexPanel extends JPanel {
     varTable.saveState(false);
     timeCoordTable.saveState(false);
     vertCoordTable.saveState(false);
-    fileTable.saveState(false);
+    fileTable.save();
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    prefs.putBeanObject("DetailWindowBounds", fileWindow.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
     if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
@@ -317,18 +314,19 @@ public class GribCdmIndexPanel extends JPanel {
 
   ///////////////////////////////////////////////
   GribCollection gc;
+  List<MFile> gcFiles;
   FeatureCollectionConfig.GribConfig config = null;
   String magic;
 
-  public void setIndexFile(Path indexFile) throws IOException {
-    setIndexFile(indexFile.toString());
+  public void setIndexFile(String indexFile) throws IOException {
+    setIndexFile(Paths.get(indexFile));
   }
 
-  public void setIndexFile(String indexFile) throws IOException {
+  public void setIndexFile(Path indexFile) throws IOException {
     if (gc != null) gc.close();
     magic = null;
 
-    gc = GribCdmIndex.openCdmIndex(indexFile, config, logger);
+    gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, logger);
     if (gc == null)
       throw new IOException("Not a grib collection index file ="+magic);
 
@@ -337,6 +335,7 @@ public class GribCdmIndexPanel extends JPanel {
       groups.add(new GroupBean(g));
     }
     groupTable.setBeans(groups);
+    gcFiles = gc.getFiles();
   }
 
   private void setGroup(GribCollection.GroupHcs group) {
@@ -383,15 +382,11 @@ public class GribCdmIndexPanel extends JPanel {
     f.format("============%n%s%n", gc);
   }
 
-  private void showFiles(List<MFile> files) {
-    if (files == null) return;
+  private void showFiles(GribCollection gc, GribCollection.GroupHcs group) {
+    File dir = gc.getDirectory();
+    List<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
 
-    int count = 0;
-    List<FileBean> beans = new ArrayList<>();
-    for (MFile mfile : files)
-      beans.add(new FileBean(mfile, count++));
-    fileTable.setBeans(beans);
-    fileWindow.show();
+    fileTable.setFiles(dir, files);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -704,21 +699,33 @@ public class GribCdmIndexPanel extends JPanel {
        f.format("%12s ", " ");
        List<VertCoord.Level> levels = vcoord.getCoords();
        boolean isLayer = vcoord.isLayer();
-       for (int j = 0; j < levels.size(); j++)
-         f.format("%6s ", levels.get(j).toString(isLayer));
+       for (VertCoord.Level level : levels)
+         f.format("%13s ", level.toString(isLayer));
        f.format("%n");
 
        for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
          f.format("%10s = ", tinvs.get(timeIdx));
+         Formatter filenames = new Formatter();
          for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
            int idx = GribCollection.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
            GribCollection.Record r = records[idx];
            //f.format("%3d %10d ", r.fileno, r.drsPos);
-           f.format("%6d ", (r == null ? -1 : r.fileno));
+           if (r == null || r.pos == 0)
+             f.format("(%4d,%6d) ", -1, -1);
+           else {
+             f.format("(%4d,%6d) ", r.fileno, r.pos);
+             filenames.format(" %s,", getFilename(r.fileno));
+           }
          }
-         f.format("%n");
+         f.format(" == %s%n", filenames);
        }
      }
+
+    private String getFilename(int fileno) {
+      MFile want = gcFiles.get(fileno);
+      File wantFile = new File(gc.getDirectory(), want.getPath());
+      return wantFile.getPath();
+    }
 
      void showRecords2Dintv(Formatter f, List<TimeCoord.Tinv> tinvs, GribCollection.Record[] records) throws IOException {
        f.format(" timeIntv (down) %n");
@@ -732,6 +739,28 @@ public class GribCdmIndexPanel extends JPanel {
          f.format("%n");
        }
      }
+
+    void sendFilesToGrib2Collection() {
+      try {
+        Set<Integer> filenos = new HashSet<>();
+        for (GribCollection.Record r : v.getRecords()) {
+          if (r != null && r.pos > 0)
+            filenos.add(r.fileno);
+        }
+        Formatter f = new Formatter();
+
+        f.format("list:");
+        Iterator<Integer> iter = filenos.iterator();
+        while (iter.hasNext()) {
+          f.format("%s;", getFilename(iter.next()));
+        }
+        firePropertyChange("openGrib2Collection", null, f.toString());
+
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
+
+    }
 
    }
 
@@ -784,31 +813,6 @@ public class GribCdmIndexPanel extends JPanel {
        }
      }
    }
-
-  public class FileBean {
-    MFile mfile;
-    int count;
-
-     public FileBean() {
-     }
-
-     public FileBean(MFile mfile, int count) {
-       this.mfile = mfile;
-       this.count = count;
-     }
-
-    public int getCount() {
-      return count;
-    }
-
-    public String getName() {
-      return mfile.getName();
-    }
-
-    public String getLastModified() {
-      return CalendarDateFormatter.toDateTimeString( new Date(mfile.getLastModified()));
-    }
-  }
 
 }
 

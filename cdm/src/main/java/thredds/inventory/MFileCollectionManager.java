@@ -91,7 +91,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   // these are final
   private final List<MCollection> scanList = new ArrayList<MCollection>(); // an MCollection is a collection of managed files
   private final long olderThanInMsecs;
-  private final String rootDir;
+  protected String rootDir;
   protected FeatureCollectionConfig config;
 
   // this can change = keep under lock

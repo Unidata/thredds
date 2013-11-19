@@ -31,6 +31,8 @@ import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -60,18 +62,22 @@ public class DirectoryPartitionViewer extends JPanel {
   private JSplitPane mainSplit;
 
   private PartitionTreeBrowser partitionTreeBrowser;
-  private NCdumpPane dumpPane;
+  private MFileTable fileTable;
 
   private TextHistoryPane infoTA;
-  private StructureTable dataTable;
-  private IndependentWindow infoWindow, dataWindow, dumpWindow;
-  private List<String> gribCollectionFiles = new ArrayList<>();
+  private IndependentWindow infoWindow;
 
   public DirectoryPartitionViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
     partitionTreeBrowser = new PartitionTreeBrowser();
-    cdmIndexTables = new GribCdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), null);
     partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
+
+    cdmIndexTables = new GribCdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), null);
+    cdmIndexTables.addPropertyChangeListener(new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent evt) {
+        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+      }
+    });
 
     if (buttPanel != null) {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
@@ -85,15 +91,16 @@ public class DirectoryPartitionViewer extends JPanel {
 
     setLayout(new BorderLayout());
 
-    tablePanel = new JPanel(new BorderLayout());
-    tablePanel.add(partitionTreeBrowser.view, BorderLayout.NORTH);
-    // tablePanel.add(cdmIndexTables, BorderLayout.CENTER);   LOOK flip back and forth ??
-    tablePanel.add(partitionsTable, BorderLayout.CENTER);
-    current = partitionsTable;
-
     JScrollPane treeScroll = new JScrollPane(partitionTreeBrowser.tree);
+    JPanel treePanel = new JPanel(new BorderLayout());
+    treePanel.add(treeScroll, BorderLayout.CENTER);
+    treePanel.add(partitionTreeBrowser.view, BorderLayout.SOUTH);
 
-    mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, treeScroll, tablePanel);
+    tablePanel = new JPanel(new BorderLayout());
+    tablePanel.add(cdmIndexTables, BorderLayout.CENTER);
+    current = cdmIndexTables;
+
+    mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, treePanel, tablePanel);
     mainSplit.setDividerLocation(prefs.getInt("mainSplit", 100));
     add(mainSplit, BorderLayout.CENTER);
 
@@ -102,21 +109,21 @@ public class DirectoryPartitionViewer extends JPanel {
     infoWindow = new IndependentWindow("Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
-    // the data Table
-    dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
-    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("netcdfUI"), dataTable);
-    dataWindow.setBounds((Rectangle) prefs.getBean("dataWindow", new Rectangle(50, 300, 1000, 600)));
-
-    // the ncdump Pane
-    dumpPane = new NCdumpPane((PreferencesExt) prefs.node("dumpPane"));
-    dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage("netcdfUI"), dumpPane);
-    dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 300, 200)));
+    // file popup window
+    fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
+    fileTable.addPropertyChangeListener(new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent evt) {
+        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+      }
+    });
   }
 
   public void save() {
     if (mainSplit != null) prefs.putInt("mainSplit", mainSplit.getDividerLocation());
     cdmIndexTables.save();
     partitionsTable.save();
+    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    fileTable.save();
   }
 
   private Component current;
@@ -174,17 +181,6 @@ public class DirectoryPartitionViewer extends JPanel {
     config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
     CollectionSpecParser spec = new CollectionSpecParser(config.spec, errlog);
     partitionTreeBrowser.setRoot(Paths.get(spec.getRootDir()));
-  }
-
-  // LOOK - shouldnt this be done in the swing dispatch or something ??
-  private void cmdSendGribCollection() {
-    if (gribCollectionFiles.size() == 0) return;
-    Formatter f = new Formatter();
-    f.format("list:");
-    for (String s : gribCollectionFiles) {
-      f.format("%s;", s);
-    }
-    DirectoryPartitionViewer.this.firePropertyChange("openGrib2Collection", null, f.toString());
   }
 
   private void moveCdmIndexFile(NodeInfo indexFile) throws IOException {
@@ -325,6 +321,7 @@ public class DirectoryPartitionViewer extends JPanel {
     Path dir;
     DirectoryPartition part;
     boolean hasIndex;
+    boolean isPartition = true;
 
     NodeInfo(Path dir) {
       this.dir = dir;
@@ -354,6 +351,8 @@ public class DirectoryPartitionViewer extends JPanel {
       } catch (IOException e) {
         e.printStackTrace();
       }
+
+      isPartition = (result.size() > 0);
       return result;
     }
 
@@ -657,7 +656,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
       final List<NodeInfo> result = new ArrayList<>(100);
       NodeInfo uobj = (NodeInfo) node.getUserObject();
-      if (uobj.hasIndex) {
+      if (uobj.hasIndex && uobj.isPartition) {
         for (NodeInfo child : uobj.getChildren()) {
           result.add(child);
         }
@@ -673,7 +672,11 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       }
 
-      if (result.size() == 0) return;
+      if (result.size() == 0) {
+        progressBar.setIndeterminate(false);
+        tree.setEnabled(true);
+        return;
+      }
 
       SwingWorker<Void, NodeInfo> worker = new SwingWorker<Void, NodeInfo>() {
         @Override
@@ -772,10 +775,8 @@ public class DirectoryPartitionViewer extends JPanel {
   private class PartitionsTable extends JPanel {
     private PreferencesExt prefs;
 
-    private BeanTableSorted groupsTable, groupTable, varTable, fileTable;
-    private JSplitPane split, split2, split3;
-
-    private IndependentWindow fileWindow;
+    private BeanTableSorted groupsTable, groupTable, varTable;
+    private JSplitPane split;
 
     public PartitionsTable(PreferencesExt prefs) {
       this.prefs = prefs;
@@ -807,7 +808,7 @@ public class DirectoryPartitionViewer extends JPanel {
           GroupBean bean = (GroupBean) groupTable.getSelectedBean();
           if (bean != null) {
             if (bean.group != null)
-              showFiles(bean.group.getFiles());
+              showFiles(null, bean.group);
           }
         }
       });
@@ -838,39 +839,6 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       });
 
-      fileTable = new BeanTableSorted(FileBean.class, (PreferencesExt) prefs.node("FileBean"), false, "Files", "Files", null);
-      varPopup = new PopupMenu(fileTable.getJTable(), "Options");
-      varPopup.addAction("Open in Grib2Collection", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          FileBean bean = (FileBean) fileTable.getSelectedBean();
-          if (bean == null) return;
-          DirectoryPartitionViewer.this.firePropertyChange("openGrib2Collection", null, bean.getPath());
-        }
-      });
-      varPopup.addAction("Add File to Grib2Collection", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          FileBean bean = (FileBean) fileTable.getSelectedBean();
-          if (bean == null) return;
-          gribCollectionFiles.add(bean.getPath());
-        }
-      });
-      varPopup.addAction("Clear Grib2Collection", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          FileBean bean = (FileBean) fileTable.getSelectedBean();
-          if (bean == null) return;
-          gribCollectionFiles = new ArrayList<>();
-        }
-      });
-      varPopup.addAction("Send Grib2Collection", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          cmdSendGribCollection();
-        }
-      });
-
-
-      fileWindow = new IndependentWindow("Files Used", BAMutil.getImage("netcdfUI"), fileTable);
-      fileWindow.setBounds((Rectangle) prefs.getBean("DetailWindowBounds", new Rectangle(300, 300, 500, 300)));
-
       /////////////////////////////////////////
       setLayout(new BorderLayout());
 
@@ -887,8 +855,6 @@ public class DirectoryPartitionViewer extends JPanel {
       groupTable.saveState(false);
       varTable.saveState(false);
       if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-      if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
-      if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
     }
 
     private void setGroups(GroupsBean groups) {
@@ -902,15 +868,15 @@ public class DirectoryPartitionViewer extends JPanel {
       varTable.setBeans(vars);
     }
 
-    private void showFiles(List<MFile> files) {
-      if (files == null) return;
+   // private void showFiles(File dir, List<MFile> files) {
+   //   fileTable.setFiles(dir, files);
+   // }
 
-      int count = 0;
-      List<FileBean> beans = new ArrayList<>();
-      for (MFile mfile : files)
-        beans.add(new FileBean(mfile, count++));
-      fileTable.setBeans(beans);
-      fileWindow.show();
+    private void showFiles(GribCollection gc, GribCollection.GroupHcs group) {
+      File dir = gc.getDirectory();
+      List<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
+
+      fileTable.setFiles(dir, files);
     }
 
     private class Groups implements Comparable<Groups> {
@@ -1202,35 +1168,6 @@ public class DirectoryPartitionViewer extends JPanel {
 
     public String getVariableId() {
       return v.discipline + "-" + v.category + "-" + v.parameter;
-    }
-  }
-
-  public class FileBean {
-    MFile mfile;
-    int count;
-
-    public FileBean() {
-    }
-
-    public FileBean(MFile mfile, int count) {
-      this.mfile = mfile;
-      this.count = count;
-    }
-
-    public int getCount() {
-      return count;
-    }
-
-    public String getName() {
-      return mfile.getName();
-    }
-
-    public String getPath() {
-       return mfile.getPath();
-     }
-
-     public String getLastModified() {
-      return CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified()));
     }
   }
 }

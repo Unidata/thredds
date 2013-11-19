@@ -125,9 +125,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
-      createPartitionedIndex(null);  // LOOK at this point we are going to remake the whole thing
-      readIndex(idx.getPath()); // read back in index
-      return true;
+      if (createPartitionedIndex(null)) {  // LOOK at this point we are going to remake the whole thing
+        return readIndex(idx.getPath()); // read back in index
+      }
     }
     return false;
   }
@@ -205,7 +205,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     checkGroups(canon, f, true);
     GribCollection canonGc = checkPartitions(canon, f);
     if (canonGc == null) {
-      logger.error(" Partition check failed, index not written on {} message = {}", tp.getName(), f.toString());
+      logger.error(" Partition check failed, index not written on {} errors = \n{}", tp.getName(), f.toString());
       return false;
     }
 
@@ -237,6 +237,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     GribCollection canonGc = canon.gc;
     for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
       String gname = firstGroup.getId();
+      String gdesc = firstGroup.getDescription();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // hash proto variables for quick lookup
@@ -269,12 +270,12 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
         // for each variable in partition group
         for (int varIdx = 0; varIdx < group.varIndex.size(); varIdx++) {
           GribCollection.VariableIndex vi2 = group.varIndex.get(varIdx);
-          if (trace) f.format(" Check variable %s%n",  vi2);
+          if (trace) f.format(" Check %s%n",  vi2.toStringShort());
           int flag = 0;
 
-          GribCollection.VariableIndex vi1 = check.get(vi2.cdmHash); // compare with proto variable
+          GribCollection.VariableIndex vi1 = check.get(vi2.cdmHash); // compare with proto variable (vi1)
           if (vi1 == null) {
-            f.format("   WARN Cant find variable %s from %s in proto - ignoring that variable%n",  vi2, tpp.getName());
+            f.format("   WARN Cant find %s from %s in proto - ignoring that variable%n",  vi2.toStringShort(), tpp.getName());
             continue; // we can tolerate this
           }
 
@@ -284,11 +285,12 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
           if ((vc1 == null) != (vc2 == null)) {
             vc1 = vi1.getVertCoord();   // debug
             vc2 = vi2.getVertCoord();
-            f.format("   ERR Vert coordinates existence on variable %s in %s doesnt match%n",  vi2, tpp.getName());
+            f.format("   ERR Vert coordinates existence on group %s (%s) on %s in %s (exist %s) doesnt match %s (exist %s)%n",  gname, gdesc, vi2.toStringShort(),
+                    tpp.getName(), (vc2 == null), canon.getName(), (vc1 == null));
             ok = false;
 
           } else if ((vc1 != null) && !vc1.equalsData(vc2)) {
-            f.format("   WARN Vert coordinates values on variable %s in %s dont match%n",  vi2, tpp.getName());
+            f.format("   WARN Vert coordinates values on %s in %s dont match%n",  vi2.toStringShort(), tpp.getName());
             f.format("    canon vc = %s%n", vc1);
             f.format("    this vc = %s%n", vc2);
             flag |= TimePartition.VERT_COORDS_DIFFER;
@@ -298,10 +300,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
           EnsCoord ec1 = vi1.getEnsCoord();
           EnsCoord ec2 = vi2.getEnsCoord();
           if ((ec1 == null) != (ec2 == null)) {
-            f.format("   ERR Ensemble coordinates existence on variable %s in %s doesnt match%n",  vi2, tpp.getName());
+            f.format("   ERR Ensemble coordinates existence on %s in %s doesnt match%n",  vi2.toStringShort(), tpp.getName());
             ok = false;
           } else if ((ec1 != null) && !ec1.equalsData(ec2)) {
-            f.format("   WARN Ensemble coordinates values on variable %s in %s dont match%n",  vi2, tpp.getName());
+            f.format("   WARN Ensemble coordinates values on %s in %s dont match%n",  vi2.toStringShort(), tpp.getName());
             f.format("    canon ec = %s%n", ec1);
             f.format("    this ec = %s%n", ec2);
             flag |= TimePartition.ENS_COORDS_DIFFER;
