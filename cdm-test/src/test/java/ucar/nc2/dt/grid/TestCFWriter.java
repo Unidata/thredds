@@ -32,7 +32,7 @@
 
 package ucar.nc2.dt.grid;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
@@ -44,15 +44,17 @@ import ucar.unidata.test.util.TestDir;
 import java.util.List;
 import java.util.ArrayList;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Use NetcdfCFWriter to write a netcdf-3 file
  *
  * @author caron
  * @since May 28, 2009
  */
-public class TestCFWriter extends TestCase {
+public class TestCFWriter {
 
-
+  @Test
   public void testSubset() throws Exception {
     String fileIn = TestDir.cdmUnitTestDir + "ft/grid/testCFwriter.nc";
     String fileOut = TestDir.temporaryLocalDataDir + "testCFwriter.nc";
@@ -73,12 +75,13 @@ public class TestCFWriter extends TestCase {
 
     ucar.nc2.dt.grid.GridDataset result = GridDataset.open(fileOut);
     GeoGrid grid = result.findGridByName(varName);
-    assert grid != null;
+    assertTrue(grid != null);
 
     result.close();
 
   }
 
+  @Test
   public void testSizeEstimate() throws Exception {
     String fileIn = TestDir.cdmUnitTestDir + "ft/grid/testCFwriter.nc";
     System.out.printf("Open %s%n", fileIn);
@@ -99,7 +102,7 @@ public class TestCFWriter extends TestCase {
 
     System.out.printf("total size  = %d%n", totalSize);
     System.out.printf("subset size = %d%n", subsetSize);
-    assert subsetSize < totalSize;
+    assertTrue(subsetSize < totalSize);
 
     String varName = "Temperature";
     gridList = new ArrayList<String>();
@@ -110,19 +113,12 @@ public class TestCFWriter extends TestCase {
 
     System.out.printf("total size Temp only  = %d%n", totalSize);
     System.out.printf("subset size Temp only = %d%n", subsetSize);
-    assert subsetSize < totalSize;
-
-    CalendarDateRange dateRange = null; // CalendarDateRange.of();
-    totalSize = writer.makeGridFileSizeEstimate(gds, gridList, (LatLonRect) null, 1, null, null, 1, false);
-    subsetSize = writer.makeGridFileSizeEstimate(gds, gridList, (LatLonRect) null, 1, null, dateRange, 1, false);
-
-    System.out.printf("total size Temp only  = %d%n", totalSize);
-    System.out.printf("subset size with date range = %d%n", subsetSize);
-    assert subsetSize < totalSize;
+    assertTrue(subsetSize < totalSize);
 
     gds.close();
   }
 
+  @Test
   public void testSizeEstimateTimeSubset() throws Exception {
     String fileIn = TestDir.cdmUnitTestDir + "ft/grid/cg/cg.ncml";
     System.out.printf("Open %s%n", fileIn);
@@ -142,7 +138,7 @@ public class TestCFWriter extends TestCase {
 
     System.out.printf("total size Temp only  = %d%n", totalSize);
     System.out.printf("subset size with date range = %d%n", subsetSize);
-    assert subsetSize < totalSize;
+    assertTrue(subsetSize < totalSize);
 
     gds.close();
   }

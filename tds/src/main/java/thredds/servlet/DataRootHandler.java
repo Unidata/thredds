@@ -887,6 +887,7 @@ public final class DataRootHandler implements InitializingBean {
    * @param req the request
    * @return the DataRootMatch, or null if not found
    */
+  //  see essupport SEG-622383
   public DataRootMatch findDataRootMatch(HttpServletRequest req) {
     String spath = TdsPathUtils.extractPath(req, null);
 
