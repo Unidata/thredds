@@ -1733,7 +1733,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @deprecated use Variable.setValues()
    */
   public void setValues(Variable v, List<String> values) throws IllegalArgumentException {
-    Array data = Array.makeArray(v.getDataType(), values);
+    Array data = Array.makeArray(v.getDataType(), v.isUnsigned(),values);
 
     if (data.getSize() != v.getSize())
       throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + v.getFullName() +

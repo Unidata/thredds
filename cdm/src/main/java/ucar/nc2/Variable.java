@@ -1689,7 +1689,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
    * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
    */
   public void setValues(List<String> values) throws IllegalArgumentException {
-    Array data = Array.makeArray(getDataType(), values);
+    Array data = Array.makeArray(getDataType(), isUnsigned(),  values);
 
     if (data.getSize() != getSize())
       throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + getFullName() +

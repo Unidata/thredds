@@ -35,6 +35,8 @@ package ucar.nc2.dt.grid;
 import junit.framework.TestCase;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.test.util.TestDir;
@@ -79,6 +81,7 @@ public class TestCFWriter extends TestCase {
 
   public void testSizeEstimate() throws Exception {
     String fileIn = TestDir.cdmUnitTestDir + "ft/grid/testCFwriter.nc";
+    System.out.printf("Open %s%n", fileIn);
 
     ucar.nc2.dt.grid.GridDataset gds = GridDataset.open(fileIn);
     List<String> gridList = new ArrayList<String>();
@@ -109,9 +112,39 @@ public class TestCFWriter extends TestCase {
     System.out.printf("subset size Temp only = %d%n", subsetSize);
     assert subsetSize < totalSize;
 
+    CalendarDateRange dateRange = null; // CalendarDateRange.of();
+    totalSize = writer.makeGridFileSizeEstimate(gds, gridList, (LatLonRect) null, 1, null, null, 1, false);
+    subsetSize = writer.makeGridFileSizeEstimate(gds, gridList, (LatLonRect) null, 1, null, dateRange, 1, false);
+
+    System.out.printf("total size Temp only  = %d%n", totalSize);
+    System.out.printf("subset size with date range = %d%n", subsetSize);
+    assert subsetSize < totalSize;
+
     gds.close();
+  }
 
+  public void testSizeEstimateTimeSubset() throws Exception {
+    String fileIn = TestDir.cdmUnitTestDir + "ft/grid/cg/cg.ncml";
+    System.out.printf("Open %s%n", fileIn);
 
+    ucar.nc2.dt.grid.GridDataset gds = GridDataset.open(fileIn);
+    List<String> gridList = new ArrayList<String>();
+    for  (GridDatatype grid : gds.getGrids()) {
+      Variable v = grid.getVariable();
+      System.out.printf("  %20s == %d%n", grid.getName(), v.getSize() * v.getElementSize());
+      gridList.add(grid.getName());
+    }
+
+    CFGridWriter writer = new CFGridWriter();
+    CalendarDateRange dateRange = CalendarDateRange.of(CalendarDate.parseISOformat(null, "2006-06-07T12:00:00Z"), CalendarDate.parseISOformat(null, "2006-06-07T13:00:00Z"));
+    long totalSize = writer.makeGridFileSizeEstimate(gds, gridList, (LatLonRect) null, 1, null, null, 1, false);
+    long subsetSize = writer.makeGridFileSizeEstimate(gds, gridList, (LatLonRect) null, 1, null, dateRange, 1, false);
+
+    System.out.printf("total size Temp only  = %d%n", totalSize);
+    System.out.printf("subset size with date range = %d%n", subsetSize);
+    assert subsetSize < totalSize;
+
+    gds.close();
   }
 
 

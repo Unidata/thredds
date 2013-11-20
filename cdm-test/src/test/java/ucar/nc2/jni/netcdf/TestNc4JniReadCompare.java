@@ -46,7 +46,6 @@ public class TestNc4JniReadCompare {
   public static List<Object[]> getTestParameters() {
 
     List<Object[]> result = new ArrayList<Object[]>(500);
-
     try {
       addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf3/", new NotFileFilter( new SuffixFileFilter(".cdl")));
       addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf4/", new NotFileFilter( new SuffixFileFilter(".cdl")));
