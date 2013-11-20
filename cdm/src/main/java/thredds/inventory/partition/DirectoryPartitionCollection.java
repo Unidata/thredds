@@ -42,12 +42,12 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
   @Override
   public Iterable<CollectionManagerRO> makePartitions() throws IOException {
 
-    DirectoryPartition builder = new DirectoryPartition(topCollection, topDir, null);
+    DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(topCollection, topDir, null);
     builder.constructChildren(indexReader);
 
     List<CollectionManagerRO> result = new ArrayList<>();
-    for (DirectoryPartition child : builder.getChildren()) {
-      if (child.hasChildren()) {
+    for (DirectoryPartitionBuilder child : builder.getChildren()) {
+      if (child.isPartition(indexReader)) {
         result.add(makeChildCollection(child)); // nested
 
       } else {
@@ -58,7 +58,7 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
     return result;
   }
 
-  private DirectoryPartitionCollection makeChildCollection(DirectoryPartition dp) {
+  private DirectoryPartitionCollection makeChildCollection(DirectoryPartitionBuilder dp) {
     DirectoryPartitionCollection result =  new DirectoryPartitionCollection(this.config, dp.getDir(), this.indexReader, this.errlog, this.logger);
     result.setPartition(true);
     return result;
@@ -84,9 +84,9 @@ public class DirectoryPartitionCollection extends TimePartitionCollection {
   // claim to fame is that it scans files on demand
   // using DirectoryPartitionBuilder, it will read files from ncx index
   private class DirectoryPartitionManager implements CollectionManagerRO {
-    final DirectoryPartition builder;
+    final DirectoryPartitionBuilder builder;
 
-    DirectoryPartitionManager(DirectoryPartition builder) {
+    DirectoryPartitionManager(DirectoryPartitionBuilder builder) {
       this.builder = builder;
     }
 

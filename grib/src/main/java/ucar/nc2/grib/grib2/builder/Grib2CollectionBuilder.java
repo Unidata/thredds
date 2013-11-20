@@ -102,10 +102,19 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     throw new IOException("Reading index failed");
   } */
 
-  // this writes the index always
+  /* this writes the index always
   static public boolean writeIndexFile(File indexFile, CollectionManagerRO dcm, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     return builder.createIndex(indexFile);
+  } */
+
+  // this writes the index always
+  static public boolean makeIndex(CollectionManagerRO dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
+    File indexFile = builder.gc.getIndexFile();
+    boolean ok = builder.createIndex(indexFile, errlog);
+    builder.gc.close();
+    return ok;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -156,7 +165,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
        // write out index
        idx = gc.makeNewIndexFile(logger); // make sure we have a writeable index
        logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
-       createIndex(idx);
+       createIndex(idx, null);
 
        // read back in index
        RandomAccessFile indexRaf = new RandomAccessFile(idx.getPath(), "r");
@@ -217,7 +226,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   ///////////////////////////////////////////////////
   // create the index
 
-  private boolean createIndex(File indexFile) throws IOException {
+  private boolean createIndex(File indexFile, Formatter errlog) throws IOException {
     if (dcm == null) {
       logger.error("Grib2CollectionBuilder "+gc.getName()+" : cannot create new index ");
       throw new IllegalStateException();

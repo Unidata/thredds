@@ -499,7 +499,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   private boolean scanFirstTime() throws IOException {
-    Map<String, MFile> newMap = new HashMap<String, MFile>();
+    Map<String, MFile> newMap = new HashMap<>();
     if (!hasScans()) {
       map = newMap;
       return false;

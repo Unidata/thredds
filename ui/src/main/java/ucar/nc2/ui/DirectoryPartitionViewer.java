@@ -8,11 +8,10 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionManagerRO;
 import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.MFile;
-import thredds.inventory.partition.DirectoryPartition;
+import thredds.inventory.partition.DirectoryPartitionBuilder;
 import thredds.inventory.partition.DirectoryPartitionCollection;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2TimePartition;
-import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
@@ -246,8 +245,8 @@ public class DirectoryPartitionViewer extends JPanel {
 
          Formatter out = new Formatter();
          try {
-           GribCdmIndex indexWriter = new GribCdmIndex();
-           DirectoryPartitionCollection dpart = new DirectoryPartitionCollection(config, node.dir, indexWriter, out, logger);
+           GribCdmIndex indexReader = new GribCdmIndex();
+           DirectoryPartitionCollection dpart = new DirectoryPartitionCollection(config, node.dir, indexReader, out, logger);
 
            Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), node.dir.toFile(), config.gribConfig, logger);
            for (CollectionManagerRO dcm : dpart.makePartitions()) {
@@ -300,17 +299,16 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private void cmdMakeIndex(NodeInfo node) {
     Formatter out = new Formatter();
+    out.format("makeTimePartitionIndex %s%n%n", node);
     try {
-      boolean ok = GribCdmIndex.makeDirectoryPartitionIndex(config, node.dir.toFile(), out);
-      out.format("%s makeIndex success=%s%n", node, ok);
-      infoTA.appendLine(out.toString());
+      boolean ok = GribCdmIndex.makeIndex(config, out, node.dir);
+      out.format("makeTimePartitionIndex success %s%n%n", ok);
+      infoTA.setText(out.toString());
       infoTA.gotoTop();
       infoWindow.show();
 
-      if (ok) {
-        node.refresh();
-        cmdShowIndex(node);
-      }
+      node.refresh();
+      cmdShowIndex(node);
 
     } catch (Throwable t) {
       JOptionPane.showMessageDialog(this, node + " makeIndex failed: " + t.getMessage());
@@ -319,7 +317,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private class NodeInfo {
     Path dir;
-    DirectoryPartition part;
+    DirectoryPartitionBuilder part;
     boolean hasIndex;
     boolean isPartition = true;
 
@@ -327,7 +325,7 @@ public class DirectoryPartitionViewer extends JPanel {
       this.dir = dir;
 
       try {
-        part = new DirectoryPartition(collectionName, dir, null);
+        part = new DirectoryPartitionBuilder(collectionName, dir, null);
         hasIndex = part.getIndex() != null;
 
       } catch (IOException e) {
@@ -335,7 +333,7 @@ public class DirectoryPartitionViewer extends JPanel {
       }
     }
 
-    NodeInfo(DirectoryPartition part) {
+    NodeInfo(DirectoryPartitionBuilder part) {
       this.part = part;
       this.dir = part.getDir();
       this.hasIndex = part.getIndex() != null;
@@ -344,7 +342,7 @@ public class DirectoryPartitionViewer extends JPanel {
     List<NodeInfo> getChildren() {
       List<NodeInfo> result = new ArrayList<>(100);
       try {
-        for (DirectoryPartition child : part.constructChildren(new GribCdmIndex())) {
+        for (DirectoryPartitionBuilder child : part.constructChildren(new GribCdmIndex())) {
           result.add(new NodeInfo(child));
         }
 
@@ -366,10 +364,11 @@ public class DirectoryPartitionViewer extends JPanel {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder("NodeInfo{");
-      sb.append("dir=").append(dir);
-      sb.append('}');
-      return sb.toString();
+      Formatter f = new Formatter();
+      f.format("NodeInfo{ dir= %s", dir);
+      if (hasIndex) f.format(" index= %s", part.getIndex());
+      f.format("}");
+      return f.toString();
     }
   }
 
@@ -873,9 +872,8 @@ public class DirectoryPartitionViewer extends JPanel {
    // }
 
     private void showFiles(GribCollection gc, GribCollection.GroupHcs group) {
-      File dir = gc.getDirectory();
       List<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
-
+      File dir = (gc == null) ? null : gc.getDirectory();
       fileTable.setFiles(dir, files);
     }
 

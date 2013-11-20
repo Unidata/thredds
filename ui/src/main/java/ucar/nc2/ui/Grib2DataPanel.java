@@ -481,7 +481,7 @@ public class Grib2DataPanel extends JPanel {
       filename += GribCollection.NCX_IDX;
     File idxFile = new File(filename);
 
-    Grib2CollectionBuilder.writeIndexFile(idxFile, dcm, logger);
+    Grib2CollectionBuilder.makeIndex(dcm, new Formatter(), logger);
     return true;
   }
 

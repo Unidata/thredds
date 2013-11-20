@@ -106,7 +106,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-  static public void make(String name, String spec, org.slf4j.Logger logger) throws IOException {
+  /* static public void make(String name, String spec, org.slf4j.Logger logger) throws IOException {
     long start = System.currentTimeMillis();
     Formatter f = new Formatter();
     CollectionManager dcm = new MFileCollectionManager(name, spec, f, null);
@@ -141,6 +141,6 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
     }
     // "G:/nomads/timeseries/200808/.*grb2$"
     // readIndex2("G:/nomads/timeseries/200808/GaussLatLon-576X1152.ncx");
-  }
+  }  */
 
 }

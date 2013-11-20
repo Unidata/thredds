@@ -35,6 +35,7 @@
 
 package thredds.filesystem;
 
+import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.MCollection;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
@@ -50,6 +51,7 @@ import java.util.*;
  * @author caron
  * @since 11/8/13
  */
+@ThreadSafe
 public class ControllerOS7 implements MController {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS7.class);
 

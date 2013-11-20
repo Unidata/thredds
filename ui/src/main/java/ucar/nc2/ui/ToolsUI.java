@@ -6015,7 +6015,7 @@ public class ToolsUI extends JPanel {
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
     // put UI in a JFrame
-    frame = new JFrame("NetCDF (4.4) Tools");
+    frame = new JFrame("NetCDF (4.5) Tools");
     ui = new ToolsUI(prefs, frame);
 
     frame.setIconImage(BAMutil.getImage("netcdfUI"));
@@ -6041,7 +6041,7 @@ public class ToolsUI extends JPanel {
 
     UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
     HTTPSession.setGlobalCredentialsProvider(provider);
-    HTTPSession.setGlobalUserAgent("ToolsUI v4.4");
+    HTTPSession.setGlobalUserAgent("ToolsUI v4.5");
 
     // set Authentication for accessing passsword protected services like TDS PUT
     java.net.Authenticator.setDefault(provider);
