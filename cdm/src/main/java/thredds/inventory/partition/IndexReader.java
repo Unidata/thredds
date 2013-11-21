@@ -1,7 +1,10 @@
 package thredds.inventory.partition;
 
+import thredds.inventory.MFile;
+
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Knows how to read ncx Index files, to decouple eg from GRIB
@@ -12,8 +15,8 @@ import java.nio.file.Path;
 public interface IndexReader {
 
   /**
-   * Open an ncx file and read children indexes
-   * @param indexFile the ncx index file to open
+   * Open a Partition ncx file and read children indexes
+   * @param indexFile the Partition ncx index file to open
    * @param callback for each child index, call this back
    * @return true if indexFile is a partition collection
    * @throws IOException on bad things
@@ -21,7 +24,6 @@ public interface IndexReader {
   public boolean readChildren(Path indexFile, AddChildCallback callback) throws IOException;
 
   public interface AddChildCallback {
-
     /**
      * Callback for readChildren
      * @param topDir          the directory of the child collection
@@ -39,5 +41,14 @@ public interface IndexReader {
    * @throws IOException on bad
    */
   public boolean isPartition(Path indexFile) throws IOException;
+
+  /**
+   * Read the MFiles from a GribCollection index file
+   * @param indexFile
+   * @param result
+   * @return true if indexFile is a GribCollection collection
+   */
+  public boolean readMFiles(Path indexFile, List<MFile> result) throws IOException;
+
 
 }

@@ -211,6 +211,29 @@ public class ControllerOS7 implements MController {
     }
   }
 
+  public interface Visitor {
+     public void consume(MFile mfile);
+  }
+
+
+  public interface PathFilter {
+     public boolean accept(Path path);
+  }
+
+  private class MyFilter2 implements DirectoryStream.Filter<Path> {
+    PathFilter pathFilter;
+
+    private MyFilter2(PathFilter pathFilter) {
+      this.pathFilter = pathFilter;
+    }
+
+    public boolean accept(Path entry) throws IOException {
+      if (pathFilter != null && !pathFilter.accept(entry)) return false;
+      String last = entry.getName(entry.getNameCount()-1).toString();
+      return !last.endsWith(".gbx9") && !last.endsWith(".ncx");
+    }
+  }
+
   private void show(Path p, BasicFileAttributes attr) {
     System.out.printf("File: %s%n", p);
     System.out.println("    creationTime: " + attr.creationTime());

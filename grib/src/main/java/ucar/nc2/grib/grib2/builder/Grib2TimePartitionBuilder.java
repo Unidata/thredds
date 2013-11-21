@@ -78,7 +78,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   }
 
   // make the index
-  static public boolean makeIndex(PartitionManager tpc, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+  static public boolean makePartitionIndex(PartitionManager tpc, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.tp.close();
     return builder.createPartitionedIndex(errlog);

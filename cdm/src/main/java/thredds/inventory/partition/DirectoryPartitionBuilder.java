@@ -1,5 +1,7 @@
 package thredds.inventory.partition;
 
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.Collection;
 import thredds.inventory.MFile;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
@@ -16,18 +18,34 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * A Builder of Directory Collections
- * Each Collection is associated with one directory, and one ncx index.
- * If there are subdirectories, these are children DirectoryPartitions.
+ * A Builder of Directory Partitions and Collections
+ * Each DirectoryPartitionBuilder is associated with one directory, and one ncx index.
+ * If there are subdirectories, these are children DirectoryPartitionBuilders.
  *
  * @author caron
  * @since 11/10/13
  */
 public class DirectoryPartitionBuilder {
+
+  static public Collection factory(FeatureCollectionConfig config, Path topDir, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
+    DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(config.name, topDir.toString());
+
+    DirectoryPartition dpart = new DirectoryPartition(config, topDir, indexReader, logger);
+    if (builder.isPartition(indexReader))  // its a partition
+      return dpart;
+
+    // its a collection
+    boolean hasIndex = builder.findIndex();
+    if (hasIndex)
+      return dpart.makeChildCollection(builder); // with an index
+    else
+      return new DirectoryCollection(config.name, topDir, logger); // no index file
+  }
+
+
   static private enum PartitionStatus {unknown, isPartition ,isGribCollection}
 
   private final boolean debug = true;
-
   private final String topCollectionName;  // collection name
   private final String partitionName;      // partition name
   private final Path dir;                  // the directory
@@ -37,7 +55,7 @@ public class DirectoryPartitionBuilder {
   private long indexSize;                  // index size
 
   private boolean childrenConstructed = false;
-  private List<DirectoryPartitionBuilder> children;  // children
+  private List<DirectoryPartitionBuilder> children = new ArrayList<>(25);
   private PartitionStatus partitionStatus = PartitionStatus.unknown;
 
   /**
@@ -64,27 +82,8 @@ public class DirectoryPartitionBuilder {
     return children;
   }
 
-  // LOOK
-  public Iterable<MFile> getFiles() {
-    return null;
-  }
-
-  // LOOK
-  public MFile getLatestFile() {
-    return null;
-  }
-
-  // LOOK
-  public CalendarDate getStartCollection() {
-    return null;
-  }
-
   public String getPartitionName() {
     return partitionName;
-  }
-
-  // LOOK
-  public void close() {
   }
 
   public DirectoryPartitionBuilder(String topCollectionName, String dirFilename) throws IOException {
@@ -138,6 +137,7 @@ public class DirectoryPartitionBuilder {
 
       } else { // no index file
         scanForChildren();
+        if (children.size() > 0) partitionStatus = PartitionStatus.isPartition;
       }
     }
 
@@ -161,7 +161,6 @@ public class DirectoryPartitionBuilder {
   public List<DirectoryPartitionBuilder> constructChildren(IndexReader indexReader) throws IOException {
     if (childrenConstructed) return children;
 
-    children = new ArrayList<>(25);  // children
     childrenConstructed = true;
 
     if (index != null) {
@@ -193,8 +192,10 @@ public class DirectoryPartitionBuilder {
   // coming in from the index reader
   private DirectoryPartitionBuilder(String topCollectionName, Path indexFile, long indexLastModified) throws IOException {
     this.topCollectionName = topCollectionName;
-    this.index = indexFile;
-    this.indexLastModified = FileTime.fromMillis(indexLastModified);
+    if (Files.exists(indexFile)) {
+      this.index = indexFile;
+      this.indexLastModified = FileTime.fromMillis(indexLastModified);
+    }
 
     this.dir = indexFile.getParent();
     this.partitionName = DirectoryCollection.makeCollectionName(topCollectionName, dir);
@@ -226,6 +227,16 @@ public class DirectoryPartitionBuilder {
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////
+  // read teh list of files from the index
+
+  public List<MFile> getFiles(IndexReader indexReader) throws IOException {
+    List<MFile> result = new ArrayList<>(100);
+    if (index != null) return result;
+
+    indexReader.readMFiles(index, result);
+    return result;
+  }
 
   ////////////////////////////////////////////////////////
 

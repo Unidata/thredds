@@ -258,6 +258,7 @@ public class DirectoryPartitionViewer extends JPanel {
                gc.close(); // ??
 
              } catch (Throwable t) {
+               t.printStackTrace();
                out.format("Failed to open partition %s%n", tpp.getName());
                logger.error(" Failed to open partition " + tpp.getName(), t);
              }
@@ -275,6 +276,7 @@ public class DirectoryPartitionViewer extends JPanel {
            );
 
          } catch (Throwable t) {
+           t.printStackTrace();
            JOptionPane.showMessageDialog(DirectoryPartitionViewer.this, node.dir + " showPartitions failed: " + t.getMessage());
          }
        }
@@ -290,7 +292,8 @@ public class DirectoryPartitionViewer extends JPanel {
       swap(cdmIndexTables);
 
     } catch (Throwable t) {
-      JOptionPane.showMessageDialog(this, node + " makeIndex failed: " + t.getMessage());
+      t.printStackTrace();
+      JOptionPane.showMessageDialog(this, node + " showIndex failed: " + t.getMessage());
     }
   }
 
@@ -308,6 +311,7 @@ public class DirectoryPartitionViewer extends JPanel {
       cmdShowIndex(node);
 
     } catch (Throwable t) {
+      t.printStackTrace();
       JOptionPane.showMessageDialog(this, node + " makeIndex failed: " + t.getMessage());
     }
   }
