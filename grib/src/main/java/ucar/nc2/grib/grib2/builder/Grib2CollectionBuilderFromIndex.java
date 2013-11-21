@@ -5,8 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManagerRO;
-import thredds.inventory.MFile;
+import thredds.inventory.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Collection;
 import ucar.nc2.grib.grib2.Grib2Gds;
@@ -56,7 +55,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     this.gc = new Grib2Collection(name, directory, config);
   }
 
-  protected Grib2CollectionBuilderFromIndex(CollectionManagerRO dcm, boolean isSingleFile, org.slf4j.Logger logger) {
+  protected Grib2CollectionBuilderFromIndex(thredds.inventory.Collection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
     super(dcm, isSingleFile, logger);
   }
 

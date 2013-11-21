@@ -5,7 +5,6 @@ import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -17,18 +16,18 @@ import java.util.List;
  */
 public class GribCollectionBuilder {
 
-  protected final CollectionManagerRO dcm; // may be null, when read in from index
+  protected final Collection dcm; // may be null, when read in from index
   protected final boolean isSingleFile;
   protected final org.slf4j.Logger logger;
 
-  protected GribCollectionBuilder(CollectionManagerRO dcm, boolean isSingleFile, org.slf4j.Logger logger) {
+  protected GribCollectionBuilder(Collection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
     // assert dcm != null;
     this.dcm = dcm;
     this.isSingleFile = isSingleFile;
     this.logger = logger;
   }
 
-  public static List<GribCollectionBuilder.GcMFile> makeFiles(File directory, Collection<MFile> files) {
+  public static List<GribCollectionBuilder.GcMFile> makeFiles(File directory, List<MFile> files) {
     List<GribCollectionBuilder.GcMFile> result = new ArrayList<>(files.size());
     String dirPath = StringUtil2.replace(directory.getPath(), '\\', "/");
 

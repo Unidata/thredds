@@ -32,12 +32,10 @@
 
 package thredds.inventory;
 
-import thredds.featurecollection.FeatureCollectionConfig;
-// import thredds.inventory.bdb.MetadataManager;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
+import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.ListenerManager;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.*;
@@ -48,56 +46,28 @@ import java.util.*;
  * @author caron
  * @since Jan 19, 2010
  */
-public abstract class CollectionManagerAbstract implements CollectionManager {
-  static private org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
-
-  static public final String CATALOG = "catalog:";
-  static public final String LIST = "list:";
+public abstract class CollectionManagerAbstract extends CollectionAbstract implements CollectionManager  {
 
     // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
   static public CollectionManager open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
     if (collectionSpec.startsWith(CATALOG))
-      return new CatalogCollectionManager(collectionName, collectionSpec, olderThan, errlog);
-    else if (collectionSpec.startsWith(LIST))
-      return new CollectionManagerList(collectionName, collectionSpec, olderThan, errlog);
+      return new CollectionManagerCatalog(collectionName, collectionSpec, olderThan, errlog);
     else
       return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
   }
 
-  static public String cleanName(String name) {
-    if (name == null) return null;
-    return StringUtil2.replace(name.trim(), ' ', "_");  // LOOK must be ok in URL - probably not sufficient here
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected String collectionName;
-  protected final org.slf4j.Logger logger;
-
   protected TimeDuration recheck;
-  protected FeatureCollectionConfig.ProtoChoice protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;  // default
-
-  protected Map<String, Object> auxInfo; // lazy init
   private ListenerManager lm; // lazy init
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
-  private boolean isPartition; // true if partition, else GribCollection
 
   // these actually dont change, but are not set in the constructor
   protected DateExtractor dateExtractor;
   protected CalendarDate startCollection;
 
   protected CollectionManagerAbstract( String collectionName, org.slf4j.Logger logger) {
-    this.collectionName = cleanName(collectionName);
-    this.logger = logger != null ? logger : defaultLog;
-    // this.logger = loggerFactory.getLogger("fc."+this.collectionName); // seperate log file for each feature collection (!!)
-  }
-
-  public boolean isPartition() {
-    return isPartition;
-  }
-
-  public void setPartition(boolean partition) {
-    isPartition = partition;
+    super(collectionName, logger);
   }
 
   @Override
@@ -110,13 +80,14 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   }
 
   @Override
-  public String getCollectionName() {
-    return collectionName;
-  }
-
-  @Override
   public TimeDuration getRecheck() {
     return recheck;
+  }
+
+  // fake default implementation
+  @Override
+  public CloseableIterator<MFile> getFileIterator() throws IOException {
+    return new MFileIterator( getFilesSorted().iterator());
   }
 
   @Override
@@ -131,37 +102,6 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
     return isScanNeeded() && scan(false);
   }
 
-  @Override
-  public List<String> getFilenames() {
-    List<String> result = new ArrayList<String>();
-    for (MFile f: getFiles())
-      result.add(f.getPath());
-    return result;
-  }
-
-  @Override
-  public MFile getLatestFile() {
-    MFile result = null;
-    for (MFile f: getFiles()) // only have an Iterable
-      result = f;
-    return result;
-  }
-
-  @Override
-  public CalendarDate extractRunDate(MFile mfile) {
-    return (dateExtractor == null) ? null : dateExtractor.getCalendarDate(mfile);
-  }
-
-  @Override
-  public boolean hasDateExtractor() {
-    return (dateExtractor != null);
-  }
-
-  @Override
-  public CalendarDate getStartCollection() {
-    return startCollection;
-  }
-
   ////////////////////////
   // experimental
   protected ChangeChecker changeChecker = null;
@@ -169,47 +109,6 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   @Override
   public void setChangeChecker(ChangeChecker strat) {
     this.changeChecker = strat;
-  }
-
-  ////////////////////////////////////////////////////
-  // ability to pass arbitrary information in. kind of a kludge
-
-  @Override
-  public Object getAuxInfo(String key) {
-    return auxInfo == null ? null : auxInfo.get(key);
-  }
-
-  @Override
-  public void putAuxInfo(String key, Object value) {
-    if (auxInfo == null) auxInfo = new HashMap<>();
-    auxInfo.put(key, value);
-  }
-
-  ////////////////////////////////////////////////////
-  // proto dataset choosing
-
-  @Override
-  public int getProtoIndex(int n) {
-    if (n < 2) return 0;
-
-    int protoIdx = 0;
-    switch (protoChoice) {
-      case First:
-        protoIdx = 0;
-        break;
-      case Random:
-        Random r = new Random(System.currentTimeMillis());
-        protoIdx = r.nextInt(n - 1);
-        break;
-      case Run:
-      case Penultimate:
-        protoIdx = Math.max(n - 2, 0);
-        break;
-      case Latest:
-        protoIdx = Math.max(n - 1, 0);
-        break;
-    }
-    return protoIdx;
   }
 
   /////////////////////////////////////////////////////////////////////
@@ -256,13 +155,24 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   // events; keep the code from getting too coupled
 
   @Override
-  public void updateNocheck() throws IOException {
-    sendEvent(new TriggerEvent(this, TriggerType.updateNocheck));
-  }
+  public void sendEvent(TriggerType event) {
+    switch (event) {
+      case update:
+        try {
+          scan(true);
+        } catch (IOException e) {
+          logger.error("Error on scan", e);
+        }
+        break;
 
-  @Override
-  public void resetProto() {
-    sendEvent(new TriggerEvent(this, TriggerType.proto));
+      case updateNocheck:
+        sendEvent(new TriggerEvent(this, TriggerType.updateNocheck));
+        break;
+
+      case resetProto:
+        sendEvent(new TriggerEvent(this, TriggerType.resetProto));
+        break;
+    }
   }
 
   void sendEvent(TriggerEvent event) {

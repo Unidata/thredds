@@ -1,10 +1,8 @@
 package thredds.inventory.partition;
 
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerRO;
+import thredds.inventory.Collection;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Manages time partitions
@@ -12,8 +10,8 @@ import java.util.List;
  * @author caron
  * @since 11/11/13
  */
-public interface PartitionManager extends CollectionManager {
+public interface PartitionManager extends Collection {
 
-  public Iterable<CollectionManagerRO> makePartitions() throws IOException;
+  public Iterable<Collection> makePartitions() throws IOException;
 
 }

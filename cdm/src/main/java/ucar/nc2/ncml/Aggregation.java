@@ -432,7 +432,7 @@ public abstract class Aggregation {
     // heres where the results will go
     datasets = new ArrayList<Dataset>();
 
-    for (MFile cd : datasetManager.getFiles()) {
+    for (MFile cd : datasetManager.getFilesSorted()) {
       datasets.add( makeDataset(cd));
     }
 

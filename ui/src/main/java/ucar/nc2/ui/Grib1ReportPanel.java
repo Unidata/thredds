@@ -128,7 +128,7 @@ public class Grib1ReportPanel extends ReportPanel {
     f.format("Check Grib-1 Parameter Tables for local entries%n");
     int[] accum = new int[4];
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format("%n %s%n", path);
@@ -188,7 +188,7 @@ public class Grib1ReportPanel extends ReportPanel {
     CounterS local = new CounterS("local");
     CounterS missing = new CounterS("missing");
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
@@ -244,7 +244,7 @@ public class Grib1ReportPanel extends ReportPanel {
     Counter vertCoord = new Counter("vertCoord");
     Counter vertCoordInGDS = new Counter("vertCoordInGDS");
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
@@ -316,7 +316,7 @@ public class Grib1ReportPanel extends ReportPanel {
     Counter nbits = new Counter("nbits");
     Counter refVal = new Counter("refVal");
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       //if (useIndex) doShowEncodingIndex(f, mfile, decimals); else doShowEncoding(f, mfile, decimals);
       doShowEncoding(f, mfile, decimals, nbits, refVal);
@@ -383,7 +383,7 @@ public class Grib1ReportPanel extends ReportPanel {
     int multiple = 0;
     int ok = 0;
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%n%s%n", mfile.getPath());
 
       NetcdfFile ncfileOld = null;
@@ -443,7 +443,7 @@ public class Grib1ReportPanel extends ReportPanel {
     List<VarName> varNames = new ArrayList<VarName>(3000);
     Map<String,List<String>> gridsAll = new HashMap<String,List<String>>(1000); // old -> list<new>
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%n%s%n", mfile.getPath());
       Map<Integer,GridMatch> gridsNew = getGridsNew(mfile, f);
       Map<Integer,GridMatch> gridsOld = getGridsOld(mfile, f);

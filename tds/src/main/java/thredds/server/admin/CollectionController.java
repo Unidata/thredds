@@ -1,5 +1,6 @@
 package thredds.server.admin;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -195,9 +196,13 @@ public class CollectionController  {
 
     pw.printf("%n<pre>Last Scanned %-20s%n", CalendarDateFormatter.toDateTimeString(new Date(dcm.getLastScanned())));
     pw.printf("%n%-100s %-20s %9.3s %s%n", "Path", "Last Modified", "MB", "Aux");
-    for (MFile mfile : dcm.getFiles())
-      pw.printf("%-100s %-20s %9.3f %s%n", mfile.getPath(), CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified())),
-              (double) mfile.getLength() / (1000 * 1000), mfile.getAuxInfo());
+    try {
+      for (MFile mfile : dcm.getFilesSorted())
+        pw.printf("%-100s %-20s %9.3f %s%n", mfile.getPath(), CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified())),
+                (double) mfile.getLength() / (1000 * 1000), mfile.getAuxInfo());
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
     pw.printf("</pre>%n");
   }
 

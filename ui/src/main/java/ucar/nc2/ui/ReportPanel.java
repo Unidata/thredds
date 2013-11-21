@@ -7,6 +7,7 @@ import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -47,12 +48,16 @@ public class ReportPanel extends JPanel {
        return false;
      }
 
-     for (MFile mfile : dcm.getFiles()) {
-       f.format(" %s%n", mfile.getPath());
-       hasFiles = true;
-     }
+    try {
+      for (MFile mfile : dcm.getFilesSorted()) {
+        f.format(" %s%n", mfile.getPath());
+        hasFiles = true;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
 
-     reportPane.setText(f.toString());
+    reportPane.setText(f.toString());
      reportPane.gotoTop();
      return hasFiles;
    }

@@ -4,12 +4,9 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerRO;
-import thredds.inventory.CollectionSpecParser;
-import thredds.inventory.MFile;
+import thredds.inventory.*;
+import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryPartitionBuilder;
-import thredds.inventory.partition.DirectoryPartitionCollection;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.ui.widget.*;
@@ -246,10 +243,10 @@ public class DirectoryPartitionViewer extends JPanel {
          Formatter out = new Formatter();
          try {
            GribCdmIndex indexReader = new GribCdmIndex();
-           DirectoryPartitionCollection dpart = new DirectoryPartitionCollection(config, node.dir, indexReader, out, logger);
+           DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
 
            Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), node.dir.toFile(), config.gribConfig, logger);
-           for (CollectionManagerRO dcm : dpart.makePartitions()) {
+           for (thredds.inventory.Collection dcm : dpart.makePartitions()) {
              tp.addPartition(dcm);
            }
 

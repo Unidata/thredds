@@ -1,7 +1,8 @@
 package ucar.nc2.grib.grib2.builder;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.partition.TimePartitionCollection;
+import thredds.inventory.partition.PartitionManager;
+import thredds.inventory.partition.TimePartitionCollectionManager;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.unidata.io.RandomAccessFile;
@@ -37,10 +38,10 @@ public class Grib2TimePartitionBuilderFromIndex extends Grib2CollectionBuilderFr
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  private final TimePartitionCollection tpc; // defines the partition
+  private final PartitionManager tpc; // defines the partition
   private final Grib2TimePartition tp;  // build this object
 
-  private Grib2TimePartitionBuilderFromIndex(String name, File directory, TimePartitionCollection tpc, org.slf4j.Logger logger) {
+  private Grib2TimePartitionBuilderFromIndex(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(tpc, false, logger);
     FeatureCollectionConfig.GribConfig config = null;
     if (tpc != null) config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);

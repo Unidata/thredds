@@ -57,15 +57,15 @@ public class TestDcm {
     Formatter f = new Formatter(System.out);
     CollectionManager dcm = MFileCollectionManager.open("testScan", TestDir.cdmUnitTestDir + "agg/narr/narr-a_221_#yyyyMMdd_HHmm#.*grb$", null, f);
     dcm.scan(true);
-    List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFiles());
+    List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
     assert fileList.size() ==  3 : dcm;
 
     // check date extractor
     int count = 0;
     String[] result = new String[] {"2000-01-18T12:00:00", "2000-01-19T00:00:00", "2000-01-20T12:00:00"};
-    for (MFile mfile : dcm.getFiles()) {
-      System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractRunDate(mfile));
-      assert dcm.extractRunDate(mfile).toString().startsWith(result[count++]);
+    for (MFile mfile : dcm.getFilesSorted()) {
+      System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractDate(mfile));
+      assert dcm.extractDate(mfile).toString().startsWith(result[count++]);
     }
   }
 
@@ -74,18 +74,18 @@ public class TestDcm {
     Formatter f = new Formatter(System.out);
     CollectionManager dcm = MFileCollectionManager.open("testScanOlderThan", TestDir.cdmUnitTestDir + "agg/updating/.*nc$", null, f);
     dcm.scan(true);
-    List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFiles());
+    List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
     assert fileList.size() ==  3 : dcm;
 
     assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");
 
     dcm = MFileCollectionManager.open("testScanOlderThan", TestDir.cdmUnitTestDir + "agg/updating/.*nc$", "10 sec", f);
     dcm.scan(true);
-    fileList = (List<MFile>) Misc.getList(dcm.getFiles());
+    fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
     assert fileList.size() ==  2 : dcm;
 
-    for (MFile mfile : dcm.getFiles()) {
-      System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractRunDate(mfile));
+    for (MFile mfile : dcm.getFilesSorted()) {
+      System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractDate(mfile));
     }
   }
 
@@ -104,12 +104,12 @@ public class TestDcm {
     Formatter f = new Formatter(System.out);
     MFileCollectionManager dcm = new MFileCollectionManager(config, f, null);
     dcm.scan(true);
-    List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFiles());
+    List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
     assert fileList.size() ==  2 : dcm;
 
     // check date extractor
-    for (MFile mfile : dcm.getFiles()) {
-      System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractRunDate(mfile));
+    for (MFile mfile : dcm.getFilesSorted()) {
+      System.out.printf("  %s == %s%n", mfile.getPath(), dcm.extractDate(mfile));
     }
   }
 

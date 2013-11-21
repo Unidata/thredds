@@ -117,7 +117,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   }
 
   @Override
-  public void update() {
+  public void update() throws IOException {
     pointCollections.update();
   }
 

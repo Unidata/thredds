@@ -70,7 +70,7 @@ public class BufrReportPanel extends ReportPanel {
     int[] accum = new int[4];
     TrackMessageTypes all = new TrackMessageTypes();
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
       if (path.endsWith(".ncx")) continue;
       f.format("%n %s%n", path);
@@ -169,7 +169,7 @@ public class BufrReportPanel extends ReportPanel {
     f.format("BufrSplitter on files in collection %s, write to %s%n", dcm, dirName);
     BufrSplitter2 splitter = new BufrSplitter2(dirName, f);
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
       if (path.endsWith(".ncx")) continue;
       f.format("%n %s%n", path);

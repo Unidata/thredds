@@ -35,12 +35,10 @@
 
 package thredds.inventory.partition;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.filesystem.MFileOS7;
-import thredds.inventory.CollectionManagerAbstract;
-import thredds.inventory.CollectionManagerRO;
+import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MFile;
+import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -48,16 +46,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Iterator;
+import java.util.*;
 
 /**
- * Manage Files from just one collection
+ * Manage MFiles from just one directory.
+ * Needed ? DirectoryPartitionCollection instead?
  *
  * @author caron
  * @since 11/16/13
  */
-public class DirectoryCollection extends CollectionManagerAbstract implements CollectionManagerRO, Iterable<MFile>, AutoCloseable {
-  static private final Logger logger = LoggerFactory.getLogger(DirectoryCollection.class);
+public class DirectoryCollection extends CollectionAbstract {
   static public final String NCX_SUFFIX = ".ncx";
 
   /**
@@ -102,56 +100,32 @@ public class DirectoryCollection extends CollectionManagerAbstract implements Co
   }
 
   @Override
-  public long getLastScanned() {
-    return 0;
-  }
-
-  @Override
-  public long getLastChanged() {
-    return 0;
-  }
-
-  @Override
-  public boolean isScanNeeded() {
-    return false;
-  }
-
-  @Override
-  public boolean scan(boolean sendEvent) throws IOException {
-    return false;
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////
-
-  @Override
-  public Iterable<MFile> getFiles() {
-    return this;
-  }
-
-  @Override
-  public Iterator<MFile> iterator() {
-    try {
-      if (currIterator != null) currIterator.close();
-      currIterator = new MFileIterator(topDir, new MyFilter());
-      return currIterator;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+  public Iterable<MFile> getFilesSorted() throws IOException {
+    List<MFile> list = new ArrayList<>(100);
+    try (CloseableIterator<MFile> iter = getFileIterator()) {
+       while (iter.hasNext()) {
+         list.add(iter.next());
+       }
+     }
+    if (hasDateExtractor()) {
+      Collections.sort(list, new DateSorter());  // sort by date
+    } else {
+      Collections.sort(list);                    // sort by name
     }
+    return list;
   }
 
-  private MFileIterator currIterator; // lame
+  @Override
+  public CloseableIterator<MFile> getFileIterator() throws IOException {
+    return new MFileIterator(topDir, new MyFilter());
+  }
+
+  @Override
   public void close() {
-    super.close();
-    if (currIterator != null)
-      try {
-        currIterator.close();
-      } catch (IOException e) {
-        e.printStackTrace();  // lame
-      }
   }
 
   // returns everything in the current directory
-  private class MFileIterator implements Iterator<MFile> {
+  private class MFileIterator implements CloseableIterator<MFile> {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
 
@@ -187,8 +161,9 @@ public class DirectoryCollection extends CollectionManagerAbstract implements Co
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////
+
   private class MyFilter implements DirectoryStream.Filter<Path> {
-    @Override
     public boolean accept(Path entry) throws IOException {
       String last = entry.getName(entry.getNameCount()-1).toString();
       return !last.endsWith(".gbx9") && !last.endsWith(".ncx");
@@ -197,7 +172,7 @@ public class DirectoryCollection extends CollectionManagerAbstract implements Co
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 
-  // this idiom keeps the iterator from esccaping, so that we can use try-with-resource, and ensure it closes. like++
+  // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure it closes. like++
   public void iterateOverMFileCollection(Visitor visit) throws IOException {
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(topDir, new MyFilter())) {
       for (Path p : ds) {
@@ -210,26 +185,6 @@ public class DirectoryCollection extends CollectionManagerAbstract implements Co
 
   public interface Visitor {
      public void consume(MFile mfile);
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  // test
-
-  private static void dirStream() throws IOException {
-    Path topDir = Paths.get("B:/ndfd/200901/20090101");
-
-    int count = 0;
-    long start = System.currentTimeMillis();
-    DirectoryCollection c = new DirectoryCollection("ncdc1Year", topDir, logger);
-    for (MFile mfile : c.getFiles()) {
-      if (count++ < 100) System.out.printf("%s%n", mfile);
-    }
-    long took = (System.currentTimeMillis() - start) / 1000;
-    System.out.printf("took %s secs%n", took);
-  }
-
-  public static void main(String[] args) throws IOException {
-    dirStream();
   }
 
 }

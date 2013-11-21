@@ -40,6 +40,7 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
+import thredds.inventory.Collection;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
@@ -60,7 +61,7 @@ import java.util.regex.Pattern;
  * Abstract superclass for Feature Collection InvDatasets.
  * This is a InvCatalogRef subclass. So the reference is placed in the parent, but
  * the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
- *       match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
+ * match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
  * <p/>
  * The InvDatasetFeatureCollection object is created once and held in the DataRootHandler's collection
  * of DataRoots.
@@ -69,7 +70,7 @@ import java.util.regex.Pattern;
  * @since Mar 3, 2010
  */
 @ThreadSafe
-public abstract class InvDatasetFeatureCollection extends InvCatalogRef implements CollectionManager.TriggerListener {
+public abstract class InvDatasetFeatureCollection extends InvCatalogRef implements CollectionUpdateListener {
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
   static protected final String LATEST_SERVICE = "latest";
   static protected final String VARIABLES = "?metadata=variableMap";
@@ -82,50 +83,50 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
   static private org.slf4j.Logger classLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
 
-  static public void setContext( String c ) {
+  static public void setContext(String c) {
     context = c;
   }
 
-  static public void setCatalogServletName( String catServletName ) {
+  static public void setCatalogServletName(String catServletName) {
     catalogServletName = catServletName;
   }
 
-  static private String buildCatalogServiceHref( String path ) {
-    return context + ( catalogServletName == null ? "" : catalogServletName ) + "/" + path + "/catalog.xml";
+  static private String buildCatalogServiceHref(String path) {
+    return context + (catalogServletName == null ? "" : catalogServletName) + "/" + path + "/catalog.xml";
   }
 
-  static public void setCdmrFeatureServiceUrlPath( String urlPath) {
+  static public void setCdmrFeatureServiceUrlPath(String urlPath) {
     cdmrFeatureServiceUrlPath = urlPath;
   }
 
-  static public void setLoggerFactory( LoggerFactory fac) {
+  static public void setLoggerFactory(LoggerFactory fac) {
     loggerFactory = fac;
   }
 
   static private InvService makeCdmrFeatureService() {
-    return new InvService( "cdmrFeature","cdmrFeature", context + cdmrFeatureServiceUrlPath, null,null );
+    return new InvService("cdmrFeature", "cdmrFeature", context + cdmrFeatureServiceUrlPath, null, null);
   }
 
   static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     InvDatasetFeatureCollection result;
-    if (fcType == FeatureCollectionType.FMRC)
+    /* if (fcType == FeatureCollectionType.FMRC)
       result = new InvDatasetFcFmrc(parent, name, path, fcType, config);
 
-    else if (fcType == FeatureCollectionType.GRIB) {
+    else */ if (fcType == FeatureCollectionType.GRIB) {
       // use reflection to decouple from grib.jar
       try {
         Class c = InvDatasetFeatureCollection.class.getClassLoader().loadClass("thredds.catalog.InvDatasetFcGrib");
-      // public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
+        // public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
         Constructor ctor = c.getConstructor(InvDatasetImpl.class, String.class, String.class, FeatureCollectionType.class, FeatureCollectionConfig.class);
         result = (InvDatasetFeatureCollection) ctor.newInstance(parent, name, path, fcType, config);
 
       } catch (Throwable e) {
-        classLogger.error("Failed to open "+name+" path="+path, e);
+        classLogger.error("Failed to open " + name + " path=" + path, e);
         return null;
       }
 
-    } else  {
-      result =  new InvDatasetFcPoint(parent, name, path, fcType, config);
+    } else {
+      result = new InvDatasetFcPoint(parent, name, path, fcType, config);
     }
 
     if (result != null) {
@@ -158,6 +159,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
         this.lastInvChange = from.lastInvChange;
       }
     }
+
+    protected State copy() {  // allow override
+      return new State(this);
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -172,7 +177,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final FeatureCollectionType fcType;
   protected final FeatureCollectionConfig config;
   protected final String topDirectory;
-  protected CollectionManager dcm; // defines the collection of datasets in this feature collection, actually final
+  protected Collection datasetCollection; // defines the collection of datasets in this feature collection, actually final
 
   @GuardedBy("lock")
   protected State state;
@@ -181,7 +186,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final Object lock = new Object();
 
   protected InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
-    super(parent, name, buildCatalogServiceHref( path) );
+    super(parent, name, buildCatalogServiceHref(path));
     this.path = path;
     this.fcType = fcType;
 
@@ -192,77 +197,127 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       this.latestFileName = config.gribConfig.latestNamer;
     }
 
-    String collectionName = CollectionManagerAbstract.cleanName(config.name != null ? config.name : name);
-    config.name =  collectionName;
-    this.logger = loggerFactory.getLogger("fc."+collectionName); // seperate log file for each feature collection (!!)
+    String collectionName = CollectionAbstract.cleanName(config.name != null ? config.name : name);
+    config.name = collectionName;
+    this.logger = loggerFactory.getLogger("fc." + collectionName); // seperate log file for each feature collection (!!)
 
     Formatter errlog = new Formatter();
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
-      dcm = new CatalogCollectionManager(collectionName, config.spec, null, errlog);
+      datasetCollection = new CollectionManagerCatalog(collectionName, config.spec, null, errlog);
     } else {
-      dcm = new MFileCollectionManager(config, errlog, this.logger);
+      datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
     }
-    topDirectory = dcm.getRoot();
+    topDirectory = datasetCollection.getRoot();
 
     this.logger.info("FeatureCollection added = {}", getConfig());
     String errs = errlog.toString();
-    if (errs.length()> 0) logger.warn("MFileCollectionManager parse error = {} ", errs);
+    if (errs.length() > 0) logger.warn("MFileCollectionManager parse error = {} ", errs);
   }
 
   // stuff that shouldnt be done in a constructor - eg dont let 'this' escape
   // LOOK maybe not best design to start tasks from here
+  // LOOK we want to get notified of events, but no longer initiate changes.
   protected void finishConstruction() {
-    dcm.addEventListener(this); // now wired for events
-    CollectionUpdater.INSTANCE.scheduleTasks(config, dcm); // see if any background tasks are needed
+    CollectionUpdater.INSTANCE.scheduleTasks(config, this); // see if any background tasks are needed
+
+/*     if ((datasetCollection instanceof CollectionManager)) {
+      CollectionManager cm = (CollectionManager) datasetCollection;
+      cm.addEventListener(this); // now wired for events
+    }  */
   }
 
-  protected String getCatalogHref( String what) {
-    return buildCatalogServiceHref( path + "/" + what );
-  }
-
-  // call this first time a request comes in
-  protected void firstInit() {
-    this.orgService = getServiceDefault();
-    if (this.orgService == null) throw new IllegalStateException("No default service for InvDatasetFeatureCollection "+name);
-    this.virtualService = makeVirtualService(this.orgService);
-    this.cdmrService = makeCdmrFeatureService();
+  public String getCollectionName() {
+    return datasetCollection.getCollectionName();
   }
 
   @Override
   // DatasetCollectionManager was changed asynchronously
-  public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
+  public void sendEvent(TriggerType event) {
 
-    if (event.getType() == CollectionManager.TriggerType.updateNocheck)
+    if (event == CollectionUpdateListener.TriggerType.updateNocheck)
       update(CollectionManager.Force.nocheck);
 
-    else if (event.getType() == CollectionManager.TriggerType.update)
-      //update(tdsUsingTdm ? CollectionManager.Force.nocheck : CollectionManager.Force.test); // this may be startup
+    else if (event == CollectionUpdateListener.TriggerType.update)
       update(CollectionManager.Force.always);
 
-    else if (event.getType() == CollectionManager.TriggerType.proto)
+    else if (event == CollectionUpdateListener.TriggerType.resetProto)
       updateProto();
-   }
-
-  /**
-   * Collection was changed, update internal objects.
-   * called by CollectionUpdater, trigger via handleCollectionEvent, so in a quartz scheduler thread
-   * @param force test : update index if anything changed or nocheck - use index if it exists
-   */
-  abstract public void update(CollectionManager.Force force);
+  }
 
   /**
    * update the proto dataset being used.
    * called by CollectionUpdater via handleCollectionEvent, so in a quartz scheduler thread
    */
-  abstract public void updateProto();
+  abstract protected void updateProto();
+
+  abstract protected void updateCollection(State localState, CollectionManager.Force force);
+
+  abstract protected void makeDatasetTop(State localState);
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  protected String getCatalogHref(String what) {
+    return buildCatalogServiceHref(path + "/" + what);
+  }
+
+  // call this first time a request comes in
+  protected void firstInit() {
+    this.orgService = getServiceDefault();
+    if (this.orgService == null) throw new IllegalStateException("No default service for InvDatasetFeatureCollection " + name);
+    this.virtualService = makeVirtualService(this.orgService);
+    this.cdmrService = makeCdmrFeatureService(); // WTF ??
+  }
 
   /**
-   *  A request has come in, check that the state is up-to-date and initialized.
+   * A request has come in, check that the state is up-to-date and initialized.
    *
    * @return the State, updated if needed
    * @throws java.io.IOException on read error
    */
-  abstract protected State checkState() throws IOException;
+  //abstract protected State checkState() throws IOException;
+
+  // suppose all we do here is check if we have inititialized ?
+  protected State checkState() { // this is called from the request thread
+
+    synchronized (lock) {
+      if (first) {
+        firstInit();
+        updateCollection(state, CollectionManager.Force.nocheck);
+        makeDatasetTop(state);
+        first = false;
+      }
+    }
+
+    return state;
+  }
+
+  /**
+   * Collection was changed, update internal objects.
+   * called by CollectionUpdater, trigger via handleCollectionEvent, so in a quartz scheduler thread
+   *
+   * @param force test : update index if anything changed or nocheck - use index if it exists
+   */
+  //abstract public void update(CollectionManager.Force force);
+  protected void update(CollectionManager.Force force) {  // this may be called from a background thread
+    synchronized (lock) {
+      if (first) {
+        firstInit();
+        first = false;
+      }
+    }
+
+    // do the update in a local object
+    State localState = state.copy();
+    updateCollection(localState, force);
+    makeDatasetTop(localState);
+    localState.lastInvChange = System.currentTimeMillis();
+
+    // switch to live
+    synchronized (lock) {
+      state = localState;
+    }
+
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -283,7 +338,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   public CollectionManager getDatasetCollectionManager() {
-    return dcm;
+    return (datasetCollection instanceof CollectionManager) ? (CollectionManager) datasetCollection : null;
   }
 
   public Logger getLogger() {
@@ -308,20 +363,20 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     InvService result = new InvService(Virtual_Services, ServiceType.COMPOUND.toString(), null, null, null);
     for (InvService service : org.getServices()) {
-       if (service.getServiceType() != ServiceType.HTTPServer) {
-         result.addService(service);
-       }
-     }
+      if (service.getServiceType() != ServiceType.HTTPServer) {
+        result.addService(service);
+      }
+    }
     return result;
-   }
+  }
 
   /**
    * Get one of the catalogs contained in this collection,
    * called by DataRootHandler.makeDynamicCatalog()
-   * @param match match.remaining
-   * @param orgPath    the path for the request.
-   * @param catURI the base URI for the catalog to be made, used to resolve relative URLs.
-
+   *
+   * @param match   match.remaining
+   * @param orgPath the path for the request.
+   * @param catURI  the base URI for the catalog to be made, used to resolve relative URLs.
    * @return containing catalog
    */
   abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI);
@@ -330,7 +385,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * Make the containing catalog of this feature collection
    * "http://server:port/thredds/catalog/path/catalog.xml"
    *
-   * @param catURI base URI of the request
+   * @param catURI     base URI of the request
    * @param localState current state to use
    * @return the top FMRC catalog
    * @throws java.io.IOException         on I/O error
@@ -419,13 +474,8 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   // called by DataRootHandler.makeDynamicCatalog()
-  public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) {
-    try {
-      checkState();
-    } catch (IOException e) {
-      logger.error("Error in checkState", e);
-      return null;
-    }
+  public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
+    checkState();
 
     InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl result = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
@@ -448,7 +498,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       top.getLocalMetadataInheritable().setServiceName(orgService.getName());
     }
 
-    MFile mfile = dcm.getLatestFile();  // LOOK - assumes dcm is up to date
+    MFile mfile = datasetCollection.getLatestFile();  // LOOK - assumes dcm is up to date
     String mpath = mfile.getPath();
     if (!mpath.startsWith(topDirectory))
       logger.warn("File {} doesnt start with topDir {}", mpath, topDirectory);
@@ -468,6 +518,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   /**
    * Get the associated Grid Dataset, if any. called by DatasetHandler.openGridDataset()
+   *
    * @param matchPath match.remaining
    * @return Grid Dataset, or null if n/a
    * @throws IOException on error
@@ -497,6 +548,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   /**
    * Get the dataset named by the path.
    * called by DatasetHandler.getNetcdfFile()
+   *
    * @param matchPath remaining path from match
    * @return requested dataset
    * @throws IOException if read error

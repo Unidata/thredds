@@ -515,7 +515,7 @@ public class Grib2CollectionPanel extends JPanel {
     try {
       dc = CollectionManagerAbstract.open("Grib2CollectionPanel", spec, null, f);
       dc.scan(false);
-      fileList = (List<MFile>) Misc.getList(dc.getFiles());
+      fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
       return dc;
 
     } catch (Exception e) {
@@ -531,7 +531,7 @@ public class Grib2CollectionPanel extends JPanel {
     List<String> filenames = new ArrayList<String>();
 
     int fileno = 0;
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%3d: %s%n", fileno, mfile.getPath());
       filenames.add(mfile.getPath());
 
@@ -598,8 +598,12 @@ public class Grib2CollectionPanel extends JPanel {
 
     // just a list of the files
     f.format("dcm = %s%n", dcm);
-    for (MFile mfile : dcm.getFiles()) {
-      f.format("  %s%n", mfile.getPath());
+    try {
+      for (MFile mfile : dcm.getFilesSorted()) {
+        f.format("  %s%n", mfile.getPath());
+      }
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
 
     // divided by group

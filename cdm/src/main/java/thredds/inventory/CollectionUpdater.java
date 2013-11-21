@@ -25,7 +25,7 @@ public enum CollectionUpdater {
   static private final String DCM_NAME = "dcm";
   static private final String LOGGER = "logger";
   static private final long startupWait = 10 * 1000; // 10 secs
-  static private boolean disabled = false;
+  //static private boolean disabled = false;
 
   // could use Spring DI
   private org.quartz.Scheduler scheduler = null;
@@ -128,8 +128,9 @@ public enum CollectionUpdater {
     }
   }
 
-  public void scheduleTasks(FeatureCollectionConfig config, CollectionManager manager) {
-    if (disabled || failed) return;
+  public void scheduleTasks(FeatureCollectionConfig config, CollectionUpdateListener manager) {
+    //if (disabled || failed) return;
+    if (failed) return;
 
     FeatureCollectionConfig.UpdateConfig updateConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
     if (updateConfig == null) return;
@@ -249,12 +250,13 @@ public enum CollectionUpdater {
     }
   }
 
+  // do the work in a seperate thread
   public static class UpdateCollectionJob implements org.quartz.Job {
     public UpdateCollectionJob() {
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-      CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
+      CollectionUpdateListener manager = (CollectionUpdateListener) context.getJobDetail().getJobDataMap().get(DCM_NAME);
       org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
       if (manager == null) {
         loggerfc.error("UpdateCollection failed: no manager object on {}", context);
@@ -265,10 +267,10 @@ public enum CollectionUpdater {
         String groupName = context.getTrigger().getKey().getGroup();
         if (groupName.equals("nocheck")) {
           loggerfc.info("UpdateCollection {} nocheck", manager.getCollectionName());
-          manager.updateNocheck();
+          manager.sendEvent(CollectionUpdateListener.TriggerType.updateNocheck);
         } else {
           loggerfc.debug("UpdateCollection {} scan(true)", manager.getCollectionName());
-          manager.scan(true);
+          manager.sendEvent(CollectionUpdateListener.TriggerType.update);
         }
       } catch (Throwable e) {
         loggerfc.error("UpdateCollectionJob.execute failed collection=" + manager.getCollectionName(), e);
@@ -281,7 +283,7 @@ public enum CollectionUpdater {
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-      CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
+      CollectionUpdateListener manager = (CollectionUpdateListener) context.getJobDetail().getJobDataMap().get(DCM_NAME);
       org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
       if (manager == null) {
         loggerfc.error("Update resetProto failed: no manager object on {}", context);
@@ -290,7 +292,7 @@ public enum CollectionUpdater {
 
       try {
         loggerfc.info("ResetProto for {}", manager.getCollectionName());
-        manager.resetProto();
+        manager.sendEvent(CollectionUpdateListener.TriggerType.resetProto);
       } catch (Throwable e) {
         loggerfc.error("ChangeProtoJob.execute failed collection=" + manager.getCollectionName(), e);
       }

@@ -36,7 +36,7 @@
 package thredds.filesystem;
 
 import net.jcip.annotations.ThreadSafe;
-import thredds.inventory.MCollection;
+import thredds.inventory.CollectionConfig;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
 
@@ -61,12 +61,12 @@ public class ControllerOS7 implements MController {
   }
 
   @Override
-  public Iterator<MFile> getInventoryAll(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
     return null;
   }
 
   @Override
-  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck) throws IOException {
+  public Iterator<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) throws IOException {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -77,7 +77,7 @@ public class ControllerOS7 implements MController {
     return new MFileIterator(cd, new CollectionFilter(mc));  // removes subdirs
   }
 
-  public Iterator<MFile> getSubdirs(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
     return null;
   }
 
@@ -89,9 +89,9 @@ public class ControllerOS7 implements MController {
   ////////////////////////////////////////////////////////////
 
   private class CollectionFilter implements DirectoryStream.Filter<Path> {
-    MCollection mc; // LOOK not used yet
+    CollectionConfig mc; // LOOK not used yet
 
-    private CollectionFilter(MCollection mc) {
+    private CollectionFilter(CollectionConfig mc) {
       this.mc = mc;
     }
 

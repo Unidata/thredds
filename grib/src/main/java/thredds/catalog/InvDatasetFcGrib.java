@@ -36,7 +36,8 @@ import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
-import thredds.inventory.partition.TimePartitionCollection;
+import thredds.inventory.partition.PartitionManager;
+import thredds.inventory.partition.TimePartitionCollectionManager;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
@@ -87,8 +88,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (from != null) {
         this.timePartition = from.timePartition;
         this.gribCollection = from.gribCollection;
-        this.top = from.top;
       }
+    }
+
+    @Override
+    public State copy() {
+      return new StateGrib(this);
     }
   }
 
@@ -106,16 +111,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     Formatter errlog = new Formatter();
     if (config.timePartition != null) {
-      this.dcm = TimePartitionCollection.factory(config, topDirectory, new GribCdmIndex(), errlog, logger);
-      this.dcm.setChangeChecker(GribIndex.getChangeChecker());
+      this.datasetCollection = TimePartitionCollectionManager.factory(config, topDirectory, new GribCdmIndex(), errlog, logger);
     } else {
-      this.dcm = new MFileCollectionManager(config, errlog, logger);
-      this.dcm.setChangeChecker(GribIndex.getChangeChecker());
+      this.datasetCollection = new MFileCollectionManager(config, errlog, logger);
     }
+
+    if (datasetCollection instanceof CollectionManager)
+      ((CollectionManager)datasetCollection).setChangeChecker(GribIndex.getChangeChecker());
 
     // sneak in extra config info
     if (config.gribConfig != null)
-      dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+      datasetCollection.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
     String errs = errlog.toString();
     if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
@@ -126,6 +132,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       this.bestDatasetName = config.gribConfig.bestNamer;
     }
 
+    state = new StateGrib(null);
     finish();
   }
 
@@ -135,7 +142,20 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public void update(CollectionManager.Force force) { // this may be called from a background thread
+  protected void firstInit() {
+    super.firstInit();
+    this.format = getDataFormatType();
+  }
+
+  @Override
+  public void updateProto() {
+    needsProto.set(true);
+    // no actual work, wait until next call to updateCollection (??)
+    // not sure proto is used in GribFc
+  }
+
+  /* @Override
+  public void update(CollectionManager.Force force) {  // this may be called from a background thread
     // deal with the first call
     boolean firstTime;
     synchronized (lock) {
@@ -157,7 +177,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       } catch (IOException e) {
         logger.error("Error on scan " + dcm, e);
       }
-    } */
+    }
 
     // do the update in a local object
     StateGrib localState = new StateGrib((StateGrib) state);
@@ -180,28 +200,31 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public void updateProto() {
-    needsProto.set(true);
-    // no actual work, wait until next call to updateCollection (??)
-    // not sure proto is used in GribFc
-  }
-
-  @Override
   protected StateGrib checkState() throws IOException { // this is called from the request thread
     synchronized (lock) {
       if (first) {
         firstInit();
-        dcm.scanIfNeeded(); //always fall through to updateCollection
+        if (datasetCollection instanceof CollectionManager)
+          ((CollectionManager)datasetCollection).scanIfNeeded();
         first = false;
+        //always fall through to updateCollection
+
       } else {
-        if (!dcm.scanIfNeeded()) // return is not needed
+        if (datasetCollection instanceof CollectionManager) {
+          boolean changed =  ((CollectionManager)datasetCollection).scanIfNeeded();
+          if (!changed) // return is not needed
+            return (StateGrib) state;
+        } else {
           return (StateGrib) state;
+        }
       }
 
       // if this is the TDS, and its using the TDM, then you are not allowed to update
       // if there is no update config, assume static, and try to skip checking for changes. got that?
-      boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
-      CollectionManager.Force ff = (tdsUsingTdm || dcm.isStatic()) ? CollectionManager.Force.nocheck : CollectionManager.Force.test;
+      // major crapola
+      // boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
+      //CollectionManager.Force ff = (tdsUsingTdm || datasetCollection.isStatic()) ? CollectionManager.Force.nocheck : CollectionManager.Force.test;
+      CollectionManager.Force ff = CollectionManager.Force.nocheck;
 
       // update local copy of state, then switch all at once
       StateGrib localState = new StateGrib((StateGrib) state);
@@ -215,36 +238,39 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       state = localState;
       return localState;
     }
-  }
+  } */
 
   @Override
-  protected void firstInit() {
-    super.firstInit();
-    this.format = getDataFormatType();
-  }
+  protected void updateCollection(State state, CollectionManager.Force force) {
+    try {
+      StateGrib localState = (StateGrib) state;
+      if (config.timePartition != null) {
+        TimePartition previous = localState.timePartition;
+        localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (PartitionManager) this.datasetCollection, force, logger);
+        localState.gribCollection = null;
 
-  private void updateCollection(StateGrib localState, CollectionManager.Force force) throws IOException {
-    if (config.timePartition != null) {
-      TimePartition previous = localState.timePartition;
-      localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, logger);
-      localState.gribCollection = null;
+        if (previous != null) previous.delete(); // LOOK may be another thread using - other thread will fail
+        logger.debug("{}: TimePartition object was recreated", getName());
 
-      if (previous != null) previous.delete(); // LOOK may be another thread using - other thread will fail
-      logger.debug("{}: TimePartition object was recreated", getName());
+      } else {
+        GribCollection previous = localState.gribCollection;
+        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, datasetCollection, force, logger);
 
-    } else {
-      GribCollection previous = localState.gribCollection;
-      localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, logger);
-
-      localState.timePartition = null;
-      if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
-      logger.debug("{}: GribCollection object was recreated", getName());
+        localState.timePartition = null;
+        if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
+        logger.debug("{}: GribCollection object was recreated", getName());
+      }
+    } catch (IOException ioe) {
+      logger.error("GribFc updateCollection", ioe);
     }
   }
 
   /////////////////////////////////////////////////////////////////////////
 
-  private void makeDatasetTop(StateGrib localState) {
+  @Override
+  protected void makeDatasetTop(State state) {
+    StateGrib localState = (StateGrib) state;
+
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);
     InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
@@ -369,14 +395,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
    */
   @Override
   public InvCatalogImpl makeCatalog(String match, String reqPath, URI catURI) {
-    //logger.debug("{}: make catalog for {} {}", name, match, baseURI);
-    StateGrib localState;
-    try {
-      localState = checkState();
-    } catch (IOException e) {
-      logger.error("Error in checkState", e);
-      return null;
-    }
+    StateGrib localState = (StateGrib) checkState();
 
     if (localState == null) return null; // not ready yet I think
 
@@ -455,7 +474,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
 
   @Override
-  // LOOK maybe beter to implement makeDatasets() ??
+  // LOOK maybe better to implement makeDatasets() ??
   protected InvCatalogImpl makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), catURI);
@@ -562,14 +581,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) {
-    //logger.debug("{}: make catalog for {} {}", name, match, baseURI);
-    StateGrib localState;
-    try {
-      localState = checkState();
-    } catch (IOException e) {
-      logger.error("Error in checkState", e);
-      return null;
-    }
+    StateGrib localState = (StateGrib) checkState();
 
     GribCollection gc = localState.timePartition == null ? localState.gribCollection : localState.timePartition;
     List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gc.getGroups());
@@ -728,17 +740,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
-    /* handle FILES
-    GridDataset result = super.getGridDataset(matchPath);
-    if (result != null) return result; */
-
-    StateGrib localState;
-    try {
-      localState = checkState();
-    } catch (IOException e) {
-      logger.error("Error in checkState", e);
-      return null;
-    }
+    StateGrib localState = (StateGrib) checkState();
 
     DatasetParse dp = parse(matchPath, localState);
     if (dp == null) return null;
@@ -768,17 +770,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public NetcdfDataset getNetcdfDataset(String matchPath) throws IOException {
-    /* handle FILES
-    NetcdfDataset result = super.getNetcdfDataset(matchPath); // case 7
-    if (result != null) return result;  */
-
-    StateGrib localState;
-    try {
-      localState = checkState();
-    } catch (IOException e) {
-      logger.error("Error in checkState", e);
-      return null;
-    }
+    StateGrib localState = (StateGrib) checkState();
 
     DatasetParse dp = parse(matchPath, localState);
     if (dp == null) return null;

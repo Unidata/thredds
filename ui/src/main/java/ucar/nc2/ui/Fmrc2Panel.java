@@ -280,9 +280,13 @@ public class Fmrc2Panel extends JPanel {
     boolean status = false;
     int count = 0;
     infoTA.appendLine("Files found=");
-    for (MFile mfile :  cm.getFiles()) {
-      infoTA.appendLine(" "+mfile.getPath()+" "+ new Date(mfile.getLastModified())+" "+ mfile.getLength());
-      count++;
+    try {
+      for (MFile mfile :  cm.getFilesSorted()) {
+        infoTA.appendLine(" "+mfile.getPath()+" "+ new Date(mfile.getLastModified())+" "+ mfile.getLength());
+        count++;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
     infoTA.appendLine("total files="+count);
     status = true;

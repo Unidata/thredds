@@ -80,7 +80,7 @@ public class Fmrc {
    */
   public static Fmrc open(String collection, Formatter errlog) throws IOException {
     if (collection.startsWith(MFileCollectionManager.CATALOG)) {
-      CatalogCollectionManager manager = new CatalogCollectionManager(collection, collection, null, errlog);
+      CollectionManagerCatalog manager = new CollectionManagerCatalog(collection, collection, null, errlog);
       return new Fmrc(manager, new FeatureCollectionConfig());
 
     } else if (collection.endsWith(".ncml")) {
@@ -97,7 +97,7 @@ public class Fmrc {
   public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) throws IOException {
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
       String name = config.name != null ? config.name : config.spec;
-      CatalogCollectionManager manager = new CatalogCollectionManager(name, config.spec, null, errlog);
+      CollectionManagerCatalog manager = new CollectionManagerCatalog(name, config.spec, null, errlog);
       return new Fmrc(manager, config);
     }
 
@@ -292,7 +292,7 @@ public class Fmrc {
       List<FmrInv> fmrList = new ArrayList<FmrInv>(); // an fmrc is a collection of fmr
 
       // get the inventory, sorted by path
-      for (MFile f : manager.getFiles()) {
+      for (MFile f : manager.getFilesSorted()) {
         if (logger.isDebugEnabled())
           logger.debug("Fmrc: "+config.spec+": file="+f.getPath());
 

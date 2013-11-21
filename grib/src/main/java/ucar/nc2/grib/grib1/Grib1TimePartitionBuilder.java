@@ -34,13 +34,13 @@ package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerRO;
-import thredds.inventory.MFile;
-import thredds.inventory.partition.TimePartitionCollection;
+import thredds.inventory.*;
+import thredds.inventory.Collection;
+import thredds.inventory.partition.PartitionManager;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -61,7 +61,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
   static private final boolean trace = false;
 
   // called by tdm
-  static public boolean update(TimePartitionCollection tpc, org.slf4j.Logger logger) throws IOException {
+  static public boolean update(PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
     Grib1TimePartitionBuilder builder = new Grib1TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     if (!builder.needsUpdate()) return false;
     builder.readOrCreateIndex(CollectionManager.Force.always);
@@ -70,7 +70,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
   }
 
   // read in the index, create if it doesnt exist or is out of date
-  static public Grib1TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public Grib1TimePartition factory(PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib1TimePartitionBuilder builder = new Grib1TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.readOrCreateIndex(force);
     return builder.tp;
@@ -93,7 +93,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
    * @return true if index was written
    * @throws IOException on error
    */
-  static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public boolean writeIndexFile(PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib1TimePartitionBuilder builder = null;
     try {
       builder = new Grib1TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
@@ -107,10 +107,10 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  private final TimePartitionCollection tpc; // defines the partition
+  private final PartitionManager tpc; // defines the partition
   private final Grib1TimePartition tp;  // build this object
 
-  private Grib1TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc, org.slf4j.Logger logger) {
+  private Grib1TimePartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(tpc, false, logger);
     FeatureCollectionConfig.GribConfig config = (tpc == null) ? null :  (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.tp = new Grib1TimePartition(name, directory, config, logger);
@@ -136,13 +136,15 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
 
   private boolean needsUpdate(long collectionLastModified) throws IOException {
     CollectionManager.ChangeChecker cc = Grib1Index.getChangeChecker();
-    for (CollectionManagerRO dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
+    for (Collection dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
       File idxFile = GribCollection.getIndexFile(dcm);
       if (!idxFile.exists()) return true;
       if (collectionLastModified < idxFile.lastModified()) return true;
-      for (MFile mfile : dcm.getFiles()) {
-        if (cc.hasChangedSince(mfile, idxFile.lastModified())) return true;
-      }
+      try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
+       while (iter.hasNext()) {
+         if (cc.hasChangedSince(iter.next(), idxFile.lastModified())) return true;
+       }
+     }
     }
     return false;
   }
@@ -154,7 +156,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     long start = System.currentTimeMillis();
 
     // create partitions based on TimePartitionCollections object
-    for (CollectionManagerRO dcm : tpc.makePartitions()) {
+    for (thredds.inventory.Collection dcm : tpc.makePartitions()) {
       tp.addPartition(dcm);
     }
 

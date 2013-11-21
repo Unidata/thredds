@@ -49,7 +49,7 @@ public interface MController {
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
    */
-  public Iterator<MFile> getInventoryAll(MCollection mc, boolean recheck);
+  public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck);
 
   /**
    * Returns all leaves in top collection, not recursing into subdirectories.
@@ -57,7 +57,7 @@ public interface MController {
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
    */
-  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck) throws IOException;
+  public Iterator<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) throws IOException;
 
   /**
    * Returns all subdirectories in top collection.
@@ -65,7 +65,7 @@ public interface MController {
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
    */
-  public Iterator<MFile> getSubdirs(MCollection mc, boolean recheck);
+  public Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck);
 
   public void close();
 

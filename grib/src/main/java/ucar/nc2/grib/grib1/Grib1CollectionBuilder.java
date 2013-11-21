@@ -34,14 +34,13 @@ package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerRO;
-import thredds.inventory.CollectionManagerSingleFile;
-import thredds.inventory.MFile;
+import thredds.inventory.*;
+import thredds.inventory.Collection;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 
@@ -80,7 +79,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
   // from a collection, read in the index, create if it doesnt exist or is out of date
   // assume that the CollectionManager is up to date, eg doesnt need to be scanned
-  static public GribCollection factory(CollectionManagerRO dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection factory(Collection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm, logger);
     builder.readOrCreateIndex(force);
     return builder.gc;
@@ -110,7 +109,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
   // single file
   private Grib1CollectionBuilder(MFile file, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
-    super(new CollectionManagerSingleFile(file, logger), true, logger);
+    super(new CollectionSingleFile(file, logger), true, logger);
     try {
       if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
       this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()), config);
@@ -123,7 +122,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
-  private Grib1CollectionBuilder(CollectionManagerRO dcm, org.slf4j.Logger logger) {
+  private Grib1CollectionBuilder(thredds.inventory.Collection dcm, org.slf4j.Logger logger) {
     super(dcm, false, logger);
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), config);
@@ -134,7 +133,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     this.gc = new Grib1Collection(name, directory, config);
   }
 
-  protected Grib1CollectionBuilder(CollectionManager dcm, boolean isSingleFile, org.slf4j.Logger logger) {
+  protected Grib1CollectionBuilder(Collection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
     super(dcm, isSingleFile, logger);
   }
 
@@ -159,18 +158,19 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
-  public boolean needsUpdate() {
+  public boolean needsUpdate() throws IOException {
     if (dcm == null) return false;
     File idx = gc.getIndexFile();
     return !idx.exists() || needsUpdate(idx.lastModified());
   }
 
-  private boolean needsUpdate(long idxLastModified) {
+  private boolean needsUpdate(long idxLastModified) throws IOException {
     CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
-    for (MFile mfile : dcm.getFiles()) {
-      if (cc.hasChangedSince(mfile, idxLastModified))
-        return true;
-    }
+    try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
+     while (iter.hasNext()) {
+       if (cc.hasChangedSince(iter.next(), idxLastModified)) return true;
+     }
+   }
     return false;
   }
 
@@ -474,8 +474,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
     // intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
 
-    for (MFile mfile : dcm.getFiles()) {
-      // f.format("%3d: %s%n", fileno, mfile.getPath());
+    for (MFile mfile : dcm.getFilesSorted()) {  // LOOK do we really need sorted ??
 
       Grib1Index index;
       try {

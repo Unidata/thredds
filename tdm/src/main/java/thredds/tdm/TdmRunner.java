@@ -47,7 +47,7 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 
-import thredds.inventory.partition.TimePartitionCollection;
+import thredds.inventory.partition.PartitionManager;
 import thredds.util.LoggerFactorySpecial;
 import thredds.util.PathAliasReplacement;
 import thredds.util.PathAliasReplacementImpl;
@@ -57,6 +57,7 @@ import ucar.nc2.grib.TimePartition;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;
+import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.net.*;
@@ -209,8 +210,8 @@ public class TdmRunner {
         //  doManage(config.tdmConfig.deleteAfter);
         //}
 
-        if (dcm instanceof TimePartitionCollection) {
-          TimePartitionCollection tpc = (TimePartitionCollection) dcm;
+        if (dcm instanceof PartitionManager) {
+          PartitionManager tpc = (PartitionManager) dcm;
           logger.debug("**** running TimePartitionBuilder.factory {} thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
@@ -285,7 +286,7 @@ public class TdmRunner {
 
     }
 
-    private void doManage(String deleteAfterS) {
+    private void doManage(String deleteAfterS) throws IOException {
       TimeDuration deleteAfter = null;
       if (deleteAfterS != null) {
         try {
@@ -303,16 +304,18 @@ public class TdmRunner {
       CalendarDate now = CalendarDate.of(new Date());
       CalendarDate last = now.add(-val, unit);
 
-      for (MFile mfile : dcm.getFiles()) {
-        CalendarDate cd = dcm.extractRunDate(mfile);
-        int n = period.subtract(cd, now);
-        if (cd.isBefore(last)) {
-          logger.info("delete={} age = {}", mfile.getPath(), n + " " + unit);
-        } else {
-          logger.debug("dont delete={} age = {}", mfile.getPath(), n + " " + unit);
+      try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
+        while (iter.hasNext()) {
+          MFile mfile = iter.next();
+          CalendarDate cd = dcm.extractDate(mfile);
+          int n = period.subtract(cd, now);
+          if (cd.isBefore(last)) {
+            logger.info("delete={} age = {}", mfile.getPath(), n + " " + unit);
+          } else {
+            logger.debug("dont delete={} age = {}", mfile.getPath(), n + " " + unit);
+          }
         }
       }
-
     }
 
   }
@@ -426,13 +429,13 @@ public class TdmRunner {
     }
 
     for (InvDatasetFeatureCollection fc : fcList) {
-      CollectionManager dcm = fc.getDatasetCollectionManager();
+      CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
       FeatureCollectionConfig fcConfig = fc.getConfig();
       if (fcConfig != null && fcConfig.gribConfig != null && fcConfig.gribConfig.gdsHash != null)
         dcm.putAuxInfo("gdsHash", fcConfig.gribConfig.gdsHash); // sneak in extra config info
 
       dcm.addEventListener(new Listener(fc, dcm)); // now wired for events
-      dcm.removeEventListener(fc); // not needed
+      // dcm.removeEventListener(fc); // not needed
       // CollectionUpdater.INSTANCE.scheduleTasks( CollectionUpdater.FROM.tdm, fc.getConfig(), dcm); // already done in finish() method
     }
 

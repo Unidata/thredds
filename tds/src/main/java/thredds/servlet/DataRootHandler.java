@@ -1364,7 +1364,7 @@ public final class DataRootHandler implements InitializingBean {
    * @param baseURI the base URI for the catalog, used to resolve relative URLs.
    * @return the requested InvCatalog, or null if catalog does not exist or is not allowed.
    */
-  public InvCatalog getCatalog(String path, URI baseURI) {
+  public InvCatalog getCatalog(String path, URI baseURI) throws IOException {
     if (path == null)
       return null;
 
@@ -1427,7 +1427,7 @@ public final class DataRootHandler implements InitializingBean {
     return catalog;
   }
 
-  private InvCatalogImpl makeDynamicCatalog(String path, URI baseURI) {
+  private InvCatalogImpl makeDynamicCatalog(String path, URI baseURI) throws IOException {
     String workPath = path;
 
     // Make sure this is a dynamic catalog request.

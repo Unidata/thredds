@@ -240,8 +240,7 @@ public class TestDataRootHandler
    * listDatasets() returns a set of CrDs all of whose isCollection()
    * method returns false.
    */
-  public void testScanLocationContainOnlyAtomicDatasets()
-  {
+  public void testScanLocationContainOnlyAtomicDatasets() throws IOException {
     // Create public data directory in content path.
     File publicDataDir = new File( publicContentDir, "dataDir");
     if ( ! publicDataDir.mkdir() )
@@ -337,8 +336,7 @@ public class TestDataRootHandler
    * Test behavior when dataset with name containing a plus sign ("+") is
    * found under a datasetScan@location.
    */
-  public void testScanLocationContainsDatasetWithPlusSignInName()
-  {
+  public void testScanLocationContainsDatasetWithPlusSignInName() throws IOException {
     // Create public data directory in content path.
     File publicDataDir = new File( publicContentDir, "dataDir");
     if ( ! publicDataDir.mkdir() )
@@ -440,8 +438,7 @@ public class TestDataRootHandler
    * Test behavior when a catalogRef@xlink:href, using ".." directory path
    * segments, points to a catalog outside of the content directory.
    */
-  public void testCatRefOutOfContentDirUsingDotDotDirs()
-  {
+  public void testCatRefOutOfContentDirUsingDotDotDirs() throws IOException {
     File publicDataDir = TestFileDirUtils.addDirectory( publicContentDir, "dataDir" );
     File dataFileNc = TestFileDirUtils.addFile( publicDataDir, "data.nc");
     File dataFileGrib1 = TestFileDirUtils.addFile( publicDataDir, "data.grib1");
@@ -489,8 +486,7 @@ public class TestDataRootHandler
   /**
    * Test canonicalization of paths to remove "./" and "../" directories.
    */
-  public void testInitCatalogWithDotDotInPath()
-  {
+  public void testInitCatalogWithDotDotInPath() throws IOException {
     String subDirName = "aSubDir";
     File subDir = TestFileDirUtils.addDirectory( contentDir, subDirName );
 

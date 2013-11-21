@@ -279,7 +279,7 @@ public class GribFilesPanel extends JPanel {
       try {
         dc = MFileCollectionManager.open(spec, spec, null, f);
         dc.scan(false);
-        fileList = dc.getFiles();
+        fileList = dc.getFilesSorted();
 
       } catch (Exception e) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);

@@ -34,8 +34,6 @@
 package ucar.nc2.ft;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerAbstract;
-import thredds.inventory.CollectionManagerRO;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.CF;

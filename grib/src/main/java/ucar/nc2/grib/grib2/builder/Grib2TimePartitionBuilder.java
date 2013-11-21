@@ -34,16 +34,15 @@ package ucar.nc2.grib.grib2.builder;
 
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerRO;
-import thredds.inventory.MFile;
+import thredds.inventory.*;
+import thredds.inventory.Collection;
 import thredds.inventory.partition.PartitionManager;
-import thredds.inventory.partition.TimePartitionCollection;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -71,14 +70,14 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     return true;
   }
 
-    // read in the index, create if it doesnt exist or is out of date
+  // read in the index, create if it doesnt exist or is out of date
   static public Grib2TimePartition factory(PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.readOrCreateIndex(force);
     return builder.tp;
   }
 
-    // make the index
+  // make the index
   static public boolean makeIndex(PartitionManager tpc, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.tp.close();
@@ -92,18 +91,19 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
    * @param force force index
    * @return true if index was written
    * @throws IOException on error
-   *
-  static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
-    Grib2TimePartitionBuilder builder = null;
-    try {
-      builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
-      return builder.readOrCreateIndex(force);
-
-    } finally {
-      if ((builder != null) && (builder.tp != null))
-        builder.tp.close();
-    }
-  } */
+   * <p/>
+   * static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+   * Grib2TimePartitionBuilder builder = null;
+   * try {
+   * builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
+   * return builder.readOrCreateIndex(force);
+   * <p/>
+   * } finally {
+   * if ((builder != null) && (builder.tp != null))
+   * builder.tp.close();
+   * }
+   * }
+   */
 
   //////////////////////////////////////////////////////////////////////////////////
 
@@ -125,11 +125,11 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private boolean readOrCreateIndex(CollectionManager.Force ff) throws IOException {
     File idx = gc.getIndexFile();
 
-     // force new index or test for new index needed
+    // force new index or test for new index needed
     boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate(idx.lastModified())));
 
     // otherwise, we're good as long as the index file exists and can be read
-    if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
+    if (force || !idx.exists() || !readIndex(idx.getPath())) {
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
       if (createPartitionedIndex(null)) {  // write index
         return readIndex(idx.getPath()); // read back in index
@@ -141,22 +141,24 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   // LOOK not sure if this works
   private boolean needsUpdate(long collectionLastModified) throws IOException {
     CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
-    for (CollectionManagerRO dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
+    for (Collection dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
       File idxFile = GribCollection.getIndexFile(dcm);
       if (!idxFile.exists())
         return true;
       if (collectionLastModified < idxFile.lastModified())
         return true;
-      for (MFile mfile : dcm.getFiles()) {
-        if (cc.hasChangedSince(mfile, idxFile.lastModified()))
-          return true;
+      try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
+        while (iter.hasNext()) {
+          if (cc.hasChangedSince(iter.next(), idxFile.lastModified())) return true;
+        }
       }
+
     }
     return false;
   }
 
   private boolean readIndex(String filename) throws IOException {
-    return readIndex( new RandomAccessFile(filename, "r") );
+    return readIndex(new RandomAccessFile(filename, "r"));
   }
 
   private boolean readIndex(RandomAccessFile indexRaf) throws IOException {
@@ -176,7 +178,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     long start = System.currentTimeMillis();
 
     // create partitions based on TimePartitionCollections object
-    for (CollectionManagerRO dcm : tpc.makePartitions()) {
+    for (thredds.inventory.Collection dcm : tpc.makePartitions()) {
       tp.addPartition(dcm);
     }
 
@@ -248,10 +250,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
       String gname = firstGroup.getId();
       String gdesc = firstGroup.getDescription();
-      if (trace) f.format(" Check Group %s%n",  gname);
+      if (trace) f.format(" Check Group %s%n", gname);
 
       // hash proto variables for quick lookup
-      Map<Integer, GribCollection.VariableIndex> check = new HashMap<>(2*firstGroup.varIndex.size());
+      Map<Integer, GribCollection.VariableIndex> check = new HashMap<>(2 * firstGroup.varIndex.size());
       List<GribCollection.VariableIndex> varIndexP = new ArrayList<>(firstGroup.varIndex.size());
       for (GribCollection.VariableIndex vi : firstGroup.varIndex) {
         TimePartition.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, npart);
@@ -266,7 +268,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       // for each partition
       for (int partno = 0; partno < npart; partno++) {
         TimePartition.Partition tpp = partitions.get(partno);
-        if (trace) f.format(" Check Partition %s%n",  tpp.getName());
+        if (trace) f.format(" Check Partition %s%n", tpp.getName());
 
         // get corresponding group
         GribCollection gc = tpp.gc;
@@ -281,12 +283,12 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
         // for each variable in partition group
         for (int varIdx = 0; varIdx < group.varIndex.size(); varIdx++) {
           GribCollection.VariableIndex vi2 = group.varIndex.get(varIdx);
-          if (trace) f.format(" Check %s%n",  vi2.toStringShort());
+          if (trace) f.format(" Check %s%n", vi2.toStringShort());
           int flag = 0;
 
           GribCollection.VariableIndex vi1 = check.get(vi2.cdmHash); // compare with proto variable (vi1)
           if (vi1 == null) {
-            f.format(" WARN Cant find %s from %s in proto - ignoring that variable%n",  vi2.toStringShort(), tpp.getName());
+            f.format(" WARN Cant find %s from %s in proto - ignoring that variable%n", vi2.toStringShort(), tpp.getName());
             continue; // we can tolerate this
           }
 
@@ -302,7 +304,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
             ok = false;
 
           } else if ((vc1 != null) && !vc1.equalsData(vc2)) {
-            f.format(" WARN Vert coordinates values on %s in %s dont match%n",  vi2.toStringShort(), tpp.getName());
+            f.format(" WARN Vert coordinates values on %s in %s dont match%n", vi2.toStringShort(), tpp.getName());
             f.format("    canon vc = %s%n", vc1);
             f.format("    this vc = %s%n", vc2);
             flag |= TimePartition.VERT_COORDS_DIFFER;
@@ -312,16 +314,16 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
           EnsCoord ec1 = vi1.getEnsCoord();
           EnsCoord ec2 = vi2.getEnsCoord();
           if ((ec1 == null) != (ec2 == null)) {
-            f.format(" ERR Ensemble coordinates existence on %s in %s doesnt match%n",  vi2.toStringShort(), tpp.getName());
+            f.format(" ERR Ensemble coordinates existence on %s in %s doesnt match%n", vi2.toStringShort(), tpp.getName());
             ok = false;
           } else if ((ec1 != null) && !ec1.equalsData(ec2)) {
-            f.format(" WARN Ensemble coordinates values on %s in %s dont match%n",  vi2.toStringShort(), tpp.getName());
+            f.format(" WARN Ensemble coordinates values on %s in %s dont match%n", vi2.toStringShort(), tpp.getName());
             f.format("    canon ec = %s%n", ec1);
             f.format("    this ec = %s%n", ec2);
             flag |= TimePartition.ENS_COORDS_DIFFER;
           }
 
-          ((TimePartition.VariableIndexPartitioned)vi1).setPartitionIndex(partno, groupIdx, varIdx, flag);
+          ((TimePartition.VariableIndexPartitioned) vi1).setPartitionIndex(partno, groupIdx, varIdx, flag);
         } // loop over variable
       } // loop over partition
     } // loop over group
@@ -374,7 +376,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     // for each group in canonical Partition
     for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
       String gname = firstGroup.getId();
-      if (trace) f.format(" Check Group %s%n",  gname);
+      if (trace) f.format(" Check Group %s%n", gname);
 
       // get list of corresponding groups from all the time partition, so we dont have to keep looking it up
       List<PartGroup> pgList = new ArrayList<>(partitions.size());
@@ -466,10 +468,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     File file = tp.getIndexFile();
     if (file.exists()) {
       if (!file.delete())
-        logger.error("gc2tp cant delete "+file.getPath());
+        logger.error("gc2tp cant delete " + file.getPath());
     }
 
-    try (RandomAccessFile raf = new RandomAccessFile(file.getPath(), "rw"))  {
+    try (RandomAccessFile raf = new RandomAccessFile(file.getPath(), "rw")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
 
       //// header message
@@ -513,7 +515,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     b.setGdsHash(g.gdsHash);
 
     for (GribCollection.VariableIndex vb : g.varIndex) {
-      b.addVariables(writeVariableProto( (TimePartition.VariableIndexPartitioned) vb));
+      b.addVariables(writeVariableProto((TimePartition.VariableIndexPartitioned) vb));
     }
 
     for (int i = 0; i < g.timeCoordPartitions.size(); i++)

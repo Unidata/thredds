@@ -231,7 +231,7 @@ public class CollectionSpecTable extends JPanel {
     if (dcm == null) return;
 
     f.format("dcm = %s%n", dcm);
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format("  %s%n", mfile.getPath());
     }
   }
@@ -241,7 +241,7 @@ public class CollectionSpecTable extends JPanel {
     try {
       dc = MFileCollectionManager.open(spec, spec, null, f);
       dc.scan(false);
-      fileList = (List<MFile>) Misc.getList(dc.getFiles());
+      fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
 
       List<Bean> beans = new ArrayList<Bean>();
       for (MFile mfile : fileList)
@@ -271,7 +271,7 @@ public class CollectionSpecTable extends JPanel {
     }
 
     public String getDate() {
-      CalendarDate cd = dcm.extractRunDate(mfile);
+      CalendarDate cd = dcm.extractDate(mfile);
       return cd.toString();
     }
   }

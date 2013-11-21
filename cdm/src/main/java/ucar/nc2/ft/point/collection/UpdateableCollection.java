@@ -1,5 +1,7 @@
 package ucar.nc2.ft.point.collection;
 
+import java.io.IOException;
+
 /**
  * Mixin for update() method.
  *
@@ -7,5 +9,5 @@ package ucar.nc2.ft.point.collection;
  * @since Nov 22, 2010
  */
 public interface UpdateableCollection {
-  void update();
+  void update() throws IOException;
 }

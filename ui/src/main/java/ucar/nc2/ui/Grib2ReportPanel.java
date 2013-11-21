@@ -125,7 +125,7 @@ public class Grib2ReportPanel extends ReportPanel {
     long totalOrg = 0;
     long totalZip = 0;
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format("------- %s%n", mfile.getPath());
       long orgSize = mfile.getLength();
       totalOrg += orgSize;
@@ -284,7 +284,7 @@ public class Grib2ReportPanel extends ReportPanel {
     f.format("Check Grib-2 Parameter Tables%n");
     int[] accum = new int[4];
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%n %s%n", mfile.getPath());
       doCheckTables(mfile, f, accum);
     }
@@ -345,7 +345,7 @@ public class Grib2ReportPanel extends ReportPanel {
   private void doLocalUseSection(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
     f.format("Show Local Use Section%n");
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       doLocalUseSection(mfile, f, useIndex);
     }
@@ -384,7 +384,7 @@ public class Grib2ReportPanel extends ReportPanel {
     f.format("Show Unique GDS%n");
 
     Map<Integer, GdsList> gdsSet = new HashMap<Integer, GdsList>();
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       doUniqueGds(mfile, gdsSet, f);
     }
@@ -452,7 +452,7 @@ public class Grib2ReportPanel extends ReportPanel {
     countPDS = 0;
     countPDSdup = 0;
     f.format("Show Duplicate PDS%n");
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       doDuplicatePds(f, mfile);
     }
     f.format("Total PDS duplicates = %d / %d%n%n", countPDSdup, countPDS);
@@ -491,7 +491,7 @@ public class Grib2ReportPanel extends ReportPanel {
       f.format("Check Grib-2 PDS probability and statistical variables%n");
       total = 0;
       prob = 0;
-      for (MFile mfile : dcm.getFiles()) {
+      for (MFile mfile : dcm.getFilesSorted()) {
         f.format("%n %s%n", mfile.getPath());
         doPdsSummaryIndexed(f, mfile);
       }
@@ -506,7 +506,7 @@ public class Grib2ReportPanel extends ReportPanel {
       Counter levelScale = new Counter("levelScale");
       Counter ncoords = new Counter("nExtraCoords");
 
-      for (MFile mfile : dcm.getFiles()) {
+      for (MFile mfile : dcm.getFilesSorted()) {
         f.format(" %s%n", mfile.getPath());
         doPdsSummary(f, mfile, templateSet, timeUnitSet, processType, processId, levelScale, levelTypeSet, ncoords);
       }
@@ -631,7 +631,7 @@ public class Grib2ReportPanel extends ReportPanel {
     Counter genProcess = new Counter("genProcess");
     Counter backProcess = new Counter("backProcess");
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       doIdProblems(f, mfile, useIndex,
               disciplineSet, masterTable, localTable, centerId, subcenterId, genProcess, backProcess);
@@ -737,7 +737,7 @@ public class Grib2ReportPanel extends ReportPanel {
     Counter prob = new Counter("DRS template 40 signed problem");
     Counter nbitsC = new Counter("Number of Bits");
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       if (eachFile) {
         template.reset();
         bitmapRepeat.reset();
@@ -836,7 +836,7 @@ public class Grib2ReportPanel extends ReportPanel {
     f.format("Show Unique GDS Templates%n");
 
     Map<Integer, Integer> drsSet = new HashMap<Integer, Integer>();
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       doGdsTemplate(f, mfile, drsSet);
     }
@@ -872,7 +872,7 @@ public class Grib2ReportPanel extends ReportPanel {
     Counter TinvLength = new Counter("TimeIntervalsLength");
 
     int count = 0;
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       count += doTimeCoord(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, TinvDiffer, TinvLength);
     }
@@ -957,7 +957,7 @@ public class Grib2ReportPanel extends ReportPanel {
     int multiple = 0;
     int ok = 0;
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%n%s%n", mfile.getPath());
 
       NetcdfFile ncfileOld = null;
@@ -1020,7 +1020,7 @@ public class Grib2ReportPanel extends ReportPanel {
     int countExactMatchIg = 0;
     int countOldVars = 0;
 
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : dcm.getFilesSorted()) {
       f.format("%n%s%n", mfile.getPath());
       Map<Integer, GridMatch> gridsNew = getGridsNew(mfile, f);
       Map<Integer, GridMatch> gridsOld = getGridsOld(mfile, f);

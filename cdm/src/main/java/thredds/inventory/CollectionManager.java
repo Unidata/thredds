@@ -35,10 +35,11 @@ package thredds.inventory;
 import ucar.nc2.units.TimeDuration;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Manages a dynamic collection of MFile objects.
+ * You must call scan() firsst.
+ *
  * An MFile must have the property that
  * <pre>  NetcdfDataset.open(MFile.getPath, ...); </pre>
  * should work.
@@ -78,7 +79,7 @@ The XML Schema:
  * @author caron
  * @since Jan 19, 2010
  */
-public interface CollectionManager extends CollectionManagerRO {
+public interface CollectionManager extends Collection, CollectionUpdateListener {
 
   public enum Force {always,  // force new index
                      test,    // test if new index is needed
@@ -140,34 +141,6 @@ public interface CollectionManager extends CollectionManagerRO {
    */
   public boolean scan(boolean sendEvent) throws IOException;
 
-  /**
-   * send event TriggerType.updateNocheck, which calls
-   * call InvDatasetFeatureCollection.update(CollectionManager.Force.nocheck)
-   * @throws IOException
-   */
-  public void updateNocheck() throws IOException;
-
-  //////////////////////////////
-  // these 2 are kind of kludges
-
-  /**
-   * Choose Proto dataset as index from [0..n-1], based on configuration.
-   * @param n size to choose from
-   * @return index within range [0..n-1]
-   */
-  public int getProtoIndex(int n);
-
-  /**
-   * The "olderThan" amount in seconds.
-   * Files are excluded if they have been modified within this amount of time.
-   * However once in the collection they are not removed.
-   * Really this is handled by the manager, but this is exposed so that others (eg DatasetScan) can be consistent.
-   * @return olderThan" amount in seconds, or < 0 to mean this filter is not present
-   */
-  //public long getOlderThanFilterInMSecs();
-
-  public List<String> getFilenames();
-
   ////////////////////////////////////////////////////
   // set Strategy for checking if MFile has changed
 
@@ -179,13 +152,7 @@ public interface CollectionManager extends CollectionManagerRO {
   public void setChangeChecker(ChangeChecker strategy);
 
 
-  /////////////////////////////////////////////////////
-
-  /**
-   * Called by external program to tell the manager its time to switch the proto dataset.
-   * a TriggerEvent.proto is sent to any listeners.
-   */
-  public void resetProto();
+  ///////////////////////////////////////////////////////////
 
   /**
    * Register to get Trigger events
@@ -202,8 +169,6 @@ public interface CollectionManager extends CollectionManagerRO {
   public static interface TriggerListener {
     public void handleCollectionEvent(TriggerEvent event);
   }
-
-  public enum TriggerType {update, proto, updateNocheck }
 
   public class TriggerEvent extends java.util.EventObject {
      private final TriggerType type;
@@ -224,5 +189,6 @@ public interface CollectionManager extends CollectionManagerRO {
                '}';
      }
    }
+
 
 }

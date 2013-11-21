@@ -120,7 +120,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   @Override
-  public void update() {
+  public void update() throws IOException {
     dataCollection.update();
   }
 

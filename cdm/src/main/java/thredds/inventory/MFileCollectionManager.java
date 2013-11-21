@@ -89,7 +89,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   ////////////////////////////////////////////////////////////////////
 
   // these are final
-  private final List<MCollection> scanList = new ArrayList<MCollection>(); // an MCollection is a collection of managed files
+  private final List<CollectionConfig> scanList = new ArrayList<CollectionConfig>(); // an MCollection is a collection of managed files
   private final long olderThanInMsecs;
   protected String rootDir;
   protected FeatureCollectionConfig config;
@@ -113,7 +113,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     olderThanInMsecs = parseOlderThanFilter(olderThan);
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    scanList.add(new MCollection(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
+    scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
   }
 
   // this is the full featured constructor, using FeatureCollectionConfig for config.
@@ -136,7 +136,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     else
       dateExtractor = new DateExtractorNone();
 
-    scanList.add(new MCollection(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
+    scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
 
     this.recheck = makeRecheck(config.updateConfig.recheckAfter);
     protoChoice = config.protoConfig.choice;
@@ -194,14 +194,14 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       filters.add(new WildcardMatchOnName(sp.getFilter()));
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    scanList.add(new MCollection(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
+    scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
 
     this.recheck = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.olderThanInMsecs = -1;
   }
 
-  public MFileCollectionManager(String name, MCollection mc, CalendarDate startPartition, org.slf4j.Logger logger) {
+  public MFileCollectionManager(String name, CollectionConfig mc, CalendarDate startPartition, org.slf4j.Logger logger) {
     super(name, logger);
     this.startCollection = startPartition;
     this.scanList.add(mc);
@@ -265,7 +265,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       wantSubdirs = false;
 
     MFileFilter filter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
-    MCollection mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, auxInfo);
+    CollectionConfig mc = new CollectionConfig(dirName, dirName, wantSubdirs, filter, auxInfo);
 
     // create name
     StringBuilder sb = new StringBuilder(dirName);
@@ -349,7 +349,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     getController(); // make sure a controller is instantiated
 
     // run through all scanners and collect MFile instances into the Map
-    for (MCollection mc : scanList) {
+    for (CollectionConfig mc : scanList) {
 
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
       Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);  /// NCDC wants subdir /global/nomads/nexus/gfsanl/**/gfsanl_3_.*\.grb$
@@ -461,7 +461,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   @Override
-  public Iterable<MFile> getFiles() {
+  public Iterable<MFile> getFilesSorted() {
     if (map == null)
       try {
         scanFirstTime(); // never scanned
@@ -477,19 +477,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       Collections.sort(result);
     }
 
-    return result;
-  }
-
-  private class DateSorter implements Comparator<MFile> {
-    public int compare(MFile m1, MFile m2) {
-      return extractRunDateWithError(m1).compareTo(extractRunDateWithError(m2));
-    }
-  }
-
-  private CalendarDate extractRunDateWithError(MFile mfile) {
-    CalendarDate result = extractRunDate(mfile);
-    if (result == null)
-      logger.error("Failed to extract date from file {} with Extractor {}", mfile.getPath(), dateExtractor);
     return result;
   }
 
@@ -536,7 +523,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     // run through all scanners and collect MFile instances into the Map
     int count = 0;
-    for (MCollection mc : scanList) {
+    for (CollectionConfig mc : scanList) {
       long start = System.currentTimeMillis();
       System.out.printf("MFileCollectionManager reallyScan %s%n", mc.getDirectoryName());
 
@@ -572,7 +559,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   public String toString() {
     Formatter f = new Formatter();
     f.format("DatasetCollectionManager{ collectionName='%s' recheck=%s ", collectionName, recheck);
-    for (MCollection mc : scanList) {
+    for (CollectionConfig mc : scanList) {
       f.format("%n dir=%s filter=%s", mc.getDirectoryName(), mc.getFileFilter());
     }
     return f.toString();

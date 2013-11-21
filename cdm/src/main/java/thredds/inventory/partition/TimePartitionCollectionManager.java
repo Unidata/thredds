@@ -34,9 +34,11 @@ package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
+import thredds.inventory.Collection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -51,7 +53,7 @@ import java.util.*;
  * @author caron
  * @since 4/16/11
  */
-public class TimePartitionCollection extends MFileCollectionManager implements PartitionManager {
+public class TimePartitionCollectionManager extends MFileCollectionManager implements PartitionManager {
   static protected enum Type {setfromExistingIndices, directory, timePeriod}
 
   static public PartitionManager factory(FeatureCollectionConfig config, String topDir, IndexReader indexReader, Formatter errlog, org.slf4j.Logger logger) {
@@ -60,10 +62,10 @@ public class TimePartitionCollection extends MFileCollectionManager implements P
 
     if (config.timePartition.equalsIgnoreCase("directory")) {
       Path topPath = Paths.get(topDir);
-      return new DirectoryPartitionCollection(config, topPath, indexReader, errlog, logger);
+      return new DirectoryPartition(config, topPath, indexReader, logger);
 
     } else {
-      return new TimePartitionCollection(config, errlog, logger);
+      return new thredds.inventory.partition.TimePartitionCollectionManager(config, errlog, logger);
     }
   }
 
@@ -71,27 +73,25 @@ public class TimePartitionCollection extends MFileCollectionManager implements P
 
   protected Type type;
 
-  protected TimePartitionCollection(FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
+  protected TimePartitionCollectionManager(FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
     super(config, errlog, logger);
     if (dateExtractor == null)
       throw new IllegalArgumentException("Time partition must specify a date extractor");
     this.type = Type.timePeriod;
   }
 
-  public Iterable<CollectionManagerRO> makePartitions() throws IOException {
+  public Iterable<Collection> makePartitions() throws IOException {
     List<DatedMFile> files = new ArrayList<DatedMFile>();
-    for (MFile mfile : getFiles()) {
+    for (MFile mfile : getFilesSorted()) {
       CalendarDate cdate = dateExtractor.getCalendarDate(mfile);
       if (cdate == null)
         logger.error("Date extraction failed on file= {} dateExtractor = {}", mfile.getPath(), dateExtractor);
       files.add( new DatedMFile(mfile, cdate));
     }
-    Collections.sort(files);
-
     CalendarDateFormatter cdf = new CalendarDateFormatter("yyyyMMdd");
 
-    List<CollectionManagerRO> result = new ArrayList<>();
-    TimePartitionCollectionManager curr = null;
+    List<Collection> result = new ArrayList<>();
+    TimePartitionCollection curr = null;
     for (DatedMFile dmf : files) {
       if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
         CalendarPeriod period = CalendarPeriod.of(config.timePartition);
@@ -100,7 +100,7 @@ public class TimePartitionCollection extends MFileCollectionManager implements P
         String name = collectionName + "-"+ cdf.toString(dmf.cdate);   // LOOK
         if (startCollection == null) startCollection = start; // grab the first one
 
-        curr = new TimePartitionCollectionManager(name, start, end, getRoot());
+        curr = new TimePartitionCollection(name, start, end, getRoot());
         result.add(curr);
       }
       curr.add(dmf);
@@ -135,28 +135,23 @@ public class TimePartitionCollection extends MFileCollectionManager implements P
   }
 
   // a partition of a collection, based on time intervals
-  private class TimePartitionCollectionManager implements CollectionManagerRO {
-    final String name;
+  private class TimePartitionCollection extends CollectionAbstract {
     final String root;
     final CalendarDate startPartition, endPartition;
 
     List<MFile> files;
 
-    TimePartitionCollectionManager(String name, CalendarDate startPartition, CalendarDate endPartition, String root) {
-      this.name = name;
+    TimePartitionCollection(String name, CalendarDate startPartition, CalendarDate endPartition, String root) {
+      super(name, TimePartitionCollectionManager.this.logger);
       this.startPartition = startPartition;
       this.endPartition = endPartition;
       this.root = root;
       this.files = new ArrayList<>();
+      this.setDateExtractor(TimePartitionCollectionManager.this.dateExtractor);
     }
 
     void add(DatedMFile dmfile) {
       files.add(dmfile.mfile);
-    }
-
-    @Override
-    public boolean hasDateExtractor() {
-      return true;
     }
 
     @Override
@@ -176,24 +171,8 @@ public class TimePartitionCollection extends MFileCollectionManager implements P
     }
 
     @Override
-    public Object getAuxInfo(String key) {
-      return (auxInfo == null) ? null : auxInfo.get(key);
-    }
-
-    @Override
-    public void putAuxInfo(String key, Object value) {
-      if (auxInfo == null) auxInfo = new HashMap<>(10);
-      auxInfo.put(key, value);
-    }
-
-    @Override
     public boolean isPartition() {
       return true;
-    }
-
-    @Override
-    public String getCollectionName() {
-      return name;
     }
 
     @Override
@@ -202,13 +181,13 @@ public class TimePartitionCollection extends MFileCollectionManager implements P
     }
 
     @Override
-    public Iterable<MFile> getFiles() {
+    public Iterable<MFile> getFilesSorted() {
       return files;
     }
 
     @Override
-    public CalendarDate extractRunDate(MFile mfile) {
-      return dateExtractor.getCalendarDate(mfile);
+    public CloseableIterator<MFile> getFileIterator() throws IOException {
+      return new MFileIterator(files.iterator());
     }
 
     @Override

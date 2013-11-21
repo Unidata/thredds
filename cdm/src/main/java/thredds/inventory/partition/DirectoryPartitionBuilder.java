@@ -16,8 +16,8 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * A Builder of Directory Partitions
- * Each Partition is associated with one directory, and one ncx index.
+ * A Builder of Directory Collections
+ * Each Collection is associated with one directory, and one ncx index.
  * If there are subdirectories, these are children DirectoryPartitions.
  *
  * @author caron
@@ -225,6 +225,7 @@ public class DirectoryPartitionBuilder {
       e.printStackTrace();
     }
   }
+
 
   ////////////////////////////////////////////////////////
 

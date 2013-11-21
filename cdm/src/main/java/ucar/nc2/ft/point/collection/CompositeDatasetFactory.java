@@ -31,6 +31,7 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import thredds.inventory.Collection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.TimedCollection;
 import ucar.nc2.Attribute;
@@ -61,7 +62,7 @@ public class CompositeDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
   static boolean debug = false;
 
-  static public FeatureDataset factory(String location, FeatureType wantFeatureType, CollectionManager dcm, Formatter errlog) throws IOException {
+  static public FeatureDataset factory(String location, FeatureType wantFeatureType, Collection dcm, Formatter errlog) throws IOException {
 
     TimedCollection collection = new TimedCollection(dcm, errlog);
     if (collection.getDatasets().size() == 0) {
@@ -153,7 +154,7 @@ public class CompositeDatasetFactory {
 
 
     @Override
-    public void update() {
+    public void update() throws IOException {
       ((UpdateableCollection)pfc).update();
     }    
 

@@ -33,9 +33,9 @@
 package ucar.nc2.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerRO;
-import thredds.inventory.partition.TimePartitionCollection;
+import thredds.inventory.*;
+import thredds.inventory.Collection;
+import thredds.inventory.partition.PartitionManager;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.builder.Grib2TimePartitionBuilder;
 import ucar.nc2.util.CancelTask;
@@ -87,12 +87,12 @@ public abstract class TimePartition extends GribCollection {
 
   ///////////////////////////////////////////////////////////////////////
 
-  static public boolean update(boolean isGrib1, TimePartitionCollection tpc, org.slf4j.Logger logger) throws IOException {
+  static public boolean update(boolean isGrib1, PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
     if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, logger);
     return Grib2TimePartitionBuilder.update(tpc, logger);
   }
 
-  static public TimePartition factory(boolean isGrib1, TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public TimePartition factory(boolean isGrib1, PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, logger);
     return Grib2TimePartitionBuilder.factory(tpc, force, logger);
   }
@@ -141,7 +141,7 @@ public abstract class TimePartition extends GribCollection {
     }
 
     // null if it came from the index
-    public CollectionManagerRO getDcm() {
+    public Collection getDcm() {
       return dcm;            // in GribCollection
     }
 
@@ -172,10 +172,10 @@ public abstract class TimePartition extends GribCollection {
 
     /////////////////////////////////////////////
     // only used during creation of index
-    private CollectionManagerRO dcm;
+    private Collection dcm;
 
     // constructor from a TimePartition object
-    public Partition(CollectionManagerRO dcm) {
+    public Partition(Collection dcm) {
       this.dcm = dcm;
       this.name = dcm.getCollectionName();
       this.directory = dcm.getRoot();
@@ -273,7 +273,7 @@ public abstract class TimePartition extends GribCollection {
     partitions.add(partition);
   }
 
-  public void addPartition(CollectionManagerRO dcm) {
+  public void addPartition(thredds.inventory.Collection dcm) {
     Partition partition = new Partition(dcm);
     partitionMap.put(dcm.getCollectionName(), new Partition(dcm));
     partitions.add(partition);

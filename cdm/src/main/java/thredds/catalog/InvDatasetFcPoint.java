@@ -49,7 +49,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
     Formatter errlog = new Formatter();
     try {
-      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(name, fcType.getFeatureType(), dcm, errlog);
+      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(name, fcType.getFeatureType(), datasetCollection, errlog);
 
     } catch (Exception e) {
 
@@ -96,7 +96,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     return fd;
   }
 
-  @Override
+
+  /* @Override
   public void update(CollectionManager.Force force) { // this may be called from a background thread
     // deal with the first call
     boolean firstTime;
@@ -127,10 +128,15 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     synchronized (lock) {
       state = localState;
     }
-  }
+  } */
 
+  @Override
   public void updateCollection(State localState, CollectionManager.Force force) {
-    ((UpdateableCollection)fd).update();
+    try {
+      ((UpdateableCollection)fd).update();
+    } catch (IOException e) {
+      logger.error("update failed", e);
+    }
 
     // time coverage = expect it may be changing
     if (fd.getCalendarDateRange() != null)
@@ -144,7 +150,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     // probably dont need this
   }
 
-  // called when a request comes in, see if everything is ready to go
+  /* called when a request comes in, see if everything is ready to go
   // in particular, state.datasets and state.scan
   @Override
   protected State checkState() throws IOException {
@@ -152,10 +158,10 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     synchronized (lock) {
       if (first) {
         firstInit();
-        dcm.scanIfNeeded(); //always fall through to updateCollection
+        datasetCollection.scanIfNeeded(); //always fall through to updateCollection
         first = false;
       } else {
-        if (!dcm.scanIfNeeded()) // return is not needed
+        if (!datasetCollection.scanIfNeeded()) // return is not needed
           return state;
       }
 
@@ -167,18 +173,12 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       state = localState;
       return state;
     }
-  }
+  }   */
 
   @Override
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI)  {
     logger.debug("FcPoint make catalog for " + match + " " + catURI);
-    State localState;
-    try {
-      localState = checkState();
-    } catch (IOException e) {
-      logger.error("Error in checkState", e);
-      return null;
-    }
+    State localState = checkState();
 
     try {
       if ((match == null) || (match.length() == 0)) {
@@ -189,7 +189,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
         return main;
 
       } else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files)) {
-        return  makeCatalogFiles(catURI, localState, dcm.getFilenames(), true);
+        return  makeCatalogFiles(catURI, localState, datasetCollection.getFilenames(), true);
       }
 
     } catch (Exception e) {
@@ -199,7 +199,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     return null;
   }
 
-  private void makeDatasetTop(State localState) {
+  @Override
+  protected void makeDatasetTop(State localState) {
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);
     InvDatasetImpl parent = (InvDatasetImpl) this.getParent();

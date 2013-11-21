@@ -127,7 +127,7 @@ public class GridDatasetInv {
 
       // System.out.println("gds dataset= "+ gds.getNetcdfDataset());
 
-      GridDatasetInv inv = new GridDatasetInv(gds, cm.extractRunDate(mfile));
+      GridDatasetInv inv = new GridDatasetInv(gds, cm.extractDate(mfile));
       String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
       ((CollectionManagerAbstract)cm).putMetadata(mfile, "fmrInv.xml", xmlString.getBytes(CDM.utf8Charset));
       if (log.isDebugEnabled()) log.debug(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");

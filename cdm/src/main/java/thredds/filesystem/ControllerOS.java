@@ -33,7 +33,7 @@
 package thredds.filesystem;
 
 import net.jcip.annotations.ThreadSafe;
-import thredds.inventory.MCollection;
+import thredds.inventory.CollectionConfig;
 import thredds.inventory.*;
 
 import java.util.*;
@@ -57,7 +57,7 @@ public class ControllerOS implements MController {
   }
 
   @Override
-  public Iterator<MFile> getInventoryAll(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -70,7 +70,7 @@ public class ControllerOS implements MController {
   }
 
   @Override
-  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -82,7 +82,7 @@ public class ControllerOS implements MController {
     return new FilteredIterator(mc, new MFileIterator(cd), false);  // removes subdirs
   }
 
-  public Iterator<MFile> getSubdirs(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -104,12 +104,12 @@ public class ControllerOS implements MController {
   // handles filtering and removing/including subdirectories
   private class FilteredIterator implements Iterator<MFile> {
     private Iterator<MFile> orgIter;
-    private MCollection mc;
+    private CollectionConfig mc;
     private boolean wantDirs;
 
     private MFile next;
 
-    FilteredIterator(MCollection mc, Iterator<MFile> iter, boolean wantDirs) {
+    FilteredIterator(CollectionConfig mc, Iterator<MFile> iter, boolean wantDirs) {
       this.orgIter = iter;
       this.mc = mc;
       this.wantDirs = wantDirs;

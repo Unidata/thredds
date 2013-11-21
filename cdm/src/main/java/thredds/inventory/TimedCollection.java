@@ -52,7 +52,7 @@ import java.util.List;
 public class TimedCollection {
   private static final boolean debug = false;
 
-  private final CollectionManager manager;
+  private final Collection manager;
   private List<TimedCollection.Dataset> datasets;
   private CalendarDateRange dateRange;
 
@@ -64,11 +64,13 @@ public class TimedCollection {
    * @see CollectionSpecParser
    * @throws java.io.IOException on read error
    */
-  public TimedCollection(CollectionManager manager, Formatter errlog) throws IOException {
+  public TimedCollection(Collection manager, Formatter errlog) throws IOException {
     this.manager = manager;
 
     // get the inventory, sorted by path
-    manager.scanIfNeeded();  // LOOK no event
+    if (manager instanceof CollectionManager) {
+      ((CollectionManager)manager).scanIfNeeded();
+    }
     update();
 
     if (debug) {
@@ -81,9 +83,9 @@ public class TimedCollection {
 
   }
 
-  public void update() {
+  public void update() throws IOException {
     datasets = new ArrayList<TimedCollection.Dataset>();
-    for (MFile f :  manager.getFiles())
+    for (MFile f :  manager.getFilesSorted())
       datasets.add(new Dataset(f));
 
     if (manager.hasDateExtractor()) {
@@ -156,7 +158,7 @@ public class TimedCollection {
 
     Dataset(MFile f) {
       this.location = f.getPath();
-      this.start = manager.extractRunDate(f);
+      this.start = manager.extractDate(f);
     }
 
     public String getLocation() {
