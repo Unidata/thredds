@@ -105,7 +105,7 @@ public class Grib2Rectilyser {
   }
 
   List<MFile> files = null; // temp debug
-  public void make(Counter counter, List<MFile> files) throws IOException {
+  public void make(Counter counter, List<MFile> files, Formatter errlog) throws IOException {
     this.files = files;
 
     // unique variables using Grib2Record.cdmVariableHash()
@@ -171,18 +171,21 @@ public class Grib2Rectilyser {
         int timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord);
         if (timeIdx < 0) {
           timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord); // debug
+          errlog.format("Cant find time coord %s%n", r.tcCoord);
           throw new IllegalStateException("Cant find time coord " + r.tcCoord);
         }
 
         int vertIdx = (vb.vertCoordIndex < 0) ? 0 : vc.findIdx(r.vcCoord);
         if (vertIdx < 0) {
           vertIdx = vc.findIdx(r.vcCoord); // debug
+          errlog.format("Cant find vert coord %s%n", r.vcCoord);
           throw new IllegalStateException("Cant find vert coord " + r.vcCoord);
         }
 
         int ensIdx = (vb.ensCoordIndex < 0) ? 0 : ec.findIdx(r.ecCoord);
         if (ensIdx < 0) {
           ensIdx = ec.findIdx(r.ecCoord); // debug
+          errlog.format("Cant find ens coord %s%n", r.ecCoord);
           throw new IllegalStateException("Cant find ens coord " + r.ecCoord);
         }
 
@@ -191,12 +194,15 @@ public class Grib2Rectilyser {
         if (vb.recordMap[index] != null) tot_dups++; else tot_used++;
         vb.recordMap[index] = r;
       }
+      counter.recordsTotal += vb.recordMap.length;
+
       //System.out.printf("%d: recordMap %d = records %d - dups %d (%d)%n", vb.first.cdmVariableHash(),
       //        vb.recordMap.length, vb.atomList.size(), dups, vb.atomList.size() - vb.recordMap.length);
     }
     counter.recordsUnique += tot_used;
     counter.dups += tot_dups;
     counter.vars += gribvars.size();
+
   }
 
   static public class Counter {
@@ -212,6 +218,12 @@ public class Grib2Rectilyser {
       f.format(" Rectilyser2: nvars=%d records total=%d filtered=%d unique=%d dups=%d (%f)%n",
               vars, recordsTotal, filter, recordsUnique, dups, dupPercent);
       return f.toString();
+    }
+
+    void add(Counter c) {
+      this.recordsUnique += c.recordsUnique;
+      this.dups += c.dups;
+      this.vars += c.vars;
     }
   }
 

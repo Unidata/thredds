@@ -335,6 +335,7 @@ public class GribCdmIndexPanel extends JPanel {
       groups.add(new GroupBean(g));
     }
     groupTable.setBeans(groups);
+    groupTable.setHeader(indexFile.toString());
     gcFiles = gc.getFiles();
   }
 

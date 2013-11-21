@@ -160,6 +160,11 @@ public class BeanTable extends JPanel {
 
   }
 
+  public void setHeader(String header) {
+    headerLabel.setText(header);
+  }
+
+  private JLabel headerLabel = null;
   private void init(String header, String tooltip) {
     jtable = new JTable(model);
     //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
@@ -188,7 +193,6 @@ public class BeanTable extends JPanel {
     add(scrollPane, BorderLayout.CENTER);
 
     if (header != null) {
-      JLabel headerLabel;
       if (tooltip != null) {
         headerLabel = new JLabel(header, SwingConstants.CENTER) {
           public JToolTip createToolTip() {

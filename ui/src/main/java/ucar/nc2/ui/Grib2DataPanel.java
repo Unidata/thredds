@@ -445,11 +445,9 @@ public class Grib2DataPanel extends JPanel {
 
     Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
     Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, null);
-    agg.make(stats, null);
+    agg.make(stats, null, f);
     agg.dump(f, cust);
     stats.recordsTotal = records.size();
-
-    f.format("%s", stats.show());
   }
 
   /* public void runCollate(Formatter f) throws IOException {

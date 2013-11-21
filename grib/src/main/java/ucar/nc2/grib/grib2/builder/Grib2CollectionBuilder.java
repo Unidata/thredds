@@ -212,7 +212,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     public Grib2SectionGridDefinition gdss;
     public int gdsHash; // may have been modified
     public Grib2Rectilyser rect;
-    public List<Grib2Record> records = new ArrayList<Grib2Record>();
+    public List<Grib2Record> records = new ArrayList<>();
     public String nameOverride;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
@@ -235,7 +235,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     long start = System.currentTimeMillis();
 
     List<MFile> files = new ArrayList<>();
-    List<Group> groups = makeAggregatedGroups(files);
+    List<Group> groups = makeAggregatedGroups(files, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
     createIndex(indexFile, groups, allFiles);
 
@@ -248,33 +248,29 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  private List<Group> makeAggregatedGroups(List<MFile> allFiles) throws IOException {
+  private List<Group> makeAggregatedGroups(List<MFile> allFiles, Formatter errlog) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<String, Boolean> pdsConvert = null;
 
-    //boolean intvMerge = intvMergeDefault;
-    //boolean useGenType = false;
-
     logger.debug("GribCollection {}: makeAggregatedGroups", gc.getName());
     int fileno = 0;
-    Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter(); // debugging
+    Grib2Rectilyser.Counter statsAll = new Grib2Rectilyser.Counter(); // debugging
 
     logger.debug(" dcm={}", dcm);
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     Map<Integer, Integer> gdsConvert = (config != null) ?  config.gdsHash : null;
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
     if (config != null) pdsConvert = config.pdsHash;
-    //intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
-    //useGenType = (config == null) || (config.useGenType == null) ? false : config.useGenType;
 
     int totalRecords = 0;
     for (MFile mfile : dcm.getFilesSorted()) { // LOOK do we need sorted ??
       Grib2Index index;
-      try {
+      try {                  // LOOK here is where gbx9 files get recreated
         index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, !isSingleFile, mfile, config, CollectionManager.Force.test, logger);
         allFiles.add(mfile);  // add on success
 
       } catch (IOException ioe) {
+        errlog.format("ERR Grib2CollectionBuilder %s: reading/Creating gbx9 index for file %s failed err=%s%n", gc.getName(), mfile.getPath(), ioe.getMessage());
         logger.error("Grib2CollectionBuilder "+gc.getName()+" : reading/Creating gbx9 index for file "+ mfile.getPath()+" failed", ioe);
         continue;
       }
@@ -291,7 +287,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter());
         }
         if (intvMap != null && filterOut(gr, intvMap)) {
-          stats.filter++;
+          statsAll.filter++;
           continue; // skip
         }
 
@@ -308,20 +304,24 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         g.records.add(gr);
       }
       fileno++;
-      stats.recordsTotal += index.getRecords().size();
+      statsAll.recordsTotal += index.getRecords().size();
     }
     // System.out.printf("%s: Open %d files %d records%n",  gc.getName(), fileno, totalRecords);
 
-    List<Group> result = new ArrayList<Group>(gdsMap.values());
-    for (Group g : result) {
+    List<Group> groups = new ArrayList<>(gdsMap.values());
+    for (Group g : groups) {
+      Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter(); // debugging
       g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, pdsConvert);
-      g.rect.make(stats, Collections.unmodifiableList(allFiles));
+      g.rect.make(stats, Collections.unmodifiableList(allFiles), errlog);
+      errlog.format("Group hash=%d %s%n", g.gdsHash, stats.show());
+      statsAll.add(stats);
     }
 
     // debugging and validation
-    if (logger.isDebugEnabled()) logger.debug(stats.show());
+    if (logger.isDebugEnabled()) logger.debug(statsAll.show());
+    errlog.format("%s%n", statsAll.show());
 
-    return result;
+    return groups;
   }
 
   // true means remove

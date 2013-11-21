@@ -33,6 +33,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.*;
+import thredds.inventory.Collection;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
@@ -416,7 +417,7 @@ public class Grib2CollectionPanel extends JPanel {
   ///////////////////////////////////////////////
 
   private String spec;
-  private CollectionManager dcm;
+  private Collection dcm;
   private List<MFile> fileList;
   private Grib2Customizer cust;
   private Grib2Rectilyser rect2;
@@ -510,11 +511,12 @@ public class Grib2CollectionPanel extends JPanel {
     }
   }
 
-  private CollectionManager scanCollection(String spec, Formatter f) {
-    CollectionManager dc;
+  private Collection scanCollection(String spec, Formatter f) {
+    Collection dc;
     try {
-      dc = CollectionManagerAbstract.open("Grib2CollectionPanel", spec, null, f);
-      dc.scan(false);
+      dc = CollectionAbstract.open("Grib2CollectionPanel", spec, null, f);
+      if (dc instanceof CollectionManager)
+        ((CollectionManager)dc).scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
       return dc;
 
@@ -549,11 +551,9 @@ public class Grib2CollectionPanel extends JPanel {
 
     Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
     Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, null);
-    agg.make(stats, null);
+    agg.make(stats, null, f);
     agg.dump(f, cust);
     stats.recordsTotal = records.size();
-
-    f.format("%s", stats.show());
   }
 
   /* public void runCollate(Formatter f) throws IOException {
@@ -570,7 +570,7 @@ public class Grib2CollectionPanel extends JPanel {
   } */
 
   public boolean writeIndex(Formatter f) throws IOException {
-    CollectionManager dcm = scanCollection(spec, f);
+    Collection dcm = scanCollection(spec, f);
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));

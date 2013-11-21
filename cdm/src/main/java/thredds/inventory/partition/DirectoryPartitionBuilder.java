@@ -232,7 +232,7 @@ public class DirectoryPartitionBuilder {
 
   public List<MFile> getFiles(IndexReader indexReader) throws IOException {
     List<MFile> result = new ArrayList<>(100);
-    if (index != null) return result;
+    if (index == null) return result;
 
     indexReader.readMFiles(index, result);
     return result;

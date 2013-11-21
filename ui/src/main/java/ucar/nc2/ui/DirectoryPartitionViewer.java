@@ -525,13 +525,13 @@ public class DirectoryPartitionViewer extends JPanel {
     private void makePopups() {
 
       PopupMenu varPopup = new PopupMenu(tree, "Options");
-      varPopup.addAction("Make Partition", new AbstractAction() {
+      varPopup.addAction("Make Index", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           cmdMakeIndex(currentNode);
         }
       });
 
-      varPopup.addAction("Show Partition", new AbstractAction() {
+      varPopup.addAction("Show Index", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           cmdShowIndex(currentNode);
         }
