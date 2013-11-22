@@ -193,7 +193,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     // grib2
     if (dcm.isPartition()) {
       if (force == CollectionManager.Force.never) {  // LOOK not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
-        return Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), logger);
+        FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+        return Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
       } else {
         return Grib2TimePartitionBuilder.factory((PartitionManager) dcm, force, logger);
       }
@@ -245,6 +246,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   public List<MFile> getFiles() {
     return files;
+  }
+
+  public FeatureCollectionConfig.GribConfig getGribConfig() {
+    return gribConfig;
   }
 
   public List<String> getFilenames() {
@@ -364,10 +369,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     this.directory = directory;
   }
 
-  protected GribCollection(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1) {
+  protected GribCollection(String name, File directory, FeatureCollectionConfig.GribConfig config, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
-    this.gribConfig = dcm;
+    this.gribConfig = config;
     this.isGrib1 = isGrib1;
   }
 
@@ -484,7 +489,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public int gdsHash;
 
     private String id, description;
-    public List<VariableIndex> varIndex;
+    public List<VariableIndex> varIndex;   // GribCollection.VariableIndex
     public List<TimeCoord> timeCoords;
     public List<VertCoord> vertCoords;
     public List<EnsCoord> ensCoords;
@@ -600,7 +605,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public GribCollection.VariableIndex findVariableByHash(int cdmHash) {
-      for (VariableIndex vi : varIndex)
+      for (VariableIndex vi : varIndex)                // look might want to hash to avoid linear lookup cost
         if (vi.cdmHash == cdmHash) return vi;
       return null;
     }
@@ -692,7 +697,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public final boolean isLayer;                                                                     // uniquely identifies the variable
     public final int genProcessType;
     public final int cdmHash;                  // unique hashCode - from Grib2Record, but works here also
-    public final int timeIdx, vertIdx, ensIdx; // which time, vert and ens coordinates to use (in group)
+    public int timeIdx, vertIdx, ensIdx; // which time, vert and ens coordinates to use (in group)
     public final long recordsPos;              // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
     public final GroupHcs group;               // belongs to this group

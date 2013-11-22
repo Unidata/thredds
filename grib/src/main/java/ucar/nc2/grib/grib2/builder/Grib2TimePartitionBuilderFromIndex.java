@@ -1,8 +1,6 @@
 package ucar.nc2.grib.grib2.builder;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.partition.PartitionManager;
-import thredds.inventory.partition.TimePartitionCollectionManager;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.unidata.io.RandomAccessFile;
@@ -12,7 +10,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Describe
+ * Read Grib2TimePartition from ncx partition index
  *
  * @author caron
  * @since 11/9/13
@@ -20,15 +18,16 @@ import java.util.*;
 public class Grib2TimePartitionBuilderFromIndex extends Grib2CollectionBuilderFromIndex {
 
     // read in the index, open raf
-  static public GribCollection createTimePartitionFromIndex(String name, File directory, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection createTimePartitionFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     File idxFile = GribCollection.getIndexFile(name, directory);
     RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
-    return createTimePartitionFromIndex(name, directory, raf, logger);
+    return createTimePartitionFromIndex(name, directory, raf, config, logger);
   }
 
   // read in the index, index raf already open
-  static public Grib2TimePartition createTimePartitionFromIndex(String name, File directory, RandomAccessFile raf, org.slf4j.Logger logger) throws IOException {
-    Grib2TimePartitionBuilderFromIndex builder = new Grib2TimePartitionBuilderFromIndex(name, directory, null, logger);
+  static public Grib2TimePartition createTimePartitionFromIndex(String name, File directory, RandomAccessFile raf,
+                                                                FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+    Grib2TimePartitionBuilderFromIndex builder = new Grib2TimePartitionBuilderFromIndex(name, directory, config, logger);
     if (builder.readIndex(raf)) {
       return builder.tp;
     }
@@ -38,16 +37,13 @@ public class Grib2TimePartitionBuilderFromIndex extends Grib2CollectionBuilderFr
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  private final PartitionManager tpc; // defines the partition
+  //private final PartitionManager tpc; // defines the partition
   private final Grib2TimePartition tp;  // build this object
 
-  private Grib2TimePartitionBuilderFromIndex(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
-    super(tpc, false, logger);
-    FeatureCollectionConfig.GribConfig config = null;
-    if (tpc != null) config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+  private Grib2TimePartitionBuilderFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
+    super(null, false, logger);
     this.tp = new Grib2TimePartition(name, directory, config, logger);
     this.gc = tp;
-    this.tpc = tpc;
   }
 
   @Override

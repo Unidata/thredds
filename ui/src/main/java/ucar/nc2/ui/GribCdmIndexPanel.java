@@ -138,14 +138,14 @@ public class GribCdmIndexPanel extends JPanel {
     varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
     
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
-    varPopup.addAction("Show Variable", new AbstractAction() {
+    varPopup.addAction("Show Variable(s)", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VarBean bean = (VarBean) varTable.getSelectedBean();
-        if (bean != null) {
-          infoTA.setText(bean.v.toStringComplete());
-          infoTA.gotoTop();
-          infoWindow.show();
-        }
+        List<VarBean> beans = varTable.getSelectedBeans();
+        infoTA.clear();
+        for (VarBean bean : beans)
+          infoTA.appendLine(bean.v.toStringComplete());
+        infoTA.gotoTop();
+        infoWindow.show();
       }
     });
     varPopup.addAction("Show Record Table", new AbstractAction() {
@@ -246,11 +246,19 @@ public class GribCdmIndexPanel extends JPanel {
 
   public void showInfo(Formatter f) {
     if (gc == null) return;
-    f.format("magic=%s%n", magic);
-    gc.showIndex(f);
+    List<GroupBean> groups = groupTable.getBeans();
+    for (GroupBean bean : groups) {
+      f.format("%50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
+    }
   }
 
-  private void compareFiles(Formatter f) throws IOException {
+  public void showDetailInfo(Formatter f) {
+     if (gc == null) return;
+     f.format("magic=%s%n", magic);
+     gc.showIndex(f);
+   }
+
+   private void compareFiles(Formatter f) throws IOException {
     if (gc == null) return;
     List<String> canon = new ArrayList<String>(gc.getFilenames());
     Collections.sort(canon);
@@ -318,14 +326,11 @@ public class GribCdmIndexPanel extends JPanel {
   FeatureCollectionConfig.GribConfig config = null;
   String magic;
 
-  public void setIndexFile(String indexFile) throws IOException {
-    setIndexFile(Paths.get(indexFile));
-  }
-
-  public void setIndexFile(Path indexFile) throws IOException {
+  public void setIndexFile(Path indexFile, FeatureCollectionConfig.GribConfig config) throws IOException {
     if (gc != null) gc.close();
     magic = null;
 
+    this.config = config;
     gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, logger);
     if (gc == null)
       throw new IOException("Not a grib collection index file ="+magic);

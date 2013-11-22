@@ -251,8 +251,8 @@ public abstract class TimePartition extends GribCollection {
   protected List<Partition> partitions = new ArrayList<Partition>();
   protected final org.slf4j.Logger logger;
 
-  protected TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1, org.slf4j.Logger logger) {
-    super(name, directory, dcm, isGrib1);
+  protected TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig config, boolean isGrib1, org.slf4j.Logger logger) {
+    super(name, directory, config, isGrib1);
     this.logger = logger;
   }
 

@@ -23,6 +23,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -83,6 +84,13 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       });
       buttPanel.add(infoButton);
+      AbstractButton info2Button = BAMutil.makeButtcon("Information", "Show Detail Info", false);
+      info2Button.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          showDetailInfo();
+        }
+      });
+      buttPanel.add(info2Button);
     }
 
     setLayout(new BorderLayout());
@@ -139,6 +147,21 @@ public class DirectoryPartitionViewer extends JPanel {
       partitionsTable.showGroupDiffs(f);
     } else if (current == cdmIndexTables) {
       cdmIndexTables.showInfo(f);
+    } else {
+      return;
+    }
+
+    infoTA.setText(f.toString());
+    infoTA.gotoTop();
+    infoWindow.show();
+  }
+
+  public void showDetailInfo() {
+    Formatter f = new Formatter();
+    if (current == partitionsTable) {
+      partitionsTable.showGroupDiffs(f);
+    } else if (current == cdmIndexTables) {
+      cdmIndexTables.showDetailInfo(f);
     } else {
       return;
     }
@@ -235,7 +258,7 @@ public class DirectoryPartitionViewer extends JPanel {
   } */
 
 
-  private void cmdShowPartitions(final NodeInfo node) {
+  private void cmdSummarizePartitions(final NodeInfo node) {
     // long running task in background thread
     Thread background = new Thread() {
        public void run() {
@@ -243,9 +266,9 @@ public class DirectoryPartitionViewer extends JPanel {
          Formatter out = new Formatter();
          try {
            GribCdmIndex indexReader = new GribCdmIndex();
-           DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
+           final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
 
-           Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), node.dir.toFile(), config.gribConfig, logger);
+           final Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), node.dir.toFile(), config.gribConfig, logger);
            for (thredds.inventory.Collection dcm : dpart.makePartitions()) {
              tp.addPartition(dcm);
            }
@@ -268,6 +291,7 @@ public class DirectoryPartitionViewer extends JPanel {
            SwingUtilities.invokeLater(new Runnable() {
                public void run() {
                  partitionsTable.clear();
+                 partitionsTable.setHeader(dpart.getCollectionName());
                  for (GribCollection gc : gclist)
                    partitionsTable.addGribCollection(gc);
                  swap(partitionsTable);
@@ -287,8 +311,9 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private void cmdShowIndex(NodeInfo node) {
     try {
+      FeatureCollectionConfig.GribConfig gconfig = (config == null) ? null : config.gribConfig ;
       // this opens the index file and constructs a GribCollection
-      cdmIndexTables.setIndexFile(node.part.getIndex());
+      cdmIndexTables.setIndexFile(node.part.getIndex(), gconfig);
       swap(cdmIndexTables);
 
     } catch (Throwable t) {
@@ -308,7 +333,7 @@ public class DirectoryPartitionViewer extends JPanel {
       infoWindow.show();
 
       node.refresh();
-      cmdShowIndex(node);
+      // cmdShowIndex(node);
 
     } catch (Throwable t) {
       t.printStackTrace();
@@ -525,9 +550,12 @@ public class DirectoryPartitionViewer extends JPanel {
     private void makePopups() {
 
       PopupMenu varPopup = new PopupMenu(tree, "Options");
-      varPopup.addAction("Make Index", new AbstractAction() {
+      varPopup.addAction("Make Index(es)", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          cmdMakeIndex(currentNode);
+          for (TreePath path : tree.getSelectionPaths()) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+            cmdMakeIndex( (NodeInfo) node.getUserObject());
+          }
         }
       });
 
@@ -542,7 +570,7 @@ public class DirectoryPartitionViewer extends JPanel {
           // do this in another Thread
           new Thread() {
             public void run() {
-              cmdShowPartitions(currentNode);
+              cmdSummarizePartitions(currentNode);
             }
           }.start();
         }
@@ -857,6 +885,10 @@ public class DirectoryPartitionViewer extends JPanel {
       if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
     }
 
+    private void setHeader(String header) {
+      groupsTable.setHeader(header);
+    }
+
     private void setGroups(GroupsBean groups) {
       groupTable.setBeans(groups.beans);
     }
@@ -912,7 +944,7 @@ public class DirectoryPartitionViewer extends JPanel {
       out.format("=======================Groups%n");
       for (Groups gs : groups) {
         if (gs.parts.size() < partitionsAll.size()) {
-          out.format("%s Missing partitions:%n", gs.groupId);
+          out.format("Missing partitions for group %s:%n", gs.groupId);
           for (String p : partitionsAll) {
             if (!gs.parts.contains(p))
               out.format("   %s%n", p);

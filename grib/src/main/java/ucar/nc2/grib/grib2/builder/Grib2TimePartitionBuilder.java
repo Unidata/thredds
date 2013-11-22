@@ -163,7 +163,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
   private boolean readIndex(RandomAccessFile indexRaf) throws IOException {
     try {
-      this.tp = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, logger);
+      this.tp = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, gc.getGribConfig(), logger);
       this.gc = tp;
       return true;
     } catch (IOException ioe) {
@@ -176,8 +176,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
   public boolean createPartitionedIndex(Formatter f) throws IOException {
     long start = System.currentTimeMillis();
+    if (f == null) f = new Formatter(); // info will be discarded
 
-    // create partitions based on TimePartitionCollections object
+    // create partitions
     for (thredds.inventory.Collection dcm : tpc.makePartitions()) {
       tp.addPartition(dcm);
     }
@@ -209,134 +210,36 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     f.format(" INFO Using canonical partition %s%n", canon.getDcm().getCollectionName());
     logger.info("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
+    // alternately one could choose a partition that has all the groups or maximum # variables
+    // checkGroups(canon, f, true);
+
     // check consistency across vert and ens coords
     // also replace variables  in canonGc with partitioned variables
     // partition index is used - do not resort partitions
-    if (f == null) f = new Formatter();
-    checkGroups(canon, f, true);
-    GribCollection canonGc = checkPartitions(canon, f);
-    if (canonGc == null) {
+    if (!comparePartitions(canon, f)) {
       f.format(" ERR Partition check failed, index not written on %s%n", tp.getName());
       logger.error(" Partition check failed, index not written on {} errors = \n{}", tp.getName(), f.toString());
       return false;
     }
 
     // make the time coordinates, place results into canon
-    createPartitionedTimeCoordinates(canonGc, f);
+    createPartitionedTimeCoordinates(canon.gc, f);
 
     // ready to write the index file
-    writeIndex(canonGc, f);
+    writeIndex(canon.gc, f);
 
     // close open gc's
     for (TimePartition.Partition tpp : tp.getPartitions()) {
       tpp.gc.close();
     }
-    canonGc.close();
+    canon.gc.close();
 
     long took = System.currentTimeMillis() - start;
     f.format(" INFO CreatePartitionedIndex took %d msecs%n", took);
     return true;
   }
 
-  // consistency check on variables : compare each variable to corresponding one in proto
-  // also set the groupno and partno for each partition
-  private GribCollection checkPartitions(TimePartition.Partition canon, Formatter f) throws IOException {
-    List<TimePartition.Partition> partitions = tp.getPartitions();
-    int npart = partitions.size();
-    boolean ok = true;
-
-    // for each group in canonical Partition
-    GribCollection canonGc = canon.gc;
-    for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
-      String gname = firstGroup.getId();
-      String gdesc = firstGroup.getDescription();
-      if (trace) f.format(" Check Group %s%n", gname);
-
-      // hash proto variables for quick lookup
-      Map<Integer, GribCollection.VariableIndex> check = new HashMap<>(2 * firstGroup.varIndex.size());
-      List<GribCollection.VariableIndex> varIndexP = new ArrayList<>(firstGroup.varIndex.size());
-      for (GribCollection.VariableIndex vi : firstGroup.varIndex) {
-        TimePartition.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, npart);
-        varIndexP.add(vip);
-        if (check.containsKey(vi.cdmHash)) {
-          f.format(" WARN Duplicate variable hash %s%n", vi.toStringShort());
-        }
-        check.put(vi.cdmHash, vip); // replace with its evil twin
-      }
-      firstGroup.varIndex = varIndexP;// replace with its evil twin
-
-      // for each partition
-      for (int partno = 0; partno < npart; partno++) {
-        TimePartition.Partition tpp = partitions.get(partno);
-        if (trace) f.format(" Check Partition %s%n", tpp.getName());
-
-        // get corresponding group
-        GribCollection gc = tpp.gc;
-        int groupIdx = gc.findGroupIdxById(firstGroup.getId());
-        if (groupIdx < 0) {
-          f.format(" WARN Cant find canonical group %s in partition %s%n", gname, tpp.getName());
-          //ok = false;
-          continue;
-        }
-        GribCollection.GroupHcs group = gc.getGroup(groupIdx);
-
-        // for each variable in partition group
-        for (int varIdx = 0; varIdx < group.varIndex.size(); varIdx++) {
-          GribCollection.VariableIndex vi2 = group.varIndex.get(varIdx);
-          if (trace) f.format(" Check %s%n", vi2.toStringShort());
-          int flag = 0;
-
-          GribCollection.VariableIndex vi1 = check.get(vi2.cdmHash); // compare with proto variable (vi1)
-          if (vi1 == null) {
-            f.format(" WARN Cant find %s from %s in proto - ignoring that variable%n", vi2.toStringShort(), tpp.getName());
-            continue; // we can tolerate this
-          }
-
-          //compare vert coordinates
-          VertCoord vc1 = vi1.getVertCoord();
-          VertCoord vc2 = vi2.getVertCoord();
-          if ((vc1 == null) != (vc2 == null)) {
-            vc1 = vi1.getVertCoord();   // debug
-            vc2 = vi2.getVertCoord();
-            f.format(" ERR Vert coordinates existence on group %s (%s) on %s in %s (exist %s) doesnt match %s (exist %s)%n",
-                    gname, gdesc, vi2.toStringShort(),
-                    tpp.getName(), (vc2 == null), canon.getName(), (vc1 == null));
-            ok = false;
-
-          } else if ((vc1 != null) && !vc1.equalsData(vc2)) {
-            f.format(" WARN Vert coordinates values on %s in %s dont match%n", vi2.toStringShort(), tpp.getName());
-            f.format("    canon vc = %s%n", vc1);
-            f.format("    this vc = %s%n", vc2);
-            flag |= TimePartition.VERT_COORDS_DIFFER;
-          }
-
-          //compare ens coordinates
-          EnsCoord ec1 = vi1.getEnsCoord();
-          EnsCoord ec2 = vi2.getEnsCoord();
-          if ((ec1 == null) != (ec2 == null)) {
-            f.format(" ERR Ensemble coordinates existence on %s in %s doesnt match%n", vi2.toStringShort(), tpp.getName());
-            ok = false;
-          } else if ((ec1 != null) && !ec1.equalsData(ec2)) {
-            f.format(" WARN Ensemble coordinates values on %s in %s dont match%n", vi2.toStringShort(), tpp.getName());
-            f.format("    canon ec = %s%n", ec1);
-            f.format("    this ec = %s%n", ec2);
-            flag |= TimePartition.ENS_COORDS_DIFFER;
-          }
-
-          ((TimePartition.VariableIndexPartitioned) vi1).setPartitionIndex(partno, groupIdx, varIdx, flag);
-        } // loop over variable
-      } // loop over partition
-    } // loop over group
-
-    if (ok) {
-      f.format(" INFO Partition check OK%n");
-      return canonGc;
-    } else {
-      return null;
-    }
-  }
-
-  private class Groups {
+  /* private class Groups {
     GribCollection.GroupHcs g;
     List<TimePartition.Partition> parts = new ArrayList<>();
   }
@@ -357,6 +260,122 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
         gs.parts.add(tpp);
       }
     }
+  }   */
+
+  // consistency check on variables : compare each variable to corresponding one in proto
+  // also set the groupno and partno for each partition
+  private boolean comparePartitions(TimePartition.Partition canon, Formatter f) throws IOException {
+    List<TimePartition.Partition> partitions = tp.getPartitions();
+    int npart = partitions.size();
+    boolean ok = true;
+
+    // for each group in canonical Partition
+    GribCollection canonGc = canon.gc;
+    for (GribCollection.GroupHcs canonGroup : canonGc.getGroups()) {
+      String gname = canonGroup.getId();
+      String gdesc = canonGroup.getDescription();
+      if (trace) f.format(" Check Group %s%n", gname);
+
+      // hash proto variables for quick lookup
+      Map<Integer, TimePartition.VariableIndexPartitioned> canonVars = new HashMap<>(2 * canonGroup.varIndex.size());
+      List<GribCollection.VariableIndex> varIndexP = new ArrayList<>(canonGroup.varIndex.size());
+      for (GribCollection.VariableIndex vi : canonGroup.varIndex) {
+        TimePartition.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, npart);
+        varIndexP.add(vip);
+        if (canonVars.containsKey(vi.cdmHash)) {
+          f.format(" WARN Duplicate variable hash %s%n", vi.toStringShort());
+        }
+        canonVars.put(vi.cdmHash, vip);
+      }
+      canonGroup.varIndex = varIndexP;// replace variable list with VariableIndexPartitioned in the group
+
+      // for each partition
+      for (int partno = 0; partno < npart; partno++) {
+        TimePartition.Partition tpp = partitions.get(partno);
+        if (trace) f.format(" Check Partition %s%n", tpp.getName());
+
+        // get group corresponding to canonGroup
+        GribCollection gc = tpp.gc;
+        int groupIdx = gc.findGroupIdxById(canonGroup.getId());
+        if (groupIdx < 0) {
+          f.format(" INFO Cant find canonical group %s in partition %s%n", gname, tpp.getName());
+          //ok = false;
+          continue;
+        }
+        GribCollection.GroupHcs group = gc.getGroup(groupIdx); // note this will be the same as the canonGroup when partition == canonPartition
+
+        // for each variable in otherPartition group
+        for (int varIdx = 0; varIdx < group.varIndex.size(); varIdx++) {
+          GribCollection.VariableIndex viFromOtherPartition = group.varIndex.get(varIdx);
+          if (trace) f.format(" Check %s%n", viFromOtherPartition.toStringShort());
+          int flag = 0;
+
+          TimePartition.VariableIndexPartitioned viCanon = canonVars.get(viFromOtherPartition.cdmHash); // match with proto variable hash
+          if (viCanon == null) {
+            f.format(" WARN Cant find %s from %s / %s in proto %s - add to canon%n", viFromOtherPartition.toStringShort(), tpp.getName(), gdesc, canon.getName());
+
+            //////////////// add it to the canonGroup
+            viCanon = tp.makeVariableIndexPartitioned(viFromOtherPartition, npart);
+            varIndexP.add(viCanon); // this is the canonGorup list of vars
+            if (canonVars.containsKey(viFromOtherPartition.cdmHash))
+              f.format(" WARN Duplicate variable hash %s%n", viFromOtherPartition.toStringShort());
+            canonVars.put(viFromOtherPartition.cdmHash, viCanon); // replace with its evil twin
+
+            // reparent its vertical coordinate
+            VertCoord vc = viCanon.getVertCoord();
+            if (vc != null) {
+              viCanon.vertIdx = VertCoord.findCoord(canonGroup.vertCoords, vc); // share coordinates or add
+            }
+            // reparent its ens coordinate
+            EnsCoord ec = viCanon.getEnsCoord();
+            if (ec != null) {
+              viCanon.ensIdx = EnsCoord.findCoord(canonGroup.ensCoords, ec); // share coordinates or add
+            }
+            // i think you dont need to reparent time coordinate because those are made into timePartition coordidates
+          }
+
+          //compare vert coordinates
+          VertCoord vc1 = viCanon.getVertCoord();
+          VertCoord vc2 = viFromOtherPartition.getVertCoord();
+          if ((vc1 == null) != (vc2 == null)) {
+            vc1 = viCanon.getVertCoord();   // debug
+            vc2 = viFromOtherPartition.getVertCoord();
+            f.format(" ERR Vert coordinates existence on group %s (%s) on %s in %s (exist %s) doesnt match %s (exist %s)%n",
+                    gname, gdesc, viFromOtherPartition.toStringShort(),
+                    tpp.getName(), (vc2 == null), canon.getName(), (vc1 == null));
+            ok = false; // LOOK could remove vi ?
+
+          } else if ((vc1 != null) && !vc1.equalsData(vc2)) {
+            f.format(" WARN Vert coordinates values on %s in %s dont match%n", viFromOtherPartition.toStringShort(), tpp.getName());
+            f.format("    canon vc = %s%n", vc1);
+            f.format("    this vc = %s%n", vc2);
+            flag |= TimePartition.VERT_COORDS_DIFFER;
+          }
+
+          //compare ens coordinates
+          EnsCoord ec1 = viCanon.getEnsCoord();
+          EnsCoord ec2 = viFromOtherPartition.getEnsCoord();
+          if ((ec1 == null) != (ec2 == null)) {
+            f.format(" ERR Ensemble coordinates existence on %s in %s doesnt match%n", viFromOtherPartition.toStringShort(), tpp.getName());
+            ok = false; // LOOK could remove vi ?
+          } else if ((ec1 != null) && !ec1.equalsData(ec2)) {
+            f.format(" WARN Ensemble coordinates values on %s in %s dont match%n", viFromOtherPartition.toStringShort(), tpp.getName());
+            f.format("    canon ec = %s%n", ec1);
+            f.format("    this ec = %s%n", ec2);
+            flag |= TimePartition.ENS_COORDS_DIFFER;
+          }
+
+          viCanon.setPartitionIndex(partno, groupIdx, varIdx, flag);
+        } // loop over variable
+      } // loop over partition
+    } // loop over group
+
+    if (ok) {
+      f.format(" INFO Partition check OK%n");
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private class PartGroup {
@@ -374,50 +393,50 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     boolean ok = true;
 
     // for each group in canonical Partition
-    for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
-      String gname = firstGroup.getId();
+    for (GribCollection.GroupHcs canonGroup : canonGc.getGroups()) {
+      String gname = canonGroup.getId();
       if (trace) f.format(" Check Group %s%n", gname);
 
       // get list of corresponding groups from all the time partition, so we dont have to keep looking it up
-      List<PartGroup> pgList = new ArrayList<>(partitions.size());
+      List<PartGroup> partGroups = new ArrayList<>(partitions.size());
       for (TimePartition.Partition tpp : partitions) {
         GribCollection.GroupHcs gg = tpp.gc.findGroupById(gname);
         if (gg == null) {
-          f.format(" WARN Cant find group %s in partition %s%n", gname, tpp.getName());
-          logger.warn(" Cant find group {} in partition {}", gname, tpp.getName());
+          f.format(" INFO TimeCoordinates: Cant find canonical group %s in partition %s%n", gname, tpp.getName());
+          // logger.info(" TimeCoordinates: Cant find canonical  group {} in partition {}", gname, tpp.getName());
           continue;
         } else {
-          pgList.add(new PartGroup(gg, tpp));
+          partGroups.add(new PartGroup(gg, tpp));
         }
       }
 
       // unique time coordinate unions
-      List<TimeCoordUnion> unionList = new ArrayList<TimeCoordUnion>();
+      List<TimeCoordUnion> unionList = new ArrayList<>();
 
       // for each variable in canonical Partition
-      for (GribCollection.VariableIndex viCanon : firstGroup.varIndex) {
-        if (trace) f.format(" Check variable %s%n", viCanon);
+      for (GribCollection.VariableIndex viCanon : canonGroup.varIndex) {
+        if (trace) f.format(" Check variable %s%n", viCanon.toStringShort());
         TimeCoord tcCanon = viCanon.getTimeCoord();
 
-        List<TimeCoord> tcPartitions = new ArrayList<>(pgList.size());
+        List<TimeCoord> tcPartitions = new ArrayList<>(partGroups.size()); // access by index position
 
         // for each partition, get the time index
-        for (PartGroup pg : pgList) {
-          // get corresponding variable
+        for (PartGroup pg : partGroups) {
+          // get corresponding variable in this partition
           GribCollection.VariableIndex vi2 = pg.group.findVariableByHash(viCanon.cdmHash);
-          if (vi2 == null) {  // apparently not in the file
-            f.format(" WARN TimeCoordinates: Cant find variable %s in partition %s / %s%n", viCanon, pg.tpp.getName(), pg.group.getId());
+          if (vi2 == null) {  // apparently not in the partition - asssume this is ok
+            f.format(" INFO TimeCoordinates: Missing %s in partition %s / %s%n", viCanon.toStringShort(), pg.tpp.getName(), gname);
             tcPartitions.add(null);
           } else {
-            if (vi2.timeIdx < 0 || vi2.timeIdx >= pg.group.timeCoords.size()) {
-              f.format(" ERR TimeCoordinates: timeIdx out of range var= %s on partition %s%n", vi2, pg.tpp.getName());
-              logger.error(" timeIdx out of range var= {} on partition {}", vi2, pg.tpp.getName());
+            if (vi2.timeIdx < 0 || vi2.timeIdx >= vi2.group.timeCoords.size()) { // hy would this ever happen ??
+              f.format(" ERR TimeCoordinates: timeIdx out of range var= %s on partition %s%n", vi2.toStringShort(), pg.tpp.getName());
+              logger.error(" timeIdx out of range var= {} on partition {}", vi2.toStringShort(), pg.tpp.getName());
               tcPartitions.add(null);
             } else {
               TimeCoord tc2 = vi2.getTimeCoord();
               if (tc2.isInterval() != tcCanon.isInterval()) {
-                f.format(" ERR TimeCoordinates: timeIdx wrong interval type var= %s on partition %s%n", vi2, pg.tpp.getName());
-                logger.error(" timeIdx wrong interval type var= {} on partition {}", vi2, pg.tpp.getName());
+                f.format(" ERR TimeCoordinates: timeIdx wrong interval type var= %s on partition %s%n", vi2.toStringShort(), pg.tpp.getName());
+                logger.error(" timeIdx wrong interval type var= {} on partition {}", vi2.toStringShort(), pg.tpp.getName());
                 tcPartitions.add(null);
               } else {
                 tcPartitions.add(tc2);
@@ -442,7 +461,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       } */
 
       // store results in first group
-      firstGroup.timeCoordPartitions = unionList;
+      canonGroup.timeCoordPartitions = unionList;
     }
 
     return ok;
@@ -556,6 +575,11 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       b.setProbabilityName(v.probabilityName);
     if (v.probType >= 0)
       b.setProbabilityType(v.probType);
+
+    if (v.intvName != null)
+      b.setIntvName(v.intvName);
+    b.setGenProcessType(v.genProcessType);
+
     for (int idx : v.groupno)
       b.addGroupno(idx);
     for (int idx : v.varno)

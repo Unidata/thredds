@@ -223,7 +223,7 @@ public class GribCdmIndex implements IndexReader {
           gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf, config, logger);
           break;
         case Grib2TimePartitionBuilder.MAGIC_START:
-          gc = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(indexFile, null, raf, logger);
+          gc = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(indexFile, null, raf, config, logger);
           break;
         case Grib1TimePartitionBuilder.MAGIC_START:
           gc = Grib1TimePartitionBuilder.createFromIndex(indexFile, null, raf, logger);
@@ -560,7 +560,7 @@ public class GribCdmIndex implements IndexReader {
   private static Grib2TimePartition doOnePart(File dir, String filename, FeatureCollectionConfig config) throws IOException {
     long start = System.currentTimeMillis();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex("test", dir, raf, logger);  // LOOK why no config ??
+    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex("test", dir, raf, config.gribConfig, logger);
     //GribCollection gc = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
     long took = System.currentTimeMillis() - start;
     System.out.printf("that took %s msecs%n", took);

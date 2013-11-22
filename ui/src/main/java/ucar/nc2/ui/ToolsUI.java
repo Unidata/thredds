@@ -87,6 +87,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
@@ -2767,7 +2768,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribTable.setIndexFile(command);
+        gribTable.setIndexFile(Paths.get(command), null);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());

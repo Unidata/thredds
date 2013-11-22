@@ -193,9 +193,9 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
     group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash);
 
-    group.varIndex = new ArrayList<GribCollection.VariableIndex>();
+    group.varIndex = new ArrayList<>();
     for (int i = 0; i < p.getVariablesCount(); i++)
-      group.varIndex.add(readVariable(p.getVariables(i), group));
+      group.varIndex.add( readVariable(p.getVariables(i), group));
     Collections.sort(group.varIndex);
 
     group.timeCoords = new ArrayList<TimeCoord>(p.getTimeCoordsCount());
@@ -311,7 +311,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   private static Grib2TimePartition doOnePart(File dir, String filename, FeatureCollectionConfig config) throws IOException {
     long start = System.currentTimeMillis();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex("test", dir, raf, logger);  // LOOK why no config ??
+    Grib2TimePartition tp = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex("test", dir, raf, config.gribConfig, logger);
     //GribCollection gc = Grib2TimePartitionBuilderFromIndex.createFromIndex("test", dir, raf, config.gribConfig, logger);
     long took = System.currentTimeMillis() - start;
     System.out.printf("that took %s msecs%n", took);
