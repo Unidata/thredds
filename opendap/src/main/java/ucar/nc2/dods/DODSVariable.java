@@ -35,7 +35,6 @@ package ucar.nc2.dods;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Group;
-import ucar.nc2.DODSNode;
 
 
 import opendap.dap.*;

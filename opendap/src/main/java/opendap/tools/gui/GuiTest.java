@@ -38,11 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.util.gui;
-
-import opendap.util.gui.msg_box;
-import opendap.util.gui.warning_box;
-import opendap.util.gui.error_box;
+package opendap.tools.gui;
 
 /**
  * Test routine for the opendap/util/gui classes
