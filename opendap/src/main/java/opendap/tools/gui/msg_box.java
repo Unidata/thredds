@@ -39,7 +39,7 @@
 
 
 
-package opendap.util.gui;
+package opendap.tools.gui;
 
 import javax.swing.*;
 
