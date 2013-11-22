@@ -38,18 +38,20 @@
 
 package thredds.server.radarServer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import thredds.catalog.query.Station;
-import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RadarServerUtil {
+
+  @Autowired
+  private RadarDatasetRepository radarDatasetRepository;
 
   public static final Pattern p_yymmdd_hhmm = Pattern.compile("(\\d{2})(\\d{4}_\\d{4})");
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("(\\d{8}_\\d{4})");
@@ -123,83 +125,6 @@ public class RadarServerUtil {
       }
     }
     return min_station.getValue();
-  }
-  /**
-   * Determine if any of the given station names are actually in the dataset.
-   *
-   * @param stations List of station names
-   * @return true if list is empty, ie no names are in the actual station list
-   * @throws java.io.IOException if read error
-   */
-  public static boolean isStationListEmpty(List<String> stations, DatasetRepository.RadarType radarType ) {
-
-    if( stations.get( 0 ).toUpperCase().equals( "ALL") )
-        return false;
-
-    for (String s : stations ) {
-      if( isStation( s, radarType ))
-        return false;
-    }
-    return true;
-  }
-
-  /**
-   * returns true if a station
-   * @param station
-   * @param radarType
-   * @return  boolean  isStation
-   */
-  public static boolean isStation( String station, DatasetRepository.RadarType radarType ) {
-
-    if( station.toUpperCase().equals( "ALL") )
-        return true;
-
-    Station stn = null;
-    // terminal level3 station
-    if( station.length() == 3 && radarType.equals( DatasetRepository.RadarType.terminal ) ) {
-      stn = DatasetRepository.terminalMap.get( "T"+ station );
-    } else if( station.length() == 3 ) {
-      for( Station stn3 : DatasetRepository.nexradList ) {
-         if( stn3.getValue().endsWith( station ) ) {
-           stn = stn3;
-           break;
-         }
-      }
-    } else if( radarType.equals( DatasetRepository.RadarType.terminal ) ) {
-      stn = DatasetRepository.terminalMap.get( station );
-    } else {
-       stn = DatasetRepository.nexradMap.get( station );
-    }
-    if( stn != null)
-      return true;
-    return false;
-  }
-
-  /**
-   * returns station or null
-   * @param station
-   * @param radarType
-   * @return  station
-   */
-  public static Station getStation( String station, DatasetRepository.RadarType radarType ) {
-
-    Station stn = null;
-    // terminal level3 station
-    if( station.length() == 3 && radarType.equals( DatasetRepository.RadarType.terminal ) ) {
-      stn = DatasetRepository.terminalMap.get( "T"+ station );
-    } else if( station.length() == 3 ) {
-      for( Station stn3 : DatasetRepository.nexradList ) {
-         if( stn3.getValue().endsWith( station ) ) {
-           stn = stn3;
-           break;
-         }
-      }
-    } else if( radarType.equals( DatasetRepository.RadarType.terminal ) ) {
-      stn = DatasetRepository.terminalMap.get( station );
-    } else {
-       stn = DatasetRepository.nexradMap.get( station );
-    }
-    return stn;
   }
 
   /////////////////// time utilities

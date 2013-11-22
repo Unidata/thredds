@@ -83,10 +83,10 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>FileServer</servlet-name>
   </filter-mapping-->
-  <filter-mapping>
+  <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>radarServer</servlet-name>
-  </filter-mapping>
+  </filter-mapping -->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>RestrictedDataset</servlet-name>
@@ -235,11 +235,11 @@
   </servlet -->
 
   <!-- Radar Server -->
-  <servlet>
+  <!-- servlet>
     <servlet-name>radarServer</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <!-- OGC Web Coverage server -->
   <!-- servlet>
@@ -358,10 +358,10 @@
   </servlet-mapping -->
 
   <!-- data services -->
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>radarServer</servlet-name>
     <url-pattern>/radarServer/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>Opendap</servlet-name>
