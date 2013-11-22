@@ -32,8 +32,8 @@
  */
 package thredds.crawlabledataset.filter;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 import java.util.Collections;
 
 import thredds.crawlabledataset.CrawlableDataset;
@@ -49,75 +49,154 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
 public class MultiSelectorFilter implements CrawlableDatasetFilter
 {
 
-
-  private List<Selector> selectorGroup;
+  private final List<Selector> selectorGroup;
+  private final boolean containsAtomicIncluders;
+  private final boolean containsAtomicExcluders;
+  private final boolean containsCollectionIncluders;
+  private final boolean containsCollectionExcluders;
 
   public MultiSelectorFilter( List<Selector> selectorGroup )
   {
-    if ( selectorGroup == null )
-      throw new IllegalArgumentException( "Selector group parameter must not be null." );
-    this.selectorGroup = selectorGroup;
+    if ( selectorGroup == null || selectorGroup.isEmpty() ) {
+      this.selectorGroup = Collections.emptyList();
+      this.containsAtomicIncluders = false;
+      this.containsAtomicExcluders = false;
+      this.containsCollectionIncluders = false;
+      this.containsCollectionExcluders = false;
+    }
+    else {
+      boolean anyAtomicIncluders = false;
+      boolean anyAtomicExcluders = false;
+      boolean anyCollectionIncluders = false;
+      boolean anyCollectionExcluders = false;
+      List<Selector> tmpSelectorGroup = new ArrayList<Selector>();
+      for ( Selector curSelector : selectorGroup ) {
+        if ( curSelector.isIncluder() ) {
+          if ( curSelector.isApplyToAtomicDataset())
+            anyAtomicIncluders = true;
+          if ( curSelector.isApplyToCollectionDataset())
+            anyCollectionIncluders = true;
+        } else { // curSelector.isExcluder()
+          if ( curSelector.isApplyToAtomicDataset())
+            anyAtomicExcluders = true;
+          if ( curSelector.isApplyToCollectionDataset())
+            anyCollectionExcluders = true;
+        }
+          tmpSelectorGroup.add( curSelector);
+      }
+
+      this.selectorGroup = tmpSelectorGroup;
+      this.containsAtomicIncluders = anyAtomicIncluders;
+      this.containsAtomicExcluders = anyAtomicExcluders;
+      this.containsCollectionIncluders = anyCollectionIncluders;
+      this.containsCollectionExcluders = anyCollectionExcluders;
+    }
   }
 
   public MultiSelectorFilter( Selector selector)
   {                         
-    if ( selector == null )
-      selectorGroup = Collections.emptyList();
-    else
-      selectorGroup = Collections.singletonList( selector);
+    if ( selector == null ) {
+      this.selectorGroup = Collections.emptyList();
+      this.containsAtomicIncluders = false;
+      this.containsAtomicExcluders = false;
+      this.containsCollectionIncluders = false;
+      this.containsCollectionExcluders = false;
+    }
+    else {
+      boolean anyAtomicIncluders = false;
+      boolean anyAtomicExcluders = false;
+      boolean anyCollectionIncluders = false;
+      boolean anyCollectionExcluders = false;
+
+      if ( selector.isIncluder() ){
+        if ( selector.isApplyToAtomicDataset())
+          anyAtomicIncluders = true;
+        if ( selector.isApplyToCollectionDataset())
+          anyCollectionIncluders = true;
+      } else { // curSelector.isExcluder()
+        if ( selector.isApplyToAtomicDataset())
+          anyAtomicExcluders = true;
+        if ( selector.isApplyToCollectionDataset())
+          anyCollectionExcluders = true;
+      }
+
+      this.selectorGroup = Collections.singletonList( selector);
+      this.containsAtomicIncluders = anyAtomicIncluders;
+      this.containsAtomicExcluders = anyAtomicExcluders;
+      this.containsCollectionIncluders = anyCollectionIncluders;
+      this.containsCollectionExcluders = anyCollectionExcluders;
+    }
   }
 
-  public Object getConfigObject() { return selectorGroup; }
+  public Object getConfigObject() {
+    return selectorGroup;
+  }
 
   public boolean accept( CrawlableDataset dataset )
   {
-    if ( dataset == null ) throw new IllegalArgumentException( "Dataset parameter must not be null." );
+    if ( dataset == null )
+      return false;
 
-    // If no selectors, accept all datasets.
-    if ( selectorGroup.isEmpty() )
-    {
-      return ( true );
+    // If no Selectors, accept all datasets.
+    if ( this.selectorGroup.isEmpty() )
+      return true;
+
+    if ( dataset.isCollection()) {
+      // If no collection selectors, accept all collection datasets.
+      if ( ! this.containsCollectionIncluders && ! this.containsCollectionExcluders )
+        return true;
+    } else {
+      // If no atomic selectors, accept all atomic datasets.
+      if ( ! this.containsAtomicIncluders && ! this.containsAtomicExcluders )
+        return true;
     }
 
-    // Loop through selector group to check if current dataset should be accepted.
-    boolean accept = false;
-    boolean doAnyIncludersApply = false;
-    boolean doAnySelectorsApply = false;
-    for ( Selector curSelector: selectorGroup )
-    {
-      if ( curSelector.isApplicable( dataset ) )
-      {
-        doAnySelectorsApply = true;
-        if ( curSelector.isIncluder() )
-        {
-          doAnyIncludersApply = true;
-          if ( curSelector.match( dataset ) )
-          {
-            accept = true; // Dataset accepted by current DatasetFilter.
-          }
-        }
-        else // isExcluder()
-        {
-          if ( curSelector.match( dataset ) )
-          {
-            return ( false ); // Exclusion takes precedence over inclusion.
-          }
+    boolean include = false;
+    boolean exclude = false;
+
+    for ( Selector curSelector: this.selectorGroup ) {
+      if ( curSelector.isApplicable( dataset )) {
+        if ( curSelector.match( dataset )) {
+          if ( curSelector.isIncluder())
+            include = true;
+          else
+            exclude = true;
         }
       }
     }
 
-    // If at least one filter accepted (and none rejected), accept.
-    if ( accept ) return ( true );
+    // Deal with atomic datasets
+    if( ! dataset.isCollection() ) {
+      // If have only inclusion Selectors, accept any dataset that is explicitly included.
+      if ( this.containsAtomicIncluders && ! this.containsAtomicExcluders )
+        return include;
 
-    // If no selectors apply to this dataset, accept it.
-    if ( ! doAnySelectorsApply ) return ( true );
+      // If have only exclusion Selectors, accept any dataset not explicitly excluded.
+      if ( this.containsAtomicExcluders && ! this.containsAtomicIncluders )
+        return ! exclude;
 
-    // If no includers apply to this dataset (and no excluders
-    // rejected it), accept. [Allows exclusion only.]
-    if ( ! doAnyIncludersApply ) return ( true );
+      // If have both inclusion and exclusion Selectors, accept datasets that are
+      // explicitly included but not explicitly excluded.
+      if ( this.containsAtomicIncluders && this.containsAtomicExcluders && include )
+        return ! exclude;
+    // Deal with collection datasets
+    } else {
+      // If have only inclusion Selectors, accept any dataset that is explicitly included.
+      if ( this.containsCollectionIncluders && ! this.containsCollectionExcluders )
+        return include;
 
-    // Dataset not accepted or rejected by any DatasetFilter (so reject).
-    return ( false );
+      // If have only exclusion Selectors, accept any dataset not explicitly excluded.
+      if ( this.containsCollectionExcluders && ! this.containsCollectionIncluders )
+        return ! exclude;
+
+      // If have both inclusion and exclusion Selectors, accept datasets that are
+      // explicitly included but not explicitly excluded.
+      if ( this.containsCollectionIncluders && this.containsCollectionExcluders && include )
+        return ! exclude;
+    }
+
+    // Otherwise, don't accept.
+    return false;
   }
 
   /**
@@ -126,11 +205,11 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
   */
  public static class Selector
   {
-    private boolean includer;
-    private boolean applyToAtomicDataset;
-    private boolean applyToCollectionDataset;
+    private final boolean includer;
+    private final boolean applyToAtomicDataset;
+    private final boolean applyToCollectionDataset;
 
-    private CrawlableDatasetFilter filter;
+    private final CrawlableDatasetFilter filter;
 
 
     /**
