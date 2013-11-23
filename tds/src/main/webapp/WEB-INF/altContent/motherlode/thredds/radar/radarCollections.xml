@@ -2,6 +2,7 @@
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS Radar Server" version="1.0.1">
   <service name="radarServer" serviceType="QueryCapability" base="/thredds/radarServer/" />
   <dataset name="Radar Data">
+
     <datasetScan name="NEXRAD Level II Radar from IDD" collectionType="TimeSeries" ID="nexrad/level2/IDD" path="nexrad/level2/IDD" location="/data/ldm/pub/native/radar/level2">
       <metadata inherited="true">
         <dataType>Radial</dataType>
@@ -38,6 +39,7 @@
       </geospatialCoverage>
       </metadata>
     </datasetScan>
+
     <datasetScan name="NEXRAD Level II Radar for Case Study CCS039" collectionType="TimeSeries" ID="nexrad/level2/CCS039" path="nexrad/level2/CCS039" location="/data/ldm/pub/casestudies/ccs039/images/radar/level2">
       <metadata inherited="true">
         <dataType>Radial</dataType>
@@ -74,6 +76,7 @@
       </geospatialCoverage>
       </metadata>
     </datasetScan>
+
     <datasetScan name="NEXRAD Level III Radar from IDD" collectionType="TimeSeries" ID="nexrad/level3/IDD" path="nexrad/level3/IDD" location="/data/ldm/pub/native/radar/level3/nexrad/">
       <metadata inherited="true">
         <dataType>Radial</dataType>
@@ -83,6 +86,7 @@
       <documentation xlink:href="http://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />
       <documentation xlink:href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html" xlink:title="NCDC Radar Resources" />
       <documentation xlink:href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html" xlink:title="Description of Radar Products (NCDC)" />
+        <documentation xlink:title="Available Stations" xlink:href="/thredds/radarServer/nexrad/level3/IDD/stations.xml"/>
       <creator>
         <name vocabulary="DIF">DOC/NOAA/NWS</name>
         <contact url="http://www.roc.noaa.gov/" email="http://www.roc.noaa.gov/Feedback/" />
@@ -158,6 +162,7 @@
       </variables>
       </metadata>
     </datasetScan>
+
     <datasetScan name="NEXRAD Level III Radar for Case Study CCS039" collectionType="TimeSeries" ID="nexrad/level3/CCS039" path="nexrad/level3/CCS039" location="/data/ldm/pub/casestudies/ccs039/images/radar/nids">
       <metadata inherited="true">
         <dataType>Radial</dataType>
@@ -198,6 +203,7 @@
       </variables>
       </metadata>
     </datasetScan>
+
     <datasetScan name="TDWR Level III Radar from IDD" collectionType="TimeSeries" ID="terminal/level3/IDD" path="terminal/level3/IDD" location="/data/ldm/pub/native/radar/level3/tdwr/">
       <metadata inherited="true">
         <dataType>Radial</dataType>
@@ -207,6 +213,7 @@
       <documentation xlink:href="http://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />
       <documentation xlink:href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html" xlink:title="NCDC Radar Resources" />
       <documentation xlink:href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html" xlink:title="Description of Radar Products (NCDC)" />
+        <documentation xlink:title="Available Stations" xlink:href="/thredds/radarServer/terminal/level3/IDD/stations.xml"/>
       <creator>
         <name vocabulary="DIF">DOC/NOAA/NWS</name>
         <contact url="http://www.roc.noaa.gov/" email="http://www.roc.noaa.gov/Feedback/" />
