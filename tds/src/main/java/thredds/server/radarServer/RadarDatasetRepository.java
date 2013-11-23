@@ -55,8 +55,8 @@ import thredds.catalog.query.Location;
 import thredds.catalog.query.SelectStation;
 import thredds.catalog.query.Station;
 import thredds.server.config.TdsContext;
+import thredds.servlet.DataRootHandler;
 
-import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -85,13 +85,13 @@ public class RadarDatasetRepository {
   InvCatalogImpl defaultCat = null;
 
   HashMap<String, RadarDatasetCollection> datasetMap = new HashMap<String, RadarDatasetCollection>();
-  HashMap<String, String> dataLocation = new HashMap<String, String>();
+  HashMap<String, String> dataRoots = new HashMap<String, String>();
   List<Station> nexradList = new ArrayList<Station>();
   List<Station> terminalList = new ArrayList<Station>();
   HashMap<String, Station> nexradMap;
   HashMap<String, Station> terminalMap;
 
-  @Autowired
+  //@Autowired
   private TdsContext tdsContext;
 
   /*
@@ -113,11 +113,14 @@ public class RadarDatasetRepository {
     }
 
     // get path and location from cat
+    DataRootHandler drh =  DataRootHandler.getInstance();
     for (InvDataset top : defaultCat.getDatasets()) {
       for (InvDataset dataset : top.getDatasets()) {
         InvDatasetScan ds = (InvDatasetScan) dataset;
         if (ds.getPath() != null) {
-          dataLocation.put(ds.getPath(), ds.getScanLocation());
+          String path = ds.getPath();
+          String location = drh.findDataRootLocation(path);
+          dataRoots.put(ds.getPath(), location);
           startupLog.info("path =" + ds.getPath() + " location =" + ds.getScanLocation());
         }
         ds.setXlinkHref(ds.getPath() + "/dataset.xml");
@@ -139,8 +142,8 @@ public class RadarDatasetRepository {
         ok = false;
       }
 
-      HashMap<String, Station> nexradMap = getStationMap(nexradList);
-      HashMap<String, Station> terminalMap = getStationMap(terminalList);
+      nexradMap = getStationMap(nexradList);
+      terminalMap = getStationMap(terminalList);
     }
 
     startupLog.info("DatasetRepository initialization done - ok={}", ok);
@@ -173,7 +176,7 @@ public class RadarDatasetRepository {
         }
         if (rdc != null)
           return rdc;
-        rdc = new RadarDatasetCollection(dataLocation.get(key), var);
+        rdc = new RadarDatasetCollection(dataRoots.get(key), var);
         if (rdc == null || rdc.yyyymmdd.size() == 0 || rdc.hhmm.size() == 0)
           return null;
         datasetMap.put(dmkey, rdc);

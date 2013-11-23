@@ -89,7 +89,7 @@ import ucar.unidata.util.StringUtil2;
  *
  * @author caron
  */
-@Component
+@Component("DataRootHandler")
 @DependsOn ("CdmInit")
 public final class DataRootHandler implements InitializingBean {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
@@ -722,7 +722,7 @@ public final class DataRootHandler implements InitializingBean {
       return false;
     }
 
-    location =  expandAliasForDataRoot(location);
+    location = expandAliasForDataRoot(location);
     File file = new File(location);
     if (!file.exists()) {
       logCatalogInit.error(ERROR + "DataRootConfig path =" + path + " directory= <" + location + "> does not exist");
@@ -868,19 +868,34 @@ public final class DataRootHandler implements InitializingBean {
   }
 
   /**
-   * Find the longest match for this path.
+   * Find the location match for a dataRoot.
+   * Aliasing has been done.
    *
-   * @param fullpath the complete path name
-   * @return best DataRoot or null if no match.
+   * @param path the dataRoot path name
+   * @return best DataRoot location or null if no match.
    */
-  private DataRoot findDataRoot(String fullpath) {
-    if ((fullpath.length() > 0) && (fullpath.charAt(0) == '/'))
-      fullpath = fullpath.substring(1);
+  public String findDataRootLocation(String path) {
+    if ((path.length() > 0) && (path.charAt(0) == '/'))
+      path = path.substring(1);
 
-    return (DataRoot) pathMatcher.match(fullpath);
+    DataRoot dataRoot =  (DataRoot) pathMatcher.match(path);
+    return (dataRoot == null) ? null : dataRoot.dirLocation;
   }
 
   /**
+    * Find the longest match for this path.
+    *
+    * @param fullpath the complete path name
+    * @return best DataRoot or null if no match.
+    */
+   private DataRoot findDataRoot(String fullpath) {
+     if ((fullpath.length() > 0) && (fullpath.charAt(0) == '/'))
+       fullpath = fullpath.substring(1);
+
+     return (DataRoot) pathMatcher.match(fullpath);
+   }
+
+   /**
    * Extract the DataRoot from the request.
    * Use this when you need to manipulate the path based on the part that matches a DataRoot.
    *

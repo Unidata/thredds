@@ -66,8 +66,8 @@ import thredds.util.TdsPathUtils;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
-@Controller
-@RequestMapping("/radarServer")
+//@Controller
+//@RequestMapping("/radarServer")
 public class RadarCatalogController {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RadarCatalogController.class);
 
@@ -92,9 +92,6 @@ public class RadarCatalogController {
 
   protected String getControllerPath() { return "/radarServer/";}
 
-
-
-
   /**
    * Spring Framework controller
    *
@@ -103,7 +100,7 @@ public class RadarCatalogController {
    * @return ModelAndView
    * @throws Exception
    */
-  @RequestMapping(value = {"**/*.xml", "**/*.html"}, method = RequestMethod.GET)
+  @RequestMapping(value = {"**/catalog.xml", "**/catalog.html", "catalog.xml", "catalog.html"}, method = RequestMethod.GET)
   protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       String path = TdsPathUtils.extractPath(request, getControllerPath());

@@ -46,7 +46,7 @@ public class TestRadarServerUrls {
   @SpringJUnit4ParameterizedClassRunner.Parameters
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
-            {"/radarServer/catalog.xml"},
+            {"/radar/radarCollections.xml"},
             {"/radarServer/nexrad/level3/IDD/stations.xml"},
     });
   }
@@ -58,9 +58,8 @@ public class TestRadarServerUrls {
   }
 
   @Test
-   public void cdmRemoteRequestCapabilitiesTest() throws Exception {
-     RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
-   				.param("req", "capabilities");
+   public void radarRequest() throws Exception {
+     RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path);
 
      MvcResult result = this.mockMvc.perform( rb )
                .andExpect(MockMvcResultMatchers.status().is(200))

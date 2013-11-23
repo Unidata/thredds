@@ -20,7 +20,7 @@ public class TestRadarServer {
   @Parameterized.Parameters
   public static java.util.Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
-            {"/radarServer/catalog.xml"},
+            {"/radar/catalogCollections.xml"},
             {"/radarServer/nexrad/level2/IDD/dataset.xml"},
             {"/radarServer/nexrad/level2/CCS039/dataset.xml"},
             {"/radarServer/nexrad/level3/IDD/stations.xml"},

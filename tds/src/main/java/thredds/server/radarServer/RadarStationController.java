@@ -39,8 +39,8 @@
 package thredds.server.radarServer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -59,6 +59,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/radarServer")
+@DependsOn("DataRootHandler")
 public class RadarStationController extends AbstractController {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RadarStationController.class);
 
@@ -135,7 +136,7 @@ public class RadarStationController extends AbstractController {
   private void stationsXML(RadarDatasetRepository.RadarType radarType, String path, Map<String, Object> model)
           throws Exception {
     // stations in this dataset, set by path
-    String[] stations = stationsDS(radarType, radarDatasetRepository.dataLocation.get(path));
+    String[] stations = stationsDS(radarType, radarDatasetRepository.dataRoots.get(path));
     if (path.contains("level3") && stations[0].length() == 4) {
       for (int i = 0; i < stations.length; i++)
         stations[i] = stations[i].substring(1);
