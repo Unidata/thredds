@@ -10,7 +10,7 @@
         <documentation type="summary">NEXRAD Level II Radar WSR-88D from IDD. Sent every 5 minutes.</documentation>
         <timeCoverage>
           <end>present</end>
-          <duration>90 days</duration>
+          <duration>14 days</duration>
         </timeCoverage>
         <variables vocabulary="DIF">
           <variable name="Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="db" />
@@ -74,7 +74,7 @@
       </geospatialCoverage>
       </metadata>
     </datasetScan>
-    <datasetScan name="NEXRAD Level III Radar from IDD" collectionType="TimeSeries" ID="nexrad/level3/IDD" path="nexrad/level3/IDD" location="/data/ldm/pub/native/radar/level3/">
+    <datasetScan name="NEXRAD Level III Radar from IDD" collectionType="TimeSeries" ID="nexrad/level3/IDD" path="nexrad/level3/IDD" location="/data/ldm/pub/native/radar/level3/nexrad/">
       <metadata inherited="true">
         <dataType>Radial</dataType>
         <dataFormat>NIDS</dataFormat>
@@ -106,7 +106,7 @@
       </geospatialCoverage>
       <timeCoverage>
         <end>present</end>
-        <duration>90 days</duration>
+        <duration>14 days</duration>
       </timeCoverage>
       <variables vocabulary="DIF">
         <variable name="NTP/Storm Total Rainfall" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
@@ -137,6 +137,13 @@
         <variable name="NBQ/Base Reflectivity DR Tilt 4" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
         <variable name="N2Q/Base Reflectivity DR Tilt 5" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
         <variable name="N3Q/Base Reflectivity DR Tilt 6" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+
+        <variable name="N0X/Differential Reflectivity DR Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="NAX/Differential Reflectivity DR Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N1X/Differential Reflectivity DR Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="NBX/Differential Reflectivity DR Tilt 4" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N2X/Differential Reflectivity DR Tilt 5" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N3X/Differential Reflectivity DR Tilt 6" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
 
         <variable name="N0U/Radial Velocity DV Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
         <variable name="NAU/Radial Velocity DV Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
@@ -191,7 +198,7 @@
       </variables>
       </metadata>
     </datasetScan>
-    <datasetScan name="TDWR Level III Radar from IDD" collectionType="TimeSeries" ID="terminal/level3/IDD" path="terminal/level3/IDD" location="/data/ldm/pub/native/radar/level3/">
+    <datasetScan name="TDWR Level III Radar from IDD" collectionType="TimeSeries" ID="terminal/level3/IDD" path="terminal/level3/IDD" location="/data/ldm/pub/native/radar/level3/tdwr/">
       <metadata inherited="true">
         <dataType>Radial</dataType>
         <dataFormat>NIDS</dataFormat>
@@ -223,7 +230,7 @@
       </geospatialCoverage>
       <timeCoverage>
         <end>present</end>
-        <duration>90 days</duration>
+        <duration>14 days</duration>
       </timeCoverage>
       <variables vocabulary="DIF">
         <variable name="TR0/Base Reflectivity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
