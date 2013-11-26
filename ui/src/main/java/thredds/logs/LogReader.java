@@ -58,6 +58,10 @@ public class LogReader {
       return ip;
     }
 
+    public long getDateMillisec(){
+      return date;
+    }
+
     public String getDate() {
       return df.format(new Date(date));
     }

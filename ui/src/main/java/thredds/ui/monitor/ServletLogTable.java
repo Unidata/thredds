@@ -588,7 +588,9 @@ public class ServletLogTable extends JPanel {
 
     Collections.sort(logs, new Comparator<ServletLogParser.ServletLog>() {
       public int compare(ServletLogParser.ServletLog o1, ServletLogParser.ServletLog o2) {
-        return o1.getDate().compareTo(o2.getDate());
+        long d1 = o1.getDateMillisec();
+        long d2 = o2.getDateMillisec();
+        return (d1 < d2) ? -1 : ((d1 == d2) ? 0 : 1);
       }
     });
 
@@ -600,6 +602,7 @@ public class ServletLogTable extends JPanel {
     ServletLogParser.ServletLog last = null;
     Uptime current = null;
     for (ServletLogParser.ServletLog log : logs) {
+      if (log.getReqSeq() == 0) continue;
       if (current == null) {
         current = new Uptime(log);
         uptimeList.add(current);

@@ -218,7 +218,8 @@ public class Grib2Index extends GribIndex {
   // LOOK what about extending an index ??
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
-    FileOutputStream fout = new FileOutputStream(idxFile);
+    File idxFileTmp = GribCollection.getIndexFile(filename + GBX9_IDX +".tmp");
+    FileOutputStream fout = new FileOutputStream(idxFileTmp);
     RandomAccessFile raf = null;
 
     try {
@@ -265,6 +266,14 @@ public class Grib2Index extends GribIndex {
     } finally {
       fout.close();
       if (raf != null) raf.close(); // only close if we opened it
+
+      // now switch
+      boolean deleteOk = !idxFile.exists() || idxFile.delete();
+      boolean renameOk = idxFileTmp.renameTo(idxFile);
+      if (!deleteOk)
+        logger.error("  could not delete Grib2Index= {}", idxFile.getPath());
+      if (!renameOk)
+        logger.error("  could not rename Grib2Index= {}", idxFile.getPath());
     }
   }
 

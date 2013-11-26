@@ -213,7 +213,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // LOOK maybe not best design to start tasks from here
   protected void finishConstruction() {
     dcm.addEventListener(this); // now wired for events
-    CollectionUpdater.INSTANCE.scheduleTasks(config, dcm); // see if any background tasks are needed
+    CollectionUpdater.INSTANCE.scheduleTasks(config, dcm, logger); // see if any background tasks are needed
   }
 
   protected String getCatalogHref( String what) {

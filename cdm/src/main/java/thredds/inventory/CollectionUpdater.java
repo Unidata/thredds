@@ -4,6 +4,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.listeners.SchedulerListenerSupport;
+import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 
 import java.util.Date;
@@ -128,7 +129,7 @@ public enum CollectionUpdater {
     }
   }
 
-  public void scheduleTasks(FeatureCollectionConfig config, CollectionManager manager) {
+  public void scheduleTasks(FeatureCollectionConfig config, CollectionManager manager, Logger logger) {
     if (disabled || failed) return;
 
     FeatureCollectionConfig.UpdateConfig updateConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
@@ -140,7 +141,7 @@ public enum CollectionUpdater {
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(DCM_NAME, manager);
-    map.put(LOGGER, org.slf4j.LoggerFactory.getLogger("fc."+manager.getCollectionName()));
+    map.put(LOGGER, logger);
     JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
             .withIdentity(jobName, "UpdateCollection")
             .storeDurably()
