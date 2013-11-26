@@ -83,7 +83,6 @@ public class RadarDatasetRepository {
   }
 
   InvCatalogImpl defaultCat = null;
-
   HashMap<String, RadarDatasetCollection> datasetMap = new HashMap<String, RadarDatasetCollection>();
   HashMap<String, String> dataRoots = new HashMap<String, String>();
   List<Station> nexradList = new ArrayList<Station>();

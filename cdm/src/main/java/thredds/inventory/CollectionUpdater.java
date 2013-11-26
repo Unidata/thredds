@@ -169,7 +169,7 @@ public enum CollectionUpdater {
 
       try {
     	   scheduler.scheduleJob(startupTrigger);
-         logger.info("Schedule startup scan {} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
+         logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
