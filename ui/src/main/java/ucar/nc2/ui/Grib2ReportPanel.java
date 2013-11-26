@@ -633,11 +633,12 @@ public class Grib2ReportPanel extends ReportPanel {
     Counter subcenterId = new Counter("subcenterId");
     Counter genProcess = new Counter("genProcess");
     Counter backProcess = new Counter("backProcess");
+    Counter sigRefProcess = new Counter("significanceOfReference");
 
     for (MFile mfile : dcm.getFiles()) {
       f.format(" %s%n", mfile.getPath());
       doIdProblems(f, mfile, useIndex,
-              disciplineSet, masterTable, localTable, centerId, subcenterId, genProcess, backProcess);
+              disciplineSet, masterTable, localTable, centerId, subcenterId, genProcess, backProcess, sigRefProcess);
     }
 
     disciplineSet.show(f);
@@ -647,11 +648,12 @@ public class Grib2ReportPanel extends ReportPanel {
     subcenterId.show(f);
     genProcess.show(f);
     backProcess.show(f);
+    sigRefProcess.show(f);
   }
 
   private void doIdProblems(Formatter f, MFile mf, boolean showProblems,
                             Counter disciplineSet, Counter masterTable, Counter localTable, Counter centerId,
-                            Counter subcenterId, Counter genProcessC, Counter backProcessC) throws IOException {
+                            Counter subcenterId, Counter genProcessC, Counter backProcessC, Counter sigRefProcess) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
@@ -662,6 +664,7 @@ public class Grib2ReportPanel extends ReportPanel {
     int local = -1;
     int genProcess = -1;
     int backProcess = -1;
+    int sigRef = -1;
 
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
       disciplineSet.count(gr.getDiscipline());
@@ -671,6 +674,7 @@ public class Grib2ReportPanel extends ReportPanel {
       subcenterId.count(gr.getId().getSubcenter_id());
       genProcessC.count(gr.getPDS().getGenProcessId());
       backProcessC.count(gr.getPDS().getBackProcessId());
+      sigRefProcess.count(gr.getId().getSignificanceOfRT());
 
       if (!showProblems) continue;
 
@@ -724,6 +728,14 @@ public class Grib2ReportPanel extends ReportPanel {
       if (backProcess < 0) backProcess = val;
       else if (backProcess != val) {
         f.format("  backProcess %d != %d ", backProcess, val);
+        gr.show(f);
+        f.format(" %s%n", gr.getId());
+      }
+
+      val = gr.getId().getSignificanceOfRT();
+      if (sigRef < 0) sigRef = val;
+      else if (sigRef != val) {
+        f.format("  sigRef %d != %d ", sigRef, val);
         gr.show(f);
         f.format(" %s%n", gr.getId());
       }

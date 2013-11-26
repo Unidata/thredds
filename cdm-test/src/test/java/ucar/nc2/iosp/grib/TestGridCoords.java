@@ -18,7 +18,7 @@ public class TestGridCoords {
 
   @Test
   public void testCoordExtract() throws IOException {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir+"ft/grid/grib2/TestCoordExtract.grib2");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir+"formats/grib2/coordExtract/TestCoordExtract.grib2");
     System.out.printf("%s%n", dataset.getLocation());
 
     GeoGrid grid = dataset.findGridByName("Convective_inhibition_surface");
