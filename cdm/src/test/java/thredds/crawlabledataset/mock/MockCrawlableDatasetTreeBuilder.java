@@ -73,20 +73,23 @@ public class MockCrawlableDatasetTreeBuilder {
   }
 
   public void addChild( String childRelativePath, boolean isCollection ) {
-    MockCrawlableDataset child = new MockCrawlableDataset( childRelativePath, isCollection);
-    this.cursor.addChild( child);
-    child.setParent( this.cursor);
-    this.mostRecentlyAdded = child;
+    this.mostRecentlyAdded = this.cursor.addChild( childRelativePath, isCollection);
   }
 
-  public String moveDown( String childPath ) {
+  /**
+   * Move cursor to the named child of the CrDs at the current cursor location.
+   *
+   * @param childName the name of the child CrDs
+   * @return the full path of the child or null if child does not exist.
+   */
+  public String moveDown( String childName ) {
     if ( ! this.cursor.isCollection())
       return null;
-    String[] pathSegments = CrawlableDatasetUtils.getPathSegments(childPath);
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( childName);
     if ( ! CrawlableDatasetUtils.isValidRelativePath( pathSegments)
         || pathSegments.length != 1 )
-      throw new IllegalArgumentException( String.format("Child path [%s] not single path segment (or not a valid relative path).", childPath));
-    WildcardMatchOnNameFilter filter = new WildcardMatchOnNameFilter(childPath);
+      throw new IllegalArgumentException( String.format("Child path [%s] not single path segment (or not a valid relative path).", childName));
+    WildcardMatchOnNameFilter filter = new WildcardMatchOnNameFilter( childName);
     List<CrawlableDataset> matchingCrDs = null;
     try {
       matchingCrDs = this.cursor.listDatasets( filter);
@@ -94,9 +97,11 @@ public class MockCrawlableDatasetTreeBuilder {
       throw new IllegalStateException( "Shouldn't get an IOE on MockCrDs", e);
     }
     if ( matchingCrDs.isEmpty() )
-      throw new IllegalArgumentException( "Child path [%s] did not match an existing child.");
+      return null;
+      // throw new IllegalArgumentException( "Child path [%s] did not match an existing child.");
     if ( matchingCrDs.size() != 1 )
-      throw new IllegalArgumentException( "Child path [%s] matched more than one child.");
+      return null;
+      // throw new IllegalArgumentException( "Child path [%s] matched more than one child.");
     this.cursor = (MockCrawlableDataset) matchingCrDs.get( 0);
     return this.cursor.getPath();
   }

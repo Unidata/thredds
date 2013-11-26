@@ -60,10 +60,6 @@ public class MockCrawlableDataset implements CrawlableDataset
   private Map<String,CrawlableDataset> childrenMap; // Used only to ensure unique child name (all else uses childrenList)
 
   public MockCrawlableDataset( String path, boolean isCollection ) {
-    this( path, null, -1, isCollection);
-  }
-
-  public MockCrawlableDataset( String path, Date lastModified, long length, boolean isCollection ) {
     String[] pathSegments = CrawlableDatasetUtils.getPathSegments(path);
     if ( ! CrawlableDatasetUtils.isValidAbsolutePath(pathSegments)
         && ! CrawlableDatasetUtils.isValidRelativePath( pathSegments))
@@ -71,8 +67,6 @@ public class MockCrawlableDataset implements CrawlableDataset
     this.path = path;
     this.name = pathSegments[ pathSegments.length - 1 ];
 
-    this.lastModified = lastModified;
-    this.length = length;
     this.isCollection = isCollection;
   }
 
@@ -81,21 +75,29 @@ public class MockCrawlableDataset implements CrawlableDataset
   }
 
   /**
-   * Add a child (or replace existing one with same name).
-   * @param child the CrDs to add.
-   * @return true if the list of children has changed.
+   * Construct a new MockCrawlableDataset and add it as a child of this MockCrawlableDataset.
+   * (If a child with the same name already exists, it will be replaced.)
+   *
+   * @param childName the name of the new child.
+   * @param isCollection whether the new child is a collection
+   * @return the new child MockCrawlableDataset
    */
-  public boolean addChild( MockCrawlableDataset child ) {
-    if ( child == null || ! this.isCollection )
-      return false;
+  public MockCrawlableDataset addChild( String childName, boolean isCollection ) {
+    String[] pathSegments = CrawlableDatasetUtils.getPathSegments( childName);
+    if ( ! CrawlableDatasetUtils.isValidRelativePath( pathSegments) || pathSegments.length > 1)
+      throw new IllegalArgumentException( String.format( "Child name [%s] is not valid.", childName));
+
+    MockCrawlableDataset childCrDs = new MockCrawlableDataset( this.path + "/" + childName, isCollection);
+    childCrDs.setParent( this);
     if ( this.childrenMap == null ) {
       this.childrenMap = new HashMap<String, CrawlableDataset>();
       this.childrenList = new ArrayList<CrawlableDataset>();
     }
-    CrawlableDataset prevCrDs = this.childrenMap.put(child.getName(), child);
+    CrawlableDataset prevCrDs = this.childrenMap.put(childCrDs.getName(), childCrDs);
     if ( prevCrDs != null )
       this.childrenList.remove( prevCrDs);
-    return this.childrenList.add( child);
+    this.childrenList.add( childCrDs);
+    return childCrDs;
   }
 
   public boolean removeChild( String childName ) {

@@ -344,6 +344,8 @@
         <include wildcard="STL" atomic="false" collection="true"/>
         <include wildcard="TPA" atomic="false" collection="true"/>
         <include wildcard="TUL" atomic="false" collection="true"/>
+        <!-- Include date subdirectories (i.e., dir names of the form "yyyymmdd". -->
+        <include regExp="[0-9]{8}" atomic="false" collection="true" />
         <!-- Exclude other stuff -->
         <exclude wildcard=".*" atomic="false" collection="true"/>
       </filter>
