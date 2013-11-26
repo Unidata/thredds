@@ -101,6 +101,7 @@ Making a release for CDM/TDS with jenkins
 12/18/2012
 edited 8/1/2013
 edited 11/25/2013
+edited 11/26/2013
 
 1. Jenkins
   - Go to CDM/TDS project's configuration page
@@ -142,12 +143,12 @@ edited 11/25/2013
     git branch -d temp15
 
 5. put thredds.war on conan ftp  (best to do from ssh)
-  - cd /web/ftp/pub/thredds/4.3
+  - cd /web/ftp/pub/thredds/{version}
   - mkdir {release}
   - from http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
-     download tds-{release}.war tds-{release}.war.md5 tds-{release}.sha1 to /web/ftp/pub/thredds/4.3/{release}
+     download tds-{release}.war tds-{release}.war.md5 tds-{release}.sha1 to /web/ftp/pub/thredds/{version}/{release}
      rename to thredds.war, thredds.war.md5 and thredds.war.sha1
-  - move /web/ftp/pub/thredds/4.3/current to point to /web/ftp/pub/thredds/4.3/{release}
+  - move /web/ftp/pub/thredds/{version}/current to point to /web/ftp/pub/thredds/{version}/{release}
      rm current
      ln -s {release} current
 
@@ -156,9 +157,9 @@ edited 11/25/2013
     mvn clean install
 
 7. put tdm, netcdfAll, toolsUI onto conan ftp
-    cp {github/thredds}/tdm/build/tdm-{release}.jar /web/ftp/pub/thredds/4.3/current/tdm-4.3.jar
-    cp {github/thredds}/ui/target/netcdfAll-{release}.jar to /web/ftp/pub/netcdf-java/v4.3
-    cp {github/thredds}/ui/target/toolsUI-{release}.jar to /web/ftp/pub/netcdf-java/v4.3
+    cp {github/thredds}/tdm/build/tdm-{release}.jar /web/ftp/pub/thredds/{version}/current/tdm-{version}.jar
+    cp {github/thredds}/ui/target/netcdfAll-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
+    cp {github/thredds}/ui/target/toolsUI-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
 
 8. CDM has additional targets that are handled by gradle builds
   - modify gradle.build in top directory to use the correct version
@@ -166,24 +167,24 @@ edited 11/25/2013
   - cd {github/thredds}
   1. make supporting libraries
       gradle clean build -x test
-  2. release ncIdv.jar to conan:/pub/netcdf-java/v4.3/
+  2. release ncIdv.jar to conan:/pub/netcdf-java/v{version}/
       gradle -p ncIdv releaseCdm
-  3. release webstart to conan:/content/software/netcdf-java/v4.3/webstart
-     // release ToolsUI.jar to conan:/pub/netcdf-java/v4.3/
+  3. release webstart to conan:/content/software/netcdf-java/v{version}/webstart
+     // release ToolsUI.jar to conan:/pub/netcdf-java/v{version}/
       gradle -p ui releaseWebstart
-  4. SKIP release toolsUI to conan:/pub/netcdf-java/v4.3/
+  4. SKIP release toolsUI to conan:/pub/netcdf-java/v{version}/
       gradle -p ui releaseCdm
-  5. release cdm javadocs to conan:/content/software/netcdf-java/v4.3/javadoc
+  5. release cdm javadocs to conan:/content/software/netcdf-java/v{version}/javadoc
       gradle -p cdm releaseDocs
-  6. release all javadocs to conan:/content/software/netcdf-java/v4.3/javadocAll
+  6. release all javadocs to conan:/content/software/netcdf-java/v{version}/javadocAll
       gradle -p ui releaseDocs
 
 8. update links on conan
   - in /web/ftp/pub/netcdf-java/v4.3:
-     rm toolsUI-4.3.jar netcdfAll-4.3.jar ncIdv-4.3.jar
-     ln -s toolsUI-{release}.jar toolsUI-4.3.jar
-     ln -s netcdfAll-{release}.jar netcdfAll-4.3.jar
-     ln -s ncIdv-4.3.14.jar ncIdv-4.3.jar
+     rm toolsUI-{version}.jar netcdfAll-{version}.jar ncIdv-{version}.jar
+     ln -s toolsUI-{release}.jar toolsUI-{version}.jar
+     ln -s netcdfAll-{release}.jar netcdfAll-{version}.jar
+     ln -s ncIdv-{release}.jar ncIdv-{version}.jar
 
 9. update Unidata download page(s)
   - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
