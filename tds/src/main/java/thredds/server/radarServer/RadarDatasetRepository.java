@@ -74,9 +74,9 @@ import java.util.List;
 public class RadarDatasetRepository {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  static private final String mainCatalog = "radarServer/radarCollections.xml";
-  static private final String nexradStations = "radarServer/RadarNexradStations.xml";
-  static private final String terminalStations = "radarServer/RadarTerminalStations.xml";
+  static private final String mainCatalog = "radar/radarCollections.xml";
+  static private final String nexradStations = "radar/RadarNexradStations.xml";
+  static private final String terminalStations = "radar/RadarTerminalStations.xml";
 
   public enum RadarType {
     nexrad, terminal

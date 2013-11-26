@@ -22,7 +22,7 @@ import java.util.Date;
 public enum CollectionUpdater {
   INSTANCE;   // Singleton cf Bloch p 18
 
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
+  static private final org.slf4j.Logger startupLogger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
   static private final String DCM_NAME = "dcm";
   static private final String LOGGER = "logger";
   static private final long startupWait = 10 * 1000; // 10 secs
@@ -45,7 +45,7 @@ public enum CollectionUpdater {
     try {
       scheduler = StdSchedulerFactory.getDefaultScheduler();
       scheduler.start();
-      scheduler.getListenerManager().addSchedulerListener(new MySchedListener());
+      // scheduler.getListenerManager().addSchedulerListener(new MySchedListener());
     } catch (SchedulerException e) {
       failed = true;
       throw new RuntimeException("quartz scheduler failed to initialize", e);
@@ -56,7 +56,7 @@ public enum CollectionUpdater {
     return scheduler;
   }
 
-  private class MySchedListener extends SchedulerListenerSupport {
+  /* private class MySchedListener extends SchedulerListenerSupport {
 
     @Override
     public void jobScheduled(Trigger trigger) {
@@ -127,7 +127,7 @@ public enum CollectionUpdater {
     public void schedulerError(String s, SchedulerException e) {
       logger.debug("schedulerError {} {}", s, e);
     }
-  }
+  }   */
 
   public void scheduleTasks(FeatureCollectionConfig config, CollectionManager manager, Logger logger) {
     if (disabled || failed) return;
@@ -227,7 +227,7 @@ public enum CollectionUpdater {
       org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
       logServerStartup.info("Scheduler shutdown");
     } catch (SchedulerException e) {
-      logger.error("Scheduler failed to shutdown", e);
+      startupLogger.error("Scheduler failed to shutdown", e);
       scheduler = null;
       //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
@@ -242,10 +242,10 @@ public enum CollectionUpdater {
             .build();
 
     try {
-      logger.debug("Trigger Update for {} type= {}", collectionName, triggerType);
+      // logger.debug("Trigger Update for {} type= {}", collectionName, triggerType);
       scheduler.scheduleJob(trigger);
     } catch (SchedulerException e) {
-      logger.error("triggerUpdate failed", e);
+      startupLogger.error("triggerUpdate failed", e);
       // e.printStackTrace();
     }
   }
