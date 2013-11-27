@@ -48,12 +48,14 @@ import java.util.*;
  * @author caron
  * @since 3/30/11
  */
-public class Grib2Rectilyser {
+public class Grib2Rectilyser2 {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   //static private final boolean useGenType = false; // LOOK dummy for now
 
   private final Grib2Customizer cust;
   private final int gdsHash;
+  CoordinateRuntime runtimeCoord;
+
   private final boolean intvMerge;
   private final boolean useGenType;
   private final boolean useTableVersion;
@@ -66,10 +68,11 @@ public class Grib2Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, Map<String, Boolean> pdsConfig) {
+  public Grib2Rectilyser2(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, CoordinateRuntime runtimeCoord, Map<String, Boolean> pdsConfig) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
+    this.runtimeCoord = runtimeCoord;
 
     intvMerge = assignValue(pdsConfig, "intvMerge", true);
     useTableVersion = assignValue(pdsConfig, "useTableVersion", true);
@@ -105,8 +108,6 @@ public class Grib2Rectilyser {
   }
 
   List<MFile> files = null; // temp debug
-
-  // rectilyze one group's worth
   public void make(Counter counter, List<MFile> files, Formatter errlog) throws IOException {
     this.files = files;
 
@@ -167,7 +168,7 @@ public class Grib2Rectilyser {
       int ntimes = tc.getSize();
       int nverts = (vc == null) ? 1 : vc.getSize();
       int nens = (ec == null) ? 1 : ec.getSize();
-      vb.recordMap = new Record[ntimes * nverts * nens];
+      vb.recordMap = new RecordMap(ntimes,nverts,nens); // LOOK wrong
 
       for (Record r : vb.atomList) {
         int timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord);
@@ -413,9 +414,8 @@ public class Grib2Rectilyser {
     f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
     for (VariableBag vb : gribvars) {
       String vname = tables.getVariableName(vb.first);
-      f.format("  %3d %3d %3d %s records = %d density = %d/%d hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
-              vname, vb.atomList.size(), vb.countDensity(), vb.recordMap.length, vb.cdmHash);
-      if (vb.countDensity() != vb.recordMap.length) f.format(" HEY!!");
+      f.format("  %3d %3d %3d %s records = %d density = %f hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
+              vname, vb.atomList.size(), vb.recordMap.density(), vb.cdmHash);
       f.format("%n");
     }
   }
@@ -431,7 +431,7 @@ public class Grib2Rectilyser {
     int ensCoordIndex = -1;
     CalendarDate refDate;
     CalendarPeriod timeUnit;
-    Record[] recordMap;
+    RecordMap recordMap;
     long pos;
     int length;
 
@@ -445,12 +445,8 @@ public class Grib2Rectilyser {
       return Grib2Utils.getVariableName(first).compareTo(Grib2Utils.getVariableName(o.first));
     }
 
-    int countDensity() {
-      int count = 0;
-      for (Record r : recordMap)
-        if (r != null) count++;
-      return count;
-    }
+
+
   }
 
   /**

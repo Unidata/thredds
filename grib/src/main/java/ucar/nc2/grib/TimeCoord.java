@@ -54,7 +54,7 @@ import java.util.*;
  * @since 3/30/11
  */
 @Immutable
-public class TimeCoord {
+public class TimeCoord implements Comparable<TimeCoord> {
 
   public static int getOffset(CalendarDate refDate, CalendarDate cd, CalendarPeriod timeUnit) {
     long msecs = cd.getDifferenceInMsecs(refDate);

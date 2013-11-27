@@ -36,7 +36,7 @@ package ucar.ma2;
 /**
  * Abstraction for vector operations.
  * A vector is a rank-1 Array.
- * All operations done in double precision (??)
+ * All operations done in double precision
  *
  * @author @caron
  */

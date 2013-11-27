@@ -20,7 +20,7 @@ message VariableRecords {
 
 // reference VariableRecords with pos,length, for deferred access
 message Variable {
-  required int32 discipline = 1;  // should be uint
+  required int32 discipline = 1;  // should be uint     // LOOK what if we just keep a PDS ?
   required int32 category = 2;
   required int32 parameter = 3;
   required int32 levelType = 4;                     // table 4.5 (grib2); table 3 (grib1)

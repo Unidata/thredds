@@ -36,7 +36,7 @@ package ucar.ma2;
 /**
  * Abstraction for matrix operations.
  * A matrix is a rank-2 Array: m[rows, cols].
- * All operations done in double precision (??)
+ * All operations done in double precision
  *
  * @author @caron
  */
