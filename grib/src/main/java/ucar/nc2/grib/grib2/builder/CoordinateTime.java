@@ -50,6 +50,10 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
     return offsetSorted;
   }
 
+  public List<? extends Object> getValues() {
+    return offsetSorted;
+  }
+
   public int getSize() {
     return offsetSorted.size();
   }
@@ -60,10 +64,10 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s %20s:", indent, "Offsets");
+    /* info.format("%s %20s:", indent, "Offsets");
      for (Integer cd : offsetSorted)
        info.format("%3d, ", cd);
-    info.format("%n");
+    info.format("%n"); */
   }
 
   static public class Builder extends CoordinateBuilderImpl  {

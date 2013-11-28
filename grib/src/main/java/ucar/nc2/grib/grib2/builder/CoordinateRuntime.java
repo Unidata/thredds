@@ -34,6 +34,10 @@ public class CoordinateRuntime implements Coordinate {
     return runtimeSorted.size();
   }
 
+  public List<? extends Object> getValues() {
+    return runtimeSorted;
+  }
+
   static public CalendarDate extractRunDate(Grib2Record gr) {
     return gr.getReferenceDate();
   }

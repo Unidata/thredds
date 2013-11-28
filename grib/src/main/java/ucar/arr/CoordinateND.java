@@ -29,7 +29,7 @@ public class CoordinateND {
   public void finish() {
     root.finish();
     buildOrthogonalCoordinates();
-    buildSparseArray(root);
+    buildSparseArray();
 
     /* sa = new SparseArray<>(nruns, maxTimes);
     int runIdx = 0;
@@ -46,48 +46,92 @@ public class CoordinateND {
   private void buildOrthogonalCoordinates() {
     coordinates = new ArrayList<>();
     coordinates.add(root.getCoordinate());
-    buildOrthogonalCoordinates(root, root.getCoordinate());
+    int wantLevel = 1;
+    while (true) {
+      Coordinate result = mergeNestedCoordinates(root, wantLevel, 1);
+      if (result == null) break;
+      coordinates.add(result);
+      wantLevel++;
+    }
   }
 
-  private Coordinate buildOrthogonalCoordinates(CoordinateBuilder builder, Coordinate coord) {
+  private Coordinate mergeNestedCoordinates(CoordinateBuilder builder, int wantLevel, int isLevel) {
+
+    if (builder.getNestedBuilder() == null)
+      return null;
+
     Set<Object> allKeys = new HashSet<>();
+    Coordinate coord = builder.getCoordinate();
     for (Object key : coord.getValues()) {
       CoordinateBuilder nestedBuilder = builder.getChildBuilder(key);
-      Coordinate nestedCoord = nestedBuilder.getCoordinate();
-      for (Object nestedVal : nestedCoord.getValues())
-        allKeys.add(nestedVal);
+
+      if (wantLevel == isLevel) {
+        Coordinate nestedCoord = nestedBuilder.getCoordinate();
+        for (Object nestedVal : nestedCoord.getValues())
+          allKeys.add(nestedVal);
+
+      } else {
+        Coordinate nestedCoord2 = mergeNestedCoordinates(nestedBuilder, wantLevel, isLevel + 1);
+        if (nestedCoord2 == null) return null;
+        allKeys.addAll(nestedCoord2.getValues());
+      }
     }
-    return builder.makeNestedCoord(allKeys);
+    if (allKeys.size() == 0) return null;
+    return builder.getNestedBuilder().makeCoordinate(allKeys);
+  }
+
+  void buildSparseArray() {
+    int[] sizeArray = new int[coordinates.size()];
+    for (int i = 0; i < coordinates.size(); i++)
+      sizeArray[i] = coordinates.get(i).getSize();
+    sa = new SparseArray<>(sizeArray);
+
+    List<Integer> indexList = new ArrayList<>();
+    makeArray(root, indexList, 0);
+  }
+
+  void makeArray(CoordinateBuilder builder, List<Integer> indexList, int level) {
+
+    Coordinate coord = builder.getCoordinate();
+    int index = 0;
+    indexList.add(level);
+    for (Object key : coord.getValues()) {
+      indexList.set(level, index);
+
+      if (builder.getNestedBuilder() != null) {
+        CoordinateBuilder nestedBuilder = builder.getChildBuilder(key);
+        makeArray(nestedBuilder, indexList, level + 1);
+
+      } else {
+        int[] indexArray = new int[indexList.size()];
+        for (int i = 0; i < indexList.size(); i++) indexArray[i] = indexList.get(i);
+
+        for (Grib2Record r : builder.getRecords(key))  {
+          sa.add(r, indexArray);
+        }
+      }
+      index++;
+    }
   }
 
 
-
-  private void buildSparseArray(CoordinateBuilder builder, Coordinate coordinate) {
-    int ncoords = coordinate.size();
-    for (CoordinateTime.Builder bucket : timeMap.values()) {
-      CoordinateTime tc = null; // bucket.finish();
-      timesSorted.add(tc);
-      maxTimes = Math.max(maxTimes, tc.getSize());
-    }
-
-  }
+  /////////////////////////////////////////////////////////////////////////
 
   public void showInfo(Formatter info) {
     showInfo(coordinates, info, new Indent(2));
-    //sa.showInfo(info);
+    if (sa != null) sa.showInfo(info);
   }
 
   // recurse
-  private void showInfo(Coordinate coord, Formatter info, Indent indent) {
-    //Coordinate coord = coords.get(0);
+  private void showInfo(List<Coordinate> coords, Formatter info, Indent indent) {
+    Coordinate coord = coords.get(0);
     coord.showInfo(info, indent);
 
-    //if (coords.size() > 1) {
-   //   showInfo(coords.subList(1, coords.size()), info, indent.incr());
-   //   indent.decr();
-   // }
+    if (coords.size() > 1) {
+      showInfo(coords.subList(1, coords.size()), info, indent.incr());
+      indent.decr();
+    }
   }
-
 
 
 }

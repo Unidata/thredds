@@ -7,7 +7,6 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -40,6 +39,10 @@ public class CoordinateVert implements Coordinate {
 
 
   public List<VertCoord.Level> getLevelSorted() {
+    return levelSorted;
+  }
+
+  public List<? extends Object> getValues() {
     return levelSorted;
   }
 

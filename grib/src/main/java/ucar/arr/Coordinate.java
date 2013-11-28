@@ -17,7 +17,7 @@ public interface Coordinate {
 
   void showInfo(Formatter info, Indent indent);
 
-  List<Object> getValues();
+  List<? extends Object> getValues();
 
   int getSize();
 
