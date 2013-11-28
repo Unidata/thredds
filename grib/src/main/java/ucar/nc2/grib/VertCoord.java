@@ -198,12 +198,21 @@ public class VertCoord { // implements Comparable<VertCoord> {
     final double value1;
     final double value2;
     final double mid;
+    boolean isLayer;
 
     // LOOK - you might need to track isLayer
     public Level(double value1, double value2) {
       this.value1 = value1;
       this.value2 = value2;
       this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
+    }
+
+    // LOOK - you might need to track isLayer
+    public Level(double value1, double value2, boolean isLayer) {
+      this.value1 = value1;
+      this.value2 = value2;
+      this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
+      this.isLayer = isLayer;
     }
 
     public double getValue1() {
@@ -241,6 +250,15 @@ public class VertCoord { // implements Comparable<VertCoord> {
       temp = value2 != +0.0d ? Double.doubleToLongBits(value2) : 0L;
       result = 31 * result + (int) (temp ^ (temp >>> 32));
       return result;
+    }
+
+    public String toString() {
+      Formatter out = new Formatter();
+      if (isLayer)
+        out.format("(%f,%f)", value1, value2);
+      else
+        out.format("%f", value1);
+      return out.toString();
     }
 
     public String toString(boolean isLayer) {

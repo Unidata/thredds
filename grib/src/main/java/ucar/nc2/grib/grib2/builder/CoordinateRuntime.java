@@ -76,7 +76,9 @@ public class CoordinateRuntime implements Coordinate {
 
     @Override
     public CoordinateBuilder makeBuilder(Object val) {
-      return new Builder(val);
+      CoordinateBuilder result =  new Builder(val);
+      result.chainTo(nestedBuilder);
+      return result;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ucar.arr;
 
 import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.grib.grib2.builder.Grib2Rectilyser2;
 
 import java.util.*;
 
@@ -58,6 +59,8 @@ public class SparseArray<T> {
   }
 
   public int calcIndex(int... index) {
+    if (index.length != size.length)
+      System.out.println("HEY");
     assert index.length == size.length;
     int result = 0;
     for (int ii = 0; ii < index.length; ii++)
@@ -73,8 +76,13 @@ public class SparseArray<T> {
     return (double) countNotMissing() / totalSize;
   }
 
-  public void showInfo(Formatter info) {
+  public void showInfo(Formatter info, Grib2Rectilyser2.Counter all) {
     info.format(" ndups=%d total=%d/%d density= %f%n", ndups, countNotMissing(), totalSize, getDensity());
+
+    all.dups += ndups;
+    all.recordsUnique += countNotMissing();
+    all.recordsTotal += totalSize;
+    all.vars++;
   }
 
 }

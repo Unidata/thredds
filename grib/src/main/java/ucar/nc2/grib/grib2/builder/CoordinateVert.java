@@ -7,6 +7,7 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -30,7 +31,9 @@ public class CoordinateVert implements Coordinate {
     Grib2Pds pds = gr.getPDS();
     boolean hasLevel2 = pds.getLevelType2() != GribNumbers.MISSING;
     double level2val =  hasLevel2 ?  pds.getLevelValue2() :  GribNumbers.UNDEFINEDD;
-    return new VertCoord.Level(pds.getLevelValue1(), level2val);
+    boolean isLayer = Grib2Utils.isLayer(gr);
+
+    return new VertCoord.Level(pds.getLevelValue1(), level2val, isLayer);
   }
 
   public Object extract(Grib2Record gr) {
@@ -57,8 +60,8 @@ public class CoordinateVert implements Coordinate {
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s %20s:", indent, "Levels");
-     for (VertCoord.Level cd : levelSorted)
-       info.format("%s, ", cd);
+     for (VertCoord.Level level : levelSorted)
+       info.format("%s, ", level);
     info.format("%n");
   }
 
@@ -70,7 +73,9 @@ public class CoordinateVert implements Coordinate {
 
     @Override
     public CoordinateBuilder makeBuilder(Object val) {
-      return new Builder(val);
+      CoordinateBuilder result = new Builder(val);
+      result.chainTo(nestedBuilder);
+      return result;
     }
 
     @Override

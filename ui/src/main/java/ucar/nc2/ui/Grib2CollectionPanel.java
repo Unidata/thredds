@@ -36,7 +36,6 @@ import thredds.inventory.*;
 import thredds.inventory.Collection;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.builder.CoordinateRuntime;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.builder.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
@@ -581,7 +580,7 @@ public class Grib2CollectionPanel extends JPanel {
     Grib2Rectilyser2.Counter stats = new Grib2Rectilyser2.Counter();
     Grib2Rectilyser2 agg = new Grib2Rectilyser2(cust, records, 0, null);
     agg.make(stats, null, f);
-    agg.dump(f, cust);
+    agg.showInfo(f, cust);
     stats.recordsTotal = records.size();
   }
 

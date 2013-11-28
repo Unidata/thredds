@@ -35,7 +35,6 @@ package ucar.nc2.grib.grib2.builder;
 import thredds.inventory.MFile;
 import ucar.arr.CoordinateBuilder;
 import ucar.arr.CoordinateND;
-import ucar.arr.Time2D;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -416,7 +415,7 @@ public class Grib2Rectilyser2 {
     return new TimeCoord(timeIntvCode, vb.refDate, vb.timeUnit, tlist);
   }
 
-  public void dump(Formatter f, Grib2Customizer tables) {
+  public void showInfo(Formatter f, Grib2Customizer tables) {
     /* f.format("%nTime Coordinates%n");
     for (int i = 0; i < timeCoords.size(); i++) {
       TimeCoord time = timeCoords.get(i);
@@ -437,13 +436,16 @@ public class Grib2Rectilyser2 {
 
     //f.format("%nVariables%n");
     //f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
+    Counter all = new Counter();
+
     for (VariableBag vb : gribvars) {
       f.format("Variable %s%n", tables.getVariableName(vb.first));
-      vb.coordND.showInfo(f);
+      vb.coordND.showInfo(f, all);
       //f.format("  %3d %3d %3d %s records = %d density = %f hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
       //        vname, vb.atomList.size(), vb.recordMap.density(), vb.cdmHash);
       f.format("%n");
     }
+    f.format("%n all= %s", all.show());
   }
 
   public class VariableBag implements Comparable<VariableBag> {
