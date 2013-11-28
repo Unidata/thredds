@@ -263,9 +263,10 @@ public class Grib2CollectionBuilder2 extends GribCollectionBuilder {
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
     if (config != null) pdsConvert = config.pdsHash;
 
-    CoordinateRuntime runtimeCoord = new CoordinateRuntime(30);
+    //CoordinateRuntime.Builder builder = new CoordinateRuntime.Builder(30);
 
     // place each record into its group
+    // LOOK maybe also put into unique variable Bags
     int totalRecords = 0;
     for (MFile mfile : dcm.getFilesSorted()) { // LOOK do we need sorted ??
       Grib2Index index;
@@ -308,7 +309,7 @@ public class Grib2CollectionBuilder2 extends GribCollectionBuilder {
         g.records.add(gr);
 
         // track all runtimes
-        runtimeCoord.add(gr);
+        //builder.add(gr);
       }
       fileno++;
       statsAll.recordsTotal += index.getRecords().size();
@@ -316,13 +317,13 @@ public class Grib2CollectionBuilder2 extends GribCollectionBuilder {
     // System.out.printf("%s: Open %d files %d records%n",  gc.getName(), fileno, totalRecords);
 
     // create a unique, sorted list of runtimes
-    runtimeCoord.finish();
+    //CoordinateRuntime runtimeCoord = builder.finish();
 
      // rectilyze each group independently
     List<Group> groups = new ArrayList<>(gdsMap.values());
     for (Group g : groups) {
       Grib2Rectilyser2.Counter stats = new Grib2Rectilyser2.Counter(); // debugging
-      g.rect = new Grib2Rectilyser2(tables, g.records, g.gdsHash, runtimeCoord, pdsConvert);
+      g.rect = new Grib2Rectilyser2(tables, g.records, g.gdsHash, pdsConvert);
       g.rect.make(stats, Collections.unmodifiableList(allFiles), errlog);
       errlog.format("Group hash=%d %s%n", g.gdsHash, stats.show());
       statsAll.add(stats);

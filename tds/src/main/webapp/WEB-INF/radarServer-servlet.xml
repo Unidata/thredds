@@ -9,25 +9,25 @@
     <property name="daysToRead" value="14" />
   </bean>
 
-  <bean id="repository" class="thredds.server.radarServer.DatasetRepository" init-method="init">
+  <bean id="repository" class="thredds.server.radarServer.RadarDatasetRepository" init-method="init">
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
-  <bean id="catalogXmlController" class="thredds.server.radarServer.CatalogRadarServerController">
+  <bean id="catalogXmlController" class="thredds.server.radarServer.RadarCatalogController">
     <!-- property name="tdsContext" ref="tdsContext"/-->
     <property name="htmlView" value="false"/>
     <!-- property name="htmlWriter" ref="htmlWriter"/-->
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="catalogHtmlController" class="thredds.server.radarServer.CatalogRadarServerController">
+  <bean id="catalogHtmlController" class="thredds.server.radarServer.RadarCatalogController">
     <!-- property name="tdsContext" ref="tdsContext"/-->
     <property name="htmlView" value="true"/>
     <!-- property name="htmlWriter" ref="htmlWriter"/-->
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="queryXmlController" class="thredds.server.radarServer.QueryRadarServerController" >
+  <bean id="queryXmlController" class="thredds.server.radarServer.RadarQueryController" >
     <property name="tdsContext" ref="tdsContext"/>
     <property name="htmlView" value="false"/>
     <property name="htmlWriter" ref="htmlWriter"/>
@@ -35,7 +35,7 @@
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="stationXmlController" class="thredds.server.radarServer.StationRadarServerController">
+  <bean id="stationXmlController" class="thredds.server.radarServer.RadarStationController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="htmlView" value="false"/>
     <property name="htmlWriter" ref="htmlWriter"/>
@@ -45,6 +45,8 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
+        /*=catalogHtmlController
+        /catalog.xml=catalogXmlController
         /**/*?*=queryXmlController
         /**/catalog.xml=catalogXmlController
         /**/dataset.xml=catalogXmlController

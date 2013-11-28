@@ -551,7 +551,8 @@ public class Grib2Iosp extends GribIosp {
       Grib2Customizer.Parameter entry = cust.getParameter(vindex.discipline,vindex.category,vindex.parameter);
       if (entry != null) v.addAttribute(new Attribute("Grib2_Parameter_Name", entry.getName()));
 
-      v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
+      if (vindex.levelType != GribNumbers.MISSING)
+        v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
       if ( vindex.intvName != null && vindex.intvName.length() != 0)
         v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
       if (vindex.intvType >= 0) {

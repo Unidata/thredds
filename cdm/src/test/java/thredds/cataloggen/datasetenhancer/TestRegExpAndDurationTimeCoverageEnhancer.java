@@ -32,9 +32,12 @@
  */
 package thredds.cataloggen.datasetenhancer;
 
-import junit.framework.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import thredds.catalog.InvDatasetImpl;
 import thredds.crawlabledataset.CrawlableDataset;
+import thredds.crawlabledataset.CrawlableDatasetFactory;
 import thredds.crawlabledataset.mock.MockCrawlableDataset;
 
 /**
@@ -43,24 +46,9 @@ import thredds.crawlabledataset.mock.MockCrawlableDataset;
  * @author edavis
  * @since Mar 27, 2006 1:21:49 PM
  */
-public class TestRegExpAndDurationTimeCoverageEnhancer extends TestCase
+public class TestRegExpAndDurationTimeCoverageEnhancer
 {
-//  static private org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( TestRegExpAndDurationTimeCoverageEnhancer.class );
-
-
-  public TestRegExpAndDurationTimeCoverageEnhancer( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
-  {
-  }
-
-  /**
-   * Test ...
-   */
+  @Test
   public void testDatasetNameMatchSuccess()
   {
     String matchPattern = "NDFD_CONUS_5km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2";
@@ -82,6 +70,7 @@ public class TestRegExpAndDurationTimeCoverageEnhancer extends TestCase
                 timeCoverageEnhancer.addMetadata( ds, crDs ));
   }
 
+  @Test
   public void testDatasetNameMatchFail()
   {
     String matchPattern = "NDFD_CONUS_5km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2";
@@ -103,6 +92,7 @@ public class TestRegExpAndDurationTimeCoverageEnhancer extends TestCase
                 ! timeCoverageEnhancer.addMetadata( ds, crDs ));
   }
 
+  @Test
   public void testDatasetPathMatchSuccess()
   {
     String matchPattern = "prod/sref.([0-9]{4})([0-9]{2})([0-9]{2})/([0-9]{2})/pgrb_biasc/sref_([^.]*)\\.t\\4z\\.pgrb([0-9]{3})\\.(.*)\\.grib2$";

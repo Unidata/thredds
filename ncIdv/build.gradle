@@ -30,11 +30,12 @@ ext {
   if ( project.hasProperty( "webdir")) {
     webstartDir = webdir + "webstart"
   }
-
+  destinationDir = 'build/libs/'
 }
 
 shadow {
   outputFile = file("${destinationDir}/${ncIdvJar}")
+  outputFile = file("${ncIdvJar}")
   stats = true
 
   exclude 'AUTHORS'    // crap from other packages
@@ -72,9 +73,11 @@ shadow {
  */
 task releaseCdm(dependsOn: ['shadow']) << {
   if (  project.hasProperty( "ftpdir") ) {
+    // println "destinationDir= " + ${destinationDir}
     println "copy " + ncIdvJar + " to " + ftpdir
     copy { // does not give error message
-      from ${destinationDir} + ncIdvJar
+      // from ${destinationDir} + ncIdvJar
+      from ncIdvJar
       into ftpdir
     }
   } else {

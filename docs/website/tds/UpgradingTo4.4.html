@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Upgrading To TDS 4.4</title>
+  <link rel="stylesheet" href="tds.css" type="text/css">
+</head>
+<body>
+<h1><img alt="Unidata" src="images/unidataLogo.png" align="middle" height="75" width="75"> Upgrading To TDS 4.4 (Alpha)</h1>
+
+<hr>
+<h3>New Requirements</h3>
+<ul>
+  <li>Tomcat 7 (servlet 3.0) is now required</li>
+  <li>On the command line when starting up Tomcat, you must specify <strong>-Dtds.content.root.path=&lt;content root&gt;</strong> where &lt;content root&gt; points to the top of the content directory (note its ../content, not ../content/thredds). For example:
+        <blockquote>
+          <pre>-Dtds.content.root.path=/opt/tomcat-home/content/</pre>
+          <p>For example, your <strong>{tomcat}/bin/setenv.sh</strong> might look like:</p>
+          <pre>
+#!/bin/sh
+#
+ulimit -n 2048
+#
+CATALINA_HOME=&quot;/opt/tomcat-home&quot;
+export CATALINA_HOME
+CATALINA_BASE=&quot;/opt/tomcat-home&quot;
+export CATALINA_BASE
+JAVA_HOME=&quot;/opt/jdk&quot;
+export JAVA_HOME
+#
+<strong>CONTENT_ROOT=-Dtds.content.root.path=/data/thredds/tds-dev/content</strong>
+NORMAL=&quot;-d64 -Xmx4090m -Xms512m -server&quot;
+MAX_PERM_GEN=&quot;-XX:MaxPermSize=256m&quot;
+HEADLESS=&quot;-Djava.awt.headless=true&quot;
+JAVA_PREFS_SYSTEM_ROOT=&quot;-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs&quot;
+#             
+JAVA_OPTS=&quot;$CONTENT_ROOT $NORMAL $MAX_PERM_GEN $HEADLESS $JAVA_PREFS_SYSTEM_ROOT&quot;            
+export JAVA_OPTS
+           </pre>
+        </blockquote>
+  </li>
+</ul>
+<h3>Netcdf Subset Service Changes</h3>
+<blockquote>
+  <p>The Netcdf Subset Service (ncss) has a different URL path, and the REST interface has changed.  If you have been using ncss from a script, you will need to check your URLs and parameters <a href="http://www.unidata.ucar.edu/software/thredds/v4.4/tds/reference/NetcdfSubsetServiceReference.html">(documentation</a>). If you are accessing the ncss from the HTML form, or are correctly parsing the catalog, nohting needs to be changed.<br>
+</p>
+  <p>An old (4.3) ncss URL:</p>
+<pre> http://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p5deg/best/dataset.html</pre>
+  <p> Should  be changed in version 4.4 to:</p>
+<pre> http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best/dataset.html</pre>
+  <p> Note the only difference is the removal of &quot;/grid&quot;</p>
+  <p>&nbsp;</p>
+</blockquote>
+<h3>New Features</h3>
+<ul>
+  <li>NcML has been updated to implement full extended model.<br>
+  </li>
+  <li>Automatic Metadata Extraction on point collections. Will extend to other feature collections.</li>
+  <li>Point Feature Collections (point, stations) now handled by Netcdf Subset Service.</li>
+  <li>GRIB1:  indexing minimum version is 11, so  grib1 ncx files will be recreated. This fixes a problem where the vertical coordinates were not sorted correctly.</li>
+  <li>Improved HDF-EOS processing.</li>
+</ul>
+<h3>Internal changes</h3>
+<ul>
+  <li>We are now using <strong>log4j2</strong>. The configuration file is in <strong>{tomcat}/webapps/thredds//WEB-INF/classes/log4j2.xml</strong>. See <a href="http://logging.apache.org/log4j/2.x/">http://logging.apache.org/log4j/2.x/</a></li>
+  <li> Most services have been converted to <a href="http://docs.spring.io/spring/docs/3.0.x/reference/mvc.html">annotated Spring controllers</a>. Documentation on adding your own service (coming soon).</li>
+  <li>    Unit testing framework now complete; 2000+ unit tests.</li>
+</ul>
+<p>&nbsp;</p>
+<hr>
+
+<address>
+  <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
+  last updated Nov 2013. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  support</a>.
+</address>
+
+</body>
+</html>

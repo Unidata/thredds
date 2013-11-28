@@ -33,6 +33,9 @@
 package ucar.nc2.grib.grib2.builder;
 
 import thredds.inventory.MFile;
+import ucar.arr.CoordinateBuilder;
+import ucar.arr.CoordinateND;
+import ucar.arr.Time2D;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -44,13 +47,13 @@ import java.util.*;
 
 /**
  * Turn a collection of Grib2Records into a rectangular array
+ * Helper class for Grib2CollectionBuilder2.
  *
  * @author caron
- * @since 3/30/11
+ * @since 11/26/2013
  */
 public class Grib2Rectilyser2 {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
-  //static private final boolean useGenType = false; // LOOK dummy for now
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder2.class);
 
   private final Grib2Customizer cust;
   private final int gdsHash;
@@ -67,8 +70,8 @@ public class Grib2Rectilyser2 {
   private final List<VertCoord> vertCoords = new ArrayList<>();
   private final List<EnsCoord> ensCoords = new ArrayList<>();
 
-  // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser2(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, CoordinateRuntime runtimeCoord, Map<String, Boolean> pdsConfig) {
+  // LOOK make records not be sorted - resolve conflicts locally
+  public Grib2Rectilyser2(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, Map<String, Boolean> pdsConfig) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
@@ -108,10 +111,10 @@ public class Grib2Rectilyser2 {
   }
 
   List<MFile> files = null; // temp debug
-  public void make(Counter counter, List<MFile> files, Formatter errlog) throws IOException {
+  public void make(Counter counter, List<MFile> files, Formatter info) throws IOException {
     this.files = files;
 
-    // unique variables using Grib2Record.cdmVariableHash()
+    // assign each record to unique variable using cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
     for (Grib2Record gr : records) {
       int cdmHash = cdmVariableHash(gr, gdsHash);
@@ -119,7 +122,6 @@ public class Grib2Rectilyser2 {
       if (bag == null) {
         bag = new VariableBag(gr, cdmHash);
         vbHash.put(cdmHash, bag);
-        //bag.useGenType = useGenType;
       }
       bag.atomList.add(new Record(gr));
     }
@@ -127,20 +129,42 @@ public class Grib2Rectilyser2 {
     Collections.sort(gribvars); // make it deterministic by sorting
 
     // create and assign time coordinate
-    // uniform or not X isInterval or not
+    // (uniform or not) X (isInterval or not)
     for (VariableBag vb : gribvars) {
-      setTimeUnit(vb);
-      TimeCoord use;
-      if (vb.first.getPDS().isTimeInterval()) {
-        use = makeTimeCoordsIntv(vb);
-      } else {
-        boolean isUniform = checkTimeCoordsUniform(vb);
-        use = makeTimeCoords(vb, isUniform);
+      CoordinateBuilder rootBuilder = new CoordinateRuntime.Builder(null);
+      CoordinateBuilder next = rootBuilder.chainTo(new CoordinateTime.Builder(null));
+
+      Grib2Pds pdsFirst = vb.first.getPDS();
+      VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
+      if (vertUnit.isVerticalCoordinate()) {
+        next = next.chainTo(new CoordinateVert.Builder(null));
       }
-      vb.timeCoordIndex = TimeCoord.findCoord(timeCoords, use); // share coordinates when possible
+
+      vb.coordND = new CoordinateND(rootBuilder);
+
+      setTimeUnit(vb);
+      if (vb.first.getPDS().isTimeInterval()) {
+        // LOOK
+      } else {
+        for (Record r : vb.atomList)
+          vb.coordND.add(r.gr);
+      }
+      vb.coordND.finish();
     }
 
-    // create and assign vert coordinate
+    /* for (VariableBag vb : gribvars) {
+       setTimeUnit(vb);
+       TimeCoord use;
+       if (vb.first.getPDS().isTimeInterval()) {
+         use = makeTimeCoordsIntv(vb);
+       } else {
+         boolean isUniform = checkTimeCoordsUniform(vb);
+         use = makeTimeCoords(vb, isUniform);
+       }
+       vb.timeCoordIndex = TimeCoord.findCoord(timeCoords, use); // share coordinates when possible
+     }
+
+     // create and assign vert coordinate
     for (VariableBag vb : gribvars) {
       VertCoord vc = makeVertCoord(vb);
       if (vc.isVertDimensionUsed()) {
@@ -154,12 +178,12 @@ public class Grib2Rectilyser2 {
       if (ec != null) {
         vb.ensCoordIndex = EnsCoord.findCoord(ensCoords, ec); // share coordinates when possible
       }
-    }
+    }  */
 
     int tot_used = 0;
     int tot_dups = 0;
 
-    // for each variable, create recordMap, which maps index (time, ens, vert) -> Grib2Record
+    /* for each variable, create recordMap, which maps index (time, ens, vert) -> Grib2Record
     for (VariableBag vb : gribvars) {
       TimeCoord tc = timeCoords.get(vb.timeCoordIndex);
       VertCoord vc = (vb.vertCoordIndex < 0) ? null : vertCoords.get(vb.vertCoordIndex);
@@ -174,21 +198,21 @@ public class Grib2Rectilyser2 {
         int timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord);
         if (timeIdx < 0) {
           timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord); // debug
-          errlog.format("Cant find time coord %s%n", r.tcCoord);
+          info.format("Cant find time coord %s%n", r.tcCoord);
           throw new IllegalStateException("Cant find time coord " + r.tcCoord);
         }
 
         int vertIdx = (vb.vertCoordIndex < 0) ? 0 : vc.findIdx(r.vcCoord);
         if (vertIdx < 0) {
           vertIdx = vc.findIdx(r.vcCoord); // debug
-          errlog.format("Cant find vert coord %s%n", r.vcCoord);
+          info.format("Cant find vert coord %s%n", r.vcCoord);
           throw new IllegalStateException("Cant find vert coord " + r.vcCoord);
         }
 
         int ensIdx = (vb.ensCoordIndex < 0) ? 0 : ec.findIdx(r.ecCoord);
         if (ensIdx < 0) {
           ensIdx = ec.findIdx(r.ecCoord); // debug
-          errlog.format("Cant find ens coord %s%n", r.ecCoord);
+          info.format("Cant find ens coord %s%n", r.ecCoord);
           throw new IllegalStateException("Cant find ens coord " + r.ecCoord);
         }
 
@@ -201,7 +225,8 @@ public class Grib2Rectilyser2 {
 
       //System.out.printf("%d: recordMap %d = records %d - dups %d (%d)%n", vb.first.cdmVariableHash(),
       //        vb.recordMap.length, vb.atomList.size(), dups, vb.atomList.size() - vb.recordMap.length);
-    }
+    }  */
+
     counter.recordsUnique += tot_used;
     counter.dups += tot_dups;
     counter.vars += gribvars.size();
@@ -392,7 +417,7 @@ public class Grib2Rectilyser2 {
   }
 
   public void dump(Formatter f, Grib2Customizer tables) {
-    f.format("%nTime Coordinates%n");
+    /* f.format("%nTime Coordinates%n");
     for (int i = 0; i < timeCoords.size(); i++) {
       TimeCoord time = timeCoords.get(i);
       f.format("  %d: (%d) %s%n", i, time.getSize(), time);
@@ -408,14 +433,15 @@ public class Grib2Rectilyser2 {
     for (int i = 0; i < ensCoords.size(); i++) {
       EnsCoord coord = ensCoords.get(i);
       f.format("  %d: (%d) %s%n", i, coord.getSize(), coord);
-    }
+    }  */
 
-    f.format("%nVariables%n");
-    f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
+    //f.format("%nVariables%n");
+    //f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
     for (VariableBag vb : gribvars) {
-      String vname = tables.getVariableName(vb.first);
-      f.format("  %3d %3d %3d %s records = %d density = %f hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
-              vname, vb.atomList.size(), vb.recordMap.density(), vb.cdmHash);
+      f.format("Variable %s%n", tables.getVariableName(vb.first));
+      vb.coordND.showInfo(f);
+      //f.format("  %3d %3d %3d %s records = %d density = %f hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
+      //        vname, vb.atomList.size(), vb.recordMap.density(), vb.cdmHash);
       f.format("%n");
     }
   }
@@ -423,17 +449,19 @@ public class Grib2Rectilyser2 {
   public class VariableBag implements Comparable<VariableBag> {
     Grib2Record first;
     int cdmHash;
-    //boolean useGenType;
 
-    List<Record> atomList = new ArrayList<Record>(100);
+    List<Record> atomList = new ArrayList<>(100); // does this need to be sorted??
+    CoordinateND coordND;
+    CalendarPeriod timeUnit;
+
     int timeCoordIndex = -1;
     int vertCoordIndex = -1;
     int ensCoordIndex = -1;
     CalendarDate refDate;
-    CalendarPeriod timeUnit;
     RecordMap recordMap;
     long pos;
     int length;
+
 
     private VariableBag(Grib2Record first, int cdmHash) {
       this.first = first;

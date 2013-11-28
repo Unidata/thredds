@@ -201,5 +201,6 @@
   <catalogRef xlink:title="Test Point FC" xlink:href="pointCatalog.xml" name=""/>
   <catalogRef xlink:title="somecat" xlink:href="somedir/somecat.xml" name=""/>
   <catalogRef xlink:title="update JoinExisting Agg" xlink:href="catalogUpdateAgg.xml" name=""/>
+  <catalogRef xlink:title="Radar Collections" xlink:href="radar/radarCollections.xml" name=""/>
 
 </catalog>

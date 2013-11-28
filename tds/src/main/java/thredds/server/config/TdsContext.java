@@ -387,9 +387,9 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
     List<DescendantFileSource> chain = new ArrayList<DescendantFileSource>();
     DescendantFileSource contentMinusPublicSource =
-            new BasicWithExclusionsDescendantFileSource(this.contentDirectory,
-                    Collections.singletonList("public"));
+            new BasicWithExclusionsDescendantFileSource(this.contentDirectory, Collections.singletonList("public"));
     chain.add(contentMinusPublicSource);
+
     for (String curContentRoot : ThreddsConfig.getContentRootList()) {
       if (curContentRoot.equalsIgnoreCase("idd"))
         chain.add(this.iddContentPublicDirSource);

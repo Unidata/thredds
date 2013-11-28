@@ -1,7 +1,8 @@
 package ucar.arr;
 
-import java.util.ArrayList;
-import java.util.List;
+import ucar.nc2.grib.grib2.Grib2Record;
+
+import java.util.*;
 
 /**
  * Store objects of type T in a sparse array.
@@ -19,11 +20,10 @@ public class SparseArray<T> {
 
   int ndups = 0; // number of duplicates - last one is kept (could make this changeable)
 
-  public SparseArray( int[] size) {
+  public SparseArray( int... size) {
     this.size = size;
     totalSize = 1;
-    for (int ii : size)
-      totalSize *= size[ii];
+    for (int aSize : size) totalSize *= aSize;
     this.content = new ArrayList<>(totalSize);
 
     // strides
@@ -34,9 +34,10 @@ public class SparseArray<T> {
       stride[ii] = product;
       product *= thisDim;
     }
+    track = new int[totalSize];
   }
 
-  public void add(T thing, int[] index) {
+  public void add(T thing, int... index) {
     content.add(thing);
     int where = calcIndex(index);
     if (track[where] > 0) ndups++;
@@ -56,7 +57,7 @@ public class SparseArray<T> {
     return result;
   }
 
-  public int calcIndex(int[] index) {
+  public int calcIndex(int... index) {
     assert index.length == size.length;
     int result = 0;
     for (int ii = 0; ii < index.length; ii++)
@@ -71,4 +72,55 @@ public class SparseArray<T> {
   public double getDensity() {
     return (double) countNotMissing() / totalSize;
   }
+
+  public void showInfo(Formatter info) {
+    info.format(" ndups=%d total=%d/%d density= %f%n", ndups, countNotMissing(), totalSize, getDensity());
+  }
+
+  public static class Builder {
+    SparseArray<Grib2Record> sa;
+
+    Builder(CoordinateBuilder root) {
+      List<Integer> sizeList = new ArrayList<>();
+      getSizes(sizeList, root);
+
+      int[] sizeArray = new int[sizeList.size()];
+      for (int i=0; i<sizeList.size(); i++) sizeArray[i] = sizeList.get(i);
+      sa = new SparseArray(sizeArray);
+
+    }
+
+
+    void getSizes(List<Integer> sizeList, CoordinateBuilder coordBuilder) {
+      Coordinate coord = coordBuilder.getCoordinate();
+      sizeList.add(coord.getSize());
+
+      if (coordBuilder.hasChildBuilders()) {
+        int max = 0;
+        for (Object key : coord.getValues()) {
+          CoordinateBuilder next = coordBuilder.getChildBuilder(key);
+          Coordinate coordNested = next.getCoordinate();
+          max = Math.max(max, coordNested.getSize());
+        }
+        sizeList.add(max);
+      }
+    }
+
+    void makeArray() {
+      int[] sizeArray = new int[sizeList.size()];
+      for (int i=0; i<sizeList.size(); i++) sizeArray[i] = sizeList.get(i);
+      SparseArray<Grib2Record> sa = new SparseArray(sizeArray);
+    }
+
+    void makeArray(SparseArray<Grib2Record> sa, CoordinateBuilder coordBuilder, List<Integer> indexList) {
+       if (coordBuilder.getRecords() == null) return;
+
+      int[] index = new int[indexList.size()];
+      for (int i=0; i<indexList.size(); i++) index[i] = indexList.get(i);
+
+       for (Grib2Record r : coordBuilder.getRecords())
+         sa.add(r, index);
+     }
+
+   }
 }

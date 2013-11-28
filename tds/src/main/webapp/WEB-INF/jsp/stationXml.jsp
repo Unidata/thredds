@@ -1,4 +1,4 @@
-<%@page contentType="text/xml"%><%@page pageEncoding="UTF-8"%><?xml version="1.0" encoding="UTF-8"?>
+<%@page contentType="application/xml; charset=UTF-8"%><%@page pageEncoding="UTF-8"%><?xml version="1.0" encoding="UTF-8"?>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <stationsList>

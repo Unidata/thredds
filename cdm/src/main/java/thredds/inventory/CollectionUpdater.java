@@ -4,6 +4,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.listeners.SchedulerListenerSupport;
+import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 
 import java.util.Date;
@@ -21,11 +22,11 @@ import java.util.Date;
 public enum CollectionUpdater {
   INSTANCE;   // Singleton cf Bloch p 18
 
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
+  static private final org.slf4j.Logger startupLogger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
   static private final String DCM_NAME = "dcm";
   static private final String LOGGER = "logger";
   static private final long startupWait = 10 * 1000; // 10 secs
-  //static private boolean disabled = false;
+  static private boolean disabled = false;
 
   // could use Spring DI
   private org.quartz.Scheduler scheduler = null;
@@ -44,7 +45,7 @@ public enum CollectionUpdater {
     try {
       scheduler = StdSchedulerFactory.getDefaultScheduler();
       scheduler.start();
-      scheduler.getListenerManager().addSchedulerListener(new MySchedListener());
+      // scheduler.getListenerManager().addSchedulerListener(new MySchedListener());
     } catch (SchedulerException e) {
       failed = true;
       throw new RuntimeException("quartz scheduler failed to initialize", e);
@@ -55,7 +56,7 @@ public enum CollectionUpdater {
     return scheduler;
   }
 
-  private class MySchedListener extends SchedulerListenerSupport {
+  /* private class MySchedListener extends SchedulerListenerSupport {
 
     @Override
     public void jobScheduled(Trigger trigger) {
@@ -126,11 +127,10 @@ public enum CollectionUpdater {
     public void schedulerError(String s, SchedulerException e) {
       logger.debug("schedulerError {} {}", s, e);
     }
-  }
+  }   */
 
-  public void scheduleTasks(FeatureCollectionConfig config, CollectionUpdateListener manager) {
-    //if (disabled || failed) return;
-    if (failed) return;
+  public void scheduleTasks(FeatureCollectionConfig config, Collection manager, Logger logger) {
+    if (disabled || failed) return;
 
     FeatureCollectionConfig.UpdateConfig updateConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
     if (updateConfig == null) return;
@@ -141,7 +141,7 @@ public enum CollectionUpdater {
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(DCM_NAME, manager);
-    map.put(LOGGER, org.slf4j.LoggerFactory.getLogger("fc."+manager.getCollectionName()));
+    map.put(LOGGER, logger);
     JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
             .withIdentity(jobName, "UpdateCollection")
             .storeDurably()
@@ -169,7 +169,7 @@ public enum CollectionUpdater {
 
       try {
     	   scheduler.scheduleJob(startupTrigger);
-         logger.info("Schedule startup scan {} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
+         logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
@@ -227,7 +227,7 @@ public enum CollectionUpdater {
       org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
       logServerStartup.info("Scheduler shutdown");
     } catch (SchedulerException e) {
-      logger.error("Scheduler failed to shutdown", e);
+      startupLogger.error("Scheduler failed to shutdown", e);
       scheduler = null;
       //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
@@ -242,10 +242,10 @@ public enum CollectionUpdater {
             .build();
 
     try {
-      logger.debug("Trigger Update for {} type= {}", collectionName, triggerType);
+      // logger.debug("Trigger Update for {} type= {}", collectionName, triggerType);
       scheduler.scheduleJob(trigger);
     } catch (SchedulerException e) {
-      logger.error("triggerUpdate failed", e);
+      startupLogger.error("triggerUpdate failed", e);
       // e.printStackTrace();
     }
   }

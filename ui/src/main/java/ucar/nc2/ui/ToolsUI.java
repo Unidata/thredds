@@ -2537,6 +2537,22 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(aggButton);
 
+      AbstractButton agg2Button = BAMutil.makeButtcon("V3", "Run Rectilyser2", false);
+      agg2Button.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            gribTable.runAggregator2(f);
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(agg2Button);
+
       /* AbstractButton collateButton = BAMutil.makeButtcon("V3", "Run GribCollection", false);
       collateButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {

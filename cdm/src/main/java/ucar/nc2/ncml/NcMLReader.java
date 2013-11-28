@@ -1270,6 +1270,7 @@ public class NcMLReader {
   }
 
   private void readValues(NetcdfDataset ds, Variable v, Element varElem, Element valuesElem) {
+    try {
 
     // check if values are specified by attribute
     String fromAttribute = valuesElem.getAttributeValue("fromAttribute");
@@ -1339,6 +1340,10 @@ public class NcMLReader {
       String[] tokens = StringUtil2.splitString(values);
       List<String> valList = Arrays.asList(tokens);
       v.setValues(valList);
+    }
+
+    } catch (Throwable t) {
+      throw new RuntimeException("Ncml Reading on "+v.getFullName(), t);
     }
   }
 

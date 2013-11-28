@@ -33,6 +33,7 @@
 
 package ucar.ma2;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
 /**
@@ -208,6 +209,28 @@ public enum DataType {
   }
 
   /**
+   * convert an unsigned long to a String
+   *
+   * @param li unsigned int
+   * @return equivilent long value
+   */
+  static public String unsignedLongToString(long li) {
+    if (li >= 0) return Long.toString(li);
+
+    // else do the hard part - see http://technologicaloddity.com/2010/09/22/biginteger-as-unsigned-long-in-java/
+    byte[] val = new byte[8];
+    for (int i=0; i<8; i++) {
+      val[7-i] = (byte) ((li) & 0xFF);
+      li = li >>> 8;
+    }
+
+    BigInteger biggy = new BigInteger(1, val);
+    return biggy.toString();
+  }
+
+
+
+  /**
    * widen an unsigned int to a long
    *
    * @param i unsigned int
@@ -237,7 +260,7 @@ public enum DataType {
     return (short) (b & 0xff);
   }
 
-  public static void main(String[] args) {
+  public static void main2(String[] args) {
     for (int i=0; i<260; i++) {
       byte b = (byte) i;
       System.out.printf("%4d = %4d%n", b, unsignedByteToShort(b));

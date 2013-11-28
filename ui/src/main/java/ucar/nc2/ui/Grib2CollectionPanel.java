@@ -36,9 +36,11 @@ import thredds.inventory.*;
 import thredds.inventory.Collection;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib2.builder.CoordinateRuntime;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.builder.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
+import ucar.nc2.grib.grib2.builder.Grib2Rectilyser2;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
@@ -551,6 +553,33 @@ public class Grib2CollectionPanel extends JPanel {
 
     Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
     Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, null);
+    agg.make(stats, null, f);
+    agg.dump(f, cust);
+    stats.recordsTotal = records.size();
+  }
+
+  public void runAggregator2(Formatter f) throws IOException {
+    List<Grib2Record> records = new ArrayList<Grib2Record>();
+    List<String> filenames = new ArrayList<String>();
+
+    int fileno = 0;
+    for (MFile mfile : dcm.getFilesSorted()) {
+      f.format("%3d: %s%n", fileno, mfile.getPath());
+      filenames.add(mfile.getPath());
+
+      Grib2Index index = new Grib2Index();
+      if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
+        index.makeIndex(mfile.getPath(), null);
+      }
+
+      for (Grib2Record gr : index.getRecords()) {
+        gr.setFile(fileno);
+        records.add(gr);
+      }
+      fileno++;
+    }
+    Grib2Rectilyser2.Counter stats = new Grib2Rectilyser2.Counter();
+    Grib2Rectilyser2 agg = new Grib2Rectilyser2(cust, records, 0, null);
     agg.make(stats, null, f);
     agg.dump(f, cust);
     stats.recordsTotal = records.size();

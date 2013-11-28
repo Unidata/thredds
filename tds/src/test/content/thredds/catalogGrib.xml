@@ -34,5 +34,42 @@
 
   </featureCollection>
 
+    <featureCollection name="RTMA-CONUS_2p5km" featureType="GRIB" harvest="true" path="grib/NCEP/RTMA/CONUS_2p5km">
+      <metadata inherited="true">
+        <dataFormat>GRIB-2</dataFormat>
+        <serviceName>all</serviceName>
+        <dataType>Grid</dataType>
+
+        <documentation type="summary">
+          NCEP Model horizontal = 1377 by 2145 points, resolution 2.5 km, LambertConformal projection.
+          Model runs are made hourly, with 0 hour forecast
+          The NCEP RTMA Model is Real Time Mesoscale Analysis models.
+        </documentation>
+        <documentation xlink:href="http://www.weather.gov/infoservicechanges/tin08-56_rtma.txt"
+                       xlink:title="RTMA TIN"/>
+        <documentation xlink:href="http://www.coaps.fsu.edu/~dvandyke/wrfarw/rtma.html"
+                       xlink:title="COAPS FSU"/>
+      </metadata>
+
+      <collection
+          spec="/data/ldm/pub/native/grid/NCEP/RTMA/CONUS_2p5km/.*grib2$"
+          dateFormatMark="#RTMA_CONUS_2p5km_#yyyyMMdd_HHmm"
+          olderThan="5 min"/>
+      <update startup="nocheck" trigger="allow"/>
+      <tdm startup="true" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
+
+      <gribConfig datasetTypes="Best LatestFile Files">
+        <pdsHash>
+          <useGenType>true</useGenType>
+        </pdsHash>
+        <latestNamer name="Latest Real Time Mesoscale Analysis CONUS 2.5km"/>
+        <bestNamer name="Best Real Time Mesoscale Analysis CONUS 2.5km Time Series"/>
+        <filesSort>
+          <lexigraphicByName increasing="false"/>
+        </filesSort>
+      </gribConfig>
+    </featureCollection>
+
+
 
 </catalog>

@@ -217,7 +217,6 @@ public class CollectionController  {
   @RequestMapping(value={"/fmrcCache", "/fmrcCache/*"})
   protected ModelAndView showFmrcCache(HttpServletRequest req, HttpServletResponse res) throws Exception {
     String path = TdsPathUtils.extractPath(req, "admin/");   // LOOK probably wrong
-    if (path == null) path = "";
 
     if (path.endsWith(STATISTICS)) {
       res.setContentType(ContentType.text.getContentHeader());

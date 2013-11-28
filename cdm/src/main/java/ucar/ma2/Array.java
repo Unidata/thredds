@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.nio.*;
@@ -325,11 +327,12 @@ public abstract class Array {
    * Make an 1D array from a list of strings.
    *
    * @param dtype        data type of the array.
+   * @param isUnsigned   may be unsigned (byte, short, int, long)
    * @param stringValues list of strings.
    * @return resulting 1D array.
-   * @throws NumberFormatException if string values not parssable to specified data type
+   * @throws NumberFormatException if string values not parseable to specified data type
    */
-  static public Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
+  static public Array makeArray(DataType dtype, boolean isUnsigned, List<String> stringValues) throws NumberFormatException {
     Array result = Array.factory(dtype.getPrimitiveClassType(), new int[]{stringValues.size()});
     IndexIterator dataI = result.getIndexIterator();
 
@@ -338,8 +341,16 @@ public abstract class Array {
         dataI.setObjectNext(s);
 
       } else if (dtype == DataType.LONG) {
-        long val = Long.parseLong(s);
-        dataI.setLongNext(val);
+        if (isUnsigned) {
+          BigInteger biggy = new BigInteger(s);
+          long convert = biggy.longValue(); // > 63 bits will become "negetive".
+          System.out.printf("%s == %d%n", biggy, convert);
+          dataI.setLongNext(biggy.longValue());
+
+        } else {
+          long val = Long.parseLong(s);
+          dataI.setLongNext(val);
+        }
 
       } else {
         double val = Double.parseDouble(s);
@@ -350,31 +361,27 @@ public abstract class Array {
   }
 
   /**
-   * Make an 1D array from an array of strings.
+   * Make an 1D array from a list of strings.
    *
-   * @param dtype        data type of the array.
+   * @param dtype        data type of the array. Assumed unsigned
    * @param stringValues list of strings.
    * @return resulting 1D array.
-   * @throws NumberFormatException if string values not parssable to specified data type
+   * @throws NumberFormatException if string values not parseable to specified data type
+   */
+  static public Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
+    return makeArray(dtype, false, stringValues);
+  }
+
+  /**
+   * Make an 1D array from an array of strings.
+   *
+   * @param dtype        data type of the array. Assumed unsigned
+   * @param stringValues list of strings.
+   * @return resulting 1D array.
+   * @throws NumberFormatException if string values not parseable to specified data type
    */
   static public Array makeArray(DataType dtype, String[] stringValues) throws NumberFormatException {
-    Array result = Array.factory(dtype.getPrimitiveClassType(), new int[]{stringValues.length});
-    IndexIterator dataI = result.getIndexIterator();
-
-    for (String s : stringValues) {
-      if (dtype == DataType.STRING) {
-        dataI.setObjectNext(s);
-
-      } else if (dtype == DataType.LONG) {
-        long val = Long.parseLong(s);
-        dataI.setLongNext(val);
-
-      } else {
-        double val = Double.parseDouble(s);
-        dataI.setDoubleNext(val);
-      }
-    }
-    return result;
+    return makeArray(dtype, Arrays.asList(stringValues));
   }
 
 

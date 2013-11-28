@@ -334,7 +334,8 @@ public class Grib1Iosp extends GribIosp {
       if (param != null && param.getName() != null)
         v.addAttribute(new Attribute("Grib1_Parameter_Name", param.getName()));
 
-      v.addAttribute(new Attribute("Grib1_Level_Type", vindex.levelType));
+      if (vindex.levelType != GribNumbers.MISSING)
+        v.addAttribute(new Attribute("Grib1_Level_Type", vindex.levelType));
       String ldesc = cust.getLevelDescription(vindex.levelType);
       if (ldesc != null)
         v.addAttribute(new Attribute("Grib1_Level_Desc", ldesc));

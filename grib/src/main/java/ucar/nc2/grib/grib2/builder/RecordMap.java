@@ -1,8 +1,10 @@
 package ucar.nc2.grib.grib2.builder;
 
+import ucar.arr.Coordinate;
 import ucar.arr.SparseArray;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -11,7 +13,7 @@ import java.util.List;
  * @author caron
  * @since 11/24/13
  */
-public class RecordMap {
+public class RecordMap implements Iterable<Grib2Rectilyser2.Record> {
 
   int nruntime, ntime;
   int[] other;
@@ -29,7 +31,7 @@ public class RecordMap {
       totalSize *= n;
 
     records = new ArrayList<>(totalSize);
-    sparse = new SparseArray<>();
+    // sparse = new SparseArray<>();
   }
 
   double density() {
@@ -41,7 +43,11 @@ public class RecordMap {
 
 
 
-    sparse.add(r, runCE, timeCR, otherCE);
+    //sparse.add(r, runCE, timeCR, otherCE);
   }
 
+  @Override
+  public Iterator<Grib2Rectilyser2.Record> iterator() {  // LOOK not sorted
+    return records.iterator();
+  }
 }

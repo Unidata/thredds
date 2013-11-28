@@ -1,7 +1,12 @@
 package ucar.nc2.grib.grib2.builder;
 
+import net.jcip.annotations.Immutable;
+import ucar.arr.Coordinate;
+import ucar.arr.CoordinateBuilder;
+import ucar.arr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.Indent;
 
 import java.util.*;
 
@@ -11,27 +16,77 @@ import java.util.*;
  * @author caron
  * @since 11/24/13
  */
+@Immutable
 public class CoordinateRuntime implements Coordinate {
-  List<CalendarDate> runtimeSorted;
-  Set<CalendarDate> runtimes;
+  final List<CalendarDate> runtimeSorted;
+  final List<Coordinate> times;
 
-  CoordinateRuntime(int estSize) {
-    runtimes = new HashSet<>(estSize);
+  public CoordinateRuntime(List<CalendarDate> runtimeSorted, List<Coordinate> times) {
+    this.runtimeSorted = Collections.unmodifiableList(runtimeSorted);
+    this.times = (times == null) ? null : Collections.unmodifiableList(times);
   }
 
-  void add(Grib2Record r) {
-    runtimes.add( extract(r));
+  public List<CalendarDate> getRuntimesSorted() {
+    return runtimeSorted;
   }
 
-  void finish() {
-    runtimeSorted = new ArrayList<>(runtimes.size());
-    for (CalendarDate cd : runtimes) runtimeSorted.add(cd);
-    Collections.sort(runtimeSorted);
-    runtimes = null;
+  public int getSize() {
+    return runtimeSorted.size();
+  }
+
+  static public CalendarDate extractRunDate(Grib2Record gr) {
+    return gr.getReferenceDate();
+  }
+
+  public CalendarDate extract(Grib2Record gr) {
+    return extractRunDate(gr);
   }
 
   @Override
-  public CalendarDate extract(Grib2Record gr) {
-    return gr.getReferenceDate();
+  public void showInfo(Formatter info, Indent indent) {
+    if (times == null) {
+      info.format("%s %20s:", indent, "RunTimes");
+      for (CalendarDate cd : runtimeSorted)
+        info.format("%s, ", cd);
+      info.format("%n");
+
+    } else {
+      info.format("%s %20s    Offsets %n", indent, "RunTime");
+      int runIdx = 0;
+      for (CalendarDate cd : runtimeSorted) {
+        CoordinateTime time = (CoordinateTime) times.get(runIdx); // LOOK sort
+        info.format("%s %20s    ", indent, time.getRuntime());
+        for (int off : time.getOffsetSorted())
+          info.format(" %3d,", off);
+        info.format("%n");
+        runIdx++;
+      }
+    }
   }
+
+  public static class Builder extends CoordinateBuilderImpl {
+
+    public Builder(Object val) {
+      super(val);
+    }
+
+    @Override
+    public CoordinateBuilder makeBuilder(Object val) {
+      return new Builder(val);
+    }
+
+    @Override
+    protected Object extract(Grib2Record gr) {
+      return extractRunDate(gr);
+    }
+
+  protected Coordinate makeCoordinate(List<Object> values, List<Coordinate> subdivide) {
+    List<CalendarDate> runtimeSorted = new ArrayList<>(values.size());
+     for (Object val : values) runtimeSorted.add( (CalendarDate) val);
+     Collections.sort(runtimeSorted);
+     return new CoordinateRuntime(runtimeSorted, subdivide);
+   }
+  }
+
+
 }

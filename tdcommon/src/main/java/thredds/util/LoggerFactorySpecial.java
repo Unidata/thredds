@@ -174,13 +174,19 @@ public class LoggerFactorySpecial implements LoggerFactory {
               config);
       app.start();
 
-      LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+      /*LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
       Configuration conf = ctx.getConfiguration();
       LoggerConfig lconf = conf.getLoggerConfig(name);
       lconf.setAdditive(false); // otherwise, it also gets sent to root logger (threddsServlet.log)
       lconf.setLevel(level);
       lconf.addAppender(app, level, null);
-      ctx.updateLoggers(conf);
+      ctx.updateLoggers(conf);  */
+
+      org.apache.logging.log4j.core.Logger log4j = (org.apache.logging.log4j.core.Logger) LogManager.getLogger(name);
+      log4j.addAppender(app);
+      log4j.setLevel(level);
+      log4j.setAdditive(false); // otherwise, it also gets sent to root logger (threddsServlet.log)
+
 
       /* org.apache.logging.log4j.core.Logger log4j = (org.apache.logging.log4j.core.Logger) LogManager.getLogger(name);
       log4j.addAppender(app);

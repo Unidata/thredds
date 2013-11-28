@@ -41,6 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.server.dataset.TdsRequestedDataset;
 import thredds.server.wms.config.WmsDetailedConfig;
 import thredds.servlet.ServletUtil;
+import thredds.util.ContentType;
 import ucar.nc2.dt.GridDataset;
 import uk.ac.rdg.resc.ncwms.controller.AbstractWmsController;
 import uk.ac.rdg.resc.ncwms.controller.RequestParams;
@@ -173,6 +174,7 @@ public final class ThreddsWmsController extends AbstractWmsController
         Collection<? extends Dataset> datasets = Arrays.asList( ds );
         // In THREDDS we don't know the last update time so we use null
         modelAndView = getCapabilities( datasets, null, params, httpServletRequest, usageLogEntry );
+        //httpServletResponse.setContentType(ContentType.xml.toString());
       }
       else if ( request.equals( "GetMap" ) )
       {
@@ -236,7 +238,7 @@ public final class ThreddsWmsController extends AbstractWmsController
     }
     catch ( IOException e ) {
       if ( e.getClass().getName().equals( "org.apache.catalina.connector.ClientAbortException")) {
-        log.debug( "dispatchWmsRequest(): ClientAbortException: " + e.getMessage() );
+        log.debug("dispatchWmsRequest(): ClientAbortException: " + e.getMessage());
         return null;
       }
       log.error( "dispatchWmsRequest(): IOException: ", e );
