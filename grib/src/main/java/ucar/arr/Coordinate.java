@@ -13,7 +13,7 @@ import java.util.List;
  * @since 11/24/13
  */
 public interface Coordinate {
-  public Object extract(Grib2Record r);
+  // public Object extract(Grib2Record r);
 
   void showInfo(Formatter info, Indent indent);
 

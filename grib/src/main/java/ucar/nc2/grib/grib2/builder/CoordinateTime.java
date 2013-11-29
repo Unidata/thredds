@@ -12,7 +12,7 @@ import ucar.nc2.util.Indent;
 import java.util.*;
 
 /**
- * Describe
+ * Time coordinates that are not intervals.
  *
  * @author caron
  * @since 11/24/13
@@ -21,12 +21,12 @@ import java.util.*;
 public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
   private final CalendarDate runtime;
   private final List<Integer> offsetSorted;
-  private final List<Coordinate> subdivide;
+  //private final List<Coordinate> subdivide;
 
   public CoordinateTime(CalendarDate runtime, List<Integer> offsetSorted, List<Coordinate> subdivide) {
     this.runtime = runtime;
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
-    this.subdivide = (subdivide == null) ? null :  Collections.unmodifiableList(subdivide);
+    //this.subdivide = (subdivide == null) ? null :  Collections.unmodifiableList(subdivide);
   }
 
   static public Integer extractOffset(Grib2Record gr) {
@@ -50,10 +50,12 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
     return offsetSorted;
   }
 
+  @Override
   public List<? extends Object> getValues() {
     return offsetSorted;
   }
 
+  @Override
   public int getSize() {
     return offsetSorted.size();
   }

@@ -130,24 +130,24 @@ public class Grib2Rectilyser2 {
     // create and assign time coordinate
     // (uniform or not) X (isInterval or not)
     for (VariableBag vb : gribvars) {
-      CoordinateBuilder rootBuilder = new CoordinateRuntime.Builder(null);
-      CoordinateBuilder next = rootBuilder.chainTo(new CoordinateTime.Builder(null));
-
       Grib2Pds pdsFirst = vb.first.getPDS();
+      setTimeUnit(vb);
+
+      CoordinateBuilder rootBuilder = new CoordinateRuntime.Builder(null);
+      CoordinateBuilder next;
+      if (vb.first.getPDS().isTimeInterval())
+        next = rootBuilder.chainTo(new CoordinateTimeIntv.Builder(null, cust, vb.timeUnit));
+      else
+        next = rootBuilder.chainTo(new CoordinateTime.Builder(null));
+
       VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
-      if (vertUnit.isVerticalCoordinate()) {
+      if (vertUnit.isVerticalCoordinate())
         next = next.chainTo(new CoordinateVert.Builder(null));
-      }
 
       vb.coordND = new CoordinateND(rootBuilder);
 
-      setTimeUnit(vb);
-      if (vb.first.getPDS().isTimeInterval()) {
-        // LOOK
-      } else {
-        for (Record r : vb.atomList)
-          vb.coordND.add(r.gr);
-      }
+      for (Record r : vb.atomList)
+        vb.coordND.add(r.gr);
       vb.coordND.finish();
     }
 
@@ -255,7 +255,7 @@ public class Grib2Rectilyser2 {
   }
 
   public class Record {
-    Grib2Record gr;
+    public Grib2Record gr;
     int tcCoord;
     TimeCoord.TinvDate tcIntvCoord;
     VertCoord.Level vcCoord;
@@ -439,7 +439,7 @@ public class Grib2Rectilyser2 {
     Counter all = new Counter();
 
     for (VariableBag vb : gribvars) {
-      f.format("Variable %s%n", tables.getVariableName(vb.first));
+      f.format("Variable %s (%d)%n", tables.getVariableName(vb.first), vb.cdmHash);
       vb.coordND.showInfo(f, all);
       //f.format("  %3d %3d %3d %s records = %d density = %f hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
       //        vname, vb.atomList.size(), vb.recordMap.density(), vb.cdmHash);
@@ -449,11 +449,11 @@ public class Grib2Rectilyser2 {
   }
 
   public class VariableBag implements Comparable<VariableBag> {
-    Grib2Record first;
-    int cdmHash;
+    public Grib2Record first;
+    public int cdmHash;
 
-    List<Record> atomList = new ArrayList<>(100); // does this need to be sorted??
-    CoordinateND coordND;
+    public List<Record> atomList = new ArrayList<>(100); // does this need to be sorted??
+    public CoordinateND coordND;
     CalendarPeriod timeUnit;
 
     int timeCoordIndex = -1;
@@ -474,9 +474,6 @@ public class Grib2Rectilyser2 {
     public int compareTo(VariableBag o) {
       return Grib2Utils.getVariableName(first).compareTo(Grib2Utils.getVariableName(o.first));
     }
-
-
-
   }
 
   /**

@@ -58,10 +58,10 @@ public class CoordinateRuntime implements Coordinate {
       info.format("%s %20s    Offsets %n", indent, "RunTime");
       int runIdx = 0;
       for (CalendarDate cd : runtimeSorted) {
-        CoordinateTime time = (CoordinateTime) times.get(runIdx); // LOOK sort
-        info.format("%s %20s    ", indent, time.getRuntime());
-        for (int off : time.getOffsetSorted())
-          info.format(" %3d,", off);
+        Coordinate time = times.get(runIdx); // LOOK sort
+        info.format("%s %20s    ", indent, cd);
+        for (Object val : time.getValues())
+          info.format(" %3s,", val);
         info.format("%n");
         runIdx++;
       }

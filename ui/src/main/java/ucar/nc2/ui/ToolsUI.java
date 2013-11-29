@@ -141,10 +141,11 @@ public class ToolsUI extends JPanel {
   private GribIndexPanel gribIdxPanel;
   private GribRenamePanel gribVariableRenamePanel;
   private GribTemplatePanel gribTemplatePanel;
-  private Grib2CollectionPanel grib2CollectionPanel;
   private Grib1CollectionPanel grib1CollectionPanel;
   private Grib1ReportPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
+  private Grib2CollectionPanel grib2CollectionPanel;
+  private Grib2RectilyzePanel grib2RectilyzePanel;
   private Grib2TablePanel grib2TablePanel;
   private Grib2ReportPanel grib2ReportPanel;
   private Grib2DataPanel grib2DataPanel;
@@ -166,7 +167,7 @@ public class ToolsUI extends JPanel {
   private WmsPanel wmsPanel;
 
   private JTabbedPane tabbedPane;
-  private JTabbedPane iospTabPane, bufrTabPane, grib2TabPane, grib1TabPane, hdf5TabPane;
+  private JTabbedPane iospTabPane, bufrTabPane, gribTabPane, grib2TabPane, grib1TabPane, hdf5TabPane;
   private JTabbedPane ftTabPane, fcTabPane;
   private JTabbedPane fmrcTabPane;
   private JTabbedPane ncmlTabPane;
@@ -200,6 +201,7 @@ public class ToolsUI extends JPanel {
     // all the tabbed panes
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
     iospTabPane = new JTabbedPane(JTabbedPane.TOP);
+    gribTabPane = new JTabbedPane(JTabbedPane.TOP);
     grib2TabPane = new JTabbedPane(JTabbedPane.TOP);
     grib1TabPane = new JTabbedPane(JTabbedPane.TOP);
     bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
@@ -242,6 +244,7 @@ public class ToolsUI extends JPanel {
 
     // nested tab - iosp
     iospTabPane.addTab("BUFR", bufrTabPane);
+    iospTabPane.addTab("GRIB", gribTabPane);
     iospTabPane.addTab("GRIB2", grib2TabPane);
     iospTabPane.addTab("GRIB1", grib1TabPane);
     iospTabPane.addTab("HDF5", hdf5TabPane);
@@ -259,17 +262,21 @@ public class ToolsUI extends JPanel {
     bufrTabPane.addTab("BufrReports", new JLabel("BufrReports"));
     addListeners(bufrTabPane);
 
+    // nested-2 tab - grib
+    gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
+    gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
+    gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
+    gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
+    gribTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
+    gribTabPane.addTab("GRIB-RENAME", new JLabel("GRIB-RENAME"));
+    addListeners(gribTabPane);
+
     // nested-2 tab - grib-2
     grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2collection"));
-    grib2TabPane.addTab("GribIndex", new JLabel("GribIndex"));
-    grib2TabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
+    grib2TabPane.addTab("GRIB2rectilyze", new JLabel("GRIB2rectilyze"));
     grib2TabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
     grib2TabPane.addTab("GRIB2data", new JLabel("GRIB2data"));
-    grib2TabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
-    grib2TabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
-    grib2TabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
     grib2TabPane.addTab("GRIB2-TABLES", new JLabel("GRIB2-TABLES"));
-    grib2TabPane.addTab("GRIB-RENAME", new JLabel("GRIB-RENAME"));
     addListeners(grib2TabPane);
 
     // nested-2 tab - grib-1
@@ -409,6 +416,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("GRIB2collection")) {
       grib2CollectionPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
       c = grib2CollectionPanel;
+
+    } else if (title.equals("GRIB2rectilyze")) {
+      grib2RectilyzePanel = new Grib2RectilyzePanel((PreferencesExt) mainPrefs.node("GRIB2rectilyze"));
+      c = grib2RectilyzePanel;
 
     } else if (title.equals("GRIB2data")) {
       grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
@@ -928,6 +939,7 @@ public class ToolsUI extends JPanel {
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribFilesPanel != null) gribFilesPanel.save();
     if (grib2CollectionPanel != null) grib2CollectionPanel.save();
+    if (grib2RectilyzePanel != null) grib2RectilyzePanel.save();
     if (grib2DataPanel != null) grib2DataPanel.save();
     if (gribCodePanel != null) gribCodePanel.save();
     if (gribIdxPanel != null) gribIdxPanel.save();
@@ -2623,7 +2635,125 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
+  // GRIB2 new
+  private class Grib2RectilyzePanel extends OpPanel {
+    ucar.nc2.ui.Grib2RectilyzePanel gribTable;
 
+    void closeOpenFiles() throws IOException {
+      gribTable.closeOpenFiles();
+    }
+
+    Grib2RectilyzePanel(PreferencesExt p) {
+      super(p, "collection:", true, false);
+      gribTable = new ucar.nc2.ui.Grib2RectilyzePanel(prefs, buttPanel);
+      add(gribTable, BorderLayout.CENTER);
+
+      gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("openGrib2Collection")) {
+            String collectionName = (String) e.getNewValue();
+            openGrib2Collection(collectionName);
+          }
+        }
+      });
+
+      /* AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+      showButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          gribTable.showCollection(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(showButt);
+
+      AbstractButton aggButton = BAMutil.makeButtcon("V3", "Run Rectilyser", false);
+      aggButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            gribTable.runAggregator(f);
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(aggButton);
+
+      /* AbstractButton agg2Button = BAMutil.makeButtcon("V3", "Run Rectilyser2", false);
+      agg2Button.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            gribTable.runAggregator2(f);
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(agg2Button);
+
+      AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+      writeButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            if (!gribTable.writeIndex(f)) return;
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(writeButton);  */
+    }
+
+    void setCollection(String collection) {
+      if (process(collection)) {
+        if (!defer) cb.addItem(collection);
+      }
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        gribTable.setCollection(command);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      gribTable.save();
+      super.save();
+    }
+
+  }
     /////////////////////////////////////////////////////////////////////
   // GRIB2 new
   private class Grib2DataPanel extends OpPanel {

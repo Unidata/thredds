@@ -20,11 +20,11 @@ import java.util.*;
  */
 public class CoordinateVert implements Coordinate {
   private final List<VertCoord.Level> levelSorted;
-  private final List<Coordinate> subdivide;
+  //private final List<Coordinate> subdivide;
 
   public CoordinateVert(List<VertCoord.Level> levelSorted, List<Coordinate> subdivide) {
     this.levelSorted = Collections.unmodifiableList(levelSorted);
-    this.subdivide = (subdivide == null) ? null :  Collections.unmodifiableList(subdivide);
+    //this.subdivide = (subdivide == null) ? null :  Collections.unmodifiableList(subdivide);
   }
 
   static public VertCoord.Level extractLevel(Grib2Record gr) {
@@ -59,7 +59,7 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s %20s:", indent, "Levels");
+    info.format("%s Levels: ", indent);
      for (VertCoord.Level level : levelSorted)
        info.format("%s, ", level);
     info.format("%n");

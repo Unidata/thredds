@@ -27,6 +27,10 @@ public class CoordinateND {
     root.add(gr);
   }
 
+  public List<Coordinate> getCoordinates() {
+    return coordinates;
+  }
+
   public void finish() {
     root.finish();
     buildOrthogonalCoordinates();

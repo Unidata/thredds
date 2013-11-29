@@ -56,7 +56,7 @@ public interface Collection extends AutoCloseable {
   public MFile getLatestFile() throws IOException;
 
   /**
-   * Get the current collection of MFile, no guarenteed order.
+   * Get the current collection of MFile, no guaranteed order.
    * May be faster for large collections, use when order is not important.
    * <pre>
      try (CloseableIterator<MFile> iter = getFileIterator()) {
