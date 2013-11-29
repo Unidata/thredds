@@ -185,8 +185,7 @@ public class CatalogReader {
   private void initFollowCatrefs(File catFile, List<InvDataset> datasets) throws IOException {
     for (InvDataset invDataset : datasets) {
 
-      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)
-              && !(invDataset instanceof InvDatasetFeatureCollection)) {
+      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFeatureCollection)) {
 
         InvCatalogRef catref = (InvCatalogRef) invDataset;
         String href = catref.getXlinkHref();
@@ -208,7 +207,7 @@ public class CatalogReader {
           initCatalog(catR, true);
         }
 
-      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc) && !(invDataset instanceof InvDatasetFeatureCollection)) {
+      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFeatureCollection)) {
         // recurse through nested datasets
         initFollowCatrefs(catFile, invDataset.getDatasets());
       }

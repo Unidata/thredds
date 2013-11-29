@@ -46,7 +46,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvDatasetFeatureCollection;
-import thredds.catalog.InvDatasetFmrc;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetScan;
 import thredds.server.admin.DebugController;
@@ -169,15 +168,6 @@ public class DatasetHandler {
 
     // look for a match
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
-
-    // look for an fmrc dataset
-    if ((match != null) && (match.dataRoot.getFmrc() != null)) {
-      InvDatasetFmrc fmrc = match.dataRoot.getFmrc();
-      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFmrc= " + fmrc);
-      NetcdfFile ncfile = fmrc.getDataset(match.remaining);
-      if (ncfile == null) throw new FileNotFoundException(reqPath);
-      return ncfile;
-    }
 
     // look for an feature collection dataset
     if ((match != null) && (match.dataRoot.getFeatCollection() != null)) {
@@ -406,12 +396,6 @@ public class DatasetHandler {
       if (debugResourceControl)
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for datasetScan " + scan.getPath());
       resourceControlMatcher.put(scan.getPath(), ds.getRestrictAccess());
-
-    } else if (ds instanceof InvDatasetFmrc) {
-      InvDatasetFmrc fmrc = (InvDatasetFmrc) ds;
-      if (debugResourceControl)
-        System.out.println("putResourceControl " + ds.getRestrictAccess() + " for datasetFmrc " + fmrc.getPath());
-      resourceControlMatcher.put(fmrc.getPath(), ds.getRestrictAccess());
 
     } else { // dataset
       if (debugResourceControl)

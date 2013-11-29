@@ -190,8 +190,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         catalog.addDataset( readDataset( catalog, null, e, baseURI ));
       } else if (e.getName().equals("featureCollection")) {
         catalog.addDataset( readFeatureCollection( catalog, null, e, baseURI ));
-      } else if (e.getName().equals("datasetFmrc")) {
-        catalog.addDataset( readDatasetFmrc( catalog, null, e, baseURI ));
       } else if (e.getName().equals("datasetScan")) {
         catalog.addDataset( readDatasetScan( catalog, null, e, baseURI ));
       } else if (e.getName().equals("catalogRef")) {
@@ -323,8 +321,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         dataset.addDataset( ds);
       } else if (e.getName().equals("datasetScan")) {
         dataset.addDataset( readDatasetScan( catalog, dataset, e, base));
-      } else if (e.getName().equals("datasetFmrc")) {
-        dataset.addDataset( readDatasetFmrc( catalog, dataset, e, base));
       } else if (e.getName().equals("featureCollection")) {
         InvDatasetImpl ds = readFeatureCollection( catalog, dataset, e, base );
         if (ds != null)
@@ -366,25 +362,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return new FeatureCollectionConfig.UpdateConfig(startup, recheckAfter, rescan, trigger, deleteAfter);
   }
 
-  protected InvDatasetImpl readDatasetFmrc( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
-    String name = dsElem.getAttributeValue("name");
-    String path = dsElem.getAttributeValue("path");
-    String runsOnly = dsElem.getAttributeValue("runsOnly");
-    InvDatasetFmrc dsFmrc = new InvDatasetFmrc( parent, name, path, "true".equals(runsOnly));
-
-    Element fmrcElem = dsElem.getChild( "fmrcInventory", defNS );
-    if (fmrcElem != null) {
-      String location = expandAliasForPath(fmrcElem.getAttributeValue("location"));
-      String def = fmrcElem.getAttributeValue("fmrcDefinition");
-      String suffix = fmrcElem.getAttributeValue("suffix");
-      String olderThan = fmrcElem.getAttributeValue("olderThan");
-      String subdirs = fmrcElem.getAttributeValue("subdirs");
-      dsFmrc.setFmrcInventoryParams( location, def, suffix, olderThan, subdirs);
-    }
-
-    readDatasetInfo( catalog, dsFmrc, dsElem, base);
-    return dsFmrc;
-  }
       // read a dataset scan element
   protected InvDatasetScan readDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
     InvDatasetScan datasetScan = null;
@@ -1761,25 +1738,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return dsElem;
   }
 
-  private Element writeDatasetFmrc( InvDatasetFmrc ds) {
-    Element dsElem;
-
-    if ( raw ) {
-      dsElem = new Element( "datasetFmrc", defNS );
-      dsElem.setAttribute( "name", ds.getName() );
-      dsElem.setAttribute( "path", ds.getPath() );
-      if (ds.isRunsOnly())
-        dsElem.setAttribute( "runsOnly", "true" );
-      writeDatasetInfo( ds, dsElem, false, true );
-
-    } else {
-      dsElem = writeCatalogRef( ds);
-      // dsElem.addContent( writeProperty( new InvProperty( "DatasetFmrc", ds.getPath() ) ) ); /// LOOK security hole - not used anyway, I think
-    }
-
-    return dsElem;
-  }
-
   private Element writeDatasetRoot( InvProperty prop) {
     Element drootElem = new Element("datasetRoot", defNS);
     drootElem.setAttribute("path", prop.getName());
@@ -2159,8 +2117,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       InvDatasetImpl nested = (InvDatasetImpl) datasets.next();
       if (nested instanceof InvDatasetScan)
         dsElem.addContent( writeDatasetScan( (InvDatasetScan) nested));
-      else if (nested instanceof InvDatasetFmrc)
-        dsElem.addContent( writeDatasetFmrc( (InvDatasetFmrc) nested));
       else if (nested instanceof InvCatalogRef)
         dsElem.addContent( writeCatalogRef( (InvCatalogRef) nested));
       else

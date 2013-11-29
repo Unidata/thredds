@@ -106,7 +106,7 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
             mcGridReader = new McIDASGridReader();
         }
         mcGridReader.init(raf);
-        GridIndex index = ((McIDASGridReader) mcGridReader).getGridIndex();
+        GridIndex index =  mcGridReader.getGridIndex();
         open(index, cancelTask);
         if (debugOpen) {
             System.out.println(" GridServiceProvider.open "
@@ -130,7 +130,7 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
                 (McIDASGridRecord) index.getGridRecords().get(0));
         GridIndexToNC delegate = new GridIndexToNC(index.filename);
         //delegate.setUseDescriptionForVariableName(false);
-        delegate.open(index, lookup, 4, ncfile, fmrcCoordSys, cancelTask);
+        delegate.open(index, lookup, 4, ncfile, cancelTask);
         ncfile.finish();
     }
 
@@ -144,8 +144,7 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
             if ( !mcGridReader.init()) {
                 return false;
             }
-            GridIndex index =
-                ((McIDASGridReader) mcGridReader).getGridIndex();
+            GridIndex index =  mcGridReader.getGridIndex();
             // reconstruct the ncfile objects
             ncfile.empty();
             open(index, null);

@@ -39,7 +39,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.ma2.Section;
