@@ -38,6 +38,10 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder;
+import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilderFromIndex;
+import ucar.nc2.grib.grib1.builder.Grib1TimePartitionBuilder;
+import ucar.nc2.grib.grib1.builder.Grib1TimePartitionBuilderFromIndex;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.util.CancelTask;
@@ -173,10 +177,10 @@ public class Grib1Iosp extends GribIosp {
       String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName();
 
       if (isTimePartitioned) {
-        timePartition = Grib1TimePartitionBuilder.createFromIndex(name, null, raf, logger);
+        timePartition = Grib1TimePartitionBuilderFromIndex.createTimePartitionFromIndex(name, null, raf, null, logger);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib1CollectionBuilder.createFromIndex(name, null, raf, gribConfig, logger);
+        gribCollection = Grib1CollectionBuilderFromIndex.createFromIndex(name, null, raf, gribConfig, logger);
       }
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
 

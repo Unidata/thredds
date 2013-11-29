@@ -32,7 +32,6 @@
 
 package ucar.nc2.grib.grib1;
 
-import thredds.filesystem.MFileOS;
 import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
@@ -40,6 +39,7 @@ import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -123,7 +123,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-  static public void make(String name, String spec, org.slf4j.Logger logger) throws IOException {
+  /* static public void make(String name, String spec, org.slf4j.Logger logger) throws IOException {
     long start = System.currentTimeMillis();
     Formatter f = new Formatter();
     CollectionManager dcm = new MFileCollectionManager(name, spec, f, null);
@@ -158,5 +158,5 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
     }
     // "G:/nomads/timeseries/200808/.*grb2$"
     // readIndex2("G:/nomads/timeseries/200808/GaussLatLon-576X1152.ncx");
-  }
+  }   */
 }

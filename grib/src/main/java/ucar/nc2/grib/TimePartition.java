@@ -36,7 +36,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.Collection;
 import thredds.inventory.partition.PartitionManager;
-import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
+import ucar.nc2.grib.grib1.builder.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.builder.Grib2TimePartitionBuilder;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;

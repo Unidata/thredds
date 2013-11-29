@@ -10,8 +10,9 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
-import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
+import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder;
+import ucar.nc2.grib.grib1.builder.Grib1TimePartitionBuilder;
+import ucar.nc2.grib.grib1.builder.Grib1TimePartitionBuilderFromIndex;
 import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.grib.grib2.builder.*;
 import ucar.nc2.stream.NcStream;
@@ -220,13 +221,13 @@ public class GribCdmIndex implements IndexReader {
           gc = Grib2CollectionBuilderFromIndex.createFromIndex(indexFile, null, raf, config, logger);
           break;
         case Grib1CollectionBuilder.MAGIC_START:
-          gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf, config, logger);
+          gc = Grib2CollectionBuilderFromIndex.createFromIndex(indexFile, null, raf, config, logger);
           break;
         case Grib2TimePartitionBuilder.MAGIC_START:
           gc = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(indexFile, null, raf, config, logger);
           break;
         case Grib1TimePartitionBuilder.MAGIC_START:
-          gc = Grib1TimePartitionBuilder.createFromIndex(indexFile, null, raf, logger);
+          gc = Grib1TimePartitionBuilderFromIndex.createTimePartitionFromIndex(indexFile, null, raf, config, logger);
           break;
       }
     } catch (Throwable t) {
