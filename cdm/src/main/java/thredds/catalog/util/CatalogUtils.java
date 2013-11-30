@@ -64,7 +64,7 @@ public class CatalogUtils
         {
             InvDatasetImpl curDs = (InvDatasetImpl) invds;
 
-            if ( curDs instanceof InvDatasetScan || curDs instanceof InvDatasetFmrc )
+            if ( curDs instanceof InvDatasetScan)
                 continue;
 
             if ( curDs instanceof InvCatalogRef )

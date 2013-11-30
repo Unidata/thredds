@@ -36,7 +36,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.fmr.FmrcCoordSys;
+//import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 
@@ -84,7 +84,7 @@ public class GridIndexToNC {
    * @throws IOException Problem reading from the file
    */
   public void open(GridIndex index, GridTableLookup lookup, int version,
-                   NetcdfFile ncfile, FmrcCoordSys fmrcCoordSys, CancelTask cancelTask) throws IOException {
+                   NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
 
     // create the HorizCoord Systems : one for each gds
     List<GridDefRecord> hcsList = index.getHorizCoordSys();

@@ -36,7 +36,7 @@ package ucar.nc2.iosp.grid;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
-import ucar.nc2.dt.fmr.FmrcCoordSys;
+//import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 
@@ -174,11 +174,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * set by the FMRC from the inventory definition, otherwise null
-   */
-  protected FmrcCoordSys fmrcCoordSys;
-
-  /**
    * The netCDF file that the iosp is part of
    */
   protected NetcdfFile ncfile;
@@ -218,9 +213,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
   @Override
   public Object sendIospMessage(Object special) {
-    if (special instanceof FmrcCoordSys) {
-      fmrcCoordSys = (FmrcCoordSys) special;
-    } 
     return super.sendIospMessage(special);
   }
 

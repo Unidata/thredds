@@ -48,7 +48,7 @@ import java.io.IOException;
  */
 public class Grib1TimePartition extends TimePartition {
 
-  Grib1TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig tpc, org.slf4j.Logger logger) {
+  public Grib1TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig tpc, org.slf4j.Logger logger) {
     super(name, directory, tpc, true, logger);
   }
 

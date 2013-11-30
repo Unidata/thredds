@@ -59,7 +59,6 @@ import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogRef;
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvDatasetFeatureCollection;
-import thredds.catalog.InvDatasetFmrc;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetScan;
 import thredds.catalog.InvProperty;
@@ -494,11 +493,6 @@ public final class DataRootHandler implements InitializingBean {
         if (!addRoot(ds))
           iter.remove();
 
-      } else if (invDataset instanceof InvDatasetFmrc) {
-        InvDatasetFmrc fmrc = (InvDatasetFmrc) invDataset;
-        addRoot(fmrc);
-        needsCache = true;
-
       } else if (invDataset instanceof InvDatasetFeatureCollection) {
         InvDatasetFeatureCollection fc = (InvDatasetFeatureCollection) invDataset;
         addRoot(fc);
@@ -522,7 +516,7 @@ public final class DataRootHandler implements InitializingBean {
   private void initFollowCatrefs(String dirPath, List<InvDataset> datasets) throws IOException {
     for (InvDataset invDataset : datasets) {
 
-      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)
+      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan)
               && !(invDataset instanceof InvDatasetFeatureCollection)) {
         InvCatalogRef catref = (InvCatalogRef) invDataset;
         String href = catref.getXlinkHref();
@@ -551,7 +545,7 @@ public final class DataRootHandler implements InitializingBean {
           initCatalog(path, true, false);
         }
 
-      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc) && !(invDataset instanceof InvDatasetFeatureCollection)) {
+      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFeatureCollection)) {
         // recurse through nested datasets
         initFollowCatrefs(dirPath, invDataset.getDatasets());
       }
@@ -589,40 +583,6 @@ public final class DataRootHandler implements InitializingBean {
     pathMatcher.put(path, droot);
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
-    return true;
-  }
-
-  // Only called by synchronized methods
-  private boolean addRoot(InvDatasetFmrc fmrc) {
-    // check for duplicates
-    String path = fmrc.getPath();
-
-    if (path == null) {
-      logCatalogInit.error(ERROR + fmrc.getFullName() + " missing a path attribute.");
-      return false;
-    }
-
-    DataRoot droot = (DataRoot) pathMatcher.get(path);
-    if (droot != null) {
-      logCatalogInit.error(ERROR + "DatasetFmrc already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-              " wanted to use by FMRC Dataset =<" + fmrc.getFullName() + ">");
-      return false;
-    }
-
-    // add it
-    droot = new DataRoot(fmrc);
-
-    if (droot.dirLocation != null) {
-      File file = new File(droot.dirLocation);
-      if (!file.exists()) {
-        logCatalogInit.error(ERROR + "DatasetFmrc =" + droot.path + " directory= <" + droot.dirLocation + "> does not exist\n");
-        return false;
-      }
-    }
-
-    pathMatcher.put(path, droot);
-
-    logCatalogInit.debug(" added rootPath=<" + path + ">  for fmrc= <" + fmrc.getFullName() + ">");
     return true;
   }
 
@@ -759,7 +719,6 @@ public final class DataRootHandler implements InitializingBean {
     private String path;         // match this path
     private String dirLocation;  // to this directory
     private InvDatasetScan scan; // the InvDatasetScan that created this (may be null)
-    private InvDatasetFmrc fmrc; // the InvDatasetFmrc that created this (may be null)
     private InvDatasetFeatureCollection featCollection; // the InvDatasetFeatureCollection that created this (may be null)
     private boolean cache = true;
 
@@ -771,16 +730,6 @@ public final class DataRootHandler implements InitializingBean {
       setPath(featCollection.getPath());
       this.featCollection = featCollection;
       this.dirLocation = featCollection.getTopDirectoryLocation();
-      show();
-    }
-
-    DataRoot(InvDatasetFmrc fmrc) {
-      setPath(fmrc.getPath());
-      this.fmrc = fmrc;
-
-      InvDatasetFmrc.InventoryParams params = fmrc.getFmrcInventoryParams();
-      if (null != params)
-        dirLocation = params.location;
       show();
     }
 
@@ -824,10 +773,6 @@ public final class DataRootHandler implements InitializingBean {
 
     public InvDatasetScan getScan() {
       return scan;
-    }
-
-    public InvDatasetFmrc getFmrc() {
-      return fmrc;
     }
 
     public InvDatasetFeatureCollection getFeatCollection() {
@@ -977,9 +922,6 @@ public final class DataRootHandler implements InitializingBean {
     if (reqDataRoot.scan != null)
       return reqDataRoot.scan.requestCrawlableDataset(path);
 
-    if (reqDataRoot.fmrc != null)
-      return null; // if fmrc exists, bail out and deal with it in caller
-
     if (reqDataRoot.featCollection != null)
       return null; // if featCollection exists, bail out and deal with it in caller
 
@@ -1015,11 +957,8 @@ public final class DataRootHandler implements InitializingBean {
     DataRootMatch match = findDataRootMatch(path);
     if (match == null)
       return null;
-    if (match.dataRoot.fmrc != null)
-      return match.dataRoot.fmrc.getFile(match.remaining);
     if (match.dataRoot.featCollection != null)
       return match.dataRoot.featCollection.getFile(match.remaining);
-
 
     CrawlableDataset crDs;
     try {
@@ -1100,10 +1039,6 @@ public final class DataRootHandler implements InitializingBean {
     InvDatasetScan scan = null;
     if (reqDataRoot.scan != null)
       scan = reqDataRoot.scan;
-    else if (reqDataRoot.fmrc != null)  // TODO refactor UGLY FMRC HACK
-      scan = reqDataRoot.fmrc.getRawFileScan();
-    //else if (reqDataRoot.featCollection != null)  // TODO refactor UGLY FMRC HACK
-    //  scan = reqDataRoot.featCollection.getRawFileScan();
 
     return scan;
   }
@@ -1460,11 +1395,6 @@ public final class DataRootHandler implements InitializingBean {
     if (match == null)
       return null;
 
-    // look for the fmrc
-    if (match.dataRoot.fmrc != null) {
-      return match.dataRoot.fmrc.makeCatalog(match.remaining, path, baseURI);
-    }
-
     // look for the feature Collection
     if (match.dataRoot.featCollection != null) {
       boolean isLatest = path.endsWith("/latest.xml");
@@ -1799,17 +1729,8 @@ public final class DataRootHandler implements InitializingBean {
             DataRoot ds = (DataRoot) iter.next();
             e.pw.print(" <b>" + ds.path + "</b>");
             String url = DataRootHandler.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.path + "/";
-            if (ds.fmrc == null) {
-              String type = (ds.scan == null) ? "root" : "scan";
-              e.pw.println(" for " + type + " directory= <a href='" + url + "'>" + ds.dirLocation + "</a> ");
-            } else {
-              if (ds.dirLocation == null) {
-                //url = DataRootHandler.this.tdsContext.getContextPath() + "/" + ds.path;
-                e.pw.println("  for fmrc= <a href='" + ds.fmrc.getXlinkHref() + "'>" + ds.fmrc.getXlinkHref() + "</a>");
-              } else {
-                e.pw.println("  for fmrc= <a href='" + url + "'>" + ds.dirLocation + "</a>");
-              }
-            }
+            String type = (ds.scan == null) ? "root" : "scan";
+            e.pw.println(" for " + type + " directory= <a href='" + url + "'>" + ds.dirLocation + "</a> ");
           }
         }
       }
@@ -1824,7 +1745,7 @@ public final class DataRootHandler implements InitializingBean {
           boolean ok = true;
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
-            if ((ds.dirLocation == null) && (ds.fmrc != null)) continue;
+            if ((ds.dirLocation == null)) continue;
 
             try {
               File f = new File(ds.dirLocation);

@@ -852,7 +852,6 @@ public class TestAll extends TestCase
       InvDatasetImpl curDs = (InvDatasetImpl) invds;
 
       if ( curDs instanceof InvDatasetScan ) continue;
-      if ( curDs instanceof InvDatasetFmrc ) continue;
 
       if ( curDs instanceof InvCatalogRef )
       {

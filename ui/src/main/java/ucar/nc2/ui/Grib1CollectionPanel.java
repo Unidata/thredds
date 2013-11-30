@@ -33,7 +33,6 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerAbstract;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.GdsHorizCoordSys;
@@ -42,6 +41,8 @@ import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.Grib1Parameter;
+import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder;
+import ucar.nc2.grib.grib1.builder.Grib1Rectilyser;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
