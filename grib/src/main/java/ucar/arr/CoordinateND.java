@@ -1,14 +1,12 @@
 package ucar.arr;
 
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.builder.CoordinateTime;
-import ucar.nc2.grib.grib2.builder.Grib2Rectilyser2;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
 
 /**
- * Describe
+ * N dimensional coordinates.
  *
  * @author caron
  * @since 11/27/13
@@ -29,6 +27,10 @@ public class CoordinateND {
 
   public List<Coordinate> getCoordinates() {
     return coordinates;
+  }
+
+  public SparseArray<Grib2Record> getSparseArray() {
+    return sa;
   }
 
   public void finish() {
@@ -113,7 +115,7 @@ public class CoordinateND {
 
   /////////////////////////////////////////////////////////////////////////
 
-  public void showInfo(Formatter info, Grib2Rectilyser2.Counter all) {
+  public void showInfo(Formatter info, Counter all) {
     showInfo(coordinates, info, new Indent(2));
     if (sa != null) sa.showInfo(info, all);
   }

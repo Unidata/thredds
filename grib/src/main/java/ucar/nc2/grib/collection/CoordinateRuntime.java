@@ -1,4 +1,4 @@
-package ucar.nc2.grib.grib2.builder;
+package ucar.nc2.grib.collection;
 
 import net.jcip.annotations.Immutable;
 import ucar.arr.Coordinate;

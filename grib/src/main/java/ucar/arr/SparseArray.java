@@ -1,8 +1,5 @@
 package ucar.arr;
 
-import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.builder.Grib2Rectilyser2;
-
 import java.util.*;
 
 /**
@@ -13,19 +10,19 @@ import java.util.*;
  */
 public class SparseArray<T> {
   int[] size;    // multidim sizes
-  int[] stride;  // optimize index calculation
+  int[] stride;  // for index calculation
   int totalSize; // product of sizes
 
-  int[] track; // index into content  size totalSize. LOOK use byte, short for memory ??
-  List<T> content; // keep the things in an ArrayList. LOOK could only allocated part of this.
+  int[] track; // index into content, size totalSize. LOOK use byte, short for memory ??
+  List<T> content; // keep the things in an ArrayList.
 
-  int ndups = 0; // number of duplicates - last one is kept (could make this changeable)
+  int ndups = 0; // number of duplicates
 
   public SparseArray( int... size) {
     this.size = size;
     totalSize = 1;
     for (int aSize : size) totalSize *= aSize;
-    this.content = new ArrayList<>(totalSize);
+    this.content = new ArrayList<>(totalSize);  // LOOK could only allocate part of this.
 
     // strides
     stride = new int[size.length];
@@ -41,12 +38,13 @@ public class SparseArray<T> {
   public void add(T thing, int... index) {
     content.add(thing);
     int where = calcIndex(index);
-    if (track[where] > 0) ndups++;
+    if (track[where] > 0) ndups++;  // LOOK here is where we need to decide how to handle duplicates
     track[where] = content.size(); // 1-based so that 0 = missing
   }
 
   public T fetch(int[] index) {
     int where = calcIndex(index);
+    if (track[where] == 0) return null; // missing
     int idx = track[where-1];
     return content.get(idx);
   }
@@ -55,6 +53,13 @@ public class SparseArray<T> {
     int result=0;
     for (int idx : track)
       if (idx > 0) result++;
+    return result;
+  }
+
+  public int countMissing() {
+    int result=0;
+    for (int idx : track)
+      if (idx == 0) result++;
     return result;
   }
 
@@ -76,13 +81,15 @@ public class SparseArray<T> {
     return (double) countNotMissing() / totalSize;
   }
 
-  public void showInfo(Formatter info, Grib2Rectilyser2.Counter all) {
+  public void showInfo(Formatter info, Counter all) {
     info.format(" ndups=%d total=%d/%d density= %f%n", ndups, countNotMissing(), totalSize, getDensity());
 
-    all.dups += ndups;
-    all.recordsUnique += countNotMissing();
-    all.recordsTotal += totalSize;
-    all.vars++;
+    if (all != null) {
+      all.dups += ndups;
+      all.recordsUnique += countNotMissing();
+      all.recordsTotal += totalSize;
+      all.vars++;
+    }
   }
 
 }

@@ -1,6 +1,5 @@
 package ucar.arr;
 
-import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.util.Indent;
 
 import java.util.Formatter;
@@ -16,9 +15,12 @@ public interface Coordinate {
   // public Object extract(Grib2Record r);
 
   void showInfo(Formatter info, Indent indent);
+  void showCoords(Formatter info);
 
   List<? extends Object> getValues();
 
   int getSize();
+
+  String getName();
 
 }

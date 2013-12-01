@@ -82,47 +82,6 @@ public abstract class GribIndex {
   }
 
   /**
-   * Create a gbx9 and ncx index and a grib collection from a single grib1 or grib2 file.
-   * Use the existing index is it already exists.
-   *
-   * @param isGrib1 true if grib1
-   * @param dataRaf the grib file already open
-   * @param config  special configuration
-   * @param force  force writing index
-   * @return the resulting GribCollection
-   * @throws IOException on io error
-   */
-  public static GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
-                                                                CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
-
-    GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index() ;
-
-    String filename = dataRaf.getLocation();
-    File dataFile = new File(filename);
-    boolean readOk;
-    try {
-      readOk = gribIndex.readIndex(filename, dataFile.lastModified(), force); // heres where the gbx9 file date is checked against the data file
-    } catch (IOException ioe) {
-      readOk = false;
-    }
-
-    // make or remake the index
-    if (!readOk) {
-      gribIndex.makeIndex(filename, dataRaf);
-      logger.debug("  Index written: {}", filename + GBX9_IDX);
-    } else if (debug) {
-      logger.debug("  Index read: {}", filename + GBX9_IDX);
-    }
-
-    // heres where the ncx file date is checked against the data file
-    MFile mfile = new MFileOS(dataFile);
-    if (isGrib1)
-      return Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
-    else
-      return Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
-  }
-
-  /**
    * Create a gbx9 and ncx index from a single grib1 or grib2 file.
    * Use the existing index is it already exists.
    *

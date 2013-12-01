@@ -173,21 +173,21 @@ public class Grib2Rectilyser {
         int timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord);
         if (timeIdx < 0) {
           timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord); // debug
-          errlog.format("Cant find time coord %s%n", r.tcCoord);
+          if (errlog != null) errlog.format("Cant find time coord %s%n", r.tcCoord);
           throw new IllegalStateException("Cant find time coord " + r.tcCoord);
         }
 
         int vertIdx = (vb.vertCoordIndex < 0) ? 0 : vc.findIdx(r.vcCoord);
         if (vertIdx < 0) {
           vertIdx = vc.findIdx(r.vcCoord); // debug
-          errlog.format("Cant find vert coord %s%n", r.vcCoord);
+          if (errlog != null) errlog.format("Cant find vert coord %s%n", r.vcCoord);
           throw new IllegalStateException("Cant find vert coord " + r.vcCoord);
         }
 
         int ensIdx = (vb.ensCoordIndex < 0) ? 0 : ec.findIdx(r.ecCoord);
         if (ensIdx < 0) {
           ensIdx = ec.findIdx(r.ecCoord); // debug
-          errlog.format("Cant find ens coord %s%n", r.ecCoord);
+          if (errlog != null) errlog.format("Cant find ens coord %s%n", r.ecCoord);
           throw new IllegalStateException("Cant find ens coord " + r.ecCoord);
         }
 

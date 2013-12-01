@@ -34,14 +34,17 @@ package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
 import thredds.inventory.Collection;
 import thredds.inventory.partition.PartitionManager;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilderFromIndex;
 import ucar.nc2.grib.grib1.builder.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib1.builder.Grib1TimePartitionBuilderFromIndex;
+import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilderFromIndex;
 import ucar.nc2.grib.grib2.builder.Grib2TimePartitionBuilder;
@@ -174,6 +177,47 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Create a gbx9 and ncx index and a grib collection from a single grib1 or grib2 file.
+   * Use the existing index is it already exists.
+   *
+   * @param isGrib1 true if grib1
+   * @param dataRaf the grib file already open
+   * @param config  special configuration
+   * @param force  force writing index
+   * @return the resulting GribCollection
+   * @throws IOException on io error
+   */
+  public static GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
+                                                                CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+
+    GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index() ;
+
+    String filename = dataRaf.getLocation();
+    File dataFile = new File(filename);
+    boolean readOk;
+    try {
+      readOk = gribIndex.readIndex(filename, dataFile.lastModified(), force); // heres where the gbx9 file date is checked against the data file
+    } catch (IOException ioe) {
+      readOk = false;
+    }
+
+    // make or remake the index
+    if (!readOk) {
+      gribIndex.makeIndex(filename, dataRaf);
+      logger.debug("  Index written: {}", filename);
+    } else if (logger.isDebugEnabled()) {
+      logger.debug("  Index read: {}", filename);
+    }
+
+    // heres where the ncx file date is checked against the data file
+    MFile mfile = new MFileOS(dataFile);
+    if (isGrib1)
+      return Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
+    else
+      return Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
+  }
 
   /**
    * Create a GribCollection from a collection of grib files, or a TimePartition from a collection of GribCollection index files

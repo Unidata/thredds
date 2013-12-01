@@ -2658,7 +2658,7 @@ public class ToolsUI extends JPanel {
         }
       });
 
-      /* AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+      AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
       showButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();

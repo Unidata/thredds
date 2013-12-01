@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.grib2.builder;
+package ucar.nc2.grib.collection;
 
 import thredds.inventory.MFile;
 import ucar.arr.CoordinateBuilder;
@@ -52,8 +52,8 @@ import java.util.*;
  * @author caron
  * @since 11/26/2013
  */
-public class Grib2Rectilyser2 {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder2.class);
+public class Grib2Rectilyser {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
 
   private final Grib2Customizer cust;
   private final int gdsHash;
@@ -70,7 +70,7 @@ public class Grib2Rectilyser2 {
   private final List<VertCoord> vertCoords = new ArrayList<>();
   private final List<EnsCoord> ensCoords = new ArrayList<>();
 
-  public Grib2Rectilyser2(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, Map<String, Boolean> pdsConfig) {
+  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, Map<String, Boolean> pdsConfig) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;

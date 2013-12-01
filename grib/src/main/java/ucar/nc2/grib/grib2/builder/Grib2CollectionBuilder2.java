@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib2.builder;
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
+import ucar.arr.Counter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
@@ -256,7 +257,7 @@ public class Grib2CollectionBuilder2 extends GribCollectionBuilder {
 
     logger.debug("GribCollection {}: makeAggregatedGroups", gc.getName());
     int fileno = 0;
-    Grib2Rectilyser2.Counter statsAll = new Grib2Rectilyser2.Counter(); // debugging
+    Counter statsAll = new Counter(); // debugging
 
     logger.debug(" dcm={}", dcm);
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
@@ -326,7 +327,7 @@ public class Grib2CollectionBuilder2 extends GribCollectionBuilder {
     // rectilyze each group independently
     List<Group> groups = new ArrayList<>(gdsMap.values());
     for (Group g : groups) {
-      Grib2Rectilyser2.Counter stats = new Grib2Rectilyser2.Counter(); // debugging
+      Counter stats = new Counter(); // debugging
       g.rect = new Grib2Rectilyser2(tables, g.records, g.gdsHash, pdsConvert);
       g.rect.make(stats, Collections.unmodifiableList(allFiles), errlog);
       errlog.format("Group hash=%d %s%n", g.gdsHash, stats.show());

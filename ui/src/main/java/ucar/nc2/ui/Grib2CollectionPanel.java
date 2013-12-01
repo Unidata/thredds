@@ -34,6 +34,7 @@ package ucar.nc2.ui;
 
 import thredds.inventory.*;
 import thredds.inventory.Collection;
+import ucar.arr.Counter;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
@@ -577,7 +578,7 @@ public class Grib2CollectionPanel extends JPanel {
       }
       fileno++;
     }
-    Grib2Rectilyser2.Counter stats = new Grib2Rectilyser2.Counter();
+    Counter stats = new Counter();
     Grib2Rectilyser2 agg = new Grib2Rectilyser2(cust, records, 0, null);
     agg.make(stats, null, f);
     agg.showInfo(f, cust);
@@ -1336,13 +1337,13 @@ public class Grib2CollectionPanel extends JPanel {
     f.format("  Data Length        = %d%n", ds.getMsgLength());
   }
 
-  static private void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, Grib2Customizer cust) {
+  static public void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, Grib2Customizer cust) {
     int template = gds.getGDSTemplateNumber();
     byte[] raw = gds.getRawBytes();
     showRawWithTemplate("3." + template, raw, f, cust);
   }
 
-  static private void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, Grib2Customizer cust) {
+  static public void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, Grib2Customizer cust) {
     int template = pdss.getPDSTemplateNumber();
     byte[] raw = pdss.getRawBytes();
     showRawWithTemplate("4." + template, raw, f, cust);

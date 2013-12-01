@@ -3,6 +3,7 @@ package ucar.nc2.ui;
 import thredds.inventory.*;
 import ucar.arr.Coordinate;
 import ucar.arr.CoordinateND;
+import ucar.arr.Counter;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
@@ -15,7 +16,6 @@ import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Misc;
-import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -63,6 +63,7 @@ public class Grib2RectilyzePanel extends JPanel {
       public void valueChanged(ListSelectionEvent e) {
         VariableBagBean pb = (VariableBagBean) param2BeanTable.getSelectedBean();
         if (pb != null) {
+          // makeRecordTable(pb.pds);
           java.util.List<Grib2RecordBean> records = new ArrayList<>();
           for (Grib2Rectilyser2.Record r : pb.vb.atomList) {
             records.add(new Grib2RecordBean(r));
@@ -72,7 +73,7 @@ public class Grib2RectilyzePanel extends JPanel {
           setCoordinates(pb.vb.coordND);
         }
       }
-    } );
+    });
 
     varPopup = new ucar.nc2.ui.widget.PopupMenu(param2BeanTable.getJTable(), "Options");
     varPopup.addAction("Show PDS", new AbstractAction() {
@@ -80,7 +81,7 @@ public class Grib2RectilyzePanel extends JPanel {
         VariableBagBean pb = (VariableBagBean) param2BeanTable.getSelectedBean();
         if (pb != null) {
           Formatter f = new Formatter();
-          showPdsTemplate(pb.vb.first.getPDSsection(), f, cust);
+          Grib2CollectionPanel.showPdsTemplate(pb.vb.first.getPDSsection(), f, cust);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -97,28 +98,86 @@ public class Grib2RectilyzePanel extends JPanel {
         }
       }
     });
+    varPopup.addAction("Show SparseArray", new AbstractAction() {
+     public void actionPerformed(ActionEvent e) {
+       VariableBagBean bean = (VariableBagBean) param2BeanTable.getSelectedBean();
+       if (bean == null) return;
+       Formatter f = new Formatter();
+       bean.vb.coordND.getSparseArray().showInfo(f, null);
+       infoPopup2.setText(f.toString());
+       infoPopup2.gotoTop();
+       infoWindow2.show();
+     }
+   });
 
     Class useClass = Grib2RecordBean.class;
     record2BeanTable = new BeanTableSorted(useClass, (PreferencesExt) prefs.node(useClass.getName()), false, useClass.getName(), "from Grib2Input.getRecords()");
+    varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
 
-    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("Gds2Bean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
-    varPopup = new PopupMenu(coordTable.getJTable(), "Options");
-
- /*    varPopup.addAction("Show GDS", new AbstractAction() {
+    varPopup.addAction("Compare GridRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
-        if (bean == null) return;
+        List list = record2BeanTable.getSelectedBeans();
+        if (list.size() == 2) {
+          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
+          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
+          Formatter f = new Formatter();
+          compare(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show complete GridRecord", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          try {
+            Grib2CollectionPanel.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
+          } catch (IOException ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace(new PrintStream(bos));
+            f.format("%s", bos.toString());
+          }
+          infoPopup.setText(f.toString());
+          infoPopup.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show Processed GridRecord", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = record2BeanTable.getSelectedBeans();
         Formatter f = new Formatter();
-        Grib2Gds ggds = bean.gdss.getGDS();
-        f.format("GDS hash=%d crc=%d%n", ggds.hashCode(), bean.gdss.calcCRC());
-        showGdsTemplate(bean.gdss, f, cust);
+        for (Object o : list) {
+          Grib2RecordBean bean = (Grib2RecordBean) o;
+          bean.showProcessedGridRecord(f);
+        }
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
         infoWindow2.show();
       }
     });
 
-    varPopup.addAction("Compare GDS", new AbstractAction() {
+    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
+    varPopup = new PopupMenu(coordTable.getJTable(), "Options");
+
+     varPopup.addAction("Show Coords", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        if (bean == null) return;
+        Formatter f = new Formatter();
+        bean.showCoords(f);
+        infoPopup2.setText(f.toString());
+        infoPopup2.gotoTop();
+        infoWindow2.show();
+      }
+    });
+
+    /* varPopup.addAction("Compare GDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List list = coordTable.getSelectedBeans();
         if (list.size() == 2) {
@@ -269,7 +328,7 @@ public class Grib2RectilyzePanel extends JPanel {
         if (bean != null) {
           Formatter f = new Formatter();
           try {
-            showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
+            Grib2CollectionPanel.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
           } catch (IOException ioe) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
             ioe.printStackTrace(new PrintStream(bos));
@@ -364,95 +423,6 @@ public class Grib2RectilyzePanel extends JPanel {
   private Grib2Customizer cust;
   private Grib2Rectilyser rect2;
 
- /*  public void generateGdsXml(Formatter f) {
-    f.format("<gribConfig>%n");
-    List<Object> gdss = new ArrayList<Object>(coordTable.getBeans());
-    Collections.sort(gdss, new Comparator<Object>() {
-      public int compare(Object o1, Object o2) {
-        int h1 = ((CoordBean) o1).gds.hashCode();
-        int h2 = ((CoordBean) o2).gds.hashCode();
-        if (h1 < h2) return -1;
-        else if (h1 == h2) return 0;
-        else return 1;
-      }
-    });
-
-    for (Object bean : gdss) {
-      CoordBean gbean = (CoordBean) bean;
-      gbean.gds.hashCode();
-      f.format("  <gdsName hash='%d' groupName='%s'/>%n", gbean.gds.hashCode(), gbean.getGroupName());
-    }
-    f.format("</gribConfig>%n");
-  }  */
-
-
-  /* public void setCollectionOld(String spec) throws IOException {
-    this.spec = spec;
-    this.cust = null;
-    this.rect2 = null;
-
-    Formatter f = new Formatter();
-    this.dcm = scanCollection(spec, f);
-    if (dcm == null) {
-      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f.toString());
-      return;
-    }
-
-    Map<Integer, Grib2ParameterBean> pdsSet = new HashMap<>();
-    Map<Integer, Grib2SectionGridDefinition> gdsSet = new HashMap<>();
-
-    java.util.List<Grib2ParameterBean> params = new ArrayList<>();
-    java.util.List<Gds2Bean> gdsList = new ArrayList<>();
-
-    int fileno = 0;
-    for (MFile mfile : fileList) {
-      f.format("%n %s%n", mfile.getPath());
-      processGribFile(mfile, fileno++, pdsSet, gdsSet, params, f);
-    }
-    param2BeanTable.setBeans(params);
-
-    for (Grib2SectionGridDefinition gds : gdsSet.values()) {
-      gdsList.add(new Gds2Bean(gds));
-    }
-    Collections.sort(gdsList);
-    gds2Table.setBeans(gdsList);
-  }
-
-  private void processGribFile(MFile mfile, int fileno,
-                               Map<Integer, Grib2ParameterBean> pdsSet,
-                               Map<Integer, Grib2SectionGridDefinition> gdsSet,
-                               List<Grib2ParameterBean> params, Formatter f) throws IOException {
-
-    Grib2Index index = new Grib2Index();
-    if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-      index.makeIndex(mfile.getPath(), null);
-    }
-
-    for (Grib2SectionGridDefinition gds : index.getGds()) {
-      int hash = gds.getGDS().hashCode();
-      if (gdsSet.get(hash) == null)
-        gdsSet.put(hash, gds);
-    }
-
-    for (Grib2Record gr : index.getRecords()) {
-      gr.setFile(fileno);
-
-      if (rect2 == null) {
-        cust = Grib2Customizer.factory(gr);
-        rect2 = new Grib2Rectilyser(cust, null, 0, null);
-      }
-
-      int id = rect2.cdmVariableHash(gr, 0);
-      Grib2ParameterBean bean = pdsSet.get(id);
-      if (bean == null) {
-        bean = new Grib2ParameterBean(gr);
-        pdsSet.put(id, bean);
-        params.add(bean);
-      }
-      bean.addRecord(gr);
-    }
-  } */
-
   private thredds.inventory.Collection getCollection(String spec, Formatter f) {
     thredds.inventory.Collection dc;
     try {
@@ -467,34 +437,6 @@ public class Grib2RectilyzePanel extends JPanel {
       f.format("%s", bos.toString());
       return null;
     }
-  }
-
-  public void runAggregator(Formatter f) throws IOException {
-    List<Grib2Record> records = new ArrayList<>();
-    List<String> filenames = new ArrayList<>();
-
-    int fileno = 0;
-    for (MFile mfile : dcm.getFilesSorted()) {
-      f.format("%3d: %s%n", fileno, mfile.getPath());
-      filenames.add(mfile.getPath());
-
-      Grib2Index index = new Grib2Index();
-      if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-        index.makeIndex(mfile.getPath(), null);
-      }
-
-      for (Grib2Record gr : index.getRecords()) {
-        gr.setFile(fileno);
-        records.add(gr);
-      }
-      fileno++;
-    }
-
-    Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
-    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, null);
-    agg.make(stats, null, f);
-    agg.dump(f, cust);
-    stats.recordsTotal = records.size();
   }
 
   Formatter info;
@@ -524,23 +466,26 @@ public class Grib2RectilyzePanel extends JPanel {
           first = false;
 
           gr.setFile(fileno);
-          records.add(gr);
+          records.add(gr);   // LOOK not dividing into groups
         }
         fileno++;
       }
     }
 
-    Grib2Rectilyser2.Counter stats = new Grib2Rectilyser2.Counter();
-    Grib2Rectilyser2 agg = new Grib2Rectilyser2(cust, records, 0, null);
-    agg.make(stats, null, info);
-    agg.showInfo(info, cust);
+    Counter stats = new Counter();
+    Grib2Rectilyser2 rect = new Grib2Rectilyser2(cust, records, 0, null);
+    rect.make(stats, null, info);
+    rect.showInfo(info, cust);
     stats.recordsTotal = records.size();
 
     java.util.List<VariableBagBean> params = new ArrayList<>();
-    for (Grib2Rectilyser2.VariableBag vb : agg.getGribvars()) {
+    for (Grib2Rectilyser2.VariableBag vb : rect.getGribvars()) {
       params.add( new VariableBagBean(vb));
     }
     param2BeanTable.setBeans(params);
+
+    record2BeanTable.clearBeans();
+    coordTable.clearBeans();
   }
 
   private void setCoordinates(CoordinateND coordND) {
@@ -549,88 +494,42 @@ public class Grib2RectilyzePanel extends JPanel {
       params.add( new CoordBean(coord));
     }
     coordTable.setBeans(params);
-
-  }
-
-
-  /* public void runCollate(Formatter f) throws IOException {
-    DatasetCollectionManager dcm = getCollection(spec, f);
-    GribCollection gc = GribCollectionBuilder.factory(dcm);
-    ArrayList<String> filenames = new ArrayList<String>();
-    List<GribCollection.Group> groups = gc.makeAggregatedGroups(filenames, f);
-
-    for (GribCollection.Group g : groups) {
-      f.format("====================================================%n");
-      f.format("Group %s%n", g.name);
-      g.rect.dump(f, cust);
-    }
-  } */
-
- /* public boolean writeIndex(Formatter f) throws IOException {
-    thredds.inventory.Collection dcm = scanCollection(spec, f);
-
-    if (fileChooser == null)
-      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-    String name = dcm.getCollectionName();
-    int pos = name.lastIndexOf('/');
-    if (pos < 0) pos = name.lastIndexOf('\\');
-    if (pos > 0) name = name.substring(pos + 1);
-    File def = new File(dcm.getRoot(), name + GribCollection.NCX_IDX);
-    String filename = fileChooser.chooseFilename(def);
-    if (filename == null) return false;
-    if (!filename.endsWith(GribCollection.NCX_IDX))
-      filename += GribCollection.NCX_IDX;
-    File idxFile = new File(filename);
-
-    Grib2CollectionBuilder.makeIndex(dcm, new Formatter(), logger);
-    return true;
   }
 
   public void showCollection(Formatter f) {
-    if (dcm == null) {
-      if (spec == null) return;
-      dcm = scanCollection(spec, f);
-      if (dcm == null) return;
-    }
-
-    // just a list of the files
-    f.format("dcm = %s%n", dcm);
-    try {
-      for (MFile mfile : dcm.getFilesSorted()) {
-        f.format("  %s%n", mfile.getPath());
-      }
-    } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
-
-    // divided by group
-    Map<Integer, Set<Integer>> groups = new HashMap<Integer, Set<Integer>>();
-    for (Object o : param2BeanTable.getBeans()) {
-      Grib2ParameterBean p = (Grib2ParameterBean) o;
-      Set<Integer> group = groups.get(p.getGDS());
-      if (group == null) {
-        group = new TreeSet<Integer>();
-        groups.put(p.getGDS(), group);
-      }
-      for (Grib2RecordBean r : p.getRecordBeans())
-        group.add(r.gr.getFile());
-    }
-
-    for (Object o : gds2Table.getBeans()) {
-      Gds2Bean gds = (Gds2Bean) o;
-      Set<Integer> group = groups.get(gds.getGDShash());
-      f.format("%nGroup %s %n", gds.getGroupName());
-      if (group == null) continue;
-      Iterator<Integer> iter = group.iterator();
-      while (iter.hasNext()) {
-        int fileno = iter.next();
-        f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
-      }
-      f.format("%n");
+    if (fileList == null) return;
+    for (MFile mfile : fileList) {
+      f.format("  %s%n", mfile.getPath());
     }
   }
 
-  public void showGDSuse(Formatter f) {
+  public void runAggregator(Formatter f) throws IOException {
+    Set<Object> runtimeCoords = new HashSet<>();
+    Set<Object> timeCoords = new HashSet<>();
+    Set<Object> timeIntvCoords = new HashSet<>();
+
+    for (Object beano : param2BeanTable.getBeans()) {
+      VariableBagBean bean = (VariableBagBean) beano;
+      for (Coordinate coord : bean.vb.coordND.getCoordinates()) {
+        String name =  coord.getName();
+        if (name.equals("runtime")) merge(runtimeCoords, coord);
+        if (name.equals("time")) merge(timeCoords, coord);
+        if (name.equals("timeIntv")) merge(timeIntvCoords, coord);
+      }
+    }
+
+    f.format("Total Runtimes = %d%n", runtimeCoords.size());
+    f.format("Total Times = %d%n", timeCoords.size());
+    f.format("Total Time Intervals = %d%n", timeIntvCoords.size());
+  }
+
+  private void merge(Set<Object> set, Coordinate coord) {
+    for (Object val : coord.getValues())
+      set.add(val);
+  }
+
+
+  /* public void showGDSuse(Formatter f) {
 
     Map<Integer, Gds2Bean> gdsMap = new HashMap<Integer, Gds2Bean>();
     Map<Integer, Set<Integer>> fileMap = new HashMap<Integer, Set<Integer>>();
@@ -1030,6 +929,10 @@ public class Grib2RectilyzePanel extends JPanel {
     public int compareTo(CoordBean o) {
       return getName().compareTo(o.getName());
     }
+
+    void showCoords(Formatter f) {
+      coord.showCoords(f);
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -1069,7 +972,16 @@ public class Grib2RectilyzePanel extends JPanel {
       return vb.first.getPDSsection().getPDSTemplateNumber();
     }
 
-    public int getNRecords() {
+    public boolean isTimeIntv() {
+      return vb.first.getPDS().isTimeInterval();
+    }
+
+    public boolean isVert() {
+      VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pds.getLevelType1());
+      return vertUnit.isVerticalCoordinate();
+    }
+
+     public int getNRecords() {
       return vb.atomList.size();
     }
 
@@ -1089,8 +1001,19 @@ public class Grib2RectilyzePanel extends JPanel {
       return nvert;
     }
 
+    public int getNDups() {
+      return vb.coordND.getSparseArray().getNduplicates();
+    }
 
-    public final String getStatType() {
+    public int getNMissing() {
+      return vb.coordND.getSparseArray().countMissing();
+    }
+
+    public double getDensity() {
+      return vb.coordND.getSparseArray().getDensity();
+    }
+
+   public final String getStatType() {
       if (pds.isTimeInterval()) {
         Formatter f = new Formatter();
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
@@ -1111,21 +1034,9 @@ public class Grib2RectilyzePanel extends JPanel {
       return vb.cdmHash;
     }
 
-    /* public long getIntvHash() {
-      if (pds.isTimeInterval()) {
-        long sum = 0;
-        for (Grib2RecordBean bean : records) {
-          Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) bean.pds;
-          sum += pdsi.getIntervalHash();
-        }
-        return sum;
-      }
-      return 0;
-    } */
-
     public String toString() {
       Formatter f = new Formatter();
-      showPdsTemplate(vb.first.getPDSsection(), f, cust);
+      Grib2CollectionPanel.showPdsTemplate(vb.first.getPDSsection(), f, cust);
       return f.toString();
     }
 
@@ -1177,105 +1088,6 @@ public class Grib2RectilyzePanel extends JPanel {
       else
         f.format("(%d)", ub);
     }
-  }
-
-  static public void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Customizer cust) throws IOException {
-    f.format("File=%d %s %n", gr.getFile(), path);
-    f.format("Header=\"");
-    showBytes(f, gr.getHeader());
-    f.format("\"%n%n");
-    int d = gr.getDiscipline();
-    f.format("Grib2IndicatorSection%n");
-    f.format(" Discipline = (%d) %s%n", d, cust.getTableValue("0.0", d));
-    f.format(" Length     = %d%n", gr.getIs().getMessageLength());
-
-    Grib2SectionIdentification id = gr.getId();
-    f.format("%nGrib2IdentificationSection%n");
-    f.format(" Center        = (%d) %s%n", id.getCenter_id(), CommonCodeTable.getCenterName(id.getCenter_id(), 2));
-    f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), cust.getSubCenterName(id.getCenter_id(), id.getSubcenter_id()));
-    f.format(" Master Table  = %d%n", id.getMaster_table_version());
-    f.format(" Local Table   = %d%n", id.getLocal_table_version());
-    f.format(" RefTimeSignif = %d (%s)%n", id.getSignificanceOfRT(), cust.getTableValue("1.2", id.getSignificanceOfRT()));
-    f.format(" RefTime       = %s%n", id.getReferenceDate());
-    f.format(" RefTime Fields = %d-%d-%d %d:%d:%d%n", id.getYear(), id.getMonth(), id.getDay(), id.getHour(), id.getMinute(), id.getSecond());
-    f.format(" ProductionStatus      = %d (%s)%n", id.getProductionStatus(), cust.getTableValue("1.3", id.getProductionStatus()));
-    f.format(" TypeOfProcessedData   = %d (%s)%n", id.getTypeOfProcessedData(), cust.getTableValue("1.4", id.getTypeOfProcessedData()));
-
-    if (gr.hasLocalUseSection()) {
-      byte[] lus = gr.getLocalUseSection().getRawBytes();
-      f.format("%nLocal Use Section (grib section 2)%n");
-      /* try {
-       f.format(" String= %s%n", new String(lus, 0, lus.length, "UTF-8"));
-     } catch (UnsupportedEncodingException e) {
-       e.printStackTrace();
-     } */
-      f.format("bytes (len=%d) =", lus.length);
-      Misc.showBytes(lus, f);
-      f.format("%n");
-    }
-
-    Grib2SectionGridDefinition gds = gr.getGDSsection();
-    Grib2Gds ggds = gds.getGDS();
-    f.format("%nGrib2GridDefinitionSection hash=%d crc=%d%n", ggds.hashCode(), gds.calcCRC());
-    f.format(" Length             = %d%n", gds.getLength());
-    f.format(" Source  (3.0)      = %d (%s) %n", gds.getSource(), cust.getTableValue("3.0", gds.getSource()));
-    f.format(" Npts               = %d%n", gds.getNumberPoints());
-    f.format(" Template (3.1)     = %d%n", gds.getGDSTemplateNumber());
-    showGdsTemplate(gds, f, cust);
-
-    Grib2SectionProductDefinition pdss = gr.getPDSsection();
-    f.format("%nGrib2ProductDefinitionSection%n");
-    Grib2Pds pds = pdss.getPDS();
-    if (pds.isTimeInterval()) {
-      TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
-      if (intv != null) f.format(" Interval     = %s%n", intv);
-    }
-    showPdsTemplate(pdss, f, cust);
-    if (pds.getExtraCoordinatesCount() > 0) {
-      float[] coords = pds.getExtraCoordinates();
-      f.format("Hybrid Coordinates (%d) %n  ", coords.length);
-      for (float fc : coords) f.format("%10.5f ", fc);
-      f.format("%n%n");
-    }
-
-    Grib2SectionDataRepresentation drs = gr.getDataRepresentationSection();
-    f.format("%nGrib2SectionDataRepresentation%n");
-    f.format("  Template           = %d (%s) %n", drs.getDataTemplate(), cust.getTableValue("5.0", drs.getDataTemplate()));
-    f.format("  NPoints            = %d%n", drs.getDataPoints());
-
-    Grib2SectionData ds = gr.getDataSection();
-    f.format("%nGrib2SectionData%n");
-    f.format("  Starting Pos       = %d %n", ds.getStartingPosition());
-    f.format("  Data Length        = %d%n", ds.getMsgLength());
-  }
-
-  static private void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, Grib2Customizer cust) {
-    int template = gds.getGDSTemplateNumber();
-    byte[] raw = gds.getRawBytes();
-    showRawWithTemplate("3." + template, raw, f, cust);
-  }
-
-  static private void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, Grib2Customizer cust) {
-    int template = pdss.getPDSTemplateNumber();
-    byte[] raw = pdss.getRawBytes();
-    showRawWithTemplate("4." + template, raw, f, cust);
-  }
-
-
-  static private void showRawWithTemplate(String key, byte[] raw, Formatter f, Grib2Customizer cust) {
-    if (gribTemplates == null)
-      try {
-        gribTemplates = WmoTemplateTable.getWmoStandard().map;
-      } catch (IOException e) {
-        f.format("Read template failed = %s%n", e.getMessage());
-        return;
-      }
-
-    WmoTemplateTable gt = gribTemplates.get(key);
-    if (gt == null)
-      f.format("Cant find template %s%n", key);
-    else
-      gt.showInfo(cust, raw, f);
   }
 
   ////////////////////////////////////////////////////////
@@ -1342,6 +1154,14 @@ public class Grib2RectilyzePanel extends JPanel {
 
     public final int getForecastTime() {
       return pds.getForecastTime();
+    }
+
+    public int getGenProcessId() {
+      return pds.getGenProcessId();
+    }
+
+    public int getGenProcessType() {
+      return pds.getGenProcessType();
     }
 
     public final String getFile() {
