@@ -10,6 +10,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.nc2.grib.grib2.Grib2Pds;
+import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -151,7 +153,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
    * @return the resulting GribCollection
    * @throws IOException on io error
    */
-  public static ucar.nc2.grib.collection.GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
+  public static GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
                                                                 CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
 
     GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index() ;
@@ -698,15 +700,40 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
  }
 }   */
 
-  public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int tableVersion,
-                                                        int discipline, int category, int parameter, int levelType, boolean isLayer,
-                                                        int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
-                                                        int genProcessType,
-                                                        int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
+  public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int cdmHash, int discipline,
+              Grib2Pds pds, List<Integer> index, long recordsPos, int recordsLen) {
 
-    return new VariableIndex(g, tableVersion, discipline, category, parameter, levelType, isLayer,
-            intvType, intvName, ensDerivedType, probType, probabilityName, genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
-  }
+    int category = pds.getParameterCategory();
+    int parameter = pds.getParameterNumber();
+    int levelType = pds.getLevelType1();
+    boolean isLayer = Grib2Utils.isLayer(pds);
+    int intvType = pds.getStatisticalProcessType();
+
+    String intvName = null;
+    if (pds.isTimeInterval())
+       intvName = rect.getTimeIntervalName(vb.timeCoordIndex);
+
+    int ensDerivedType = -1;
+     if (pds.isEnsembleDerived()) {
+       Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
+       ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
+     }
+
+    int probType = -1;
+    String probName = null;
+     if (pds.isProbability()) {
+       Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+       probName = pdsProb.getProbabilityName();
+       probType = pdsProb.getProbabilityType();
+     }
+
+     int genType = pds.getGenProcessType(); // LOOK why gc genProcessType  ?
+
+    return new VariableIndex(g, -1, discipline, category, parameter, levelType, isLayer,
+            intvType, intvName, ensDerivedType, probType, probName, genProcessType, cdmHash,
+            index, recordsPos, recordsLen);
+ }
+
 
   public class VariableIndex implements Comparable<VariableIndex> {
     public final int tableVersion; // grib1 : can vary by variable
@@ -716,7 +743,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public final boolean isLayer;                                                                     // uniquely identifies the variable
     public final int genProcessType;
     public final int cdmHash;                  // unique hashCode - from Grib2Record, but works here also
-    public int timeIdx, vertIdx, ensIdx; // which time, vert and ens coordinates to use (in group)
+
+    public List<Integer> index;      // which time, vert and ens coordinates to use (in group)
     public final long recordsPos;              // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
     public final GroupHcs group;               // belongs to this group
@@ -730,7 +758,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
                          int discipline, int category, int parameter, int levelType, boolean isLayer,
                          int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
                          int genProcessType,
-                         int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
+                         int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
       this.group = g;
       this.tableVersion = tableVersion;
       this.discipline = discipline;
@@ -745,9 +773,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       this.probType = probType;
       this.genProcessType = genProcessType;
       this.cdmHash = cdmHash;
-      this.timeIdx = timeIdx;
-      this.vertIdx = vertIdx;
-      this.ensIdx = ensIdx;
+      this.index = index;
       this.recordsPos = recordsPos;
       this.recordsLen = recordsLen;
     }

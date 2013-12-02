@@ -267,11 +267,12 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     }
 
     int cdmHash = pv.getCdmHash();
+    int discipline = pv.getDiscipline();
     long recordsPos = pv.getRecordsPos();
     int recordsLen = pv.getRecordsLen();
     List<Integer> index = pv.getCoordIdxList();
 
-    return gc.makeVariableIndex(group, pds, cdmHash, index, recordsPos, recordsLen);
+    return gc.makeVariableIndex(group, cdmHash, discipline, pds, index, recordsPos, recordsLen);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -551,7 +551,7 @@ public class Grib2CollectionBuilder2 extends GribCollectionBuilder {
     b.setCategory(pds.getParameterCategory());
     b.setParameter(pds.getParameterNumber());
     b.setLevelType(pds.getLevelType1());
-    b.setIsLayer(Grib2Utils.isLayer(vb.first));
+    b.setIsLayer(Grib2Utils.isLayer(pds));
     b.setIntervalType(pds.getStatisticalProcessType());
     b.setCdmHash(vb.cdmHash);
 

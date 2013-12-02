@@ -182,8 +182,7 @@ public class Grib2Utils {
    * @param gr record to check
    * @return true if a layer
    */
-  static public boolean isLayer(Grib2Record gr) {
-    Grib2Pds pds = gr.getPDS();
+  static public boolean isLayer(Grib2Pds pds) {
     if (pds.getLevelType2() == 255 || pds.getLevelType2() == 0)
       return false;
     return true;
