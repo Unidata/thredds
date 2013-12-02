@@ -42,7 +42,7 @@ export JAVA_OPTS
 </ul>
 <h3>Netcdf Subset Service Changes</h3>
 <blockquote>
-  <p>The Netcdf Subset Service (ncss) has a different URL path, and the REST interface has changed.  If you have been using ncss from a script, you will need to check your URLs and parameters <a href="http://www.unidata.ucar.edu/software/thredds/v4.4/tds/reference/NetcdfSubsetServiceReference.html">(documentation</a>). If you are accessing the ncss from the HTML form, or are correctly parsing the catalog, nohting needs to be changed.<br>
+  <p>The Netcdf Subset Service (ncss) has a different URL path, and the REST interface has changed.  If you have been using ncss from a script, you will need to check your URLs and parameters <a href="http://www.unidata.ucar.edu/software/thredds/v4.4/tds/reference/NetcdfSubsetServiceReference.html">(documentation</a>). If you are accessing the ncss from the HTML form, or are correctly parsing the catalog, nothing needs to be changed.<br>
 </p>
   <p>An old (4.3) ncss URL:</p>
 <pre> http://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p5deg/best/dataset.html</pre>
@@ -60,6 +60,15 @@ export JAVA_OPTS
   <li>GRIB1:  indexing minimum version is 11, so  grib1 ncx files will be recreated. This fixes a problem where the vertical coordinates were not sorted correctly.</li>
   <li>Improved HDF-EOS processing.</li>
 </ul>
+<h3>API changes</h3>
+<ul>
+  <li><strong>ucar.unidata.geoloc.ProjectionRect</strong> no longer extends <strong>java.awt.Rectangle2D</strong>. This is necessary to remove dependence of the core package on java.awt, which is not supported on Android. If you need to convert <strong>ProjectionRect</strong> into <strong>Rectangle2D</strong>, you can use:</li>
+</ul>
+<blockquote>
+<pre><p> Rectangle2D hr = new Rectangle2D.Double();
+ hr.setRect(prect.getX(), prect.getY(), prect.getWidth(), prect.getHeight());</p>
+</pre>
+</blockquote>
 <h3>Internal changes</h3>
 <ul>
   <li>We are now using <strong>log4j2</strong>. The configuration file is in <strong>{tomcat}/webapps/thredds//WEB-INF/classes/log4j2.xml</strong>. See <a href="http://logging.apache.org/log4j/2.x/">http://logging.apache.org/log4j/2.x/</a></li>
