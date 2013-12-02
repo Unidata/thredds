@@ -429,15 +429,15 @@ public class Grib2Rectilyser {
     public Grib2Record first;
     public int cdmHash;
 
-    public List<Record> atomList = new ArrayList<>(100); // does this need to be sorted??
+    public List<Record> atomList = new ArrayList<>(100); // does this need to be sorted?? assume no
     public CoordinateND coordND;
     CalendarPeriod timeUnit;
 
-    int timeCoordIndex = -1;
-    int vertCoordIndex = -1;
-    int ensCoordIndex = -1;
+    //int timeCoordIndex = -1;
+    //int vertCoordIndex = -1;
+    //int ensCoordIndex = -1;
     CalendarDate refDate;
-    RecordMap recordMap;
+    //RecordMap recordMap;
     long pos;
     int length;
 

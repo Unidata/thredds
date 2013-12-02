@@ -73,6 +73,30 @@ public class SparseArray<T> {
     return result;
   }
 
+  public int[] getSize() {
+    return size;
+  }
+
+  public void setSize(int[] size) {
+    this.size = size;
+  }
+
+  public int[] getTrack() {
+    return track;
+  }
+
+  public void setTrack(int[] track) {
+    this.track = track;
+  }
+
+  public List<T> getContent() {
+    return content;
+  }
+
+  public void setContent(List<T> content) {
+    this.content = content;
+  }
+
   public int getNduplicates() {
     return ndups;
   }

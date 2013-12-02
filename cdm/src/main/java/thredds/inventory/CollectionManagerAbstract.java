@@ -62,9 +62,9 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   private ListenerManager lm; // lazy init
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
 
-  // these actually dont change, but are not set in the constructor
-  protected DateExtractor dateExtractor;
-  protected CalendarDate startCollection;
+  // these actually dont change, but are not set in the constructor  now set in CollectionAbstract
+  //protected DateExtractor dateExtractor;
+  //protected CalendarDate startCollection;
 
   protected CollectionManagerAbstract( String collectionName, org.slf4j.Logger logger) {
     super(collectionName, logger);

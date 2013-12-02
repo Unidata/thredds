@@ -95,7 +95,7 @@ public abstract class CollectionAbstract implements Collection {
     return (dateExtractor != null);
   }
 
-  protected void setDateExtractor(DateExtractor dateExtractor) {
+  public void setDateExtractor(DateExtractor dateExtractor) {
     this.dateExtractor = dateExtractor;
   }
 
@@ -147,7 +147,13 @@ public abstract class CollectionAbstract implements Collection {
 
   public class DateSorter implements Comparator<MFile> {
     public int compare(MFile m1, MFile m2) {
-      return extractRunDateWithError(m1).compareTo(extractRunDateWithError(m2));
+      CalendarDate cd1 = extractRunDateWithError(m1);
+      CalendarDate cd2 = extractRunDateWithError(m2);
+      if ((cd1 == null) || (cd2 == null)) {
+         cd1 = extractRunDateWithError(m1);  //debug
+         cd2 = extractRunDateWithError(m2);
+      }
+      return cd1.compareTo(cd2);
     }
   }
 

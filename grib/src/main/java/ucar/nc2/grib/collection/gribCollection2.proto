@@ -50,6 +50,11 @@ message Parameter {  // copied from ncStream.proto
   optional string sdata = 3; // used for string data
 }
 
+message MFile {
+  required string filename = 1;   // reletive to topDir
+  required uint64 lastModified = 2;
+}
+
 message Group {
   optional int32 predefinedGds = 1;   // predefined GDS code, defined by center
   optional bytes gds = 2;             // all variables in the group use the same GDS
@@ -61,12 +66,8 @@ message Group {
   repeated Parameter params = 7;      // group attributes  used ??
   repeated int32 fileno = 8;          // the component files that are in this group, index into gc.files
 
+  // partitions
   repeated TimeCoordUnion timeCoordUnions = 9; // partitions only
-}
-
-message MFile {
-  required string filename = 1;   // reletive to topDir
-  required uint64 lastModified = 2;
 }
 
 message GribCollectionIndex {
@@ -85,7 +86,8 @@ message GribCollectionIndex {
   optional int32 genProcessId = 11;
   optional int32 backProcessId = 12;
 
-  repeated Partition partitions = 13;  //  partitions only
+  // partitions only
+  repeated Partition partitions = 13;
 }
 
 message TimeCoordUnion { // extends Coord
@@ -103,7 +105,6 @@ message Partition {
   required string filename = 2;   // the gribCollection.ncx file
   optional uint64 lastModified = 3;
 }
-
 
 
 //  cd c:/dev/github/thredds/grib/src/main/java

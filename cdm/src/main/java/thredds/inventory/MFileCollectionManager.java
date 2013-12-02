@@ -229,10 +229,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.rootDir = null;
   }
 
-  public void setDateExtractor(DateExtractor dateExtractor) {
-    this.dateExtractor = dateExtractor;
-  }
-
   /**
    * Add a directory scan to the collection
    *

@@ -36,12 +36,12 @@ import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.arr.Counter;
+import ucar.arr.SparseArray;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -411,7 +411,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         g.fileSet = new HashSet<Integer>();
         for (Grib2Rectilyser.VariableBag vb : g.rect.getGribvars()) {
           if (first == null) first = vb.first;
-          GribCollectionProto.SparseArray vr = writeRecordsProto(vb, g.fileSet);
+          GribCollectionProto.SparseArray vr = writeSparseArray(vb, g.fileSet);
           byte[] b = vr.toByteArray();
           vb.pos = raf.getFilePointer();
           vb.length = b.length;
@@ -443,7 +443,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       // directory and mfile list
       List<GribCollectionBuilder.GcMFile> gcmfiles = GribCollectionBuilder.makeFiles(gc.getDirectory(), files);
       for (GribCollectionBuilder.GcMFile gcmfile : gcmfiles) {
-        indexBuilder.addMfiles(gcmfile.makeProto());
+        GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
+        b.setFilename(gcmfile.getName());
+        b.setLastModified(gcmfile.getLastModified());
+        indexBuilder.addMfiles( b.build());
       }
 
       for (Group g : groups)
@@ -456,7 +459,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         count++;
       } */
 
-      // what about just storing first ??
+      // LOOK what about just storing first ??
       Grib2SectionIdentification ids = first.getId();
       indexBuilder.setCenter(ids.getCenter_id());
       indexBuilder.setSubcenter(ids.getSubcenter_id());
@@ -486,26 +489,40 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return true;
   }
 
-  private GribCollectionProto.SparseArray writeRecordsProto(Grib2Rectilyser.VariableBag vb, Set<Integer> fileSet) throws IOException {
+  /*
+  message Record {
+    required uint32 fileno = 1;  // index into GribCollectionIndex.files
+    required uint64 pos = 2;     // offset in Grib file of the start of drs (grib2) or entire message (grib1)
+    optional uint64 bmsPos = 3 [default = 0]; // use alternate bms
+  }
+
+  // dont need SparseArray unless someone wants to read from the variable
+  message SparseArray {
+    required fixed32 cdmHash = 1; // which variable
+    repeated uint32 size = 2;     // multidim sizes
+    repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
+    repeated Record records = 4;  // List<Record>
+  }
+   */
+  private GribCollectionProto.SparseArray writeSparseArray(Grib2Rectilyser.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
     b.setCdmHash(vb.cdmHash);
+    SparseArray<Grib2Record> sa = vb.coordND.getSparseArray();
+    for (int size : sa.getSize())
+      b.addSize(size);
+    for (int track : sa.getTrack())
+      b.addTrack(track);
 
-    for (Grib2Rectilyser.Record ar : vb.recordMap) {
+    for (Grib2Record gr : sa.getContent()) {
       GribCollectionProto.Record.Builder br = GribCollectionProto.Record.newBuilder();
 
-      if (ar == null || ar.gr == null) {
-        br.setFileno(0);
-        br.setPos(0); // missing : ok to use 0 since drsPos > 0
-
-      } else {
-        br.setFileno(ar.gr.getFile());
-        fileSet.add(ar.gr.getFile());
-        Grib2SectionDataRepresentation drs = ar.gr.getDataRepresentationSection();
-        br.setPos(drs.getStartingPosition());
-        if (ar.gr.isBmsReplaced()) {
-          Grib2SectionBitMap bms = ar.gr.getBitmapSection();
-          br.setBmsPos(bms.getStartingPosition());
-        }
+      br.setFileno(gr.getFile());
+      fileSet.add(gr.getFile());
+      Grib2SectionDataRepresentation drs = gr.getDataRepresentationSection();
+      br.setPos(drs.getStartingPosition());
+      if (gr.isBmsReplaced()) {
+        Grib2SectionBitMap bms = gr.getBitmapSection();
+        br.setBmsPos(bms.getStartingPosition());
       }
       b.addRecords(br);
     }
@@ -547,38 +564,13 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     b.setDiscipline(vb.first.getDiscipline());
     Grib2Pds pds = vb.first.getPDS();
-    b.setCategory(pds.getParameterCategory());
-    b.setParameter(pds.getParameterNumber());
-    b.setLevelType(pds.getLevelType1());
-    b.setIsLayer(Grib2Utils.isLayer(vb.first));
-    b.setIntervalType(pds.getStatisticalProcessType());
+    b.setPds(ByteString.copyFrom(vb.first.getPDSsection().getRawBytes()));
     b.setCdmHash(vb.cdmHash);
 
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
-    b.setTimeIdx(vb.timeCoordIndex);
-    if (vb.vertCoordIndex >= 0)
-      b.setVertIdx(vb.vertCoordIndex);
-    if (vb.ensCoordIndex >= 0)
-      b.setEnsIdx(vb.ensCoordIndex);
 
-    if (pds.isEnsembleDerived()) {
-      Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
-      b.setEnsDerivedType(pdsDerived.getDerivedForecastType()); // derived type (table 4.7)
-    }
-
-    if (pds.isProbability()) {
-      Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
-      b.setProbabilityName(pdsProb.getProbabilityName());
-      b.setProbabilityType(pdsProb.getProbabilityType());
-    }
-
-    if (pds.isTimeInterval())
-      b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
-
-    int genType = pds.getGenProcessType();
-    if (genType != GribNumbers.UNDEFINED)
-      b.setGenProcessType(pds.getGenProcessType());
+    // b.setCoordIdx(i, idx) LOOK not done yet
 
     return b.build();
   }
