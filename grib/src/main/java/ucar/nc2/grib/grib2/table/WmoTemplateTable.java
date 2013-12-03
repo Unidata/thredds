@@ -391,6 +391,8 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   } */
 
   private String convert(Grib2Customizer tables, String table, int value) {
+    if (table.equals("ProcessId"))
+      System.out.println("HEY");
     String result = tables.getTableValue(table, value);
     return (result != null) ? result : "Table " + table + " code " + value + " not found";
   }

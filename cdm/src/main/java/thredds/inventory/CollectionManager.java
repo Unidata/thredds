@@ -79,7 +79,7 @@ The XML Schema:
  * @author caron
  * @since Jan 19, 2010
  */
-public interface CollectionManager extends Collection, CollectionUpdateListener {
+public interface CollectionManager extends MCollection, CollectionUpdateListener {
 
   public enum Force {always,  // force new index
                      test,    // test if new index is needed

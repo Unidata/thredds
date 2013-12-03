@@ -1,9 +1,9 @@
 package thredds.inventory;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
-import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -15,18 +15,21 @@ import java.util.*;
  * @author caron
  * @since 11/20/13
  */
-public abstract class CollectionAbstract implements Collection {
+public abstract class CollectionAbstract implements MCollection {
   static private org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
   static public final String CATALOG = "catalog:";
   static public final String LIST = "list:";
+  static public final String DIR = "directory:";
 
     // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public Collection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
+  static public MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
     if (collectionSpec.startsWith(CATALOG))
-      return new CollectionManagerCatalog(collectionName, collectionSpec, olderThan, errlog);
+      return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan, errlog);
     else if (collectionSpec.startsWith(LIST))
-      return new CollectionList(collectionName, collectionSpec, null);
+      return new CollectionList(collectionName, collectionSpec.substring(LIST.length()), null);
+    else if (collectionSpec.startsWith(DIR))
+      return new DirectoryCollection(collectionName, collectionSpec.substring(DIR.length()), null);
     else
       return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
   }

@@ -12,7 +12,7 @@ import java.util.List;
  * @author caron
  * @since 11/11/13
  */
-public interface Collection extends AutoCloseable {
+public interface MCollection extends AutoCloseable {
 
   /**
    * Is this a partition or a MFile Collection

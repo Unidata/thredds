@@ -33,8 +33,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.*;
-import thredds.inventory.Collection;
-import ucar.arr.Counter;
+import thredds.inventory.MCollection;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
@@ -418,7 +417,7 @@ public class Grib2CollectionPanel extends JPanel {
   ///////////////////////////////////////////////
 
   private String spec;
-  private Collection dcm;
+  private MCollection dcm;
   private List<MFile> fileList;
   private Grib2Customizer cust;
   private Grib2Rectilyser rect2;
@@ -451,7 +450,7 @@ public class Grib2CollectionPanel extends JPanel {
     this.rect2 = null;
 
     Formatter f = new Formatter();
-    this.dcm = scanCollection(spec, f);
+    this.dcm = getCollection(spec, f);
     if (dcm == null) {
       javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f.toString());
       return;
@@ -512,12 +511,10 @@ public class Grib2CollectionPanel extends JPanel {
     }
   }
 
-  private Collection scanCollection(String spec, Formatter f) {
-    Collection dc;
+  private MCollection getCollection(String spec, Formatter f) {
+    MCollection dc;
     try {
       dc = CollectionAbstract.open("Grib2CollectionPanel", spec, null, f);
-      if (dc instanceof CollectionManager)
-        ((CollectionManager)dc).scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
       return dc;
 
@@ -598,7 +595,7 @@ public class Grib2CollectionPanel extends JPanel {
   } */
 
   public boolean writeIndex(Formatter f) throws IOException {
-    Collection dcm = scanCollection(spec, f);
+    MCollection dcm = getCollection(spec, f);
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -620,7 +617,7 @@ public class Grib2CollectionPanel extends JPanel {
   public void showCollection(Formatter f) {
     if (dcm == null) {
       if (spec == null) return;
-      dcm = scanCollection(spec, f);
+      dcm = getCollection(spec, f);
       if (dcm == null) return;
     }
 

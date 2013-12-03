@@ -8,6 +8,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import thredds.inventory.CollectionManager;
+import thredds.inventory.MCollection;
+import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -56,7 +58,7 @@ public class Grib2ReportPanel extends ReportPanel {
     Formatter f = new Formatter();
     f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", which, spec, useIndex, eachFile, extra);
 
-    CollectionManager dcm = getCollection(spec, f);
+    MCollection dcm = getCollection(spec, f);
     if (dcm == null) {
       return;
     }
@@ -119,7 +121,7 @@ public class Grib2ReportPanel extends ReportPanel {
   ///////////////////////////////////////////////
   String dir = "C:/tmp/bzip/";
 
-  private void doCopyCompress(Formatter f, CollectionManager dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+  private void doCopyCompress(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
     f.format("Copy and Compress selected files%n");
     Counter nbitsC = new Counter("Number of Bits");
     long totalOrg = 0;
@@ -280,7 +282,7 @@ public class Grib2ReportPanel extends ReportPanel {
   ///////////////////////////////////////////////
 
 
-  private void doCheckTables(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doCheckTables(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Check Grib-2 Parameter Tables%n");
     int[] accum = new int[4];
 
@@ -342,7 +344,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doLocalUseSection(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doLocalUseSection(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Show Local Use Section%n");
 
     for (MFile mfile : dcm.getFilesSorted()) {
@@ -380,7 +382,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doUniqueGds(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doUniqueGds(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Show Unique GDS%n");
 
     Map<Integer, GdsList> gdsSet = new HashMap<Integer, GdsList>();
@@ -448,7 +450,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private int countPDS, countPDSdup;
 
-  private void doDuplicatePds(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doDuplicatePds(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     countPDS = 0;
     countPDSdup = 0;
     f.format("Show Duplicate PDS%n");
@@ -486,7 +488,7 @@ public class Grib2ReportPanel extends ReportPanel {
   int total = 0;
   int prob = 0;
 
-  private void doPdsSummary(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doPdsSummary(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     if (useIndex) {
       f.format("Check Grib-2 PDS probability and statistical variables%n");
       total = 0;
@@ -620,7 +622,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doIdProblems(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doIdProblems(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Look for ID Problems%n");
 
     Counter disciplineSet = new Counter("discipline");
@@ -742,7 +744,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doDrsSummary(Formatter f, CollectionManager dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+  private void doDrsSummary(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
     f.format("Show Unique DRS Templates%n");
     Counter template = new Counter("DRS template");
     Counter bitmapRepeat = new Counter("BMS indicator");
@@ -844,7 +846,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doGdsTemplate(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doGdsTemplate(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Show Unique GDS Templates%n");
 
     Map<Integer, Integer> drsSet = new HashMap<Integer, Integer>();
@@ -875,7 +877,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////////////////////////
 
-  private void doTimeCoord(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doTimeCoord(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     Counter templateSet = new Counter("template");
     Counter timeUnitSet = new Counter("timeUnit");
     Counter statTypeSet = new Counter("statType");
@@ -961,7 +963,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////////////////////////////////////////
 
-  private void doRenameCheck(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doRenameCheck(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("CHECK Renaming uniqueness %s%n", dcm.getCollectionName());
 
     GribVariableRenamer renamer = new GribVariableRenamer();
@@ -1023,7 +1025,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////////////////////////////////////////
 
-  private void doRename(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doRename(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("CHECK Grib-2 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
     List<VarName> varNames = new ArrayList<VarName>(3000);

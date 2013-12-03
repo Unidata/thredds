@@ -40,7 +40,7 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
-import thredds.inventory.Collection;
+import thredds.inventory.MCollection;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
@@ -177,7 +177,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final FeatureCollectionType fcType;
   protected final FeatureCollectionConfig config;
   protected final String topDirectory;
-  protected Collection datasetCollection; // defines the collection of datasets in this feature collection, actually final
+  protected MCollection datasetCollection; // defines the collection of datasets in this feature collection, actually final
 
   @GuardedBy("lock")
   protected State state;

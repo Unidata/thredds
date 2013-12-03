@@ -34,8 +34,8 @@ package ucar.nc2.ui;
 
 //import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 //import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.MFileCollectionManager;
+import thredds.inventory.CollectionAbstract;
+import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
@@ -299,7 +299,7 @@ public class Grib2DataPanel extends JPanel {
   ///////////////////////////////////////////////
 
   private String spec;
-  private CollectionManager dcm;
+  private MCollection dcm;
   private List<MFile> fileList;
   private Grib2Customizer cust;
   private Grib2Rectilyser rect2;
@@ -406,11 +406,10 @@ public class Grib2DataPanel extends JPanel {
     }
   }
 
-  private CollectionManager scanCollection(String spec, Formatter f) {
-    CollectionManager dc = null;
+  private MCollection scanCollection(String spec, Formatter f) {
+    MCollection dc = null;
     try {
-      dc = MFileCollectionManager.open(spec, spec, null, f);
-      dc.scan(false);
+      dc = CollectionAbstract.open(spec, spec, null, f);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
       return dc;
 
@@ -464,7 +463,7 @@ public class Grib2DataPanel extends JPanel {
   } */
 
   public boolean writeIndex(Formatter f) throws IOException {
-    CollectionManager dcm = scanCollection(spec, f);
+    MCollection dcm = scanCollection(spec, f);
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));

@@ -34,7 +34,7 @@ package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import thredds.inventory.Collection;
+import thredds.inventory.MCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarPeriod;
@@ -80,7 +80,7 @@ public class TimePartitionCollectionManager extends MFileCollectionManager imple
     this.type = Type.timePeriod;
   }
 
-  public Iterable<Collection> makePartitions() throws IOException {
+  public Iterable<MCollection> makePartitions() throws IOException {
     List<DatedMFile> files = new ArrayList<DatedMFile>();
     for (MFile mfile : getFilesSorted()) {
       CalendarDate cdate = dateExtractor.getCalendarDate(mfile);
@@ -90,7 +90,7 @@ public class TimePartitionCollectionManager extends MFileCollectionManager imple
     }
     CalendarDateFormatter cdf = new CalendarDateFormatter("yyyyMMdd");
 
-    List<Collection> result = new ArrayList<>();
+    List<MCollection> result = new ArrayList<>();
     TimePartitionCollection curr = null;
     for (DatedMFile dmf : files) {
       if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {

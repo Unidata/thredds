@@ -31,21 +31,18 @@
  */
 package ucar.nc2.ft.point.collection;
 
-import thredds.inventory.Collection;
-import thredds.inventory.CollectionManager;
+import thredds.inventory.MCollection;
 import thredds.inventory.TimedCollection;
 import ucar.nc2.Attribute;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
@@ -62,7 +59,7 @@ public class CompositeDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
   static boolean debug = false;
 
-  static public FeatureDataset factory(String location, FeatureType wantFeatureType, Collection dcm, Formatter errlog) throws IOException {
+  static public FeatureDataset factory(String location, FeatureType wantFeatureType, MCollection dcm, Formatter errlog) throws IOException {
 
     TimedCollection collection = new TimedCollection(dcm, errlog);
     if (collection.getDatasets().size() == 0) {

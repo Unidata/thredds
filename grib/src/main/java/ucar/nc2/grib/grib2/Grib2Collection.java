@@ -35,17 +35,13 @@ package ucar.nc2.grib.grib2;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
-import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
-import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilderFromIndex;
-import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Formatter;
 
 /**
  * Grib2 specific part of GribCollection

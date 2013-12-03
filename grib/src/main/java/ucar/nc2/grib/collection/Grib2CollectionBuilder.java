@@ -67,7 +67,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   private static final boolean showFiles = false;
 
   // called by tdm
-  static public boolean update(thredds.inventory.Collection dcm, org.slf4j.Logger logger) throws IOException {
+  static public boolean update(MCollection dcm, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     if (!builder.needsUpdate()) return false;
     builder.readOrCreateIndex(CollectionManager.Force.always);
@@ -91,7 +91,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    * @return GribCollection
    * @throws IOException on IO error
    */
-  static public GribCollection factory(thredds.inventory.Collection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection factory(MCollection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     builder.readOrCreateIndex(force);
     return builder.gc;
@@ -112,7 +112,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   } */
 
   // this writes the index always
-  static public boolean makeIndex(thredds.inventory.Collection dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+  static public boolean makeIndex(MCollection dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     File indexFile = builder.gc.getIndexFile();
     boolean ok = builder.createIndex(indexFile, errlog);
@@ -121,7 +121,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
     // for debugging
-  static public Grib2CollectionBuilder debugOnly(thredds.inventory.Collection dcm, org.slf4j.Logger logger) {
+  static public Grib2CollectionBuilder debugOnly(MCollection dcm, org.slf4j.Logger logger) {
     return new Grib2CollectionBuilder(dcm, logger);
   }
 
@@ -148,7 +148,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
-  private Grib2CollectionBuilder(thredds.inventory.Collection dcm, org.slf4j.Logger logger) {
+  private Grib2CollectionBuilder(MCollection dcm, org.slf4j.Logger logger) {
     super(dcm, false, logger);
     this.name = dcm.getCollectionName();
     this.directory = new File(dcm.getRoot());

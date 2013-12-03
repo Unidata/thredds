@@ -2,12 +2,10 @@ package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import thredds.inventory.Collection;
-import ucar.nc2.time.CalendarDate;
+import thredds.inventory.MCollection;
 import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -42,22 +40,22 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
   }
 
   @Override
-  public Iterable<Collection> makePartitions() throws IOException {
+  public Iterable<MCollection> makePartitions() throws IOException {
 
     DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(topCollection, topDir, null);
     builder.constructChildren(indexReader);
 
-    List<Collection> result = new ArrayList<>();
+    List<MCollection> result = new ArrayList<>();
     for (DirectoryPartitionBuilder child : builder.getChildren()) {
-      Collection dc = DirectoryPartitionBuilder.factory(config, child.getDir(), indexReader, logger);
+      MCollection dc = DirectoryPartitionBuilder.factory(config, child.getDir(), indexReader, logger);
       result.add(dc);
     }
 
     return result;
   }
 
-  Collection makeChildCollection(DirectoryPartitionBuilder dpb) throws IOException {
-    Collection result;
+  MCollection makeChildCollection(DirectoryPartitionBuilder dpb) throws IOException {
+    MCollection result;
     boolean hasIndex = dpb.findIndex();
     if (hasIndex)
       result = new DirectoryCollectionFromIndex(dpb);

@@ -35,7 +35,7 @@ package ucar.nc2.grib.grib1.builder;
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import thredds.inventory.Collection;
+import thredds.inventory.MCollection;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.*;
@@ -80,7 +80,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
   // from a collection, read in the index, create if it doesnt exist or is out of date
   // assume that the CollectionManager is up to date, eg doesnt need to be scanned
-  static public GribCollection factory(Collection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection factory(MCollection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm, logger);
     builder.readOrCreateIndex(force);
     return builder.gc;
@@ -128,7 +128,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
-  private Grib1CollectionBuilder(thredds.inventory.Collection dcm, org.slf4j.Logger logger) {
+  private Grib1CollectionBuilder(MCollection dcm, org.slf4j.Logger logger) {
     super(dcm, false, logger);
     this.name = dcm.getCollectionName();
     this.directory = new File(dcm.getRoot());
@@ -137,7 +137,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), config);
   }
 
-  protected Grib1CollectionBuilder(Collection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
+  protected Grib1CollectionBuilder(MCollection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
     super(dcm, isSingleFile, logger);
   }
 

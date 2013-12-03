@@ -3,7 +3,6 @@ package thredds.inventory;
 import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.quartz.listeners.SchedulerListenerSupport;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 
@@ -129,7 +128,7 @@ public enum CollectionUpdater {
     }
   }   */
 
-  public void scheduleTasks(FeatureCollectionConfig config, Collection manager, Logger logger) {
+  public void scheduleTasks(FeatureCollectionConfig config, MCollection manager, Logger logger) {
     if (disabled || failed) return;
 
     FeatureCollectionConfig.UpdateConfig updateConfig = (isTdm) ? config.tdmConfig : config.updateConfig;

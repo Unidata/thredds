@@ -36,9 +36,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.MFileCollectionManager;
-import thredds.inventory.MFile;
+import thredds.inventory.*;
+import thredds.inventory.MCollection;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -51,15 +50,12 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
-import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * Run through collections of Grib 1 files and make reports
@@ -80,7 +76,7 @@ public class Grib1ReportPanel extends ReportPanel {
     Formatter f = new Formatter();
     f.format("%s %s %s%n", spec, useIndex, which);
 
-    CollectionManager dcm = getCollection(spec, f);
+    MCollection dcm = getCollection(spec, f);
     if (dcm == null) {
       return;
     }
@@ -124,7 +120,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doCheckLocalParams(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doCheckLocalParams(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Check Grib-1 Parameter Tables for local entries%n");
     int[] accum = new int[4];
 
@@ -183,7 +179,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   /////////////////////////////////////////////////////////////////
 
-  private void doCheckTables(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doCheckTables(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     CounterS tableSet = new CounterS("table");
     CounterS local = new CounterS("local");
     CounterS missing = new CounterS("missing");
@@ -237,7 +233,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   /////////////////////////////////////////////////////////////////
 
-  private void doScanIssues(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     Counter predefined = new Counter("predefined");
     Counter thin = new Counter("thin");
     Counter timeUnit = new Counter("timeUnit");
@@ -311,7 +307,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   /////////////////////////////////////////////////////////////////
 
-  private void doShowEncoding(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doShowEncoding(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     Counter decimals = new Counter("decimalScale");
     Counter nbits = new Counter("nbits");
     Counter refVal = new Counter("refVal");
@@ -375,7 +371,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////////////////////////////////////////
 
-  private void doCheckRename(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doCheckRename(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("CHECK Renaming uniqueness %s%n", dcm.getCollectionName());
 
     GribVariableRenamer renamer = new GribVariableRenamer();
@@ -437,7 +433,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
     ///////////////////////////////////////////////////////////////////////////////////
 
-  private void doRename(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doRename(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("CHECK Grib-1 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
     List<VarName> varNames = new ArrayList<VarName>(3000);

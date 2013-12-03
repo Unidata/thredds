@@ -1,6 +1,6 @@
 package thredds.inventory.partition;
 
-import thredds.inventory.Collection;
+import thredds.inventory.MCollection;
 
 import java.io.IOException;
 
@@ -10,8 +10,8 @@ import java.io.IOException;
  * @author caron
  * @since 11/11/13
  */
-public interface PartitionManager extends Collection {
+public interface PartitionManager extends MCollection {
 
-  public Iterable<Collection> makePartitions() throws IOException;
+  public Iterable<MCollection> makePartitions() throws IOException;
 
 }

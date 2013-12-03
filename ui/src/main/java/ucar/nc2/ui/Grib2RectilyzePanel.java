@@ -4,19 +4,16 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.arr.Coordinate;
 import ucar.arr.CoordinateND;
-import ucar.arr.Counter;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
-import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.dialog.GribCollectionConfig;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
@@ -101,12 +98,12 @@ public class Grib2RectilyzePanel extends JPanel {
         }
       }
     });
-    varPopup.addAction("Show SparseArray", new AbstractAction() {
+    varPopup.addAction("Find Duplicates", new AbstractAction() {
      public void actionPerformed(ActionEvent e) {
        VariableBagBean bean = (VariableBagBean) param2BeanTable.getSelectedBean();
        if (bean == null) return;
        Formatter f = new Formatter();
-       bean.vb.coordND.getSparseArray().showInfo(f, null);
+       bean.vb.coordND.showInfo(f);
        infoPopup2.setText(f.toString());
        infoPopup2.gotoTop();
        infoWindow2.show();
@@ -436,13 +433,13 @@ public class Grib2RectilyzePanel extends JPanel {
   ///////////////////////////////////////////////
 
   private String spec;
-  private thredds.inventory.Collection dcm;
+  private MCollection dcm;
   private List<MFile> fileList;
   private Grib2Customizer cust;
   private Grib2Rectilyser rect2;
 
-  private thredds.inventory.Collection getCollection(String spec, Formatter f) {
-    thredds.inventory.Collection dc;
+  private MCollection getCollection(String spec, Formatter f) {
+    MCollection dc;
     try {
       dc = CollectionAbstract.open("Grib2RectilyzerPanel", spec, null, f);
       //if (dc instanceof CollectionManager)
@@ -1111,6 +1108,11 @@ public class Grib2RectilyzePanel extends JPanel {
     public final boolean isEns() {
       return pds.isEnsemble();
     }
+
+    public void findDuplicates(Formatter info) {
+      vb.coordND.showInfo(info);
+
+    }
   }
 
   ////////////////////////////////////////////////////
@@ -1199,9 +1201,13 @@ public class Grib2RectilyzePanel extends JPanel {
       return pds.getGenProcessType();
     }
 
-    public final String getFile() {
+    public final String getFilename() {
       int fno = gr.getFile();
       return fileList.get(fno).getName();
+    }
+
+    public final int getFile() {
+      return gr.getFile();
     }
 
     public String getLevel() {

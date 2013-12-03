@@ -94,6 +94,13 @@ public class DirectoryCollection extends CollectionAbstract {
     this.collectionName = makeCollectionName(collectionName, topDir);
   }
 
+  public DirectoryCollection(String topCollectionName, String topDirS, org.slf4j.Logger logger) {
+    super(topCollectionName, logger);
+    this.topCollection = cleanName(topCollectionName);
+    this.topDir = Paths.get(topDirS);
+    this.collectionName = makeCollectionName(collectionName, topDir);
+  }
+
   @Override
   public String getRoot() {
     return topDir.toString();

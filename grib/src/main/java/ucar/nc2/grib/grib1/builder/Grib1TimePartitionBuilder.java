@@ -35,7 +35,7 @@ package ucar.nc2.grib.grib1.builder;
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import thredds.inventory.Collection;
+import thredds.inventory.MCollection;
 import thredds.inventory.partition.PartitionManager;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
@@ -133,7 +133,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
 
   private boolean needsUpdate(long collectionLastModified) throws IOException {
     CollectionManager.ChangeChecker cc = Grib1Index.getChangeChecker();
-    for (Collection dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
+    for (MCollection dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
       File idxFile = GribCollection.getIndexFile(dcm);
       if (!idxFile.exists()) return true;
       if (collectionLastModified < idxFile.lastModified()) return true;
@@ -167,7 +167,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     long start = System.currentTimeMillis();
 
     // create partitions based on TimePartitionCollections object
-    for (thredds.inventory.Collection dcm : tpc.makePartitions()) {
+    for (MCollection dcm : tpc.makePartitions()) {
       tp.addPartition(dcm);
     }
 

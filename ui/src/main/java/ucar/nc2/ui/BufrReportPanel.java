@@ -1,6 +1,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.CollectionManager;
+import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.MessageScanner;
@@ -33,7 +34,7 @@ public class BufrReportPanel extends ReportPanel {
     Formatter f = new Formatter();
     f.format("%s %s %s%n", spec, useIndex, which);
 
-    CollectionManager dcm = getCollection(spec, f);
+    MCollection dcm = getCollection(spec, f);
     if (dcm == null) {
       return;
     }
@@ -65,7 +66,7 @@ public class BufrReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doCheckHash(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doCheckHash(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Check Files for hash consistency%n");
     int[] accum = new int[4];
     TrackMessageTypes all = new TrackMessageTypes();
@@ -162,7 +163,7 @@ public class BufrReportPanel extends ReportPanel {
 
     ///////////////////////////////////////////////
 
-  private void doBufrSplitter(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doBufrSplitter(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     long start = System.currentTimeMillis();
     String dirName = dcm.getRoot() +"/split"; // LOOK temp kludge
 

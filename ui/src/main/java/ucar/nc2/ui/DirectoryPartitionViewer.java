@@ -269,7 +269,7 @@ public class DirectoryPartitionViewer extends JPanel {
            final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
 
            final Grib2TimePartition tp = new Grib2TimePartition(dpart.getCollectionName(), node.dir.toFile(), config.gribConfig, logger);
-           for (thredds.inventory.Collection dcm : dpart.makePartitions()) {
+           for (MCollection dcm : dpart.makePartitions()) {
              tp.addPartition(dcm);
            }
 

@@ -52,7 +52,7 @@ import java.util.List;
 public class TimedCollection {
   private static final boolean debug = false;
 
-  private final Collection manager;
+  private final MCollection manager;
   private List<TimedCollection.Dataset> datasets;
   private CalendarDateRange dateRange;
 
@@ -64,7 +64,7 @@ public class TimedCollection {
    * @see CollectionSpecParser
    * @throws java.io.IOException on read error
    */
-  public TimedCollection(Collection manager, Formatter errlog) throws IOException {
+  public TimedCollection(MCollection manager, Formatter errlog) throws IOException {
     this.manager = manager;
 
     // get the inventory, sorted by path

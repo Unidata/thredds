@@ -5,6 +5,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Formatter;
 
 /**
@@ -186,6 +187,16 @@ public class Grib2Record {
 
   public boolean isBmsReplaced() {
     return bmsReplaced;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("Grib2Record{");
+    sb.append("file=").append(file);
+    sb.append(", ref=").append(getReferenceDate());
+    sb.append(", dataPos=").append(dataSection.getStartingPosition());
+    sb.append('}');
+    return sb.toString();
   }
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available

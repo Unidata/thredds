@@ -1,9 +1,8 @@
 package ucar.nc2.grib.collection;
 
-import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS;
-import thredds.inventory.Collection;
+import thredds.inventory.MCollection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import ucar.arr.Coordinate;
@@ -71,7 +70,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return getDiskCache2().getFile(path);
   }
 
-  static public File getIndexFile(Collection dcm) {
+  static public File getIndexFile(MCollection dcm) {
     File idxFile = new File(new File(dcm.getRoot()), dcm.getCollectionName() + NCX_IDX);
     return getIndexFile( idxFile.getPath());
   }
@@ -193,7 +192,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
    * @return GribCollection
    * @throws IOException on io error
    */
-  static public GribCollection factory(boolean isGrib1, thredds.inventory.Collection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection factory(boolean isGrib1, MCollection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     /* if (isGrib1) {
       if (dcm.isPartition())
         if (force == CollectionManager.Force.never) {  // LOOK not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex

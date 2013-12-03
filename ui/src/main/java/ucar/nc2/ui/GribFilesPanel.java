@@ -32,9 +32,8 @@
 
 package ucar.nc2.ui;
 
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionManagerAbstract;
-import thredds.inventory.MFileCollectionManager;
+import thredds.inventory.CollectionAbstract;
+import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -263,7 +262,7 @@ public class GribFilesPanel extends JPanel {
 
   public class CollectionBean {
     String spec;
-    MFileCollectionManager dcm;
+    MCollection dcm;
     Iterable<MFile> fileList;
 
     // no-arg constructor
@@ -275,10 +274,9 @@ public class GribFilesPanel extends JPanel {
       this.spec = spec;
 
       Formatter f = new Formatter();
-      CollectionManager dc = null;
+      MCollection dc = null;
       try {
-        dc = MFileCollectionManager.open(spec, spec, null, f);
-        dc.scan(false);
+        dc = CollectionAbstract.open(spec, spec, null, f);
         fileList = dc.getFilesSorted();
 
       } catch (Exception e) {

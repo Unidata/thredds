@@ -1,6 +1,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.*;
+import thredds.inventory.MCollection;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 
@@ -43,7 +44,7 @@ public class ReportPanel extends JPanel {
      f.format("collection = %s%n", spec);
      boolean hasFiles = false;
 
-     CollectionManager dcm = getCollection(spec, f);
+     MCollection dcm = getCollection(spec, f);
      if (dcm == null) {
        return false;
      }
@@ -62,11 +63,9 @@ public class ReportPanel extends JPanel {
      return hasFiles;
    }
 
-   CollectionManager getCollection(String spec, Formatter f) {
-     CollectionManager dc = null;
+   MCollection getCollection(String spec, Formatter f) {
      try {
-       dc = MFileCollectionManager.open(spec, spec, null, f);
-       dc.scan(false);
+       return CollectionAbstract.open(spec, spec, null, f);
 
      } catch (Exception e) {
        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -74,8 +73,6 @@ public class ReportPanel extends JPanel {
        reportPane.setText(bos.toString());
        return null;
      }
-
-     return dc;
    }
 
     ///////////////////////////////////////////////

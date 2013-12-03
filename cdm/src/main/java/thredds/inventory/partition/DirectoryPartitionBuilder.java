@@ -1,9 +1,8 @@
 package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.Collection;
+import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 
 import java.io.IOException;
@@ -27,7 +26,7 @@ import java.util.List;
  */
 public class DirectoryPartitionBuilder {
 
-  static public Collection factory(FeatureCollectionConfig config, Path topDir, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
+  static public MCollection factory(FeatureCollectionConfig config, Path topDir, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
     DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(config.name, topDir.toString());
 
     DirectoryPartition dpart = new DirectoryPartition(config, topDir, indexReader, logger);

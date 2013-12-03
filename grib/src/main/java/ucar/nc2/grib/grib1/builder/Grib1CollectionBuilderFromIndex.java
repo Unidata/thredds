@@ -1,6 +1,7 @@
 package ucar.nc2.grib.grib1.builder;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.*;
@@ -47,7 +48,7 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilder {
     this.gc = new Grib1Collection(name, directory, config);
   }
 
-  protected Grib1CollectionBuilderFromIndex(thredds.inventory.Collection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
+  protected Grib1CollectionBuilderFromIndex(MCollection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
     super(dcm, isSingleFile, logger);
   }
 

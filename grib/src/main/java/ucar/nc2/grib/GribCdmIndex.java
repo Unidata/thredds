@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.Collection;
+import thredds.inventory.MCollection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.*;
@@ -106,7 +106,7 @@ public class GribCdmIndex implements IndexReader {
     dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
     // do its children
-    for (Collection part : dpart.makePartitions()) {
+    for (MCollection part : dpart.makePartitions()) {
       if (part instanceof DirectoryPartition) {
         rewriteIndexesPartitionRecurse((DirectoryPartition) part, config);
 
@@ -153,7 +153,7 @@ public class GribCdmIndex implements IndexReader {
 
   static public boolean makeIndex(FeatureCollectionConfig config, Formatter errlog, Path topPath) throws IOException {
     GribCdmIndex indexReader = new GribCdmIndex();
-    Collection dpart = DirectoryPartitionBuilder.factory(config, topPath, indexReader, logger);
+    MCollection dpart = DirectoryPartitionBuilder.factory(config, topPath, indexReader, logger);
     dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
     if (dpart.isPartition()) {
@@ -174,7 +174,7 @@ public class GribCdmIndex implements IndexReader {
     DirectoryPartition dpart = new DirectoryPartition(config, topPath, indexWriter, logger);
     dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
-    for (Collection part : dpart.makePartitions()) {
+    for (MCollection part : dpart.makePartitions()) {
       GribCollection gc = Grib2CollectionBuilder.factory(part, force, logger);
       gc.close();
     }

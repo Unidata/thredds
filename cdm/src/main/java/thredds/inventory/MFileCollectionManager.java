@@ -99,7 +99,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   private long lastScanned;       // last time scanned
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
 
-  // simplified version called from DatasetCollectionManager.open()
   private MFileCollectionManager(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
     super(collectionName, null);
     CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);

@@ -36,7 +36,13 @@ public class CoordinateND {
   public void finish() {
     root.finish();
     buildOrthogonalCoordinates();
-    buildSparseArray();
+    buildSparseArray(null);
+  }
+
+  public void showInfo(Formatter info) {
+    buildSparseArray(info);
+    info.format("%n");
+    sa.showInfo(info, null);
   }
 
   private void buildOrthogonalCoordinates() {
@@ -80,17 +86,17 @@ public class CoordinateND {
     return builderAtWantedLevel.makeCoordinate(allKeys);
   }
 
-  void buildSparseArray() {
+  void buildSparseArray(Formatter info) {
     int[] sizeArray = new int[coordinates.size()];
     for (int i = 0; i < coordinates.size(); i++)
       sizeArray[i] = coordinates.get(i).getSize();
     sa = new SparseArray<>(sizeArray);
 
     int[] index = new int[coordinates.size()];
-    makeArray(root, index, 0);
+    makeArray(root, info, index, 0);
   }
 
-  void makeArray(CoordinateBuilder builder, int[] index, int level) {
+  void makeArray(CoordinateBuilder builder, Formatter info, int[] index, int level) {
     if (builder == null) return;
 
     Coordinate coord = coordinates.get(level);
@@ -100,12 +106,12 @@ public class CoordinateND {
 
       if (builder.getNestedBuilder() != null) {
         CoordinateBuilder nestedBuilder = builder.getChildBuilder(key); // may be null if missing a coordinate
-        makeArray(nestedBuilder, index, level + 1);
+        makeArray(nestedBuilder, info, index, level + 1);
 
       } else if (builder.getRecords(key) != null) {  // may be null if missing a coordinate
 
         for (Grib2Record r : builder.getRecords(key))  {
-          sa.add(r, index);
+          sa.add(r, info, index);
         }
       }
       count++;

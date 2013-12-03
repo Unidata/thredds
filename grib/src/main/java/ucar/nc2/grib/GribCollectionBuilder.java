@@ -16,11 +16,11 @@ import java.util.List;
  */
 public class GribCollectionBuilder {
 
-  protected final Collection dcm; // may be null, when read in from index
+  protected final MCollection dcm; // may be null, when read in from index
   protected final boolean isSingleFile;
   protected final org.slf4j.Logger logger;
 
-  protected GribCollectionBuilder(Collection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
+  protected GribCollectionBuilder(MCollection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
     // assert dcm != null;
     this.dcm = dcm;
     this.isSingleFile = isSingleFile;

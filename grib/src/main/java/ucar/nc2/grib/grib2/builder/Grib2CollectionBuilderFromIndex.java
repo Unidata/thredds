@@ -54,7 +54,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     this.gc = new Grib2Collection(name, directory, config);
   }
 
-  protected Grib2CollectionBuilderFromIndex(thredds.inventory.Collection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
+  protected Grib2CollectionBuilderFromIndex(MCollection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
     super(dcm, isSingleFile, logger);
   }
 

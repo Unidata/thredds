@@ -32,9 +32,7 @@
 
 package ucar.nc2.ui;
 
-import thredds.inventory.CollectionManager;
-import thredds.inventory.MFileCollectionManager;
-import thredds.inventory.MFile;
+import thredds.inventory.*;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribStatType;
@@ -363,10 +361,11 @@ public class Grib1CollectionPanel extends JPanel {
   }
 
   public boolean writeIndex(Formatter f) throws IOException {
-    CollectionManager dcm = scanCollection(spec, f);
+    MCollection dcm = scanCollection(spec, f);
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+
     String name = dcm.getCollectionName();
     int pos = name.lastIndexOf('/');
     if (pos < 0) pos = name.lastIndexOf('\\');
@@ -378,7 +377,7 @@ public class Grib1CollectionPanel extends JPanel {
       filename += GribCollection.NCX_IDX;
     File idxFile = new File(filename);
 
-    Grib1CollectionBuilder.writeIndexFile(idxFile, dcm, logger);
+    Grib1CollectionBuilder.writeIndexFile(idxFile, (CollectionManager) dcm, logger);
     return true;
   }
 
@@ -496,7 +495,7 @@ public class Grib1CollectionPanel extends JPanel {
 
   ///////////////////////////////////////////////////////////////////////////////////
   private String spec;
-  private CollectionManager dcm;
+  private MCollection dcm;
   private List<MFile> fileList;
 
   public void setCollection(String spec) throws IOException {
@@ -530,11 +529,10 @@ public class Grib1CollectionPanel extends JPanel {
     gds1Table.setBeans(gdsList);
   }
 
-  private CollectionManager scanCollection(String spec, Formatter f) {
-    CollectionManager dc = null;
+  private MCollection scanCollection(String spec, Formatter f) {
+    MCollection dc = null;
     try {
-      dc = MFileCollectionManager.open(spec, spec, null, f);
-      dc.scan(false);
+      dc = CollectionAbstract.open(spec, spec, null, f);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
       return dc;
 
