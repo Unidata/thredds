@@ -340,7 +340,7 @@ public class FeatureCollectionConfig {
     public String lookupTablePath, paramTablePath;
     public String latestNamer, bestNamer;
     public Element paramTable;
-    public Map<String,Boolean> pdsHash = new HashMap<String,Boolean>();
+    public Map<String,Boolean> pdsHash = new HashMap<>();
     //public Boolean useGenType = null;
     public Boolean filesSortIncreasing = true;
     public GribIntvFilter intvFilter;
@@ -413,6 +413,11 @@ public class FeatureCollectionConfig {
       readValue(pdsHashElement, "intvMerge", ns, true);
       readValue(pdsHashElement, "useGenType", ns, false);
       readValue(pdsHashElement, "useTableVersion", ns, true);
+    }
+
+    public void setExcludeZero(boolean val) {
+      if (intvFilter == null) intvFilter = new GribIntvFilter();
+      intvFilter.isZeroExcluded = val;
     }
 
     private void readValue(Element pdsHashElement, String key, Namespace ns, boolean value) {

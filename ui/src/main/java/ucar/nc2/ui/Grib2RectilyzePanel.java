@@ -1,5 +1,6 @@
 package ucar.nc2.ui;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.arr.Coordinate;
 import ucar.arr.CoordinateND;
@@ -12,6 +13,7 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.ui.dialog.GribCollectionConfig;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CloseableIterator;
@@ -25,6 +27,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -51,6 +54,7 @@ public class Grib2RectilyzePanel extends JPanel {
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private FileManager fileChooser;
+  private GribCollectionConfig gribCollectionConfigDialog;
 
   public Grib2RectilyzePanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -111,7 +115,7 @@ public class Grib2RectilyzePanel extends JPanel {
    });
 
     Class useClass = Grib2RecordBean.class;
-    record2BeanTable = new BeanTableSorted(useClass, (PreferencesExt) prefs.node(useClass.getName()), false, useClass.getName(), "from Grib2Input.getRecords()");
+    record2BeanTable = new BeanTableSorted(useClass, (PreferencesExt) prefs.node(useClass.getName()), false, "Grib2Record", "from VariableBag.atomList");
     varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Compare GridRecord", new AbstractAction() {
@@ -162,7 +166,7 @@ public class Grib2RectilyzePanel extends JPanel {
       }
     });
 
-    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
+    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates", "From VariableBag.CoordND");
     varPopup = new PopupMenu(coordTable.getJTable(), "Options");
 
      varPopup.addAction("Show Coords", new AbstractAction() {
@@ -257,6 +261,21 @@ public class Grib2RectilyzePanel extends JPanel {
         infoWindow2.show();
       }
     });  */
+
+    //////////////////////////////////////////
+    // extra buttcons
+
+    gribCollectionConfigDialog = new GribCollectionConfig();
+    gribCollectionConfigDialog.pack();
+
+    AbstractButton compareButton = BAMutil.makeButtcon("Select", "GribConfig", false);
+    compareButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        gribCollectionConfigDialog.setVisible(true);
+      }
+    });
+    buttPanel.add(compareButton);
+
 
     /////////////////////////////////////////
     // the info windows
@@ -441,13 +460,31 @@ public class Grib2RectilyzePanel extends JPanel {
 
   Formatter info;
   public void setCollection(String spec) throws IOException {
-    List<Grib2Record> records = new ArrayList<>();
-    List<String> filenames = new ArrayList<>();
+    java.util.List<VariableBagBean> bags = new ArrayList<>();
+
     fileList = new ArrayList<>();
     info = new Formatter();
     dcm = getCollection(spec, info);
+    FeatureCollectionConfig.GribConfig config = gribCollectionConfigDialog.getGribConfig();
+    dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
 
-    boolean first = true;
+    Grib2CollectionBuilder builder = Grib2CollectionBuilder.debugOnly(dcm, logger);
+    List<Grib2CollectionBuilder.Group> groups = builder.makeGroups(fileList, info);
+    this.cust = builder.getCustomizer();
+
+    for (Grib2CollectionBuilder.Group group : groups) {
+      Grib2Rectilyser rect = group.rect;
+      // rect.showInfo(info, cust);
+      for (Grib2Rectilyser.VariableBag vb : rect.getGribvars()) {
+        bags.add( new VariableBagBean(vb));
+      }
+    }
+    param2BeanTable.setBeans(bags);
+
+    record2BeanTable.clearBeans();
+    coordTable.clearBeans();
+
+    /* boolean first = true;
     int fileno = 0;
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
       while (iter.hasNext()) {
@@ -472,7 +509,6 @@ public class Grib2RectilyzePanel extends JPanel {
       }
     }
 
-    Counter stats = new Counter();
     Grib2Rectilyser rect = new Grib2Rectilyser(cust, records, 0, null);
     rect.make(stats, null, info);
     rect.showInfo(info, cust);
@@ -485,7 +521,7 @@ public class Grib2RectilyzePanel extends JPanel {
     param2BeanTable.setBeans(params);
 
     record2BeanTable.clearBeans();
-    coordTable.clearBeans();
+    coordTable.clearBeans();  */
   }
 
   private void setCoordinates(CoordinateND coordND) {

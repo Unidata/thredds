@@ -120,6 +120,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return ok;
   }
 
+    // for debugging
+  static public Grib2CollectionBuilder debugOnly(thredds.inventory.Collection dcm, org.slf4j.Logger logger) {
+    return new Grib2CollectionBuilder(dcm, logger);
+  }
+
   ////////////////////////////////////////////////////////////////
 
   protected GribCollection gc;      // make this object
@@ -150,10 +155,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     this.gc = new Grib2Collection(this.name, this.directory, config);
-  }
-
-  protected Grib2CollectionBuilder(thredds.inventory.Collection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
-    super(dcm, isSingleFile, logger);
   }
 
   private void readOrCreateIndex(CollectionManager.Force ff) throws IOException {
@@ -212,7 +213,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   ///////////////////////////////////////////////////////////////////////////////////
   // writing
 
-  private class Group {
+  public class Group {
     public Grib2SectionGridDefinition gdss;
     public int gdsHash; // may have been modified
     public Grib2Rectilyser rect;
@@ -248,7 +249,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  private List<Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException {
+  public List<Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<String, Boolean> pdsConvert = null;
 
@@ -362,6 +363,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return false;
   }
 
+  public Grib2Customizer getCustomizer() {
+    return tables;
+  }
 
   ///////////////////////////////////////////////////
   // heres where the actual writing is
