@@ -12,7 +12,7 @@ import java.util.List;
  * @since 11/24/13
  */
 public interface Coordinate {
-  // public Object extract(Grib2Record r);
+  public enum Type {runtime, time, timeIntv, vert}
 
   void showInfo(Formatter info, Indent indent);
   void showCoords(Formatter info);
@@ -21,6 +21,7 @@ public interface Coordinate {
 
   int getSize();
 
-  String getName();
-
+  int getCode();
+  Type getType();
+  String getUnit();
 }

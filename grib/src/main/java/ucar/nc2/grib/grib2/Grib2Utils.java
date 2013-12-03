@@ -177,9 +177,9 @@ public class Grib2Utils {
   }
 
   /**
-   * Check to see if this grid is a layer variable
-   *
-   * @param gr record to check
+   * Check to see if this pds is a layer variable
+   * LOOK compare to Grib2Utils.getLevelUnit(coord.getCode());
+   * @param pds record to check
    * @return true if a layer
    */
   static public boolean isLayer(Grib2Pds pds) {

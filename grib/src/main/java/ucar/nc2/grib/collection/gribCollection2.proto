@@ -21,27 +21,28 @@ message SparseArray {
 
 // info to construct the ncfile metadata
 message Variable {
-  required uint32 discipline = 9;
-  required bytes pds = 1;
-  required fixed32 cdmHash = 2;
+  required uint32 discipline = 1;
+  required bytes pds = 2;
+  required fixed32 cdmHash = 3;
 
-  required uint64 recordsPos = 3;  // offset of SparseArray message for this Variable
-  required uint32 recordsLen = 4;  // size of SparseArray message for this Variable (could be in stream instead)
+  required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
+  required uint32 recordsLen = 5;  // size of SparseArray message for this Variable (could be in stream instead)
 
-  repeated uint32 coordIdx = 5;    // index into Group.coords
+  repeated uint32 coordIdx = 6;    // index into Group.coords
 
   // partitions
-  repeated uint32 groupno = 6;
-  repeated uint32 varno = 7;
-  repeated int32 flag = 8;
+  repeated uint32 groupno = 10;
+  repeated uint32 varno = 11;
+  repeated int32 flag = 12;
 }
 
 message Coord {
-  required int32 code = 1;
-  required string unit = 2;
-  repeated float values = 3;
-  repeated float bound = 4; // only used if interval, then = (value, bound)
-  optional int32 index = 5  [default = -1];  // safety check
+  required int32 type = 1;   // Coordinate.Type.oridinal
+  required int32 code = 2;   // time unit; level type
+  required string unit = 3;
+  repeated float values = 4;
+  repeated float bound = 5; // only used if interval, then = (value, bound)
+  repeated int64 msecs = 6; // calendar date
 }
 
 message Parameter {  // copied from ncStream.proto
@@ -56,18 +57,17 @@ message MFile {
 }
 
 message Group {
-  optional int32 predefinedGds = 1;   // predefined GDS code, defined by center
-  optional bytes gds = 2;             // all variables in the group use the same GDS
-  optional sint32 gdsHash = 3 [default = 0];
-  optional string name = 4;         // only when user overrides default name
+  optional bytes gds = 1;             // all variables in the group use the same GDS
+  optional sint32 gdsHash = 2 [default = 0];
+  optional string nameOverride = 3;         // only when user overrides default name
 
-  repeated Variable variables = 5;    // list of variables
-  repeated Coord coords = 6;          // list of coordinates
-  repeated Parameter params = 7;      // group attributes  used ??
-  repeated int32 fileno = 8;          // the component files that are in this group, index into gc.files
+  repeated Variable variables = 4;    // list of variables
+  repeated Coord coords = 5;          // list of coordinates
+  repeated Parameter params = 6;      // group attributes  used ??
+  repeated int32 fileno = 7;          // the component files that are in this group, index into gc.files
 
   // partitions
-  repeated TimeCoordUnion timeCoordUnions = 9; // partitions only
+  repeated TimeCoordUnion timeCoordUnions = 10; // partitions only
 }
 
 message GribCollectionIndex {

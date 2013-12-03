@@ -35,9 +35,17 @@ public class CoordinateRuntime implements Coordinate {
     return runtimeSorted.size();
   }
 
+  public Type getType() {
+    return Type.runtime;
+  }
+
   @Override
-  public String getName() {
-    return "runtime";
+  public String getUnit() {
+    return null;
+  }
+
+  public int getCode() {
+    return 0;
   }
 
   public List<? extends Object> getValues() {

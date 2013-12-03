@@ -244,7 +244,7 @@ public class Grib2Rectilyser {
   private VertCoord makeVertCoord(VariableBag vb) {
     Grib2Pds pdsFirst = vb.first.getPDS();
     VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
-    boolean isLayer = Grib2Utils.isLayer(vb.first);
+    boolean isLayer = Grib2Utils.isLayer(pdsFirst);
 
     Set<VertCoord.Level> coords = new HashSet<>();
 
@@ -475,7 +475,7 @@ public class Grib2Rectilyser {
 
     result += result * 37 + gr.getDiscipline();
     result += result * 37 + pds2.getLevelType1();
-    if (Grib2Utils.isLayer(gr)) result += result * 37 + 1;
+    if (Grib2Utils.isLayer(pds2)) result += result * 37 + 1;
 
     result += result * 37 + pds2.getParameterCategory();
     result += result * 37 + pds2.getTemplateNumber();

@@ -120,21 +120,21 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       // see if its a partition
       boolean isPartition = proto.getPartitionsCount() > 0;
 
-      // switch from files to mfiles in version 12
+      // get mfile list
       if (!isPartition) {
-           int n = proto.getMfilesCount();
-          if (n == 0) {
-            logger.warn("Grib2Collection {}: has no files, force recreate ", gc.getName());
-            return false;
-          } else {
-            List<MFile> files = new ArrayList<MFile>(n);
-            for (int i = 0; i < n; i++) {
-              ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
-              files.add(new GribCollectionBuilder.GcMFile(dir, mf.getFilename(), mf.getLastModified()));
-            }
-            gc.setFiles(files);
-            //if (dcm != null) dcm.setFiles(files);  // LOOK !!
+        int n = proto.getMfilesCount();
+        if (n == 0) {
+          logger.warn("Grib2Collection {}: has no files, force recreate ", gc.getName());
+          return false;
+        } else {
+          List<MFile> files = new ArrayList<MFile>(n);
+          for (int i = 0; i < n; i++) {
+            ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
+            files.add(new GribCollectionBuilder.GcMFile(dir, mf.getFilename(), mf.getLastModified()));
           }
+          gc.setFiles(files);
+          //if (dcm != null) dcm.setFiles(files);  // LOOK !!
+        }
       }
 
       gc.groups = new ArrayList<GribCollection.GroupHcs>(proto.getGroupsCount());
@@ -180,9 +180,13 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     group.varIndex = new ArrayList<>();
     for (int i = 0; i < p.getVariablesCount(); i++)
       group.varIndex.add( readVariable(p.getVariables(i), group));
-    Collections.sort(group.varIndex);
+    // Collections.sort(group.varIndex);
 
-    group.timeCoords = new ArrayList<TimeCoord>(p.getTimeCoordsCount());
+    group.coords = new ArrayList<>();
+    //for (int i = 0; i < p.getCoordsCount(); i++)
+    //   group.coords.add( readCoord(p.getCoords(i), group));
+
+    /* group.timeCoords = new ArrayList<TimeCoord>(p.getTimeCoordsCount());
     for (int i = 0; i < p.getTimeCoordsCount(); i++)
       group.timeCoords.add(readTimeCoord(p.getTimeCoords(i)));
 
@@ -192,7 +196,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
     group.ensCoords = new ArrayList<EnsCoord>(p.getEnsCoordsCount());
     for (int i = 0; i < p.getEnsCoordsCount(); i++)
-      group.ensCoords.add(readEnsCoord(p.getEnsCoords(i)));
+      group.ensCoords.add(readEnsCoord(p.getEnsCoords(i))); */
 
     group.filenose = new int[p.getFilenoCount()];
     for (int i = 0; i < p.getFilenoCount(); i++)
@@ -200,7 +204,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
     readTimePartitions(group, p);
 
-    // finish
+    /* finish
     for (GribCollection.VariableIndex vi : group.varIndex) {
       TimeCoord tc = group.timeCoords.get(vi.timeIdx);
       vi.ntimes = tc.getSize();
@@ -208,7 +212,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       vi.nverts = (vc == null) ? 0 : vc.getSize();
       EnsCoord ec = (vi.ensIdx < 0) ? null : group.ensCoords.get(vi.ensIdx);
       vi.nens = (ec == null) ? 0 : ec.getSize();
-    }
+    } */
 
     return group;
   }
@@ -225,7 +229,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     return new Parameter(pp.getName(), vals);
   }
 
-  private TimeCoord readTimeCoord(GribCollectionProto.Coord pc) throws IOException {
+  /* private TimeCoord readTimeCoord(GribCollectionProto.Coord pc) throws IOException {
     if (pc.getBoundCount() > 0) {  // its an interval
       List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
       for (int i = 0; i < pc.getValuesCount(); i++)
@@ -254,7 +258,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     for (int i = 0; i < pc.getValuesCount(); i += 2)
       coords.add(new EnsCoord.Coord((int) pc.getValues(i), (int) pc.getValues(i + 1)));
     return new EnsCoord(coords);
-  }
+  }  */
 
   protected GribCollection.VariableIndex readVariable(GribCollectionProto.Variable pv, GribCollection.GroupHcs group) {
     byte[] rawPds = pv.getPds().toByteArray();

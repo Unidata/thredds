@@ -488,9 +488,9 @@ public class Grib2Iosp extends GribIosp {
     }
 
     for (GribCollection.VariableIndex vindex : gHcs.varIndex) {
-      TimeCoord tc = gHcs.timeCoords.get(vindex.timeIdx);
-      VertCoord vc = (vindex.vertIdx < 0) ? null : gHcs.vertCoords.get(vindex.vertIdx);
-      EnsCoord ec = (vindex.ensIdx < 0) ? null : gHcs.ensCoords.get(vindex.ensIdx);
+      TimeCoord tc = vindex.getTimeCoord();
+      VertCoord vc = vindex.getVertCoord();
+      EnsCoord ec = vindex.getEnsCoord();
 
       StringBuilder dims = new StringBuilder();
 
@@ -499,7 +499,7 @@ public class Grib2Iosp extends GribIosp {
       dims.append(tcName);
 
       if (ec != null)
-        dims.append(" ").append("ens").append(vindex.ensIdx);
+        dims.append(" ").append("ens"); // LOOK .append(vindex.ensIdx);
 
       if (vc != null)
         dims.append(" ").append(vc.getName().toLowerCase());
@@ -891,8 +891,8 @@ public class Grib2Iosp extends GribIosp {
     // canonical order: time, ens, z, y, x
     int rangeIdx = 0;
     Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range ensRange = (vindex.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range levRange = (vindex.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range ensRange = vindex.hasEns() ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range levRange = vindex.hasVert() ? section.getRange(rangeIdx++) : new Range(0, 0);
     Range yRange = section.getRange(rangeIdx++);
     Range xRange = section.getRange(rangeIdx);
 
@@ -926,8 +926,8 @@ public class Grib2Iosp extends GribIosp {
     // canonical order: time, ens, z, y, x
     int rangeIdx = 0;
     Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range ensRange = (vindex.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range levRange = (vindex.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range ensRange = vindex.hasEns() ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range levRange = vindex.hasVert() ? section.getRange(rangeIdx++) : new Range(0, 0);
     Range yRange = section.getRange(rangeIdx++);
     Range xRange = section.getRange(rangeIdx);
 

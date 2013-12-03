@@ -57,9 +57,20 @@ public class CoordinateTimeIntv implements Coordinate, Comparable<CoordinateTime
   }
 
   @Override
-  public String getName() {
-    return "timeIntv";
+  public int getCode() {
+    return 0;  //To change body of implemented methods use File | Settings | File Templates.
   }
+
+  @Override
+  public Type getType() {
+    return Type.timeIntv;
+  }
+
+  @Override
+  public String getUnit() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
 
   @Override
   public void showInfo(Formatter info, Indent indent) {

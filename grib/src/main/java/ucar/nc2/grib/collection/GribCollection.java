@@ -6,6 +6,7 @@ import thredds.filesystem.MFileOS;
 import thredds.inventory.Collection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
+import ucar.arr.Coordinate;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
@@ -510,7 +511,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
     private String id, description;
     public List<VariableIndex> varIndex;   // GribCollection.VariableIndex
-    public List<TimeCoord> coords;
+    public List<Coordinate> coords;
     public List<TimeCoord> timeCoords;
     public List<VertCoord> vertCoords;
     public List<EnsCoord> ensCoords;
@@ -619,28 +620,17 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       return result;
     }
 
-    public GribCollection.VariableIndex findAnyVariableWithTime(int usesTimeIndex) {
+    /* public GribCollection.VariableIndex findAnyVariableWithTime(int usesTimeIndex) {
       for (VariableIndex vi : varIndex)
         if (vi.timeIdx == usesTimeIndex) return vi;
       return null;
-    }
+    } */
 
     public GribCollection.VariableIndex findVariableByHash(int cdmHash) {
       for (VariableIndex vi : varIndex)                // look might want to hash to avoid linear lookup cost
         if (vi.cdmHash == cdmHash) return vi;
       return null;
     }
-
-    /* public ThreddsMetadata.Variables getVariables() {
-      ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("GRIB-2");
-      for (VariableIndex vi : varIndex) {
-        String name = Grib2Iosp.makeVariableName(GribCollection.this, vi);
-        String desc = Grib2Iosp.makeVariableLongName(tables, vi);
-        String units = Grib2Iosp.makeVariableUnits(tables, vi);
-        vars.addVariable(new ThreddsMetadata.Variable(name, desc, name, units, null));
-      }
-      return vars;
-    } */
 
     public CalendarDateRange getTimeCoverage() {
       TimeCoord useTc = null;
@@ -653,53 +643,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   }
 
-  //Map<Integer,String> gdsNamer = (Map<Integer,String>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDS_NAMER);
-  //String groupNamer = (String) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAMER);
-
-  /* kludge
-  private String setGroupNameOverride(int gdsHash, Map<Integer,String> gdsNamer, String groupNamer, MFile mfile) {
-    String result = null;
-    if (gdsNamer != null)
-      result = gdsNamer.get(gdsHash);
-    if (result != null) return result;
-    if (groupNamer == null) return null;
-    return mfile.getName();
-  }   */
-
-
-  /* public class HorizCoordSys {
- public Grib2Gds gds;
- public int template; // GDS Template number (code table 3.1)
- public int nx, ny, nPoints, scanMode;
-
- HorizCoordSys(Grib2SectionGridDefinition gdss) {
-   this.template = gdss.getGDSTemplateNumber();
-   this.nPoints = gdss.getNumberPoints();
-   this.gds = gdss.getGDS();
-   this.nx = gds.nx;
-   this.ny = gds.ny;
-   this.scanMode = gds.scanMode;
- }
-
- public String getName() {
-   return gds.getNameShort() + "-" + ny + "X" + nx;
- }
-
- @Override
- public String toString() {
-   Formatter f = new Formatter();
-   f.format("name='%s' nc=%d ny=%d", getName(), nx, ny);
-   //for (Parameter p : params)
-   //  f.format("  %s%n", p);
-   return f.toString();
- }
-
- /* public ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
-   ThreddsMetadata.Range eastwest = new ThreddsMetadata.Range(start, size, )
-   return new ThreddsMetadata.GeospatialCoverage();
- }
-}   */
-
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int cdmHash, int discipline,
               Grib2Pds pds, List<Integer> index, long recordsPos, int recordsLen) {
 
@@ -710,8 +653,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     int intvType = pds.getStatisticalProcessType();
 
     String intvName = null;
-    if (pds.isTimeInterval())
-       intvName = rect.getTimeIntervalName(vb.timeCoordIndex);
+    //if (pds.isTimeInterval())
+    //   intvName = rect.getTimeIntervalName(vb.timeCoordIndex);
 
     int ensDerivedType = -1;
      if (pds.isEnsembleDerived()) {
@@ -779,15 +722,23 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public TimeCoord getTimeCoord() {
-      return timeIdx < 0 ? null : group.timeCoords.get(timeIdx);
+      return null; // timeIdx < 0 ? null : group.timeCoords.get(timeIdx);
     }
 
     public VertCoord getVertCoord() {
-      return vertIdx < 0 ? null : group.vertCoords.get(vertIdx);
+      return null; // vertIdx < 0 ? null : group.vertCoords.get(vertIdx);
     }
 
     public EnsCoord getEnsCoord() {
-      return ensIdx < 0 ? null : group.ensCoords.get(ensIdx);
+      return null; // ensIdx < 0 ? null : group.ensCoords.get(ensIdx);
+    }
+
+    public boolean hasEns() {
+      return false; // LOOK
+    }
+
+    public boolean hasVert() {
+      return false; // vertIdx >= 0;
     }
 
     public String id() {
@@ -811,9 +762,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       sb.append(", isLayer=").append(isLayer);
       sb.append(", genProcessType=").append(genProcessType);
       sb.append(", cdmHash=").append(cdmHash);
-      sb.append(", timeIdx=").append(timeIdx);
-      sb.append(", vertIdx=").append(vertIdx);
-      sb.append(", ensIdx=").append(ensIdx);
+      //sb.append(", timeIdx=").append(timeIdx);
+      //sb.append(", vertIdx=").append(vertIdx);
+      //sb.append(", ensIdx=").append(ensIdx);
       sb.append(", ntimes=").append(ntimes);
       sb.append(", nverts=").append(nverts);
       sb.append(", nens=").append(nens);
@@ -837,9 +788,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       sb.append(", probabilityName='").append(probabilityName).append('\'');
       sb.append(", isLayer=").append(isLayer);
       sb.append(", cdmHash=").append(cdmHash);
-      sb.append(", timeIdx=").append(timeIdx);
-      sb.append(", vertIdx=").append(vertIdx);
-      sb.append(", ensIdx=").append(ensIdx);
+      //sb.append(", timeIdx=").append(timeIdx);
+      //sb.append(", vertIdx=").append(vertIdx);
+      //sb.append(", ensIdx=").append(ensIdx);
       sb.append(", recordsPos=").append(recordsPos);
       sb.append(", recordsLen=").append(recordsLen);
       sb.append(", group=").append(group.getId());
@@ -855,7 +806,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public String toStringShort() {
       Formatter sb = new Formatter();
       sb.format("Variable {%d-%d-%d", discipline, category, parameter);
-      if (vertIdx>=0) sb.format(" level=%d", vertIdx);
+      // if (vertIdx>=0) sb.format(" level=%d", vertIdx);
       if (intvName != null && intvName.length() > 0) sb.format(" intv=%s", intvName);
       if (probabilityName != null && probabilityName.length() > 0) sb.format(" prob=%s", probabilityName);
       sb.format(" cdmHash=%d}", cdmHash);

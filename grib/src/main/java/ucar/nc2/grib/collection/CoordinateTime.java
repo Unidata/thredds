@@ -21,12 +21,12 @@ import java.util.*;
 public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
   private final CalendarDate runtime;
   private final List<Integer> offsetSorted;
-  //private final List<Coordinate> subdivide;
+  private final int code;
 
-  public CoordinateTime(CalendarDate runtime, List<Integer> offsetSorted, List<Coordinate> subdivide) {
+  public CoordinateTime(CalendarDate runtime, List<Integer> offsetSorted, int code) {
     this.runtime = runtime;
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
-    //this.subdivide = (subdivide == null) ? null :  Collections.unmodifiableList(subdivide);
+    this.code = code;
   }
 
   static public Integer extractOffset(Grib2Record gr) {
@@ -60,11 +60,18 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
     return offsetSorted.size();
   }
 
-  @Override
-  public String getName() {
-    return "time";
+  public Type getType() {
+    return Type.time;
   }
 
+  @Override
+  public String getUnit() {
+    return null;
+  }
+
+  public int getCode() {
+    return code;
+  }
   /* public List<Grib2Record> getRecordList(int timeIdx) {
     return recordList.get(timeIdx);
   } */
@@ -86,15 +93,17 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
 
   static public class Builder extends CoordinateBuilderImpl  {
     private final CalendarDate runtime;
+    int code;
 
-    public Builder(Object runtime) {
+    public Builder(Object runtime, int code) {
       super(runtime);
       this.runtime = (CalendarDate) runtime;
+      this.code = code;
     }
 
     @Override
     public CoordinateBuilder makeBuilder(Object val) {
-      CoordinateBuilder result =  new Builder(val);
+      CoordinateBuilder result =  new Builder(val, code);
       result.chainTo(nestedBuilder);
       return result;
     }
@@ -109,7 +118,7 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
       List<Integer> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) offsetSorted.add( (Integer) val);
       Collections.sort(offsetSorted);
-      return new CoordinateTime(runtime, offsetSorted, subdivide);
+      return new CoordinateTime(runtime, offsetSorted, code);
     }
   }
 

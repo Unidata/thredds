@@ -7,7 +7,7 @@ import ucar.arr.Counter;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.builder.*;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
@@ -65,7 +65,7 @@ public class Grib2RectilyzePanel extends JPanel {
         if (pb != null) {
           // makeRecordTable(pb.pds);
           java.util.List<Grib2RecordBean> records = new ArrayList<>();
-          for (Grib2Rectilyser2.Record r : pb.vb.atomList) {
+          for (Grib2Rectilyser.Record r : pb.vb.atomList) {
             records.add(new Grib2RecordBean(r));
           }
           record2BeanTable.setBeans(records);
@@ -473,13 +473,13 @@ public class Grib2RectilyzePanel extends JPanel {
     }
 
     Counter stats = new Counter();
-    Grib2Rectilyser2 rect = new Grib2Rectilyser2(cust, records, 0, null);
+    Grib2Rectilyser rect = new Grib2Rectilyser(cust, records, 0, null);
     rect.make(stats, null, info);
     rect.showInfo(info, cust);
     stats.recordsTotal = records.size();
 
     java.util.List<VariableBagBean> params = new ArrayList<>();
-    for (Grib2Rectilyser2.VariableBag vb : rect.getGribvars()) {
+    for (Grib2Rectilyser.VariableBag vb : rect.getGribvars()) {
       params.add( new VariableBagBean(vb));
     }
     param2BeanTable.setBeans(params);
@@ -511,10 +511,10 @@ public class Grib2RectilyzePanel extends JPanel {
     for (Object beano : param2BeanTable.getBeans()) {
       VariableBagBean bean = (VariableBagBean) beano;
       for (Coordinate coord : bean.vb.coordND.getCoordinates()) {
-        String name =  coord.getName();
-        if (name.equals("runtime")) merge(runtimeCoords, coord);
-        if (name.equals("time")) merge(timeCoords, coord);
-        if (name.equals("timeIntv")) merge(timeIntvCoords, coord);
+        Coordinate.Type type =  coord.getType();
+        if (type == Coordinate.Type.runtime) merge(runtimeCoords, coord);
+        if (type == Coordinate.Type.time) merge(timeCoords, coord);
+        if (type == Coordinate.Type.timeIntv) merge(timeIntvCoords, coord);
       }
     }
 
@@ -938,7 +938,7 @@ public class Grib2RectilyzePanel extends JPanel {
   ////////////////////////////////////////////////////////////////////////////
 
   public class VariableBagBean {
-    Grib2Rectilyser2.VariableBag  vb;
+    Grib2Rectilyser.VariableBag  vb;
     Grib2Pds pds;
     Grib2SectionIdentification id;
     int discipline;
@@ -948,7 +948,7 @@ public class Grib2RectilyzePanel extends JPanel {
     public VariableBagBean() {
     }
 
-    public VariableBagBean(Grib2Rectilyser2.VariableBag vb) throws IOException {
+    public VariableBagBean(Grib2Rectilyser.VariableBag vb) throws IOException {
       this.vb = vb;
       pds = vb.first.getPDS();
       id = vb.first.getId();
@@ -1118,14 +1118,14 @@ public class Grib2RectilyzePanel extends JPanel {
   }
 
   public class Grib2RecordBean {
-    Grib2Rectilyser2.Record rr;
+    Grib2Rectilyser.Record rr;
     Grib2Record gr;
     Grib2Pds pds;
 
     public Grib2RecordBean() {
     }
 
-    public Grib2RecordBean(Grib2Rectilyser2.Record rr) {
+    public Grib2RecordBean(Grib2Rectilyser.Record rr) {
       this.rr = rr;
       this.gr = rr.gr;
       try {

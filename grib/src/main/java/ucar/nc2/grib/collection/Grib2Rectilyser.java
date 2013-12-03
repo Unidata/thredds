@@ -33,6 +33,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.inventory.MFile;
+import ucar.arr.Coordinate;
 import ucar.arr.CoordinateBuilder;
 import ucar.arr.CoordinateND;
 import ucar.arr.Counter;
@@ -57,7 +58,6 @@ public class Grib2Rectilyser {
 
   private final Grib2Customizer cust;
   private final int gdsHash;
-  CoordinateRuntime runtimeCoord;
 
   private final boolean intvMerge;
   private final boolean useGenType;
@@ -65,10 +65,11 @@ public class Grib2Rectilyser {
 
   private final List<Grib2Record> records;
   private List<VariableBag> gribvars;
+  private List<Coordinate> coords;
 
-  private final List<TimeCoord> timeCoords = new ArrayList<>();
-  private final List<VertCoord> vertCoords = new ArrayList<>();
-  private final List<EnsCoord> ensCoords = new ArrayList<>();
+  //private final List<TimeCoord> timeCoords = new ArrayList<>();
+  //private final List<VertCoord> vertCoords = new ArrayList<>();
+  //private final List<EnsCoord> ensCoords = new ArrayList<>();
 
   public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, Map<String, Boolean> pdsConfig) {
     this.cust = cust;
@@ -96,7 +97,11 @@ public class Grib2Rectilyser {
     return gribvars;
   }
 
-  public List<TimeCoord> getTimeCoords() {
+  public List<Coordinate> getCoordinates() {
+    return coords;
+  }
+
+  /* public List<TimeCoord> getTimeCoords() {
     return timeCoords;
   }
 
@@ -106,7 +111,7 @@ public class Grib2Rectilyser {
 
   public List<EnsCoord> getEnsCoords() {
     return ensCoords;
-  }
+  } */
 
   List<MFile> files = null; // temp debug
   public void make(Counter counter, List<MFile> files, Formatter info) throws IOException {
@@ -126,22 +131,22 @@ public class Grib2Rectilyser {
     gribvars = new ArrayList<VariableBag>(vbHash.values());
     Collections.sort(gribvars); // make it deterministic by sorting
 
-    // create and assign time coordinate
-    // (uniform or not) X (isInterval or not)
+    // create coordinates
     for (VariableBag vb : gribvars) {
       Grib2Pds pdsFirst = vb.first.getPDS();
-      setTimeUnit(vb);
+      int unit = cust.convertTimeUnit(pdsFirst.getTimeUnit());
+      vb.timeUnit = Grib2Utils.getCalendarPeriod(unit);
 
       CoordinateBuilder rootBuilder = new CoordinateRuntime.Builder(null);
       CoordinateBuilder next;
       if (vb.first.getPDS().isTimeInterval())
         next = rootBuilder.chainTo(new CoordinateTimeIntv.Builder(null, cust, vb.timeUnit));
       else
-        next = rootBuilder.chainTo(new CoordinateTime.Builder(null));
+        next = rootBuilder.chainTo(new CoordinateTime.Builder(null, pdsFirst.getTimeUnit()));
 
       VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
       if (vertUnit.isVerticalCoordinate())
-        next = next.chainTo(new CoordinateVert.Builder(null));
+        next = next.chainTo(new CoordinateVert.Builder(null, pdsFirst.getLevelType1()));
 
       vb.coordND = new CoordinateND(rootBuilder);
 
@@ -246,7 +251,7 @@ public class Grib2Rectilyser {
   private VertCoord makeVertCoord(VariableBag vb) {
     Grib2Pds pdsFirst = vb.first.getPDS();
     VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
-    boolean isLayer = Grib2Utils.isLayer(vb.first);
+    boolean isLayer = Grib2Utils.isLayer(pdsFirst);
 
     Set<VertCoord.Level> coords = new HashSet<>();
 
@@ -475,7 +480,7 @@ public class Grib2Rectilyser {
 
     result += result * 37 + gr.getDiscipline();
     result += result * 37 + pds2.getLevelType1();
-    if (Grib2Utils.isLayer(gr)) result += result * 37 + 1;
+    if (Grib2Utils.isLayer(pds2)) result += result * 37 + 1;
 
     result += result * 37 + pds2.getParameterCategory();
     result += result * 37 + pds2.getTemplateNumber();
@@ -538,9 +543,9 @@ public class Grib2Rectilyser {
     return result;
   }
 
-  public String getTimeIntervalName(int timeIdx) {
+  /* public String getTimeIntervalName(int timeIdx) {
     TimeCoord tc = timeCoords.get(timeIdx);
     return tc.getTimeIntervalName();
-  }
+  } */
 
 }

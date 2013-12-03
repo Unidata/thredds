@@ -40,7 +40,6 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.builder.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.builder.Grib2Rectilyser2;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
@@ -578,10 +577,10 @@ public class Grib2CollectionPanel extends JPanel {
       }
       fileno++;
     }
-    Counter stats = new Counter();
-    Grib2Rectilyser2 agg = new Grib2Rectilyser2(cust, records, 0, null);
+    Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
+    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, null);
     agg.make(stats, null, f);
-    agg.showInfo(f, cust);
+    agg.dump(f, cust);
     stats.recordsTotal = records.size();
   }
 

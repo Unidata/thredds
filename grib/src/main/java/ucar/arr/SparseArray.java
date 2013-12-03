@@ -39,7 +39,7 @@ public class SparseArray<T> {
     content.add(thing);
     int where = calcIndex(index);
     if (track[where] > 0) ndups++;  // LOOK here is where we need to decide how to handle duplicates
-    track[where] = content.size(); // 1-based so that 0 = missing
+    track[where] = content.size();  // 1-based so that 0 = missing
   }
 
   public T fetch(int[] index) {
