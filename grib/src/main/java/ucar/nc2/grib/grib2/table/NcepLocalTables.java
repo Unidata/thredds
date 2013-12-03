@@ -83,75 +83,75 @@ public class NcepLocalTables extends Grib2Customizer {
   //      return null;
   //  }
 
-    //if (dirURL != null && dirURL.getProtocol().equals("file")) {
-     //   /* A file path: easy enough */
-      //  return new File(dirURL.toURI()).list();
+  //if (dirURL != null && dirURL.getProtocol().equals("file")) {
+  //   /* A file path: easy enough */
+  //  return new File(dirURL.toURI()).list();
   //  return null;
   //}
 
   private String[] getResourceListing(Class clazz, String path) throws URISyntaxException, IOException {
-        URL dirURL = clazz.getClassLoader().getResource(path);
-        if (dirURL != null && dirURL.getProtocol().equals("file")) {
+    URL dirURL = clazz.getClassLoader().getResource(path);
+    if (dirURL != null && dirURL.getProtocol().equals("file")) {
             /* A file path: easy enough */
-            return new File(dirURL.toURI()).list();
-        }
+      return new File(dirURL.toURI()).list();
+    }
 
-        if (dirURL == null) {
+    if (dirURL == null) {
             /*
             * In case of a jar file, we can't actually find a directory.
             * Have to assume the same jar as clazz.
             */
-            String me = clazz.getName().replace(".", "/")+".class";
-            dirURL = clazz.getClassLoader().getResource(me);
-        }
-
-        if (dirURL.getProtocol().equals("jar")) {
-            /* A JAR path */
-            String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
-            JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-            Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
-            Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
-            while(entries.hasMoreElements()) {
-                String name = entries.nextElement().getName();
-                if (name.startsWith(path)) { //filter according to the path
-                    String entry = name.substring(path.length());
-                    int checkSubdir = entry.indexOf("/");
-                    if (checkSubdir >= 0) {
-                        // if it is a subdirectory, we just return the directory name
-                        entry = entry.substring(0, checkSubdir);
-                    }
-                    result.add(entry);
-                }
-            }
-            return result.toArray(new String[result.size()]);
-        }
-
-        throw new UnsupportedOperationException("Cannot list files for URL "+dirURL);
+      String me = clazz.getName().replace(".", "/") + ".class";
+      dirURL = clazz.getClassLoader().getResource(me);
     }
+
+    if (dirURL.getProtocol().equals("jar")) {
+            /* A JAR path */
+      String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
+      JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+      Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+      Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
+      while (entries.hasMoreElements()) {
+        String name = entries.nextElement().getName();
+        if (name.startsWith(path)) { //filter according to the path
+          String entry = name.substring(path.length());
+          int checkSubdir = entry.indexOf("/");
+          if (checkSubdir >= 0) {
+            // if it is a subdirectory, we just return the directory name
+            entry = entry.substring(0, checkSubdir);
+          }
+          result.add(entry);
+        }
+      }
+      return result.toArray(new String[result.size()]);
+    }
+
+    throw new UnsupportedOperationException("Cannot list files for URL " + dirURL);
+  }
 
   @Override
   public List getParameters() {
     List allParams = new ArrayList(3000);
-    String path="resources/grib2/ncep/";
+    String path = "resources/grib2/ncep/";
     try {
       String[] fileNames = getResourceListing(ucar.nc2.grib.GribNumbers.class, path);
       for (String fileName : fileNames) {
-         File f = new File(fileName);
-         if (f.isDirectory()) continue;
-         if (!f.getName().contains("Table4.2.")) continue;
-         if (!f.getName().endsWith(".xml")) continue;
-         try {
-           NcepLocalParams params = NcepLocalParams.factory(path + f.getPath());
-           allParams.addAll(params.getParameters());
-         } catch (Exception e) {
-           System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
-         }
+        File f = new File(fileName);
+        if (f.isDirectory()) continue;
+        if (!f.getName().contains("Table4.2.")) continue;
+        if (!f.getName().endsWith(".xml")) continue;
+        try {
+          NcepLocalParams params = NcepLocalParams.factory(path + f.getPath());
+          allParams.addAll(params.getParameters());
+        } catch (Exception e) {
+          System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
+        }
       }
       return allParams;
     } catch (URISyntaxException e) {
-        System.out.println(e);
+      System.out.println(e);
     } catch (IOException e) {
-        System.out.println(e);
+      System.out.println(e);
     }
     return null;
   }
@@ -195,7 +195,7 @@ public class NcepLocalTables extends Grib2Customizer {
     f.format("%nCFSR MM special encoding (Swank)%n");
     f.format("  (55-58) length of avg period per unit                     = %d%n", p2);
     f.format("  (62-65) hours skipped between each calculation component  = %d%n", p2mp1);
-    f.format("  nhours in month %d should be  = %d%n", ngrids*p2, 24 * 31);
+    f.format("  nhours in month %d should be  = %d%n", ngrids * p2, 24 * 31);
   }
 
 
@@ -219,7 +219,7 @@ public class NcepLocalTables extends Grib2Customizer {
 
   private boolean isCfsr(Grib2Record gr, Grib2Pds pds) {
     int genType = pds.getGenProcessId();
-    if ((genType != 82) && (genType != 89)) return false                           ;
+    if ((genType != 82) && (genType != 89)) return false;
 
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
     Grib2Pds.TimeInterval[] ti = pdsIntv.getTimeIntervals();
@@ -250,8 +250,8 @@ public class NcepLocalTables extends Grib2Customizer {
     /* email from boi.vuong@noaa.gov 1/19/2012
      "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
       The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."  */
-    if (makeHash(discipline, category, number) == makeHash(2,4,3))
-      return getParameter(2,4,2);
+    if (makeHash(discipline, category, number) == makeHash(2, 4, 3))
+      return getParameter(2, 4, 2);
 
     /* email from boi.vuong@noaa.gov 1/26/2012
      The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
@@ -275,12 +275,12 @@ public class NcepLocalTables extends Grib2Customizer {
      The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
      It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in June or July, 2012.
      RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242  */
-   // if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
-   //   return getParameter(0, 1, 242);
+    // if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
+    //   return getParameter(0, 1, 242);
 
     Grib2Parameter plocal = NcepLocalParams.getParameter(discipline, category, number);
 
-    if ((category <= 191) && (number <= 191))  {
+    if ((category <= 191) && (number <= 191)) {
       GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
       if (plocal == null) return pwmo;
 
@@ -294,7 +294,11 @@ public class NcepLocalTables extends Grib2Customizer {
 
   @Override
   public String getTableValue(String tableName, int code) {
-     if ((code < 192) || (code > 254) || tableName.equals("4.0"))
+    if (tableName.equals("ProcessId")) {
+      return getGeneratingProcessName(code);
+    }
+
+    if ((code < 192) || (code > 254) || tableName.equals("4.0"))
       return WmoCodeTable.getTableValue(tableName, code);
 
     return codeMap.get(tableName + "." + code);
@@ -476,7 +480,7 @@ public class NcepLocalTables extends Grib2Customizer {
     return statName.get(id);
   }
 
-    // public so can be called from Grib2
+  // public so can be called from Grib2
   private Map<Integer, String> initTable410() {
     String path = "resources/grib2/ncep/Table4.10.xml";
     InputStream is = null;
