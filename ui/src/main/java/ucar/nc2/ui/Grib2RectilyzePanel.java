@@ -43,7 +43,6 @@ import java.util.List;
  * @since 11/28/13
  */
 public class Grib2RectilyzePanel extends JPanel {
-  static private Map<String, WmoTemplateTable> gribTemplates = null;
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionPanel.class);
 
   private final PreferencesExt prefs;

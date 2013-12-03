@@ -420,6 +420,11 @@ public class FeatureCollectionConfig {
       intvFilter.isZeroExcluded = val;
     }
 
+    public void setIntervalLength(int intvLength, String varId) {
+      if (intvFilter == null) intvFilter = new GribIntvFilter();
+      intvFilter.addVariable(intvLength, varId, null);
+    }
+
     private void readValue(Element pdsHashElement, String key, Namespace ns, boolean value) {
       if (pdsHashElement != null) {
         Element e = pdsHashElement.getChild(key, ns);
