@@ -136,66 +136,74 @@ public class Grib2Rectilyser {
       Grib2Pds pdsFirst = vb.first.getPDS();
       int unit = cust.convertTimeUnit(pdsFirst.getTimeUnit());
       vb.timeUnit = Grib2Utils.getCalendarPeriod(unit);
+      vb.coordND = new CoordinateND();
+      vb.coordND.addBuilder(new CoordinateRuntime.Builder());
 
-      CoordinateBuilder rootBuilder = new CoordinateRuntime.Builder(null);
-      CoordinateBuilder next;
       if (vb.first.getPDS().isTimeInterval())
-        next = rootBuilder.chainTo(new CoordinateTimeIntv.Builder(null, cust, vb.timeUnit));
+        vb.coordND.addBuilder(new CoordinateTimeIntv.Builder(cust, vb.timeUnit, pdsFirst.getTimeUnit()));
       else
-        next = rootBuilder.chainTo(new CoordinateTime.Builder(null, pdsFirst.getTimeUnit()));
+        vb.coordND.addBuilder(new CoordinateTime.Builder(pdsFirst.getTimeUnit()));
 
       VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
       if (vertUnit.isVerticalCoordinate())
-        next = next.chainTo(new CoordinateVert.Builder(null, pdsFirst.getLevelType1()));
+        vb.coordND.addBuilder(new CoordinateVert.Builder(pdsFirst.getLevelType1()));
 
-      vb.coordND = new CoordinateND(rootBuilder);
-      vb.coordND.add(vb.atomList);
-      vb.coordND.finish();
+      for (Grib2Record gr : vb.atomList)
+        vb.coordND.addRecord(gr);
+
+      vb.coordND.finish(vb.atomList, info);
     }
+
+    this.coords = new ArrayList<>();
+
+    CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder();
+    Set<Coordinate> timeBuilders = new HashSet<>();
+    Set<Coordinate> timeIntvBuilders = new HashSet<>();
+    Set<Coordinate> vertBuilders = new HashSet<>();
 
     // make shared coordinates
     for (VariableBag vb : gribvars) {
        for (Coordinate coord : vb.coordND.getCoordinates()) {
          switch (coord.getType()) {
            case runtime:
+             runtimeAllBuilder.addAll(coord); // always union
              break;
            case time:
+             timeBuilders.add(coord);
              break;
            case timeIntv:
+             timeIntvBuilders.add(coord);
              break;
            case vert:
+             vertBuilders.add(coord);
              break;
          }
        }
     }
 
-    /* for (VariableBag vb : gribvars) {
-       setTimeUnit(vb);
-       TimeCoord use;
-       if (vb.first.getPDS().isTimeInterval()) {
-         use = makeTimeCoordsIntv(vb);
-       } else {
-         boolean isUniform = checkTimeCoordsUniform(vb);
-         use = makeTimeCoords(vb, isUniform);
-       }
-       vb.timeCoordIndex = TimeCoord.findCoord(timeCoords, use); // share coordinates when possible
-     }
-
-     // create and assign vert coordinate
-    for (VariableBag vb : gribvars) {
-      VertCoord vc = makeVertCoord(vb);
-      if (vc.isVertDimensionUsed()) {
-        vb.vertCoordIndex = VertCoord.findCoord(vertCoords, vc); // share coordinates when possible
-      }
+    Coordinate runtimeAll = runtimeAllBuilder.finish();
+    this.coords.add(runtimeAll);
+    for (Coordinate coord : timeBuilders) this.coords.add(coord);
+    for (Coordinate coord : timeIntvBuilders) this.coords.add(coord);
+    for (Coordinate coord : vertBuilders) this.coords.add(coord);
+    Map<Coordinate, Integer> coordMap = new HashMap<>();
+    for (int i=0; i<this.coords.size(); i++) {
+      coordMap.put(this.coords.get(i), i);
     }
 
-    // create and assign ens coordinate
+    // redo the variables against the shared coordinates (at the moment this is just possibly runtime
     for (VariableBag vb : gribvars) {
-      EnsCoord ec = makeEnsCoord(vb);
-      if (ec != null) {
-        vb.ensCoordIndex = EnsCoord.findCoord(ensCoords, ec); // share coordinates when possible
+      vb.coordIndex = new ArrayList<>();
+      for (Coordinate coord : vb.coordND.getCoordinates()) {
+        if (coord.getType() == Coordinate.Type.runtime) {
+          if (!coord.equals(runtimeAll)) { // redo
+            System.out.println("HEY");
+          }
+        }
+        vb.coordIndex.add(coordMap.get(coord)); // index into rect.coords
       }
-    }  */
+
+     }
 
     int tot_used = 0;
     int tot_dups = 0;
@@ -451,11 +459,7 @@ public class Grib2Rectilyser {
     public CoordinateND coordND;
     CalendarPeriod timeUnit;
 
-    //int timeCoordIndex = -1;
-    //int vertCoordIndex = -1;
-    //int ensCoordIndex = -1;
-    CalendarDate refDate;
-    //RecordMap recordMap;
+    public List<Integer> coordIndex;
     long pos;
     int length;
 

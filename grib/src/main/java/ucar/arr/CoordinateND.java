@@ -13,35 +13,65 @@ import java.util.*;
  */
 public class CoordinateND {
 
-  CoordinateBuilder root;       // root of the tree
+  List<CoordinateBuilder> builders;
   List<Coordinate> coordinates; // result is orthogonal coordinates
   SparseArray<Grib2Record> sa;  // indexes refer to coordinates
 
-  public CoordinateND(CoordinateBuilder root) {
-    this.root = root;
+  public CoordinateND() {
+    builders = new ArrayList<>();
   }
+
+  public void addBuilder(CoordinateBuilder builder) {
+    builders.add(builder);
+  }
+
+  public void addRecord( Grib2Record gr) {
+    for (CoordinateBuilder builder : builders)
+      builder.addRecord(gr);
+  }
+
+  public void finish(List<Grib2Record> records, Formatter info) {
+    coordinates = new ArrayList<>();
+    for (CoordinateBuilder builder : builders)
+      coordinates.add(builder.finish());
+
+    buildSparseArray(records, info);
+  }
+
+  public void buildSparseArray(List<Grib2Record> records, Formatter info) {
+    int[] sizeArray = new int[coordinates.size()];
+    for (int i = 0; i < coordinates.size(); i++)
+      sizeArray[i] = coordinates.get(i).getSize();
+    sa = new SparseArray<>(sizeArray);
+
+    int[] index = new int[coordinates.size()];
+    for (Grib2Record gr : records) {
+      int count = 0;
+      for (CoordinateBuilder builder : builders)
+        index[count++] = builder.getIndex(gr);
+
+      sa.add(gr, info, index);
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////
+  // apres finis
 
   public List<Coordinate> getCoordinates() {
     return coordinates;
+  }
+
+  public int getNCoordinates() {
+    return coordinates.size();
   }
 
   public SparseArray<Grib2Record> getSparseArray() {
     return sa;
   }
 
-  public void add(List<Grib2Record> records) {
-    for (Grib2Record gr : records)
-      root.add(gr);
-  }
-
-  public void finish() {
-    root.finish();
-    buildOrthogonalCoordinates();
-    buildSparseArray(null);
-  }
-
-  public void showInfo(Formatter info) {
-    buildSparseArray(info);
+  public void showInfo(List<Grib2Record> records, Formatter info) {
+    buildSparseArray(records, info);
     info.format("%n%n");
     sa.showInfo(info, null);
     info.format("%n");
@@ -49,97 +79,11 @@ public class CoordinateND {
       coord.showInfo(info, new Indent(2));
   }
 
-  private void buildOrthogonalCoordinates() {
-    coordinates = new ArrayList<>();
-    coordinates.add(root.getCoordinate());
-    int wantLevel = 1;
-    while (true) {
-      Coordinate result = mergeNestedCoordinates(root, wantLevel, 1);
-      if (result == null) break;
-      coordinates.add(result);
-      wantLevel++;
-    }
-  }
-
-  // we orthogonalize here, merging subtrees' values into a single set
-  private Coordinate mergeNestedCoordinates(CoordinateBuilder builder, int wantLevel, int isLevel) {
-
-    if (builder.getNestedBuilder() == null)
-      return null;
-
-    Set<Object> allKeys = new HashSet<>();
-    Coordinate coord = builder.getCoordinate();
-    for (Object key : coord.getValues()) {
-      CoordinateBuilder nestedBuilder = builder.getChildBuilder(key);
-
-      if (wantLevel == isLevel) {
-        Coordinate nestedCoord = nestedBuilder.getCoordinate();
-        for (Object nestedVal : nestedCoord.getValues())
-          allKeys.add(nestedVal);
-
-      } else {
-        Coordinate nestedCoord2 = mergeNestedCoordinates(nestedBuilder, wantLevel, isLevel + 1);
-        if (nestedCoord2 == null) return null;
-        allKeys.addAll(nestedCoord2.getValues());
-      }
-    }
-    if (allKeys.size() == 0) return null;
-
-    CoordinateBuilder builderAtWantedLevel = builder.getNestedBuilder();
-    for (int i=isLevel; i<wantLevel; i++)
-      builderAtWantedLevel = builderAtWantedLevel.getNestedBuilder();
-    return builderAtWantedLevel.makeCoordinate(allKeys);
-  }
-
-  void buildSparseArray(Formatter info) {
-    int[] sizeArray = new int[coordinates.size()];
-    for (int i = 0; i < coordinates.size(); i++)
-      sizeArray[i] = coordinates.get(i).getSize();
-    sa = new SparseArray<>(sizeArray);
-
-    int[] index = new int[coordinates.size()];
-    makeArray(root, info, index, 0);
-  }
-
-  void makeArray(CoordinateBuilder builder, Formatter info, int[] index, int level) {
-    if (builder == null) return;
-
-    Coordinate coord = coordinates.get(level);
-    int count = 0;
-    for (Object key : coord.getValues()) {
-      index[level] = count;
-
-      if (builder.getNestedBuilder() != null) {
-        CoordinateBuilder nestedBuilder = builder.getChildBuilder(key); // may be null if missing a coordinate
-        makeArray(nestedBuilder, info, index, level + 1);
-
-      } else if (builder.getRecords(key) != null) {  // may be null if missing a coordinate
-
-        for (Grib2Record r : builder.getRecords(key))  {
-          sa.add(r, info, index);
-        }
-      }
-      count++;
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////
-
   public void showInfo(Formatter info, Counter all) {
-    showInfo(coordinates, info, new Indent(2));
+    for (Coordinate coord : coordinates)
+       coord.showInfo(info, new Indent(2));
+
     if (sa != null) sa.showInfo(info, all);
   }
-
-  // recurse
-  private void showInfo(List<Coordinate> coords, Formatter info, Indent indent) {
-    Coordinate coord = coords.get(0);
-    coord.showInfo(info, indent);
-
-    if (coords.size() > 1) {
-      showInfo(coords.subList(1, coords.size()), info, indent.incr());
-      indent.decr();
-    }
-  }
-
 
 }

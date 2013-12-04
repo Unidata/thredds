@@ -2,7 +2,6 @@ package ucar.nc2.grib.collection;
 
 import net.jcip.annotations.Immutable;
 import ucar.arr.Coordinate;
-import ucar.arr.CoordinateBuilder;
 import ucar.arr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -18,13 +17,11 @@ import java.util.*;
  * @since 11/24/13
  */
 @Immutable
-public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
-  private final CalendarDate runtime;
+public class CoordinateTime implements Coordinate {
   private final List<Integer> offsetSorted;
   private final int code;
 
-  public CoordinateTime(CalendarDate runtime, List<Integer> offsetSorted, int code) {
-    this.runtime = runtime;
+  public CoordinateTime(List<Integer> offsetSorted, int code) {
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
     this.code = code;
   }
@@ -36,14 +33,6 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
 
   public Integer extract(Grib2Record gr) {
     return extractOffset(gr);
-  }
-
-  public int compareTo(CoordinateTime o) {
-    return runtime.compareTo(o.runtime);
-  }
-
-  public CalendarDate getRuntime() {
-    return runtime;
   }
 
   public List<Integer> getOffsetSorted() {
@@ -72,9 +61,6 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
   public int getCode() {
     return code;
   }
-  /* public List<Grib2Record> getRecordList(int timeIdx) {
-    return recordList.get(timeIdx);
-  } */
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
@@ -91,34 +77,46 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
        info.format("   %3d%n", cd);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CoordinateTime that = (CoordinateTime) o;
+
+    if (code != that.code) return false;
+    if (!offsetSorted.equals(that.offsetSorted)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = offsetSorted.hashCode();
+    result = 31 * result + code;
+    return result;
+  }
+
+  ////////////////////////////////////////////
+
   static public class Builder extends CoordinateBuilderImpl  {
-    private final CalendarDate runtime;
     int code;
 
-    public Builder(Object runtime, int code) {
-      super(runtime);
-      this.runtime = (CalendarDate) runtime;
+    public Builder(int code) {
       this.code = code;
     }
 
     @Override
-    public CoordinateBuilder makeBuilder(Object val) {
-      CoordinateBuilder result =  new Builder(val, code);
-      result.chainTo(nestedBuilder);
-      return result;
-    }
-
-    @Override
-    protected Object extract(Grib2Record gr) {
+    public Object extract(Grib2Record gr) {
       return extractOffset(gr);
     }
 
     @Override
-   protected Coordinate makeCoordinate(List<Object> values, List<Coordinate> subdivide) {
+    public Coordinate makeCoordinate(List<Object> values) {
       List<Integer> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) offsetSorted.add( (Integer) val);
       Collections.sort(offsetSorted);
-      return new CoordinateTime(runtime, offsetSorted, code);
+      return new CoordinateTime(offsetSorted, code);
     }
   }
 

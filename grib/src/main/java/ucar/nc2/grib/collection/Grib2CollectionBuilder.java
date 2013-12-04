@@ -600,7 +600,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
 
-    // b.setCoordIdx(i, idx) LOOK not done yet
+    for (int idx : vb.coordIndex)
+      b.addCoordIdx(idx);
 
     return b.build();
   }

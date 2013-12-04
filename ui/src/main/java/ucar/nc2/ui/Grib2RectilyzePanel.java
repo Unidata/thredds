@@ -3,7 +3,6 @@ package ucar.nc2.ui;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.arr.Coordinate;
-import ucar.arr.CoordinateND;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
@@ -44,8 +43,8 @@ public class Grib2RectilyzePanel extends JPanel {
 
   private final PreferencesExt prefs;
 
-  private BeanTableSorted param2BeanTable, record2BeanTable, coordTable;
-  private JSplitPane split, split2;
+  private BeanTableSorted param2BeanTable, record2BeanTable, coordTable, allCoordTable;
+  private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
@@ -61,16 +60,24 @@ public class Grib2RectilyzePanel extends JPanel {
     param2BeanTable = new BeanTableSorted(VariableBagBean.class, (PreferencesExt) prefs.node("Param2Bean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
     param2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        VariableBagBean pb = (VariableBagBean) param2BeanTable.getSelectedBean();
-        if (pb != null) {
-          // makeRecordTable(pb.pds);
+        VariableBagBean bean = (VariableBagBean) param2BeanTable.getSelectedBean();
+        if (bean != null) {
           java.util.List<Grib2RecordBean> records = new ArrayList<>();
-          for (Grib2Record r : pb.vb.atomList) {
+          for (Grib2Record r : bean.vb.atomList)
             records.add(new Grib2RecordBean(r));
-          }
           record2BeanTable.setBeans(records);
 
-          setCoordinates(pb.vb.coordND);
+          int count = 0;
+          java.util.List<CoordBean> coords = new ArrayList<>();
+          for (Coordinate coord : bean.vb.coordND.getCoordinates())
+            coords.add(new CoordBean(coord, bean.vb.coordIndex.get(count++)));
+          coordTable.setBeans(coords);
+
+          java.util.List<CoordBean> coordAll = new ArrayList<>();
+          int idx = 0;
+          for (Coordinate coord : bean.rect.getCoordinates())
+            coordAll.add(new CoordBean(coord, idx++));
+          allCoordTable.setBeans(coordAll);
         }
       }
     });
@@ -103,7 +110,7 @@ public class Grib2RectilyzePanel extends JPanel {
        VariableBagBean bean = (VariableBagBean) param2BeanTable.getSelectedBean();
        if (bean == null) return;
        Formatter f = new Formatter();
-       bean.vb.coordND.showInfo(f);
+       bean.vb.coordND.showInfo(bean.vb.atomList, f);
        infoPopup2.setText(f.toString());
        infoPopup2.gotoTop();
        infoWindow2.show();
@@ -162,7 +169,7 @@ public class Grib2RectilyzePanel extends JPanel {
       }
     });
 
-    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates", "From VariableBag.CoordND");
+    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Variable Coordinates", "From VariableBag.CoordND");
     varPopup = new PopupMenu(coordTable.getJTable(), "Options");
 
      varPopup.addAction("Show Coords", new AbstractAction() {
@@ -177,86 +184,20 @@ public class Grib2RectilyzePanel extends JPanel {
       }
     });
 
-    /* varPopup.addAction("Compare GDS", new AbstractAction() {
+    allCoordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Group Coordinates", "From Group");
+    varPopup = new PopupMenu(allCoordTable.getJTable(), "Options");
+
+     varPopup.addAction("Show Coords", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = coordTable.getSelectedBeans();
-        if (list.size() == 2) {
-          CoordBean bean1 = (CoordBean) list.get(0);
-          CoordBean bean2 = (CoordBean) list.get(1);
-          Formatter f = new Formatter();
-          compare(bean1.gdss, bean2.gdss, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Show raw GDS bytes", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Formatter f = new Formatter();
-        List list = coordTable.getSelectedBeans();
-        for (int i = 0; i < list.size(); i++) {
-          CoordBean bean = (CoordBean) list.get(i);
-          bean.toRawGdsString(f);
-        }
-        infoPopup.setText(f.toString());
-        infoPopup.gotoTop();
-        infoWindow.show();
-      }
-    });    */
-
-    /* varPopup.addAction("Show Files that use this GDS", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Gds2Bean want = (Gds2Bean) gds2Table.getSelectedBean();
-        if (want == null) return;
-        SortedSet<Integer> files = new TreeSet<Integer>();
-
-        for (Object o : param2BeanTable.getBeans()) {
-          Grib2ParameterBean p = (Grib2ParameterBean) o;
-          if (p.getGDS() == want.getGDShash()) {
-            for (Grib2RecordBean r : p.getRecordBeans())
-              files.add(r.gr.getFile());
-          }
-        }
-
-        Formatter f = new Formatter();
-        Iterator<Integer> iter = files.iterator();
-        while (iter.hasNext()) {
-          int fileno = iter.next();
-          f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
-        }
-        infoPopup2.setText(f.toString());
-        infoPopup2.gotoTop();
-        infoWindow2.show();
-      }
-    }); */
-
- /*    varPopup.addAction("Restrict to this GDS", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        CoordBean want = (CoordBean) coordTable.getSelectedBean();
-        if (want == null) return;
-        java.util.List<VariableBagBean> params = new ArrayList<VariableBagBean>();
-        for (Object o : param2BeanTable.getBeans()) {
-          VariableBagBean p = (VariableBagBean) o;
-          if (p.getGDS() == want.getGDShash())
-            params.add(p);
-        }
-        param2BeanTable.setBeans(params);
-      }
-    });
-
-    varPopup.addAction("Test GDS Projection", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = (CoordBean) allCoordTable.getSelectedBean();
         if (bean == null) return;
         Formatter f = new Formatter();
-        bean.gds.testHorizCoordSys(f);
+        bean.showCoords(f);
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
         infoWindow2.show();
       }
-    });  */
+    });
 
     //////////////////////////////////////////
     // extra buttcons
@@ -289,11 +230,14 @@ public class Grib2RectilyzePanel extends JPanel {
 
     setLayout(new BorderLayout());
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, param2BeanTable, record2BeanTable);
-    split2.setDividerLocation(prefs.getInt("splitPos2", 800));
+    split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, param2BeanTable, record2BeanTable);
+    split3.setDividerLocation(prefs.getInt("splitPos3", 800));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, coordTable);
-    split.setDividerLocation(prefs.getInt("splitPos", 500));
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split3, coordTable);
+    split2.setDividerLocation(prefs.getInt("splitPos2", 400));
+
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, allCoordTable);
+    split.setDividerLocation(prefs.getInt("splitPos", 400));
 
     add(split, BorderLayout.CENTER);
 
@@ -414,6 +358,7 @@ public class Grib2RectilyzePanel extends JPanel {
   }
 
   public void save() {
+    allCoordTable.saveState(false);
     coordTable.saveState(false);
     param2BeanTable.saveState(false);
     record2BeanTable.saveState(false);
@@ -422,12 +367,14 @@ public class Grib2RectilyzePanel extends JPanel {
     prefs.putBeanObject("InfoWindowBounds3", infoWindow3.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
   }
 
   void closeOpenFiles() throws IOException {
     param2BeanTable.clearBeans();
     record2BeanTable.clearBeans();
     coordTable.clearBeans();
+    allCoordTable.clearBeans();
   }
 
   ///////////////////////////////////////////////
@@ -470,60 +417,13 @@ public class Grib2RectilyzePanel extends JPanel {
       Grib2Rectilyser rect = group.rect;
       // rect.showInfo(info, cust);
       for (Grib2Rectilyser.VariableBag vb : rect.getGribvars()) {
-        bags.add( new VariableBagBean(vb));
+        bags.add( new VariableBagBean(rect, vb));
       }
     }
     param2BeanTable.setBeans(bags);
 
     record2BeanTable.clearBeans();
     coordTable.clearBeans();
-
-    /* boolean first = true;
-    int fileno = 0;
-    try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
-      while (iter.hasNext()) {
-        MFile mfile = iter.next();
-        fileList.add(mfile);
-
-        filenames.add(mfile.getPath());
-
-        Grib2Index index = new Grib2Index();
-        if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
-          index.makeIndex(mfile.getPath(), null);
-        }
-
-        for (Grib2Record gr : index.getRecords()) {
-          if (first) cust = Grib2Customizer.factory(gr);
-          first = false;
-
-          gr.setFile(fileno);
-          records.add(gr);   // LOOK not dividing into groups
-        }
-        fileno++;
-      }
-    }
-
-    Grib2Rectilyser rect = new Grib2Rectilyser(cust, records, 0, null);
-    rect.make(stats, null, info);
-    rect.showInfo(info, cust);
-    stats.recordsTotal = records.size();
-
-    java.util.List<VariableBagBean> params = new ArrayList<>();
-    for (Grib2Rectilyser.VariableBag vb : rect.getGribvars()) {
-      params.add( new VariableBagBean(vb));
-    }
-    param2BeanTable.setBeans(params);
-
-    record2BeanTable.clearBeans();
-    coordTable.clearBeans();  */
-  }
-
-  private void setCoordinates(CoordinateND coordND) {
-    java.util.List<CoordBean> params = new ArrayList<>();
-    for (Coordinate coord : coordND.getCoordinates()) {
-      params.add( new CoordBean(coord));
-    }
-    coordTable.setBeans(params);
   }
 
   public void showCollection(Formatter f) {
@@ -933,18 +833,20 @@ public class Grib2RectilyzePanel extends JPanel {
 
   public class CoordBean implements Comparable<CoordBean> {
     Coordinate coord;
+    int idx;
 
     // no-arg constructor
 
     public CoordBean() {
     }
 
-    public String getName() {
-      return coord.getClass().getName();
+    public String getType() {
+      return coord.getType().toString();
     }
 
-    public CoordBean(Coordinate coord) {
+    public CoordBean(Coordinate coord, int idx) {
       this.coord = coord;
+      this.idx = idx;
     }
 
     public String getValues() {
@@ -957,9 +859,21 @@ public class Grib2RectilyzePanel extends JPanel {
       return coord.getSize();
     }
 
+    public int getCode() {
+      return coord.getCode();
+    }
+
+    public int getIndex() {
+      return idx;
+    }
+
+    public String getUnit() {
+      return coord.getUnit();
+    }
+
     @Override
     public int compareTo(CoordBean o) {
-      return getName().compareTo(o.getName());
+      return getType().compareTo(o.getType());
     }
 
     void showCoords(Formatter f) {
@@ -970,6 +884,7 @@ public class Grib2RectilyzePanel extends JPanel {
   ////////////////////////////////////////////////////////////////////////////
 
   public class VariableBagBean {
+    Grib2Rectilyser rect;
     Grib2Rectilyser.VariableBag  vb;
     Grib2Pds pds;
     Grib2SectionIdentification id;
@@ -980,7 +895,8 @@ public class Grib2RectilyzePanel extends JPanel {
     public VariableBagBean() {
     }
 
-    public VariableBagBean(Grib2Rectilyser.VariableBag vb) throws IOException {
+    public VariableBagBean(Grib2Rectilyser rect, Grib2Rectilyser.VariableBag vb) throws IOException {
+      this.rect = rect;
       this.vb = vb;
       pds = vb.first.getPDS();
       id = vb.first.getId();
@@ -1110,8 +1026,7 @@ public class Grib2RectilyzePanel extends JPanel {
     }
 
     public void findDuplicates(Formatter info) {
-      vb.coordND.showInfo(info);
-
+      vb.coordND.showInfo(vb.atomList, info);
     }
   }
 

@@ -4,7 +4,9 @@ import ucar.arr.Coordinate;
 import ucar.arr.CoordinateBuilder;
 import ucar.arr.CoordinateBuilderImpl;
 import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -21,27 +23,13 @@ import java.util.List;
  * @author John
  * @since 11/28/13
  */
-public class CoordinateTimeIntv implements Coordinate, Comparable<CoordinateTimeIntv> {
-  private final CalendarDate runtime;
+public class CoordinateTimeIntv implements Coordinate {
+  private final int code;
   private final List<TimeCoord.Tinv> timeIntervals;
-  //private final List<Coordinate> subdivide; // who needs this ??
 
-  public CoordinateTimeIntv(CalendarDate runtime, List<TimeCoord.Tinv> timeIntervals, List<Coordinate> subdivide) {
-    this.runtime = runtime;
+  public CoordinateTimeIntv(List<TimeCoord.Tinv> timeIntervals, int code) {
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
-    //this.subdivide = (subdivide == null) ? null :  Collections.unmodifiableList(subdivide);
-  }
-
-  //public TimeCoord.Tinv extract(Grib2Record gr) {
-  //  return extractOffset(gr);
-  //}
-
-  public int compareTo(CoordinateTimeIntv o) {
-    return runtime.compareTo(o.runtime);
-  }
-
-  public CalendarDate getRuntime() {
-    return runtime;
+    this.code = code;
   }
 
   public List<TimeCoord.Tinv> getTimeIntervals() {
@@ -87,38 +75,63 @@ public class CoordinateTimeIntv implements Coordinate, Comparable<CoordinateTime
       info.format("   (%3d - %3d)  %d%n", cd.getBounds1(), cd.getBounds2(), cd.getBounds2() - cd.getBounds1());
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CoordinateTimeIntv that = (CoordinateTimeIntv) o;
+
+    if (code != that.code) return false;
+    if (!timeIntervals.equals(that.timeIntervals)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = code;
+    result = 31 * result + timeIntervals.hashCode();
+    return result;
+  }
+
+  ///////////////////////////////////////////////////////////
   static public class Builder extends CoordinateBuilderImpl {
-    private final CalendarDate refDate;
     private final Grib2Customizer cust;
+    private final int code;
     private final CalendarPeriod timeUnit;
 
-    public Builder(Object runtime, Grib2Customizer cust, CalendarPeriod timeUnit) {
-      super(runtime);
-      this.refDate = (CalendarDate) runtime;
+    public Builder(Grib2Customizer cust, CalendarPeriod timeUnit, int code) {
       this.cust = cust;
       this.timeUnit = timeUnit;
+      this.code = code;
     }
 
-    @Override
-    public CoordinateBuilder makeBuilder(Object val) {
-      CoordinateBuilder result =  new Builder(val, cust, timeUnit);
-      result.chainTo(nestedBuilder);
-      return result;
-    }
 
     @Override
-    protected Object extract(Grib2Record gr) {
+    public Object extract(Grib2Record gr) {
+      CalendarDate refDate =  gr.getReferenceDate();
+
+      CalendarPeriod timeUnitUse = timeUnit;
+      Grib2Pds pds = gr.getPDS();
+      int tu2 = pds.getTimeUnit();
+      if (tu2 != code) {
+        System.out.printf("Time unit diff %d != %d%n", tu2, code);
+        int unit = cust.convertTimeUnit(tu2);
+        timeUnitUse = Grib2Utils.getCalendarPeriod(unit);
+      }
+
       TimeCoord.TinvDate tinvd = cust.getForecastTimeInterval(gr);
-      TimeCoord.Tinv tinv = tinvd.convertReferenceDate(refDate, timeUnit);
+      TimeCoord.Tinv tinv = tinvd.convertReferenceDate(refDate, timeUnitUse);
       return tinv;
     }
 
     @Override
-   protected Coordinate makeCoordinate(List<Object> values, List<Coordinate> subdivide) {
+    public Coordinate makeCoordinate(List<Object> values) {
       List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
       Collections.sort(offsetSorted);
-      return new CoordinateTimeIntv(refDate, offsetSorted, subdivide);
+      return new CoordinateTimeIntv( offsetSorted, code);
     }
   }
 

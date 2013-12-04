@@ -20,11 +20,9 @@ import java.util.*;
 @Immutable
 public class CoordinateRuntime implements Coordinate {
   final List<CalendarDate> runtimeSorted;
-  final List<Coordinate> times;
 
-  public CoordinateRuntime(List<CalendarDate> runtimeSorted, List<Coordinate> times) {
+  public CoordinateRuntime(List<CalendarDate> runtimeSorted) {
     this.runtimeSorted = Collections.unmodifiableList(runtimeSorted);
-    this.times = (times == null) ? null : Collections.unmodifiableList(times);
   }
 
   public List<CalendarDate> getRuntimesSorted() {
@@ -62,24 +60,10 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    if (times == null) {
-      info.format("%s%s %20s:", indent, getType(), "RunTimes");
-      for (CalendarDate cd : runtimeSorted)
-        info.format(" %s,", cd);
-      info.format(" (%d) %n", runtimeSorted.size());
-
-    } else {
-      info.format("%s %20s    Offsets %n", indent, "RunTime");
-      int runIdx = 0;
-      for (CalendarDate cd : runtimeSorted) {
-        Coordinate time = times.get(runIdx); // LOOK sort
-        info.format("%s %20s    ", indent, cd);
-        for (Object val : time.getValues())
-          info.format(" %3s,", val);
-        info.format(" (%d) %n", time.getSize());
-        runIdx++;
-      }
-    }
+    info.format("%s%s %20s:", indent, getType(), "RunTimes");
+    for (CalendarDate cd : runtimeSorted)
+      info.format(" %s,", cd);
+    info.format(" (%d) %n", runtimeSorted.size());
   }
 
   @Override
@@ -89,30 +73,39 @@ public class CoordinateRuntime implements Coordinate {
       info.format("   %s%n", cd);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CoordinateRuntime that = (CoordinateRuntime) o;
+
+    if (!runtimeSorted.equals(that.runtimeSorted)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return runtimeSorted.hashCode();
+  }
+
+  ///////////////////////////////////////////////////////
+
   public static class Builder extends CoordinateBuilderImpl {
 
-    public Builder(Object val) {
-      super(val);
-    }
-
     @Override
-    public CoordinateBuilder makeBuilder(Object val) {
-      CoordinateBuilder result =  new Builder(val);
-      result.chainTo(nestedBuilder);
-      return result;
-    }
-
-    @Override
-    protected Object extract(Grib2Record gr) {
+    public Object extract(Grib2Record gr) {
       return extractRunDate(gr);
     }
 
-  protected Coordinate makeCoordinate(List<Object> values, List<Coordinate> subdivide) {
-    List<CalendarDate> runtimeSorted = new ArrayList<>(values.size());
-     for (Object val : values) runtimeSorted.add( (CalendarDate) val);
-     Collections.sort(runtimeSorted);
-     return new CoordinateRuntime(runtimeSorted, subdivide);
-   }
+    @Override
+    public Coordinate makeCoordinate(List<Object> values) {
+      List<CalendarDate> runtimeSorted = new ArrayList<>(values.size());
+      for (Object val : values) runtimeSorted.add((CalendarDate) val);
+      Collections.sort(runtimeSorted);
+      return new CoordinateRuntime(runtimeSorted);
+    }
   }
 
 

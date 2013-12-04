@@ -39,6 +39,7 @@ import java.util.*;
 
 /**
  * Ndfd local tables
+ * @see "http://graphical.weather.gov/docs/grib_design.html"
  */
 
 public class NdfdLocalTables extends Grib2Customizer {

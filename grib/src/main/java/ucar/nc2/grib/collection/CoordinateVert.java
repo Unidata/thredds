@@ -1,7 +1,6 @@
 package ucar.nc2.grib.collection;
 
 import ucar.arr.Coordinate;
-import ucar.arr.CoordinateBuilder;
 import ucar.arr.CoordinateBuilderImpl;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
@@ -24,7 +23,7 @@ public class CoordinateVert implements Coordinate {
 
   public CoordinateVert(List<VertCoord.Level> levelSorted, int code) {
     this.levelSorted = Collections.unmodifiableList(levelSorted);
-  this.code = code;
+    this.code = code;
   }
 
   static public VertCoord.Level extractLevel(Grib2Record gr) {
@@ -66,9 +65,6 @@ public class CoordinateVert implements Coordinate {
     return code;
   }
 
-  /* public List<Grib2Record> getRecordList(int timeIdx) {
-    return recordList.get(timeIdx);
-  } */
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
@@ -85,28 +81,57 @@ public class CoordinateVert implements Coordinate {
       info.format("   %s%n", level);
   }
 
+  public boolean equals2(CoordinateVert other) {
+    if (getCode() != other.getCode())
+      return false;
+
+    if (getSize() != other.getSize())
+      return false;
+
+    for (int i = 0; i < levelSorted.size(); i++) {
+      if (!levelSorted.get(i).equals(other.levelSorted.get(i)))
+        return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CoordinateVert that = (CoordinateVert) o;
+
+    if (code != that.code) return false;
+    if (!levelSorted.equals(that.levelSorted)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = levelSorted.hashCode();
+    result = 31 * result + code;
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////////
+
   static public class Builder extends CoordinateBuilderImpl {
     int code;
 
-    public Builder(Object runtime, int code) {
-      super(runtime);
+    public Builder(int code) {
       this.code = code;
     }
 
     @Override
-    public CoordinateBuilder makeBuilder(Object val) {
-      CoordinateBuilder result = new Builder(val, code);
-      result.chainTo(nestedBuilder);
-      return result;
-    }
-
-    @Override
-    protected Object extract(Grib2Record gr) {
+    public Object extract(Grib2Record gr) {
       return extractLevel(gr);
     }
 
     @Override
-   protected Coordinate makeCoordinate(List<Object> values, List<Coordinate> subdivide) {
+   public Coordinate makeCoordinate(List<Object> values) {
       List<VertCoord.Level> levelSorted = new ArrayList<>(values.size());
       for (Object val : values) levelSorted.add( (VertCoord.Level) val);
       Collections.sort(levelSorted);

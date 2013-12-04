@@ -1,6 +1,7 @@
 package thredds.inventory;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.filesystem.MFileOS7;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
@@ -10,7 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * A Collection that has been initialized by a list of MFiles
+ * A Collection of MFiles
  *
  * @author caron
  * @since 11/20/13
@@ -19,17 +20,20 @@ public abstract class CollectionAbstract implements MCollection {
   static private org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
   static public final String CATALOG = "catalog:";
-  static public final String LIST = "list:";
   static public final String DIR = "directory:";
+  static public final String FILE = "file:";
+  static public final String LIST = "list:";
 
     // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
   static public MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
     if (collectionSpec.startsWith(CATALOG))
       return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan, errlog);
-    else if (collectionSpec.startsWith(LIST))
-      return new CollectionList(collectionName, collectionSpec.substring(LIST.length()), null);
     else if (collectionSpec.startsWith(DIR))
       return new DirectoryCollection(collectionName, collectionSpec.substring(DIR.length()), null);
+    else if (collectionSpec.startsWith(FILE))
+      return new CollectionSingleFile(MFileOS7.getExistingFile(collectionSpec.substring(FILE.length())), null);
+    else if (collectionSpec.startsWith(LIST))
+      return new CollectionList(collectionName, collectionSpec.substring(LIST.length()), null);
     else
       return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
   }

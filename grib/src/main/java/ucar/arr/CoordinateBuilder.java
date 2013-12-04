@@ -14,32 +14,19 @@ import java.util.Set;
  */
 public interface CoordinateBuilder {
 
-  // make a Builder that will be associated with the val
-  public CoordinateBuilder makeBuilder(Object val);
+  public void addRecord(Grib2Record r);
 
-  public void add(Grib2Record r);
+  public Object extract(Grib2Record gr);
+
+  // must sort values; Coordinate must be immutable
+  public Coordinate makeCoordinate(List<Object> values);
 
   public Coordinate finish();
 
+  public int getIndex(Grib2Record gr);
+
   public Coordinate getCoordinate(); // call only after finish
 
-  //////////////////////////////////////
-
-   // add a nested CoordinateBuilder, return it
-  public CoordinateBuilder chainTo(CoordinateBuilder builderBuilder);
-
-  // if a nested CoordinateBuilder exists
-  public CoordinateBuilder getNestedBuilder();
-
-  // get nested CoordinateBuilder associated with the key
-  public CoordinateBuilder getChildBuilder(Object key);
-
-  // make a Coordinate
-  public Coordinate makeCoordinate(Set<Object> allCoords);
-
-
-  ////////////////////////////////////////////
-
-  public List<Grib2Record> getRecords(Object key);  // only at the leaves
+  public void addAll(Coordinate coord);
 
 }
