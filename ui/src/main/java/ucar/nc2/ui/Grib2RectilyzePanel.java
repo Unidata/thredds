@@ -65,7 +65,7 @@ public class Grib2RectilyzePanel extends JPanel {
         if (pb != null) {
           // makeRecordTable(pb.pds);
           java.util.List<Grib2RecordBean> records = new ArrayList<>();
-          for (Grib2Rectilyser.Record r : pb.vb.atomList) {
+          for (Grib2Record r : pb.vb.atomList) {
             records.add(new Grib2RecordBean(r));
           }
           record2BeanTable.setBeans(records);
@@ -98,7 +98,7 @@ public class Grib2RectilyzePanel extends JPanel {
         }
       }
     });
-    varPopup.addAction("Find Duplicates", new AbstractAction() {
+    varPopup.addAction("Show SparseArray and Duplicates", new AbstractAction() {
      public void actionPerformed(ActionEvent e) {
        VariableBagBean bean = (VariableBagBean) param2BeanTable.getSelectedBean();
        if (bean == null) return;
@@ -438,12 +438,10 @@ public class Grib2RectilyzePanel extends JPanel {
   private Grib2Customizer cust;
   private Grib2Rectilyser rect2;
 
-  private MCollection getCollection(String spec, Formatter f) {
+  private MCollection makeCollection(String spec, Formatter f) {
     MCollection dc;
     try {
       dc = CollectionAbstract.open("Grib2RectilyzerPanel", spec, null, f);
-      //if (dc instanceof CollectionManager)
-      //  ((CollectionManager) dc).scan(false);
       return dc;
 
     } catch (Exception e) {
@@ -460,7 +458,7 @@ public class Grib2RectilyzePanel extends JPanel {
 
     fileList = new ArrayList<>();
     info = new Formatter();
-    dcm = getCollection(spec, info);
+    dcm = makeCollection(spec, info);
     FeatureCollectionConfig.GribConfig config = gribCollectionConfigDialog.getGribConfig();
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
 
@@ -529,10 +527,12 @@ public class Grib2RectilyzePanel extends JPanel {
   }
 
   public void showCollection(Formatter f) {
-    if (fileList == null) return;
-    for (MFile mfile : fileList) {
-      f.format("  %s%n", mfile.getPath());
-    }
+    if (fileList != null)
+      for (MFile mfile : fileList) {
+        f.format("  %s%n", mfile.getPath());
+      }
+
+    f.format("%n%s%n", info);
   }
 
   public void runAggregator(Formatter f) throws IOException {
@@ -1155,16 +1155,14 @@ public class Grib2RectilyzePanel extends JPanel {
   }
 
   public class Grib2RecordBean {
-    Grib2Rectilyser.Record rr;
     Grib2Record gr;
     Grib2Pds pds;
 
     public Grib2RecordBean() {
     }
 
-    public Grib2RecordBean(Grib2Rectilyser.Record rr) {
-      this.rr = rr;
-      this.gr = rr.gr;
+    public Grib2RecordBean(Grib2Record gr) {
+      this.gr = gr;
       try {
         this.pds = gr.getPDSsection().getPDS();
       } catch (IOException e) {

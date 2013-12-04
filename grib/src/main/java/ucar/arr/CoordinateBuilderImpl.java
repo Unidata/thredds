@@ -5,7 +5,8 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import java.util.*;
 
 /**
- * Describe
+ * A tree of CoordinateBuilders, branching on unique coordinate values.
+ * Store records at the leaves.
  *
  * @author caron
  * @since 11/27/13
@@ -41,7 +42,7 @@ public abstract class CoordinateBuilderImpl implements CoordinateBuilder {
     Object val = extract(gr);
     if (nestedBuilder == null) {
       if (records == null) records = new HashMap<>();
-      List<Grib2Record> recordsList = records.get(val);
+      List<Grib2Record> recordsList = records.get(val); // dont think this is needed?
       if (recordsList == null) {
         recordsList = new ArrayList<>();
         records.put(val, recordsList);

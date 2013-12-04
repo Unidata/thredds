@@ -74,10 +74,10 @@ public class CoordinateTimeIntv implements Coordinate, Comparable<CoordinateTime
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    /* info.format("%s %20s:", indent, "Offsets");
-     for (Integer cd : offsetSorted)
-       info.format("%3d, ", cd);
-    info.format("%n"); */
+    info.format("%s%s Tinv:", indent, getType());
+     for (TimeCoord.Tinv cd : timeIntervals)
+       info.format(" %s,", cd);
+    info.format(" (%d) %n", timeIntervals.size());
   }
 
   @Override

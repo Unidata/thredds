@@ -13,16 +13,12 @@ import java.util.*;
  */
 public class CoordinateND {
 
-  CoordinateBuilder root;
-  List<Coordinate> coordinates;
-  SparseArray<Grib2Record> sa;
+  CoordinateBuilder root;       // root of the tree
+  List<Coordinate> coordinates; // result is orthogonal coordinates
+  SparseArray<Grib2Record> sa;  // indexes refer to coordinates
 
   public CoordinateND(CoordinateBuilder root) {
     this.root = root;
-  }
-
-  public void add(Grib2Record gr) {
-    root.add(gr);
   }
 
   public List<Coordinate> getCoordinates() {
@@ -33,6 +29,11 @@ public class CoordinateND {
     return sa;
   }
 
+  public void add(List<Grib2Record> records) {
+    for (Grib2Record gr : records)
+      root.add(gr);
+  }
+
   public void finish() {
     root.finish();
     buildOrthogonalCoordinates();
@@ -41,8 +42,11 @@ public class CoordinateND {
 
   public void showInfo(Formatter info) {
     buildSparseArray(info);
-    info.format("%n");
+    info.format("%n%n");
     sa.showInfo(info, null);
+    info.format("%n");
+    for (Coordinate coord : coordinates)
+      coord.showInfo(info, new Indent(2));
   }
 
   private void buildOrthogonalCoordinates() {
@@ -57,6 +61,7 @@ public class CoordinateND {
     }
   }
 
+  // we orthogonalize here, merging subtrees' values into a single set
   private Coordinate mergeNestedCoordinates(CoordinateBuilder builder, int wantLevel, int isLevel) {
 
     if (builder.getNestedBuilder() == null)
@@ -117,7 +122,6 @@ public class CoordinateND {
       count++;
     }
   }
-
 
   /////////////////////////////////////////////////////////////////////////
 

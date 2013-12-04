@@ -173,7 +173,7 @@ public class DirectoryCollection extends CollectionAbstract {
   private class MyFilter implements DirectoryStream.Filter<Path> {
     public boolean accept(Path entry) throws IOException {
       String last = entry.getName(entry.getNameCount()-1).toString();
-      return !last.endsWith(".gbx9") && !last.endsWith(".ncx");
+      return !last.endsWith(".gbx9") && !last.endsWith(".gbx8") && !last.endsWith(".ncx") && !last.endsWith(".ncx2");
     }
   }
 

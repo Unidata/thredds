@@ -126,12 +126,12 @@ public class Grib2Rectilyser {
         bag = new VariableBag(gr, cdmHash);
         vbHash.put(cdmHash, bag);
       }
-      bag.atomList.add(new Record(gr));
+      bag.atomList.add(gr);
     }
     gribvars = new ArrayList<VariableBag>(vbHash.values());
     Collections.sort(gribvars); // make it deterministic by sorting
 
-    // create coordinates
+    // create coordinates for each variable
     for (VariableBag vb : gribvars) {
       Grib2Pds pdsFirst = vb.first.getPDS();
       int unit = cust.convertTimeUnit(pdsFirst.getTimeUnit());
@@ -149,10 +149,24 @@ public class Grib2Rectilyser {
         next = next.chainTo(new CoordinateVert.Builder(null, pdsFirst.getLevelType1()));
 
       vb.coordND = new CoordinateND(rootBuilder);
-
-      for (Record r : vb.atomList)
-        vb.coordND.add(r.gr);
+      vb.coordND.add(vb.atomList);
       vb.coordND.finish();
+    }
+
+    // make shared coordinates
+    for (VariableBag vb : gribvars) {
+       for (Coordinate coord : vb.coordND.getCoordinates()) {
+         switch (coord.getType()) {
+           case runtime:
+             break;
+           case time:
+             break;
+           case timeIntv:
+             break;
+           case vert:
+             break;
+         }
+       }
     }
 
     /* for (VariableBag vb : gribvars) {
@@ -233,10 +247,9 @@ public class Grib2Rectilyser {
     counter.recordsUnique += tot_used;
     counter.dups += tot_dups;
     counter.vars += gribvars.size();
-
   }
 
-  public class Record {
+ /* public class Record {
     public Grib2Record gr;
     int tcCoord;
     TimeCoord.TinvDate tcIntvCoord;
@@ -303,7 +316,7 @@ public class Grib2Rectilyser {
    *
    * @param vb check this collection
    * @return true if refDate, timeUnit are the same for all records
-   */
+   *
   private boolean checkTimeCoordsUniform(VariableBag vb) {
     boolean isUniform = true;
     CalendarDate refDate = null;
@@ -391,11 +404,11 @@ public class Grib2Rectilyser {
         r.tcIntvCoord = org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit); // LOOK heres the magic
         times.add(r.tcIntvCoord);
       }
-    } */
+    } *
     List<TimeCoord.TinvDate> tlist = new ArrayList<TimeCoord.TinvDate>(times.values());
     Collections.sort(tlist);
     return new TimeCoord(timeIntvCode, vb.refDate, vb.timeUnit, tlist);
-  }
+  } */
 
   public void showInfo(Formatter f, Grib2Customizer tables) {
     /* f.format("%nTime Coordinates%n");
@@ -434,7 +447,7 @@ public class Grib2Rectilyser {
     public Grib2Record first;
     public int cdmHash;
 
-    public List<Record> atomList = new ArrayList<>(100); // does this need to be sorted?? assume no
+    public List<Grib2Record> atomList = new ArrayList<>(100); // not sorted anymore
     public CoordinateND coordND;
     CalendarPeriod timeUnit;
 

@@ -72,10 +72,10 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s Levels: ", indent);
+    info.format("%s%s levels: ", indent, getType());
      for (VertCoord.Level level : levelSorted)
-       info.format("%s, ", level);
-    info.format("%n");
+       info.format(" %s", level);
+    info.format(" (%d)%n", levelSorted.size());
   }
 
   @Override

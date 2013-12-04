@@ -78,10 +78,10 @@ public class CoordinateTime implements Coordinate, Comparable<CoordinateTime> {
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s %20s:", indent, "Offsets");
+    info.format("%s%s offsets:", indent, getType());
      for (Integer cd : offsetSorted)
-       info.format("%3d, ", cd);
-    info.format("%n");
+       info.format(" %3d,", cd);
+    info.format(" (%d) %n", offsetSorted.size());
   }
 
   @Override

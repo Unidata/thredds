@@ -238,7 +238,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     List<MFile> files = new ArrayList<>();
     List<Group> groups = makeGroups(files, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
-    createIndex(indexFile, groups, allFiles);
+    writeIndex(indexFile, groups, allFiles);
 
     long took = System.currentTimeMillis() - start;
     logger.debug("That took {} msecs", took);
@@ -374,12 +374,12 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    MAGIC_START
    version
    sizeRecords
-   VariableRecords (sizeRecords bytes)
+   SparseArray's (sizeRecords bytes)
    sizeIndex
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  private boolean createIndex(File indexFile, List<Group> groups, List<MFile> files) throws IOException {
+  private boolean writeIndex(File indexFile, List<Group> groups, List<MFile> files) throws IOException {
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
@@ -445,7 +445,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
       for (Group g : groups)
         indexBuilder.addGroups(writeGroupProto(g));
-
 
       /* int count = 0;
       for (DatasetCollectionManager dcm : collections) {

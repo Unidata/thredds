@@ -63,10 +63,10 @@ public class CoordinateRuntime implements Coordinate {
   @Override
   public void showInfo(Formatter info, Indent indent) {
     if (times == null) {
-      info.format("%s %20s:", indent, "RunTimes");
+      info.format("%s%s %20s:", indent, getType(), "RunTimes");
       for (CalendarDate cd : runtimeSorted)
-        info.format("%s, ", cd);
-      info.format("%n");
+        info.format(" %s,", cd);
+      info.format(" (%d) %n", runtimeSorted.size());
 
     } else {
       info.format("%s %20s    Offsets %n", indent, "RunTime");
@@ -76,7 +76,7 @@ public class CoordinateRuntime implements Coordinate {
         info.format("%s %20s    ", indent, cd);
         for (Object val : time.getValues())
           info.format(" %3s,", val);
-        info.format("%n");
+        info.format(" (%d) %n", time.getSize());
         runIdx++;
       }
     }
