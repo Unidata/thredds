@@ -33,6 +33,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.CollectionManager;
+import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.time.CalendarDate;
@@ -262,20 +263,9 @@ public class Fmrc2Panel extends JPanel {
     infoTA.clear();
 
     // CollectionSpecParser sp = null;
-    CollectionManager cm = fmrc.getManager();
+    MCollection cm = fmrc.getManager();
     infoTA.appendLine("CollectionManager= ");
     infoTA.appendLine(cm.toString());
-
-    try {
-      cm.scan(true);
-    } catch (IOException e1) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-      e1.printStackTrace(new PrintStream(bos));
-      infoTA.appendLine(bos.toString());
-      infoTA.gotoTop();
-      infoWindow.show();
-      return false;
-    }
 
     boolean status = false;
     int count = 0;
