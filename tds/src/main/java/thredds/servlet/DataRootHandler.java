@@ -315,7 +315,7 @@ public final class DataRootHandler implements InitializingBean {
   private void initCatalog(String path, boolean recurse, boolean cache) throws IOException {
     path = StringUtils.cleanPath(path);
     File f = this.tdsContext.getConfigFileSource().getFile(path);
-    // System.out.printf("catalog %s -> %s%n", path, f.getAbsolutePath());
+    System.out.printf("catalog %s -> %s%n", path, f.getAbsolutePath());
 
     if (f == null) {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");

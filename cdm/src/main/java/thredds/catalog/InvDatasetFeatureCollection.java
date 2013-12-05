@@ -109,10 +109,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     InvDatasetFeatureCollection result;
-    /* if (fcType == FeatureCollectionType.FMRC)
+    if (fcType == FeatureCollectionType.FMRC)
       result = new InvDatasetFcFmrc(parent, name, path, fcType, config);
 
-    else */ if (fcType == FeatureCollectionType.GRIB) {
+    else if (fcType == FeatureCollectionType.GRIB) {
       // use reflection to decouple from grib.jar
       try {
         Class c = InvDatasetFeatureCollection.class.getClassLoader().loadClass("thredds.catalog.InvDatasetFcGrib");

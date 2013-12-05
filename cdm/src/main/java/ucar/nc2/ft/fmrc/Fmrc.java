@@ -105,7 +105,7 @@ public class Fmrc {
   }
 
   ////////////////////////////////////////////////////////////////////////
-  private final CollectionManager manager;
+  private final MCollection manager;
   private final FeatureCollectionConfig config;
 
   // should be final
@@ -130,7 +130,7 @@ public class Fmrc {
   }
 
   // from AggregationFmrc
-  public Fmrc(CollectionManager manager, FeatureCollectionConfig config) {
+  public Fmrc(MCollection manager, FeatureCollectionConfig config) {
     this.manager = manager;
     this.config = config;
   }
@@ -146,7 +146,7 @@ public class Fmrc {
 
   // exposed for debugging
 
-  public CollectionManager getManager() {
+  public MCollection getManager() {
     return manager;
   }
 
@@ -262,7 +262,8 @@ public class Fmrc {
   }
 
   public void checkNeeded(boolean force) {
-    synchronized (lock) {
+    // assume external update
+    /* synchronized (lock) {
       if (fmrcDataset == null) {
         try {
           manager.scan(true);
@@ -282,7 +283,7 @@ public class Fmrc {
         logger.error(config.spec+": rescan failed");
         throw new RuntimeException(t);
       }
-    }
+    } */
   }
 
   // scan has been done, create FmrcInv

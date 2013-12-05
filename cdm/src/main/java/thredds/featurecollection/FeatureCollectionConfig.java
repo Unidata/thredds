@@ -96,6 +96,7 @@ public class FeatureCollectionConfig {
                                  String dateFormatMark, String olderThan, String recheckAfter,
                                  String timePartition, String useIndexOnlyS, Element innerNcml) {
     this.name = name;
+    this.path = path;
     this.type = fcType;
     this.spec = spec;
     this.dateFormatMark = dateFormatMark;

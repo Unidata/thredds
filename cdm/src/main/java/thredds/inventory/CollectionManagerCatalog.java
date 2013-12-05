@@ -184,7 +184,6 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
   @Override
   public void getDataset(InvDataset ds, Object context) {
-
     if (ds.hasAccess()) {
       ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
       InvAccess access = tdataFactory.chooseDatasetAccess(ds.getAccess());
@@ -193,7 +192,6 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
       mfiles.add(mfile);
       if (debug) System.out.format("add %s %n", mfile.getPath());
     }
-
   }
 
 

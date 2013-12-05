@@ -67,10 +67,6 @@ public class Grib2Rectilyser {
   private List<VariableBag> gribvars;
   private List<Coordinate> coords;
 
-  //private final List<TimeCoord> timeCoords = new ArrayList<>();
-  //private final List<VertCoord> vertCoords = new ArrayList<>();
-  //private final List<EnsCoord> ensCoords = new ArrayList<>();
-
   public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, Map<String, Boolean> pdsConfig) {
     this.cust = cust;
     this.records = records;
@@ -100,18 +96,6 @@ public class Grib2Rectilyser {
   public List<Coordinate> getCoordinates() {
     return coords;
   }
-
-  /* public List<TimeCoord> getTimeCoords() {
-    return timeCoords;
-  }
-
-  public List<VertCoord> getVertCoords() {
-    return vertCoords;
-  }
-
-  public List<EnsCoord> getEnsCoords() {
-    return ensCoords;
-  } */
 
   List<MFile> files = null; // temp debug
   public void make(Counter counter, List<MFile> files, Formatter info) throws IOException {
@@ -197,7 +181,7 @@ public class Grib2Rectilyser {
       for (Coordinate coord : vb.coordND.getCoordinates()) {
         if (coord.getType() == Coordinate.Type.runtime) {
           if (!coord.equals(runtimeAll)) { // redo
-            System.out.println("HEY");
+            System.out.println("Grib2Rectilyser coord.equals(runtimeAll");
           }
         }
         vb.coordIndex.add(coordMap.get(coord)); // index into rect.coords

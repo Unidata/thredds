@@ -33,6 +33,7 @@
 package ucar.nc2.ft.fmrc;
 
 import thredds.inventory.CollectionManagerAbstract;
+import thredds.inventory.MCollection;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -84,7 +85,7 @@ public class GridDatasetInv {
   
   static private boolean debug = false;  // current version
 
-  public static GridDatasetInv open(CollectionManager cm, MFile mfile, Element ncml) throws IOException {
+  public static GridDatasetInv open(MCollection cm, MFile mfile, Element ncml) throws IOException {
     // do we already have it ?
     byte[] xmlBytes = ((CollectionManagerAbstract)cm).getMetadata(mfile, "fmrInv.xml");  // LOOK should we keep this functionality ??
     if (xmlBytes != null) {
