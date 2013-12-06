@@ -6,6 +6,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import ucar.arr.Coordinate;
+import ucar.arr.SparseArray;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
@@ -72,7 +73,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   static public File getIndexFile(MCollection dcm) {
     File idxFile = new File(new File(dcm.getRoot()), dcm.getCollectionName() + NCX_IDX);
-    return getIndexFile( idxFile.getPath());
+    return getIndexFile(idxFile.getPath());
   }
 
   static public void setDiskCache2(DiskCache2 dc) {
@@ -149,14 +150,14 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
    * @param isGrib1 true if grib1
    * @param dataRaf the grib file already open
    * @param config  special configuration
-   * @param force  force writing index
+   * @param force   force writing index
    * @return the resulting GribCollection
    * @throws IOException on io error
    */
   public static GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
                                                                 CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
 
-    GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index() ;
+    GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index();
 
     String filename = dataRaf.getLocation();
     File dataFile = new File(filename);
@@ -180,7 +181,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     //if (isGrib1)
     //  return Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
     //else
-      return Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
+    return Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
   }
 
   /**
@@ -219,12 +220,12 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         return Grib2TimePartitionBuilder.factory((PartitionManager) dcm, force, logger);
       }
     } else { */
-      if (force == CollectionManager.Force.never) {
-        FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-        return Grib2CollectionBuilderFromIndex.createFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
-      } else {
-        return Grib2CollectionBuilder.factory(dcm, force, logger);
-      }
+    if (force == CollectionManager.Force.never) {
+      FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+      return Grib2CollectionBuilderFromIndex.createFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
+    } else {
+      return Grib2CollectionBuilder.factory(dcm, force, logger);
+    }
     //}
   }
 
@@ -283,7 +284,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   public MFile findMFileByName(String filename) {
     if (fileMap == null) {
-      fileMap = new HashMap<String, MFile>(files.size()*2);
+      fileMap = new HashMap<String, MFile>(files.size() * 2);
       for (MFile file : files)
         fileMap.put(file.getName(), file);
     }
@@ -297,6 +298,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   /**
    * public by accident, do not use
+   *
    * @param indexRaf the open raf of the index file
    */
   public void setIndexRaf(RandomAccessFile indexRaf) {
@@ -478,6 +480,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       indexRaf = null;
     }
   }
+
   @Override
   public String getLocation() {
     if (indexRaf != null) return indexRaf.getLocation();
@@ -511,9 +514,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     private String id, description;
     public List<VariableIndex> varIndex;   // GribCollection.VariableIndex
     public List<Coordinate> coords;
-    public List<TimeCoord> timeCoords;
+    /* public List<TimeCoord> timeCoords;
     public List<VertCoord> vertCoords;
-    public List<EnsCoord> ensCoords;
+    public List<EnsCoord> ensCoords;  */
     public int[] filenose;
     public List<TimeCoordUnion> timeCoordPartitions; // used only for time partitions - DO NOT USE
 
@@ -589,9 +592,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       return description;
     }
 
-    // must have thread safety for vc.setName()
     private boolean vertNamesAssigned = false;
-    synchronized public void assignVertNames( GribTables cust) {
+
+     // must have thread safety for vc.setName()
+    synchronized public void assignVertNames(GribTables cust) {
       if (vertNamesAssigned) return;
       VertCoord.assignVertNames(vertCoords, cust);
       vertNamesAssigned = true;
@@ -632,18 +636,19 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     public CalendarDateRange getTimeCoverage() {
-      TimeCoord useTc = null;
+      return null;
+      /* TimeCoord useTc = null;
       for (TimeCoord tc : timeCoords) {
         if (useTc == null || useTc.getSize() < tc.getSize())  // use time coordinate with most values
           useTc = tc;
       }
-      return (useTc == null) ? null : useTc.getCalendarRange();
+      return (useTc == null) ? null : useTc.getCalendarRange(); */
     }
 
   }
 
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int cdmHash, int discipline,
-              Grib2Pds pds, List<Integer> index, long recordsPos, int recordsLen) {
+                                                        Grib2Pds pds, List<Integer> index, long recordsPos, int recordsLen) {
 
     int category = pds.getParameterCategory();
     int parameter = pds.getParameterNumber();
@@ -656,25 +661,25 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     //   intvName = rect.getTimeIntervalName(vb.timeCoordIndex);
 
     int ensDerivedType = -1;
-     if (pds.isEnsembleDerived()) {
-       Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
-       ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
-     }
+    if (pds.isEnsembleDerived()) {
+      Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
+      ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
+    }
 
     int probType = -1;
     String probName = null;
-     if (pds.isProbability()) {
-       Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
-       probName = pdsProb.getProbabilityName();
-       probType = pdsProb.getProbabilityType();
-     }
+    if (pds.isProbability()) {
+      Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+      probName = pdsProb.getProbabilityName();
+      probType = pdsProb.getProbabilityType();
+    }
 
-     int genType = pds.getGenProcessType(); // LOOK why gc genProcessType  ?
+    int genType = pds.getGenProcessType(); // LOOK why gc genProcessType  ?
 
     return new VariableIndex(g, -1, discipline, category, parameter, levelType, isLayer,
             intvType, intvName, ensDerivedType, probType, probName, genProcessType, cdmHash,
             index, recordsPos, recordsLen);
- }
+  }
 
 
   public class VariableIndex implements Comparable<VariableIndex> {
@@ -684,15 +689,18 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public final String probabilityName;                                                              // uniquely identifies the variable
     public final boolean isLayer;                                                                     // uniquely identifies the variable
     public final int genProcessType;
-    public final int cdmHash;                  // unique hashCode - from Grib2Record, but works here also
+    public final int cdmHash;         // unique hashCode
 
-    public List<Integer> index;      // which time, vert and ens coordinates to use (in group)
-    public final long recordsPos;              // where the records array is stored in the index. 0 means no records
+    public List<Integer> index;       // which time, vert and ens coordinates to use (in group)
+    public final long recordsPos;     // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
-    public final GroupHcs group;               // belongs to this group
+    public final GroupHcs group;     // belongs to this group
 
+    public SparseArray<Record> sa; // lazy read
+
+    /* obsolete ??
     public int ntimes, nverts, nens;           // time, vert and ens coordinate lengths
-    public Record[] records;                   // Record[ntimes*nverts*nens] - lazy init
+    public Record[] records;                   // Record[ntimes*nverts*nens] - lazy init  */
 
     public int partTimeCoordIdx; // partition time coordinate index
 
@@ -720,6 +728,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       this.recordsLen = recordsLen;
     }
 
+    /* obsolete ??
     public TimeCoord getTimeCoord() {
       return null; // timeIdx < 0 ? null : group.timeCoords.get(timeIdx);
     }
@@ -740,6 +749,13 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       return false; // vertIdx >= 0;
     }
 
+    public Record[] getRecords() throws IOException {
+      readRecords();
+      return records;
+    }  */
+
+
+    /////////////////////////////
     public String id() {
       return discipline + "-" + category + "-" + parameter;
     }
@@ -764,9 +780,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       //sb.append(", timeIdx=").append(timeIdx);
       //sb.append(", vertIdx=").append(vertIdx);
       //sb.append(", ensIdx=").append(ensIdx);
-      sb.append(", ntimes=").append(ntimes);
-      sb.append(", nverts=").append(nverts);
-      sb.append(", nens=").append(nens);
+      //sb.append(", ntimes=").append(ntimes);
+      //sb.append(", nverts=").append(nverts);
+      //sb.append(", nens=").append(nens);
       sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
       sb.append('}');
       return sb.toString();
@@ -793,9 +809,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       sb.append(", recordsPos=").append(recordsPos);
       sb.append(", recordsLen=").append(recordsLen);
       sb.append(", group=").append(group.getId());
-      sb.append(", ntimes=").append(ntimes);
-      sb.append(", nverts=").append(nverts);
-      sb.append(", nens=").append(nens);
+      //sb.append(", ntimes=").append(ntimes);
+      //sb.append(", nverts=").append(nverts);
+      //sb.append(", nens=").append(nens);
       //sb.append(", records=").append(records == null ? "null" : Arrays.asList(records).toString());
       sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
       sb.append('}');
@@ -812,15 +828,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       return sb.toString();
     }
 
-
-    public Record[] getRecords() throws IOException {
-      readRecords();
-      return records;
-    }
-
-    // LOOK : use ehcache here ??
     public void readRecords() throws IOException {
-      if (records != null) return;
+      if (this.sa != null) return;
 
       byte[] b = new byte[recordsLen];
       if (recordsLen == 0) return;
@@ -831,19 +840,39 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
         indexRaf.readFully(b);
       }
 
+          /*
+    message SparseArray {
+      required fixed32 cdmHash = 1; // which variable
+      repeated uint32 size = 2;     // multidim sizes
+      repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
+      repeated Record records = 4;  // List<Record>
+    }
+     */
       // synchronize to protect records[]
       synchronized (this) {
         GribCollectionProto.SparseArray proto = GribCollectionProto.SparseArray.parseFrom(b);
         int cdmHash = proto.getCdmHash();
         if (cdmHash != this.cdmHash)
           throw new IllegalStateException("Corrupted index");
+
+        int nsizes = proto.getSizeCount();
+        int[] size = new int[nsizes];
+        for (int i = 0; i < nsizes; i++)
+          size[i] = proto.getSize(i);
+
+        int ntrack = proto.getTrackCount();
+        int[] track = new int[ntrack];
+        for (int i = 0; i < ntrack; i++)
+          track[i] = proto.getTrack(i);
+
         int n = proto.getRecordsCount();
-        Record[] recordsTemp = new Record[n];
+        List<Record> records = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
           GribCollectionProto.Record pr = proto.getRecords(i);
-          recordsTemp[i] = new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos());
+          records.add( new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos()));
         }
-        records = recordsTemp; // switch all at once - worse case is it gets read more than once
+
+        this.sa = new SparseArray<>(size, track, records);
       }
     }
 
@@ -894,9 +923,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       for (VariableIndex v : g.varIndex)
         f.format("  %s%n", v.toStringComplete());
 
-      f.format("%nTimeCoords (%d)%n", g.timeCoords.size());
-      for (int i = 0; i < g.timeCoords.size(); i++) {
-        TimeCoord tc = g.timeCoords.get(i);
+      f.format("%nCoords (%d)%n", g.coords.size());
+      for (int i = 0; i < g.coords.size(); i++) {
+        Coordinate tc = g.coords.get(i);
         f.format(" %d: %s%n", i, tc);
       }
     }

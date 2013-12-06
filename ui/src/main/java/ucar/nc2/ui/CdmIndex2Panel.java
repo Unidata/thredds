@@ -2,6 +2,7 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
+import ucar.arr.Coordinate;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.Grib2CollectionBuilderFromIndex;
@@ -40,7 +41,7 @@ public class CdmIndex2Panel extends JPanel {
 
   private PreferencesExt prefs;
 
-  private BeanTableSorted groupTable, varTable, vertCoordTable, timeCoordTable;
+  private BeanTableSorted groupTable, varTable, coordTable;
   private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoTA;
@@ -117,55 +118,40 @@ public class CdmIndex2Panel extends JPanel {
         infoWindow.show();
       }
     });
-    varPopup.addAction("Show Record Table", new AbstractAction() {
+    varPopup.addAction("Show Sparse Array", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VarBean bean = (VarBean) varTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          bean.showRecords(f);
+          bean.showSparseArray(f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
         }
       }
     });
-
-    varPopup.addAction("Send Files to Grib2Collection", new AbstractAction() {
+    /* varPopup.addAction("Send Files to Grib2Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VarBean bean = (VarBean) varTable.getSelectedBean();
         if (bean != null) {
           bean.sendFilesToGrib2Collection();
         }
       }
-    });
+    }); */
 
-    vertCoordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Vertical Coordinates", "VertCoord", null);
-    varPopup = new PopupMenu(vertCoordTable.getJTable(), "Options");
+    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Vertical Coordinates", "VertCoord", null);
+    varPopup = new PopupMenu(coordTable.getJTable(), "Options");
 
     varPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) vertCoordTable.getSelectedBean();
+        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
         if (bean != null) {
-          infoTA.setText(bean.vc.toString());
+          infoTA.setText(bean.coord.toString());
           infoTA.gotoTop();
           infoWindow.show();
         }
       }
     });
-
-    timeCoordTable = new BeanTableSorted(TimeCoordBean.class, (PreferencesExt) prefs.node("TimeCoordBean"), false, "Time Coordinates", "TimeCoord", null);
-    varPopup = new PopupMenu(timeCoordTable.getJTable(), "Options");
-
-    varPopup.addAction("Show Coord", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         TimeCoordBean bean = (TimeCoordBean) timeCoordTable.getSelectedBean();
-         if (bean != null) {
-           infoTA.setText(bean.tc.toString());
-           infoTA.gotoTop();
-           infoWindow.show();
-         }
-       }
-     });
 
        // file popup window
     fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
@@ -187,20 +173,19 @@ public class CdmIndex2Panel extends JPanel {
     split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, groupTable, varTable);
     split3.setDividerLocation(prefs.getInt("splitPos3", 800));
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split3, timeCoordTable);
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split3, coordTable);
     split2.setDividerLocation(prefs.getInt("splitPos2", 800));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, vertCoordTable);
-    split.setDividerLocation(prefs.getInt("splitPos", 500));
+    //split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, vertCoordTable);
+    //split.setDividerLocation(prefs.getInt("splitPos", 500));
 
-    add(split, BorderLayout.CENTER);
+    add(split2, BorderLayout.CENTER);
   }
 
   public void save() {
     groupTable.saveState(false);
     varTable.saveState(false);
-    timeCoordTable.saveState(false);
-    vertCoordTable.saveState(false);
+    coordTable.saveState(false);
     fileTable.save();
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
@@ -321,15 +306,9 @@ public class CdmIndex2Panel extends JPanel {
 
     int count = 0;
     List<CoordBean> coords = new ArrayList<>();
-    for (VertCoord vc : group.vertCoords)
+    for (Coordinate vc : group.coords)
       coords.add(new CoordBean(vc, count++));
-    vertCoordTable.setBeans(coords);
-
-    count = 0;
-    List<TimeCoordBean> tcoords = new ArrayList<>();
-    for (TimeCoord tc : group.timeCoords)
-      tcoords.add(new TimeCoordBean(tc, count++));
-    timeCoordTable.setBeans(tcoords);
+    coordTable.setBeans(coords);
   }
 
   private void showFiles(Formatter f) {
@@ -388,16 +367,8 @@ public class CdmIndex2Panel extends JPanel {
       return group.filenose.length;
     }
 
-    public int getNTimes() {
-      return group.timeCoords.size();
-    }
-
-    public int getNVerts() {
-      return group.vertCoords.size();
-    }
-
-    public int getNVars() {
-      return group.varIndex.size();
+    public int getNCoords() {
+      return group.coords.size();
     }
 
 
@@ -415,78 +386,53 @@ public class CdmIndex2Panel extends JPanel {
   }
 
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  public class CoordBean {
-    VertCoord vc;
-    int index;
+  public class CoordBean implements Comparable<CoordBean> {
+    Coordinate coord;
+    int idx;
+
+    // no-arg constructor
 
     public CoordBean() {
     }
 
-    public CoordBean(VertCoord vc, int index) {
-      this.vc = vc;
-      this.index = index;
+    public String getType() {
+      return coord.getType().toString();
     }
 
-    public boolean isLayer() {
-      return vc.isLayer();
+    public CoordBean(Coordinate coord, int idx) {
+      this.coord = coord;
+      this.idx = idx;
+    }
+
+    public String getValues() {
+      Formatter f = new Formatter();
+      for (Object val : coord.getValues()) f.format("%s,", val);
+      return f.toString();
     }
 
     public int getSize() {
-      return vc.getSize();
+      return coord.getSize();
     }
 
     public int getCode() {
-      return vc.getCode();
-    }
-
-    public String getVertCoords() {
-      return vc.showCoords();
-    }
-
-    public String getVertCoordName() {
-      return vc.getName();
-    }
-
-    public String getUnits() {
-      return vc.getUnits();
+      return coord.getCode();
     }
 
     public int getIndex() {
-      return index;
-    }
-  }
-
-  public class TimeCoordBean {
-    TimeCoord tc;
-    int index;
-
-    public TimeCoordBean() {
+      return idx;
     }
 
-    public TimeCoordBean(TimeCoord tc, int index) {
-      this.tc = tc;
-      this.index = index;
+    public String getUnit() {
+      return coord.getUnit();
     }
 
-    public int getNCoords() {
-      return tc.getSize();
+    @Override
+    public int compareTo(CoordBean o) {
+      return getType().compareTo(o.getType());
     }
 
-    public String getCalendarRange() {
-      return tc.getCalendarRange().toString();
-    }
-
-    public String getTimeUnit() {
-      return tc.getTimeUnit().toString();
-    }
-
-    public String getTimeIntervalName() {
-      return tc.getTimeIntervalName();
-    }
-
-    public int getIndex() {
-      return index;
+    void showCoords(Formatter f) {
+      coord.showCoords(f);
     }
   }
 
@@ -504,12 +450,8 @@ public class CdmIndex2Panel extends JPanel {
        this.group = group;
      }
 
-     public boolean getTimeIntv() {
-       return (v.getTimeCoord() == null) ? false : v.getTimeCoord().isInterval();
-     }
-
-     public boolean getVertLayer() {
-       return (v.getVertCoord() == null) ? false : v.getVertCoord().isLayer();
+     public boolean isLayer() {
+       return v.isLayer;
      }
 
      public int getLevelType() {
@@ -528,8 +470,10 @@ public class CdmIndex2Panel extends JPanel {
        return v.ensDerivedType;
      }
 
-     public int getGenType() {
-       return v.genProcessType;
+     public String getIndexes() {
+       Formatter f = new Formatter();
+       for (int idx : v.index) f.format("%d,", idx);
+       return f.toString();
      }
 
      public String getIntvName() {
@@ -552,11 +496,17 @@ public class CdmIndex2Panel extends JPanel {
        return v.discipline + "-" + v.category + "-" + v.parameter;
      }
 
-     private void showRecords(Formatter f) {
-       //if (v instanceof TimePartition.VariableIndexPartitioned)
+     private void showSparseArray(Formatter f) {
+       try {
+         v.readRecords();
+       } catch (IOException e) {
+         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+       }
+       v.sa.showInfo(f, null);
+       /* if (v instanceof TimePartition.VariableIndexPartitioned)
        //  showRecordsInPartition(f);
        //else
-         showRecordsInCollection(f);
+         showRecordsInCollection(f); */
      }
 
      /* private void showRecordsInPartition(Formatter f) {
@@ -567,7 +517,7 @@ public class CdmIndex2Panel extends JPanel {
        } catch (IOException ioe) {
          ioe.printStackTrace();
        }
-     } */
+     }
 
      private void showRecordsInCollection(Formatter f) {
        TimeCoord tcoord = v.getTimeCoord();
@@ -723,7 +673,7 @@ public class CdmIndex2Panel extends JPanel {
         ioe.printStackTrace();
       }
 
-    }
+    }  */
 
    }
 

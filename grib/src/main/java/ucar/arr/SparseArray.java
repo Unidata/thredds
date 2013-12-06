@@ -18,11 +18,30 @@ public class SparseArray<T> {
 
   int ndups = 0; // number of duplicates
 
+  // create from Rectilyser
   public SparseArray( int... size) {
     this.size = size;
+    calcStrides();
+
+    track = new int[totalSize];
+    this.content = new ArrayList<>(totalSize);  // LOOK could only allocate part of this.
+  }
+
+  // read back in from index
+  public SparseArray( int[] size, int[] track, List<T> content) {
+    this.size = size;
+    calcStrides();
+
+    this.track = track;
+    this.content = content;
+
+    if (track.length != totalSize)
+      throw new IllegalStateException("track len "+track.length+" != totalSize "+totalSize);
+  }
+
+  private void calcStrides() {
     totalSize = 1;
     for (int aSize : size) totalSize *= aSize;
-    this.content = new ArrayList<>(totalSize);  // LOOK could only allocate part of this.
 
     // strides
     stride = new int[size.length];
@@ -32,7 +51,6 @@ public class SparseArray<T> {
       stride[ii] = product;
       product *= thisDim;
     }
-    track = new int[totalSize];
   }
 
   public void add(T thing, Formatter info, int... index) {

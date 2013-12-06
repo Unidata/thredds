@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.arr.Coordinate;
+import ucar.arr.SparseArray;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
