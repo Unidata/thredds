@@ -454,7 +454,7 @@ public class NCdumpW {
       printStringArray(out, (ArrayChar) array, ilev, ct);
 
     } else if (array.getElementType() == String.class) {
-      printStringArray(out, (ArrayObject) array, ilev, ct);
+      printStringArray(out, array, ilev, ct);
 
     } else if (array instanceof ArraySequence) {
       if (printSeq) printSequence(out, (ArraySequence) array, ilev, ct);
@@ -576,7 +576,7 @@ public class NCdumpW {
     }
   }
 
-  static void printStringArray(PrintWriter out, ArrayObject ma, Indent indent, ucar.nc2.util.CancelTask ct) {
+  static void printStringArray(PrintWriter out, Array ma, Indent indent, ucar.nc2.util.CancelTask ct) {
     if (ct != null && ct.isCancel()) return;
 
     int rank = ma.getRank();
