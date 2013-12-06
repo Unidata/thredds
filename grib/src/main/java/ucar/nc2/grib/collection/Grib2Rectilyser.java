@@ -124,7 +124,7 @@ public class Grib2Rectilyser {
       vb.coordND.addBuilder(new CoordinateRuntime.Builder());
 
       if (vb.first.getPDS().isTimeInterval())
-        vb.coordND.addBuilder(new CoordinateTimeIntv.Builder(cust, vb.timeUnit, pdsFirst.getTimeUnit()));
+        vb.coordND.addBuilder(new CoordinateTimeIntv.Builder(cust, vb.timeUnit, unit));
       else
         vb.coordND.addBuilder(new CoordinateTime.Builder(pdsFirst.getTimeUnit()));
 

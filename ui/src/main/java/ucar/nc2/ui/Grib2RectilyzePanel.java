@@ -837,6 +837,10 @@ public class Grib2RectilyzePanel extends JPanel {
       return coord.getUnit();
     }
 
+    public String getName() {
+      return coord.getName();
+    }
+
     @Override
     public int compareTo(CoordBean o) {
       return getType().compareTo(o.getType());

@@ -94,8 +94,12 @@ public class SparseArray<T> {
     return result;
   }
 
-  public int[] getSize() {
+  public int[] getShape() {
     return size;
+  }
+
+  public int getTotalSize() {
+    return totalSize;
   }
 
   public void setSize(int[] size) {
@@ -112,6 +116,10 @@ public class SparseArray<T> {
 
   public List<T> getContent() {
     return content;
+  }
+
+  public T getContent(int idx) {
+    return content.get(idx);
   }
 
   public void setContent(List<T> content) {

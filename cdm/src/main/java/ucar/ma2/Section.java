@@ -43,7 +43,7 @@ import java.util.*;
  * @author caron
  */
 
-public class  Section {
+public class Section {
   private List<Range> list;
   private boolean immutable = false;
   private boolean isvariablelength = false;
@@ -56,9 +56,9 @@ public class  Section {
   public Section(int[] shape) {
     list = new ArrayList<Range>();
     for (int i = 0; i < shape.length; i++) {
-      if (shape[i] > 0 )
+      if (shape[i] > 0)
         list.add(new Range(shape[i]));
-      else if (shape[i] == 0 )
+      else if (shape[i] == 0)
         list.add(Range.EMPTY);
       else {
         list.add(Range.VLEN);
@@ -77,13 +77,13 @@ public class  Section {
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
     list = new ArrayList<Range>();
     for (int i = 0; i < shape.length; i++) {
-      if(shape[i] > 0)
-          list.add(new Range(origin[i],origin[i]+shape[i] - 1));
-      else if(shape[i] == 0)
-          list.add(Range.EMPTY);
+      if (shape[i] > 0)
+        list.add(new Range(origin[i], origin[i] + shape[i] - 1));
+      else if (shape[i] == 0)
+        list.add(Range.EMPTY);
       else {
-          list.add(Range.VLEN);
-          isvariablelength = true;
+        list.add(Range.VLEN);
+        isvariablelength = true;
       }
     }
   }
@@ -99,14 +99,14 @@ public class  Section {
   public Section(int[] origin, int[] size, int[] stride) throws InvalidRangeException {
     list = new ArrayList<Range>();
     for (int i = 0; i < size.length; i++) {
-       if(size[i] > 0)
-         list.add(new Range(origin[i], origin[i]+size[i] - 1, stride[i]));
-       else if(size[i] == 0)
-         list.add(Range.EMPTY);
-       else {
-         list.add(Range.VLEN);
-         isvariablelength = true;
-       }
+      if (size[i] > 0)
+        list.add(new Range(origin[i], origin[i] + size[i] - 1, stride[i]));
+      else if (size[i] == 0)
+        list.add(Range.EMPTY);
+      else {
+        list.add(Range.VLEN);
+        isvariablelength = true;
+      }
     }
   }
 
@@ -117,9 +117,9 @@ public class  Section {
    */
   public Section(List<Range> from) {
     list = new ArrayList<Range>(from);
-    for(int i =0 ; i <from.size(); i++) {
-        if(from.get(i) == Range.VLEN)
-            isvariablelength = true;
+    for (int i = 0; i < from.size(); i++) {
+      if (from.get(i) == Range.VLEN)
+        isvariablelength = true;
     }
   }
 
@@ -200,15 +200,15 @@ public class  Section {
    *   start := INTEGER
    *   stride := INTEGER
    *   end := INTEGER
-   * <p/>
+   *
    * where nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
-   * <p/>
+   *
    * Meaning of index selector :
    *  ':' = all
    *  slice = hold index to that value
    *  start:end = all indices from start to end inclusive
    *  start:end:stride = all indices from start to end inclusive with given stride
-   * <p/>
+   *
    * </pre>
    *
    * @param sectionSpec the token to parse, eg "(1:20,:,3,10:20:2)", parenthesis optional
@@ -418,8 +418,8 @@ public class  Section {
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
       Range r = other.getRange(j);
-      if(base == Range.VLEN || r == Range.VLEN)
-          continue;
+      if (base == Range.VLEN || r == Range.VLEN)
+        continue;
       if (!base.intersects(r))
         return false;
     }
@@ -431,6 +431,7 @@ public class  Section {
   /**
    * See if this Section contains another Section. ignores strides
    * Must have same rank and last >= other.last.
+   *
    * @param other another section
    * @return true if its a subset
    */
@@ -478,6 +479,7 @@ public class  Section {
   }
 
   // these make it mutable
+
   /**
    * Append a null Range to the Section - meaning "all"
    *
@@ -512,9 +514,9 @@ public class  Section {
     if (size > 0)
       list.add(new Range(size));
     else if (size == 0)
-      list.add( Range.EMPTY);
+      list.add(Range.EMPTY);
     else
-      list.add( Range.VLEN);
+      list.add(Range.VLEN);
     return this;
   }
 
@@ -634,7 +636,7 @@ public class  Section {
     }
     if (!needed) return this;
 
-    List<Range> newList = new ArrayList<Range>( list.size());
+    List<Range> newList = new ArrayList<Range>(list.size());
     for (Range r : list) {
       if (r.length() > 1)
         newList.add(r);
@@ -642,7 +644,9 @@ public class  Section {
     return new Section(newList);
   }
 
-
+  public Section subSection(int from, int endExclusive) {
+    return new Section(list.subList(from, endExclusive));
+  }
 
   /**
    * If any of the ranges are null, which means "all", set the Range from the
@@ -660,11 +664,11 @@ public class  Section {
     for (int i = 0; i < shape.length; i++) {
       Range r = list.get(i);
       if (r == null) {
-        if (shape[i] > 0 )
+        if (shape[i] > 0)
           list.set(i, new Range(shape[i]));
-        else if (shape[i] == 0 )
+        else if (shape[i] == 0)
           list.set(i, Range.EMPTY);
-        else  {
+        else {
           list.set(i, Range.VLEN);
           isvariablelength = true;
         }
@@ -691,7 +695,7 @@ public class  Section {
   }
 
   public boolean isVariableLength() {
-      return isvariablelength;
+    return isvariablelength;
   }
 
   public boolean isStrided() {
@@ -784,16 +788,15 @@ public class  Section {
    *
    * @return rank
    */
-   public int getVlenRank() {
-      return list.size() - (isvariablelength ? 1 : 0);
-   }
+  public int getVlenRank() {
+    return list.size() - (isvariablelength ? 1 : 0);
+  }
 
-   /**
-     * Compare this section with another upto the vlen in either
-    */
-    public boolean compatibleRank(Section other)
-    {
-      return (getRank() == other.getRank());
+  /**
+   * Compare this section with another upto the vlen in either
+   */
+  public boolean compatibleRank(Section other) {
+    return (getRank() == other.getRank());
       /*if((isVariableLength() && other.isVariableLength())
           || (!isVariableLength() && !other.isVariableLength()))
           return getRank() == other.getRank();
@@ -801,16 +804,17 @@ public class  Section {
           return getVlenRank() == other.getRank();
       else // !isVariableLength() && other.isVariableLength()
         return getRank() == other.getVlenRank(); */
-    }
+  }
 
   /**
    * Compute total number of elements represented by the section.
    * Any VLEN Ranges are effectively skipped.
+   *
    * @return total number of elements
    */
   public long computeSize() {
     long product = 1;
-    for(int ii=0;ii<list.size();ii++) {
+    for (int ii = 0; ii < list.size(); ii++) {
       Range r = list.get(ii);
       if (r != Range.VLEN)
         product *= r.length();
@@ -866,7 +870,7 @@ public class  Section {
   /**
    * Check if this Section is legal for the given shape.
    * [Note: modified by dmh to address the case of unlimited
-   *  where the size is zero]
+   * where the size is zero]
    *
    * @param shape range must fit within this shape, rank must match.
    * @return error message if illegal, null if all ok
@@ -937,6 +941,13 @@ public class  Section {
     return result;
   }
 
+
+  /**
+   * Iterate over a section, returning the index in an equivilant 1D array of shape[]
+   *
+   * @param shape total array shape
+   * @return iterator over this section
+   */
   public Iterator getIterator(int[] shape) {
     return new Iterator(shape);
   }
@@ -957,15 +968,38 @@ public class  Section {
       total = Index.computeSize(getShape()); // total in the section
     }
 
+    /**
+     * Return true if there are more elements
+     *
+     * @return true if there are more elements
+     */
     public boolean hasNext() {
       return done < total;
     }
 
-    public int next() {
+    /**
+     * Get the position in the equivilant 1D array of shape[]
+     *
+     * @param index if not null, return the current nD index
+     * @return the position in a 1D array
+     */
+    public int next(int[] index) {
       int next = currentElement();
+      if (index != null)
+        System.arraycopy(odo, 0, index, 0, odo.length);
+
       done++;
       if (done < total) incr(); // increment for next call
       return next;
+    }
+
+    /**
+     * Get the current index in the result array, ie in this section
+     *
+     * @return result index
+     */
+    public int getResultIndex() {
+      return (int) done - 1;
     }
 
     private void incr() {

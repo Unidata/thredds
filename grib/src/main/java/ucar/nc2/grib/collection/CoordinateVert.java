@@ -20,10 +20,13 @@ import java.util.*;
 public class CoordinateVert implements Coordinate {
   private final List<VertCoord.Level> levelSorted;
   private final int code;
+  private String name;
+  private VertCoord.VertUnit vunit;
 
   public CoordinateVert(List<VertCoord.Level> levelSorted, int code) {
     this.levelSorted = Collections.unmodifiableList(levelSorted);
     this.code = code;
+    this.vunit = Grib2Utils.getLevelUnit(code);
   }
 
   static public VertCoord.Level extractLevel(Grib2Record gr) {
@@ -38,7 +41,6 @@ public class CoordinateVert implements Coordinate {
   public Object extract(Grib2Record gr) {
     return extractLevel(gr);
   }
-
 
   public List<VertCoord.Level> getLevelSorted() {
     return levelSorted;
@@ -58,13 +60,29 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public String getUnit() {
-    return null;
+    return vunit.getUnits();
+  }
+
+  public boolean isLayer() {
+    return vunit.isLayer();
+  }
+
+  public boolean isPositiveUp() {
+    return vunit.isPositiveUp();
   }
 
   public int getCode() {
     return code;
   }
 
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
   @Override
   public void showInfo(Formatter info, Indent indent) {

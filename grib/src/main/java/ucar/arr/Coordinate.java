@@ -23,5 +23,6 @@ public interface Coordinate {
 
   int getCode();
   Type getType();
+  String getName();
   String getUnit();
 }

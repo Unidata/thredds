@@ -6,6 +6,7 @@ import ucar.arr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -19,7 +20,11 @@ import java.util.*;
 @Immutable
 public class CoordinateTime implements Coordinate {
   private final List<Integer> offsetSorted;
-  private final int code;
+  private final int code;                    // pdsFirst.getTimeUnit()
+  private String name = "time";
+  private CalendarPeriod timeUnit;
+  private CalendarDate refDate;
+  private String  period;
 
   public CoordinateTime(List<Integer> offsetSorted, int code) {
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
@@ -53,9 +58,31 @@ public class CoordinateTime implements Coordinate {
     return Type.time;
   }
 
+  public void setRefDate(CalendarDate refDate) {
+    this.refDate = refDate;
+  }
+
+  public void setTimeUnit(CalendarPeriod timeUnit) {
+    this.timeUnit = timeUnit;
+    CalendarPeriod.Field cf = timeUnit.getField();
+    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
+      this.period = "calendar "+ cf.toString();
+    else
+      this.period = timeUnit.getField().toString();
+  }
+
   @Override
   public String getUnit() {
-    return null;
+    return period+" since "+ refDate;
+  }
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public int getCode() {
@@ -100,7 +127,7 @@ public class CoordinateTime implements Coordinate {
   ////////////////////////////////////////////
 
   static public class Builder extends CoordinateBuilderImpl  {
-    int code;
+    int code;  // pdsFirst.getTimeUnit()
 
     public Builder(int code) {
       this.code = code;

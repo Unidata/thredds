@@ -117,7 +117,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
     // LOOK can we just load Grib through the ServiceLoader ??
     try {
-      registerIOProvider("ucar.nc2.grib.grib2.Grib2Iosp");
+      registerIOProvider("ucar.nc2.grib.collection.Grib2Iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }

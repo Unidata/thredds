@@ -1024,7 +1024,7 @@ public class IospHelper {
     int count = 0;
     Section.Iterator iter = child.section.getIterator(child.v.getShape());
     while (iter.hasNext()) {
-      int recno = iter.next();
+      int recno = iter.next(null);
       StructureData sd = innerData.getStructureData(recno);
       result.setStructureData(sd, count++);
     }

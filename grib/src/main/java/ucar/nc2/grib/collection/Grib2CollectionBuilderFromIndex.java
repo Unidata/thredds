@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.arr.Coordinate;
-import ucar.arr.SparseArray;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -28,14 +27,14 @@ import java.util.*;
 public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
   // read in the index, open raf
-  static public GribCollection createFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection readFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     File idxFile = GribCollection.getIndexFile(name, directory);
     RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
-    return createFromIndex(name, directory, raf, config, logger);
+    return readFromIndex(name, directory, raf, config, logger);
   }
 
   // read in the index, index raf already open
-  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection readFromIndex(String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, directory, config, logger);
     if (builder.readIndex(raf))
       return builder.gc;
@@ -44,16 +43,12 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
   ////////////////////////////////////////////////////////////////
 
-  protected GribCollection gc;
-  protected Grib2Customizer tables; // only gets created in makeAggGroups
+  private GribCollection gc;
+  private Grib2Customizer tables; // only gets created in makeAggGroups
 
   protected Grib2CollectionBuilderFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
     super(null, false, logger);
     this.gc = new Grib2Collection(name, directory, config);
-  }
-
-  protected Grib2CollectionBuilderFromIndex(MCollection dcm, boolean isSingleFile, org.slf4j.Logger logger) {
-    super(dcm, isSingleFile, logger);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +102,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       gc.genProcessId = proto.getGenProcessId();
       gc.backProcessId = proto.getBackProcessId();
       gc.local = proto.getLocal();
-      // gc.tables = Grib2Tables.factory(gc.center, gc.subcenter, gc.master, gc.local);
+      this.tables = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local);
 
       File dir = gc.getDirectory();
       File protoDir = new File(proto.getTopDir());
@@ -205,18 +200,65 @@ message Group {
 
     readTimePartitions(group, p);
 
-    /* finish
-    for (GribCollection.VariableIndex vi : group.varIndex) {
-      TimeCoord tc = group.timeCoords.get(vi.timeIdx);
-      vi.ntimes = tc.getSize();
-      VertCoord vc = (vi.vertIdx < 0) ? null : group.vertCoords.get(vi.vertIdx);
-      vi.nverts = (vc == null) ? 0 : vc.getSize();
-      EnsCoord ec = (vi.ensIdx < 0) ? null : group.ensCoords.get(vi.ensIdx);
-      vi.nens = (ec == null) ? 0 : ec.getSize();
-    } */
+    // assign names, units to coordinates
+    CalendarDate firstRef = null;
+    int timeCoord = 0;
+    List<CoordinateVert> vertCoords = new ArrayList<>();
+    for (Coordinate coord : group.coords) {
+      Coordinate.Type type = coord.getType();
+      switch (type) {
+        case runtime:
+          firstRef = ((CoordinateRuntime)coord).getFirstDate();
+          break;
+
+        case time:
+          CoordinateTime tc = (CoordinateTime) coord;
+          if (timeCoord > 0) tc.setName("time"+timeCoord);
+          timeCoord++;
+          tc.setTimeUnit(Grib2Utils.getCalendarPeriod( tables.convertTimeUnit( tc.getCode())));
+          tc.setRefDate(firstRef);
+          break;
+
+        case timeIntv:
+          CoordinateTimeIntv tci = (CoordinateTimeIntv) coord;
+          if (timeCoord > 0) tci.setName("time"+timeCoord);
+          timeCoord++;
+          tci.setTimeUnit(Grib2Utils.getCalendarPeriod( tables.convertTimeUnit( tci.getCode())));
+          tci.setRefDate(firstRef);
+          break;
+
+        case vert:
+          vertCoords.add((CoordinateVert) coord);
+          break;
+      }
+    }
+    assignVertNames(vertCoords);
 
     return group;
   }
+
+  public void assignVertNames(List<CoordinateVert> vertCoords) {
+    Map<String, Integer> map = new HashMap<>(2*vertCoords.size());
+
+    // assign name
+    for (CoordinateVert vc : vertCoords) {
+      String shortName = tables.getLevelNameShort(vc.getCode());
+      if (vc.isLayer()) shortName = shortName + "_layer";
+
+      Integer countName = map.get(shortName);
+      if (countName == null) {
+        map.put(shortName, 0);
+      } else {
+        countName++;
+        shortName = shortName + countName;
+        map.put(shortName, countName);
+      }
+
+      vc.setName(shortName);
+    }
+
+  }
+
 
   private Parameter readParam(GribCollectionProto.Parameter pp) throws IOException {
     if (pp.hasSdata())

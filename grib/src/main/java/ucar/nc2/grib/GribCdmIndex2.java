@@ -31,7 +31,7 @@ public class GribCdmIndex2 {
 
       switch (magic) {
         case Grib2CollectionBuilder.MAGIC_START:
-          gc = Grib2CollectionBuilderFromIndex.createFromIndex(indexFile, null, raf, config, logger);
+          gc = Grib2CollectionBuilderFromIndex.readFromIndex(indexFile, null, raf, config, logger);
           break;
       }
       return gc;

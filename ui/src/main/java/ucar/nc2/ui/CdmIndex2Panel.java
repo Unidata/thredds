@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Description
+ * Read ncx2 index files.
  *
  * @author John
  * @since 12/5/13
@@ -228,7 +228,7 @@ public class CdmIndex2Panel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = Grib2CollectionBuilderFromIndex.createFromIndex(file.getPath(), file.getParentFile(), raf, null, logger);
+      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getPath(), file.getParentFile(), raf, null, logger);
       List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
@@ -371,6 +371,9 @@ public class CdmIndex2Panel extends JPanel {
       return group.coords.size();
     }
 
+    public int getNVariables() {
+      return group.varIndex.size();
+    }
 
   public String getDescription() {
       return group.getDescription();
@@ -426,6 +429,10 @@ public class CdmIndex2Panel extends JPanel {
       return coord.getUnit();
     }
 
+    public String getName() {
+      return coord.getName();
+    }
+
     @Override
     public int compareTo(CoordBean o) {
       return getType().compareTo(o.getType());
@@ -472,7 +479,7 @@ public class CdmIndex2Panel extends JPanel {
 
      public String getIndexes() {
        Formatter f = new Formatter();
-       for (int idx : v.index) f.format("%d,", idx);
+       for (int idx : v.coordIndex) f.format("%d,", idx);
        return f.toString();
      }
 

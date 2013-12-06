@@ -607,7 +607,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
       dataVolume = vs.read(start, shape);
     } catch (Exception ex) {
       log.error("GeoGrid.getdataSlice() on dataset " + getFullName()+" "+ dataset.getLocation(), ex);
-      throw new java.io.IOException(ex.getMessage());
+      throw new java.io.IOException(ex);
     }
 
     // LOOK: the real problem is the lack of named dimensions in the Array object

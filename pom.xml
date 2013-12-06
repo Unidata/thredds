@@ -47,6 +47,7 @@
     <url>https://github.com/Unidata/thredds/</url>
     <connection>scm:git:https://github.com/Unidata/thredds/</connection>
     <developerConnection>scm:git:git@github.com:Unidata/thredds.git</developerConnection>
+    <tag>HEAD</tag>
   </scm>
 
   <!-- ===========================================================

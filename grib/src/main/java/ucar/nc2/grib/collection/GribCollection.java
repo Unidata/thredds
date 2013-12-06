@@ -222,16 +222,16 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     } else { */
     if (force == CollectionManager.Force.never) {
       FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-      return Grib2CollectionBuilderFromIndex.createFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
+      return Grib2CollectionBuilderFromIndex.readFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
     } else {
       return Grib2CollectionBuilder.factory(dcm, force, logger);
     }
     //}
   }
 
-  static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection readFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     //if (isGrib1) return Grib1CollectionBuilderFromIndex.createFromIndex(name, directory, raf, config, logger);
-    return Grib2CollectionBuilderFromIndex.createFromIndex(name, directory, raf, config, logger);
+    return Grib2CollectionBuilderFromIndex.readFromIndex(name, directory, raf, config, logger);
   }
 
   static public boolean update(boolean isGrib1, CollectionManager dcm, org.slf4j.Logger logger) throws IOException {
@@ -432,7 +432,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     // absolute location
     MFile mfile = files.get(fileno);
     String filename = mfile.getPath();
-    File dataFile = new File(filename);
+    File dataFile = new File(directory, filename);
 
     // check reletive location - eg may be /upc/share instead of Q:
     if (!dataFile.exists()) {
@@ -592,16 +592,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       return description;
     }
 
-    private boolean vertNamesAssigned = false;
-
-     // must have thread safety for vc.setName()
-    synchronized public void assignVertNames(GribTables cust) {
-      if (vertNamesAssigned) return;
-      VertCoord.assignVertNames(vertCoords, cust);
-      vertNamesAssigned = true;
-    }
-
-
     @Override
     public int compareTo(GroupHcs o) {
       return getDescription().compareTo(o.getDescription());
@@ -691,7 +681,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public final int genProcessType;
     public final int cdmHash;         // unique hashCode
 
-    public List<Integer> index;       // which time, vert and ens coordinates to use (in group)
+    public List<Integer> coordIndex;   // index into group.coords
     public final long recordsPos;     // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
     public final GroupHcs group;     // belongs to this group
@@ -723,36 +713,17 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       this.probType = probType;
       this.genProcessType = genProcessType;
       this.cdmHash = cdmHash;
-      this.index = index;
+      this.coordIndex = index;
       this.recordsPos = recordsPos;
       this.recordsLen = recordsLen;
     }
 
-    /* obsolete ??
-    public TimeCoord getTimeCoord() {
-      return null; // timeIdx < 0 ? null : group.timeCoords.get(timeIdx);
+    public List<Coordinate> getCoordinates() {
+      List<Coordinate> result = new ArrayList<>(coordIndex.size());
+      for (int idx : coordIndex)
+        result.add(group.coords.get(idx));
+      return result;
     }
-
-    public VertCoord getVertCoord() {
-      return null; // vertIdx < 0 ? null : group.vertCoords.get(vertIdx);
-    }
-
-    public EnsCoord getEnsCoord() {
-      return null; // ensIdx < 0 ? null : group.ensCoords.get(ensIdx);
-    }
-
-    public boolean hasEns() {
-      return false; // LOOK
-    }
-
-    public boolean hasVert() {
-      return false; // vertIdx >= 0;
-    }
-
-    public Record[] getRecords() throws IOException {
-      readRecords();
-      return records;
-    }  */
 
 
     /////////////////////////////

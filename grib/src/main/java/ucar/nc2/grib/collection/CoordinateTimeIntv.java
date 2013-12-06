@@ -1,7 +1,6 @@
 package ucar.nc2.grib.collection;
 
 import ucar.arr.Coordinate;
-import ucar.arr.CoordinateBuilder;
 import ucar.arr.CoordinateBuilderImpl;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -24,8 +23,12 @@ import java.util.List;
  * @since 11/28/13
  */
 public class CoordinateTimeIntv implements Coordinate {
-  private final int code;
+  private final int code;                               // pdsFirst.getTimeUnit()
   private final List<TimeCoord.Tinv> timeIntervals;
+  private String name = "time";
+  private CalendarPeriod timeUnit;
+  private CalendarDate refDate;
+  private String period;
 
   public CoordinateTimeIntv(List<TimeCoord.Tinv> timeIntervals, int code) {
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
@@ -46,7 +49,7 @@ public class CoordinateTimeIntv implements Coordinate {
 
   @Override
   public int getCode() {
-    return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    return code;
   }
 
   @Override
@@ -56,10 +59,30 @@ public class CoordinateTimeIntv implements Coordinate {
 
   @Override
   public String getUnit() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return period+" since "+ refDate;
   }
 
+  @Override
+  public String getName() {
+    return name;
+  }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setRefDate(CalendarDate refDate) {
+    this.refDate = refDate;
+  }
+
+  public void setTimeUnit(CalendarPeriod timeUnit) {
+    this.timeUnit = timeUnit;
+    CalendarPeriod.Field cf = timeUnit.getField();
+    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
+      this.period = "calendar "+ cf.toString();
+    else
+      this.period = timeUnit.getField().toString();
+  }
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s Tinv:", indent, getType());
@@ -98,7 +121,7 @@ public class CoordinateTimeIntv implements Coordinate {
   ///////////////////////////////////////////////////////////
   static public class Builder extends CoordinateBuilderImpl {
     private final Grib2Customizer cust;
-    private final int code;
+    private final int code;                  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
 
     public Builder(Grib2Customizer cust, CalendarPeriod timeUnit, int code) {
@@ -131,6 +154,7 @@ public class CoordinateTimeIntv implements Coordinate {
       List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
       Collections.sort(offsetSorted);
+
       return new CoordinateTimeIntv( offsetSorted, code);
     }
   }

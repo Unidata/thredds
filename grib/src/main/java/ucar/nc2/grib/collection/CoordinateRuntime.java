@@ -20,13 +20,23 @@ import java.util.*;
 @Immutable
 public class CoordinateRuntime implements Coordinate {
   final List<CalendarDate> runtimeSorted;
+  final CalendarDate firstDate;
 
   public CoordinateRuntime(List<CalendarDate> runtimeSorted) {
     this.runtimeSorted = Collections.unmodifiableList(runtimeSorted);
+    firstDate = runtimeSorted.get(0);
   }
 
   public List<CalendarDate> getRuntimesSorted() {
     return runtimeSorted;
+  }
+
+  public List<Integer> getRuntimesUdunits() {
+    List<Integer> result = new ArrayList<>(runtimeSorted.size());
+    for (CalendarDate cd : runtimeSorted) {
+      cd.getDifferenceInMsecs(firstDate);
+    }
+    return result;
   }
 
   public int getSize() {
@@ -39,11 +49,20 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public String getUnit() {
-    return null;
+    return "secs since "+firstDate.toString();
+  }
+
+  @Override
+  public String getName() {
+    return "reftime";
   }
 
   public int getCode() {
     return 0;
+  }
+
+  public CalendarDate getFirstDate() {
+    return firstDate;
   }
 
   public List<? extends Object> getValues() {

@@ -115,6 +115,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   static public boolean makeIndex(MCollection dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     File indexFile = builder.gc.getIndexFile();
+    errlog.format("Using index file %s%n", indexFile.getAbsolutePath());
     boolean ok = builder.createIndex(indexFile, errlog);
     builder.gc.close();
     return ok;
@@ -203,7 +204,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   private boolean readIndex(RandomAccessFile indexRaf) throws IOException {
     FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
     try {
-      gc = Grib2CollectionBuilderFromIndex.createFromIndex(this.name, this.directory, indexRaf, config, logger);
+      gc = Grib2CollectionBuilderFromIndex.readFromIndex(this.name, this.directory, indexRaf, config, logger);
       return true;
     } catch (IOException ioe) {
       return false;
@@ -497,7 +498,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
     b.setCdmHash(vb.cdmHash);
     SparseArray<Grib2Record> sa = vb.coordND.getSparseArray();
-    for (int size : sa.getSize())
+    for (int size : sa.getShape())
       b.addSize(size);
     for (int track : sa.getTrack())
       b.addTrack(track);
