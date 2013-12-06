@@ -48,7 +48,7 @@ import java.util.*;
 
 /**
  * Turn a collection of Grib2Records into a rectangular array
- * Helper class for Grib2CollectionBuilder2.
+ * Helper class for Grib2CollectionBuilder.
  *
  * @author caron
  * @since 11/26/2013
@@ -175,6 +175,10 @@ public class Grib2Rectilyser {
       coordMap.put(this.coords.get(i), i);
     }
 
+
+    int tot_used = 0;
+    int tot_dups = 0;
+
     // redo the variables against the shared coordinates (at the moment this is just possibly runtime
     for (VariableBag vb : gribvars) {
       vb.coordIndex = new ArrayList<>();
@@ -187,240 +191,18 @@ public class Grib2Rectilyser {
         vb.coordIndex.add(coordMap.get(coord)); // index into rect.coords
       }
 
+      tot_used += vb.coordND.getSparseArray().countNotMissing();
+      tot_dups += vb.coordND.getSparseArray().getNduplicates();
      }
-
-    int tot_used = 0;
-    int tot_dups = 0;
-
-    /* for each variable, create recordMap, which maps index (time, ens, vert) -> Grib2Record
-    for (VariableBag vb : gribvars) {
-      TimeCoord tc = timeCoords.get(vb.timeCoordIndex);
-      VertCoord vc = (vb.vertCoordIndex < 0) ? null : vertCoords.get(vb.vertCoordIndex);
-      EnsCoord ec = (vb.ensCoordIndex < 0) ? null : ensCoords.get(vb.ensCoordIndex);
-
-      int ntimes = tc.getSize();
-      int nverts = (vc == null) ? 1 : vc.getSize();
-      int nens = (ec == null) ? 1 : ec.getSize();
-      vb.recordMap = new RecordMap(ntimes,nverts,nens); // LOOK wrong
-
-      for (Record r : vb.atomList) {
-        int timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord);
-        if (timeIdx < 0) {
-          timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord); // debug
-          info.format("Cant find time coord %s%n", r.tcCoord);
-          throw new IllegalStateException("Cant find time coord " + r.tcCoord);
-        }
-
-        int vertIdx = (vb.vertCoordIndex < 0) ? 0 : vc.findIdx(r.vcCoord);
-        if (vertIdx < 0) {
-          vertIdx = vc.findIdx(r.vcCoord); // debug
-          info.format("Cant find vert coord %s%n", r.vcCoord);
-          throw new IllegalStateException("Cant find vert coord " + r.vcCoord);
-        }
-
-        int ensIdx = (vb.ensCoordIndex < 0) ? 0 : ec.findIdx(r.ecCoord);
-        if (ensIdx < 0) {
-          ensIdx = ec.findIdx(r.ecCoord); // debug
-          info.format("Cant find ens coord %s%n", r.ecCoord);
-          throw new IllegalStateException("Cant find ens coord " + r.ecCoord);
-        }
-
-        // later records overwrite earlier ones with same index. so atomList must be ordered
-        int index = GribCollection.calcIndex(timeIdx, ensIdx, vertIdx, nens, nverts);
-        if (vb.recordMap[index] != null) tot_dups++; else tot_used++;
-        vb.recordMap[index] = r;
-      }
-      counter.recordsTotal += vb.recordMap.length;
-
-      //System.out.printf("%d: recordMap %d = records %d - dups %d (%d)%n", vb.first.cdmVariableHash(),
-      //        vb.recordMap.length, vb.atomList.size(), dups, vb.atomList.size() - vb.recordMap.length);
-    }  */
 
     counter.recordsUnique += tot_used;
     counter.dups += tot_dups;
     counter.vars += gribvars.size();
   }
 
- /* public class Record {
-    public Grib2Record gr;
-    int tcCoord;
-    TimeCoord.TinvDate tcIntvCoord;
-    VertCoord.Level vcCoord;
-    EnsCoord.Coord ecCoord;
 
-    private Record(Grib2Record gr) {
-      this.gr = gr;
-    }
-  }
-
-  private VertCoord makeVertCoord(VariableBag vb) {
-    Grib2Pds pdsFirst = vb.first.getPDS();
-    VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
-    boolean isLayer = Grib2Utils.isLayer(pdsFirst);
-
-    Set<VertCoord.Level> coords = new HashSet<>();
-
-    for (Record r : vb.atomList) {
-      Grib2Pds pds = r.gr.getPDS();
-      boolean hasLevel2 = pds.getLevelType2() != GribNumbers.MISSING;
-      double level2val =  hasLevel2 ?  pds.getLevelValue2() :  GribNumbers.UNDEFINEDD;
-      r.vcCoord = new VertCoord.Level(pds.getLevelValue1(), level2val);
-      coords.add(r.vcCoord);
-    }
-
-    List<VertCoord.Level> vlist = new ArrayList<>(coords);
-    Collections.sort(vlist);
-    if (!vertUnit.isPositiveUp())
-      Collections.reverse(vlist);
-
-    return new VertCoord(vlist, vertUnit, isLayer);
-  }
-
-
-  private EnsCoord makeEnsCoord(VariableBag vb) {
-    if (!vb.first.getPDS().isEnsemble()) return null;
-
-    Set<EnsCoord.Coord> coords = new HashSet<EnsCoord.Coord>();
-    for (Record r : vb.atomList) {
-      Grib2Pds.PdsEnsemble pds = (Grib2Pds.PdsEnsemble) r.gr.getPDS();
-      r.ecCoord = new EnsCoord.Coord(pds.getPerturbationType(), pds.getPerturbationNumber());
-      coords.add(r.ecCoord);
-    }
-    List<EnsCoord.Coord> elist = new ArrayList<EnsCoord.Coord>(coords);
-    Collections.sort(elist);
-    return new EnsCoord(elist);
-  }
-
-  private CalendarPeriod convertTimeDuration(int timeUnit) {
-    return Grib2Utils.getCalendarPeriod( cust.convertTimeUnit(timeUnit));
-  }
-
-  private void setTimeUnit(VariableBag vb) {
-    Record first = vb.atomList.get(0);
-    Grib2Pds pds = first.gr.getPDS();
-    int unit = cust.convertTimeUnit(pds.getTimeUnit());
-    vb.timeUnit = Grib2Utils.getCalendarPeriod(unit);
-  }
-
-  /**
-   * check if refDate and timeUnit is the same for all atoms.
-   * set vb refDate, timeUnit fields as side effect. if not true, refDate is earliest
-   *
-   * @param vb check this collection
-   * @return true if refDate, timeUnit are the same for all records
-   *
-  private boolean checkTimeCoordsUniform(VariableBag vb) {
-    boolean isUniform = true;
-    CalendarDate refDate = null;
-    int timeUnit = -1;
-    boolean timeUnitOk = true;
-
-    for (Record r : vb.atomList) {
-      Grib2Pds pds = r.gr.getPDS();
-      int unit = cust.convertTimeUnit(pds.getTimeUnit());
-      if (timeUnit < 0) { // first one
-        timeUnit = unit;
-      } else if (unit != timeUnit) {
-        isUniform = false;
-      }
-
-      CalendarDate cd = r.gr.getReferenceDate();
-      if (refDate == null) {
-        refDate = cd;
-
-      } else if (!cd.equals(refDate)) {
-        isUniform = false;
-        if (cd.compareTo(refDate) < 0) // earliest one
-          refDate = cd;
-      }
-
-      // LOOK - cant you just compare time units ??
-      int time = pds.getForecastTime();
-      CalendarDate date1 = cd.add(Grib2Utils.getCalendarPeriod(unit).multiply(time));  // actual forecast date
-      int offset = TimeCoord.getOffset(refDate, date1, vb.timeUnit);
-      CalendarDate date2 = refDate.add(vb.timeUnit.multiply(offset));  // forecast date using offset
-      if (!date1.equals(date2)) {
-        timeUnitOk = false;
-      }
-    }
-
-    // drop down to minutes if the time unit in the grib record is not accurate
-    if (!timeUnitOk)
-      timeUnit = 0; // minutes
-
-    vb.timeUnit = Grib2Utils.getCalendarPeriod(timeUnit);
-    vb.refDate = refDate;
-    return isUniform;
-  }
-
-  private TimeCoord makeTimeCoords(VariableBag vb, boolean uniform) {
-    Set<Integer> times = new HashSet<Integer>();
-    for (Record r : vb.atomList) {
-      Grib2Pds pds = r.gr.getPDS();
-      int time = pds.getForecastTime();
-      CalendarPeriod duration = convertTimeDuration(pds.getTimeUnit());
-
-      if (uniform) {
-        r.tcCoord = time;
-      } else {
-        CalendarDate refDate = r.gr.getReferenceDate();
-        CalendarDate date = refDate.add(duration.multiply(time));
-        r.tcCoord = TimeCoord.getOffset(vb.refDate, date, vb.timeUnit);
-      }
-      times.add(r.tcCoord);
-    }
-    List<Integer> tlist = new ArrayList<Integer>(times);
-    Collections.sort(tlist);
-    return new TimeCoord(0, vb.refDate, vb.timeUnit, tlist);
-  }
-
-  private TimeCoord makeTimeCoordsIntv(VariableBag vb) {
-    int timeIntvCode = 999; // just for documentation in the time coord attribute
-    Map<Integer, TimeCoord.TinvDate> times = new HashMap<Integer, TimeCoord.TinvDate>();
-    for (Record r : vb.atomList) {
-      Grib2Pds pds = r.gr.getPDS();
-      if (timeIntvCode == 999) timeIntvCode = pds.getStatisticalProcessType();
-      TimeCoord.TinvDate mine = cust.getForecastTimeInterval(r.gr);
-      TimeCoord.TinvDate org = times.get(mine.hashCode());
-      if (org == null) times.put(mine.hashCode(), mine);
-      r.tcIntvCoord = (org == null) ? mine : org; // always point to the one thats in the HashMap
-    }
-
-     /* if (uniform) {
-        r.tcIntvCoord = org;
-        times.add(r.tcIntvCoord);
-
-      } else {
-        int timeUnit = cust.convertTimeUnit(pds.getTimeUnit());
-        CalendarPeriod fromUnit = Grib2Utils.getCalendarPeriod(timeUnit);
-        r.tcIntvCoord = org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit); // LOOK heres the magic
-        times.add(r.tcIntvCoord);
-      }
-    } *
-    List<TimeCoord.TinvDate> tlist = new ArrayList<TimeCoord.TinvDate>(times.values());
-    Collections.sort(tlist);
-    return new TimeCoord(timeIntvCode, vb.refDate, vb.timeUnit, tlist);
-  } */
 
   public void showInfo(Formatter f, Grib2Customizer tables) {
-    /* f.format("%nTime Coordinates%n");
-    for (int i = 0; i < timeCoords.size(); i++) {
-      TimeCoord time = timeCoords.get(i);
-      f.format("  %d: (%d) %s%n", i, time.getSize(), time);
-    }
-
-    f.format("%nVert Coordinates%n");
-    for (int i = 0; i < vertCoords.size(); i++) {
-      VertCoord coord = vertCoords.get(i);
-      f.format("  %d: (%d) %s%n", i, coord.getSize(), coord);
-    }
-
-    f.format("%nEns Coordinates%n");
-    for (int i = 0; i < ensCoords.size(); i++) {
-      EnsCoord coord = ensCoords.get(i);
-      f.format("  %d: (%d) %s%n", i, coord.getSize(), coord);
-    }  */
-
     //f.format("%nVariables%n");
     //f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
     Counter all = new Counter();
@@ -446,7 +228,6 @@ public class Grib2Rectilyser {
     public List<Integer> coordIndex;
     long pos;
     int length;
-
 
     private VariableBag(Grib2Record first, int cdmHash) {
       this.first = first;

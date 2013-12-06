@@ -390,10 +390,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
     logger.debug(" createIndex for {}", indexFile.getPath());
 
-    RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw");
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    try {
+    try (RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw")) {
       //// header message
+      raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
       raf.writeInt(version);
       long lenPos = raf.getFilePointer();
@@ -471,9 +470,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       logger.debug("  write GribCollectionIndex= {} bytes", b.length);
 
     } finally {
-      logger.debug("  file size =  {} bytes", raf.length());
-      if (raf != null) raf.close();
-
       // remove it on failure
       if (deleteOnClose && !indexFile.delete())
         logger.error(" gc2 cant deleteOnClose index file {}", indexFile.getPath());
@@ -523,20 +519,19 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   /*
-  message Group {
-    optional int32 predefinedGds = 1;   // predefined GDS code, defined by center
-    optional bytes gds = 2;             // all variables in the group use the same GDS
-    optional sint32 gdsHash = 3 [default = 0];
-    optional string name = 4;         // only when user overrides default name
+message Group {
+  optional bytes gds = 1;             // all variables in the group use the same GDS
+  optional sint32 gdsHash = 2 [default = 0];
+  optional string nameOverride = 3;         // only when user overrides default name
 
-    repeated Variable variables = 5;    // list of variables
-    repeated Coord coords = 6;          // list of coordinates
-    repeated Parameter params = 7;      // group attributes  used ??
-    repeated int32 fileno = 8;          // the component files that are in this group, index into gc.files
+  repeated Variable variables = 4;    // list of variables
+  repeated Coord coords = 5;          // list of coordinates
+  repeated Parameter params = 6;      // group attributes  used ??
+  repeated int32 fileno = 7;          // the component files that are in this group, index into gc.files
 
-    // partitions
-    repeated TimeCoordUnion timeCoordUnions = 9; // partitions only
-  }
+  // partitions
+  repeated TimeCoordUnion timeCoordUnions = 10; // partitions only
+}
    */
   private GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
@@ -574,21 +569,21 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   /*
-  message Variable {
-    required uint32 discipline = 9;
-    required bytes pds = 1;
-    required fixed32 cdmHash = 2;
+message Variable {
+  required uint32 discipline = 1;
+  required bytes pds = 2;
+  required fixed32 cdmHash = 3;
 
-    required uint64 recordsPos = 3;  // offset of SparseArray message for this Variable
-    required uint32 recordsLen = 4;  // size of SparseArray message for this Variable (could be in stream instead)
+  required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
+  required uint32 recordsLen = 5;  // size of SparseArray message for this Variable (could be in stream instead)
 
-    repeated uint32 coordIdx = 5;    // index into Group.coords
+  repeated uint32 coordIdx = 6;    // index into Group.coords
 
-    // partitions
-    repeated uint32 groupno = 6;
-    repeated uint32 varno = 7;
-    repeated int32 flag = 8;
-  }
+  // partitions
+  repeated uint32 groupno = 10;
+  repeated uint32 varno = 11;
+  repeated int32 flag = 12;
+}
    */
   private GribCollectionProto.Variable writeVariableProto(Grib2Rectilyser rect, Grib2Rectilyser.VariableBag vb) throws IOException {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();

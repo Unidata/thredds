@@ -44,12 +44,6 @@ public class CollectionList extends CollectionAbstract {
     super(collectionName, logger);
   }
 
-
-  @Override
-  public String getRoot() {
-    return null;
-  }
-
   @Override
   public Iterable<MFile> getFilesSorted() {
     return mfiles;

@@ -124,6 +124,7 @@ public class ToolsUI extends JPanel {
   private BufrCdmIndexPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmrFeature cdmremotePanel;
+  private CdmIndex2Panel cdmIndex2Panel;
   private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
   private CoveragePanel coveragePanel;
@@ -265,6 +266,7 @@ public class ToolsUI extends JPanel {
     // nested-2 tab - grib
     gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
     gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
+    gribTabPane.addTab("CdmIndex2", new JLabel("CdmIndex2"));
     gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
     gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
     gribTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
@@ -432,6 +434,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("CdmIndex")) {
       gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
       c = gribCdmIndexPanel;
+
+    } else if (title.equals("CdmIndex2")) {
+      cdmIndex2Panel = new CdmIndex2Panel((PreferencesExt) mainPrefs.node("cdmIdx2"));
+      c = cdmIndex2Panel;
 
     } else if (title.equals("GribIndex")) {
       gribIdxPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
@@ -931,6 +937,7 @@ public class ToolsUI extends JPanel {
     if (cdmremotePanel != null) cdmremotePanel.save();
     if (dirPartPanel != null) dirPartPanel.save();
     if (bufrCdmIndexPanel != null) bufrCdmIndexPanel.save();
+    if (cdmIndex2Panel != null) cdmIndex2Panel.save();
     if (gribCdmIndexPanel != null) gribCdmIndexPanel.save();
     if (fmrcCollectionPanel != null) fmrcCollectionPanel.save();
     if (fcPanel != null) fcPanel.save();
@@ -2686,22 +2693,6 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(aggButton);
 
-      /* AbstractButton agg2Button = BAMutil.makeButtcon("V3", "Run Rectilyser2", false);
-      agg2Button.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
-          try {
-            gribTable.runAggregator2(f);
-          } catch (IOException e1) {
-            e1.printStackTrace();
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-        }
-      });
-      buttPanel.add(agg2Button);
-
       AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
       writeButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -2716,7 +2707,7 @@ public class ToolsUI extends JPanel {
           detailWindow.show();
         }
       });
-      buttPanel.add(writeButton);  */
+      buttPanel.add(writeButton);
     }
 
     void setCollection(String collection) {
@@ -2933,6 +2924,59 @@ public class ToolsUI extends JPanel {
 
     void save() {
       gribTable.save();
+      super.save();
+    }
+
+  }
+
+    /////////////////////////////////////////////////////////////////////
+  private class CdmIndex2Panel extends OpPanel {
+    ucar.nc2.ui.CdmIndex2Panel indexPanel;
+
+    void closeOpenFiles() throws IOException {
+      indexPanel.closeOpenFiles();
+    }
+
+      CdmIndex2Panel(PreferencesExt p) {
+      super(p, "index file:", true, false);
+        indexPanel = new ucar.nc2.ui.CdmIndex2Panel(prefs, buttPanel);
+        indexPanel.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("openGrib2Collection")) {
+            String collectionName = (String) e.getNewValue();
+            openGrib2Collection(collectionName);
+          }
+        }
+      });
+
+      add(indexPanel, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        indexPanel.setIndexFile(Paths.get(command), null);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      indexPanel.save();
       super.save();
     }
 

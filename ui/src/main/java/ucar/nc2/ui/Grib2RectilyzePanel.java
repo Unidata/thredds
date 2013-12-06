@@ -5,6 +5,9 @@ import thredds.inventory.*;
 import ucar.arr.Coordinate;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.Grib2CollectionBuilder;
+import ucar.nc2.grib.collection.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -424,6 +427,7 @@ public class Grib2RectilyzePanel extends JPanel {
 
     record2BeanTable.clearBeans();
     coordTable.clearBeans();
+    allCoordTable.clearBeans();
   }
 
   public void showCollection(Formatter f) {
@@ -461,50 +465,12 @@ public class Grib2RectilyzePanel extends JPanel {
   }
 
 
-  /* public void showGDSuse(Formatter f) {
+  public boolean writeIndex(Formatter f) throws IOException {
+    if (dcm == null) return false;
 
-    Map<Integer, Gds2Bean> gdsMap = new HashMap<Integer, Gds2Bean>();
-    Map<Integer, Set<Integer>> fileMap = new HashMap<Integer, Set<Integer>>();
-    List<Gds2Bean> beans = gds2Table.getBeans();
-    for (Gds2Bean gdsBean : beans) {
-      fileMap.put(gdsBean.getGDShash(), new TreeSet<Integer>());
-      gdsMap.put(gdsBean.getGDShash(), gdsBean);
-      f.format("<gdsName hash='%d' groupName='%s'/>%n", gdsBean.getGDShash(), gdsBean.getGroupName());
-    }
-    f.format("%n");
-
-    for (Object o : param2BeanTable.getBeans()) {
-      Grib2ParameterBean p = (Grib2ParameterBean) o;
-      Set<Integer> files = fileMap.get(p.getGDS());
-      for (Grib2RecordBean r : p.getRecordBeans())
-        files.add(r.gr.getFile());
-    }
-
-    for (Integer key : fileMap.keySet()) {
-      Gds2Bean gds = gdsMap.get(key);
-      Set<Integer> files = fileMap.get(key);
-      Iterator<Integer> iter = files.iterator();
-      f.format("%nGDS %d == %s%n", key, gds);
-      while (iter.hasNext()) {
-        int fileno = iter.next();
-        f.format(" %3d = %s%n", fileno, fileList.get(fileno).getPath());
-      }
-    }
-
-
-    f.format("%n%n");
-    for (Integer key : fileMap.keySet()) {
-      Gds2Bean gds = gdsMap.get(key);
-      Set<Integer> files = fileMap.get(key);
-      Iterator<Integer> iter = files.iterator();
-      f.format("%nGDS %d == %s%n", key, gds);
-      while (iter.hasNext()) {
-        int fileno = iter.next();
-        f.format(" %3d = %s%n", fileno, fileList.get(fileno).getPath());
-      }
-    }
-
-  }   */
+    ucar.nc2.grib.collection.Grib2CollectionBuilder.makeIndex(dcm, f, logger);
+    return true;
+  }
 
   public void checkProblems(Formatter f) {
     //checkDuplicates(f);

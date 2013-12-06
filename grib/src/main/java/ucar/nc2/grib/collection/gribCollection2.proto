@@ -39,7 +39,7 @@ message Variable {
 message Coord {
   required int32 type = 1;   // Coordinate.Type.oridinal
   required int32 code = 2;   // time unit; level type
-  required string unit = 3;
+  optional string unit = 3;
   repeated float values = 4;
   repeated float bound = 5; // only used if interval, then = (value, bound)
   repeated int64 msecs = 6; // calendar date

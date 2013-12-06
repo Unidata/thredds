@@ -32,6 +32,9 @@
 
 package thredds.inventory;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * A CollectionManager consisting of a single file
  *
@@ -41,18 +44,13 @@ package thredds.inventory;
 public class CollectionSingleFile extends CollectionList {
 
   public CollectionSingleFile(MFile file, org.slf4j.Logger logger) {
-    super(file.getPath(), logger);
+    super(file.getName(), logger);
     mfiles.add(file);
-  }
-
-  @Override
-  public String getRoot() {
-    int pos = collectionName.lastIndexOf("/");
-    if (pos >=0)
-      return collectionName.substring(0,pos);
-
-    // otherwise it must be a path reletive to working directory
-    return System.getProperty("user.dir");
+    Path p = Paths.get(file.getPath());
+    if (p.getParent() != null)
+      this.root = p.getParent().toString();
+    else
+      this.root = System.getProperty("user.dir");
   }
 
 }

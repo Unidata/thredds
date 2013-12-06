@@ -4,13 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
+import ucar.arr.Coordinate;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2Gds;
-import ucar.nc2.grib.grib2.Grib2Pds;
-import ucar.nc2.grib.grib2.Grib2SectionGridDefinition;
-import ucar.nc2.grib.grib2.Grib2SectionProductDefinition;
+import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 
@@ -168,8 +167,22 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     // NOOP
   }
 
+    /*
+message Group {
+  optional bytes gds = 1;             // all variables in the group use the same GDS
+  optional sint32 gdsHash = 2 [default = 0];
+  optional string nameOverride = 3;         // only when user overrides default name
+
+  repeated Variable variables = 4;    // list of variables
+  repeated Coord coords = 5;          // list of coordinates
+  repeated Parameter params = 6;      // group attributes  used ??
+  repeated int32 fileno = 7;          // the component files that are in this group, index into gc.files
+
+  // partitions
+  repeated TimeCoordUnion timeCoordUnions = 10; // partitions only
+}
+   */
   GribCollection.GroupHcs readGroup(GribCollectionProto.Group p, GribCollection.GroupHcs group) throws IOException {
-    //System.out.printf("Grib2CollectionBuilderFromIndex readGroup %d%n", groupno++);
 
     byte[] rawGds = p.getGds().toByteArray();
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
@@ -180,23 +193,10 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     group.varIndex = new ArrayList<>();
     for (int i = 0; i < p.getVariablesCount(); i++)
       group.varIndex.add( readVariable(p.getVariables(i), group));
-    // Collections.sort(group.varIndex);
 
     group.coords = new ArrayList<>();
-    //for (int i = 0; i < p.getCoordsCount(); i++)
-    //   group.coords.add( readCoord(p.getCoords(i), group));
-
-    /* group.timeCoords = new ArrayList<TimeCoord>(p.getTimeCoordsCount());
-    for (int i = 0; i < p.getTimeCoordsCount(); i++)
-      group.timeCoords.add(readTimeCoord(p.getTimeCoords(i)));
-
-    group.vertCoords = new ArrayList<VertCoord>(p.getVertCoordsCount());
-    for (int i = 0; i < p.getVertCoordsCount(); i++)
-      group.vertCoords.add(readVertCoord(p.getVertCoords(i)));
-
-    group.ensCoords = new ArrayList<EnsCoord>(p.getEnsCoordsCount());
-    for (int i = 0; i < p.getEnsCoordsCount(); i++)
-      group.ensCoords.add(readEnsCoord(p.getEnsCoords(i))); */
+    for (int i = 0; i < p.getCoordsCount(); i++)
+       group.coords.add( readCoord(p.getCoords(i)));
 
     group.filenose = new int[p.getFilenoCount()];
     for (int i = 0; i < p.getFilenoCount(); i++)
@@ -229,37 +229,74 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     return new Parameter(pp.getName(), vals);
   }
 
-  /* private TimeCoord readTimeCoord(GribCollectionProto.Coord pc) throws IOException {
-    if (pc.getBoundCount() > 0) {  // its an interval
-      List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
-      for (int i = 0; i < pc.getValuesCount(); i++)
-        coords.add(new TimeCoord.Tinv((int) pc.getValues(i), (int) pc.getBound(i)));
-      TimeCoord tc = new TimeCoord(pc.getCode(), pc.getUnit(), coords);
-      return tc.setIndex(pc.getIndex());
-    } else {
-      List<Integer> coords = new ArrayList<Integer>(pc.getValuesCount());
-      for (float value : pc.getValuesList())
-        coords.add((int) value);
-      TimeCoord tc = new TimeCoord(pc.getCode(), pc.getUnit(), coords);
-      return tc.setIndex(pc.getIndex());
+    /*
+  message Coord {
+    required int32 type = 1;   // Coordinate.Type.oridinal
+    required int32 code = 2;   // time unit; level type
+    required string unit = 3;
+    repeated float values = 4;
+    repeated float bound = 5; // only used if interval, then = (value, bound)
+    repeated int64 msecs = 6; // calendar date
+  }
+   */
+  private Coordinate readCoord(GribCollectionProto.Coord pc) throws IOException {
+    int typei = pc.getType();
+    int code = pc.getCode();
+    String unit = pc.hasUnit() ? pc.getUnit() : null;
+    Coordinate.Type type = Coordinate.Type.values()[typei];
+    switch (type) {
+      case runtime:
+        List<CalendarDate> dates = new ArrayList<>(pc.getMsecsCount());
+        for (Long msec : pc.getMsecsList())
+          dates.add(CalendarDate.of(msec));
+        return new CoordinateRuntime(dates);
+
+      case time:
+        List<Integer> offs = new ArrayList<>(pc.getValuesCount());
+        for (float val : pc.getValuesList())
+          offs.add((int) val);
+        return new CoordinateTime(offs, code);
+
+      case timeIntv:
+        List<TimeCoord.Tinv> tinvs = new ArrayList<>(pc.getValuesCount());
+        for (int i=0; i<pc.getValuesCount(); i++) {
+          int val1 = (int) pc.getValues(i);
+          int val2 = (int) pc.getBound(i);
+          tinvs.add( new TimeCoord.Tinv(val1, val2));
+        }
+        return new CoordinateTimeIntv(tinvs, code);
+
+      case vert:
+        VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(code);
+        boolean isLayer = vertUnit.isLayer();
+        List<VertCoord.Level> levels = new ArrayList<>(pc.getValuesCount());
+        for (int i=0; i<pc.getValuesCount(); i++) {
+          double val1 = pc.getValues(i);
+          double val2 =  isLayer ? pc.getBound(i) : GribNumbers.UNDEFINEDD;
+          levels.add( new VertCoord.Level(val1, val2, isLayer));
+        }
+        return new CoordinateVert(levels, code);
     }
+    throw new IllegalStateException("Unknow Coordinate type = "+type);
   }
 
-  private VertCoord readVertCoord(GribCollectionProto.Coord pc) throws IOException {
-    boolean isLayer = (pc.getBoundCount() > 0);
-    List<VertCoord.Level> coords = new ArrayList<VertCoord.Level>(pc.getValuesCount());
-    for (int i = 0; i < pc.getValuesCount(); i++)
-      coords.add(new VertCoord.Level(pc.getValues(i), isLayer ? pc.getBound(i) : 0));
-    return new VertCoord(pc.getCode(), coords, isLayer);
-  }
+    /*
+message Variable {
+  required uint32 discipline = 1;
+  required bytes pds = 2;
+  required fixed32 cdmHash = 3;
 
-  private EnsCoord readEnsCoord(GribCollectionProto.Coord pc) throws IOException {
-    List<EnsCoord.Coord> coords = new ArrayList<EnsCoord.Coord>(pc.getValuesCount());
-    for (int i = 0; i < pc.getValuesCount(); i += 2)
-      coords.add(new EnsCoord.Coord((int) pc.getValues(i), (int) pc.getValues(i + 1)));
-    return new EnsCoord(coords);
-  }  */
+  required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
+  required uint32 recordsLen = 5;  // size of SparseArray message for this Variable (could be in stream instead)
 
+  repeated uint32 coordIdx = 6;    // index into Group.coords
+
+  // partitions
+  repeated uint32 groupno = 10;
+  repeated uint32 varno = 11;
+  repeated int32 flag = 12;
+}
+   */
   protected GribCollection.VariableIndex readVariable(GribCollectionProto.Variable pv, GribCollection.GroupHcs group) {
     byte[] rawPds = pv.getPds().toByteArray();
     Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
@@ -270,8 +307,8 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       e.printStackTrace();  // cant happen
     }
 
-    int cdmHash = pv.getCdmHash();
     int discipline = pv.getDiscipline();
+    int cdmHash = pv.getCdmHash();
     long recordsPos = pv.getRecordsPos();
     int recordsLen = pv.getRecordsLen();
     List<Integer> index = pv.getCoordIdxList();

@@ -46,9 +46,9 @@ public abstract class CollectionAbstract implements MCollection {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   protected String collectionName;
+  protected String root;
   protected final org.slf4j.Logger logger;
 
-  protected TimeDuration recheck;
   protected FeatureCollectionConfig.ProtoChoice protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;  // default
 
   protected Map<String, Object> auxInfo; // lazy init
@@ -74,6 +74,12 @@ public abstract class CollectionAbstract implements MCollection {
   @Override
   public String getCollectionName() {
     return collectionName;
+  }
+
+
+  @Override
+  public String getRoot() {
+    return root;
   }
 
   @Override
