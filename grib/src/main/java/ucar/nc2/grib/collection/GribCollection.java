@@ -40,7 +40,7 @@ import java.util.*;
  * @since 12/1/13
  */
 public abstract class GribCollection implements FileCacheable, AutoCloseable {
-  public static final String NCX_IDX = ".ncx2";
+  public static final String NCX_IDX2 = ".ncx2";
   public static final long MISSING_RECORD = -1;
 
   //////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   static public File getIndexFile(MCollection dcm) {
-    File idxFile = new File(new File(dcm.getRoot()), dcm.getCollectionName() + NCX_IDX);
+    File idxFile = new File(new File(dcm.getRoot()), dcm.getCollectionName() + NCX_IDX2);
     return getIndexFile(idxFile.getPath());
   }
 
@@ -322,7 +322,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   public File getIndexFile() {
     if (indexFile == null) {
       String nameNoBlanks = StringUtil2.replace(name, ' ', "_");
-      File f = new File(directory, nameNoBlanks + NCX_IDX);
+      File f = new File(directory, nameNoBlanks + NCX_IDX2);
       indexFile = getDiskCache2().getFile(f.getPath()); // diskCcahe manages where the index file lives
     }
     return indexFile;
@@ -330,7 +330,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
 
   static public File getIndexFile(String collectionName, File directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    File f = new File(directory, nameNoBlanks + NCX_IDX);
+    File f = new File(directory, nameNoBlanks + NCX_IDX2);
     return getDiskCache2().getFile(f.getPath()); // diskCache manages where the index file lives
   }
 
@@ -514,10 +514,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     private String id, description;
     public List<VariableIndex> varIndex;   // GribCollection.VariableIndex
     public List<Coordinate> coords;
-    /* public List<TimeCoord> timeCoords;
-    public List<VertCoord> vertCoords;
-    public List<EnsCoord> ensCoords;  */
     public int[] filenose;
+
     public List<TimeCoordUnion> timeCoordPartitions; // used only for time partitions - DO NOT USE
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash) {
@@ -638,9 +636,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int cdmHash, int discipline,
-                                                        Grib2Pds pds, List<Integer> index, long recordsPos, int recordsLen) {
+         byte[] rawPds, Grib2Pds pds, List<Integer> index, long recordsPos, int recordsLen) {
 
-    int category = pds.getParameterCategory();
+    /* int category = pds.getParameterCategory();
     int parameter = pds.getParameterNumber();
     int levelType = pds.getLevelType1();
     boolean isLayer = Grib2Utils.isLayer(pds);
@@ -664,58 +662,94 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       probType = pdsProb.getProbabilityType();
     }
 
-    int genType = pds.getGenProcessType(); // LOOK why gc genProcessType  ?
+    int genType = pds.getGenProcessType(); // LOOK why gc genProcessType  ?   */
 
-    return new VariableIndex(g, -1, discipline, category, parameter, levelType, isLayer,
-            intvType, intvName, ensDerivedType, probType, probName, genProcessType, cdmHash,
-            index, recordsPos, recordsLen);
+    return new VariableIndex(g, -1, discipline, rawPds, pds, cdmHash, index, recordsPos, recordsLen);
   }
 
 
   public class VariableIndex implements Comparable<VariableIndex> {
-    public final int tableVersion; // grib1 : can vary by variable
-    public final int discipline, category, parameter, levelType, intvType, ensDerivedType, probType;  // uniquely identifies the variable
-    public final String intvName;                                                                     // uniquely identifies the variable
-    public final String probabilityName;                                                              // uniquely identifies the variable
-    public final boolean isLayer;                                                                     // uniquely identifies the variable
-    public final int genProcessType;
-    public final int cdmHash;         // unique hashCode
-
-    public List<Integer> coordIndex;   // index into group.coords
+    public final GroupHcs group;     // belongs to this group
+    public final int tableVersion;   // grib1 : can vary by variable
+    public final int discipline;     // grib2
+    public final byte[] rawPds;      // grib1 or grib2
+    public final int cdmHash;
     public final long recordsPos;     // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
-    public final GroupHcs group;     // belongs to this group
 
     public SparseArray<Record> sa; // lazy read
+    public List<Integer> coordIndex;   // index into group.coords
+
+    public int partTimeCoordIdx; // partition time coordinate index
+
+    // derived from pds
+    public int category, parameter, levelType, intvType, ensDerivedType, probType;
+    private String intvName;                                                                     // uniquely identifies the variable
+    public String probabilityName;                                                              // uniquely identifies the variable
+    public boolean isLayer;                                                                     // uniquely identifies the variable
+    public int genProcessType;
+
 
     /* obsolete ??
     public int ntimes, nverts, nens;           // time, vert and ens coordinate lengths
     public Record[] records;                   // Record[ntimes*nverts*nens] - lazy init  */
 
-    public int partTimeCoordIdx; // partition time coordinate index
 
-    public VariableIndex(GroupHcs g, int tableVersion,
-                         int discipline, int category, int parameter, int levelType, boolean isLayer,
-                         int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
-                         int genProcessType,
+    public VariableIndex(GroupHcs g, int tableVersion, int discipline, byte[] rawPds, Grib2Pds pds,
                          int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
       this.group = g;
       this.tableVersion = tableVersion;
       this.discipline = discipline;
-      this.category = category;
-      this.parameter = parameter;
-      this.levelType = levelType;
-      this.isLayer = isLayer;
-      this.intvType = intvType;
-      this.intvName = intvName;
-      this.ensDerivedType = ensDerivedType;
-      this.probabilityName = probabilityName;
-      this.probType = probType;
-      this.genProcessType = genProcessType;
+      this.rawPds = rawPds;
       this.cdmHash = cdmHash;
       this.coordIndex = index;
       this.recordsPos = recordsPos;
       this.recordsLen = recordsLen;
+
+      // quantities that are stored in the pds
+      this.category = pds.getParameterCategory();
+      this.parameter = pds.getParameterNumber();
+      this.levelType = pds.getLevelType1();
+      this.intvType = pds.getStatisticalProcessType();
+      this.isLayer = Grib2Utils.isLayer(pds);
+
+      this.ensDerivedType = -1;
+       if (pds.isEnsembleDerived()) {
+         Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
+         ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
+       }
+
+      this.probType = -1;
+      this.probabilityName = null;
+       if (pds.isProbability()) {
+         Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+         probabilityName = pdsProb.getProbabilityName();
+         probType = pdsProb.getProbabilityType();
+       }
+
+       this.genProcessType = pds.getGenProcessType();
+    }
+
+    protected VariableIndex( VariableIndex other) {
+      this.group = other.group;
+      this.tableVersion = other.tableVersion;
+      this.discipline = other.discipline;
+      this.rawPds = other.rawPds;
+      this.cdmHash = other.cdmHash;
+      this.coordIndex = other.coordIndex;
+      this.recordsPos = other.recordsPos;
+      this.recordsLen = other.recordsLen;
+
+      this.category = other.category;
+      this.parameter = other.parameter;
+      this.levelType = other.levelType;
+      this.intvType = other.intvType;
+      this.isLayer = other.isLayer;
+      //this.intvName = other.intvName;
+      this.ensDerivedType = other.ensDerivedType;
+      this.probabilityName = other.probabilityName;
+      this.probType = other.probType;
+      this.genProcessType = other.genProcessType;
     }
 
     public List<Coordinate> getCoordinates() {
@@ -725,6 +759,20 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       return result;
     }
 
+    public Coordinate getCoordinate(Coordinate.Type want) {
+      for (int idx : coordIndex)
+        if(group.coords.get(idx).getType() == want)
+          return group.coords.get(idx);
+      return null;
+    }
+
+    public String getTimeIntvName() {
+      if (intvName != null) return intvName;
+      CoordinateTimeIntv timeiCoord = (CoordinateTimeIntv) getCoordinate(Coordinate.Type.timeIntv);
+      if (timeiCoord != null) return null;
+      intvName = timeiCoord.getTimeIntervalName();
+      return intvName;
+    }
 
     /////////////////////////////
     public String id() {
@@ -748,12 +796,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       sb.append(", isLayer=").append(isLayer);
       sb.append(", genProcessType=").append(genProcessType);
       sb.append(", cdmHash=").append(cdmHash);
-      //sb.append(", timeIdx=").append(timeIdx);
-      //sb.append(", vertIdx=").append(vertIdx);
-      //sb.append(", ensIdx=").append(ensIdx);
-      //sb.append(", ntimes=").append(ntimes);
-      //sb.append(", nverts=").append(nverts);
-      //sb.append(", nens=").append(nens);
       sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
       sb.append('}');
       return sb.toString();
@@ -774,16 +816,9 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       sb.append(", probabilityName='").append(probabilityName).append('\'');
       sb.append(", isLayer=").append(isLayer);
       sb.append(", cdmHash=").append(cdmHash);
-      //sb.append(", timeIdx=").append(timeIdx);
-      //sb.append(", vertIdx=").append(vertIdx);
-      //sb.append(", ensIdx=").append(ensIdx);
       sb.append(", recordsPos=").append(recordsPos);
       sb.append(", recordsLen=").append(recordsLen);
       sb.append(", group=").append(group.getId());
-      //sb.append(", ntimes=").append(ntimes);
-      //sb.append(", nverts=").append(nverts);
-      //sb.append(", nens=").append(nens);
-      //sb.append(", records=").append(records == null ? "null" : Arrays.asList(records).toString());
       sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
       sb.append('}');
       return sb.toString();
@@ -792,7 +827,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public String toStringShort() {
       Formatter sb = new Formatter();
       sb.format("Variable {%d-%d-%d", discipline, category, parameter);
-      // if (vertIdx>=0) sb.format(" level=%d", vertIdx);
+      sb.format(", levelType=%d", levelType);
+      sb.format(", intvType=%d", intvType);
       if (intvName != null && intvName.length() > 0) sb.format(" intv=%s", intvName);
       if (probabilityName != null && probabilityName.length() > 0) sb.format(" prob=%s", probabilityName);
       sb.format(" cdmHash=%d}", cdmHash);

@@ -43,8 +43,8 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
   ////////////////////////////////////////////////////////////////
 
-  private GribCollection gc;
-  private Grib2Customizer tables; // only gets created in makeAggGroups
+  protected GribCollection gc;
+  protected Grib2Customizer tables; // only gets created in makeAggGroups
 
   protected Grib2CollectionBuilderFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) {
     super(null, false, logger);
@@ -250,8 +250,8 @@ message Group {
         map.put(shortName, 0);
       } else {
         countName++;
-        shortName = shortName + countName;
         map.put(shortName, countName);
+        shortName = shortName + countName;
       }
 
       vc.setName(shortName);
@@ -348,6 +348,7 @@ message Variable {
       pds = pdss.getPDS();
     } catch (IOException e) {
       e.printStackTrace();  // cant happen
+      logger.error("failed to read PDS");
     }
 
     int discipline = pv.getDiscipline();
@@ -356,11 +357,11 @@ message Variable {
     int recordsLen = pv.getRecordsLen();
     List<Integer> index = pv.getCoordIdxList();
 
-    return gc.makeVariableIndex(group, cdmHash, discipline, pds, index, recordsPos, recordsLen);
+    return gc.makeVariableIndex(group, cdmHash, discipline, rawPds, pds, index, recordsPos, recordsLen);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  static private final Logger logger = LoggerFactory.getLogger(Grib2CollectionBuilderFromIndex.class);
+ // static private final Logger logger = LoggerFactory.getLogger(Grib2CollectionBuilderFromIndex.class);
 
   /*
   private static GribCollection doOne(File dir, String filename, FeatureCollectionConfig config) throws IOException {

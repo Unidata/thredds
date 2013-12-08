@@ -2652,9 +2652,19 @@ public class ToolsUI extends JPanel {
     }
 
     Grib2RectilyzePanel(PreferencesExt p) {
-      super(p, "collection:", true, false);
+      super(p, "collection:", false, false);
       gribTable = new ucar.nc2.ui.Grib2RectilyzePanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
+
+      AbstractAction fileAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          String filename = fileChooser.chooseFilename();
+          if (filename == null) return;
+          cb.setSelectedItem("file:"+filename);
+        }
+      };
+      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
+      BAMutil.addActionToContainer(buttPanel, fileAction);
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {

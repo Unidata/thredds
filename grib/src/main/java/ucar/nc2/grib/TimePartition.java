@@ -56,7 +56,6 @@ import java.util.*;
  * @since 4/17/11
  */
 public abstract class TimePartition extends GribCollection {
-  // static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
   static public final byte VERT_COORDS_DIFFER = 1;
   static public final byte ENS_COORDS_DIFFER = 2;
 

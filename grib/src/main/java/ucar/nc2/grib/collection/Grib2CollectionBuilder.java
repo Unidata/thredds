@@ -35,6 +35,7 @@ package ucar.nc2.grib.collection;
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
+import thredds.inventory.partition.PartitionManager;
 import ucar.arr.Coordinate;
 import ucar.arr.Counter;
 import ucar.arr.SparseArray;
@@ -147,6 +148,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       logger.error("Failed to index single file", e);
       throw new IOException(e);
     }
+  }
+
+  // for Grib2PartitionBuilder
+  protected Grib2CollectionBuilder(PartitionManager tpc, org.slf4j.Logger logger) {
+    super(tpc, false, logger);
   }
 
   private Grib2CollectionBuilder(MCollection dcm, org.slf4j.Logger logger) {
@@ -273,8 +279,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       while (iter.hasNext()) {
         MFile mfile = iter.next();
         Grib2Index index;
-        try {                  // LOOK here is where gbx9 files get recreated
-          index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, !isSingleFile, mfile, config, CollectionManager.Force.test, logger);
+        try {                  // LOOK here is where gbx9 files get recreated; do not make collection index
+          index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, false, mfile, config, CollectionManager.Force.test, logger);
           allFiles.add(mfile);  // add on success
 
         } catch (IOException ioe) {
@@ -542,8 +548,9 @@ message Group {
     b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
     b.setGdsHash(g.gdsHash);
 
-    for (Grib2Rectilyser.VariableBag vb : g.rect.getGribvars())
-      b.addVariables(writeVariableProto(g.rect, vb));
+    for (Grib2Rectilyser.VariableBag vbag : g.rect.getGribvars()) {
+      b.addVariables(writeVariableProto( vbag));
+    }
 
     int count = 0;
     for (Coordinate coord : g.rect.getCoordinates()) {
@@ -586,7 +593,7 @@ message Variable {
   repeated int32 flag = 12;
 }
    */
-  private GribCollectionProto.Variable writeVariableProto(Grib2Rectilyser rect, Grib2Rectilyser.VariableBag vb) throws IOException {
+  private GribCollectionProto.Variable writeVariableProto(Grib2Rectilyser.VariableBag vb) throws IOException {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
 
     b.setDiscipline(vb.first.getDiscipline());

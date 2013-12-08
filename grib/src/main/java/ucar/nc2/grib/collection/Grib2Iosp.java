@@ -95,8 +95,9 @@ public class Grib2Iosp extends GribIosp {
       if (vindex.isLayer) f.format("_layer");
     }
 
-    if (vindex.intvName != null && !vindex.intvName.isEmpty()) {
-      f.format("_%s", vindex.intvName);
+    String intvName = vindex.getTimeIntvName();
+    if (intvName != null && !intvName.isEmpty()) {
+      f.format("_%s", intvName);
     }
 
     if (vindex.intvType >= 0) {
@@ -181,11 +182,12 @@ public class Grib2Iosp extends GribIosp {
       if (vindex.isLayer) f.format("_layer");
     }
 
-    if (vindex.intvName != null  && !vindex.intvName.isEmpty()) {
-      if (vindex.intvName.equals("Mixed_intervals"))
+    String intvName = vindex.getTimeIntvName();
+    if (intvName != null  && !intvName.isEmpty()) {
+      if (intvName.equals("Mixed_intervals"))
         f.format("_Imixed");
       else
-        f.format("_I%s", vindex.intvName);
+        f.format("_I%s", intvName);
     }
 
     if (vindex.intvType >= 0) {
@@ -217,11 +219,13 @@ public class Grib2Iosp extends GribIosp {
     else
       f.format("%s", gp.getName());
 
-    if (vindex.intvType >= 0 && vindex.intvName != null && !vindex.intvName.isEmpty()) {
+    String vintvName = vindex.getTimeIntvName();
+    if (vindex.intvType >= 0 && vintvName != null && !vintvName.isEmpty()) {
       String intvName = cust.getIntervalNameShort(vindex.intvType);
-      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getIntervalNameShort(vindex.intvType);
-      if (intvName == null) f.format(" (%s)", vindex.intvName);
-      else f.format(" (%s %s)", vindex.intvName, intvName);
+      if (intvName == null || intvName.equalsIgnoreCase("Missing"))
+        intvName = cust.getIntervalNameShort(vindex.intvType);
+      if (intvName == null) f.format(" (%s)", vintvName);
+      else f.format(" (%s %s)", vintvName, intvName);
 
     } else if (vindex.intvType >= 0) {
       String intvName = cust.getIntervalNameShort(vindex.intvType);
@@ -261,11 +265,11 @@ public class Grib2Iosp extends GribIosp {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  //private Grib2TimePartition timePartition;
+  private Grib2Partition gribPartition;
   private GribCollection gribCollection;
   private Grib2Customizer cust;
   private GribCollection.GroupHcs gHcs;
-  private boolean isTimePartitioned;
+  private boolean isPartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
 
   // accept grib2 or ncx files
@@ -276,7 +280,7 @@ public class Grib2Iosp extends GribIosp {
     raf.readFully(b);
     String magic = new String(b);
     if (magic.equals(Grib2CollectionBuilder.MAGIC_START)) return true;
-    //if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START)) return true;  // so must be same length as Grib2CollectionBuilder.MAGIC_START
+    if (magic.equals(Grib2PartitionBuilder.MAGIC_START)) return true;  // so must be same length as Grib2CollectionBuilder.MAGIC_START
 
     // check for GRIB2 file
     return Grib2RecordScanner.isValidFile(raf);
@@ -318,18 +322,18 @@ public class Grib2Iosp extends GribIosp {
 
     if (gHcs != null) { // just use the one group that was set in the constructor
       this.gribCollection = gHcs.getGribCollection();
-      /* if (this.gribCollection instanceof Grib2TimePartition) {
-        isTimePartitioned = true;
-        timePartition = (Grib2TimePartition) gribCollection;
-      } */
+      if (this.gribCollection instanceof Grib2Partition) {
+        isPartitioned = true;
+        gribPartition = (Grib2Partition) gribCollection;
+      }
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
       addGroup(ncfile, gHcs, false);
 
     } else if (gribCollection != null) { // use the gribCollection that was set in the constructor
-      /* if (this.gribCollection instanceof Grib2TimePartition) {
-        isTimePartitioned = true;
-        timePartition = (Grib2TimePartition) gribCollection;
-      } */
+      if (this.gribCollection instanceof Grib2Partition) {
+        isPartitioned = true;
+        gribPartition = (Grib2Partition) gribCollection;
+      }
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
       List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
@@ -344,23 +348,23 @@ public class Grib2Iosp extends GribIosp {
       byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.length()];
       raf.readFully(b);
       String magic = new String(b);
-      isTimePartitioned = false; // magic.equals(Grib2TimePartitionBuilder.MAGIC_START);
+      isPartitioned = magic.equals(Grib2PartitionBuilder.MAGIC_START);
 
       String location = raf.getLocation();
       File f = new File(location);
       int pos = f.getName().lastIndexOf(".");
       String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName();
 
-      /* if (isTimePartitioned) {
-        timePartition = Grib2TimePartitionBuilderFromIndex.createTimePartitionFromIndex(name, null, raf, null, logger);
-        gribCollection = timePartition;
-      } else { */
+      if (isPartitioned) {
+        gribPartition = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, null, raf, null, logger);
+        gribCollection = gribPartition;
+      } else {
         gribCollection = Grib2CollectionBuilderFromIndex.readFromIndex(name, null, raf, gribConfig, logger);
-      // }
+      }
 
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
-      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
+      List<GribCollection.GroupHcs> groups = new ArrayList<>(gribCollection.getGroups());
       Collections.sort(groups);
       boolean useGroups = groups.size() > 1;
       for (GribCollection.GroupHcs g : groups)
@@ -552,15 +556,18 @@ public class Grib2Iosp extends GribIosp {
 
       if (vindex.levelType != GribNumbers.MISSING)
         v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
-      if ( vindex.intvName != null && vindex.intvName.length() != 0)
-        v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
+      String intvName = vindex.getTimeIntvName();
+      if ( intvName != null && intvName.length() != 0)
+        v.addAttribute(new Attribute(CDM.TIME_INTERVAL, intvName));
       if (vindex.intvType >= 0) {
         v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", vindex.intvType));
-        /* GribStatType statType = cust.getStatType(vindex.intvType);   // LOOK find the time coordinate
+        GribStatType statType = cust.getStatType(vindex.intvType);   // LOOK find the time coordinate
         if (statType != null) {
           CF.CellMethods cm = GribStatType.getCFCellMethod( statType);
-          if (cm != null) v.addAttribute(new Attribute("cell_methods", tcName + ": " + cm.toString()));
-        } */
+          Coordinate timeCoord = vindex.getCoordinate(Coordinate.Type.timeIntv);
+          if (cm != null && timeCoord != null)
+            v.addAttribute(new Attribute("cell_methods", timeCoord.getName() + ": " + cm.toString()));
+        }
       }
       if (vindex.ensDerivedType >= 0)
         v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.ensDerivedType));
@@ -759,9 +766,9 @@ public class Grib2Iosp extends GribIosp {
     long start = System.currentTimeMillis();
 
     Array result;
-    /* if (isTimePartitioned)
-      result = readDataFromPartition(v2, section);
-    else  */
+    if (isPartitioned)
+      result = readDataFromPartition(v2, section, null);
+    else
       result = readDataFromCollection(v2, section, null);
 
     long took = System.currentTimeMillis() - start;
@@ -776,149 +783,15 @@ public class Grib2Iosp extends GribIosp {
 
     long start = System.currentTimeMillis();
 
-    //if (isTimePartitioned)
-   //   result = streamDataFromPartition(v2, section, channel);
-    //else
-    readDataFromCollection(v2, section, channel);
+    /* if (isPartitioned)
+      streamDataFromPartition(v2, section, channel);
+    else */
+      readDataFromCollection(v2, section, channel);
 
     long took = System.currentTimeMillis() - start;
     if (debugTime) System.out.println("  read data took=" + took + " msec ");
     return 0;
   }
-
-  /* private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
-    TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject(); // the variable in the tp collection
-
-    // canonical order: time, ens, z, y, x
-    int rangeIdx = 0;
-    Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range ensRange = (vindexP.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range levRange = (vindexP.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range yRange = section.getRange(rangeIdx++);
-    Range xRange = section.getRange(rangeIdx);
-
-    DataReceiver dataReceiver = new DataReceiver(section, yRange, xRange);
-    DataReaderPartitioned dataReader = new DataReaderPartitioned();
-
-    TimeCoordUnion timeCoordP = (TimeCoordUnion) vindexP.getTimeCoord();
-
-    // collect all the records from this partition that need to be read
-    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
-
-      TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
-      int partno = val.getPartition();
-      GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the variable in this partition
-
-      for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
-        for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
-
-          // where does this record go in the result ??
-          int resultIndex = GribCollection.calcIndex(timeRange.index(timeIdx), ensRange.index(ensIdx), levRange.index(levelIdx),
-                  ensRange.length(), levRange.length());
-
-          // where does this record come from ??
-          int recordIndex = -1;
-
-          int flag = vindexP.flag[partno]; // see if theres a mismatch with vert or ens coordinates
-          if (flag == 0) { // no problem
-            recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
-          } else {  // problem - must match coordinates
-            recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, flag, vindex.getEnsCoord(), vindex.getVertCoord(),
-                    vindexP.getEnsCoord(), vindexP.getVertCoord());
-          }
-
-          if (recordIndex >= 0)  {
-            if (recordIndex < vindex.records.length)  {
-              GribCollection.Record record = vindex.records[recordIndex];
-              dataReader.addRecord(vindex, partno, record.fileno, record.pos, record.bmsPos, resultIndex);  // add this record to be read
-
-            } else {
-              Formatter f = new Formatter();
-              f.format("recordIndex=%d size=%d%n", recordIndex,  vindex.records.length);
-              if (flag == 0) f.format("time=%d, ens=%d, level=%d, nens=%d, nverts=%d", val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
-              else  f.format("time=%d, ens=%d, level=%d, flag=%d, nens=%s, vert=%s ensp=%s, vertp=%s", val.getIndex(), ensIdx, levelIdx, flag,
-                      vindex.getEnsCoord(), vindex.getVertCoord(), vindexP.getEnsCoord(), vindexP.getVertCoord());
-
-              logger.error("recordIndex out of bounds: "+f.toString());
-            }
-          }
-        }
-      }
-    }
-
-    // sort by file and position, then read
-    dataReader.read(dataReceiver);
-
-    // close partitions as needed
-    vindexP.cleanup();
-
-    return dataReceiver.getArray();
-  }
-
-  private class DataReaderPartitioned {
-    List<DataRecord> records = new ArrayList<DataRecord>();
-
-    private DataReaderPartitioned() {
-    }
-
-    void addRecord(GribCollection.VariableIndex vindex, int partno, int fileno, long drsPos, long bmsPos, int resultIndex) {
-      records.add(new DataRecord(partno, vindex, resultIndex, fileno, drsPos, bmsPos));
-    }
-
-    void read(DataReceiver dataReceiver) throws IOException {
-      Collections.sort(records);
-
-      int currPartno = -1;
-      int currFile = -1;
-      RandomAccessFile rafData = null;
-      for (DataRecord dr : records) {
-        if (dr.partno != currPartno || dr.fileno != currFile) {
-          if (rafData != null) rafData.close();
-          rafData = timePartition.getRaf(dr.partno, dr.fileno);
-          currFile = dr.fileno;
-          currPartno = dr.partno;
-        }
-
-        if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
-
-        if (debugRead) { // for validation
-          show( Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
-        }
-
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, dr.vindex.group.hcs.gdsNumberPoints, dr.vindex.group.hcs.scanMode,
-                dr.vindex.group.hcs.nxRaw,  dr.vindex.group.hcs.nyRaw, dr.vindex.group.hcs.nptsInLine);
-        dataReceiver.addData(data, dr.resultIndex, dr.vindex.group.hcs.nx);
-      }
-      if (rafData != null) rafData.close();
-    }
-
-    private class DataRecord implements Comparable<DataRecord> {
-      int partno; // partition index
-      GribCollection.VariableIndex vindex; // the vindex of the partition
-      int resultIndex; // where does this record go in the result array?
-      int fileno;
-      long drsPos;
-      long bmsPos;  // if non zero, use alernate bms
-
-      DataRecord(int partno, GribCollection.VariableIndex vindex, int resultIndex, int fileno, long drsPos, long bmsPos) {
-        this.partno = partno;
-        this.vindex = vindex;
-        this.resultIndex = resultIndex;
-        this.fileno = fileno;
-        this.drsPos = (drsPos == 0) ? GribCollection.MISSING_RECORD : drsPos; // 0 also means missing in Grib2
-        this.bmsPos = bmsPos;
-      }
-
-      @Override
-      public int compareTo(DataRecord o) {
-        int r = Misc.compare(partno, o.partno);
-        if (r != 0) return r;
-        r = Misc.compare(fileno, o.fileno);
-        if (r != 0) return r;
-        return Misc.compare(drsPos, o.drsPos);
-      }
-    }
-  }  */
 
 ///////////////////////////////////////////////////////
 
@@ -942,7 +815,7 @@ public class Grib2Iosp extends GribIosp {
      // collect all the records that need to be read
     int count = 0;
     while (iter.hasNext()) {
-      int sourceIndex = iter.next(null);      // may be wrong. needs to be the index in the result array, size of section
+      int sourceIndex = iter.next(null);
       dataReader.addRecord(sourceIndex, count++);
     }
 
@@ -954,7 +827,7 @@ public class Grib2Iosp extends GribIosp {
 
   private class DataReader {
     GribCollection.VariableIndex vindex;
-    List<DataRecord> records = new ArrayList<DataRecord>();
+    List<DataRecord> records = new ArrayList<>();
 
     private DataReader(GribCollection.VariableIndex vindex) {
       this.vindex = vindex;
@@ -1098,6 +971,194 @@ public class Grib2Iosp extends GribIosp {
        gr.getPDS().show(f);
        System.out.printf("%nGrib2Record.readData at drsPos %d = %s%n", pos, f.toString());
      }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
+  private Array readDataFromPartition(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
+    PartitionCollection.VariableIndexPartitioned vindexP = (PartitionCollection.VariableIndexPartitioned) v.getSPobject(); // the variable in the tp collection
+
+    // first time, read records and keep in memory
+    vindexP.readRecords(); // ?? needed
+
+    int sectionLen = section.getRank();
+    Range timeRange = section.getRange(0);   // for the moment, assume always partitioned on runtime
+    Section otherSection = section.subSection(1, sectionLen-2); // all but x, y
+    Range yRange = section.getRange(sectionLen-2);
+    Range xRange = section.getRange(sectionLen-1);
+
+    DataReaderPartitioned dataReader = new DataReaderPartitioned();
+
+    TimeCoordUnion timeCoordP = (TimeCoordUnion) vindexP.getTimeCoord();
+
+    // collect all the records from this partition that need to be read
+    int resultPos = 0;
+    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
+      TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
+      int partno = val.getPartition();
+      GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the variable in this partition
+
+      int[] otherShape = new int[sectionLen-2];
+      System.arraycopy(vindex.sa.getShape(), 0, otherShape, 0, sectionLen-2);
+      Section.Iterator iter = otherSection.getIterator(otherShape);
+
+       // collect all the records that need to be read
+      while (iter.hasNext()) {
+        int sourceIndex = iter.next(null);
+        dataReader.addRecord(partno, vindex, sourceIndex, resultPos++);
+      }
+    }
+
+    // sort by file and position, then read
+        // sort by file and position, then read
+    DataReceiverIF dataReceiver = channel == null ? new DataReceiver(section, yRange, xRange) : new ChannelReceiver(channel, yRange, xRange);
+    dataReader.read(dataReceiver);
+
+    // close partitions as needed
+    vindexP.cleanup();
+
+    return dataReceiver.getArray();
+  }
+
+  /* private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
+    PartitionCollection.VariableIndexPartitioned vindexP = (PartitionCollection.VariableIndexPartitioned) v2.getSPobject(); // the variable in the tp collection
+
+    // canonical order: time, ens, z, y, x
+    int rangeIdx = 0;
+    Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range ensRange = (vindexP.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range levRange = (vindexP.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range yRange = section.getRange(rangeIdx++);
+    Range xRange = section.getRange(rangeIdx);
+
+    DataReceiver dataReceiver = new DataReceiver(section, yRange, xRange);
+    DataReaderPartitioned dataReader = new DataReaderPartitioned();
+
+    TimeCoordUnion timeCoordP = (TimeCoordUnion) vindexP.getTimeCoord();
+
+    // collect all the records from this partition that need to be read
+    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
+
+      TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
+      int partno = val.getPartition();
+      GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the variable in this partition
+
+      for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
+        for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
+
+          // where does this record go in the result ??
+          int resultIndex = GribCollection.calcIndex(timeRange.index(timeIdx), ensRange.index(ensIdx), levRange.index(levelIdx),
+                  ensRange.length(), levRange.length());
+
+          // where does this record come from ??
+          int recordIndex = -1;
+
+          int flag = vindexP.flag[partno]; // see if theres a mismatch with vert or ens coordinates
+          if (flag == 0) { // no problem
+            recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
+          } else {  // problem - must match coordinates
+            recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, flag, vindex.getEnsCoord(), vindex.getVertCoord(),
+                    vindexP.getEnsCoord(), vindexP.getVertCoord());
+          }
+
+          if (recordIndex >= 0)  {
+            if (recordIndex < vindex.records.length)  {
+              GribCollection.Record record = vindex.records[recordIndex];
+              dataReader.addRecord(vindex, partno, record.fileno, record.pos, record.bmsPos, resultIndex);  // add this record to be read
+
+            } else {
+              Formatter f = new Formatter();
+              f.format("recordIndex=%d size=%d%n", recordIndex,  vindex.records.length);
+              if (flag == 0) f.format("time=%d, ens=%d, level=%d, nens=%d, nverts=%d", val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
+              else  f.format("time=%d, ens=%d, level=%d, flag=%d, nens=%s, vert=%s ensp=%s, vertp=%s", val.getIndex(), ensIdx, levelIdx, flag,
+                      vindex.getEnsCoord(), vindex.getVertCoord(), vindexP.getEnsCoord(), vindexP.getVertCoord());
+
+              logger.error("recordIndex out of bounds: "+f.toString());
+            }
+          }
+        }
+      }
+    }
+
+    // sort by file and position, then read
+    dataReader.read(dataReceiver);
+
+    // close partitions as needed
+    vindexP.cleanup();
+
+    return dataReceiver.getArray();
+  } */
+
+  private class DataReaderPartitioned {
+    List<DataRecord> records = new ArrayList<>();
+
+    private DataReaderPartitioned() {
+    }
+
+    void addRecord(int partno, GribCollection.VariableIndex vindex, int sourceIndex, int resultIndex) {
+      GribCollection.Record record = vindex.sa.getContent(sourceIndex);
+      if (record != null)
+        records.add(new DataRecord(partno, vindex, resultIndex, record.fileno, record.pos, record.bmsPos));
+    }
+
+
+    //void addRecord(GribCollection.VariableIndex vindex, int partno, int fileno, long drsPos, long bmsPos, int resultIndex) {
+    //  records.add(new DataRecord(partno, vindex, resultIndex, fileno, drsPos, bmsPos));
+    //}
+
+    void read(DataReceiverIF dataReceiver) throws IOException {
+      Collections.sort(records);
+
+      int currPartno = -1;
+      int currFile = -1;
+      RandomAccessFile rafData = null;
+      for (DataRecord dr : records) {
+        if (dr.partno != currPartno || dr.fileno != currFile) {
+          if (rafData != null) rafData.close();
+          rafData = gribPartition.getRaf(dr.partno, dr.fileno);
+          currFile = dr.fileno;
+          currPartno = dr.partno;
+        }
+
+        if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
+
+        if (debugRead) { // for validation
+          show( Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
+        }
+
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, dr.vindex.group.hcs.gdsNumberPoints, dr.vindex.group.hcs.scanMode,
+                dr.vindex.group.hcs.nxRaw,  dr.vindex.group.hcs.nyRaw, dr.vindex.group.hcs.nptsInLine);
+        dataReceiver.addData(data, dr.resultIndex, dr.vindex.group.hcs.nx);
+      }
+      if (rafData != null) rafData.close();
+    }
+
+    private class DataRecord implements Comparable<DataRecord> {
+      int partno; // partition index
+      GribCollection.VariableIndex vindex; // the vindex of the partition
+      int resultIndex; // where does this record go in the result array?
+      int fileno;
+      long drsPos;
+      long bmsPos;  // if non zero, use alernate bms
+
+      DataRecord(int partno, GribCollection.VariableIndex vindex, int resultIndex, int fileno, long drsPos, long bmsPos) {
+        this.partno = partno;
+        this.vindex = vindex;
+        this.resultIndex = resultIndex;
+        this.fileno = fileno;
+        this.drsPos = (drsPos == 0) ? GribCollection.MISSING_RECORD : drsPos; // 0 also means missing in Grib2
+        this.bmsPos = bmsPos;
+      }
+
+      @Override
+      public int compareTo(DataRecord o) {
+        int r = Misc.compare(partno, o.partno);
+        if (r != 0) return r;
+        r = Misc.compare(fileno, o.fileno);
+        if (r != 0) return r;
+        return Misc.compare(drsPos, o.drsPos);
+      }
+    }
   }
 
 }

@@ -83,6 +83,30 @@ public class CoordinateTimeIntv implements Coordinate {
     else
       this.period = timeUnit.getField().toString();
   }
+
+  public String getTimeIntervalName() {
+
+    // are they the same length ?
+    int firstValue = -1;
+    boolean same = true;
+    for (TimeCoord.Tinv tinv : timeIntervals) {
+      int value = (tinv.getBounds2() - tinv.getBounds1());
+      if (firstValue < 0) firstValue = value;
+      else if (value != firstValue) same = false;
+    }
+
+    if (same) {
+      firstValue = (int) (firstValue * getTimeUnitScale());
+      return firstValue + "_" + timeUnit.getField().toString();
+    } else {
+      return "Mixed_intervals";
+    }
+  }
+
+  public double getTimeUnitScale() {
+     return timeUnit.getValue();
+   }
+
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s Tinv:", indent, getType());

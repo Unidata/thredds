@@ -115,13 +115,11 @@ public class Grib2Index extends GribIndex {
   public boolean readIndex(String filename, long gribLastModified, CollectionManager.Force force) throws IOException {
 
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
-      if (!idxFile.exists()) return false;
+    if (!idxFile.exists()) return false;
     long idxModified = idxFile.lastModified();
     if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
-    FileInputStream fin = new FileInputStream(idxFile);
-
-    try {
+    try (FileInputStream fin = new FileInputStream(idxFile)) {
         //// check header is ok
         if (!NcStream.readAndTest(fin, MAGIC_START.getBytes())) {
           logger.info("Bad magic number of grib index on file= {}", idxFile);
@@ -169,10 +167,6 @@ public class Grib2Index extends GribIndex {
     } catch (IOException e) {
       logger.error("GribIndex failed on " + filename, e);
       return false;
-
-    } finally {
-      if (fin != null)
-        fin.close();
     }
 
     return true;
@@ -219,10 +213,11 @@ public class Grib2Index extends GribIndex {
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
     File idxFileTmp = GribCollection.getIndexFile(filename + GBX9_IDX +".tmp");
-    FileOutputStream fout = new FileOutputStream(idxFileTmp);
+
+    boolean ok = false;
     RandomAccessFile raf = null;
 
-    try {
+    try (FileOutputStream fout = new FileOutputStream(idxFileTmp)) {
       //// header message
       fout.write(MAGIC_START.getBytes(CDM.utf8Charset));
       NcStream.writeVInt(fout, version);
@@ -261,19 +256,22 @@ public class Grib2Index extends GribIndex {
       NcStream.writeVInt(fout, b.length); // message size
       fout.write(b);  // message  - all in one gulp
       logger.debug("  made gbx9 index for {} size={}", filename, b.length);
+
+      ok = true;
       return true;
 
     } finally {
-      fout.close();
       if (raf != null) raf.close(); // only close if we opened it
 
-      // now switch
-      boolean deleteOk = !idxFile.exists() || idxFile.delete();
-      boolean renameOk = idxFileTmp.renameTo(idxFile);
-      if (!deleteOk)
-        logger.error("  could not delete Grib2Index= {}", idxFile.getPath());
-      if (!renameOk)
-        logger.error("  could not rename Grib2Index= {}", idxFile.getPath());
+      // now switch; fout has been closed
+      if (ok) {
+        boolean deleteOk = !idxFile.exists() || idxFile.delete();
+        boolean renameOk = idxFileTmp.renameTo(idxFile);
+        if (!deleteOk)
+          logger.error("  could not delete Grib2Index= {}", idxFile.getPath());
+        if (!renameOk)
+          logger.error("  could not rename Grib2Index= {}", idxFile.getPath());
+      }
     }
   }
 
