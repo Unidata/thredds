@@ -163,14 +163,14 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
     // check consistency across vert and ens coords
     // also replace variables  in canonGc with partitioned variables
     // partition index is used - do not resort partitions
-    if (!comparePartitions(canon, f)) {
+    /* if (!comparePartitions(canon, f)) {
       f.format(" ERR Partition check failed, index not written on %s%n", tp.getName());
       logger.error(" Partition check failed, index not written on {} errors = \n{}", tp.getName(), f.toString());
       return false;
-    }
+    }  */
 
     // make the time coordinates, place results into canon
-    createPartitionedTimeCoordinates(canon.gc, f);
+    //createPartitionedTimeCoordinates(canon.gc, f);
 
     // ready to write the index file
     writeIndex(canon.gc, f);
@@ -209,7 +209,7 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
     }
   }   */
 
-  // consistency check on variables : compare each variable to corresponding one in proto
+  /* consistency check on variables : compare each variable to corresponding one in proto
   // also set the groupno and partno for each partition
   private boolean comparePartitions(PartitionCollection.Partition canon, Formatter f) throws IOException {
     List<PartitionCollection.Partition> partitions = tp.getPartitions();
@@ -323,7 +323,7 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
     } else {
       return false;
     }
-  }
+  }   */
 
   private class PartGroup {
     GribCollection.GroupHcs group;
@@ -335,7 +335,7 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
     }
   }
 
-  private boolean createPartitionedTimeCoordinates(GribCollection canonGc, Formatter f) throws IOException {
+  /* private boolean createPartitionedTimeCoordinates(GribCollection canonGc, Formatter f) throws IOException {
     List<PartitionCollection.Partition> partitions = tp.getPartitions();
     boolean ok = true;
 
@@ -405,14 +405,14 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
         f.format(" %s %d: timeIndexList=", firstGroup.hcs.getName(), tidx);
         for (int idx : union.) f.format("%d,",idx);
         f.format("%n");
-      } */
+      }
 
       // store results in first group
       canonGroup.timeCoordPartitions = unionList;
     }
 
     return ok;
-  }
+  } */
 
   //////////////////////////////////////////////////////////
 

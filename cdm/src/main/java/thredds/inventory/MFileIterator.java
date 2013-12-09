@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /**
- * Describe
+ * An iterator over MFiles, closeable so its a target for try-with-resource
  *
  * @author caron
  * @since 11/20/13

@@ -989,7 +989,7 @@ public class Grib2Iosp extends GribIosp {
 
     DataReaderPartitioned dataReader = new DataReaderPartitioned();
 
-    TimeCoordUnion timeCoordP = (TimeCoordUnion) vindexP.getTimeCoord();
+    TimeCoordUnion timeCoordP = null; // (TimeCoordUnion) vindexP.getTimeCoord(); LOOK
 
     // collect all the records from this partition that need to be read
     int resultPos = 0;

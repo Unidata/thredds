@@ -43,7 +43,7 @@ import java.util.List;
 /**
  * Manage collections of files that we can assign date ranges to.
  * Used by Composite Point Collections
- * A wrap of CollectionManager.
+ * A wrap of MCollection.
  *
  * @author caron
  * @since May 19, 2009

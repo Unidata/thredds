@@ -11,7 +11,7 @@ import java.util.*;
 
 /**
  * A Partition that uses directories to do the partitioning.
- * Intended for very large collections - must be careful to not scan more than one directory at a time.
+ * Intended for very large collections - does not scan more than one directory at a time.
  * May be a TimePartition or a collection of MFiles
  *
  * @author caron

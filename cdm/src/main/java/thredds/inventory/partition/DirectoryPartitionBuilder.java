@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * A Builder of Directory Partitions and Collections
- * Each DirectoryPartitionBuilder is associated with one directory, and one ncx index.
+ * Each DirectoryPartitionBuilder is associated with one directory, and one ncx2 index.
  * If there are subdirectories, these are children DirectoryPartitionBuilders.
  *
  * @author caron
@@ -49,41 +49,13 @@ public class DirectoryPartitionBuilder {
   private final String partitionName;      // partition name
   private final Path dir;                  // the directory
   private final FileTime dirLastModified;  // directory last modified
-  private Path index;                      // TimePartition index file (ncx with magic = TimePartition)
+  private Path index;                      // TimePartition index file (ncx2 with magic = TimePartition)
   private FileTime indexLastModified;      // index last modified
   private long indexSize;                  // index size
 
   private boolean childrenConstructed = false;
   private List<DirectoryPartitionBuilder> children = new ArrayList<>(25);
   private PartitionStatus partitionStatus = PartitionStatus.unknown;
-
-  /**
-   * The directory that the partition covers
-   * @return directory
-   */
-  public Path getDir() {
-    return dir;
-  }
-
-  /**
-   * The ncx file
-   * @return  ncx file path
-   */
-  public Path getIndex() {
-    return index;
-  }
-
-  /**
-   * May be null if constructChildren() was not called
-   * @return children directories
-   */
-  public List<DirectoryPartitionBuilder> getChildren() {
-    return children;
-  }
-
-  public String getPartitionName() {
-    return partitionName;
-  }
 
   public DirectoryPartitionBuilder(String topCollectionName, String dirFilename) throws IOException {
     this(topCollectionName, Paths.get(dirFilename), null);
@@ -227,7 +199,7 @@ public class DirectoryPartitionBuilder {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
-  // read teh list of files from the index
+  // read the list of files from the index
 
   public List<MFile> getFiles(IndexReader indexReader) throws IOException {
     List<MFile> result = new ArrayList<>(100);
@@ -238,6 +210,34 @@ public class DirectoryPartitionBuilder {
   }
 
   ////////////////////////////////////////////////////////
+
+  /**
+    * The directory that the partition covers
+    * @return directory
+    */
+   public Path getDir() {
+     return dir;
+   }
+
+   /**
+    * The ncx2 file
+    * @return  ncx2 file path
+    */
+   public Path getIndex() {
+     return index;
+   }
+
+   /**
+    * May be null if constructChildren() was not called
+    * @return children directories
+    */
+   public List<DirectoryPartitionBuilder> getChildren() {
+     return children;
+   }
+
+   public String getPartitionName() {
+     return partitionName;
+   }
 
   public void show(Formatter out) {
     out.format("Collection %s%n", partitionName);

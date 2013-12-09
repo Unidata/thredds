@@ -52,8 +52,6 @@ import java.util.*;
  * @author caron
  * @since Feb 24, 2010
  */
-
-
 public class NcmlCollectionReader {
   static public final Namespace ncNS = Namespace.getNamespace("nc", XMLEntityResolver.NJ22_NAMESPACE);
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
@@ -185,8 +183,4 @@ public class NcmlCollectionReader {
   public CollectionManager getCollectionManager() {
     return datasetManager;
   }
-
-  /* public DateExtractor getDateExtractor() {
-    return dateExtractor;
-  } */
 }

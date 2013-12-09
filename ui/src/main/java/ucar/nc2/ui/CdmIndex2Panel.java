@@ -4,6 +4,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.arr.Coordinate;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.collection.GribCdmIndex2;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.Grib2CollectionBuilderFromIndex;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -484,7 +485,7 @@ public class CdmIndex2Panel extends JPanel {
      }
 
      public String getIntvName() {
-       return v.intvName;
+       return v.getTimeIntvName();
      }
 
      public String getProbName() {

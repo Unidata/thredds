@@ -26,7 +26,7 @@ public class Grib2TimePartitionBuilderFromIndex extends Grib2CollectionBuilderFr
 
   // read in the index, index raf already open
   static public Grib2TimePartition createTimePartitionFromIndex(String name, File directory, RandomAccessFile raf,
-                                                                FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+                  FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilderFromIndex builder = new Grib2TimePartitionBuilderFromIndex(name, directory, config, logger);
     if (builder.readIndex(raf)) {
       return builder.tp;

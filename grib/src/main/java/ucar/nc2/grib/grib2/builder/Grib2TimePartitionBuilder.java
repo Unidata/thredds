@@ -58,7 +58,7 @@ import java.util.*;
  * @since 4/28/11
  */
 public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
-  public static final String MAGIC_START = "Grib2Partition0Index";
+  public static final String MAGIC_START = "Grib2Partition2Index";
   static private final boolean trace = false;
 
   // called by tdm

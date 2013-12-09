@@ -44,9 +44,9 @@ public interface IndexReader {
 
   /**
    * Read the MFiles from a GribCollection index file
-   * @param indexFile
-   * @param result
-   * @return true if indexFile is a GribCollection collection
+   * @param indexFile the Partition ncx index file to open
+   * @param result put results in this list
+   * @return true if indexFile is a GribCollection collection, and read ok
    */
   public boolean readMFiles(Path indexFile, List<MFile> result) throws IOException;
 

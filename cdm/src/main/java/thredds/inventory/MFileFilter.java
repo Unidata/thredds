@@ -43,7 +43,7 @@ public interface MFileFilter {
    * Tests if a specified MFile should be included in a file collection.
    *
    * @param mfile the MFile
-   * @return <code>true</code> if and only if the name should be
+   * @return <code>true</code> if and only if the mfile should be
    *         included in the file collection; <code>false</code> otherwise.
    */
   boolean accept(MFile mfile);
