@@ -18,16 +18,17 @@ import java.util.List;
 
 /**
  * A Builder of Directory Partitions and Collections
- * Each DirectoryPartitionBuilder is associated with one directory, and one ncx2 index.
+ * Each DirectoryBuilder is associated with one directory, and one ncx2 index.
+ * This may contain collections of files, or subdirectories.
  * If there are subdirectories, these are children DirectoryPartitionBuilders.
  *
  * @author caron
  * @since 11/10/13
  */
-public class DirectoryPartitionBuilder {
+public class DirectoryBuilder {
 
   static public MCollection factory(FeatureCollectionConfig config, Path topDir, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
-    DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(config.name, topDir.toString());
+    DirectoryBuilder builder = new DirectoryBuilder(config.name, topDir.toString());
 
     DirectoryPartition dpart = new DirectoryPartition(config, topDir, indexReader, logger);
     if (builder.isPartition(indexReader))  // its a partition
@@ -36,13 +37,14 @@ public class DirectoryPartitionBuilder {
     // its a collection
     boolean hasIndex = builder.findIndex();
     if (hasIndex)
-      return dpart.makeChildCollection(builder); // with an index
+      return dpart.makeChildCollection(builder);
     else
       return new DirectoryCollection(config.name, topDir, logger); // no index file
   }
 
-
   static private enum PartitionStatus {unknown, isPartition ,isGribCollection}
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
   private final boolean debug = true;
   private final String topCollectionName;  // collection name
@@ -54,21 +56,21 @@ public class DirectoryPartitionBuilder {
   private long indexSize;                  // index size
 
   private boolean childrenConstructed = false;
-  private List<DirectoryPartitionBuilder> children = new ArrayList<>(25);
+  private List<DirectoryBuilder> children = new ArrayList<>(25);
   private PartitionStatus partitionStatus = PartitionStatus.unknown;
 
-  public DirectoryPartitionBuilder(String topCollectionName, String dirFilename) throws IOException {
+  public DirectoryBuilder(String topCollectionName, String dirFilename) throws IOException {
     this(topCollectionName, Paths.get(dirFilename), null);
   }
 
   /**
-   * Create a DirectoryPartitionBuilder for the named directory
+   * Create a DirectoryBuilder for the named directory
    * @param topCollectionName  from config, name of the collection
    * @param dir covers this directory
    * @param attr file attributes, may be null
    * @throws IOException
    */
-  public DirectoryPartitionBuilder(String topCollectionName, Path dir, BasicFileAttributes attr) throws IOException {
+  public DirectoryBuilder(String topCollectionName, Path dir, BasicFileAttributes attr) throws IOException {
     this.topCollectionName = topCollectionName;
     this.dir = dir;
     this.partitionName = DirectoryCollection.makeCollectionName(topCollectionName, dir);
@@ -84,7 +86,7 @@ public class DirectoryPartitionBuilder {
   }
 
   /**
-   * Find the TimePartition index file (ncx with magic = TimePartition)
+   * Find the index file, using its canonical name
    * @return true if found
    * @throws IOException
    */
@@ -100,6 +102,12 @@ public class DirectoryPartitionBuilder {
     return false;
   }
 
+  /**
+   * Read the index file to find out if a partition or collection of files
+   * @param indexReader reads the index
+   * @return true if partition, false if file collection
+   * @throws IOException on IO error
+   */
   public boolean isPartition(IndexReader indexReader) throws IOException {
     if (partitionStatus == PartitionStatus.unknown) {
       if (index != null) {
@@ -117,7 +125,7 @@ public class DirectoryPartitionBuilder {
 
   /**
    * Find all children directories. Does not recurse.
-   * We seperate this from the constructor so it can be done on demand
+   * We separate this from the constructor so it can be done on demand
    *
    * Look for children by:
    * <ol>
@@ -129,7 +137,7 @@ public class DirectoryPartitionBuilder {
    * @return children, may be empty but not null
    * @throws IOException
    */
-  public List<DirectoryPartitionBuilder> constructChildren(IndexReader indexReader) throws IOException {
+  public List<DirectoryBuilder> constructChildren(IndexReader indexReader) throws IOException {
     if (childrenConstructed) return children;
 
     childrenConstructed = true;
@@ -150,18 +158,18 @@ public class DirectoryPartitionBuilder {
     return children;
   }
 
-  // add a child partition from the index file
+  // add a child partition from the index file (callback from constructChildren)
   // we dont know at this point if its another partition or a gribCollection
   private class AddChild implements IndexReader.AddChildCallback {
     public void addChild(String dirName, String indexFilename, long lastModified) throws IOException {
       Path indexPath = Paths.get(indexFilename);
-      DirectoryPartitionBuilder child = new DirectoryPartitionBuilder(topCollectionName, indexPath, lastModified);
+      DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified);
       children.add(child);
     }
   }
 
   // coming in from the index reader
-  private DirectoryPartitionBuilder(String topCollectionName, Path indexFile, long indexLastModified) throws IOException {
+  private DirectoryBuilder(String topCollectionName, Path indexFile, long indexLastModified) throws IOException {
     this.topCollectionName = topCollectionName;
     if (Files.exists(indexFile)) {
       this.index = indexFile;
@@ -188,7 +196,7 @@ public class DirectoryPartitionBuilder {
       for (Path p : ds) {
         BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
         if (attr.isDirectory()) {
-          children.add(new DirectoryPartitionBuilder(topCollectionName, p, attr));
+          children.add(new DirectoryBuilder(topCollectionName, p, attr));
         }
         if (debug && (count % 100 == 0)) System.out.printf("%d ", count);
         count++;
@@ -231,7 +239,7 @@ public class DirectoryPartitionBuilder {
     * May be null if constructChildren() was not called
     * @return children directories
     */
-   public List<DirectoryPartitionBuilder> getChildren() {
+   public List<DirectoryBuilder> getChildren() {
      return children;
    }
 
@@ -248,15 +256,9 @@ public class DirectoryPartitionBuilder {
   private void toString(Formatter out, Indent indent) {
     out.format("%sDir '%s' (%s) index '%s' (%s)%n", indent, dir, dirLastModified, index, indexLastModified);
     indent.incr();
-    for (DirectoryPartitionBuilder c : children)
+    for (DirectoryBuilder c : children)
       c.toString(out, indent);
     indent.decr();
   }
 
-  private class MyFilter implements DirectoryStream.Filter<Path> {
-    @Override
-    public boolean accept(Path entry) throws IOException {
-      return !entry.endsWith(".gbx9") && !entry.endsWith(".ncx");
-    }
-  }
 }

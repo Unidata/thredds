@@ -42,23 +42,23 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
   @Override
   public Iterable<MCollection> makePartitions() throws IOException {
 
-    DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(topCollection, topDir, null);
+    DirectoryBuilder builder = new DirectoryBuilder(topCollection, topDir, null);
     builder.constructChildren(indexReader);
 
     List<MCollection> result = new ArrayList<>();
-    for (DirectoryPartitionBuilder child : builder.getChildren()) {
-      MCollection dc = DirectoryPartitionBuilder.factory(config, child.getDir(), indexReader, logger);
+    for (DirectoryBuilder child : builder.getChildren()) {
+      MCollection dc = DirectoryBuilder.factory(config, child.getDir(), indexReader, logger);
       result.add(dc);
     }
 
     return result;
   }
 
-  MCollection makeChildCollection(DirectoryPartitionBuilder dpb) throws IOException {
+  MCollection makeChildCollection(DirectoryBuilder dpb) throws IOException {
     MCollection result;
     boolean hasIndex = dpb.findIndex();
     if (hasIndex)
-      result = new DirectoryCollectionFromIndex(dpb);
+      result = new DirectoryCollectionFromIndex(dpb, dateExtractor, indexReader, this.logger);
     else
       result = new DirectoryCollection(topCollection, dpb.getDir(), this.logger);
     return result;
@@ -84,50 +84,6 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
   @Override
   public void close() {
     // noop
-  }
-
-  // LOOK should this be a DirectoryCollection ??
-  // adapter of DirectoryPartitionBuilder to Collection
-  // claim to fame is that it scans files on demand
-  // using DirectoryPartitionBuilder, it will read files from ncx index
-  private class DirectoryCollectionFromIndex extends CollectionAbstract {
-    final DirectoryPartitionBuilder builder;  // LOOK adapts DirectoryPartitionBuilder as Collection - why ?
-
-    DirectoryCollectionFromIndex(DirectoryPartitionBuilder builder) {
-      super(builder.getPartitionName(), DirectoryPartition.this.logger );
-      setDateExtractor(DirectoryPartition.this.dateExtractor);
-      this.builder = builder;
-    }
-
-    @Override
-    public CloseableIterator<MFile> getFileIterator() throws IOException {
-      return new MFileIterator( getFilesSorted().iterator());
-    }
-
-    @Override
-    public void close() {
-    }
-
-    @Override
-    public boolean isPartition() {
-      return false;
-    }
-
-    @Override
-    public String getCollectionName() {
-      return builder.getPartitionName();
-    }
-
-    @Override
-    public String getRoot() {
-      return builder.getDir().toString();
-    }
-
-    @Override
-    public Iterable<MFile> getFilesSorted() throws IOException {
-      return builder.getFiles(indexReader);
-    }
-
   }
 
 }

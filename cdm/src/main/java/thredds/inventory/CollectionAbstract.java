@@ -76,10 +76,13 @@ public abstract class CollectionAbstract implements MCollection {
     return collectionName;
   }
 
-
   @Override
   public String getRoot() {
     return root;
+  }
+
+  public void setRoot(String root) {
+    this.root = root;
   }
 
   @Override

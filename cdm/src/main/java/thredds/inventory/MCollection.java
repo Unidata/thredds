@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Collection of MFiles.
+ * Collection of MFiles or Partitions
  *
  * @author caron
  * @since 11/11/13
@@ -32,6 +32,42 @@ public interface MCollection extends AutoCloseable {
    * @return root directory name, or null.
    */
   public String getRoot();
+
+  /**
+   * Use the date extractor to extract the date from the filename.
+   * Only call if hasDateExtractor() == true.
+   *
+   * @param mfile extract from here
+   * @return Date, or null if none
+   */
+  public CalendarDate extractDate(MFile mfile);
+
+  /**
+   * Does this CollectionManager have the ability to extract a date from the MFile ?
+   * @return true if CollectionManager has a DateExtractor
+   */
+  public boolean hasDateExtractor();
+
+  /**
+   * The starting date of the collection.
+   * Only call if hasDateExtractor() == true.
+   * @return starting date of the collection
+   */
+  public CalendarDate getStartCollection();
+
+  /**
+   * Close and release any resources. Do not make further calls on this object.
+   */
+  public void close();
+
+  /**
+   * Choose Proto dataset as index from [0..n-1], based on configuration.
+   * @param n size to choose from
+   * @return index within range [0..n-1]
+   */
+  public int getProtoIndex(int n);
+
+  //////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Get the current collection of MFile.
@@ -68,40 +104,6 @@ public interface MCollection extends AutoCloseable {
    * @return current collection of MFile as an CloseableIterator.
    */
   public CloseableIterator<MFile> getFileIterator() throws IOException;
-
-  /**
-   * Use the date extractor to extract the date from the filename.
-   * Only call if hasDateExtractor() == true.
-   *
-   * @param mfile extract from here
-   * @return Date, or null if none
-   */
-  public CalendarDate extractDate(MFile mfile);
-
-  /**
-   * Does this CollectionManager have the ability to extract a date from the MFile ?
-   * @return true if CollectionManager has a DateExtractor
-   */
-  public boolean hasDateExtractor();
-
-  /**
-   * The starting date of the collection.
-   * Only call if hasDateExtractor() == true.
-   * @return starting date of the collection
-   */
-  public CalendarDate getStartCollection();
-
-  /**
-   * Close and release any resources. Do not make further calls on this object.
-   */
-  public void close();
-
-  /**
-   * Choose Proto dataset as index from [0..n-1], based on configuration.
-   * @param n size to choose from
-   * @return index within range [0..n-1]
-   */
-  public int getProtoIndex(int n);
 
 
   ////////////////////////////////////////////////////
