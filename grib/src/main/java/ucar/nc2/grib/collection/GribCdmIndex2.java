@@ -10,6 +10,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.DirectoryCollection;
 import thredds.inventory.partition.DirectoryPartition;
+import thredds.inventory.partition.FilePartition;
 import thredds.inventory.partition.IndexReader;
 import ucar.nc2.grib.*;
 import ucar.nc2.stream.NcStream;
@@ -94,7 +95,7 @@ public class GribCdmIndex2 implements IndexReader {
   }
 
   /**
-   * Rewrite all the collection ncx2 indices for all the directories in a directory partition recursively
+   * Rewrite all the collection indices for all the directories in a directory partition recursively
    *
    * @param config  FeatureCollectionConfig
    * @param dirPath directory path
@@ -111,7 +112,7 @@ public class GribCdmIndex2 implements IndexReader {
 
      // do its children
      for (MCollection part : dpart.makePartitions()) {
-       if (part instanceof DirectoryPartition) {
+       if (part.isPartition()) {
          rewriteIndexesPartitionRecurse((DirectoryPartition) part, config);
 
        } else {
@@ -126,7 +127,7 @@ public class GribCdmIndex2 implements IndexReader {
    }
 
   /**
-   * Rewrite all the grib ncx2 indices in a directory, and the collection index for that directory
+   * Rewrite all the grib indices in a directory, and the collection index for that directory
    *
    * @param config  FeatureCollectionConfig
    * @param dirPath directory path
@@ -176,6 +177,59 @@ public class GribCdmIndex2 implements IndexReader {
     long took = System.currentTimeMillis() - start;
     System.out.printf("%s %s took %s msecs%n", collectionName, what, took);
   }
+
+  /**
+   * Rewrite all the grib indices in a directory, and the collection index for that directory
+   *
+   * @param config  FeatureCollectionConfig
+   * @param dirPath directory path
+   * @throws IOException
+   */
+  static public void rewriteFilePartition(final FeatureCollectionConfig config, Path dirPath, boolean makeChildren) throws IOException {
+    long start = System.currentTimeMillis();
+    String what;
+    FilePartition partition = new FilePartition(config.name, dirPath, logger);
+
+    String collectionName = DirectoryCollection.makeCollectionName(config.name, dirPath);
+    /* Path idxFile = DirectoryCollection.makeCollectionIndexPath(config.name, dirPath);
+    if (Files.exists(idxFile)) {
+      what = "IndexRead";
+      // read files from index
+      List<MFile> result = new ArrayList<>();
+      readMFiles(idxFile, List<MFile> result);
+
+      try (GribCollection gc = Grib2CollectionBuilderFromIndex.readFromIndex(collectionName, dirPath.toFile(), config.gribConfig, logger)) {
+        for (MFile mfile : gc.getFiles()) {
+          try (GribCollection gcNested =
+                       Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, CollectionManager.Force.always, config.gribConfig, logger)) {
+          }
+        }
+      }
+
+    } else {   */
+      what = "FilePartition";
+
+    if (makeChildren) {
+      partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
+        public void consume(MFile mfile) {
+          try (GribCollection gcNested =
+                       Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, CollectionManager.Force.always, config.gribConfig, logger)) {
+          } catch (IOException e) {
+            logger.error("rewriteIndexesFilesAndCollection", e);
+          }
+        }
+      });
+    }
+
+    // redo partition index
+    DirectoryCollection dpart = new DirectoryCollection(config.name, dirPath, logger);
+    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+    try (GribCollection gcNew = Grib2PartitionBuilder.factory(partition, CollectionManager.Force.always, logger)) { }
+
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("%s %s took %s msecs%n", collectionName, what, took);
+  }
+
 
  /////////////////////////////////////////////////////////////////////////////////////
   // manipulate the ncx without building a gc
@@ -272,7 +326,7 @@ public class GribCdmIndex2 implements IndexReader {
   public static void main(String[] args) throws IOException {
      // need to configure the loggers
 
-     File cat = new File("B:/ndfd/catalog.xml");
+     File cat = new File("B:/idd/catalog.xml");
      org.jdom2.Document doc;
      try {
        SAXBuilder builder = new SAXBuilder();
@@ -282,6 +336,7 @@ public class GribCdmIndex2 implements IndexReader {
        return;
      }
      FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
+    if (config == null) return;
 
      long start = System.currentTimeMillis();
 
@@ -297,8 +352,8 @@ public class GribCdmIndex2 implements IndexReader {
      //Grib2TimePartition tp = makeTimePartitionIndexOneDirectory(config, CollectionManager.Force.always, topPath);
      //tp.close();
 
-     Path topPath = Paths.get("B:/ndfd/");
-     rewriteIndexesPartitionAll(config, topPath);
+     Path topPath = Paths.get("B:/idd/");
+     rewriteFilePartition(config, topPath, false);
 
      long took = System.currentTimeMillis() - start;
      System.out.printf("that all took %s msecs%n", took);

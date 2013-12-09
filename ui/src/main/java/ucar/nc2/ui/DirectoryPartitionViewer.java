@@ -6,7 +6,7 @@ import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.partition.DirectoryPartition;
-import thredds.inventory.partition.DirectoryPartitionBuilder;
+import thredds.inventory.partition.DirectoryBuilder;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.ui.widget.*;
@@ -343,7 +343,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private class NodeInfo {
     Path dir;
-    DirectoryPartitionBuilder part;
+    DirectoryBuilder part;
     boolean hasIndex;
     boolean isPartition = true;
 
@@ -351,7 +351,7 @@ public class DirectoryPartitionViewer extends JPanel {
       this.dir = dir;
 
       try {
-        part = new DirectoryPartitionBuilder(collectionName, dir, null);
+        part = new DirectoryBuilder(collectionName, dir, null);
         hasIndex = part.getIndex() != null;
 
       } catch (IOException e) {
@@ -359,7 +359,7 @@ public class DirectoryPartitionViewer extends JPanel {
       }
     }
 
-    NodeInfo(DirectoryPartitionBuilder part) {
+    NodeInfo(DirectoryBuilder part) {
       this.part = part;
       this.dir = part.getDir();
       this.hasIndex = part.getIndex() != null;
@@ -368,7 +368,7 @@ public class DirectoryPartitionViewer extends JPanel {
     List<NodeInfo> getChildren() {
       List<NodeInfo> result = new ArrayList<>(100);
       try {
-        for (DirectoryPartitionBuilder child : part.constructChildren(new GribCdmIndex())) {
+        for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex())) {
           result.add(new NodeInfo(child));
         }
 

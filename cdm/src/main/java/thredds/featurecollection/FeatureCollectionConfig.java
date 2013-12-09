@@ -102,7 +102,7 @@ public class FeatureCollectionConfig {
     this.dateFormatMark = dateFormatMark;
     this.olderThan = olderThan;
     if (recheckAfter != null) this.updateConfig.recheckAfter = recheckAfter;
-    this.timePartition = timePartition;
+    this.timePartition = timePartition;    // "directory", "file", or time period
     this.useIndexOnly = useIndexOnlyS != null && useIndexOnlyS.equalsIgnoreCase("true");
     this.innerNcml = innerNcml;
   }

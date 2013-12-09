@@ -284,7 +284,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           allFiles.add(mfile);  // add on success
 
         } catch (IOException ioe) {
-          errlog.format("ERR Grib2CollectionBuilder %s: reading/Creating gbx9 index for file %s failed err=%s%n", gc.getName(), mfile.getPath(), ioe.getMessage());
+          if (errlog != null) errlog.format("ERR Grib2CollectionBuilder %s: reading/Creating gbx9 index for file %s failed err=%s%n", gc.getName(), mfile.getPath(), ioe.getMessage());
           logger.error("Grib2CollectionBuilder " + gc.getName() + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed", ioe);
           continue;
         }
@@ -328,13 +328,13 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       Counter stats = new Counter(); // debugging
       g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, pdsConvert);
       g.rect.make(stats, Collections.unmodifiableList(allFiles), errlog);
-      errlog.format("Group hash=%d %s%n", g.gdsHash, stats.show());
+      if (errlog != null) errlog.format("Group hash=%d %s%n", g.gdsHash, stats.show());
       statsAll.add(stats);
     }
 
     // debugging and validation
     if (logger.isDebugEnabled()) logger.debug(statsAll.show());
-    errlog.format("%s%n", statsAll.show());
+    if (errlog != null) errlog.format("%s%n", statsAll.show());
 
     return groups;
   }

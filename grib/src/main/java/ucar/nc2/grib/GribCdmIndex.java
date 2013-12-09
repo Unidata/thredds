@@ -153,7 +153,7 @@ public class GribCdmIndex implements IndexReader {
 
   static public boolean makeIndex(FeatureCollectionConfig config, Formatter errlog, Path topPath) throws IOException {
     GribCdmIndex indexReader = new GribCdmIndex();
-    MCollection dpart = DirectoryPartitionBuilder.factory(config, topPath, indexReader, logger);
+    MCollection dpart = DirectoryBuilder.factory(config, topPath, indexReader, logger);
     dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
     if (dpart.isPartition()) {
@@ -187,7 +187,7 @@ public class GribCdmIndex implements IndexReader {
 
   // show DirectoryPartition Index for everything under the topDir
   static public boolean showDirectoryPartitionIndex(String collectionName, File topDir, Formatter out) throws IOException {
-    DirectoryPartitionBuilder builder = new DirectoryPartitionBuilder(collectionName, topDir.getPath());
+    DirectoryBuilder builder = new DirectoryBuilder(collectionName, topDir.getPath());
     builder.constructChildren(new GribCdmIndex());
     builder.show(out);
     return true;
