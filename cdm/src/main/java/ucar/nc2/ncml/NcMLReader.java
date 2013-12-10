@@ -1331,14 +1331,10 @@ public class NcMLReader {
       Array dataArray = Array.factory(DataType.CHAR.getPrimitiveClassType(), v.getShape(), data);
       v.setCachedData(dataArray, true);
 
-    } else if (sep != null) {
+    } else {
         List<String> valList = getTokens(values, sep);
         v.setValues(valList);
-    } else { // default is to use whitespace
-      String[] tokens = StringUtil2.splitString(values);
-      List<String> valList = Arrays.asList(tokens);
-      v.setValues(valList);
-    }
+      }
 
     } catch (Throwable t) {
       throw new RuntimeException("Ncml Reading on "+v.getFullName(), t);
