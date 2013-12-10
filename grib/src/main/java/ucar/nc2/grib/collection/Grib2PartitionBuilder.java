@@ -7,6 +7,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import ucar.arr.Coordinate;
+import ucar.arr.CoordinateBuilder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Index;
@@ -132,7 +133,7 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
 
     List<PartitionCollection.Partition> bad = new ArrayList<>();
     for (PartitionCollection.Partition tpp : tp.getPartitions()) {
-      try {
+      try {                                                                  // here we read in all collections at once. can we avoid this?
         tpp.gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists  LOOK force ??
         if (trace) logger.debug(" Open partition {}", tpp.getDcm().getCollectionName());
       } catch (Throwable t) {
@@ -158,16 +159,16 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
     logger.info("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
     // alternately one could choose a partition that has all the groups or maximum # variables
-    // checkGroups(canon, f, true);
+    // List<GroupAndPartitions> groupList = makeAllGroups();
 
     // check consistency across vert and ens coords
     // also replace variables  in canonGc with partitioned variables
     // partition index is used - do not resort partitions
-    /* if (!comparePartitions(canon, f)) {
+    if (!makeAllVariables(canon, f)) {
       f.format(" ERR Partition check failed, index not written on %s%n", tp.getName());
       logger.error(" Partition check failed, index not written on {} errors = \n{}", tp.getName(), f.toString());
       return false;
-    }  */
+    }
 
     // make the time coordinates, place results into canon
     //createPartitionedTimeCoordinates(canon.gc, f);
@@ -186,37 +187,39 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
     return true;
   }
 
-  /* private class Groups {
+  private class GroupPartitions {
     GribCollection.GroupHcs g;
-    List<TimePartition.Partition> parts = new ArrayList<>();
+    List<PartitionCollection.Partition> parts = new ArrayList<>();
+
+    private GroupPartitions(GribCollection.GroupHcs g) {
+      this.g = g;
+    }
   }
 
-  private void checkGroups(TimePartition.Partition canon, Formatter f, boolean show) throws IOException {
-    List<TimePartition.Partition> partitions = tp.getPartitions();
-
-    Map<Integer, Groups> map = new HashMap<>(100);
-
-    for (TimePartition.Partition tpp : partitions) {
+  private List<GroupPartitions> makeAllGroups() throws IOException {
+    Map<Integer, GroupPartitions> groupMap = new HashMap<>(40);
+    for (PartitionCollection.Partition tpp : tp.getPartitions()) {
       GribCollection gc = tpp.gc;
       for (GribCollection.GroupHcs g : gc.getGroups()) {
-        Groups gs = map.get(g.gdsHash);
+        GroupPartitions gs = groupMap.get(g.gdsHash);
         if (gs == null) {
-          gs = new Groups();
-          map.put(g.gdsHash, gs);
+          gs = new GroupPartitions(g);
+          groupMap.put(g.gdsHash, gs);
         }
         gs.parts.add(tpp);
       }
     }
-  }   */
+    return new ArrayList<>(groupMap.values());
+  }
 
-  /* consistency check on variables : compare each variable to corresponding one in proto
+  // consistency check on variables : compare each variable to corresponding one in proto
   // also set the groupno and partno for each partition
-  private boolean comparePartitions(PartitionCollection.Partition canon, Formatter f) throws IOException {
+  private boolean makeAllVariables(List<GroupPartitions> grpPart, PartitionCollection.Partition canon, Formatter f) throws IOException {
     List<PartitionCollection.Partition> partitions = tp.getPartitions();
     int npart = partitions.size();
     boolean ok = true;
 
-    // for each group in canonical Partition
+    // do each group
     GribCollection canonGc = canon.gc;
     for (GribCollection.GroupHcs canonGroup : canonGc.getGroups()) {
       String gname = canonGroup.getId();
@@ -236,6 +239,9 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
       }
       canonGroup.varIndex = varIndexP;// replace variable list with VariableIndexPartitioned in the group
 
+      // make a single runtime coordinate
+      CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder();
+
       // for each partition
       for (int partno = 0; partno < npart; partno++) {
         PartitionCollection.Partition tpp = partitions.get(partno);
@@ -251,6 +257,12 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
         }
         GribCollection.GroupHcs group = gc.getGroup(groupIdx); // note this will be the same as the canonGroup when partition == canonPartition
 
+        // keep track of all runtime coordinates across the partitions
+        for (Coordinate coord : group.coords) {
+          if (coord.getType() == Coordinate.Type.runtime)
+            runtimeAllBuilder.addAll(coord);
+        }
+
         // for each variable in otherPartition group
         for (int varIdx = 0; varIdx < group.varIndex.size(); varIdx++) {
           GribCollection.VariableIndex viFromOtherPartition = group.varIndex.get(varIdx);
@@ -263,12 +275,12 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
 
             //////////////// add it to the canonGroup
             viCanon = tp.makeVariableIndexPartitioned(viFromOtherPartition, npart);
-            varIndexP.add(viCanon); // this is the canonGorup list of vars
+            varIndexP.add(viCanon); // this is the canonGroup list of vars
             if (canonVars.containsKey(viFromOtherPartition.cdmHash))
               f.format(" WARN Duplicate variable hash %s%n", viFromOtherPartition.toStringShort());
             canonVars.put(viFromOtherPartition.cdmHash, viCanon); // replace with its evil twin
 
-            // reparent its vertical coordinate
+            /* reparent its vertical coordinate
             VertCoord vc = viCanon.getVertCoord();
             if (vc != null) {
               viCanon.vertIdx = VertCoord.findCoord(canonGroup.vertCoords, vc); // share coordinates or add
@@ -278,10 +290,10 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
             if (ec != null) {
               viCanon.ensIdx = EnsCoord.findCoord(canonGroup.ensCoords, ec); // share coordinates or add
             }
-            // i think you dont need to reparent time coordinate because those are made into timePartition coordidates
+            // i think you dont need to reparent time coordinate because those are made into timePartition coordidates  */
           }
 
-          //compare vert coordinates
+          /* compare vert coordinates
           VertCoord vc1 = viCanon.getVertCoord();
           VertCoord vc2 = viFromOtherPartition.getVertCoord();
           if ((vc1 == null) != (vc2 == null)) {
@@ -310,11 +322,52 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
             f.format("    canon ec = %s%n", ec1);
             f.format("    this ec = %s%n", ec2);
             flag |= PartitionCollection.ENS_COORDS_DIFFER;
-          }
+          }  */
 
           viCanon.setPartitionIndex(partno, groupIdx, varIdx, flag);
         } // loop over variable
       } // loop over partition
+
+      Coordinate runtimeAll = runtimeAllBuilder.finish();
+
+      // now do each variable
+      for (int varIdx = 0; varIdx < canonGroup.varIndex.size(); varIdx++) {
+        GribCollection.VariableIndex viCanon = canonGroup.varIndex.get(varIdx);
+        Set<Coordinate> timeBuilders = new HashSet<>();
+        Set<Coordinate> timeIntvBuilders = new HashSet<>();
+        Set<Coordinate> vertBuilders = new HashSet<>();
+
+        // loop over partitions
+        for (int partno = 0; partno < npart; partno++) {
+          PartitionCollection.Partition tpp = partitions.get(partno);
+          GribCollection.GroupHcs group = tpp.gc.findGroupById(canonGroup.getId());
+          if (group == null) { // tolerate missing groups
+            continue;
+          }
+          GribCollection.VariableIndex vi = group.findVariableByHash(viCanon.cdmHash);
+          for (Coordinate coord : vi.getCoordinates()) {
+            switch (coord.getType()) {
+              case time:
+                timeBuilders.add(coord);
+                break;
+              case timeIntv:
+                timeIntvBuilders.add(coord);
+                break;
+              case vert:
+                vertBuilders.add(coord);
+                break;
+            }
+          }
+
+
+       }
+
+
+
+         PartitionCollection.VariableIndexPartitioned viCanon = canonVars.get(viFromOtherPartition.cdmHash); // match with proto variable hash
+      }
+
+
     } // loop over group
 
     if (ok) {
@@ -323,7 +376,7 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
     } else {
       return false;
     }
-  }   */
+  }
 
   private class PartGroup {
     GribCollection.GroupHcs group;

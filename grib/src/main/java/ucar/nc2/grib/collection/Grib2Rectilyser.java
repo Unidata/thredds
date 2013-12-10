@@ -175,7 +175,6 @@ public class Grib2Rectilyser {
       coordMap.put(this.coords.get(i), i);
     }
 
-
     int tot_used = 0;
     int tot_dups = 0;
 

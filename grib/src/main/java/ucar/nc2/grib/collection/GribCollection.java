@@ -510,6 +510,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public List<Coordinate> coords;
     public int[] filenose;
 
+    Map<Integer, GribCollection.VariableIndex> varMap;
+
     public List<TimeCoordUnion> timeCoordPartitions; // used only for time partitions - DO NOT USE
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash) {
@@ -612,9 +614,12 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     } */
 
     public GribCollection.VariableIndex findVariableByHash(int cdmHash) {
-      for (VariableIndex vi : varIndex)                // look might want to hash to avoid linear lookup cost
-        if (vi.cdmHash == cdmHash) return vi;
-      return null;
+      if (varMap == null) {
+        varMap = new HashMap<>(varIndex.size()*2);
+        for (VariableIndex vi : varIndex)
+          varMap.put(vi.cdmHash, vi);
+      }
+      return varMap.get(cdmHash);
     }
 
     public CalendarDateRange getTimeCoverage() {
@@ -671,23 +676,17 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public final long recordsPos;     // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
 
-    public SparseArray<Record> sa; // lazy read
+    public SparseArray<Record> sa;    // lazy read
     public List<Integer> coordIndex;   // index into group.coords
 
     public int partTimeCoordIdx; // partition time coordinate index
 
     // derived from pds
     public int category, parameter, levelType, intvType, ensDerivedType, probType;
-    private String intvName;                                                                     // uniquely identifies the variable
-    public String probabilityName;                                                              // uniquely identifies the variable
-    public boolean isLayer;                                                                     // uniquely identifies the variable
+    private String intvName;
+    public String probabilityName;
+    public boolean isLayer;
     public int genProcessType;
-
-
-    /* obsolete ??
-    public int ntimes, nverts, nens;           // time, vert and ens coordinate lengths
-    public Record[] records;                   // Record[ntimes*nverts*nens] - lazy init  */
-
 
     public VariableIndex(GroupHcs g, int tableVersion, int discipline, byte[] rawPds, Grib2Pds pds,
                          int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
