@@ -59,13 +59,19 @@ public class StringUtil2Test {
     private List<String> values5_sep4 = new ArrayList<String>();
     private List<String> values6_sep4 = new ArrayList<String>();
 
+    private List<String> values1_sep5 = new ArrayList<String>();
+    private List<String> values2_sep5 = new ArrayList<String>();
+    private List<String> values3_sep5 = new ArrayList<String>();
+    private List<String> values4_sep5 = new ArrayList<String>();
+    private List<String> values5_sep5 = new ArrayList<String>();
+    private List<String> values6_sep5 = new ArrayList<String>();
+
     private List<String> values1_sep6 = new ArrayList<String>();
     private List<String> values2_sep6 = new ArrayList<String>();
     private List<String> values3_sep6 = new ArrayList<String>();
     private List<String> values4_sep6 = new ArrayList<String>();
     private List<String> values5_sep6 = new ArrayList<String>();
     private List<String> values6_sep6 = new ArrayList<String>();
-
     private List<String> values1_sep7 = new ArrayList<String>();
 
     @Before
@@ -117,6 +123,34 @@ public class StringUtil2Test {
         values5_sep4.add("This.string.should.have.ten.tokens.when.separated.on.dot");
         values6_sep4.add("This string.has.several *|*different ");
         values6_sep4.add(" separators!");
+
+        values1_sep5.add("Broken?");
+        values1_sep5.add("*");
+        values1_sep5.add("**");
+        values2_sep5.add("String*|*with*|**|**|*as*|*a*|*separator");
+        values3_sep5.add("Another");
+        values3_sep5.add("string");
+        values3_sep5.add("with");
+        values3_sep5.add("foobar");
+
+        values3_sep5.add("and");
+        values3_sep5.add("foo");
+        values3_sep5.add("bar");
+        values3_sep5.add("embedded");
+        values4_sep5.add("This");
+        values4_sep5.add("string");
+        values4_sep5.add("has");
+        values4_sep5.add("a");
+        values4_sep5.add("\\");
+        values4_sep5.add("in");
+        values4_sep5.add("it");
+        values5_sep5.add("This.string.should.have.ten.tokens.when.separated.on.dot");
+        values6_sep5.add("This");
+        values6_sep5.add("string.has.several");
+        values6_sep5.add("*|*different");
+        values6_sep5.add("foo");
+        values6_sep5.add("bar");
+        values6_sep5.add("separators!");
 
         values1_sep6.add("Broken?");
         values1_sep6.add("*");
@@ -186,6 +220,13 @@ public class StringUtil2Test {
         assertEquals(values4_sep6, StringUtil2.getTokens(values4, sep6));
         assertEquals(values5_sep6, StringUtil2.getTokens(values5, sep6));
         assertEquals(values6_sep6, StringUtil2.getTokens(values6, sep6));
+
+        assertEquals(values1_sep5, StringUtil2.getTokens(values1, sep5));
+        assertEquals(values2_sep5, StringUtil2.getTokens(values2, sep5));
+        assertEquals(values3_sep5, StringUtil2.getTokens(values3, sep5));
+        assertEquals(values4_sep5, StringUtil2.getTokens(values4, sep5));
+        assertEquals(values5_sep5, StringUtil2.getTokens(values5, sep5));
+        assertEquals(values6_sep5, StringUtil2.getTokens(values6, sep5));
 
         assertEquals(values1_sep7, StringUtil2.getTokens(values1, sep7));
 

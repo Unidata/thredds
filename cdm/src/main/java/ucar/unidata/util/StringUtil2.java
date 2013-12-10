@@ -700,31 +700,36 @@ public class StringUtil2 {
       List<String> strs = new ArrayList<String>();
       if (sep != null) {
           int sepLength = sep.length();
-          if (sepLength == 1) { // base case with single char separator
-              StringTokenizer tokenizer = new StringTokenizer(fullString, sep);       // use StringUtil2 methods
-              while (tokenizer.hasMoreTokens())
-                  strs.add(tokenizer.nextToken());
-            } else { // multicharacter separator needs special handling.  Is intent for one multicharacter separator or several single character separators?  Only handle the former case for now.
-                String remainderString = fullString;
-                int location = remainderString.indexOf(sep);
-                while (location != -1) {    // watch out for off-by-one errors on the string splitting indices!!!
-                    if (location == 0) {    // remainderString starts with the separator, cut it off
-                        remainderString = remainderString.substring(location + sepLength);
-                        location = remainderString.indexOf(sep);
-                    } else {
-                        String token = remainderString.substring(0,location); // pull the token off the front of the string
-                        strs.add(token);    // add the token to our list
-                        remainderString = remainderString.substring(location + sepLength); // cut out both the token and the separator
-                        location = remainderString.indexOf(sep);
-                    }
-                }
-                if (remainderString.length() > 0) strs.add(remainderString);    // add the last token, post last separator
-          }
+          switch (sepLength) {
+              case 0:  String[] tokens = splitString(fullString);   // default to use white space if separator is ""
+                       strs = Arrays.asList(tokens);
+                       break;
+
+              case 1:  StringTokenizer tokenizer = new StringTokenizer(fullString, sep);       // maybe use StreamTokenizer?
+                       while (tokenizer.hasMoreTokens())
+                       strs.add(tokenizer.nextToken());
+                       break;
+
+              default:  String remainderString = fullString;    // multicharacter separator
+                        int location = remainderString.indexOf(sep);
+                        while (location != -1) {    // watch out for off-by-one errors on the string splitting indices!!!
+                          if (location == 0) {    // remainderString starts with the separator, cut it off
+                            remainderString = remainderString.substring(location + sepLength);
+                            location = remainderString.indexOf(sep);
+                          } else {
+                              String token = remainderString.substring(0,location); // pull the token off the front of the string
+                              strs.add(token);    // add the token to our list
+                              remainderString = remainderString.substring(location + sepLength); // cut out both the token and the separator
+                              location = remainderString.indexOf(sep);
+                          }
+                        }  //close while loop
+                        if (remainderString.length() > 0) strs.add(remainderString);    // add the last token, post last separator
+          }  //close switch (sepLength)
       } else {  // default to white space separator if sep is null
           String[] tokens = splitString(fullString);
           strs = Arrays.asList(tokens);
       }
-      if (strs.size() == 0) strs.add(""); // maybe thrown an exception instead?
+      if (strs.size() == 0) strs.add(""); // maybe thrown an exception instead?  return null?
       return strs;
   }
 
