@@ -51,6 +51,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import static ucar.unidata.util.StringUtil2.getTokens;
+
 /**
  * Read NcML and create NetcdfDataset.
  *
@@ -1330,12 +1332,8 @@ public class NcMLReader {
       v.setCachedData(dataArray, true);
 
     } else if (sep != null) {
-      List<String> valList = new ArrayList<String>();
-      StringTokenizer tokn = new StringTokenizer(values, sep);
-      while (tokn.hasMoreTokens())
-        valList.add(tokn.nextToken());
-      v.setValues(valList);
-
+        List<String> valList = getTokens(values, sep);
+        v.setValues(valList);
     } else { // default is to use whitespace
       String[] tokens = StringUtil2.splitString(values);
       List<String> valList = Arrays.asList(tokens);
