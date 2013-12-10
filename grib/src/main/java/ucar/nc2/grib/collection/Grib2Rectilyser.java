@@ -33,10 +33,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.inventory.MFile;
-import ucar.arr.Coordinate;
-import ucar.arr.CoordinateBuilder;
-import ucar.arr.CoordinateND;
-import ucar.arr.Counter;
+import ucar.arr.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -138,58 +135,20 @@ public class Grib2Rectilyser {
       vb.coordND.finish(vb.atomList, info);
     }
 
-    this.coords = new ArrayList<>();
-
-    CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder();
-    Set<Coordinate> timeBuilders = new HashSet<>();
-    Set<Coordinate> timeIntvBuilders = new HashSet<>();
-    Set<Coordinate> vertBuilders = new HashSet<>();
-
     // make shared coordinates
+    CoordinateUnionizer unionizer = new CoordinateUnionizer();
     for (VariableBag vb : gribvars) {
-       for (Coordinate coord : vb.coordND.getCoordinates()) {
-         switch (coord.getType()) {
-           case runtime:
-             runtimeAllBuilder.addAll(coord); // always union
-             break;
-           case time:
-             timeBuilders.add(coord);
-             break;
-           case timeIntv:
-             timeIntvBuilders.add(coord);
-             break;
-           case vert:
-             vertBuilders.add(coord);
-             break;
-         }
-       }
+      unionizer.addCoords(vb.coordND.getCoordinates());
     }
-
-    Coordinate runtimeAll = runtimeAllBuilder.finish();
-    this.coords.add(runtimeAll);
-    for (Coordinate coord : timeBuilders) this.coords.add(coord);
-    for (Coordinate coord : timeIntvBuilders) this.coords.add(coord);
-    for (Coordinate coord : vertBuilders) this.coords.add(coord);
-    Map<Coordinate, Integer> coordMap = new HashMap<>();
-    for (int i=0; i<this.coords.size(); i++) {
-      coordMap.put(this.coords.get(i), i);
-    }
+    unionizer.finish();
+    this.coords = unionizer.getUnionCoords();
 
     int tot_used = 0;
     int tot_dups = 0;
 
     // redo the variables against the shared coordinates (at the moment this is just possibly runtime
     for (VariableBag vb : gribvars) {
-      vb.coordIndex = new ArrayList<>();
-      for (Coordinate coord : vb.coordND.getCoordinates()) {
-        if (coord.getType() == Coordinate.Type.runtime) {
-          if (!coord.equals(runtimeAll)) { // redo
-            System.out.println("Grib2Rectilyser coord.equals(runtimeAll");
-          }
-        }
-        vb.coordIndex.add(coordMap.get(coord)); // index into rect.coords
-      }
-
+      vb.coordIndex = unionizer.reindex(vb.coordND.getCoordinates());
       tot_used += vb.coordND.getSparseArray().countNotMissing();
       tot_dups += vb.coordND.getSparseArray().getNduplicates();
      }
@@ -198,8 +157,6 @@ public class Grib2Rectilyser {
     counter.dups += tot_dups;
     counter.vars += gribvars.size();
   }
-
-
 
   public void showInfo(Formatter f, Grib2Customizer tables) {
     //f.format("%nVariables%n");

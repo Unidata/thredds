@@ -145,7 +145,7 @@ public class GribCdmIndex2 implements IndexReader {
       try (GribCollection gc = Grib2CollectionBuilderFromIndex.readFromIndex(collectionName, dirPath.toFile(), config.gribConfig, logger)) {
         for (MFile mfile : gc.getFiles()) {
           try (GribCollection gcNested =
-                       Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, CollectionManager.Force.always, config.gribConfig, logger)) {
+              Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, CollectionManager.Force.always, config.gribConfig, logger)) {
           }
         }
       }

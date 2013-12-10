@@ -8,6 +8,7 @@ import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import ucar.arr.Coordinate;
 import ucar.arr.CoordinateBuilder;
+import ucar.arr.CoordinateUnionizer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Index;
@@ -214,7 +215,7 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
 
   // consistency check on variables : compare each variable to corresponding one in proto
   // also set the groupno and partno for each partition
-  private boolean makeAllVariables(List<GroupPartitions> grpPart, PartitionCollection.Partition canon, Formatter f) throws IOException {
+  private boolean makeAllVariables(PartitionCollection.Partition canon, Formatter f) throws IOException {
     List<PartitionCollection.Partition> partitions = tp.getPartitions();
     int npart = partitions.size();
     boolean ok = true;
@@ -328,43 +329,32 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
         } // loop over variable
       } // loop over partition
 
-      Coordinate runtimeAll = runtimeAllBuilder.finish();
-
-      // now do each variable
+      // for each variable, create union of coordinates
       for (int varIdx = 0; varIdx < canonGroup.varIndex.size(); varIdx++) {
         GribCollection.VariableIndex viCanon = canonGroup.varIndex.get(varIdx);
-        Set<Coordinate> timeBuilders = new HashSet<>();
-        Set<Coordinate> timeIntvBuilders = new HashSet<>();
-        Set<Coordinate> vertBuilders = new HashSet<>();
+        CoordinateUnionizer unionizer = new CoordinateUnionizer();
 
-        // loop over partitions
+        // loop over partitions, make union coordinate
         for (int partno = 0; partno < npart; partno++) {
           PartitionCollection.Partition tpp = partitions.get(partno);
           GribCollection.GroupHcs group = tpp.gc.findGroupById(canonGroup.getId());
-          if (group == null) { // tolerate missing groups
-            continue;
-          }
+          if (group == null) continue; // tolerate missing groups
           GribCollection.VariableIndex vi = group.findVariableByHash(viCanon.cdmHash);
-          for (Coordinate coord : vi.getCoordinates()) {
-            switch (coord.getType()) {
-              case time:
-                timeBuilders.add(coord);
-                break;
-              case timeIntv:
-                timeIntvBuilders.add(coord);
-                break;
-              case vert:
-                vertBuilders.add(coord);
-                break;
-            }
-          }
+          unionizer.addCoords(vi.getCoordinates());
+        }
+        unionizer.finish();
+        // this.coords = unionizer.getUnionCoords();
 
+        // redo the variables against the shared coordinates (at the moment this is just possibly runtime
+        for (int partno = 0; partno < npart; partno++) {
+          PartitionCollection.Partition tpp = partitions.get(partno);
+          GribCollection.GroupHcs group = tpp.gc.findGroupById(canonGroup.getId());
+          if (group == null) continue; // tolerate missing groups
+          GribCollection.VariableIndex vi = group.findVariableByHash(viCanon.cdmHash);
+          viCanon.coordIndex = unionizer.reindex(vi.getCoordinates());
+         }
 
-       }
-
-
-
-         PartitionCollection.VariableIndexPartitioned viCanon = canonVars.get(viFromOtherPartition.cdmHash); // match with proto variable hash
+         // PartitionCollection.VariableIndexPartitioned viCanon = canonVars.get(viFromOtherPartition.cdmHash); // match with proto variable hash
       }
 
 
