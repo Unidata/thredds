@@ -1,4 +1,4 @@
-package ucar.arr;
+package ucar.sparr;
 
 import java.util.Formatter;
 
@@ -18,8 +18,9 @@ public class Counter {
     public String show () {
       Formatter f = new Formatter();
       float dupPercent = ((float) dups) / (recordsTotal - filter);
-      f.format(" Rectilyser2: nvars=%d records total=%d filtered=%d unique=%d dups=%d (%f)%n",
-              vars, recordsTotal, filter, recordsUnique, dups, dupPercent);
+      float density = ((float) recordsUnique) / (recordsTotal - filter);
+      f.format(" Counter: nvars=%d records %d/%d (%f) filtered=%d dups=%d (%f)%n",
+              vars, recordsUnique, recordsTotal, density, filter, dups, dupPercent);
       return f.toString();
     }
 

@@ -1,12 +1,10 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.nc2.grib.*;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,17 +61,15 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
     return proto.getPartitionsCount() > 0;
   }
 
-  @Override
-  protected void readTimePartitions(GribCollection.GroupHcs group, GribCollectionProto.Group proto) {
-    List<TimeCoordUnion> list = new ArrayList<>(proto.getTimeCoordUnionsCount());
-    for (int i = 0; i < proto.getTimeCoordUnionsCount(); i++) {
-      GribCollectionProto.TimeCoordUnion tpu = proto.getTimeCoordUnions(i);
-      list.add(readTimePartition(tpu, i));
+ @Override
+  protected void readGroupPartitionInfo(GribCollection.GroupHcs group, GribCollectionProto.Group proto) {
+   group.run2part = new int[proto.getRun2PartCount()];
+    for (int i = 0; i < proto.getRun2PartCount(); i++) {
+      group.run2part[i] = proto.getRun2Part(i);
     }
-    group.timeCoordPartitions = list;
   }
 
-  protected TimeCoordUnion readTimePartition(GribCollectionProto.TimeCoordUnion pc, int timeIndex) {
+  /* protected TimeCoordUnion readTimePartition(GribCollectionProto.TimeCoordUnion pc, int timeIndex) {
     int[] partition = new int[pc.getPartitionCount()];
     int[] index = new int[pc.getPartitionCount()];  // better be the same
     for (int i = 0; i < pc.getPartitionCount(); i++) {
@@ -97,7 +93,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
       tc.setIndex( timeIndex);
       return tc;
     }
-  }
+  } */
 
   @Override
   protected GribCollection.VariableIndex readVariable(GribCollectionProto.Variable pv, GribCollection.GroupHcs group) {

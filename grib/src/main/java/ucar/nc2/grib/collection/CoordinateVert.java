@@ -1,7 +1,7 @@
 package ucar.nc2.grib.collection;
 
-import ucar.arr.Coordinate;
-import ucar.arr.CoordinateBuilderImpl;
+import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -136,7 +136,7 @@ public class CoordinateVert implements Coordinate {
 
   //////////////////////////////////////////////////////////////
 
-  static public class Builder extends CoordinateBuilderImpl {
+  static public class Builder extends CoordinateBuilderImpl<Grib2Record> {
     int code;
 
     public Builder(int code) {

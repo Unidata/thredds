@@ -6555,50 +6555,31 @@ public final class GribCollectionProto {
      */
     int getFileno(int index);
 
-    // repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;
+    // repeated uint32 run2part = 10;
     /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+     * <code>repeated uint32 run2part = 10;</code>
      *
      * <pre>
      * partitions
      * </pre>
      */
-    java.util.List<ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion> 
-        getTimeCoordUnionsList();
+    java.util.List<java.lang.Integer> getRun2PartList();
     /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+     * <code>repeated uint32 run2part = 10;</code>
      *
      * <pre>
      * partitions
      * </pre>
      */
-    ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion getTimeCoordUnions(int index);
+    int getRun2PartCount();
     /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+     * <code>repeated uint32 run2part = 10;</code>
      *
      * <pre>
      * partitions
      * </pre>
      */
-    int getTimeCoordUnionsCount();
-    /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-     *
-     * <pre>
-     * partitions
-     * </pre>
-     */
-    java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder> 
-        getTimeCoordUnionsOrBuilderList();
-    /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-     *
-     * <pre>
-     * partitions
-     * </pre>
-     */
-    ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder getTimeCoordUnionsOrBuilder(
-        int index);
+    int getRun2Part(int index);
   }
   /**
    * Protobuf type {@code gribCollectionIndex.Group}
@@ -6711,12 +6692,25 @@ public final class GribCollectionProto {
               input.popLimit(limit);
               break;
             }
-            case 82: {
+            case 80: {
               if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-                timeCoordUnions_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion>();
+                run2Part_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000080;
               }
-              timeCoordUnions_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.PARSER, extensionRegistry));
+              run2Part_.add(input.readUInt32());
+              break;
+            }
+            case 82: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080) && input.getBytesUntilLimit() > 0) {
+                run2Part_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000080;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                run2Part_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
               break;
             }
           }
@@ -6740,7 +6734,7 @@ public final class GribCollectionProto {
           fileno_ = java.util.Collections.unmodifiableList(fileno_);
         }
         if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-          timeCoordUnions_ = java.util.Collections.unmodifiableList(timeCoordUnions_);
+          run2Part_ = java.util.Collections.unmodifiableList(run2Part_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -7072,60 +7066,39 @@ public final class GribCollectionProto {
       return fileno_.get(index);
     }
 
-    // repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;
-    public static final int TIMECOORDUNIONS_FIELD_NUMBER = 10;
-    private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion> timeCoordUnions_;
+    // repeated uint32 run2part = 10;
+    public static final int RUN2PART_FIELD_NUMBER = 10;
+    private java.util.List<java.lang.Integer> run2Part_;
     /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+     * <code>repeated uint32 run2part = 10;</code>
      *
      * <pre>
      * partitions
      * </pre>
      */
-    public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion> getTimeCoordUnionsList() {
-      return timeCoordUnions_;
+    public java.util.List<java.lang.Integer>
+        getRun2PartList() {
+      return run2Part_;
     }
     /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+     * <code>repeated uint32 run2part = 10;</code>
      *
      * <pre>
      * partitions
      * </pre>
      */
-    public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder> 
-        getTimeCoordUnionsOrBuilderList() {
-      return timeCoordUnions_;
+    public int getRun2PartCount() {
+      return run2Part_.size();
     }
     /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+     * <code>repeated uint32 run2part = 10;</code>
      *
      * <pre>
      * partitions
      * </pre>
      */
-    public int getTimeCoordUnionsCount() {
-      return timeCoordUnions_.size();
-    }
-    /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-     *
-     * <pre>
-     * partitions
-     * </pre>
-     */
-    public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion getTimeCoordUnions(int index) {
-      return timeCoordUnions_.get(index);
-    }
-    /**
-     * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-     *
-     * <pre>
-     * partitions
-     * </pre>
-     */
-    public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder getTimeCoordUnionsOrBuilder(
-        int index) {
-      return timeCoordUnions_.get(index);
+    public int getRun2Part(int index) {
+      return run2Part_.get(index);
     }
 
     private void initFields() {
@@ -7136,7 +7109,7 @@ public final class GribCollectionProto {
       coords_ = java.util.Collections.emptyList();
       params_ = java.util.Collections.emptyList();
       fileno_ = java.util.Collections.emptyList();
-      timeCoordUnions_ = java.util.Collections.emptyList();
+      run2Part_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -7157,12 +7130,6 @@ public final class GribCollectionProto {
       }
       for (int i = 0; i < getParamsCount(); i++) {
         if (!getParams(i).isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-      }
-      for (int i = 0; i < getTimeCoordUnionsCount(); i++) {
-        if (!getTimeCoordUnions(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -7195,8 +7162,8 @@ public final class GribCollectionProto {
       for (int i = 0; i < fileno_.size(); i++) {
         output.writeInt32(7, fileno_.get(i));
       }
-      for (int i = 0; i < timeCoordUnions_.size(); i++) {
-        output.writeMessage(10, timeCoordUnions_.get(i));
+      for (int i = 0; i < run2Part_.size(); i++) {
+        output.writeUInt32(10, run2Part_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -7240,9 +7207,14 @@ public final class GribCollectionProto {
         size += dataSize;
         size += 1 * getFilenoList().size();
       }
-      for (int i = 0; i < timeCoordUnions_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(10, timeCoordUnions_.get(i));
+      {
+        int dataSize = 0;
+        for (int i = 0; i < run2Part_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(run2Part_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getRun2PartList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7355,7 +7327,6 @@ public final class GribCollectionProto {
           getVariablesFieldBuilder();
           getCoordsFieldBuilder();
           getParamsFieldBuilder();
-          getTimeCoordUnionsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -7390,12 +7361,8 @@ public final class GribCollectionProto {
         }
         fileno_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000040);
-        if (timeCoordUnionsBuilder_ == null) {
-          timeCoordUnions_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000080);
-        } else {
-          timeCoordUnionsBuilder_.clear();
-        }
+        run2Part_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
 
@@ -7468,15 +7435,11 @@ public final class GribCollectionProto {
           bitField0_ = (bitField0_ & ~0x00000040);
         }
         result.fileno_ = fileno_;
-        if (timeCoordUnionsBuilder_ == null) {
-          if (((bitField0_ & 0x00000080) == 0x00000080)) {
-            timeCoordUnions_ = java.util.Collections.unmodifiableList(timeCoordUnions_);
-            bitField0_ = (bitField0_ & ~0x00000080);
-          }
-          result.timeCoordUnions_ = timeCoordUnions_;
-        } else {
-          result.timeCoordUnions_ = timeCoordUnionsBuilder_.build();
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          run2Part_ = java.util.Collections.unmodifiableList(run2Part_);
+          bitField0_ = (bitField0_ & ~0x00000080);
         }
+        result.run2Part_ = run2Part_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -7592,31 +7555,15 @@ public final class GribCollectionProto {
           }
           onChanged();
         }
-        if (timeCoordUnionsBuilder_ == null) {
-          if (!other.timeCoordUnions_.isEmpty()) {
-            if (timeCoordUnions_.isEmpty()) {
-              timeCoordUnions_ = other.timeCoordUnions_;
-              bitField0_ = (bitField0_ & ~0x00000080);
-            } else {
-              ensureTimeCoordUnionsIsMutable();
-              timeCoordUnions_.addAll(other.timeCoordUnions_);
-            }
-            onChanged();
+        if (!other.run2Part_.isEmpty()) {
+          if (run2Part_.isEmpty()) {
+            run2Part_ = other.run2Part_;
+            bitField0_ = (bitField0_ & ~0x00000080);
+          } else {
+            ensureRun2PartIsMutable();
+            run2Part_.addAll(other.run2Part_);
           }
-        } else {
-          if (!other.timeCoordUnions_.isEmpty()) {
-            if (timeCoordUnionsBuilder_.isEmpty()) {
-              timeCoordUnionsBuilder_.dispose();
-              timeCoordUnionsBuilder_ = null;
-              timeCoordUnions_ = other.timeCoordUnions_;
-              bitField0_ = (bitField0_ & ~0x00000080);
-              timeCoordUnionsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getTimeCoordUnionsFieldBuilder() : null;
-            } else {
-              timeCoordUnionsBuilder_.addAllMessages(other.timeCoordUnions_);
-            }
-          }
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -7637,12 +7584,6 @@ public final class GribCollectionProto {
         }
         for (int i = 0; i < getParamsCount(); i++) {
           if (!getParams(i).isInitialized()) {
-            
-            return false;
-          }
-        }
-        for (int i = 0; i < getTimeCoordUnionsCount(); i++) {
-          if (!getTimeCoordUnions(i).isInitialized()) {
             
             return false;
           }
@@ -8882,316 +8823,98 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;
-      private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion> timeCoordUnions_ =
-        java.util.Collections.emptyList();
-      private void ensureTimeCoordUnionsIsMutable() {
+      // repeated uint32 run2part = 10;
+      private java.util.List<java.lang.Integer> run2Part_ = java.util.Collections.emptyList();
+      private void ensureRun2PartIsMutable() {
         if (!((bitField0_ & 0x00000080) == 0x00000080)) {
-          timeCoordUnions_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion>(timeCoordUnions_);
+          run2Part_ = new java.util.ArrayList<java.lang.Integer>(run2Part_);
           bitField0_ |= 0x00000080;
          }
       }
-
-      private com.google.protobuf.RepeatedFieldBuilder<
-          ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder> timeCoordUnionsBuilder_;
-
       /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+       * <code>repeated uint32 run2part = 10;</code>
        *
        * <pre>
        * partitions
        * </pre>
        */
-      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion> getTimeCoordUnionsList() {
-        if (timeCoordUnionsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(timeCoordUnions_);
-        } else {
-          return timeCoordUnionsBuilder_.getMessageList();
-        }
+      public java.util.List<java.lang.Integer>
+          getRun2PartList() {
+        return java.util.Collections.unmodifiableList(run2Part_);
       }
       /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+       * <code>repeated uint32 run2part = 10;</code>
        *
        * <pre>
        * partitions
        * </pre>
        */
-      public int getTimeCoordUnionsCount() {
-        if (timeCoordUnionsBuilder_ == null) {
-          return timeCoordUnions_.size();
-        } else {
-          return timeCoordUnionsBuilder_.getCount();
-        }
+      public int getRun2PartCount() {
+        return run2Part_.size();
       }
       /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+       * <code>repeated uint32 run2part = 10;</code>
        *
        * <pre>
        * partitions
        * </pre>
        */
-      public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion getTimeCoordUnions(int index) {
-        if (timeCoordUnionsBuilder_ == null) {
-          return timeCoordUnions_.get(index);
-        } else {
-          return timeCoordUnionsBuilder_.getMessage(index);
-        }
+      public int getRun2Part(int index) {
+        return run2Part_.get(index);
       }
       /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+       * <code>repeated uint32 run2part = 10;</code>
        *
        * <pre>
        * partitions
        * </pre>
        */
-      public Builder setTimeCoordUnions(
-          int index, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion value) {
-        if (timeCoordUnionsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureTimeCoordUnionsIsMutable();
-          timeCoordUnions_.set(index, value);
-          onChanged();
-        } else {
-          timeCoordUnionsBuilder_.setMessage(index, value);
-        }
+      public Builder setRun2Part(
+          int index, int value) {
+        ensureRun2PartIsMutable();
+        run2Part_.set(index, value);
+        onChanged();
         return this;
       }
       /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+       * <code>repeated uint32 run2part = 10;</code>
        *
        * <pre>
        * partitions
        * </pre>
        */
-      public Builder setTimeCoordUnions(
-          int index, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder builderForValue) {
-        if (timeCoordUnionsBuilder_ == null) {
-          ensureTimeCoordUnionsIsMutable();
-          timeCoordUnions_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          timeCoordUnionsBuilder_.setMessage(index, builderForValue.build());
-        }
+      public Builder addRun2Part(int value) {
+        ensureRun2PartIsMutable();
+        run2Part_.add(value);
+        onChanged();
         return this;
       }
       /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+       * <code>repeated uint32 run2part = 10;</code>
        *
        * <pre>
        * partitions
        * </pre>
        */
-      public Builder addTimeCoordUnions(ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion value) {
-        if (timeCoordUnionsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureTimeCoordUnionsIsMutable();
-          timeCoordUnions_.add(value);
-          onChanged();
-        } else {
-          timeCoordUnionsBuilder_.addMessage(value);
-        }
+      public Builder addAllRun2Part(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureRun2PartIsMutable();
+        super.addAll(values, run2Part_);
+        onChanged();
         return this;
       }
       /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
+       * <code>repeated uint32 run2part = 10;</code>
        *
        * <pre>
        * partitions
        * </pre>
        */
-      public Builder addTimeCoordUnions(
-          int index, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion value) {
-        if (timeCoordUnionsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureTimeCoordUnionsIsMutable();
-          timeCoordUnions_.add(index, value);
-          onChanged();
-        } else {
-          timeCoordUnionsBuilder_.addMessage(index, value);
-        }
+      public Builder clearRun2Part() {
+        run2Part_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000080);
+        onChanged();
         return this;
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public Builder addTimeCoordUnions(
-          ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder builderForValue) {
-        if (timeCoordUnionsBuilder_ == null) {
-          ensureTimeCoordUnionsIsMutable();
-          timeCoordUnions_.add(builderForValue.build());
-          onChanged();
-        } else {
-          timeCoordUnionsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public Builder addTimeCoordUnions(
-          int index, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder builderForValue) {
-        if (timeCoordUnionsBuilder_ == null) {
-          ensureTimeCoordUnionsIsMutable();
-          timeCoordUnions_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          timeCoordUnionsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public Builder addAllTimeCoordUnions(
-          java.lang.Iterable<? extends ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion> values) {
-        if (timeCoordUnionsBuilder_ == null) {
-          ensureTimeCoordUnionsIsMutable();
-          super.addAll(values, timeCoordUnions_);
-          onChanged();
-        } else {
-          timeCoordUnionsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public Builder clearTimeCoordUnions() {
-        if (timeCoordUnionsBuilder_ == null) {
-          timeCoordUnions_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000080);
-          onChanged();
-        } else {
-          timeCoordUnionsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public Builder removeTimeCoordUnions(int index) {
-        if (timeCoordUnionsBuilder_ == null) {
-          ensureTimeCoordUnionsIsMutable();
-          timeCoordUnions_.remove(index);
-          onChanged();
-        } else {
-          timeCoordUnionsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder getTimeCoordUnionsBuilder(
-          int index) {
-        return getTimeCoordUnionsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder getTimeCoordUnionsOrBuilder(
-          int index) {
-        if (timeCoordUnionsBuilder_ == null) {
-          return timeCoordUnions_.get(index);  } else {
-          return timeCoordUnionsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder> 
-           getTimeCoordUnionsOrBuilderList() {
-        if (timeCoordUnionsBuilder_ != null) {
-          return timeCoordUnionsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(timeCoordUnions_);
-        }
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder addTimeCoordUnionsBuilder() {
-        return getTimeCoordUnionsFieldBuilder().addBuilder(
-            ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder addTimeCoordUnionsBuilder(
-          int index) {
-        return getTimeCoordUnionsFieldBuilder().addBuilder(
-            index, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder> 
-           getTimeCoordUnionsBuilderList() {
-        return getTimeCoordUnionsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder> 
-          getTimeCoordUnionsFieldBuilder() {
-        if (timeCoordUnionsBuilder_ == null) {
-          timeCoordUnionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder>(
-                  timeCoordUnions_,
-                  ((bitField0_ & 0x00000080) == 0x00000080),
-                  getParentForChildren(),
-                  isClean());
-          timeCoordUnions_ = null;
-        }
-        return timeCoordUnionsBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:gribCollectionIndex.Group)
@@ -12583,1360 +12306,6 @@ public final class GribCollectionProto {
     // @@protoc_insertion_point(class_scope:gribCollectionIndex.GribCollectionIndex)
   }
 
-  public interface TimeCoordUnionOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-
-    // required int32 code = 1;
-    /**
-     * <code>required int32 code = 1;</code>
-     */
-    boolean hasCode();
-    /**
-     * <code>required int32 code = 1;</code>
-     */
-    int getCode();
-
-    // required string unit = 2;
-    /**
-     * <code>required string unit = 2;</code>
-     */
-    boolean hasUnit();
-    /**
-     * <code>required string unit = 2;</code>
-     */
-    java.lang.String getUnit();
-    /**
-     * <code>required string unit = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getUnitBytes();
-
-    // repeated float values = 3;
-    /**
-     * <code>repeated float values = 3;</code>
-     */
-    java.util.List<java.lang.Float> getValuesList();
-    /**
-     * <code>repeated float values = 3;</code>
-     */
-    int getValuesCount();
-    /**
-     * <code>repeated float values = 3;</code>
-     */
-    float getValues(int index);
-
-    // repeated float bound = 4;
-    /**
-     * <code>repeated float bound = 4;</code>
-     *
-     * <pre>
-     * only used if interval, then = (value, bound)
-     * </pre>
-     */
-    java.util.List<java.lang.Float> getBoundList();
-    /**
-     * <code>repeated float bound = 4;</code>
-     *
-     * <pre>
-     * only used if interval, then = (value, bound)
-     * </pre>
-     */
-    int getBoundCount();
-    /**
-     * <code>repeated float bound = 4;</code>
-     *
-     * <pre>
-     * only used if interval, then = (value, bound)
-     * </pre>
-     */
-    float getBound(int index);
-
-    // repeated int32 partition = 5;
-    /**
-     * <code>repeated int32 partition = 5;</code>
-     *
-     * <pre>
-     * starting index, inclusive
-     * </pre>
-     */
-    java.util.List<java.lang.Integer> getPartitionList();
-    /**
-     * <code>repeated int32 partition = 5;</code>
-     *
-     * <pre>
-     * starting index, inclusive
-     * </pre>
-     */
-    int getPartitionCount();
-    /**
-     * <code>repeated int32 partition = 5;</code>
-     *
-     * <pre>
-     * starting index, inclusive
-     * </pre>
-     */
-    int getPartition(int index);
-
-    // repeated int32 index = 6;
-    /**
-     * <code>repeated int32 index = 6;</code>
-     *
-     * <pre>
-     * ending index, exclusive
-     * </pre>
-     */
-    java.util.List<java.lang.Integer> getIndexList();
-    /**
-     * <code>repeated int32 index = 6;</code>
-     *
-     * <pre>
-     * ending index, exclusive
-     * </pre>
-     */
-    int getIndexCount();
-    /**
-     * <code>repeated int32 index = 6;</code>
-     *
-     * <pre>
-     * ending index, exclusive
-     * </pre>
-     */
-    int getIndex(int index);
-  }
-  /**
-   * Protobuf type {@code gribCollectionIndex.TimeCoordUnion}
-   *
-   * <pre>
-   * extends Coord
-   * </pre>
-   */
-  public static final class TimeCoordUnion extends
-      com.google.protobuf.GeneratedMessage
-      implements TimeCoordUnionOrBuilder {
-    // Use TimeCoordUnion.newBuilder() to construct.
-    private TimeCoordUnion(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
-      super(builder);
-      this.unknownFields = builder.getUnknownFields();
-    }
-    private TimeCoordUnion(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final TimeCoordUnion defaultInstance;
-    public static TimeCoordUnion getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public TimeCoordUnion getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private TimeCoordUnion(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              code_ = input.readInt32();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              unit_ = input.readBytes();
-              break;
-            }
-            case 29: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-                values_ = new java.util.ArrayList<java.lang.Float>();
-                mutable_bitField0_ |= 0x00000004;
-              }
-              values_.add(input.readFloat());
-              break;
-            }
-            case 26: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004) && input.getBytesUntilLimit() > 0) {
-                values_ = new java.util.ArrayList<java.lang.Float>();
-                mutable_bitField0_ |= 0x00000004;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                values_.add(input.readFloat());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 37: {
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-                bound_ = new java.util.ArrayList<java.lang.Float>();
-                mutable_bitField0_ |= 0x00000008;
-              }
-              bound_.add(input.readFloat());
-              break;
-            }
-            case 34: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
-                bound_ = new java.util.ArrayList<java.lang.Float>();
-                mutable_bitField0_ |= 0x00000008;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                bound_.add(input.readFloat());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 40: {
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-                partition_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000010;
-              }
-              partition_.add(input.readInt32());
-              break;
-            }
-            case 42: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010) && input.getBytesUntilLimit() > 0) {
-                partition_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000010;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                partition_.add(input.readInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 48: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-                index_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000020;
-              }
-              index_.add(input.readInt32());
-              break;
-            }
-            case 50: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020) && input.getBytesUntilLimit() > 0) {
-                index_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000020;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                index_.add(input.readInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-          values_ = java.util.Collections.unmodifiableList(values_);
-        }
-        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-          bound_ = java.util.Collections.unmodifiableList(bound_);
-        }
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-          partition_ = java.util.Collections.unmodifiableList(partition_);
-        }
-        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-          index_ = java.util.Collections.unmodifiableList(index_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_TimeCoordUnion_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_TimeCoordUnion_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.class, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder.class);
-    }
-
-    public static com.google.protobuf.Parser<TimeCoordUnion> PARSER =
-        new com.google.protobuf.AbstractParser<TimeCoordUnion>() {
-      public TimeCoordUnion parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TimeCoordUnion(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<TimeCoordUnion> getParserForType() {
-      return PARSER;
-    }
-
-    private int bitField0_;
-    // required int32 code = 1;
-    public static final int CODE_FIELD_NUMBER = 1;
-    private int code_;
-    /**
-     * <code>required int32 code = 1;</code>
-     */
-    public boolean hasCode() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required int32 code = 1;</code>
-     */
-    public int getCode() {
-      return code_;
-    }
-
-    // required string unit = 2;
-    public static final int UNIT_FIELD_NUMBER = 2;
-    private java.lang.Object unit_;
-    /**
-     * <code>required string unit = 2;</code>
-     */
-    public boolean hasUnit() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required string unit = 2;</code>
-     */
-    public java.lang.String getUnit() {
-      java.lang.Object ref = unit_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          unit_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>required string unit = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getUnitBytes() {
-      java.lang.Object ref = unit_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        unit_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // repeated float values = 3;
-    public static final int VALUES_FIELD_NUMBER = 3;
-    private java.util.List<java.lang.Float> values_;
-    /**
-     * <code>repeated float values = 3;</code>
-     */
-    public java.util.List<java.lang.Float>
-        getValuesList() {
-      return values_;
-    }
-    /**
-     * <code>repeated float values = 3;</code>
-     */
-    public int getValuesCount() {
-      return values_.size();
-    }
-    /**
-     * <code>repeated float values = 3;</code>
-     */
-    public float getValues(int index) {
-      return values_.get(index);
-    }
-
-    // repeated float bound = 4;
-    public static final int BOUND_FIELD_NUMBER = 4;
-    private java.util.List<java.lang.Float> bound_;
-    /**
-     * <code>repeated float bound = 4;</code>
-     *
-     * <pre>
-     * only used if interval, then = (value, bound)
-     * </pre>
-     */
-    public java.util.List<java.lang.Float>
-        getBoundList() {
-      return bound_;
-    }
-    /**
-     * <code>repeated float bound = 4;</code>
-     *
-     * <pre>
-     * only used if interval, then = (value, bound)
-     * </pre>
-     */
-    public int getBoundCount() {
-      return bound_.size();
-    }
-    /**
-     * <code>repeated float bound = 4;</code>
-     *
-     * <pre>
-     * only used if interval, then = (value, bound)
-     * </pre>
-     */
-    public float getBound(int index) {
-      return bound_.get(index);
-    }
-
-    // repeated int32 partition = 5;
-    public static final int PARTITION_FIELD_NUMBER = 5;
-    private java.util.List<java.lang.Integer> partition_;
-    /**
-     * <code>repeated int32 partition = 5;</code>
-     *
-     * <pre>
-     * starting index, inclusive
-     * </pre>
-     */
-    public java.util.List<java.lang.Integer>
-        getPartitionList() {
-      return partition_;
-    }
-    /**
-     * <code>repeated int32 partition = 5;</code>
-     *
-     * <pre>
-     * starting index, inclusive
-     * </pre>
-     */
-    public int getPartitionCount() {
-      return partition_.size();
-    }
-    /**
-     * <code>repeated int32 partition = 5;</code>
-     *
-     * <pre>
-     * starting index, inclusive
-     * </pre>
-     */
-    public int getPartition(int index) {
-      return partition_.get(index);
-    }
-
-    // repeated int32 index = 6;
-    public static final int INDEX_FIELD_NUMBER = 6;
-    private java.util.List<java.lang.Integer> index_;
-    /**
-     * <code>repeated int32 index = 6;</code>
-     *
-     * <pre>
-     * ending index, exclusive
-     * </pre>
-     */
-    public java.util.List<java.lang.Integer>
-        getIndexList() {
-      return index_;
-    }
-    /**
-     * <code>repeated int32 index = 6;</code>
-     *
-     * <pre>
-     * ending index, exclusive
-     * </pre>
-     */
-    public int getIndexCount() {
-      return index_.size();
-    }
-    /**
-     * <code>repeated int32 index = 6;</code>
-     *
-     * <pre>
-     * ending index, exclusive
-     * </pre>
-     */
-    public int getIndex(int index) {
-      return index_.get(index);
-    }
-
-    private void initFields() {
-      code_ = 0;
-      unit_ = "";
-      values_ = java.util.Collections.emptyList();
-      bound_ = java.util.Collections.emptyList();
-      partition_ = java.util.Collections.emptyList();
-      index_ = java.util.Collections.emptyList();
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-
-      if (!hasCode()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasUnit()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, code_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getUnitBytes());
-      }
-      for (int i = 0; i < values_.size(); i++) {
-        output.writeFloat(3, values_.get(i));
-      }
-      for (int i = 0; i < bound_.size(); i++) {
-        output.writeFloat(4, bound_.get(i));
-      }
-      for (int i = 0; i < partition_.size(); i++) {
-        output.writeInt32(5, partition_.get(i));
-      }
-      for (int i = 0; i < index_.size(); i++) {
-        output.writeInt32(6, index_.get(i));
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, code_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getUnitBytes());
-      }
-      {
-        int dataSize = 0;
-        dataSize = 4 * getValuesList().size();
-        size += dataSize;
-        size += 1 * getValuesList().size();
-      }
-      {
-        int dataSize = 0;
-        dataSize = 4 * getBoundList().size();
-        size += dataSize;
-        size += 1 * getBoundList().size();
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < partition_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(partition_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getPartitionList().size();
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < index_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(index_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getIndexList().size();
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code gribCollectionIndex.TimeCoordUnion}
-     *
-     * <pre>
-     * extends Coord
-     * </pre>
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnionOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_TimeCoordUnion_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_TimeCoordUnion_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.class, ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.Builder.class);
-      }
-
-      // Construct using ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        code_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        unit_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        values_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
-        bound_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
-        partition_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
-        index_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000020);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_TimeCoordUnion_descriptor;
-      }
-
-      public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion getDefaultInstanceForType() {
-        return ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.getDefaultInstance();
-      }
-
-      public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion build() {
-        ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion buildPartial() {
-        ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion result = new ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.code_ = code_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.unit_ = unit_;
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          values_ = java.util.Collections.unmodifiableList(values_);
-          bitField0_ = (bitField0_ & ~0x00000004);
-        }
-        result.values_ = values_;
-        if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          bound_ = java.util.Collections.unmodifiableList(bound_);
-          bitField0_ = (bitField0_ & ~0x00000008);
-        }
-        result.bound_ = bound_;
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          partition_ = java.util.Collections.unmodifiableList(partition_);
-          bitField0_ = (bitField0_ & ~0x00000010);
-        }
-        result.partition_ = partition_;
-        if (((bitField0_ & 0x00000020) == 0x00000020)) {
-          index_ = java.util.Collections.unmodifiableList(index_);
-          bitField0_ = (bitField0_ & ~0x00000020);
-        }
-        result.index_ = index_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion) {
-          return mergeFrom((ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion other) {
-        if (other == ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion.getDefaultInstance()) return this;
-        if (other.hasCode()) {
-          setCode(other.getCode());
-        }
-        if (other.hasUnit()) {
-          bitField0_ |= 0x00000002;
-          unit_ = other.unit_;
-          onChanged();
-        }
-        if (!other.values_.isEmpty()) {
-          if (values_.isEmpty()) {
-            values_ = other.values_;
-            bitField0_ = (bitField0_ & ~0x00000004);
-          } else {
-            ensureValuesIsMutable();
-            values_.addAll(other.values_);
-          }
-          onChanged();
-        }
-        if (!other.bound_.isEmpty()) {
-          if (bound_.isEmpty()) {
-            bound_ = other.bound_;
-            bitField0_ = (bitField0_ & ~0x00000008);
-          } else {
-            ensureBoundIsMutable();
-            bound_.addAll(other.bound_);
-          }
-          onChanged();
-        }
-        if (!other.partition_.isEmpty()) {
-          if (partition_.isEmpty()) {
-            partition_ = other.partition_;
-            bitField0_ = (bitField0_ & ~0x00000010);
-          } else {
-            ensurePartitionIsMutable();
-            partition_.addAll(other.partition_);
-          }
-          onChanged();
-        }
-        if (!other.index_.isEmpty()) {
-          if (index_.isEmpty()) {
-            index_ = other.index_;
-            bitField0_ = (bitField0_ & ~0x00000020);
-          } else {
-            ensureIndexIsMutable();
-            index_.addAll(other.index_);
-          }
-          onChanged();
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        if (!hasCode()) {
-          
-          return false;
-        }
-        if (!hasUnit()) {
-          
-          return false;
-        }
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ucar.nc2.grib.collection.GribCollectionProto.TimeCoordUnion) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      // required int32 code = 1;
-      private int code_ ;
-      /**
-       * <code>required int32 code = 1;</code>
-       */
-      public boolean hasCode() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required int32 code = 1;</code>
-       */
-      public int getCode() {
-        return code_;
-      }
-      /**
-       * <code>required int32 code = 1;</code>
-       */
-      public Builder setCode(int value) {
-        bitField0_ |= 0x00000001;
-        code_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required int32 code = 1;</code>
-       */
-      public Builder clearCode() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        code_ = 0;
-        onChanged();
-        return this;
-      }
-
-      // required string unit = 2;
-      private java.lang.Object unit_ = "";
-      /**
-       * <code>required string unit = 2;</code>
-       */
-      public boolean hasUnit() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required string unit = 2;</code>
-       */
-      public java.lang.String getUnit() {
-        java.lang.Object ref = unit_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          unit_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>required string unit = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getUnitBytes() {
-        java.lang.Object ref = unit_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          unit_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>required string unit = 2;</code>
-       */
-      public Builder setUnit(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        unit_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required string unit = 2;</code>
-       */
-      public Builder clearUnit() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        unit_ = getDefaultInstance().getUnit();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required string unit = 2;</code>
-       */
-      public Builder setUnitBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        unit_ = value;
-        onChanged();
-        return this;
-      }
-
-      // repeated float values = 3;
-      private java.util.List<java.lang.Float> values_ = java.util.Collections.emptyList();
-      private void ensureValuesIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          values_ = new java.util.ArrayList<java.lang.Float>(values_);
-          bitField0_ |= 0x00000004;
-         }
-      }
-      /**
-       * <code>repeated float values = 3;</code>
-       */
-      public java.util.List<java.lang.Float>
-          getValuesList() {
-        return java.util.Collections.unmodifiableList(values_);
-      }
-      /**
-       * <code>repeated float values = 3;</code>
-       */
-      public int getValuesCount() {
-        return values_.size();
-      }
-      /**
-       * <code>repeated float values = 3;</code>
-       */
-      public float getValues(int index) {
-        return values_.get(index);
-      }
-      /**
-       * <code>repeated float values = 3;</code>
-       */
-      public Builder setValues(
-          int index, float value) {
-        ensureValuesIsMutable();
-        values_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated float values = 3;</code>
-       */
-      public Builder addValues(float value) {
-        ensureValuesIsMutable();
-        values_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated float values = 3;</code>
-       */
-      public Builder addAllValues(
-          java.lang.Iterable<? extends java.lang.Float> values) {
-        ensureValuesIsMutable();
-        super.addAll(values, values_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated float values = 3;</code>
-       */
-      public Builder clearValues() {
-        values_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
-        onChanged();
-        return this;
-      }
-
-      // repeated float bound = 4;
-      private java.util.List<java.lang.Float> bound_ = java.util.Collections.emptyList();
-      private void ensureBoundIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-          bound_ = new java.util.ArrayList<java.lang.Float>(bound_);
-          bitField0_ |= 0x00000008;
-         }
-      }
-      /**
-       * <code>repeated float bound = 4;</code>
-       *
-       * <pre>
-       * only used if interval, then = (value, bound)
-       * </pre>
-       */
-      public java.util.List<java.lang.Float>
-          getBoundList() {
-        return java.util.Collections.unmodifiableList(bound_);
-      }
-      /**
-       * <code>repeated float bound = 4;</code>
-       *
-       * <pre>
-       * only used if interval, then = (value, bound)
-       * </pre>
-       */
-      public int getBoundCount() {
-        return bound_.size();
-      }
-      /**
-       * <code>repeated float bound = 4;</code>
-       *
-       * <pre>
-       * only used if interval, then = (value, bound)
-       * </pre>
-       */
-      public float getBound(int index) {
-        return bound_.get(index);
-      }
-      /**
-       * <code>repeated float bound = 4;</code>
-       *
-       * <pre>
-       * only used if interval, then = (value, bound)
-       * </pre>
-       */
-      public Builder setBound(
-          int index, float value) {
-        ensureBoundIsMutable();
-        bound_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated float bound = 4;</code>
-       *
-       * <pre>
-       * only used if interval, then = (value, bound)
-       * </pre>
-       */
-      public Builder addBound(float value) {
-        ensureBoundIsMutable();
-        bound_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated float bound = 4;</code>
-       *
-       * <pre>
-       * only used if interval, then = (value, bound)
-       * </pre>
-       */
-      public Builder addAllBound(
-          java.lang.Iterable<? extends java.lang.Float> values) {
-        ensureBoundIsMutable();
-        super.addAll(values, bound_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated float bound = 4;</code>
-       *
-       * <pre>
-       * only used if interval, then = (value, bound)
-       * </pre>
-       */
-      public Builder clearBound() {
-        bound_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
-        onChanged();
-        return this;
-      }
-
-      // repeated int32 partition = 5;
-      private java.util.List<java.lang.Integer> partition_ = java.util.Collections.emptyList();
-      private void ensurePartitionIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-          partition_ = new java.util.ArrayList<java.lang.Integer>(partition_);
-          bitField0_ |= 0x00000010;
-         }
-      }
-      /**
-       * <code>repeated int32 partition = 5;</code>
-       *
-       * <pre>
-       * starting index, inclusive
-       * </pre>
-       */
-      public java.util.List<java.lang.Integer>
-          getPartitionList() {
-        return java.util.Collections.unmodifiableList(partition_);
-      }
-      /**
-       * <code>repeated int32 partition = 5;</code>
-       *
-       * <pre>
-       * starting index, inclusive
-       * </pre>
-       */
-      public int getPartitionCount() {
-        return partition_.size();
-      }
-      /**
-       * <code>repeated int32 partition = 5;</code>
-       *
-       * <pre>
-       * starting index, inclusive
-       * </pre>
-       */
-      public int getPartition(int index) {
-        return partition_.get(index);
-      }
-      /**
-       * <code>repeated int32 partition = 5;</code>
-       *
-       * <pre>
-       * starting index, inclusive
-       * </pre>
-       */
-      public Builder setPartition(
-          int index, int value) {
-        ensurePartitionIsMutable();
-        partition_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 partition = 5;</code>
-       *
-       * <pre>
-       * starting index, inclusive
-       * </pre>
-       */
-      public Builder addPartition(int value) {
-        ensurePartitionIsMutable();
-        partition_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 partition = 5;</code>
-       *
-       * <pre>
-       * starting index, inclusive
-       * </pre>
-       */
-      public Builder addAllPartition(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensurePartitionIsMutable();
-        super.addAll(values, partition_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 partition = 5;</code>
-       *
-       * <pre>
-       * starting index, inclusive
-       * </pre>
-       */
-      public Builder clearPartition() {
-        partition_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
-        onChanged();
-        return this;
-      }
-
-      // repeated int32 index = 6;
-      private java.util.List<java.lang.Integer> index_ = java.util.Collections.emptyList();
-      private void ensureIndexIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
-          index_ = new java.util.ArrayList<java.lang.Integer>(index_);
-          bitField0_ |= 0x00000020;
-         }
-      }
-      /**
-       * <code>repeated int32 index = 6;</code>
-       *
-       * <pre>
-       * ending index, exclusive
-       * </pre>
-       */
-      public java.util.List<java.lang.Integer>
-          getIndexList() {
-        return java.util.Collections.unmodifiableList(index_);
-      }
-      /**
-       * <code>repeated int32 index = 6;</code>
-       *
-       * <pre>
-       * ending index, exclusive
-       * </pre>
-       */
-      public int getIndexCount() {
-        return index_.size();
-      }
-      /**
-       * <code>repeated int32 index = 6;</code>
-       *
-       * <pre>
-       * ending index, exclusive
-       * </pre>
-       */
-      public int getIndex(int index) {
-        return index_.get(index);
-      }
-      /**
-       * <code>repeated int32 index = 6;</code>
-       *
-       * <pre>
-       * ending index, exclusive
-       * </pre>
-       */
-      public Builder setIndex(
-          int index, int value) {
-        ensureIndexIsMutable();
-        index_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 index = 6;</code>
-       *
-       * <pre>
-       * ending index, exclusive
-       * </pre>
-       */
-      public Builder addIndex(int value) {
-        ensureIndexIsMutable();
-        index_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 index = 6;</code>
-       *
-       * <pre>
-       * ending index, exclusive
-       * </pre>
-       */
-      public Builder addAllIndex(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureIndexIsMutable();
-        super.addAll(values, index_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated int32 index = 6;</code>
-       *
-       * <pre>
-       * ending index, exclusive
-       * </pre>
-       */
-      public Builder clearIndex() {
-        index_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000020);
-        onChanged();
-        return this;
-      }
-
-      // @@protoc_insertion_point(builder_scope:gribCollectionIndex.TimeCoordUnion)
-    }
-
-    static {
-      defaultInstance = new TimeCoordUnion(true);
-      defaultInstance.initFields();
-    }
-
-    // @@protoc_insertion_point(class_scope:gribCollectionIndex.TimeCoordUnion)
-  }
-
   public interface PartitionOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -13972,7 +12341,7 @@ public final class GribCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx file
+     * the gribCollection.ncx2 file
      * </pre>
      */
     boolean hasFilename();
@@ -13980,7 +12349,7 @@ public final class GribCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx file
+     * the gribCollection.ncx2 file
      * </pre>
      */
     java.lang.String getFilename();
@@ -13988,7 +12357,7 @@ public final class GribCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx file
+     * the gribCollection.ncx2 file
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -14172,7 +12541,7 @@ public final class GribCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx file
+     * the gribCollection.ncx2 file
      * </pre>
      */
     public boolean hasFilename() {
@@ -14182,7 +12551,7 @@ public final class GribCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx file
+     * the gribCollection.ncx2 file
      * </pre>
      */
     public java.lang.String getFilename() {
@@ -14203,7 +12572,7 @@ public final class GribCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx file
+     * the gribCollection.ncx2 file
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -14621,7 +12990,7 @@ public final class GribCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx file
+       * the gribCollection.ncx2 file
        * </pre>
        */
       public boolean hasFilename() {
@@ -14631,7 +13000,7 @@ public final class GribCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx file
+       * the gribCollection.ncx2 file
        * </pre>
        */
       public java.lang.String getFilename() {
@@ -14649,7 +13018,7 @@ public final class GribCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx file
+       * the gribCollection.ncx2 file
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -14669,7 +13038,7 @@ public final class GribCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx file
+       * the gribCollection.ncx2 file
        * </pre>
        */
       public Builder setFilename(
@@ -14686,7 +13055,7 @@ public final class GribCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx file
+       * the gribCollection.ncx2 file
        * </pre>
        */
       public Builder clearFilename() {
@@ -14699,7 +13068,7 @@ public final class GribCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx file
+       * the gribCollection.ncx2 file
        * </pre>
        */
       public Builder setFilenameBytes(
@@ -14798,11 +13167,6 @@ public final class GribCollectionProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_gribCollectionIndex_GribCollectionIndex_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_gribCollectionIndex_TimeCoordUnion_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_gribCollectionIndex_TimeCoordUnion_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_gribCollectionIndex_Partition_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -14831,29 +13195,25 @@ public final class GribCollectionProto {
       "\003(\002\022\r\n\005msecs\030\006 \003(\003\"6\n\tParameter\022\014\n\004name\030" +
       "\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"/\n\005MF" +
       "ile\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastModified\030\002 " +
-      "\002(\004\"\232\002\n\005Group\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 " +
+      "\002(\004\"\356\001\n\005Group\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 " +
       "\001(\021:\0010\022\024\n\014nameOverride\030\003 \001(\t\0220\n\tvariable" +
       "s\030\004 \003(\0132\035.gribCollectionIndex.Variable\022*" +
       "\n\006coords\030\005 \003(\0132\032.gribCollectionIndex.Coo" +
       "rd\022.\n\006params\030\006 \003(\0132\036.gribCollectionIndex",
-      ".Parameter\022\016\n\006fileno\030\007 \003(\005\022<\n\017timeCoordU" +
-      "nions\030\n \003(\0132#.gribCollectionIndex.TimeCo" +
-      "ordUnion\"\366\002\n\023GribCollectionIndex\022\014\n\004name" +
-      "\030\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022*\n\006mfiles\030\003 \003(\0132\032" +
-      ".gribCollectionIndex.MFile\022*\n\006groups\030\004 \003" +
-      "(\0132\032.gribCollectionIndex.Group\022.\n\006params" +
-      "\030\005 \003(\0132\036.gribCollectionIndex.Parameter\022\016" +
-      "\n\006center\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006mas" +
-      "ter\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessTy" +
-      "pe\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackPr",
-      "ocessId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.grib" +
-      "CollectionIndex.Partition\"m\n\016TimeCoordUn" +
-      "ion\022\014\n\004code\030\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006value" +
-      "s\030\003 \003(\002\022\r\n\005bound\030\004 \003(\002\022\021\n\tpartition\030\005 \003(" +
-      "\005\022\r\n\005index\030\006 \003(\005\"A\n\tPartition\022\014\n\004name\030\001 " +
-      "\002(\t\022\020\n\010filename\030\002 \002(\t\022\024\n\014lastModified\030\003 " +
-      "\001(\004B/\n\030ucar.nc2.grib.collectionB\023GribCol" +
-      "lectionProto"
+      ".Parameter\022\016\n\006fileno\030\007 \003(\005\022\020\n\010run2part\030\n" +
+      " \003(\r\"\366\002\n\023GribCollectionIndex\022\014\n\004name\030\001 \002" +
+      "(\t\022\016\n\006topDir\030\002 \002(\t\022*\n\006mfiles\030\003 \003(\0132\032.gri" +
+      "bCollectionIndex.MFile\022*\n\006groups\030\004 \003(\0132\032" +
+      ".gribCollectionIndex.Group\022.\n\006params\030\005 \003" +
+      "(\0132\036.gribCollectionIndex.Parameter\022\016\n\006ce" +
+      "nter\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030" +
+      "\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n" +
+      " \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProces" +
+      "sId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.gribColl",
+      "ectionIndex.Partition\"A\n\tPartition\022\014\n\004na" +
+      "me\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\022\024\n\014lastModifi" +
+      "ed\030\003 \001(\004B/\n\030ucar.nc2.grib.collectionB\023Gr" +
+      "ibCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14901,21 +13261,15 @@ public final class GribCollectionProto {
           internal_static_gribCollectionIndex_Group_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Group_descriptor,
-              new java.lang.String[] { "Gds", "GdsHash", "NameOverride", "Variables", "Coords", "Params", "Fileno", "TimeCoordUnions", });
+              new java.lang.String[] { "Gds", "GdsHash", "NameOverride", "Variables", "Coords", "Params", "Fileno", "Run2Part", });
           internal_static_gribCollectionIndex_GribCollectionIndex_descriptor =
             getDescriptor().getMessageTypes().get(7);
           internal_static_gribCollectionIndex_GribCollectionIndex_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_GribCollectionIndex_descriptor,
               new java.lang.String[] { "Name", "TopDir", "Mfiles", "Groups", "Params", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Partitions", });
-          internal_static_gribCollectionIndex_TimeCoordUnion_descriptor =
-            getDescriptor().getMessageTypes().get(8);
-          internal_static_gribCollectionIndex_TimeCoordUnion_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_gribCollectionIndex_TimeCoordUnion_descriptor,
-              new java.lang.String[] { "Code", "Unit", "Values", "Bound", "Partition", "Index", });
           internal_static_gribCollectionIndex_Partition_descriptor =
-            getDescriptor().getMessageTypes().get(9);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_gribCollectionIndex_Partition_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Partition_descriptor,

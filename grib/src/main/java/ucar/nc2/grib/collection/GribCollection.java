@@ -6,8 +6,8 @@ import thredds.inventory.MCollection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
-import ucar.arr.Coordinate;
-import ucar.arr.SparseArray;
+import ucar.sparr.Coordinate;
+import ucar.sparr.SparseArray;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Index;
@@ -509,10 +509,11 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public List<VariableIndex> varIndex;   // GribCollection.VariableIndex
     public List<Coordinate> coords;
     public int[] filenose;
+    public int[] run2part;   // same length as runtime coordinate; which partition to use for that runtime
 
     Map<Integer, GribCollection.VariableIndex> varMap;
 
-    public List<TimeCoordUnion> timeCoordPartitions; // used only for time partitions - DO NOT USE
+    // public List<TimeCoordUnion> timeCoordPartitions; // used only for time partitions - DO NOT USE
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash) {
       this.hcs = hcs;
@@ -730,8 +731,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       this.rawPds = other.rawPds;
       this.cdmHash = other.cdmHash;
       this.coordIndex = other.coordIndex;
-      this.recordsPos = other.recordsPos;
-      this.recordsLen = other.recordsLen;
+      this.recordsPos = 0;
+      this.recordsLen = 0;
 
       this.category = other.category;
       this.parameter = other.parameter;
@@ -762,7 +763,7 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public String getTimeIntvName() {
       if (intvName != null) return intvName;
       CoordinateTimeIntv timeiCoord = (CoordinateTimeIntv) getCoordinate(Coordinate.Type.timeIntv);
-      if (timeiCoord != null) return null;
+      if (timeiCoord == null) return null;
       intvName = timeiCoord.getTimeIntervalName();
       return intvName;
     }
@@ -831,8 +832,8 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public void readRecords() throws IOException {
       if (this.sa != null) return;
 
-      byte[] b = new byte[recordsLen];
       if (recordsLen == 0) return;
+      byte[] b = new byte[recordsLen];
 
       // synchronize to protect the raf, and records[]
       synchronized (indexRaf) {

@@ -1,4 +1,4 @@
-package ucar.arr;
+package ucar.sparr;
 
 import ucar.nc2.util.Indent;
 

@@ -34,7 +34,7 @@ package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
 import thredds.inventory.CollectionManager;
-import ucar.arr.Coordinate;
+import ucar.sparr.Coordinate;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
@@ -982,20 +982,17 @@ public class Grib2Iosp extends GribIosp {
     vindexP.readRecords(); // ?? needed
 
     int sectionLen = section.getRank();
-    Range timeRange = section.getRange(0);   // for the moment, assume always partitioned on runtime
+    Range runtimeRange = section.getRange(0);   // for the moment, assume always partitioned on runtime
     Section otherSection = section.subSection(1, sectionLen-2); // all but x, y
     Range yRange = section.getRange(sectionLen-2);
     Range xRange = section.getRange(sectionLen-1);
 
     DataReaderPartitioned dataReader = new DataReaderPartitioned();
 
-    TimeCoordUnion timeCoordP = null; // (TimeCoordUnion) vindexP.getTimeCoord(); LOOK
-
     // collect all the records from this partition that need to be read
     int resultPos = 0;
-    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
-      TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
-      int partno = val.getPartition();
+    for (int runtimeIdx = runtimeRange.first(); runtimeIdx <= runtimeRange.last(); runtimeIdx += runtimeRange.stride()) {
+      int partno = vindexP.getPartition(runtimeIdx);
       GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the variable in this partition
 
       int[] otherShape = new int[sectionLen-2];

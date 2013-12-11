@@ -79,6 +79,10 @@ public abstract class PartitionCollection extends GribCollection {
       this.flag[partno] = flag;
     }
 
+    public int getPartition(int runtimeIdx) {
+      return group.run2part[runtimeIdx];
+    }
+
     public GribCollection.VariableIndex getVindex(int partno) throws IOException {
       // at this point, we need to instantiate the Partition and the vindex.records
       Partition p = getPartitions().get(partno);

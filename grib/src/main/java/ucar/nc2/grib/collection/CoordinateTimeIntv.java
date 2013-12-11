@@ -1,7 +1,7 @@
 package ucar.nc2.grib.collection;
 
-import ucar.arr.Coordinate;
-import ucar.arr.CoordinateBuilderImpl;
+import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -143,7 +143,7 @@ public class CoordinateTimeIntv implements Coordinate {
   }
 
   ///////////////////////////////////////////////////////////
-  static public class Builder extends CoordinateBuilderImpl {
+  static public class Builder extends CoordinateBuilderImpl<Grib2Record> {
     private final Grib2Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;

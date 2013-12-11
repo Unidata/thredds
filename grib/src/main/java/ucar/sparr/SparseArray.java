@@ -1,4 +1,4 @@
-package ucar.arr;
+package ucar.sparr;
 
 import java.util.*;
 
@@ -9,16 +9,16 @@ import java.util.*;
  * @since 11/24/13
  */
 public class SparseArray<T> {
-  int[] size;    // multidim sizes
-  int[] stride;  // for index calculation
-  int totalSize; // product of sizes
+  private int[] size;    // multidim sizes
+  private int[] stride;  // for index calculation
+  private int totalSize; // product of sizes
 
-  int[] track; // index into content, size totalSize. LOOK use byte, short for memory ??
-  List<T> content; // keep the things in an ArrayList.
+  private int[] track; // index into content, size totalSize. LOOK use byte, short for memory ??
+  private List<T> content; // keep the things in an ArrayList.
 
-  int ndups = 0; // number of duplicates
+  private int ndups = 0; // number of duplicates
 
-  // create from Rectilyser
+  // create from Rectilyser or reindexer
   public SparseArray( int... size) {
     this.size = size;
     calcStrides();
@@ -70,20 +70,6 @@ public class SparseArray<T> {
     return content.get(idx);
   }
 
-  public int countNotMissing() {
-    int result=0;
-    for (int idx : track)
-      if (idx > 0) result++;
-    return result;
-  }
-
-  public int countMissing() {
-    int result=0;
-    for (int idx : track)
-      if (idx == 0) result++;
-    return result;
-  }
-
   public int calcIndex(int... index) {
     if (index.length != size.length)
       System.out.println("HEY");
@@ -110,6 +96,10 @@ public class SparseArray<T> {
     return track;
   }
 
+  public int getTrack(int idx) {
+    return track[idx];
+  }
+
   public void setTrack(int[] track) {
     this.track = track;
   }
@@ -129,6 +119,20 @@ public class SparseArray<T> {
   public int getNduplicates() {
     return ndups;
   }
+
+  public int countNotMissing() {
+     int result=0;
+     for (int idx : track)
+       if (idx > 0) result++;
+     return result;
+   }
+
+   public int countMissing() {
+     int result=0;
+     for (int idx : track)
+       if (idx == 0) result++;
+     return result;
+   }
 
   public double getDensity() {
     return (double) countNotMissing() / totalSize;

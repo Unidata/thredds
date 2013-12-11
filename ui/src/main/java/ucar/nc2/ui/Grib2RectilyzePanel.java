@@ -2,10 +2,9 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import ucar.arr.Coordinate;
+import ucar.sparr.Coordinate;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.Grib2CollectionBuilder;
 import ucar.nc2.grib.collection.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;

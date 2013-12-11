@@ -1,9 +1,6 @@
-package ucar.arr;
-
-import ucar.nc2.grib.grib2.Grib2Record;
+package ucar.sparr;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Build Coordinates heirarchically, keeping records at the leaves
@@ -12,18 +9,18 @@ import java.util.Set;
  * @author caron
  * @since 11/27/13
  */
-public interface CoordinateBuilder {
+public interface CoordinateBuilder<T> {
 
-  public void addRecord(Grib2Record r);
+  public void addRecord(T r);
 
-  public Object extract(Grib2Record gr);
+  public Object extract(T gr);
 
   // must sort values; Coordinate must be immutable
   public Coordinate makeCoordinate(List<Object> values);
 
   public Coordinate finish();
 
-  public int getIndex(Grib2Record gr);
+  public int getIndex(T gr);
 
   public Coordinate getCoordinate(); // call only after finish
 

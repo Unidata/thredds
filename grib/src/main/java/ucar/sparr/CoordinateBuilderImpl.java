@@ -1,6 +1,4 @@
-package ucar.arr;
-
-import ucar.nc2.grib.grib2.Grib2Record;
+package ucar.sparr;
 
 import java.util.*;
 
@@ -10,13 +8,13 @@ import java.util.*;
  * @author caron
  * @since 11/27/13
  */
-public abstract class CoordinateBuilderImpl implements CoordinateBuilder {
+public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
   protected Set<Object> valSet = new HashSet<>(100);
   protected Map<Object, Integer> valMap;
   protected Coordinate coord;
 
   @Override
-  public void addRecord(Grib2Record gr) {
+  public void addRecord(T gr) {
     Object val = extract(gr);
     valSet.add(val);
   }
@@ -41,7 +39,7 @@ public abstract class CoordinateBuilderImpl implements CoordinateBuilder {
   }
 
   @Override
-  public int getIndex(Grib2Record gr) {
+  public int getIndex(T gr) {
     Integer result =  valMap.get( extract(gr));
     return (result == null) ? 0 : result;
   }

@@ -33,18 +33,18 @@
 package ucar.nc2.grib.collection;
 
 import thredds.inventory.MFile;
-import ucar.arr.*;
+import ucar.sparr.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
 import java.io.IOException;
 import java.util.*;
 
 /**
- * Turn a collection of Grib2Records into a rectangular array
+ * Turn a collection of Grib2Records into a rectangular array.
+ * Do seperately for each Group
  * Helper class for Grib2CollectionBuilder.
  *
  * @author caron
@@ -58,7 +58,6 @@ public class Grib2Rectilyser {
 
   private final boolean intvMerge;
   private final boolean useGenType;
-  private final boolean useTableVersion;
 
   private final List<Grib2Record> records;
   private List<VariableBag> gribvars;
@@ -70,7 +69,7 @@ public class Grib2Rectilyser {
     this.gdsHash = gdsHash;
 
     intvMerge = assignValue(pdsConfig, "intvMerge", true);
-    useTableVersion = assignValue(pdsConfig, "useTableVersion", true);
+    // useTableVersion = assignValue(pdsConfig, "useTableVersion", true);
     useGenType = assignValue(pdsConfig, "useGenType", false);
   }
 
@@ -99,7 +98,7 @@ public class Grib2Rectilyser {
     this.files = files;
 
     // assign each record to unique variable using cdmVariableHash()
-    Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
+    Map<Integer, VariableBag> vbHash = new HashMap<>(100);
     for (Grib2Record gr : records) {
       int cdmHash = cdmVariableHash(gr, gdsHash);
       VariableBag bag = vbHash.get(cdmHash);
@@ -109,7 +108,7 @@ public class Grib2Rectilyser {
       }
       bag.atomList.add(gr);
     }
-    gribvars = new ArrayList<VariableBag>(vbHash.values());
+    gribvars = new ArrayList<>(vbHash.values());
     Collections.sort(gribvars); // make it deterministic by sorting
 
     // create coordinates for each variable
@@ -117,7 +116,7 @@ public class Grib2Rectilyser {
       Grib2Pds pdsFirst = vb.first.getPDS();
       int unit = cust.convertTimeUnit(pdsFirst.getTimeUnit());
       vb.timeUnit = Grib2Utils.getCalendarPeriod(unit);
-      vb.coordND = new CoordinateND();
+      vb.coordND = new CoordinateND<>();
       vb.coordND.addBuilder(new CoordinateRuntime.Builder());
 
       if (vb.first.getPDS().isTimeInterval())
@@ -136,19 +135,20 @@ public class Grib2Rectilyser {
     }
 
     // make shared coordinates
-    CoordinateUnionizer unionizer = new CoordinateUnionizer();
+    CoordinateUniquify uniquify = new CoordinateUniquify();
     for (VariableBag vb : gribvars) {
-      unionizer.addCoords(vb.coordND.getCoordinates());
+      uniquify.addCoords(vb.coordND.getCoordinates());
     }
-    unionizer.finish();
-    this.coords = unionizer.getUnionCoords();
+    uniquify.finish();
+    this.coords = uniquify.getUnionCoords();
 
     int tot_used = 0;
     int tot_dups = 0;
 
-    // redo the variables against the shared coordinates (at the moment this is just possibly runtime
+    // redo the variables against the shared coordinates (at the moment this is just possibly runtime)
     for (VariableBag vb : gribvars) {
-      vb.coordIndex = unionizer.reindex(vb.coordND.getCoordinates());
+      vb.coordIndex = new ArrayList<>();
+      vb.coordND = uniquify.reindex(vb.coordND, vb.coordIndex);
       tot_used += vb.coordND.getSparseArray().countNotMissing();
       tot_dups += vb.coordND.getSparseArray().getNduplicates();
      }
@@ -178,7 +178,7 @@ public class Grib2Rectilyser {
     public int cdmHash;
 
     public List<Grib2Record> atomList = new ArrayList<>(100); // not sorted anymore
-    public CoordinateND coordND;
+    public CoordinateND<Grib2Record> coordND;
     CalendarPeriod timeUnit;
 
     public List<Integer> coordIndex;

@@ -1,10 +1,8 @@
 package ucar.nc2.grib.collection;
 
 import net.jcip.annotations.Immutable;
-import ucar.arr.Coordinate;
-import ucar.arr.CoordinateBuilder;
-import ucar.arr.CoordinateBuilderImpl;
-import ucar.nc2.grib.TimeCoord;
+import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
@@ -69,6 +67,10 @@ public class CoordinateRuntime implements Coordinate {
     return runtimeSorted;
   }
 
+  public Object getValue(int idx) {
+    return runtimeSorted.get(idx);
+  }
+
   static public CalendarDate extractRunDate(Grib2Record gr) {
     return gr.getReferenceDate();
   }
@@ -111,7 +113,7 @@ public class CoordinateRuntime implements Coordinate {
 
   ///////////////////////////////////////////////////////
 
-  public static class Builder extends CoordinateBuilderImpl {
+  public static class Builder extends CoordinateBuilderImpl<Grib2Record> {
 
     @Override
     public Object extract(Grib2Record gr) {

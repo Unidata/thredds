@@ -1,10 +1,8 @@
 package ucar.nc2.grib.collection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import ucar.arr.Coordinate;
+import ucar.sparr.Coordinate;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -159,7 +157,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     return true;
   }
 
-  protected void readTimePartitions(GribCollection.GroupHcs group, GribCollectionProto.Group proto) {
+  protected void readGroupPartitionInfo(GribCollection.GroupHcs group, GribCollectionProto.Group proto) {
     // NOOP
   }
 
@@ -198,7 +196,7 @@ message Group {
     for (int i = 0; i < p.getFilenoCount(); i++)
       group.filenose[i] = p.getFileno(i);
 
-    readTimePartitions(group, p);
+    readGroupPartitionInfo(group, p);
 
     // assign names, units to coordinates
     CalendarDate firstRef = null;
@@ -213,9 +211,9 @@ message Group {
 
         case time:
           CoordinateTime tc = (CoordinateTime) coord;
-          if (timeCoord > 0) tc.setName("time"+timeCoord);
+          if (timeCoord > 0) tc.setName("time" + timeCoord);
           timeCoord++;
-          tc.setTimeUnit(Grib2Utils.getCalendarPeriod( tables.convertTimeUnit( tc.getCode())));
+          tc.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(tc.getCode())));
           tc.setRefDate(firstRef);
           break;
 

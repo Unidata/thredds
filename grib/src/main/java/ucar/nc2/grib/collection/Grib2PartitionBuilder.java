@@ -6,11 +6,9 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
-import ucar.arr.Coordinate;
-import ucar.arr.CoordinateBuilder;
-import ucar.arr.CoordinateUnionizer;
+import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilder;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.util.CloseableIterator;
@@ -26,7 +24,7 @@ import java.util.*;
  * @author John
  * @since 12/7/13
  */
-public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2CollectionBuilder {
+public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2Partition0Index";
   static private final boolean trace = false;
 
@@ -329,7 +327,13 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
         } // loop over variable
       } // loop over partition
 
-      // for each variable, create union of coordinates
+      Coordinate runtimeCoord = runtimeAllBuilder.finish();
+      canonGroup.run2part = new int[runtimeCoord.getSize()];
+      for (int i=0; i<canonGroup.run2part.length; i++) canonGroup.run2part[i] = i; // LOOK wrong
+      canonGroup.coords.set(0, runtimeCoord);
+
+
+      /* for each variable, create union of coordinates
       for (int varIdx = 0; varIdx < canonGroup.varIndex.size(); varIdx++) {
         GribCollection.VariableIndex viCanon = canonGroup.varIndex.get(varIdx);
         CoordinateUnionizer unionizer = new CoordinateUnionizer();
@@ -351,11 +355,11 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
           GribCollection.GroupHcs group = tpp.gc.findGroupById(canonGroup.getId());
           if (group == null) continue; // tolerate missing groups
           GribCollection.VariableIndex vi = group.findVariableByHash(viCanon.cdmHash);
-          viCanon.coordIndex = unionizer.reindex(vi.getCoordinates());
+          vi.readRecords();
+          viCanon.coordIndex = unionizer.reindex(vi.getSparseArray());
          }
 
-         // PartitionCollection.VariableIndexPartitioned viCanon = canonVars.get(viFromOtherPartition.cdmHash); // match with proto variable hash
-      }
+      } */
 
 
     } // loop over group
@@ -544,8 +548,8 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
       }
     }
 
-    for (int i = 0; i < g.timeCoordPartitions.size(); i++)
-      b.addTimeCoordUnions(writeTimeCoordUnionProto(g.timeCoordPartitions.get(i), i));
+    for (int i = 0; i < g.run2part.length; i++)
+      b.addRun2Part(g.run2part[i]);
 
     return b.build();
   }
@@ -573,7 +577,7 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
     return b.build();
   }
 
-  protected GribCollectionProto.TimeCoordUnion writeTimeCoordUnionProto(TimeCoordUnion tcu, int index) throws IOException {
+  /* protected GribCollectionProto.TimeCoordUnion writeTimeCoordUnionProto(TimeCoordUnion tcu, int index) throws IOException {
     GribCollectionProto.TimeCoordUnion.Builder b = GribCollectionProto.TimeCoordUnion.newBuilder();
     b.setCode(index);
     b.setUnit(tcu.getUnits());
@@ -593,7 +597,7 @@ public class Grib2PartitionBuilder extends ucar.nc2.grib.collection.Grib2Collect
     }
 
     return b.build();
-  }
+  } */
 
   private GribCollectionProto.Partition writePartitionProto(String name, PartitionCollection.Partition p) throws IOException {
     GribCollectionProto.Partition.Builder b = GribCollectionProto.Partition.newBuilder();

@@ -2,8 +2,8 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.arr.Coordinate;
-import ucar.nc2.grib.*;
+import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.sparr.Coordinate;
 import ucar.nc2.grib.collection.GribCdmIndex2;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.Grib2CollectionBuilderFromIndex;
@@ -147,7 +147,9 @@ public class CdmIndex2Panel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         CoordBean bean = (CoordBean) coordTable.getSelectedBean();
         if (bean != null) {
-          infoTA.setText(bean.coord.toString());
+          Formatter f = new Formatter();
+          bean.coord.showCoords(f);
+          infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
         }
@@ -510,24 +512,15 @@ public class CdmIndex2Panel extends JPanel {
        } catch (IOException e) {
          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
        }
-       v.sa.showInfo(f, null);
-       /* if (v instanceof TimePartition.VariableIndexPartitioned)
-       //  showRecordsInPartition(f);
-       //else
-         showRecordsInCollection(f); */
+       if (v.sa != null) v.sa.showInfo(f, null);
+
+       if (v instanceof PartitionCollection.VariableIndexPartitioned)
+         showRecordsInPartition(f);
+      // else
+      //   showRecordsInCollection(f);
      }
 
-     /* private void showRecordsInPartition(Formatter f) {
-       try {
-         TimePartition.VariableIndexPartitioned vp = (TimePartition.VariableIndexPartitioned) v;
-         showPartitionInfo(vp, f);
-
-       } catch (IOException ioe) {
-         ioe.printStackTrace();
-       }
-     }
-
-     private void showRecordsInCollection(Formatter f) {
+     /* private void showRecordsInCollection(Formatter f) {
        TimeCoord tcoord = v.getTimeCoord();
        VertCoord vcoord = v.getVertCoord();
        EnsCoord ecoord = v.getEnsCoord();
@@ -685,9 +678,20 @@ public class CdmIndex2Panel extends JPanel {
 
    }
 
-   /* private void showPartitionInfo(TimePartition.VariableIndexPartitioned vP, Formatter f) throws IOException {
 
-     TimePartition tp = (TimePartition) gc;
+  private void showRecordsInPartition(Formatter f) {
+    try {
+      PartitionCollection.VariableIndexPartitioned vp = (PartitionCollection.VariableIndexPartitioned) v;
+      showPartitionInfo(vp, f);
+
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
+  }
+
+   private void showPartitionInfo(PartitionCollection.VariableIndexPartitioned vP, Formatter f) throws IOException {
+
+     PartitionCollection tp = (PartitionCollection) gc;
      tp.setPartitionIndexReletive();
 
      TimeCoordUnion timeCoordP = (TimeCoordUnion) vP.getTimeCoord();
@@ -733,5 +737,5 @@ public class CdmIndex2Panel extends JPanel {
          }
        }
      }
-   } */
+   }
 }

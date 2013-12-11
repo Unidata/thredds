@@ -1,8 +1,8 @@
 package ucar.nc2.grib.collection;
 
 import net.jcip.annotations.Immutable;
-import ucar.arr.Coordinate;
-import ucar.arr.CoordinateBuilderImpl;
+import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
@@ -126,7 +126,7 @@ public class CoordinateTime implements Coordinate {
 
   ////////////////////////////////////////////
 
-  static public class Builder extends CoordinateBuilderImpl  {
+  static public class Builder extends CoordinateBuilderImpl<Grib2Record>  {
     int code;  // pdsFirst.getTimeUnit()
 
     public Builder(int code) {
