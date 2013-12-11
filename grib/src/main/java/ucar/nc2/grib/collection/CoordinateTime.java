@@ -5,7 +5,6 @@ import ucar.sparr.Coordinate;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 
@@ -23,8 +22,8 @@ public class CoordinateTime implements Coordinate {
   private final int code;                    // pdsFirst.getTimeUnit()
   private String name = "time";
   private CalendarPeriod timeUnit;
-  private CalendarDate refDate;
-  private String  period;
+  //private CalendarDate refDate;
+  private String periodName;
 
   public CoordinateTime(List<Integer> offsetSorted, int code) {
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
@@ -58,22 +57,26 @@ public class CoordinateTime implements Coordinate {
     return Type.time;
   }
 
-  public void setRefDate(CalendarDate refDate) {
-    this.refDate = refDate;
+  public CalendarPeriod getPeriod() {
+    return timeUnit;
   }
+
+  /* public void setRefDate(CalendarDate refDate) {
+    this.refDate = refDate;
+  } */
 
   public void setTimeUnit(CalendarPeriod timeUnit) {
     this.timeUnit = timeUnit;
     CalendarPeriod.Field cf = timeUnit.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.period = "calendar "+ cf.toString();
+      this.periodName = "calendar "+ cf.toString();
     else
-      this.period = timeUnit.getField().toString();
+      this.periodName = timeUnit.getField().toString();
   }
 
   @Override
   public String getUnit() {
-    return period+" since "+ refDate;
+    return periodName;
   }
 
   @Override
@@ -99,7 +102,7 @@ public class CoordinateTime implements Coordinate {
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("Time offsets:%n");
+    info.format("Time offsets: (%s) %n", getUnit());
      for (Integer cd : offsetSorted)
        info.format("   %3d%n", cd);
   }

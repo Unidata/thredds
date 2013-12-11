@@ -214,7 +214,7 @@ message Group {
           if (timeCoord > 0) tc.setName("time" + timeCoord);
           timeCoord++;
           tc.setTimeUnit(Grib2Utils.getCalendarPeriod(tables.convertTimeUnit(tc.getCode())));
-          tc.setRefDate(firstRef);
+          //tc.setRefDate(firstRef);
           break;
 
         case timeIntv:
@@ -222,7 +222,7 @@ message Group {
           if (timeCoord > 0) tci.setName("time"+timeCoord);
           timeCoord++;
           tci.setTimeUnit(Grib2Utils.getCalendarPeriod( tables.convertTimeUnit( tci.getCode())));
-          tci.setRefDate(firstRef);
+          //tci.setRefDate(firstRef);
           break;
 
         case vert:

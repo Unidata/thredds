@@ -4,11 +4,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MCollection;
 import thredds.inventory.partition.PartitionManager;
-import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib1.builder.Grib1TimePartitionBuilder;
-import ucar.nc2.grib.grib2.Grib2Pds;
-import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.grib.grib2.builder.Grib2TimePartitionBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
@@ -46,7 +41,7 @@ public abstract class PartitionCollection extends GribCollection {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return ucar.nc2.grib.GribCollection.createFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger());
+      return ucar.nc2.grib.collection.GribCollection.readFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger());
     }
   };
 
@@ -58,13 +53,13 @@ public abstract class PartitionCollection extends GribCollection {
   ///////////////////////////////////////////////////////////////////////
 
   static public boolean update(boolean isGrib1, PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
-    if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, logger);
-    return Grib2TimePartitionBuilder.update(tpc, logger);
+    //if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, logger);
+    return Grib2PartitionBuilder.update(tpc, logger);
   }
 
-  static public TimePartition factory(boolean isGrib1, PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
-    if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, logger);
-    return Grib2TimePartitionBuilder.factory(tpc, force, logger);
+  static public PartitionCollection factory(boolean isGrib1, PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+    //if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, logger);
+    return Grib2PartitionBuilder.factory(tpc, force, logger);
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {

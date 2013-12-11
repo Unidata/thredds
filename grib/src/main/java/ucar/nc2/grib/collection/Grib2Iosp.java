@@ -34,6 +34,7 @@ package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
 import thredds.inventory.CollectionManager;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.sparr.Coordinate;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -467,17 +468,17 @@ public class Grib2Iosp extends GribIosp {
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
+    CoordinateRuntime runtime = null;
     for (Coordinate coord : gHcs.coords) {
       Coordinate.Type type = coord.getType();
       switch (type) {
         case runtime:
-          addRuntimeCoordinate(ncfile, g, (CoordinateRuntime) coord);
-          break;
-        case time:
-          addTimeCoordinate(ncfile, g, (CoordinateTime) coord);
+          runtime = (CoordinateRuntime) coord;
+          addRuntimeCoordinate(ncfile, g, runtime);
           break;
         case timeIntv:
-          addTimeIntvCoordinate(ncfile, g, (CoordinateTimeIntv) coord);
+        case time:
+          addTimeCoordinate(ncfile, g, coord, runtime);
           break;
         case vert:
           addVerticalCoordinate(ncfile, g, (CoordinateVert) coord);
@@ -505,9 +506,12 @@ public class Grib2Iosp extends GribIosp {
     for (GribCollection.VariableIndex vindex : gHcs.varIndex) {
 
       Formatter dims = new Formatter();
+      Formatter coords = new Formatter();
 
       for (Coordinate coord : vindex.getCoordinates()) {
         dims.format("%s ", coord.getName());
+        if (coord.getType() == Coordinate.Type.time || coord.getType() == Coordinate.Type.timeIntv) // for 2D times
+          coords.format("%s ", coord.getName());
       }
       dims.format("%s", horizDims);
 
@@ -537,11 +541,16 @@ public class Grib2Iosp extends GribIosp {
           v.addAttribute(new Attribute(CDM.UNITS, units));
 
         } else {
-          v.addAttribute(new Attribute(CF.COORDINATES, s));
+          coords.format("%s ", s);
         }
       } else {
         if (!hcs.isLatLon()) v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
       }
+      v.addAttribute(new Attribute(CF.COORDINATES, coords.toString()));
+
+      String intvName = vindex.getTimeIntvName();
+      if ( intvName != null && intvName.length() != 0)
+        v.addAttribute(new Attribute(CDM.TIME_INTERVAL, intvName));
 
       v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));
       int[] param = new int[] {vindex.discipline,vindex.category,vindex.parameter};
@@ -554,48 +563,44 @@ public class Grib2Iosp extends GribIosp {
       Grib2Customizer.Parameter entry = cust.getParameter(vindex.discipline,vindex.category,vindex.parameter);
       if (entry != null) v.addAttribute(new Attribute("Grib2_Parameter_Name", entry.getName()));
 
-      if (vindex.levelType != GribNumbers.MISSING)
-        v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
-      String intvName = vindex.getTimeIntvName();
-      if ( intvName != null && intvName.length() != 0)
-        v.addAttribute(new Attribute(CDM.TIME_INTERVAL, intvName));
+      if (vindex.levelType != GribNumbers.MISSING) {
+        String levelTypeName = cust.getLevelName(vindex.levelType);
+        if (levelTypeName != null)
+          v.addAttribute(new Attribute("Grib2_Level_Type", levelTypeName));
+        else
+          v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
+      }
+
       if (vindex.intvType >= 0) {
-        v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", vindex.intvType));
         GribStatType statType = cust.getStatType(vindex.intvType);   // LOOK find the time coordinate
         if (statType != null) {
+          v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", statType.toString()));
           CF.CellMethods cm = GribStatType.getCFCellMethod( statType);
           Coordinate timeCoord = vindex.getCoordinate(Coordinate.Type.timeIntv);
           if (cm != null && timeCoord != null)
             v.addAttribute(new Attribute("cell_methods", timeCoord.getName() + ": " + cm.toString()));
+        } else {
+          v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", vindex.intvType));
         }
       }
+
       if (vindex.ensDerivedType >= 0)
         v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.ensDerivedType));
       else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
         v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.probType));
         v.addAttribute(new Attribute("Grib2_Probability_Name", vindex.probabilityName));
       }
-      if (vindex.genProcessType >= 0)
-        v.addAttribute(new Attribute("Grib2_Generating_Process_Type", cust.getGeneratingProcessTypeName(vindex.genProcessType)));
+
+      if (vindex.genProcessType >= 0) {
+        String genProcessTypeName = cust.getGeneratingProcessTypeName(vindex.genProcessType);
+        if (genProcessTypeName != null)
+          v.addAttribute(new Attribute("Grib2_Generating_Process_Type", genProcessTypeName));
+        else
+          v.addAttribute(new Attribute("Grib2_Generating_Process_Type", vindex.genProcessType));
+      }
 
       v.setSPobject(vindex);
     }
-  }
-
-  private void addTimeCoordinate(NetcdfFile ncfile, Group g, CoordinateTime tc) {
-    int n = tc.getSize();
-    String tcName = tc.getName();
-    ncfile.addDimension(g, new Dimension(tcName, n));
-    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, tcName));
-    v.addAttribute(new Attribute(CDM.UNITS, tc.getUnit()));
-    v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
-
-    // coordinate values
-    int[] data = new int[n];
-    int count = 0;
-
-    for (int val : tc.getOffsetSorted()) data[count++] = val;
-    v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
   }
 
   private void addRuntimeCoordinate(NetcdfFile ncfile, Group g, CoordinateRuntime tc) {
@@ -603,7 +608,7 @@ public class Grib2Iosp extends GribIosp {
     String tcName = tc.getName();
     ncfile.addDimension(g, new Dimension(tcName, n));
 
-    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, tcName));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, tcName));
     v.addAttribute(new Attribute(CDM.UNITS, tc.getUnit()));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, "forecast_reference_time"));
 
@@ -620,16 +625,78 @@ public class Grib2Iosp extends GribIosp {
     vs.setCachedData(Array.factory(DataType.STRING, new int[]{n}, dataS));
 
     // now convert to udunits
-    int[] data = new int[n];
+    double[] data = new double[n];
     count = 0;
-    for (int val : tc.getRuntimesUdunits()) {
+    for (double val : tc.getRuntimesUdunits()) {
       data[count++] = val;
     }
-    v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
+    v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{n}, data));
   }
 
+  // maybe do 1D if single runtime
+  private void addTimeCoordinate(NetcdfFile ncfile, Group g, Coordinate tc, CoordinateRuntime runtime) {
+    int nruns = runtime.getSize();
+    int ntimes = tc.getSize();
+    String tcName = tc.getName();
+    String dims = runtime.getName()+" "+tc.getName();
+    ncfile.addDimension(g, new Dimension(tcName, ntimes));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
+    String units = tc.getUnit()+ " since " + runtime.getFirstDate();
+    v.addAttribute(new Attribute(CDM.UNITS, units));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
 
-  private void addTimeIntvCoordinate(NetcdfFile ncfile, Group g, CoordinateTimeIntv tc) {
+    double[] data = new double[nruns * ntimes];
+    int count = 0;
+
+    // coordinate values
+    if (tc instanceof CoordinateTime) {
+      CoordinateTime coordTime = (CoordinateTime) tc;
+      CalendarPeriod period = coordTime.getPeriod();
+      for (CalendarDate cd : runtime.getRuntimesSorted()) {
+        double offset = period.getOffset(runtime.getFirstDate(), cd);
+        for (int val : coordTime.getOffsetSorted())
+          data[count++] = offset + val;
+      }
+      v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{nruns, ntimes}, data));
+
+    } else if (tc instanceof CoordinateTimeIntv) {
+      CoordinateTimeIntv coordTime = (CoordinateTimeIntv) tc;
+      CalendarPeriod period = coordTime.getPeriod();
+
+      // use upper bounds for coord value
+      for (CalendarDate cd : runtime.getRuntimesSorted()) {
+        double offset = period.getOffset(runtime.getFirstDate(), cd);
+        for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals())
+          data[count++] = offset + tinv.getBounds2();
+      }
+      v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{nruns, ntimes}, data));
+
+      // bounds
+      String intvName = cust.getIntervalName(tc.getCode());
+      if (intvName != null)
+        v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));
+      String bounds_name = tcName + "_bounds";
+
+      Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, dims + " 2"));
+      v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
+      bounds.addAttribute(new Attribute(CDM.UNITS, units));
+      bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
+
+      data = new double[nruns * ntimes * 2];
+      count = 0;
+      for (CalendarDate cd : runtime.getRuntimesSorted()) {
+        double offset = period.getOffset(runtime.getFirstDate(), cd);
+        for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals()) {
+          data[count++] = offset + tinv.getBounds1();
+          data[count++] = offset + tinv.getBounds2();
+        }
+      }
+      bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[]{nruns, ntimes, 2}, data));
+    }
+
+  }
+
+  /* private void addTimeIntvCoordinate(NetcdfFile ncfile, Group g, CoordinateTimeIntv tc) {
     int n = tc.getSize();
     String tcName = tc.getName();
     ncfile.addDimension(g, new Dimension(tcName, n));
@@ -661,7 +728,7 @@ public class Grib2Iosp extends GribIosp {
       data[count++] = tinv.getBounds2();
     }
     bounds.setCachedData(Array.factory(DataType.INT, new int[]{n, 2}, data));
-}
+}  */
 
 
   private void addVerticalCoordinate(NetcdfFile ncfile, Group g, CoordinateVert vc) {
@@ -995,8 +1062,8 @@ public class Grib2Iosp extends GribIosp {
       int partno = vindexP.getPartition(runtimeIdx);
       GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the variable in this partition
 
-      int[] otherShape = new int[sectionLen-2];
-      System.arraycopy(vindex.sa.getShape(), 0, otherShape, 0, sectionLen-2);
+      int[] otherShape = new int[sectionLen-3];
+      System.arraycopy(vindex.sa.getShape(), 1, otherShape, 0, sectionLen-3);
       Section.Iterator iter = otherSection.getIterator(otherShape);
 
        // collect all the records that need to be read

@@ -27,8 +27,8 @@ public class CoordinateTimeIntv implements Coordinate {
   private final List<TimeCoord.Tinv> timeIntervals;
   private String name = "time";
   private CalendarPeriod timeUnit;
-  private CalendarDate refDate;
-  private String period;
+  //private CalendarDate refDate;
+  private String periodName;
 
   public CoordinateTimeIntv(List<TimeCoord.Tinv> timeIntervals, int code) {
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
@@ -57,9 +57,13 @@ public class CoordinateTimeIntv implements Coordinate {
     return Type.timeIntv;
   }
 
+  public CalendarPeriod getPeriod() {
+    return timeUnit;
+  }
+
   @Override
   public String getUnit() {
-    return period+" since "+ refDate;
+    return periodName;
   }
 
   @Override
@@ -71,17 +75,17 @@ public class CoordinateTimeIntv implements Coordinate {
     this.name = name;
   }
 
-  public void setRefDate(CalendarDate refDate) {
+  /* public void setRefDate(CalendarDate refDate) {
     this.refDate = refDate;
-  }
+  } */
 
   public void setTimeUnit(CalendarPeriod timeUnit) {
     this.timeUnit = timeUnit;
     CalendarPeriod.Field cf = timeUnit.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.period = "calendar "+ cf.toString();
+      this.periodName = "calendar "+ cf.toString();
     else
-      this.period = timeUnit.getField().toString();
+      this.periodName = timeUnit.getField().toString();
   }
 
   public String getTimeIntervalName() {
@@ -117,7 +121,7 @@ public class CoordinateTimeIntv implements Coordinate {
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("Time Interval offsets:%n");
+    info.format("Time Interval offsets: (%s) %n", getUnit());
     for (TimeCoord.Tinv cd : timeIntervals)
       info.format("   (%3d - %3d)  %d%n", cd.getBounds1(), cd.getBounds2(), cd.getBounds2() - cd.getBounds1());
   }

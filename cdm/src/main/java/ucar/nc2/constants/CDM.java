@@ -60,7 +60,6 @@ public interface CDM {
   public static final String LONG_NAME = "long_name";
   public static final String MISSING_VALUE = "missing_value";
   public static final String SCALE_FACTOR = "scale_factor";
-  public static final String TIME_INTERVAL = "time_interval";
   public static final String TITLE = "title";
   public static final String UNITS = "units";
   public static final String UNSIGNED = "_Unsigned";
@@ -73,5 +72,6 @@ public interface CDM {
   public static final String FILE_FORMAT = "file_format";
   public static final String LAT_UNITS = "degrees_north";
   public static final String LON_UNITS = "degrees_east";
+  public static final String TIME_INTERVAL = "time_interval";
 
 }

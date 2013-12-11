@@ -29,10 +29,11 @@ public class CoordinateRuntime implements Coordinate {
     return runtimeSorted;
   }
 
-  public List<Integer> getRuntimesUdunits() {
-    List<Integer> result = new ArrayList<>(runtimeSorted.size());
+  public List<Double> getRuntimesUdunits() {
+    List<Double> result = new ArrayList<>(runtimeSorted.size());
     for (CalendarDate cd : runtimeSorted) {
-      cd.getDifferenceInMsecs(firstDate);
+      double msecs = (double) cd.getDifferenceInMsecs(firstDate);
+      result.add(msecs / 60 / 60 / 1000);
     }
     return result;
   }
@@ -47,7 +48,7 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public String getUnit() {
-    return "secs since "+firstDate.toString();
+    return "hours since "+firstDate.toString();
   }
 
   @Override
@@ -89,9 +90,12 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("Run Times:%n");
-    for (CalendarDate cd : runtimeSorted)
-      info.format("   %s%n", cd);
+    info.format("Run Times: (%s)%n", getUnit());
+    List<Double> udunits = getRuntimesUdunits();
+    int count = 0;
+    for (CalendarDate cd : runtimeSorted) {
+      info.format("   %s (%f)%n", cd, udunits.get(count++));
+    }
   }
 
   @Override

@@ -739,7 +739,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       this.levelType = other.levelType;
       this.intvType = other.intvType;
       this.isLayer = other.isLayer;
-      //this.intvName = other.intvName;
       this.ensDerivedType = other.ensDerivedType;
       this.probabilityName = other.probabilityName;
       this.probType = other.probType;

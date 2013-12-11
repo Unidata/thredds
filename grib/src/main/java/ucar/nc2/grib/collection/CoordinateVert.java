@@ -94,7 +94,7 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("Levels:%n");
+    info.format("Levels: (%s)%n", getUnit());
     for (VertCoord.Level level : levelSorted)
       info.format("   %s%n", level);
   }
