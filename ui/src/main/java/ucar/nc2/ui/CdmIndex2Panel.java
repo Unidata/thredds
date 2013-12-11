@@ -76,7 +76,7 @@ public class CdmIndex2Panel extends JPanel {
           infoWindow.show(); */
 
           if (gc != null)
-            showFiles(gc, null);
+            showFileTable(gc, null);
         }
       });
       buttPanel.add(filesButton);
@@ -101,7 +101,7 @@ public class CdmIndex2Panel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
         if (bean != null && bean.group != null) {
-            showFiles(gc, bean.group);
+            showFileTable(gc, bean.group);
         }
       }
     });
@@ -205,8 +205,14 @@ public class CdmIndex2Panel extends JPanel {
     if (gc == null) return;
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
-      f.format("%50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
+      f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
+      f.format("run2Part: ");
+      for (int part : bean.group.run2part) f.format("%d, ", part);
+      f.format("%n");
     }
+
+    f.format("%n");
+    showFiles(f);
   }
 
   public void showDetailInfo(Formatter f) {
@@ -316,35 +322,43 @@ public class CdmIndex2Panel extends JPanel {
 
   private void showFiles(Formatter f) {
     if (gc == null) return;
-    if (gc.getFiles() == null) return;
-    int count = 0;
-    List<MFile> fs = new ArrayList<>(gc.getFiles());
-    Map<MFile, Integer> map = new HashMap<>(fs.size() * 2);
+    if (gc.getFiles() != null) {
+      List<MFile> fs = new ArrayList<>(gc.getFiles());
+      Map<MFile, Integer> map = new HashMap<>(fs.size() * 2);
 
-    f.format("In order:%n");
-    for (MFile file : fs) {
-      f.format("%5d %60s lastModified=%s%n", count, file.getName(), CalendarDateFormatter.toDateTimeString(new Date(file.getLastModified())));
-      map.put(file, count);
-      count++;
+      int count = 0;
+      f.format("In order:%n");
+      for (MFile file : fs) {
+        f.format("%5d %60s lastModified=%s%n", count, file.getName(), CalendarDateFormatter.toDateTimeString(new Date(file.getLastModified())));
+        map.put(file, count);
+        count++;
+      }
+
+      f.format("%nsorted:%n");
+      Collections.sort(fs);
+      int last = -1;
+      for (MFile file : fs) {
+        int num = map.get(file);
+        f.format("%s%5d %s%n", (num < last) ? "***" : "", num, file.getPath());
+      }
     }
 
-    f.format("%nsorted:%n");
-    Collections.sort(fs);
-    int last = -1;
-    for (MFile file : fs) {
-      int num = map.get(file);
-      f.format("%s%5d %s%n", (num < last) ? "***" : "", num, file.getPath());
+    if (gc instanceof PartitionCollection) {
+      PartitionCollection pc = (PartitionCollection) gc;
+      for (PartitionCollection.Partition part : pc.getPartitions())
+        f.format("%s%n", part);
     }
 
     f.format("============%n%s%n", gc);
+
+
   }
 
-  private void showFiles(GribCollection gc, GribCollection.GroupHcs group) {
+  private void showFileTable(GribCollection gc, GribCollection.GroupHcs group) {
     File dir = gc.getDirectory();
     List<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
-
     fileTable.setFiles(dir, files);
-  }
+   }
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -514,8 +528,8 @@ public class CdmIndex2Panel extends JPanel {
        }
        if (v.sa != null) v.sa.showInfo(f, null);
 
-       if (v instanceof PartitionCollection.VariableIndexPartitioned)
-         showRecordsInPartition(f);
+      // if (v instanceof PartitionCollection.VariableIndexPartitioned)
+      //   showRecordsInPartition(f);
       // else
       //   showRecordsInCollection(f);
      }
@@ -679,7 +693,7 @@ public class CdmIndex2Panel extends JPanel {
    }
 
 
-  private void showRecordsInPartition(Formatter f) {
+ /*  private void showRecordsInPartition(Formatter f) {
     try {
       PartitionCollection.VariableIndexPartitioned vp = (PartitionCollection.VariableIndexPartitioned) v;
       showPartitionInfo(vp, f);
@@ -737,5 +751,5 @@ public class CdmIndex2Panel extends JPanel {
          }
        }
      }
-   }
+   }   */
 }

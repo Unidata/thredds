@@ -261,36 +261,22 @@ public class Fmrc {
     return this.lastProtoChanged > lastProtoChanged;
   }
 
-  public void checkNeeded(boolean force) {
-    // assume external update
-    /* synchronized (lock) {
-      if (fmrcDataset == null) {
-        try {
-          manager.scan(true);
-          update();
-          return;
-        } catch (Throwable t) {
-          logger.error(config.spec+": rescan failed");
-          throw new RuntimeException(t);
-        }
-      }
-
-      if (!force && !manager.isScanNeeded()) return;
+  private void checkNeeded(boolean force) {
+    if (fmrcDataset == null) {
       try {
-        if (!manager.scan(true)) return;
         update();
       } catch (Throwable t) {
         logger.error(config.spec+": rescan failed");
         throw new RuntimeException(t);
       }
-    } */
+    }
   }
 
   // scan has been done, create FmrcInv
   private FmrcInv makeFmrcInv(Formatter debug) throws IOException {
     try {
-      Map<CalendarDate, FmrInv> fmrMap = new HashMap<CalendarDate, FmrInv>(); // all files are grouped by run date in an FmrInv
-      List<FmrInv> fmrList = new ArrayList<FmrInv>(); // an fmrc is a collection of fmr
+      Map<CalendarDate, FmrInv> fmrMap = new HashMap<>(); // all files are grouped by run date in an FmrInv
+      List<FmrInv> fmrList = new ArrayList<>(); // an fmrc is a collection of fmr
 
       // get the inventory, sorted by path
       for (MFile f : manager.getFilesSorted()) {

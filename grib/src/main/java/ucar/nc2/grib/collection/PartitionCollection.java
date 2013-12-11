@@ -9,6 +9,7 @@ import ucar.nc2.grib.grib1.builder.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.builder.Grib2TimePartitionBuilder;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
@@ -188,7 +189,9 @@ public abstract class PartitionCollection extends GribCollection {
       return "Partition{" +
               "dcm=" + dcm +
               ", name='" + name + '\'' +
-              ", filename='" + indexFilename + '\'' +
+              ", directory='" + directory + '\'' +
+              ", indexFilename='" + indexFilename + '\'' +
+              ", lastModified='" + CalendarDate.of(lastModified) + '\'' +
               '}';
     }
 
