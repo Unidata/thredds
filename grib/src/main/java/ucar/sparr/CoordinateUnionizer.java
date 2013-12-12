@@ -43,7 +43,7 @@ public class CoordinateUnionizer {
     }
   }
 
-  public void finishCoordinates() {
+  public List<Coordinate> finish() {
     if (runtimeBuilder != null)
       unionCoords.add(runtimeBuilder.finish());
     if (timeBuilder != null)
@@ -54,6 +54,7 @@ public class CoordinateUnionizer {
       unionCoords.add(vertBuilder.finish());
 
     result = new CoordinateND<>(unionCoords);
+    return unionCoords;
   }
 
   /**

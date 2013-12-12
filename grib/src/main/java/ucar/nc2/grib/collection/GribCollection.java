@@ -22,7 +22,6 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -608,7 +607,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   // this class needs to be immutable, because its escapes
   public class GroupHcs implements Comparable<GroupHcs> {
     HorizCoordSys horizCoordSys;
-    public List<VariableIndex> varIndex;   // GribCollection.VariableIndex
+    public List<VariableIndex> variList;   // GribCollection.VariableIndex
     public List<Coordinate> coords;
     public int[] filenose;
     public int[] run2part;   // same length as runtime coordinate; which partition to use for that runtime
@@ -619,7 +618,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     // copy constructor for PartitionBuilder
     GroupHcs( GroupHcs from) {
       this.horizCoordSys = from.horizCoordSys;     // reference
-      this.coords = new ArrayList<>(from.coords);  // copy the coord list
+      // this.coords = new ArrayList<>(from.coords);  // copy the coord list
     }
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash) {
@@ -679,8 +678,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     public GribCollection.VariableIndex findVariableByHash(int cdmHash) {
       if (varMap == null) {
-        varMap = new HashMap<>(varIndex.size() * 2);
-        for (VariableIndex vi : varIndex)
+        varMap = new HashMap<>(variList.size() * 2);
+        for (VariableIndex vi : variList)
           varMap.put(vi.cdmHash, vi);
       }
       return varMap.get(cdmHash);
@@ -754,6 +753,9 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     // stats
     public int ndups, nrecords, missing;
     public float density;
+
+    // temporary storage while building - do not use
+    List<Coordinate> coords;
 
     public VariableIndex(GroupHcs g, int tableVersion, int discipline, byte[] rawPds, Grib2Pds pds,
                          int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
@@ -956,6 +958,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       return r;
     }
 
+    void setTotalSize(int totalSize, int sizePerRun) {
+      this.density = ((float) nrecords) / totalSize;
+    }
+
   }
 
   public static class Record {
@@ -985,8 +991,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     for (GroupHcs g : groups) {
       f.format("Hcs = %s%n", g.horizCoordSys.hcs);
 
-      f.format("%nVarIndex (%d)%n", g.varIndex.size());
-      for (VariableIndex v : g.varIndex)
+      f.format("%nVarIndex (%d)%n", g.variList.size());
+      for (VariableIndex v : g.variList)
         f.format("  %s%n", v.toStringComplete());
 
       f.format("%nCoords (%d)%n", g.coords.size());

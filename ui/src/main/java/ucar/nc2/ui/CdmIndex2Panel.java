@@ -304,11 +304,13 @@ public class CdmIndex2Panel extends JPanel {
     groupTable.setBeans(groups);
     groupTable.setHeader(indexFile.toString());
     gcFiles = gc.getFiles();
+    varTable.clearBeans();
+    coordTable.clearBeans();
   }
 
   private void setGroup(GribCollection.GroupHcs group) {
     List<VarBean> vars = new ArrayList<>();
-    for (GribCollection.VariableIndex v : group.varIndex)
+    for (GribCollection.VariableIndex v : group.variList)
       vars.add(new VarBean(v, group));
     varTable.setBeans(vars);
 
@@ -389,7 +391,7 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getNVariables() {
-      return group.varIndex.size();
+      return group.variList.size();
     }
 
     public String getDescription() {

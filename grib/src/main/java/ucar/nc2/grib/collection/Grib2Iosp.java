@@ -503,7 +503,7 @@ public class Grib2Iosp extends GribIosp {
       v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
     } */
 
-    for (GribCollection.VariableIndex vindex : gHcs.varIndex) {
+    for (GribCollection.VariableIndex vindex : gHcs.variList) {
 
       Formatter dims = new Formatter();
       Formatter coords = new Formatter();
@@ -534,7 +534,7 @@ public class Grib2Iosp extends GribIosp {
       }
 
       if (is2D) {
-        String s = searchCoord(gribCollection, Grib2Utils.getLatLon2DcoordType(desc), gHcs.varIndex);
+        String s = searchCoord(gribCollection, Grib2Utils.getLatLon2DcoordType(desc), gHcs.variList);
         if (s == null) { // its a lat/lon coordinate
           v.setDimensions(horizDims); // LOOK make this 2D and munge the units
           String units = desc.contains("Latitude of") ? CDM.LAT_UNITS : CDM.LON_UNITS;

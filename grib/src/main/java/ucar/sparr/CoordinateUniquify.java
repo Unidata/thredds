@@ -54,16 +54,18 @@ public class CoordinateUniquify {
      }
    }
 
+     // redo the variables against the shared coordinates
     public List<Integer> reindex(List<Coordinate> coords) {
-     // redo the variables against the shared coordinates (at the moment this is just possibly runtime
      List<Integer> result = new ArrayList<>();
      for (Coordinate coord : coords) {
-       if (coord.getType() == Coordinate.Type.runtime) {
-         if (!coord.equals(runtimeAll)) { // LOOK - assumes that all variables have the same runtime coordinate
-           System.out.println("Grib2Rectilyser coord.equals(runtimeAll");
-         }
+       Integer idx = coordMap.get(coord); // index into unionCoords
+       if (idx == null) {
+         if (coord.getType() == Coordinate.Type.runtime)
+           idx = 0;
+         else
+           System.out.println("HEY");
        }
-       result.add(coordMap.get(coord)); // index into rect.coords
+       result.add(idx);
      }
      return result;
    }

@@ -98,7 +98,13 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
   protected GribCollection.VariableIndex readVariable(GribCollectionProto.Variable pv, GribCollection.GroupHcs group) {
     GribCollection.VariableIndex vi = super.readVariable(pv, group);
 
-    return tp.makeVariableIndexPartitioned(vi, pv.getPartitionList());
+    PartitionCollection.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, pv.getPartitionList());
+    vip.density = vi.density;
+    vip.missing = vi.missing;
+    vip.ndups = vi.ndups;
+    vip.nrecords = vi.nrecords;
+
+    return vip;
   }
 
 }

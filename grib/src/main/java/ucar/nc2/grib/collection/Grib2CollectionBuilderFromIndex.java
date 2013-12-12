@@ -184,9 +184,9 @@ message Group {
     int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
     group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash);
 
-    group.varIndex = new ArrayList<>();
+    group.variList = new ArrayList<>();
     for (int i = 0; i < p.getVariablesCount(); i++)
-      group.varIndex.add( readVariable(p.getVariables(i), group));
+      group.variList.add( readVariable(p.getVariables(i), group));
 
     group.coords = new ArrayList<>();
     for (int i = 0; i < p.getCoordsCount(); i++)

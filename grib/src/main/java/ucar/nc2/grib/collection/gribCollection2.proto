@@ -22,12 +22,13 @@ message PartVar {
   required uint32 groupno = 1;
   required uint32 varno = 2;
   required uint32 flag = 3;
+  required uint32 partno = 4;
 
   // optionally keep stats
-  optional float density = 4;
-  optional uint32 ndups = 5;
-  optional uint32 nrecords = 6;
-  optional uint32 missing = 7;
+  optional float density = 7;
+  optional uint32 ndups = 8;
+  optional uint32 nrecords = 9;
+  optional uint32 missing = 10;
 }
 
 // info to construct the ncfile metadata

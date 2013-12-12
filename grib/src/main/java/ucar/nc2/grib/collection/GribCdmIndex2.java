@@ -352,7 +352,7 @@ public class GribCdmIndex2 implements IndexReader {
      //Grib2TimePartition tp = makeTimePartitionIndexOneDirectory(config, CollectionManager.Force.always, topPath);
      //tp.close();
 
-     Path topPath = Paths.get("F:\\data\\grib\\idd\\ndfdFire");
+     Path topPath = Paths.get("F:\\data\\grib\\idd\\ndfdConus");
      rewriteFilePartition(config, topPath, false);
 
      long took = System.currentTimeMillis() - start;

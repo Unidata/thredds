@@ -2059,9 +2059,19 @@ public final class GribCollectionProto {
      */
     int getFlag();
 
-    // optional float density = 4;
+    // required uint32 partno = 4;
     /**
-     * <code>optional float density = 4;</code>
+     * <code>required uint32 partno = 4;</code>
+     */
+    boolean hasPartno();
+    /**
+     * <code>required uint32 partno = 4;</code>
+     */
+    int getPartno();
+
+    // optional float density = 7;
+    /**
+     * <code>optional float density = 7;</code>
      *
      * <pre>
      * optionally keep stats
@@ -2069,7 +2079,7 @@ public final class GribCollectionProto {
      */
     boolean hasDensity();
     /**
-     * <code>optional float density = 4;</code>
+     * <code>optional float density = 7;</code>
      *
      * <pre>
      * optionally keep stats
@@ -2077,33 +2087,33 @@ public final class GribCollectionProto {
      */
     float getDensity();
 
-    // optional uint32 ndups = 5;
+    // optional uint32 ndups = 8;
     /**
-     * <code>optional uint32 ndups = 5;</code>
+     * <code>optional uint32 ndups = 8;</code>
      */
     boolean hasNdups();
     /**
-     * <code>optional uint32 ndups = 5;</code>
+     * <code>optional uint32 ndups = 8;</code>
      */
     int getNdups();
 
-    // optional uint32 nrecords = 6;
+    // optional uint32 nrecords = 9;
     /**
-     * <code>optional uint32 nrecords = 6;</code>
+     * <code>optional uint32 nrecords = 9;</code>
      */
     boolean hasNrecords();
     /**
-     * <code>optional uint32 nrecords = 6;</code>
+     * <code>optional uint32 nrecords = 9;</code>
      */
     int getNrecords();
 
-    // optional uint32 missing = 7;
+    // optional uint32 missing = 10;
     /**
-     * <code>optional uint32 missing = 7;</code>
+     * <code>optional uint32 missing = 10;</code>
      */
     boolean hasMissing();
     /**
-     * <code>optional uint32 missing = 7;</code>
+     * <code>optional uint32 missing = 10;</code>
      */
     int getMissing();
   }
@@ -2177,23 +2187,28 @@ public final class GribCollectionProto {
               flag_ = input.readUInt32();
               break;
             }
-            case 37: {
+            case 32: {
               bitField0_ |= 0x00000008;
+              partno_ = input.readUInt32();
+              break;
+            }
+            case 61: {
+              bitField0_ |= 0x00000010;
               density_ = input.readFloat();
               break;
             }
-            case 40: {
-              bitField0_ |= 0x00000010;
+            case 64: {
+              bitField0_ |= 0x00000020;
               ndups_ = input.readUInt32();
               break;
             }
-            case 48: {
-              bitField0_ |= 0x00000020;
+            case 72: {
+              bitField0_ |= 0x00000040;
               nrecords_ = input.readUInt32();
               break;
             }
-            case 56: {
-              bitField0_ |= 0x00000040;
+            case 80: {
+              bitField0_ |= 0x00000080;
               missing_ = input.readUInt32();
               break;
             }
@@ -2285,21 +2300,37 @@ public final class GribCollectionProto {
       return flag_;
     }
 
-    // optional float density = 4;
-    public static final int DENSITY_FIELD_NUMBER = 4;
+    // required uint32 partno = 4;
+    public static final int PARTNO_FIELD_NUMBER = 4;
+    private int partno_;
+    /**
+     * <code>required uint32 partno = 4;</code>
+     */
+    public boolean hasPartno() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required uint32 partno = 4;</code>
+     */
+    public int getPartno() {
+      return partno_;
+    }
+
+    // optional float density = 7;
+    public static final int DENSITY_FIELD_NUMBER = 7;
     private float density_;
     /**
-     * <code>optional float density = 4;</code>
+     * <code>optional float density = 7;</code>
      *
      * <pre>
      * optionally keep stats
      * </pre>
      */
     public boolean hasDensity() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>optional float density = 4;</code>
+     * <code>optional float density = 7;</code>
      *
      * <pre>
      * optionally keep stats
@@ -2309,49 +2340,49 @@ public final class GribCollectionProto {
       return density_;
     }
 
-    // optional uint32 ndups = 5;
-    public static final int NDUPS_FIELD_NUMBER = 5;
+    // optional uint32 ndups = 8;
+    public static final int NDUPS_FIELD_NUMBER = 8;
     private int ndups_;
     /**
-     * <code>optional uint32 ndups = 5;</code>
+     * <code>optional uint32 ndups = 8;</code>
      */
     public boolean hasNdups() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional uint32 ndups = 5;</code>
+     * <code>optional uint32 ndups = 8;</code>
      */
     public int getNdups() {
       return ndups_;
     }
 
-    // optional uint32 nrecords = 6;
-    public static final int NRECORDS_FIELD_NUMBER = 6;
+    // optional uint32 nrecords = 9;
+    public static final int NRECORDS_FIELD_NUMBER = 9;
     private int nrecords_;
     /**
-     * <code>optional uint32 nrecords = 6;</code>
+     * <code>optional uint32 nrecords = 9;</code>
      */
     public boolean hasNrecords() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>optional uint32 nrecords = 6;</code>
+     * <code>optional uint32 nrecords = 9;</code>
      */
     public int getNrecords() {
       return nrecords_;
     }
 
-    // optional uint32 missing = 7;
-    public static final int MISSING_FIELD_NUMBER = 7;
+    // optional uint32 missing = 10;
+    public static final int MISSING_FIELD_NUMBER = 10;
     private int missing_;
     /**
-     * <code>optional uint32 missing = 7;</code>
+     * <code>optional uint32 missing = 10;</code>
      */
     public boolean hasMissing() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
-     * <code>optional uint32 missing = 7;</code>
+     * <code>optional uint32 missing = 10;</code>
      */
     public int getMissing() {
       return missing_;
@@ -2361,6 +2392,7 @@ public final class GribCollectionProto {
       groupno_ = 0;
       varno_ = 0;
       flag_ = 0;
+      partno_ = 0;
       density_ = 0F;
       ndups_ = 0;
       nrecords_ = 0;
@@ -2383,6 +2415,10 @@ public final class GribCollectionProto {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasPartno()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -2400,16 +2436,19 @@ public final class GribCollectionProto {
         output.writeUInt32(3, flag_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeFloat(4, density_);
+        output.writeUInt32(4, partno_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeUInt32(5, ndups_);
+        output.writeFloat(7, density_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeUInt32(6, nrecords_);
+        output.writeUInt32(8, ndups_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeUInt32(7, missing_);
+        output.writeUInt32(9, nrecords_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeUInt32(10, missing_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2434,19 +2473,23 @@ public final class GribCollectionProto {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(4, density_);
+          .computeUInt32Size(4, partno_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(5, ndups_);
+          .computeFloatSize(7, density_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(6, nrecords_);
+          .computeUInt32Size(8, ndups_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(7, missing_);
+          .computeUInt32Size(9, nrecords_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(10, missing_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2574,14 +2617,16 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000002);
         flag_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
-        density_ = 0F;
+        partno_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
-        ndups_ = 0;
+        density_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000010);
-        nrecords_ = 0;
+        ndups_ = 0;
         bitField0_ = (bitField0_ & ~0x00000020);
-        missing_ = 0;
+        nrecords_ = 0;
         bitField0_ = (bitField0_ & ~0x00000040);
+        missing_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
 
@@ -2625,17 +2670,21 @@ public final class GribCollectionProto {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.density_ = density_;
+        result.partno_ = partno_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.ndups_ = ndups_;
+        result.density_ = density_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.nrecords_ = nrecords_;
+        result.ndups_ = ndups_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
+        }
+        result.nrecords_ = nrecords_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
         }
         result.missing_ = missing_;
         result.bitField0_ = to_bitField0_;
@@ -2663,6 +2712,9 @@ public final class GribCollectionProto {
         if (other.hasFlag()) {
           setFlag(other.getFlag());
         }
+        if (other.hasPartno()) {
+          setPartno(other.getPartno());
+        }
         if (other.hasDensity()) {
           setDensity(other.getDensity());
         }
@@ -2689,6 +2741,10 @@ public final class GribCollectionProto {
           return false;
         }
         if (!hasFlag()) {
+          
+          return false;
+        }
+        if (!hasPartno()) {
           
           return false;
         }
@@ -2813,20 +2869,53 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // optional float density = 4;
+      // required uint32 partno = 4;
+      private int partno_ ;
+      /**
+       * <code>required uint32 partno = 4;</code>
+       */
+      public boolean hasPartno() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required uint32 partno = 4;</code>
+       */
+      public int getPartno() {
+        return partno_;
+      }
+      /**
+       * <code>required uint32 partno = 4;</code>
+       */
+      public Builder setPartno(int value) {
+        bitField0_ |= 0x00000008;
+        partno_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint32 partno = 4;</code>
+       */
+      public Builder clearPartno() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        partno_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional float density = 7;
       private float density_ ;
       /**
-       * <code>optional float density = 4;</code>
+       * <code>optional float density = 7;</code>
        *
        * <pre>
        * optionally keep stats
        * </pre>
        */
       public boolean hasDensity() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>optional float density = 4;</code>
+       * <code>optional float density = 7;</code>
        *
        * <pre>
        * optionally keep stats
@@ -2836,126 +2925,126 @@ public final class GribCollectionProto {
         return density_;
       }
       /**
-       * <code>optional float density = 4;</code>
+       * <code>optional float density = 7;</code>
        *
        * <pre>
        * optionally keep stats
        * </pre>
        */
       public Builder setDensity(float value) {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
         density_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional float density = 4;</code>
+       * <code>optional float density = 7;</code>
        *
        * <pre>
        * optionally keep stats
        * </pre>
        */
       public Builder clearDensity() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         density_ = 0F;
         onChanged();
         return this;
       }
 
-      // optional uint32 ndups = 5;
+      // optional uint32 ndups = 8;
       private int ndups_ ;
       /**
-       * <code>optional uint32 ndups = 5;</code>
+       * <code>optional uint32 ndups = 8;</code>
        */
       public boolean hasNdups() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional uint32 ndups = 5;</code>
+       * <code>optional uint32 ndups = 8;</code>
        */
       public int getNdups() {
         return ndups_;
       }
       /**
-       * <code>optional uint32 ndups = 5;</code>
+       * <code>optional uint32 ndups = 8;</code>
        */
       public Builder setNdups(int value) {
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
         ndups_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional uint32 ndups = 5;</code>
+       * <code>optional uint32 ndups = 8;</code>
        */
       public Builder clearNdups() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         ndups_ = 0;
         onChanged();
         return this;
       }
 
-      // optional uint32 nrecords = 6;
+      // optional uint32 nrecords = 9;
       private int nrecords_ ;
       /**
-       * <code>optional uint32 nrecords = 6;</code>
+       * <code>optional uint32 nrecords = 9;</code>
        */
       public boolean hasNrecords() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>optional uint32 nrecords = 6;</code>
+       * <code>optional uint32 nrecords = 9;</code>
        */
       public int getNrecords() {
         return nrecords_;
       }
       /**
-       * <code>optional uint32 nrecords = 6;</code>
+       * <code>optional uint32 nrecords = 9;</code>
        */
       public Builder setNrecords(int value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000040;
         nrecords_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional uint32 nrecords = 6;</code>
+       * <code>optional uint32 nrecords = 9;</code>
        */
       public Builder clearNrecords() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000040);
         nrecords_ = 0;
         onChanged();
         return this;
       }
 
-      // optional uint32 missing = 7;
+      // optional uint32 missing = 10;
       private int missing_ ;
       /**
-       * <code>optional uint32 missing = 7;</code>
+       * <code>optional uint32 missing = 10;</code>
        */
       public boolean hasMissing() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
-       * <code>optional uint32 missing = 7;</code>
+       * <code>optional uint32 missing = 10;</code>
        */
       public int getMissing() {
         return missing_;
       }
       /**
-       * <code>optional uint32 missing = 7;</code>
+       * <code>optional uint32 missing = 10;</code>
        */
       public Builder setMissing(int value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
         missing_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional uint32 missing = 7;</code>
+       * <code>optional uint32 missing = 10;</code>
        */
       public Builder clearMissing() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         missing_ = 0;
         onChanged();
         return this;
@@ -14455,40 +14544,40 @@ public final class GribCollectionProto {
       "\016\n\006fileno\030\001 \002(\r\022\013\n\003pos\030\002 \002(\004\022\021\n\006bmsPos\030\003" +
       " \001(\004:\0010\"i\n\013SparseArray\022\017\n\007cdmHash\030\001 \002(\007\022" +
       "\014\n\004size\030\002 \003(\r\022\r\n\005track\030\003 \003(\r\022,\n\007records\030" +
-      "\004 \003(\0132\033.gribCollectionIndex.Record\"z\n\007Pa" +
-      "rtVar\022\017\n\007groupno\030\001 \002(\r\022\r\n\005varno\030\002 \002(\r\022\014\n" +
-      "\004flag\030\003 \002(\r\022\017\n\007density\030\004 \001(\002\022\r\n\005ndups\030\005 " +
-      "\001(\r\022\020\n\010nrecords\030\006 \001(\r\022\017\n\007missing\030\007 \001(\r\"\352" +
-      "\001\n\010Variable\022\022\n\ndiscipline\030\001 \002(\r\022\013\n\003pds\030\002",
-      " \002(\014\022\017\n\007cdmHash\030\003 \002(\007\022\022\n\nrecordsPos\030\004 \002(" +
-      "\004\022\022\n\nrecordsLen\030\005 \002(\r\022\020\n\010coordIdx\030\006 \003(\r\022" +
-      "\017\n\007density\030\007 \001(\002\022\r\n\005ndups\030\010 \001(\r\022\020\n\010nreco" +
-      "rds\030\t \001(\r\022\017\n\007missing\030\n \001(\r\022/\n\tpartition\030" +
-      "\013 \003(\0132\034.gribCollectionIndex.PartVar\"_\n\005C" +
-      "oord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014\n\004unit" +
-      "\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 \003(\002\022\r\n" +
-      "\005msecs\030\006 \003(\003\"6\n\tParameter\022\014\n\004name\030\001 \002(\t\022" +
-      "\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"/\n\005MFile\022\020\n" +
-      "\010filename\030\001 \002(\t\022\024\n\014lastModified\030\002 \002(\004\"\356\001",
-      "\n\005Group\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:\0010" +
-      "\022\024\n\014nameOverride\030\003 \001(\t\0220\n\tvariables\030\004 \003(" +
-      "\0132\035.gribCollectionIndex.Variable\022*\n\006coor" +
-      "ds\030\005 \003(\0132\032.gribCollectionIndex.Coord\022.\n\006" +
-      "params\030\006 \003(\0132\036.gribCollectionIndex.Param" +
-      "eter\022\016\n\006fileno\030\007 \003(\005\022\020\n\010run2part\030\n \003(\r\"\366" +
-      "\002\n\023GribCollectionIndex\022\014\n\004name\030\001 \002(\t\022\016\n\006" +
-      "topDir\030\002 \002(\t\022*\n\006mfiles\030\003 \003(\0132\032.gribColle" +
-      "ctionIndex.MFile\022*\n\006groups\030\004 \003(\0132\032.gribC" +
-      "ollectionIndex.Group\022.\n\006params\030\005 \003(\0132\036.g",
-      "ribCollectionIndex.Parameter\022\016\n\006center\030\006" +
-      " \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 \002(\005\022" +
-      "\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n \001(\005\022\024" +
-      "\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProcessId\030\014 " +
-      "\001(\005\0222\n\npartitions\030\r \003(\0132\036.gribCollection" +
-      "Index.Partition\"A\n\tPartition\022\014\n\004name\030\001 \002" +
-      "(\t\022\020\n\010filename\030\002 \002(\t\022\024\n\014lastModified\030\003 \001" +
-      "(\004B/\n\030ucar.nc2.grib.collectionB\023GribColl" +
-      "ectionProto"
+      "\004 \003(\0132\033.gribCollectionIndex.Record\"\212\001\n\007P" +
+      "artVar\022\017\n\007groupno\030\001 \002(\r\022\r\n\005varno\030\002 \002(\r\022\014" +
+      "\n\004flag\030\003 \002(\r\022\016\n\006partno\030\004 \002(\r\022\017\n\007density\030" +
+      "\007 \001(\002\022\r\n\005ndups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017" +
+      "\n\007missing\030\n \001(\r\"\352\001\n\010Variable\022\022\n\ndiscipli",
+      "ne\030\001 \002(\r\022\013\n\003pds\030\002 \002(\014\022\017\n\007cdmHash\030\003 \002(\007\022\022" +
+      "\n\nrecordsPos\030\004 \002(\004\022\022\n\nrecordsLen\030\005 \002(\r\022\020" +
+      "\n\010coordIdx\030\006 \003(\r\022\017\n\007density\030\007 \001(\002\022\r\n\005ndu" +
+      "ps\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030\n " +
+      "\001(\r\022/\n\tpartition\030\013 \003(\0132\034.gribCollectionI" +
+      "ndex.PartVar\"_\n\005Coord\022\014\n\004type\030\001 \002(\005\022\014\n\004c" +
+      "ode\030\002 \002(\005\022\014\n\004unit\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022" +
+      "\r\n\005bound\030\005 \003(\002\022\r\n\005msecs\030\006 \003(\003\"6\n\tParamet" +
+      "er\022\014\n\004name\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030" +
+      "\003 \001(\t\"/\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014last",
+      "Modified\030\002 \002(\004\"\356\001\n\005Group\022\013\n\003gds\030\001 \001(\014\022\022\n" +
+      "\007gdsHash\030\002 \001(\021:\0010\022\024\n\014nameOverride\030\003 \001(\t\022" +
+      "0\n\tvariables\030\004 \003(\0132\035.gribCollectionIndex" +
+      ".Variable\022*\n\006coords\030\005 \003(\0132\032.gribCollecti" +
+      "onIndex.Coord\022.\n\006params\030\006 \003(\0132\036.gribColl" +
+      "ectionIndex.Parameter\022\016\n\006fileno\030\007 \003(\005\022\020\n" +
+      "\010run2part\030\n \003(\r\"\366\002\n\023GribCollectionIndex\022" +
+      "\014\n\004name\030\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022*\n\006mfiles\030" +
+      "\003 \003(\0132\032.gribCollectionIndex.MFile\022*\n\006gro" +
+      "ups\030\004 \003(\0132\032.gribCollectionIndex.Group\022.\n",
+      "\006params\030\005 \003(\0132\036.gribCollectionIndex.Para" +
+      "meter\022\016\n\006center\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005" +
+      "\022\016\n\006master\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genPr" +
+      "ocessType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n" +
+      "\rbackProcessId\030\014 \001(\005\0222\n\npartitions\030\r \003(\013" +
+      "2\036.gribCollectionIndex.Partition\"A\n\tPart" +
+      "ition\022\014\n\004name\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\022\024\n" +
+      "\014lastModified\030\003 \001(\004B/\n\030ucar.nc2.grib.col" +
+      "lectionB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14512,7 +14601,7 @@ public final class GribCollectionProto {
           internal_static_gribCollectionIndex_PartVar_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_PartVar_descriptor,
-              new java.lang.String[] { "Groupno", "Varno", "Flag", "Density", "Ndups", "Nrecords", "Missing", });
+              new java.lang.String[] { "Groupno", "Varno", "Flag", "Partno", "Density", "Ndups", "Nrecords", "Missing", });
           internal_static_gribCollectionIndex_Variable_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_gribCollectionIndex_Variable_fieldAccessorTable = new
