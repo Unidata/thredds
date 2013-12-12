@@ -94,7 +94,7 @@ public class CoordinateTime implements Coordinate {
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s%s offsets:", indent, getType());
+    info.format("%s%s:", indent, getType());
      for (Integer cd : offsetSorted)
        info.format(" %3d,", cd);
     info.format(" (%d) %n", offsetSorted.size());

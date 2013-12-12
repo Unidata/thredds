@@ -177,7 +177,7 @@ public class Grib2Rectilyser {
     public Grib2Record first;
     public int cdmHash;
 
-    public List<Grib2Record> atomList = new ArrayList<>(100); // not sorted anymore
+    public List<Grib2Record> atomList = new ArrayList<>(100); // not sorted
     public CoordinateND<Grib2Record> coordND;
     CalendarPeriod timeUnit;
 
@@ -227,7 +227,7 @@ public class Grib2Rectilyser {
       if (!intvMerge) {
         double size = 0;
         try {
-          size = cust.getForecastTimeIntervalSizeInHours(gr); // LOOK using an Hour here, but will need to make this configurable
+          size = cust.getForecastTimeIntervalSizeInHours(pds2); // LOOK using an Hour here, but will need to make this configurable
         } catch (Throwable t) {
           logger.error("bad", t);
           if (files != null)

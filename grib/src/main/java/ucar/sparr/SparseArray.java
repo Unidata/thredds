@@ -1,5 +1,7 @@
 package ucar.sparr;
 
+import ucar.ma2.Section;
+
 import java.util.*;
 
 /**
@@ -139,7 +141,7 @@ public class SparseArray<T> {
   }
 
   public void showInfo(Formatter info, Counter all) {
-    info.format(" ndups=%d total=%d/%d density= %f%n", ndups, countNotMissing(), totalSize, getDensity());
+    info.format("ndups=%d total=%d/%d density= %f%n", ndups, countNotMissing(), totalSize, getDensity());
 
     if (all != null) {
       all.dups += ndups;
@@ -147,6 +149,42 @@ public class SparseArray<T> {
       all.recordsTotal += totalSize;
       all.vars++;
     }
+
+    info.format("sizes=");
+    List<Integer> sizes = new ArrayList<>();
+    for (int s : size) {
+      info.format("%d,", s);
+      if (s == 1) continue; // skip dimension len 1
+      sizes.add(s);
+    }
+    info.format("%n");
+    showRecurse(0, sizes, info);
   }
+
+  int showRecurse(int offset, List<Integer> sizes, Formatter f) {
+    if (sizes.size() == 0) return 0;
+    if (sizes.size() == 1) {
+      int len = sizes.get(0);
+      for (int i=0; i<len; i++) {
+        boolean hasRecord = track[offset+i] > 0;
+        if (hasRecord) f.format("X"); else f.format("-");
+      }
+      f.format("%n%n");
+      return len;
+
+    } else {
+      int total = 0;
+      int len = sizes.get(0);
+      for (int i=0; i<len; i++) {
+        int count = showRecurse(offset, sizes.subList(1,sizes.size()), f);
+        offset += count;
+        total += count;
+      }
+      f.format("%n");
+      return total;
+    }
+
+  }
+
 
 }

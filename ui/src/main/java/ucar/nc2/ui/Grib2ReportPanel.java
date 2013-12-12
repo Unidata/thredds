@@ -941,7 +941,7 @@ public class Grib2ReportPanel extends ReportPanel {
         }
 
         if (cust == null) cust = Grib2Customizer.factory(gr);
-        double len = cust.getForecastTimeIntervalSizeInHours(gr);
+        double len = cust.getForecastTimeIntervalSizeInHours(pds);
         TinvLength.count((int) len);
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
         if ((intv[0] == 0) && (intv[1] == 0)) {

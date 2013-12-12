@@ -270,12 +270,12 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   /**
    * Get interval size in units of hours
-   * @param gr must be an interval
+   * @param pds must be a Grib2Pds.PdsInterval
    * @return  interval size in units of hours
    */
-  public double getForecastTimeIntervalSizeInHours(Grib2Record gr) {
-    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
-    int timeUnitOrg = gr.getPDS().getTimeUnit();
+  public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
+    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
+    int timeUnitOrg = pds.getTimeUnit();
 
     // calculate total "range" in units of timeUnit
     int range = 0;

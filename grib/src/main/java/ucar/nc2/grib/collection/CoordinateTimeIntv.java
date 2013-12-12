@@ -113,7 +113,7 @@ public class CoordinateTimeIntv implements Coordinate {
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s%s Tinv:", indent, getType());
+    info.format("%s%s:", indent, getType());
      for (TimeCoord.Tinv cd : timeIntervals)
        info.format(" %s,", cd);
     info.format(" (%d) %n", timeIntervals.size());

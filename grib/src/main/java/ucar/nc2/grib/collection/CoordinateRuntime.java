@@ -82,7 +82,7 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s%s %20s:", indent, getType(), "RunTimes");
+    info.format("%s%s:", indent, getType());
     for (CalendarDate cd : runtimeSorted)
       info.format(" %s,", cd);
     info.format(" (%d) %n", runtimeSorted.size());

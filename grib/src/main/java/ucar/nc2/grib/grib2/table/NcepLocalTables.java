@@ -203,7 +203,7 @@ public class NcepLocalTables extends Grib2Customizer {
   public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     if (!pds.isTimeInterval()) return null;
-    if (!isCfsr(gr, pds)) return super.getForecastTimeInterval(gr);
+    if (!isCfsr(pds)) return super.getForecastTimeInterval(gr);
 
     // LOOK this is hack for CFSR monthly combobulation
     CalendarPeriod period = CalendarPeriod.of(6, CalendarPeriod.Field.Hour); // hahahahahaha
@@ -211,13 +211,12 @@ public class NcepLocalTables extends Grib2Customizer {
   }
 
   @Override
-  public double getForecastTimeIntervalSizeInHours(Grib2Record gr) {
-    Grib2Pds pds = gr.getPDS();
-    if (!isCfsr(gr, pds)) return super.getForecastTimeIntervalSizeInHours(gr);
-    return 6.0;
+  public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
+    if (!isCfsr(pds)) return super.getForecastTimeIntervalSizeInHours(pds);
+    return 6.0;  // LOOK
   }
 
-  private boolean isCfsr(Grib2Record gr, Grib2Pds pds) {
+  private boolean isCfsr(Grib2Pds pds) {
     int genType = pds.getGenProcessId();
     if ((genType != 82) && (genType != 89)) return false;
 

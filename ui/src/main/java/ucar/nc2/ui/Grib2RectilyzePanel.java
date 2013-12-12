@@ -118,6 +118,17 @@ public class Grib2RectilyzePanel extends JPanel {
        infoWindow2.show();
      }
    });
+    varPopup.addAction("Compare cdmHash", new AbstractAction() {
+     public void actionPerformed(ActionEvent e) {
+       List beans = param2BeanTable.getSelectedBeans();
+       if (beans == null || beans.size() != 2) return;
+       Formatter f = new Formatter();
+       compareCdmHash((VariableBagBean) beans.get(0), (VariableBagBean) beans.get(1), f);
+       infoPopup2.setText(f.toString());
+       infoPopup2.gotoTop();
+       infoWindow2.show();
+     }
+   });
 
     Class useClass = Grib2RecordBean.class;
     record2BeanTable = new BeanTableSorted(useClass, (PreferencesExt) prefs.node(useClass.getName()), false, "Grib2Record", "from VariableBag.atomList");
@@ -1012,6 +1023,57 @@ public class Grib2RectilyzePanel extends JPanel {
   }
 
   ////////////////////////////////////////////////////////
+  /*   public int cdmVariableHash(Grib2Record gr, int gdsHash) {
+      Grib2SectionGridDefinition gdss = gr.getGDSsection();
+      Grib2Pds pds2 = gr.getPDS();
+
+      int result = 17;
+
+      if (gdsHash == 0)
+        result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
+      else
+        result += result * 37 + gdsHash;
+
+      // if this uses any local tables, then we have to add the center id, and subcenter if present
+      if ((pds2.getParameterCategory() > 191) || (pds2.getParameterNumber() > 191) || (pds2.getLevelType1() > 191)
+              || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191)
+              || (ensDerivedType > 191) || (probType > 191)) {
+        Grib2SectionIdentification id = gr.getId();
+        result += result * 37 + id.getCenter_id();
+        if (id.getSubcenter_id() > 0)
+          result += result * 37 + id.getSubcenter_id();
+      }
+    } */
+  private void compareCdmHash(VariableBagBean bean1, VariableBagBean bean2, Formatter f) {
+    f.format("discipline   %d == %d%n", bean1.discipline, bean2.discipline);
+    f.format("category     %d == %d%n", bean1.pds.getParameterCategory(), bean2.pds.getParameterCategory());
+    f.format("paramNo      %d == %d%n", bean1.pds.getParameterNumber(), bean2.pds.getParameterNumber());
+    f.format("template     %d == %d%n", bean1.pds.getTemplateNumber(), bean2.pds.getTemplateNumber());
+    f.format("levelType    %d == %d%n", bean1.pds.getLevelType1(), bean2.pds.getLevelType1());
+    f.format("isLayer      %s == %s%n", Grib2Utils.isLayer(bean1.pds), Grib2Utils.isLayer(bean2.pds));
+    f.format("isTimeIntv   %s == %s%n", bean1.pds.isTimeInterval(), bean2.pds.isTimeInterval());
+    if (bean1.pds.isTimeInterval() && bean2.pds.isTimeInterval()) {  //!intvMerge
+      f.format("intvSize     %f == %f%n",  cust.getForecastTimeIntervalSizeInHours(bean1.pds), cust.getForecastTimeIntervalSizeInHours(bean2.pds));
+    }
+    f.format("statType     %d == %d%n", bean1.pds.getStatisticalProcessType(), bean2.pds.getStatisticalProcessType());
+    f.format("isProb       %s == %s%n", bean1.pds.isProbability(), bean2.pds.isProbability());
+    if (bean1.pds.isProbability() && bean2.pds.isProbability()) {
+      Grib2Pds.PdsProbability pdsProb1 = (Grib2Pds.PdsProbability) bean1.pds;
+      Grib2Pds.PdsProbability pdsProb2 = (Grib2Pds.PdsProbability) bean2.pds;
+      f.format("probType     %d == %d%n", pdsProb1.getProbabilityType(), pdsProb2.getProbabilityType());
+      f.format("probName     %s == %s%n", pdsProb1.getProbabilityName(), pdsProb2.getProbabilityName());
+      f.format("probHash     %d == %d%n", pdsProb1.getProbabilityHashcode(), pdsProb2.getProbabilityHashcode());
+    }
+    f.format("isEnsemble   %s == %s%n", bean1.pds.isEnsemble(), bean2.pds.isEnsemble());
+    f.format("isEnsDerived %s == %s%n", bean1.pds.isEnsembleDerived(), bean2.pds.isEnsembleDerived());
+    if (bean1.pds.isEnsembleDerived() && bean2.pds.isEnsembleDerived()) {
+      Grib2Pds.PdsEnsembleDerived pdsDerived1 = (Grib2Pds.PdsEnsembleDerived) bean1.pds;
+      Grib2Pds.PdsEnsembleDerived pdsDerived2 = (Grib2Pds.PdsEnsembleDerived) bean2.pds;
+      f.format("DerivedType    %d == %d%n", pdsDerived1.getDerivedForecastType(), pdsDerived2.getDerivedForecastType());
+    }
+   f.format("genType       %d == %d%n", bean1.pds.getGenProcessType(), bean2.pds.getGenProcessType());
+  }
+
   private void showProcessedPds(Grib2Record gr, Grib2Pds pds, int discipline, Formatter f) {
     int template = pds.getTemplateNumber();
     f.format(" Product Template %3d = %s%n", template, cust.getTableValue("4.0", template));

@@ -71,12 +71,13 @@ public class CoordinateND<T> {
   }
 
   public void showInfo(List<T> records, Formatter info) {
-    buildSparseArray(records, info);
+    if (sa == null) buildSparseArray(records, info);
+
+    for (Coordinate coord : coordinates)
+      coord.showInfo(info, new Indent(2));
     info.format("%n%n");
     sa.showInfo(info, null);
     info.format("%n");
-    for (Coordinate coord : coordinates)
-      coord.showInfo(info, new Indent(2));
   }
 
   public void showInfo(Formatter info, Counter all) {
