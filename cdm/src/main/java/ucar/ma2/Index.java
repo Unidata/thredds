@@ -567,6 +567,7 @@ public class  Index implements Cloneable {
   public Index set(int[] index) {
     if (index.length != rank)
       throw new ArrayIndexOutOfBoundsException();
+    if (rank == 0) return this;
     int prefixrank = (hasvlen ? rank : rank -1);
     System.arraycopy(index, 0, current, 0, prefixrank);
     if(hasvlen) current[prefixrank] = -1;
