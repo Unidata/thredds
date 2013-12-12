@@ -34,6 +34,7 @@ public class TestReadFormats {
       if (name.endsWith(".gbx8")) return false;
       if (name.endsWith(".gbx9")) return false;
       if (name.endsWith(".ncx")) return false;
+      if (name.endsWith(".ncx2")) return false;
       if (name.endsWith(".java")) return false;
       if (name.endsWith(".tif")) return false;
       if (name.endsWith(".txt")) return false;

@@ -74,6 +74,8 @@ public class TestGribDiskCache {
         data.delete();
       if (data.getName().endsWith(".ncx"))
         data.delete();
+      if (data.getName().endsWith(".ncx2"))
+        data.delete();
     }
 
     for (File data : dd.listFiles()) {
@@ -86,8 +88,9 @@ public class TestGribDiskCache {
       assert !data.getName().endsWith(".gbx8");
       assert !data.getName().endsWith(".gbx9");
       assert !data.getName().endsWith(".ncx");
+      assert !data.getName().endsWith(".ncx2");
       if (data.getName().endsWith(".grib1") || data.getName().endsWith(".grib2")) {
-        String index = data.getPath()+".ncx";
+        String index = data.getPath()+".ncx2";
         File indexFile = cache.getCacheFile(index);
         assert indexFile != null;
         assert indexFile.exists() : indexFile.getPath() +" does not exist";

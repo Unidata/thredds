@@ -106,8 +106,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static public final String resourcesDir = "resources/nj22/coords/"; // resource path
   static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysBuilder.class);
 
-  static private List<Convention> conventionList = new ArrayList<Convention>();
-  static private Map<String, String> ncmlHash = new HashMap<String, String>();
+  static private List<Convention> conventionList = new ArrayList<>();
+  static private Map<String, String> ncmlHash = new HashMap<>();
   static private boolean useMaximalCoordSys = true;
   static private boolean userMode = false;
 
@@ -288,7 +288,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @return  list of Convention names
    */
   static public List<String> breakupConventionNames(String convAttValue) {
-    List<String> names = new ArrayList<String>();
+    List<String> names = new ArrayList<>();
 
     if ((convAttValue.indexOf(',') > 0) || (convAttValue.indexOf(';') > 0)) {
       StringTokenizer stoke = new StringTokenizer(convAttValue, ",;");
@@ -581,12 +581,12 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     StringTokenizer stoker = new StringTokenizer(coordinates);
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      VarProcess ap = findVarProcess(vname);
+      VarProcess ap = findVarProcess(vname, vp);
       if (ap == null) {
         Group g = vp.v.getParentGroup();
         Variable v = g.findVariableOrInParent(vname);
         if (v != null)
-          ap = findVarProcess(v.getFullName());
+          ap = findVarProcess(v.getFullName(), vp);
         else {
           parseInfo.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getFullName());
           userAdvice.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getFullName());
@@ -616,7 +616,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         StringTokenizer stoker = new StringTokenizer(vp.coordSys);
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
-          VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+          VarProcess ap = findVarProcess(vname, vp);
           if (ap != null) {
             if (!ap.isCoordinateSystem)
               parseInfo.format(" CoordinateSystem = %s added; referenced from var= %s\n", vname, vp.v.getFullName());
@@ -643,7 +643,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         StringTokenizer stoker = new StringTokenizer(vp.coordTransforms);
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
-          VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+          VarProcess ap = findVarProcess(vname, vp);
           if (ap != null) {
             if (!ap.isCoordinateTransform)
               parseInfo.format(" CoordinateTransform = %s added; referenced from var= %s\n", vname, vp.v.getFullName());
@@ -703,7 +703,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         StringTokenizer stoker = new StringTokenizer(vp.coordSys);
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
-          VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+          VarProcess ap = findVarProcess(vname, vp);
           if (ap == null) {
             parseInfo.format("***Cant find Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getFullName());
             userAdvice.format("***Cant find Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getFullName());
@@ -754,7 +754,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       VariableEnhanced ve = (VariableEnhanced) vp.v;
 
       if (!vp.hasCoordinateSystem() && (vp.coordAxes != null) && vp.isData()) {
-        List<CoordinateAxis> dataAxesList = getAxes(vp.coordAxes, vp.v.getFullName());
+        List<CoordinateAxis> dataAxesList = getAxes(vp, vp.coordAxes, vp.v.getFullName());
         if (dataAxesList.size() > 1) {
           String coordSysName = CoordinateSystem.makeName(dataAxesList);
           CoordinateSystem cs = ncDataset.findCoordinateSystem(coordSysName);
@@ -772,12 +772,12 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     }
   }
 
-  private List<CoordinateAxis> getAxes(String names, String varName) {
+  private List<CoordinateAxis> getAxes(VarProcess vp, String names, String varName) {
     List<CoordinateAxis> axesList = new ArrayList<CoordinateAxis>();
     StringTokenizer stoker = new StringTokenizer(names);
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      VarProcess ap = findVarProcess(vname);
+      VarProcess ap = findVarProcess(vname, vp);
       if (ap != null) {
         CoordinateAxis axis = ap.makeIntoCoordinateAxis();
         if (!axesList.contains(axis)) axesList.add(axis);
@@ -978,7 +978,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         StringTokenizer stoker = new StringTokenizer(vp.coordTransforms);
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
-          VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+          VarProcess ap = findVarProcess(vname, vp);
           if (ap != null) {
             if (ap.ct != null) {
               vp.addCoordinateTransform(ap.ct);
@@ -1001,7 +1001,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         StringTokenizer stoker = new StringTokenizer(vp.coordSys);
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
-          VarProcess vcs = findVarProcess(vname); // LOOK: full vs short name
+          VarProcess vcs = findVarProcess(vname, vp);
           if (vcs == null) {
             parseInfo.format("***Cant find coordSystem variable= %s referenced from var= %s\n", vname, vp.v.getFullName());
             userAdvice.format("***Cant find coordSystem variable= %s referenced from var= %s\n", vname, vp.v.getFullName());
@@ -1053,16 +1053,26 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   }
 
-  protected VarProcess findVarProcess(String fullName) {
-    if (fullName == null) return null;
+  protected VarProcess findVarProcess(String name, VarProcess from) {
+    if (name == null) return null;
 
+    // compare full name
     for (VarProcess vp : varList) {
-      if (fullName.equals(vp.v.getFullName()))
+      if (name.equals(vp.v.getFullName()))
         return vp;
     }
 
+    // prefer ones in the same group
+    if (from != null) {
+      for (VarProcess vp : varList) {
+        if (name.equals(vp.v.getShortName()) && vp.v.getGroup().equals(from.v.getGroup()))
+          return vp;
+      }
+    }
+
+    // WAEF, use short name
     for (VarProcess vp : varList) {
-      if (fullName.equals(vp.v.getShortName()))
+      if (name.equals(vp.v.getShortName()))
         return vp;
     }
 
@@ -1149,7 +1159,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           parseInfo.format("**ERROR Coordinate Variable Alias %s has rank %d\n", v.getFullName(), v.getRank());
           userAdvice.format("**ERROR Coordinate Variable Alias %s has rank %d\n", v.getFullName(), v.getRank());
         } else {
-          Dimension coordDim = ds.findDimension(coordVarAlias); // LOOK use groups
+          Dimension coordDim = v.getGroup().findDimension(coordVarAlias);
           Dimension vDim = v.getDimension(0);
           if (!coordDim.equals(vDim)) {
             parseInfo.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s\n", v.getFullName(), coordVarAlias);
@@ -1266,7 +1276,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         StringTokenizer stoker = new StringTokenizer(coordAxes); // _CoordinateAxes attribute
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
-          VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+          VarProcess ap = findVarProcess(vname, this);
           if (ap != null) {
             CoordinateAxis axis = ap.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) axesList.add(axis);
@@ -1300,13 +1310,13 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
      * @return list of coordinate axes for this data variable.
      */
     public List<CoordinateAxis> findCoordinateAxes(boolean addCoordVariables) {
-      List<CoordinateAxis> axesList = new ArrayList<CoordinateAxis>();
+      List<CoordinateAxis> axesList = new ArrayList<>();
 
       if (coordAxes != null) { // explicit axes
         StringTokenizer stoker = new StringTokenizer(coordAxes);
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
-          VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+          VarProcess ap = findVarProcess(vname, this);
           if (ap != null) {
             CoordinateAxis axis = ap.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) axesList.add(axis);
@@ -1316,7 +1326,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         StringTokenizer stoker = new StringTokenizer(coordinates);
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
-          VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+          VarProcess ap = findVarProcess(vname, this);
           if (ap != null) {
             CoordinateAxis axis = ap.makeIntoCoordinateAxis(); // LOOK check if its legal
             if (!axesList.contains(axis)) axesList.add(axis);

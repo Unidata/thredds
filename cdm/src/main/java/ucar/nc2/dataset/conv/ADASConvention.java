@@ -209,7 +209,7 @@ public class ADASConvention extends CoordSysBuilder {
 
   protected void makeCoordinateTransforms(NetcdfDataset ds) {
     if (projCT != null) {
-      VarProcess vp = findVarProcess(projCT.getName());
+      VarProcess vp = findVarProcess(projCT.getName(), null);
       vp.isCoordinateTransform = true;
       vp.ct = projCT;
     }

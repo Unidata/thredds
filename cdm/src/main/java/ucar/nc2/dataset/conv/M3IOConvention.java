@@ -430,7 +430,7 @@ public class M3IOConvention extends CoordSysBuilder {
 
   protected void makeCoordinateTransforms(NetcdfDataset ds) {
     if (ct != null) {
-      VarProcess vp = findVarProcess(ct.getName());
+      VarProcess vp = findVarProcess(ct.getName(), null);
       if (vp != null)
         vp.ct = ct;
     }

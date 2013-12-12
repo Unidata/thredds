@@ -464,7 +464,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     // data file not here
     if (!dataFile.exists()) {
-      throw new FileNotFoundException("data file not found = " + filename);
+      throw new FileNotFoundException("data file not found = " + dataFile.getPath());
     }
 
     RandomAccessFile want = getDataRaf(dataFile.getPath());

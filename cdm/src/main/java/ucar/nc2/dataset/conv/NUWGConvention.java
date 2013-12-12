@@ -325,7 +325,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
   protected void makeCoordinateTransforms( NetcdfDataset ds) {
     if ((grib != null) && (grib.ct != null)) {
-      VarProcess vp = findVarProcess(grib.ct.getName());
+      VarProcess vp = findVarProcess(grib.ct.getName(), null);
       vp.isCoordinateTransform = true;
       vp.ct = grib.ct;
     }

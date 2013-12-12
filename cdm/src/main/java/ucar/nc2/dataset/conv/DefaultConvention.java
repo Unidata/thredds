@@ -181,7 +181,7 @@ public class  DefaultConvention extends CoordSysBuilder {
 
     protected void makeCoordinateTransforms(NetcdfDataset ds) {
       if (projCT != null) {
-        VarProcess vp = findVarProcess(projCT.getName());
+        VarProcess vp = findVarProcess(projCT.getName(), null);
         if (vp != null)
           vp.ct = projCT;
       }

@@ -67,14 +67,14 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       if (!NcStream.readAndTest(raf, getMagicStart().getBytes())) {
         raf.seek(0);
         NcStream.readAndTest(raf, getMagicStart().getBytes()); // debug
-        logger.error("Grib2Collection {}: invalid index magic", gc.getName());
+        logger.error("Grib2CollectionBuilderFromIndex {}: invalid index magic", gc.getName());
         return false;
       }
 
       gc.version = raf.readInt();
       boolean versionOk = isSingleFile ? gc.version >= Grib2CollectionBuilder.minVersionSingle : gc.version >= Grib2CollectionBuilder.version;
       if (!versionOk) {
-        logger.warn("Grib2Collection {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionBuilder.version, raf.getLocation());
+        logger.warn("Grib2CollectionBuilderFromIndex {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionBuilder.version, raf.getLocation());
         return false;
       }
 
@@ -83,7 +83,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
       int size = NcStream.readVInt(raf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
-        logger.warn("Grib2Collection {}: invalid index size", gc.getName());
+        logger.warn("Grib2CollectionBuilderFromIndex {}: invalid index size", gc.getName());
         return false;
       }
 
@@ -105,10 +105,10 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       File dir = gc.getDirectory();
       File protoDir = new File(proto.getTopDir());
       if (dir != null && protoDir != null && !dir.getCanonicalPath().equals(protoDir.getCanonicalPath())) {
-        logger.info("Grib2Collection {}: has different directory= {} than index= {} ", gc.getName(), dir.getCanonicalPath(), protoDir.getCanonicalPath());
+        logger.info("Grib2CollectionBuilderFromIndex {}: has different directory= {} than index= {} ", gc.getName(), dir.getCanonicalPath(), protoDir.getCanonicalPath());
         //return false;
       }
-      gc.setDirectory(new File(proto.getTopDir()));
+      // gc.setDirectory(dir);  // correct the directory
 
       // see if its a partition
       boolean isPartition = proto.getPartitionsCount() > 0;
@@ -117,7 +117,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       if (!isPartition) {
         int n = proto.getMfilesCount();
         if (n == 0) {
-          logger.warn("Grib2Collection {}: has no files, force recreate ", gc.getName());
+          logger.warn("Grib2CollectionBuilderFromIndex {}: has no files, force recreate ", gc.getName());
           return false;
         } else {
           List<MFile> files = new ArrayList<MFile>(n);
@@ -140,7 +140,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
         gc.params.add(readParam(proto.getParams(i)));
 
       if (!readPartitions(proto, proto.getTopDir())) {
-        logger.warn("Time2Partition {}: has no partitions, force recreate ", gc.getName());
+        logger.warn("Grib2CollectionBuilderFromIndex {}: has no partitions, force recreate ", gc.getName());
         return false;
       }
 
@@ -318,7 +318,7 @@ message Group {
         }
         return new CoordinateVert(levels, code);
     }
-    throw new IllegalStateException("Unknow Coordinate type = "+type);
+    throw new IllegalStateException("Unknown Coordinate type = "+type);
   }
 
     /*
@@ -346,7 +346,7 @@ message Variable {
       pds = pdss.getPDS();
     } catch (IOException e) {
       e.printStackTrace();  // cant happen
-      logger.error("failed to read PDS");
+      logger.error("Grib2CollectionBuilderFromIndex: failed to read PDS");
     }
 
     int discipline = pv.getDiscipline();

@@ -71,7 +71,7 @@ public class TestGribEnsembles {
     Dimension yDimension = gridDatatype.getYDimension();
     Dimension zDimension = gridDatatype.getZDimension();
 
-    assertNull(rtDimension);
+    assertNotNull(rtDimension);
     assertNotNull(ensDimension);
     assertNotNull(timeDimension);
     assertNotNull(xDimension);

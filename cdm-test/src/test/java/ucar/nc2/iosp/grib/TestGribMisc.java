@@ -88,9 +88,9 @@ public class TestGribMisc {
 
     Array data = v.read();
     int[] shape = data.getShape();
-    assert shape.length == 4;
-    assert shape[2] == 1024;
-    assert shape[3] == 2048;
+    assert shape.length == 5;
+    assert shape[shape.length-2] == 1024;
+    assert shape[shape.length-1] == 2048;
     ncfile.close();
   }
 

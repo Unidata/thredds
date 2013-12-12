@@ -165,7 +165,7 @@ public class TestSubset {
     assert null != grid : dataset.getLocation();
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
-    assert grid.getRank() == 3;
+    assert grid.getRank() == 4;
 
     // bbox =  ll: 16.79S 20.5W+ ur: 14.1N 20.09E
     LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), new LatLonPointImpl(14.1, 20.9));
@@ -184,7 +184,7 @@ public class TestSubset {
     GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
 
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getRank() == 3;
+    assert data.getRank() == 3;     // LOOK why not 4 ??
     int[] shape = data.getShape();
     assert shape[0] == 1 : data.getShape()[0];
     assert shape[1] == 370 : data.getShape()[1];
@@ -407,7 +407,7 @@ public class TestSubset {
     assert null != grid : dataset.getLocation();
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
-    assert grid.getRank() == 3 : grid.getRank();
+    assert grid.getRank() == 4 : grid.getRank();
 
     System.out.println("original bbox= " + gcs.getBoundingBox());
     System.out.println("lat/lon bbox = " + gcs.getLatLonBoundingBox().toString2());
