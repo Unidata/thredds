@@ -606,6 +606,15 @@ message Variable {
     for (int idx : vb.coordIndex)
       b.addCoordIdx(idx);
 
+    // keep stats
+    SparseArray sa = vb.coordND.getSparseArray();
+    if (sa != null) {
+      b.setDensity(sa.getDensity());
+      b.setNdups(sa.getNduplicates());
+      b.setNrecords(sa.countNotMissing());
+      b.setMissing(sa.countMissing());
+    }
+
     return b.build();
   }
 

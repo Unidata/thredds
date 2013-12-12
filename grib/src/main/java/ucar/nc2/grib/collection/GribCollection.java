@@ -667,7 +667,6 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     return new VariableIndex(g, -1, discipline, rawPds, pds, cdmHash, index, recordsPos, recordsLen);
   }
 
-
   public class VariableIndex implements Comparable<VariableIndex> {
     public final GroupHcs group;     // belongs to this group
     public final int tableVersion;   // grib1 : can vary by variable
@@ -688,6 +687,10 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
     public String probabilityName;
     public boolean isLayer;
     public int genProcessType;
+
+    // stats
+    public int ndups, nrecords, missing;
+    public float density;
 
     public VariableIndex(GroupHcs g, int tableVersion, int discipline, byte[] rawPds, Grib2Pds pds,
                          int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
@@ -743,6 +746,11 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       this.probabilityName = other.probabilityName;
       this.probType = other.probType;
       this.genProcessType = other.genProcessType;
+
+      this.ndups = other.ndups;
+      this.nrecords = other.nrecords;
+      this.missing = other.missing;
+      this.density = other.density;
     }
 
     public List<Coordinate> getCoordinates() {

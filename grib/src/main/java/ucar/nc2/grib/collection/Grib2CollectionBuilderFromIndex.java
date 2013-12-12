@@ -355,7 +355,13 @@ message Variable {
     int recordsLen = pv.getRecordsLen();
     List<Integer> index = pv.getCoordIdxList();
 
-    return gc.makeVariableIndex(group, cdmHash, discipline, rawPds, pds, index, recordsPos, recordsLen);
+    GribCollection.VariableIndex result = gc.makeVariableIndex(group, cdmHash, discipline, rawPds, pds, index, recordsPos, recordsLen);
+    result.density = pv.getDensity();
+    result.ndups = pv.getNdups();
+    result.nrecords = pv.getNrecords();
+    result.missing = pv.getMissing();
+
+    return result;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////

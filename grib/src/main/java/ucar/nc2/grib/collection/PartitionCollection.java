@@ -9,6 +9,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
+import ucar.sparr.SparseArray;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -63,16 +64,35 @@ public abstract class PartitionCollection extends GribCollection {
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
-    public int[] groupno, varno, flag;
+    public List<GribCollectionProto.PartVar> partList;
 
     public VariableIndexPartitioned(VariableIndex other) {
       super(other);
     }
 
-    public void setPartitionIndex(int partno, int groupIdx, int varIdx, int flag) {
-      this.groupno[partno] = groupIdx;
-      this.varno[partno] = varIdx;
-      this.flag[partno] = flag;
+    public void addPartition(int partno, int groupIdx, int varIdx, int flag, VariableIndex vi) {
+      GribCollectionProto.PartVar.Builder b = GribCollectionProto.PartVar.newBuilder();
+      b.setGroupno(groupIdx);
+      b.setVarno(varIdx);
+      b.setFlag(flag);
+
+      // track stats in this PartVar
+      b.setDensity(vi.density);
+      b.setNdups(vi.ndups);
+      b.setMissing(vi.missing);
+      b.setNrecords(vi.nrecords);
+
+      // keep overall stats for this variable
+      density += vi.density;  // will divide by nparts when storing
+      ndups += vi.ndups;
+      missing += vi.missing;
+      nrecords += vi.nrecords;
+
+      if (vi.density > 1.0)
+        System.out.println("HEY");
+
+      assert partno == this.partList.size();
+      this.partList.add(b.build());
     }
 
     public int getPartition(int runtimeIdx) {
@@ -82,10 +102,12 @@ public abstract class PartitionCollection extends GribCollection {
     public GribCollection.VariableIndex getVindex(int partno) throws IOException {
       // at this point, we need to instantiate the Partition and the vindex.records
       Partition p = getPartitions().get(partno);
+      GribCollectionProto.PartVar partVar = partList.get(partno);
+
       try (GribCollection gc = p.getGribCollection()) { // ensure that its read in
         // the group and variable index may vary across partitions
-        GribCollection.GroupHcs g = gc.groups.get(groupno[partno]);   // WRONG LOOK
-        GribCollection.VariableIndex vindex = g.varIndex.get(varno[partno]);
+        GribCollection.GroupHcs g = gc.groups.get(partVar.getGroupno());      // WRONG LOOK  ??
+        GribCollection.VariableIndex vindex = g.varIndex.get(partVar.getVarno());
         vindex.readRecords();
         return vindex;
       }  // LOOK ok to close ?? or is this defensive ??
@@ -93,19 +115,26 @@ public abstract class PartitionCollection extends GribCollection {
 
     @Override
     public String toStringComplete() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("VariableIndexPartitioned");
-      sb.append("{\ngroupno=").append(groupno == null ? "null" : "");
-      for (int i = 0; groupno != null && i < groupno.length; ++i)
-        sb.append(i == 0 ? "" : ", ").append(groupno[i]);
-      sb.append("\n varno=").append(varno == null ? "null" : "");
-      for (int i = 0; varno != null && i < varno.length; ++i)
-        sb.append(i == 0 ? "" : ", ").append(varno[i]);
-      sb.append("\n flags=").append(flag == null ? "null" : "");
-      for (int i = 0; flag != null && i < flag.length; ++i)
-        sb.append(i == 0 ? "" : ", ").append(flag[i]);
-      sb.append("}\n");
-      sb.append(super.toStringComplete());
+      Formatter sb = new Formatter();
+      sb.format("VariableIndexPartitioned%n");
+      sb.format(" groupno=");
+      for (GribCollectionProto.PartVar partVar : partList)
+        sb.format("%d,", partVar.getGroupno());
+      sb.format("%n varno=");
+      for (GribCollectionProto.PartVar partVar : partList)
+        sb.format("%d,", partVar.getVarno());
+      sb.format("%n flags=");
+      for (GribCollectionProto.PartVar partVar : partList)
+        sb.format("%d,", partVar.getFlag());
+      sb.format("%n");
+      int count = 0;
+      sb.format("  %s %4s %3s %3s %6s%n", "part", "N", "dups", "Miss", "density");
+      for (GribCollectionProto.PartVar partVar : partList)  {
+        sb.format("   %2d: %4d %3d %3d %6.2f%n", count++, partVar.getNrecords(), partVar.getNdups(),  partVar.getMissing(),  partVar.getDensity());
+      }
+      sb.format("%n");
+
+      sb.format(super.toStringComplete());
       return sb.toString();
     }
 
@@ -261,34 +290,16 @@ public abstract class PartitionCollection extends GribCollection {
 
 
   // read from index
-  public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi,
-                 List<Integer> groupnoList, List<Integer> varnoList, List<Integer> flagList) {
-
+  public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi, List<GribCollectionProto.PartVar> parts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(vi);
-
-    int nparts = varnoList.size();
-    vip.groupno = new int[nparts];
-    vip.varno = new int[nparts];
-    vip.flag = new int[nparts];
-    for (int i = 0; i < nparts; i++) {
-      vip.groupno[i] = groupnoList.get(i);
-      vip.varno[i] = varnoList.get(i);
-      vip.flag[i] = flagList.get(i);
-    }
+    vip.partList = parts;
     return vip;
   }
 
   // construct - going to write index
   public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi, int nparts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(vi);
-
-    vip.groupno = new int[nparts];
-    vip.varno = new int[nparts];
-    vip.flag = new int[nparts];
-    for (int i = 0; i < nparts; i++) {
-      vip.groupno[i] = -1;
-      vip.varno[i] = -1;
-    }
+    vip.partList = new ArrayList<>(nparts);
     return vip;
   }
 
@@ -318,7 +329,7 @@ public abstract class PartitionCollection extends GribCollection {
       f.format("  %s%n", p);
     f.format("%n");
 
-    for (GroupHcs g : groups) {
+    /* for (GroupHcs g : groups) {
       for (VariableIndex v : g.varIndex) {
         VariableIndexPartitioned vp = (VariableIndexPartitioned) v;
         for (int i = 0; i < vp.flag.length; i++) {
@@ -327,7 +338,7 @@ public abstract class PartitionCollection extends GribCollection {
           }
         }
       }
-    }
+    } */
 
     super.showIndex(f);
   }

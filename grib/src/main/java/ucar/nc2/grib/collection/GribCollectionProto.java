@@ -2026,6 +2026,952 @@ public final class GribCollectionProto {
     // @@protoc_insertion_point(class_scope:gribCollectionIndex.SparseArray)
   }
 
+  public interface PartVarOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required uint32 groupno = 1;
+    /**
+     * <code>required uint32 groupno = 1;</code>
+     */
+    boolean hasGroupno();
+    /**
+     * <code>required uint32 groupno = 1;</code>
+     */
+    int getGroupno();
+
+    // required uint32 varno = 2;
+    /**
+     * <code>required uint32 varno = 2;</code>
+     */
+    boolean hasVarno();
+    /**
+     * <code>required uint32 varno = 2;</code>
+     */
+    int getVarno();
+
+    // required uint32 flag = 3;
+    /**
+     * <code>required uint32 flag = 3;</code>
+     */
+    boolean hasFlag();
+    /**
+     * <code>required uint32 flag = 3;</code>
+     */
+    int getFlag();
+
+    // optional float density = 4;
+    /**
+     * <code>optional float density = 4;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
+     */
+    boolean hasDensity();
+    /**
+     * <code>optional float density = 4;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
+     */
+    float getDensity();
+
+    // optional uint32 ndups = 5;
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     */
+    boolean hasNdups();
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     */
+    int getNdups();
+
+    // optional uint32 nrecords = 6;
+    /**
+     * <code>optional uint32 nrecords = 6;</code>
+     */
+    boolean hasNrecords();
+    /**
+     * <code>optional uint32 nrecords = 6;</code>
+     */
+    int getNrecords();
+
+    // optional uint32 missing = 7;
+    /**
+     * <code>optional uint32 missing = 7;</code>
+     */
+    boolean hasMissing();
+    /**
+     * <code>optional uint32 missing = 7;</code>
+     */
+    int getMissing();
+  }
+  /**
+   * Protobuf type {@code gribCollectionIndex.PartVar}
+   *
+   * <pre>
+   *&#47;////////////////////////////////////////////////////////////////////////
+   * </pre>
+   */
+  public static final class PartVar extends
+      com.google.protobuf.GeneratedMessage
+      implements PartVarOrBuilder {
+    // Use PartVar.newBuilder() to construct.
+    private PartVar(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private PartVar(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final PartVar defaultInstance;
+    public static PartVar getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public PartVar getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PartVar(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              groupno_ = input.readUInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              varno_ = input.readUInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              flag_ = input.readUInt32();
+              break;
+            }
+            case 37: {
+              bitField0_ |= 0x00000008;
+              density_ = input.readFloat();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              ndups_ = input.readUInt32();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              nrecords_ = input.readUInt32();
+              break;
+            }
+            case 56: {
+              bitField0_ |= 0x00000040;
+              missing_ = input.readUInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_PartVar_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_PartVar_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.grib.collection.GribCollectionProto.PartVar.class, ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<PartVar> PARSER =
+        new com.google.protobuf.AbstractParser<PartVar>() {
+      public PartVar parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PartVar(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PartVar> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required uint32 groupno = 1;
+    public static final int GROUPNO_FIELD_NUMBER = 1;
+    private int groupno_;
+    /**
+     * <code>required uint32 groupno = 1;</code>
+     */
+    public boolean hasGroupno() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required uint32 groupno = 1;</code>
+     */
+    public int getGroupno() {
+      return groupno_;
+    }
+
+    // required uint32 varno = 2;
+    public static final int VARNO_FIELD_NUMBER = 2;
+    private int varno_;
+    /**
+     * <code>required uint32 varno = 2;</code>
+     */
+    public boolean hasVarno() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required uint32 varno = 2;</code>
+     */
+    public int getVarno() {
+      return varno_;
+    }
+
+    // required uint32 flag = 3;
+    public static final int FLAG_FIELD_NUMBER = 3;
+    private int flag_;
+    /**
+     * <code>required uint32 flag = 3;</code>
+     */
+    public boolean hasFlag() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required uint32 flag = 3;</code>
+     */
+    public int getFlag() {
+      return flag_;
+    }
+
+    // optional float density = 4;
+    public static final int DENSITY_FIELD_NUMBER = 4;
+    private float density_;
+    /**
+     * <code>optional float density = 4;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
+     */
+    public boolean hasDensity() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional float density = 4;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
+     */
+    public float getDensity() {
+      return density_;
+    }
+
+    // optional uint32 ndups = 5;
+    public static final int NDUPS_FIELD_NUMBER = 5;
+    private int ndups_;
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     */
+    public boolean hasNdups() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     */
+    public int getNdups() {
+      return ndups_;
+    }
+
+    // optional uint32 nrecords = 6;
+    public static final int NRECORDS_FIELD_NUMBER = 6;
+    private int nrecords_;
+    /**
+     * <code>optional uint32 nrecords = 6;</code>
+     */
+    public boolean hasNrecords() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional uint32 nrecords = 6;</code>
+     */
+    public int getNrecords() {
+      return nrecords_;
+    }
+
+    // optional uint32 missing = 7;
+    public static final int MISSING_FIELD_NUMBER = 7;
+    private int missing_;
+    /**
+     * <code>optional uint32 missing = 7;</code>
+     */
+    public boolean hasMissing() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>optional uint32 missing = 7;</code>
+     */
+    public int getMissing() {
+      return missing_;
+    }
+
+    private void initFields() {
+      groupno_ = 0;
+      varno_ = 0;
+      flag_ = 0;
+      density_ = 0F;
+      ndups_ = 0;
+      nrecords_ = 0;
+      missing_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasGroupno()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasVarno()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasFlag()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, groupno_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, varno_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(3, flag_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeFloat(4, density_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeUInt32(5, ndups_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeUInt32(6, nrecords_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeUInt32(7, missing_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, groupno_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, varno_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(3, flag_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(4, density_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, ndups_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(6, nrecords_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(7, missing_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.PartVar parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.grib.collection.GribCollectionProto.PartVar prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code gribCollectionIndex.PartVar}
+     *
+     * <pre>
+     *&#47;////////////////////////////////////////////////////////////////////////
+     * </pre>
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_PartVar_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_PartVar_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.grib.collection.GribCollectionProto.PartVar.class, ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder.class);
+      }
+
+      // Construct using ucar.nc2.grib.collection.GribCollectionProto.PartVar.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        groupno_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        varno_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        flag_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        density_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        ndups_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        nrecords_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        missing_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_PartVar_descriptor;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.PartVar getDefaultInstanceForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.PartVar.getDefaultInstance();
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.PartVar build() {
+        ucar.nc2.grib.collection.GribCollectionProto.PartVar result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.PartVar buildPartial() {
+        ucar.nc2.grib.collection.GribCollectionProto.PartVar result = new ucar.nc2.grib.collection.GribCollectionProto.PartVar(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.groupno_ = groupno_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.varno_ = varno_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.flag_ = flag_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.density_ = density_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.ndups_ = ndups_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.nrecords_ = nrecords_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.missing_ = missing_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.grib.collection.GribCollectionProto.PartVar) {
+          return mergeFrom((ucar.nc2.grib.collection.GribCollectionProto.PartVar)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.grib.collection.GribCollectionProto.PartVar other) {
+        if (other == ucar.nc2.grib.collection.GribCollectionProto.PartVar.getDefaultInstance()) return this;
+        if (other.hasGroupno()) {
+          setGroupno(other.getGroupno());
+        }
+        if (other.hasVarno()) {
+          setVarno(other.getVarno());
+        }
+        if (other.hasFlag()) {
+          setFlag(other.getFlag());
+        }
+        if (other.hasDensity()) {
+          setDensity(other.getDensity());
+        }
+        if (other.hasNdups()) {
+          setNdups(other.getNdups());
+        }
+        if (other.hasNrecords()) {
+          setNrecords(other.getNrecords());
+        }
+        if (other.hasMissing()) {
+          setMissing(other.getMissing());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasGroupno()) {
+          
+          return false;
+        }
+        if (!hasVarno()) {
+          
+          return false;
+        }
+        if (!hasFlag()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.grib.collection.GribCollectionProto.PartVar parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.grib.collection.GribCollectionProto.PartVar) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required uint32 groupno = 1;
+      private int groupno_ ;
+      /**
+       * <code>required uint32 groupno = 1;</code>
+       */
+      public boolean hasGroupno() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required uint32 groupno = 1;</code>
+       */
+      public int getGroupno() {
+        return groupno_;
+      }
+      /**
+       * <code>required uint32 groupno = 1;</code>
+       */
+      public Builder setGroupno(int value) {
+        bitField0_ |= 0x00000001;
+        groupno_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint32 groupno = 1;</code>
+       */
+      public Builder clearGroupno() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        groupno_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // required uint32 varno = 2;
+      private int varno_ ;
+      /**
+       * <code>required uint32 varno = 2;</code>
+       */
+      public boolean hasVarno() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required uint32 varno = 2;</code>
+       */
+      public int getVarno() {
+        return varno_;
+      }
+      /**
+       * <code>required uint32 varno = 2;</code>
+       */
+      public Builder setVarno(int value) {
+        bitField0_ |= 0x00000002;
+        varno_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint32 varno = 2;</code>
+       */
+      public Builder clearVarno() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        varno_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // required uint32 flag = 3;
+      private int flag_ ;
+      /**
+       * <code>required uint32 flag = 3;</code>
+       */
+      public boolean hasFlag() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required uint32 flag = 3;</code>
+       */
+      public int getFlag() {
+        return flag_;
+      }
+      /**
+       * <code>required uint32 flag = 3;</code>
+       */
+      public Builder setFlag(int value) {
+        bitField0_ |= 0x00000004;
+        flag_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint32 flag = 3;</code>
+       */
+      public Builder clearFlag() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        flag_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional float density = 4;
+      private float density_ ;
+      /**
+       * <code>optional float density = 4;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
+       */
+      public boolean hasDensity() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional float density = 4;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
+       */
+      public float getDensity() {
+        return density_;
+      }
+      /**
+       * <code>optional float density = 4;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
+       */
+      public Builder setDensity(float value) {
+        bitField0_ |= 0x00000008;
+        density_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional float density = 4;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
+       */
+      public Builder clearDensity() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        density_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      // optional uint32 ndups = 5;
+      private int ndups_ ;
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       */
+      public boolean hasNdups() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       */
+      public int getNdups() {
+        return ndups_;
+      }
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       */
+      public Builder setNdups(int value) {
+        bitField0_ |= 0x00000010;
+        ndups_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       */
+      public Builder clearNdups() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        ndups_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional uint32 nrecords = 6;
+      private int nrecords_ ;
+      /**
+       * <code>optional uint32 nrecords = 6;</code>
+       */
+      public boolean hasNrecords() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional uint32 nrecords = 6;</code>
+       */
+      public int getNrecords() {
+        return nrecords_;
+      }
+      /**
+       * <code>optional uint32 nrecords = 6;</code>
+       */
+      public Builder setNrecords(int value) {
+        bitField0_ |= 0x00000020;
+        nrecords_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 nrecords = 6;</code>
+       */
+      public Builder clearNrecords() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        nrecords_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional uint32 missing = 7;
+      private int missing_ ;
+      /**
+       * <code>optional uint32 missing = 7;</code>
+       */
+      public boolean hasMissing() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional uint32 missing = 7;</code>
+       */
+      public int getMissing() {
+        return missing_;
+      }
+      /**
+       * <code>optional uint32 missing = 7;</code>
+       */
+      public Builder setMissing(int value) {
+        bitField0_ |= 0x00000040;
+        missing_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 missing = 7;</code>
+       */
+      public Builder clearMissing() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        missing_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:gribCollectionIndex.PartVar)
+    }
+
+    static {
+      defaultInstance = new PartVar(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:gribCollectionIndex.PartVar)
+  }
+
   public interface VariableOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -2121,59 +3067,98 @@ public final class GribCollectionProto {
      */
     int getCoordIdx(int index);
 
-    // repeated uint32 groupno = 10;
+    // optional float density = 7;
     /**
-     * <code>repeated uint32 groupno = 10;</code>
+     * <code>optional float density = 7;</code>
      *
      * <pre>
-     * partitions
+     * optionally keep stats
      * </pre>
      */
-    java.util.List<java.lang.Integer> getGroupnoList();
+    boolean hasDensity();
     /**
-     * <code>repeated uint32 groupno = 10;</code>
+     * <code>optional float density = 7;</code>
      *
      * <pre>
-     * partitions
+     * optionally keep stats
      * </pre>
      */
-    int getGroupnoCount();
-    /**
-     * <code>repeated uint32 groupno = 10;</code>
-     *
-     * <pre>
-     * partitions
-     * </pre>
-     */
-    int getGroupno(int index);
+    float getDensity();
 
-    // repeated uint32 varno = 11;
+    // optional uint32 ndups = 8;
     /**
-     * <code>repeated uint32 varno = 11;</code>
+     * <code>optional uint32 ndups = 8;</code>
      */
-    java.util.List<java.lang.Integer> getVarnoList();
+    boolean hasNdups();
     /**
-     * <code>repeated uint32 varno = 11;</code>
+     * <code>optional uint32 ndups = 8;</code>
      */
-    int getVarnoCount();
-    /**
-     * <code>repeated uint32 varno = 11;</code>
-     */
-    int getVarno(int index);
+    int getNdups();
 
-    // repeated int32 flag = 12;
+    // optional uint32 nrecords = 9;
     /**
-     * <code>repeated int32 flag = 12;</code>
+     * <code>optional uint32 nrecords = 9;</code>
      */
-    java.util.List<java.lang.Integer> getFlagList();
+    boolean hasNrecords();
     /**
-     * <code>repeated int32 flag = 12;</code>
+     * <code>optional uint32 nrecords = 9;</code>
      */
-    int getFlagCount();
+    int getNrecords();
+
+    // optional uint32 missing = 10;
     /**
-     * <code>repeated int32 flag = 12;</code>
+     * <code>optional uint32 missing = 10;</code>
      */
-    int getFlag(int index);
+    boolean hasMissing();
+    /**
+     * <code>optional uint32 missing = 10;</code>
+     */
+    int getMissing();
+
+    // repeated .gribCollectionIndex.PartVar partition = 11;
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    java.util.List<ucar.nc2.grib.collection.GribCollectionProto.PartVar> 
+        getPartitionList();
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.PartVar getPartition(int index);
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    int getPartitionCount();
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder> 
+        getPartitionOrBuilderList();
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder getPartitionOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code gribCollectionIndex.Variable}
@@ -2276,67 +3261,32 @@ public final class GribCollectionProto {
               input.popLimit(limit);
               break;
             }
+            case 61: {
+              bitField0_ |= 0x00000020;
+              density_ = input.readFloat();
+              break;
+            }
+            case 64: {
+              bitField0_ |= 0x00000040;
+              ndups_ = input.readUInt32();
+              break;
+            }
+            case 72: {
+              bitField0_ |= 0x00000080;
+              nrecords_ = input.readUInt32();
+              break;
+            }
             case 80: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-                groupno_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000040;
-              }
-              groupno_.add(input.readUInt32());
-              break;
-            }
-            case 82: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040) && input.getBytesUntilLimit() > 0) {
-                groupno_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000040;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                groupno_.add(input.readUInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 88: {
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-                varno_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000080;
-              }
-              varno_.add(input.readUInt32());
+              bitField0_ |= 0x00000100;
+              missing_ = input.readUInt32();
               break;
             }
             case 90: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080) && input.getBytesUntilLimit() > 0) {
-                varno_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000080;
+              if (!((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
+                partition_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.PartVar>();
+                mutable_bitField0_ |= 0x00000400;
               }
-              while (input.getBytesUntilLimit() > 0) {
-                varno_.add(input.readUInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 96: {
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-                flag_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000100;
-              }
-              flag_.add(input.readInt32());
-              break;
-            }
-            case 98: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100) && input.getBytesUntilLimit() > 0) {
-                flag_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000100;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                flag_.add(input.readInt32());
-              }
-              input.popLimit(limit);
+              partition_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.PartVar.PARSER, extensionRegistry));
               break;
             }
           }
@@ -2350,14 +3300,8 @@ public final class GribCollectionProto {
         if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
           coordIdx_ = java.util.Collections.unmodifiableList(coordIdx_);
         }
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-          groupno_ = java.util.Collections.unmodifiableList(groupno_);
-        }
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-          varno_ = java.util.Collections.unmodifiableList(varno_);
-        }
-        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-          flag_ = java.util.Collections.unmodifiableList(flag_);
+        if (((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
+          partition_ = java.util.Collections.unmodifiableList(partition_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -2522,85 +3466,132 @@ public final class GribCollectionProto {
       return coordIdx_.get(index);
     }
 
-    // repeated uint32 groupno = 10;
-    public static final int GROUPNO_FIELD_NUMBER = 10;
-    private java.util.List<java.lang.Integer> groupno_;
+    // optional float density = 7;
+    public static final int DENSITY_FIELD_NUMBER = 7;
+    private float density_;
     /**
-     * <code>repeated uint32 groupno = 10;</code>
+     * <code>optional float density = 7;</code>
      *
      * <pre>
-     * partitions
+     * optionally keep stats
      * </pre>
      */
-    public java.util.List<java.lang.Integer>
-        getGroupnoList() {
-      return groupno_;
+    public boolean hasDensity() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>repeated uint32 groupno = 10;</code>
+     * <code>optional float density = 7;</code>
      *
      * <pre>
-     * partitions
+     * optionally keep stats
      * </pre>
      */
-    public int getGroupnoCount() {
-      return groupno_.size();
-    }
-    /**
-     * <code>repeated uint32 groupno = 10;</code>
-     *
-     * <pre>
-     * partitions
-     * </pre>
-     */
-    public int getGroupno(int index) {
-      return groupno_.get(index);
+    public float getDensity() {
+      return density_;
     }
 
-    // repeated uint32 varno = 11;
-    public static final int VARNO_FIELD_NUMBER = 11;
-    private java.util.List<java.lang.Integer> varno_;
+    // optional uint32 ndups = 8;
+    public static final int NDUPS_FIELD_NUMBER = 8;
+    private int ndups_;
     /**
-     * <code>repeated uint32 varno = 11;</code>
+     * <code>optional uint32 ndups = 8;</code>
      */
-    public java.util.List<java.lang.Integer>
-        getVarnoList() {
-      return varno_;
+    public boolean hasNdups() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>repeated uint32 varno = 11;</code>
+     * <code>optional uint32 ndups = 8;</code>
      */
-    public int getVarnoCount() {
-      return varno_.size();
-    }
-    /**
-     * <code>repeated uint32 varno = 11;</code>
-     */
-    public int getVarno(int index) {
-      return varno_.get(index);
+    public int getNdups() {
+      return ndups_;
     }
 
-    // repeated int32 flag = 12;
-    public static final int FLAG_FIELD_NUMBER = 12;
-    private java.util.List<java.lang.Integer> flag_;
+    // optional uint32 nrecords = 9;
+    public static final int NRECORDS_FIELD_NUMBER = 9;
+    private int nrecords_;
     /**
-     * <code>repeated int32 flag = 12;</code>
+     * <code>optional uint32 nrecords = 9;</code>
      */
-    public java.util.List<java.lang.Integer>
-        getFlagList() {
-      return flag_;
+    public boolean hasNrecords() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
-     * <code>repeated int32 flag = 12;</code>
+     * <code>optional uint32 nrecords = 9;</code>
      */
-    public int getFlagCount() {
-      return flag_.size();
+    public int getNrecords() {
+      return nrecords_;
+    }
+
+    // optional uint32 missing = 10;
+    public static final int MISSING_FIELD_NUMBER = 10;
+    private int missing_;
+    /**
+     * <code>optional uint32 missing = 10;</code>
+     */
+    public boolean hasMissing() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>repeated int32 flag = 12;</code>
+     * <code>optional uint32 missing = 10;</code>
      */
-    public int getFlag(int index) {
-      return flag_.get(index);
+    public int getMissing() {
+      return missing_;
+    }
+
+    // repeated .gribCollectionIndex.PartVar partition = 11;
+    public static final int PARTITION_FIELD_NUMBER = 11;
+    private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.PartVar> partition_;
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.PartVar> getPartitionList() {
+      return partition_;
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder> 
+        getPartitionOrBuilderList() {
+      return partition_;
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    public int getPartitionCount() {
+      return partition_.size();
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.PartVar getPartition(int index) {
+      return partition_.get(index);
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+     *
+     * <pre>
+     * partitions
+     * </pre>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder getPartitionOrBuilder(
+        int index) {
+      return partition_.get(index);
     }
 
     private void initFields() {
@@ -2610,9 +3601,11 @@ public final class GribCollectionProto {
       recordsPos_ = 0L;
       recordsLen_ = 0;
       coordIdx_ = java.util.Collections.emptyList();
-      groupno_ = java.util.Collections.emptyList();
-      varno_ = java.util.Collections.emptyList();
-      flag_ = java.util.Collections.emptyList();
+      density_ = 0F;
+      ndups_ = 0;
+      nrecords_ = 0;
+      missing_ = 0;
+      partition_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2639,6 +3632,12 @@ public final class GribCollectionProto {
         memoizedIsInitialized = 0;
         return false;
       }
+      for (int i = 0; i < getPartitionCount(); i++) {
+        if (!getPartition(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -2664,14 +3663,20 @@ public final class GribCollectionProto {
       for (int i = 0; i < coordIdx_.size(); i++) {
         output.writeUInt32(6, coordIdx_.get(i));
       }
-      for (int i = 0; i < groupno_.size(); i++) {
-        output.writeUInt32(10, groupno_.get(i));
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeFloat(7, density_);
       }
-      for (int i = 0; i < varno_.size(); i++) {
-        output.writeUInt32(11, varno_.get(i));
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeUInt32(8, ndups_);
       }
-      for (int i = 0; i < flag_.size(); i++) {
-        output.writeInt32(12, flag_.get(i));
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeUInt32(9, nrecords_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeUInt32(10, missing_);
+      }
+      for (int i = 0; i < partition_.size(); i++) {
+        output.writeMessage(11, partition_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -2711,32 +3716,25 @@ public final class GribCollectionProto {
         size += dataSize;
         size += 1 * getCoordIdxList().size();
       }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < groupno_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(groupno_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getGroupnoList().size();
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(7, density_);
       }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < varno_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(varno_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getVarnoList().size();
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(8, ndups_);
       }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < flag_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(flag_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getFlagList().size();
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(9, nrecords_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(10, missing_);
+      }
+      for (int i = 0; i < partition_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(11, partition_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2850,6 +3848,7 @@ public final class GribCollectionProto {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getPartitionFieldBuilder();
         }
       }
       private static Builder create() {
@@ -2870,12 +3869,20 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000010);
         coordIdx_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000020);
-        groupno_ = java.util.Collections.emptyList();
+        density_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000040);
-        varno_ = java.util.Collections.emptyList();
+        ndups_ = 0;
         bitField0_ = (bitField0_ & ~0x00000080);
-        flag_ = java.util.Collections.emptyList();
+        nrecords_ = 0;
         bitField0_ = (bitField0_ & ~0x00000100);
+        missing_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000200);
+        if (partitionBuilder_ == null) {
+          partition_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000400);
+        } else {
+          partitionBuilder_.clear();
+        }
         return this;
       }
 
@@ -2929,21 +3936,31 @@ public final class GribCollectionProto {
           bitField0_ = (bitField0_ & ~0x00000020);
         }
         result.coordIdx_ = coordIdx_;
-        if (((bitField0_ & 0x00000040) == 0x00000040)) {
-          groupno_ = java.util.Collections.unmodifiableList(groupno_);
-          bitField0_ = (bitField0_ & ~0x00000040);
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000020;
         }
-        result.groupno_ = groupno_;
-        if (((bitField0_ & 0x00000080) == 0x00000080)) {
-          varno_ = java.util.Collections.unmodifiableList(varno_);
-          bitField0_ = (bitField0_ & ~0x00000080);
+        result.density_ = density_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000040;
         }
-        result.varno_ = varno_;
-        if (((bitField0_ & 0x00000100) == 0x00000100)) {
-          flag_ = java.util.Collections.unmodifiableList(flag_);
-          bitField0_ = (bitField0_ & ~0x00000100);
+        result.ndups_ = ndups_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000080;
         }
-        result.flag_ = flag_;
+        result.nrecords_ = nrecords_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.missing_ = missing_;
+        if (partitionBuilder_ == null) {
+          if (((bitField0_ & 0x00000400) == 0x00000400)) {
+            partition_ = java.util.Collections.unmodifiableList(partition_);
+            bitField0_ = (bitField0_ & ~0x00000400);
+          }
+          result.partition_ = partition_;
+        } else {
+          result.partition_ = partitionBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2985,35 +4002,43 @@ public final class GribCollectionProto {
           }
           onChanged();
         }
-        if (!other.groupno_.isEmpty()) {
-          if (groupno_.isEmpty()) {
-            groupno_ = other.groupno_;
-            bitField0_ = (bitField0_ & ~0x00000040);
-          } else {
-            ensureGroupnoIsMutable();
-            groupno_.addAll(other.groupno_);
-          }
-          onChanged();
+        if (other.hasDensity()) {
+          setDensity(other.getDensity());
         }
-        if (!other.varno_.isEmpty()) {
-          if (varno_.isEmpty()) {
-            varno_ = other.varno_;
-            bitField0_ = (bitField0_ & ~0x00000080);
-          } else {
-            ensureVarnoIsMutable();
-            varno_.addAll(other.varno_);
-          }
-          onChanged();
+        if (other.hasNdups()) {
+          setNdups(other.getNdups());
         }
-        if (!other.flag_.isEmpty()) {
-          if (flag_.isEmpty()) {
-            flag_ = other.flag_;
-            bitField0_ = (bitField0_ & ~0x00000100);
-          } else {
-            ensureFlagIsMutable();
-            flag_.addAll(other.flag_);
+        if (other.hasNrecords()) {
+          setNrecords(other.getNrecords());
+        }
+        if (other.hasMissing()) {
+          setMissing(other.getMissing());
+        }
+        if (partitionBuilder_ == null) {
+          if (!other.partition_.isEmpty()) {
+            if (partition_.isEmpty()) {
+              partition_ = other.partition_;
+              bitField0_ = (bitField0_ & ~0x00000400);
+            } else {
+              ensurePartitionIsMutable();
+              partition_.addAll(other.partition_);
+            }
+            onChanged();
           }
-          onChanged();
+        } else {
+          if (!other.partition_.isEmpty()) {
+            if (partitionBuilder_.isEmpty()) {
+              partitionBuilder_.dispose();
+              partitionBuilder_ = null;
+              partition_ = other.partition_;
+              bitField0_ = (bitField0_ & ~0x00000400);
+              partitionBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getPartitionFieldBuilder() : null;
+            } else {
+              partitionBuilder_.addAllMessages(other.partition_);
+            }
+          }
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -3039,6 +4064,12 @@ public final class GribCollectionProto {
         if (!hasRecordsLen()) {
           
           return false;
+        }
+        for (int i = 0; i < getPartitionCount(); i++) {
+          if (!getPartition(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -3356,230 +4387,464 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // repeated uint32 groupno = 10;
-      private java.util.List<java.lang.Integer> groupno_ = java.util.Collections.emptyList();
-      private void ensureGroupnoIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
-          groupno_ = new java.util.ArrayList<java.lang.Integer>(groupno_);
-          bitField0_ |= 0x00000040;
-         }
-      }
+      // optional float density = 7;
+      private float density_ ;
       /**
-       * <code>repeated uint32 groupno = 10;</code>
+       * <code>optional float density = 7;</code>
        *
        * <pre>
-       * partitions
+       * optionally keep stats
        * </pre>
        */
-      public java.util.List<java.lang.Integer>
-          getGroupnoList() {
-        return java.util.Collections.unmodifiableList(groupno_);
+      public boolean hasDensity() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>repeated uint32 groupno = 10;</code>
+       * <code>optional float density = 7;</code>
        *
        * <pre>
-       * partitions
+       * optionally keep stats
        * </pre>
        */
-      public int getGroupnoCount() {
-        return groupno_.size();
+      public float getDensity() {
+        return density_;
       }
       /**
-       * <code>repeated uint32 groupno = 10;</code>
+       * <code>optional float density = 7;</code>
        *
        * <pre>
-       * partitions
+       * optionally keep stats
        * </pre>
        */
-      public int getGroupno(int index) {
-        return groupno_.get(index);
-      }
-      /**
-       * <code>repeated uint32 groupno = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public Builder setGroupno(
-          int index, int value) {
-        ensureGroupnoIsMutable();
-        groupno_.set(index, value);
+      public Builder setDensity(float value) {
+        bitField0_ |= 0x00000040;
+        density_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 groupno = 10;</code>
+       * <code>optional float density = 7;</code>
        *
        * <pre>
-       * partitions
+       * optionally keep stats
        * </pre>
        */
-      public Builder addGroupno(int value) {
-        ensureGroupnoIsMutable();
-        groupno_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 groupno = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public Builder addAllGroupno(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureGroupnoIsMutable();
-        super.addAll(values, groupno_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 groupno = 10;</code>
-       *
-       * <pre>
-       * partitions
-       * </pre>
-       */
-      public Builder clearGroupno() {
-        groupno_ = java.util.Collections.emptyList();
+      public Builder clearDensity() {
         bitField0_ = (bitField0_ & ~0x00000040);
+        density_ = 0F;
         onChanged();
         return this;
       }
 
-      // repeated uint32 varno = 11;
-      private java.util.List<java.lang.Integer> varno_ = java.util.Collections.emptyList();
-      private void ensureVarnoIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
-          varno_ = new java.util.ArrayList<java.lang.Integer>(varno_);
-          bitField0_ |= 0x00000080;
-         }
+      // optional uint32 ndups = 8;
+      private int ndups_ ;
+      /**
+       * <code>optional uint32 ndups = 8;</code>
+       */
+      public boolean hasNdups() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
-       * <code>repeated uint32 varno = 11;</code>
+       * <code>optional uint32 ndups = 8;</code>
        */
-      public java.util.List<java.lang.Integer>
-          getVarnoList() {
-        return java.util.Collections.unmodifiableList(varno_);
+      public int getNdups() {
+        return ndups_;
       }
       /**
-       * <code>repeated uint32 varno = 11;</code>
+       * <code>optional uint32 ndups = 8;</code>
        */
-      public int getVarnoCount() {
-        return varno_.size();
-      }
-      /**
-       * <code>repeated uint32 varno = 11;</code>
-       */
-      public int getVarno(int index) {
-        return varno_.get(index);
-      }
-      /**
-       * <code>repeated uint32 varno = 11;</code>
-       */
-      public Builder setVarno(
-          int index, int value) {
-        ensureVarnoIsMutable();
-        varno_.set(index, value);
+      public Builder setNdups(int value) {
+        bitField0_ |= 0x00000080;
+        ndups_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 varno = 11;</code>
+       * <code>optional uint32 ndups = 8;</code>
        */
-      public Builder addVarno(int value) {
-        ensureVarnoIsMutable();
-        varno_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 varno = 11;</code>
-       */
-      public Builder addAllVarno(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureVarnoIsMutable();
-        super.addAll(values, varno_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 varno = 11;</code>
-       */
-      public Builder clearVarno() {
-        varno_ = java.util.Collections.emptyList();
+      public Builder clearNdups() {
         bitField0_ = (bitField0_ & ~0x00000080);
+        ndups_ = 0;
         onChanged();
         return this;
       }
 
-      // repeated int32 flag = 12;
-      private java.util.List<java.lang.Integer> flag_ = java.util.Collections.emptyList();
-      private void ensureFlagIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
-          flag_ = new java.util.ArrayList<java.lang.Integer>(flag_);
-          bitField0_ |= 0x00000100;
+      // optional uint32 nrecords = 9;
+      private int nrecords_ ;
+      /**
+       * <code>optional uint32 nrecords = 9;</code>
+       */
+      public boolean hasNrecords() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional uint32 nrecords = 9;</code>
+       */
+      public int getNrecords() {
+        return nrecords_;
+      }
+      /**
+       * <code>optional uint32 nrecords = 9;</code>
+       */
+      public Builder setNrecords(int value) {
+        bitField0_ |= 0x00000100;
+        nrecords_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 nrecords = 9;</code>
+       */
+      public Builder clearNrecords() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        nrecords_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional uint32 missing = 10;
+      private int missing_ ;
+      /**
+       * <code>optional uint32 missing = 10;</code>
+       */
+      public boolean hasMissing() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional uint32 missing = 10;</code>
+       */
+      public int getMissing() {
+        return missing_;
+      }
+      /**
+       * <code>optional uint32 missing = 10;</code>
+       */
+      public Builder setMissing(int value) {
+        bitField0_ |= 0x00000200;
+        missing_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 missing = 10;</code>
+       */
+      public Builder clearMissing() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        missing_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // repeated .gribCollectionIndex.PartVar partition = 11;
+      private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.PartVar> partition_ =
+        java.util.Collections.emptyList();
+      private void ensurePartitionIsMutable() {
+        if (!((bitField0_ & 0x00000400) == 0x00000400)) {
+          partition_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.PartVar>(partition_);
+          bitField0_ |= 0x00000400;
          }
       }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.PartVar, ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder, ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder> partitionBuilder_;
+
       /**
-       * <code>repeated int32 flag = 12;</code>
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
        */
-      public java.util.List<java.lang.Integer>
-          getFlagList() {
-        return java.util.Collections.unmodifiableList(flag_);
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.PartVar> getPartitionList() {
+        if (partitionBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(partition_);
+        } else {
+          return partitionBuilder_.getMessageList();
+        }
       }
       /**
-       * <code>repeated int32 flag = 12;</code>
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
        */
-      public int getFlagCount() {
-        return flag_.size();
+      public int getPartitionCount() {
+        if (partitionBuilder_ == null) {
+          return partition_.size();
+        } else {
+          return partitionBuilder_.getCount();
+        }
       }
       /**
-       * <code>repeated int32 flag = 12;</code>
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
        */
-      public int getFlag(int index) {
-        return flag_.get(index);
+      public ucar.nc2.grib.collection.GribCollectionProto.PartVar getPartition(int index) {
+        if (partitionBuilder_ == null) {
+          return partition_.get(index);
+        } else {
+          return partitionBuilder_.getMessage(index);
+        }
       }
       /**
-       * <code>repeated int32 flag = 12;</code>
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
        */
-      public Builder setFlag(
-          int index, int value) {
-        ensureFlagIsMutable();
-        flag_.set(index, value);
-        onChanged();
+      public Builder setPartition(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.PartVar value) {
+        if (partitionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePartitionIsMutable();
+          partition_.set(index, value);
+          onChanged();
+        } else {
+          partitionBuilder_.setMessage(index, value);
+        }
         return this;
       }
       /**
-       * <code>repeated int32 flag = 12;</code>
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
        */
-      public Builder addFlag(int value) {
-        ensureFlagIsMutable();
-        flag_.add(value);
-        onChanged();
+      public Builder setPartition(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder builderForValue) {
+        if (partitionBuilder_ == null) {
+          ensurePartitionIsMutable();
+          partition_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          partitionBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       /**
-       * <code>repeated int32 flag = 12;</code>
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
        */
-      public Builder addAllFlag(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureFlagIsMutable();
-        super.addAll(values, flag_);
-        onChanged();
+      public Builder addPartition(ucar.nc2.grib.collection.GribCollectionProto.PartVar value) {
+        if (partitionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePartitionIsMutable();
+          partition_.add(value);
+          onChanged();
+        } else {
+          partitionBuilder_.addMessage(value);
+        }
         return this;
       }
       /**
-       * <code>repeated int32 flag = 12;</code>
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
        */
-      public Builder clearFlag() {
-        flag_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000100);
-        onChanged();
+      public Builder addPartition(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.PartVar value) {
+        if (partitionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePartitionIsMutable();
+          partition_.add(index, value);
+          onChanged();
+        } else {
+          partitionBuilder_.addMessage(index, value);
+        }
         return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public Builder addPartition(
+          ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder builderForValue) {
+        if (partitionBuilder_ == null) {
+          ensurePartitionIsMutable();
+          partition_.add(builderForValue.build());
+          onChanged();
+        } else {
+          partitionBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public Builder addPartition(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder builderForValue) {
+        if (partitionBuilder_ == null) {
+          ensurePartitionIsMutable();
+          partition_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          partitionBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public Builder addAllPartition(
+          java.lang.Iterable<? extends ucar.nc2.grib.collection.GribCollectionProto.PartVar> values) {
+        if (partitionBuilder_ == null) {
+          ensurePartitionIsMutable();
+          super.addAll(values, partition_);
+          onChanged();
+        } else {
+          partitionBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public Builder clearPartition() {
+        if (partitionBuilder_ == null) {
+          partition_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000400);
+          onChanged();
+        } else {
+          partitionBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public Builder removePartition(int index) {
+        if (partitionBuilder_ == null) {
+          ensurePartitionIsMutable();
+          partition_.remove(index);
+          onChanged();
+        } else {
+          partitionBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder getPartitionBuilder(
+          int index) {
+        return getPartitionFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder getPartitionOrBuilder(
+          int index) {
+        if (partitionBuilder_ == null) {
+          return partition_.get(index);  } else {
+          return partitionBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder> 
+           getPartitionOrBuilderList() {
+        if (partitionBuilder_ != null) {
+          return partitionBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(partition_);
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder addPartitionBuilder() {
+        return getPartitionFieldBuilder().addBuilder(
+            ucar.nc2.grib.collection.GribCollectionProto.PartVar.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder addPartitionBuilder(
+          int index) {
+        return getPartitionFieldBuilder().addBuilder(
+            index, ucar.nc2.grib.collection.GribCollectionProto.PartVar.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.PartVar partition = 11;</code>
+       *
+       * <pre>
+       * partitions
+       * </pre>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder> 
+           getPartitionBuilderList() {
+        return getPartitionFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.PartVar, ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder, ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder> 
+          getPartitionFieldBuilder() {
+        if (partitionBuilder_ == null) {
+          partitionBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              ucar.nc2.grib.collection.GribCollectionProto.PartVar, ucar.nc2.grib.collection.GribCollectionProto.PartVar.Builder, ucar.nc2.grib.collection.GribCollectionProto.PartVarOrBuilder>(
+                  partition_,
+                  ((bitField0_ & 0x00000400) == 0x00000400),
+                  getParentForChildren(),
+                  isClean());
+          partition_ = null;
+        }
+        return partitionBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:gribCollectionIndex.Variable)
@@ -13137,6 +14402,11 @@ public final class GribCollectionProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_gribCollectionIndex_SparseArray_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_gribCollectionIndex_PartVar_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_gribCollectionIndex_PartVar_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_gribCollectionIndex_Variable_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -13185,35 +14455,40 @@ public final class GribCollectionProto {
       "\016\n\006fileno\030\001 \002(\r\022\013\n\003pos\030\002 \002(\004\022\021\n\006bmsPos\030\003" +
       " \001(\004:\0010\"i\n\013SparseArray\022\017\n\007cdmHash\030\001 \002(\007\022" +
       "\014\n\004size\030\002 \003(\r\022\r\n\005track\030\003 \003(\r\022,\n\007records\030" +
-      "\004 \003(\0132\033.gribCollectionIndex.Record\"\244\001\n\010V" +
-      "ariable\022\022\n\ndiscipline\030\001 \002(\r\022\013\n\003pds\030\002 \002(\014" +
-      "\022\017\n\007cdmHash\030\003 \002(\007\022\022\n\nrecordsPos\030\004 \002(\004\022\022\n" +
-      "\nrecordsLen\030\005 \002(\r\022\020\n\010coordIdx\030\006 \003(\r\022\017\n\007g" +
-      "roupno\030\n \003(\r\022\r\n\005varno\030\013 \003(\r\022\014\n\004flag\030\014 \003(",
-      "\005\"_\n\005Coord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014" +
-      "\n\004unit\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 " +
-      "\003(\002\022\r\n\005msecs\030\006 \003(\003\"6\n\tParameter\022\014\n\004name\030" +
-      "\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"/\n\005MF" +
-      "ile\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastModified\030\002 " +
-      "\002(\004\"\356\001\n\005Group\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 " +
-      "\001(\021:\0010\022\024\n\014nameOverride\030\003 \001(\t\0220\n\tvariable" +
-      "s\030\004 \003(\0132\035.gribCollectionIndex.Variable\022*" +
-      "\n\006coords\030\005 \003(\0132\032.gribCollectionIndex.Coo" +
-      "rd\022.\n\006params\030\006 \003(\0132\036.gribCollectionIndex",
-      ".Parameter\022\016\n\006fileno\030\007 \003(\005\022\020\n\010run2part\030\n" +
-      " \003(\r\"\366\002\n\023GribCollectionIndex\022\014\n\004name\030\001 \002" +
-      "(\t\022\016\n\006topDir\030\002 \002(\t\022*\n\006mfiles\030\003 \003(\0132\032.gri" +
-      "bCollectionIndex.MFile\022*\n\006groups\030\004 \003(\0132\032" +
-      ".gribCollectionIndex.Group\022.\n\006params\030\005 \003" +
-      "(\0132\036.gribCollectionIndex.Parameter\022\016\n\006ce" +
-      "nter\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030" +
-      "\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n" +
-      " \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProces" +
-      "sId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.gribColl",
-      "ectionIndex.Partition\"A\n\tPartition\022\014\n\004na" +
-      "me\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\022\024\n\014lastModifi" +
-      "ed\030\003 \001(\004B/\n\030ucar.nc2.grib.collectionB\023Gr" +
-      "ibCollectionProto"
+      "\004 \003(\0132\033.gribCollectionIndex.Record\"z\n\007Pa" +
+      "rtVar\022\017\n\007groupno\030\001 \002(\r\022\r\n\005varno\030\002 \002(\r\022\014\n" +
+      "\004flag\030\003 \002(\r\022\017\n\007density\030\004 \001(\002\022\r\n\005ndups\030\005 " +
+      "\001(\r\022\020\n\010nrecords\030\006 \001(\r\022\017\n\007missing\030\007 \001(\r\"\352" +
+      "\001\n\010Variable\022\022\n\ndiscipline\030\001 \002(\r\022\013\n\003pds\030\002",
+      " \002(\014\022\017\n\007cdmHash\030\003 \002(\007\022\022\n\nrecordsPos\030\004 \002(" +
+      "\004\022\022\n\nrecordsLen\030\005 \002(\r\022\020\n\010coordIdx\030\006 \003(\r\022" +
+      "\017\n\007density\030\007 \001(\002\022\r\n\005ndups\030\010 \001(\r\022\020\n\010nreco" +
+      "rds\030\t \001(\r\022\017\n\007missing\030\n \001(\r\022/\n\tpartition\030" +
+      "\013 \003(\0132\034.gribCollectionIndex.PartVar\"_\n\005C" +
+      "oord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014\n\004unit" +
+      "\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 \003(\002\022\r\n" +
+      "\005msecs\030\006 \003(\003\"6\n\tParameter\022\014\n\004name\030\001 \002(\t\022" +
+      "\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"/\n\005MFile\022\020\n" +
+      "\010filename\030\001 \002(\t\022\024\n\014lastModified\030\002 \002(\004\"\356\001",
+      "\n\005Group\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:\0010" +
+      "\022\024\n\014nameOverride\030\003 \001(\t\0220\n\tvariables\030\004 \003(" +
+      "\0132\035.gribCollectionIndex.Variable\022*\n\006coor" +
+      "ds\030\005 \003(\0132\032.gribCollectionIndex.Coord\022.\n\006" +
+      "params\030\006 \003(\0132\036.gribCollectionIndex.Param" +
+      "eter\022\016\n\006fileno\030\007 \003(\005\022\020\n\010run2part\030\n \003(\r\"\366" +
+      "\002\n\023GribCollectionIndex\022\014\n\004name\030\001 \002(\t\022\016\n\006" +
+      "topDir\030\002 \002(\t\022*\n\006mfiles\030\003 \003(\0132\032.gribColle" +
+      "ctionIndex.MFile\022*\n\006groups\030\004 \003(\0132\032.gribC" +
+      "ollectionIndex.Group\022.\n\006params\030\005 \003(\0132\036.g",
+      "ribCollectionIndex.Parameter\022\016\n\006center\030\006" +
+      " \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 \002(\005\022" +
+      "\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n \001(\005\022\024" +
+      "\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProcessId\030\014 " +
+      "\001(\005\0222\n\npartitions\030\r \003(\0132\036.gribCollection" +
+      "Index.Partition\"A\n\tPartition\022\014\n\004name\030\001 \002" +
+      "(\t\022\020\n\010filename\030\002 \002(\t\022\024\n\014lastModified\030\003 \001" +
+      "(\004B/\n\030ucar.nc2.grib.collectionB\023GribColl" +
+      "ectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -13232,44 +14507,50 @@ public final class GribCollectionProto {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_SparseArray_descriptor,
               new java.lang.String[] { "CdmHash", "Size", "Track", "Records", });
-          internal_static_gribCollectionIndex_Variable_descriptor =
+          internal_static_gribCollectionIndex_PartVar_descriptor =
             getDescriptor().getMessageTypes().get(2);
+          internal_static_gribCollectionIndex_PartVar_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_gribCollectionIndex_PartVar_descriptor,
+              new java.lang.String[] { "Groupno", "Varno", "Flag", "Density", "Ndups", "Nrecords", "Missing", });
+          internal_static_gribCollectionIndex_Variable_descriptor =
+            getDescriptor().getMessageTypes().get(3);
           internal_static_gribCollectionIndex_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Variable_descriptor,
-              new java.lang.String[] { "Discipline", "Pds", "CdmHash", "RecordsPos", "RecordsLen", "CoordIdx", "Groupno", "Varno", "Flag", });
+              new java.lang.String[] { "Discipline", "Pds", "CdmHash", "RecordsPos", "RecordsLen", "CoordIdx", "Density", "Ndups", "Nrecords", "Missing", "Partition", });
           internal_static_gribCollectionIndex_Coord_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_gribCollectionIndex_Coord_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Coord_descriptor,
               new java.lang.String[] { "Type", "Code", "Unit", "Values", "Bound", "Msecs", });
           internal_static_gribCollectionIndex_Parameter_descriptor =
-            getDescriptor().getMessageTypes().get(4);
+            getDescriptor().getMessageTypes().get(5);
           internal_static_gribCollectionIndex_Parameter_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Parameter_descriptor,
               new java.lang.String[] { "Name", "Data", "Sdata", });
           internal_static_gribCollectionIndex_MFile_descriptor =
-            getDescriptor().getMessageTypes().get(5);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_gribCollectionIndex_MFile_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_MFile_descriptor,
               new java.lang.String[] { "Filename", "LastModified", });
           internal_static_gribCollectionIndex_Group_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_gribCollectionIndex_Group_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Group_descriptor,
               new java.lang.String[] { "Gds", "GdsHash", "NameOverride", "Variables", "Coords", "Params", "Fileno", "Run2Part", });
           internal_static_gribCollectionIndex_GribCollectionIndex_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_gribCollectionIndex_GribCollectionIndex_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_GribCollectionIndex_descriptor,
               new java.lang.String[] { "Name", "TopDir", "Mfiles", "Groups", "Params", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Partitions", });
           internal_static_gribCollectionIndex_Partition_descriptor =
-            getDescriptor().getMessageTypes().get(8);
+            getDescriptor().getMessageTypes().get(9);
           internal_static_gribCollectionIndex_Partition_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Partition_descriptor,

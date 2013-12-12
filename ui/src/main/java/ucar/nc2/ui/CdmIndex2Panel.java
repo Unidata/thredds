@@ -2,11 +2,8 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.*;
 import ucar.sparr.Coordinate;
-import ucar.nc2.grib.collection.GribCdmIndex2;
-import ucar.nc2.grib.collection.GribCollection;
-import ucar.nc2.grib.collection.Grib2CollectionBuilderFromIndex;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -101,7 +98,7 @@ public class CdmIndex2Panel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
         if (bean != null && bean.group != null) {
-            showFileTable(gc, bean.group);
+          showFileTable(gc, bean.group);
         }
       }
     });
@@ -156,7 +153,7 @@ public class CdmIndex2Panel extends JPanel {
       }
     });
 
-       // file popup window
+    // file popup window
     fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
     fileTable.addPropertyChangeListener(new PropertyChangeListener() {
       @Override
@@ -165,7 +162,7 @@ public class CdmIndex2Panel extends JPanel {
       }
     });
 
-     /////////////////////////////////////////
+    /////////////////////////////////////////
     // the info windows
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
@@ -216,12 +213,12 @@ public class CdmIndex2Panel extends JPanel {
   }
 
   public void showDetailInfo(Formatter f) {
-     if (gc == null) return;
-     f.format("magic=%s%n", magic);
-     gc.showIndex(f);
-   }
+    if (gc == null) return;
+    f.format("magic=%s%n", magic);
+    gc.showIndex(f);
+  }
 
-   private void compareFiles(Formatter f) throws IOException {
+  private void compareFiles(Formatter f) throws IOException {
     if (gc == null) return;
     List<String> canon = new ArrayList<String>(gc.getFilenames());
     Collections.sort(canon);
@@ -296,7 +293,7 @@ public class CdmIndex2Panel extends JPanel {
     this.config = config;
     gc = GribCdmIndex2.openCdmIndex(indexFile.toString(), config, logger);
     if (gc == null)
-      throw new IOException("Not a grib collection index file ="+magic);
+      throw new IOException("Not a grib collection index file =" + magic);
 
     List<GroupBean> groups = new ArrayList<GroupBean>();
     for (GribCollection.GroupHcs g : gc.getGroups()) {
@@ -358,7 +355,7 @@ public class CdmIndex2Panel extends JPanel {
     File dir = gc.getDirectory();
     List<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
     fileTable.setFiles(dir, files);
-   }
+  }
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -392,7 +389,7 @@ public class CdmIndex2Panel extends JPanel {
       return group.varIndex.size();
     }
 
-  public String getDescription() {
+    public String getDescription() {
       return group.getDescription();
     }
 
@@ -463,76 +460,68 @@ public class CdmIndex2Panel extends JPanel {
   ////////////////////////////////////////////////////////////////////////////////////
 
   public class VarBean {
-     GribCollection.VariableIndex v;
-     GribCollection.GroupHcs group;
+    GribCollection.VariableIndex v;
+    GribCollection.GroupHcs group;
 
-     public VarBean() {
-     }
+    public VarBean() {
+    }
 
-     public VarBean(GribCollection.VariableIndex v, GribCollection.GroupHcs group) {
-       this.v = v;
-       this.group = group;
-     }
+    public VarBean(GribCollection.VariableIndex v, GribCollection.GroupHcs group) {
+      this.v = v;
+      this.group = group;
+    }
 
-     public boolean isLayer() {
-       return v.isLayer;
-     }
+    public int getNRecords() {
+      return v.nrecords;
+    }
 
-     public int getLevelType() {
-       return v.levelType;
-     }
+    public int getNMissing() {
+      return v.missing;
+    }
 
-     public int getIntvType() {
-       return v.intvType;
-     }
+    public int getNDups() {
+      return v.ndups;
+    }
 
-     public int getProbType() {
-       return v.probType;
-     }
+    public float getDensity() {
+      return v.density;
+    }
 
-     public int getEnsType() {
-       return v.ensDerivedType;
-     }
+    public String getIndexes() {
+      Formatter f = new Formatter();
+      for (int idx : v.coordIndex) f.format("%d,", idx);
+      return f.toString();
+    }
 
-     public String getIndexes() {
-       Formatter f = new Formatter();
-       for (int idx : v.coordIndex) f.format("%d,", idx);
-       return f.toString();
-     }
+    public String getIntvName() {
+      return v.getTimeIntvName();
+    }
 
-     public String getIntvName() {
-       return v.getTimeIntvName();
-     }
+    public int getHash() {
+      return v.cdmHash;
+    }
 
-     public String getProbName() {
-       return v.probabilityName;
-     }
+    public String getGroupId() {
+      return group.getId();
+    }
 
-     public int getHash() {
-       return v.cdmHash;
-     }
+    public String getVariableId() {
+      return v.discipline + "-" + v.category + "-" + v.parameter;
+    }
 
-     public String getGroupId() {
-       return group.getId();
-     }
-
-     public String getVariableId() {
-       return v.discipline + "-" + v.category + "-" + v.parameter;
-     }
-
-     private void showSparseArray(Formatter f) {
-       try {
-         v.readRecords();
-       } catch (IOException e) {
-         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-       }
-       if (v.sa != null) v.sa.showInfo(f, null);
+    private void showSparseArray(Formatter f) {
+      try {
+        v.readRecords();
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+      if (v.sa != null) v.sa.showInfo(f, null);
 
       // if (v instanceof PartitionCollection.VariableIndexPartitioned)
       //   showRecordsInPartition(f);
       // else
       //   showRecordsInCollection(f);
-     }
+    }
 
      /* private void showRecordsInCollection(Formatter f) {
        TimeCoord tcoord = v.getTimeCoord();
@@ -690,7 +679,7 @@ public class CdmIndex2Panel extends JPanel {
 
     }  */
 
-   }
+  }
 
 
  /*  private void showRecordsInPartition(Formatter f) {

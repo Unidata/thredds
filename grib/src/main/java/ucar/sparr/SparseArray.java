@@ -134,8 +134,8 @@ public class SparseArray<T> {
      return result;
    }
 
-  public double getDensity() {
-    return (double) countNotMissing() / totalSize;
+  public float getDensity() {
+    return (float) countNotMissing() / totalSize;
   }
 
   public void showInfo(Formatter info, Counter all) {

@@ -323,7 +323,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
             flag |= PartitionCollection.ENS_COORDS_DIFFER;
           }  */
 
-          viCanon.setPartitionIndex(partno, groupIdx, varIdx, flag);
+          viCanon.addPartition(partno, groupIdx, varIdx, flag, viFromOtherPartition);
         } // loop over variable
       } // loop over partition
 
@@ -567,12 +567,15 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     for (int idx : vp.coordIndex)
       b.addCoordIdx(idx);
 
-    for (int idx : vp.groupno)
-      b.addGroupno(idx);
-    for (int idx : vp.varno)
-      b.addVarno(idx);
-    for (int idx : vp.flag)
-      b.addFlag(idx);
+    for (GribCollectionProto.PartVar pv : vp.partList) {
+      b.addPartition(pv);
+    }
+
+    int nparts = vp.partList.size();
+    b.setDensity(vp.density/nparts);
+    b.setNdups(vp.ndups);
+    b.setNrecords(vp.nrecords);
+    b.setMissing(vp.missing);
 
     return b.build();
   }

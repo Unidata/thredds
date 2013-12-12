@@ -22,7 +22,7 @@ public class TestCoordinateUnionizer {
       coordNDs.add(TestCoordinateND.makeCoordinateND(i));
     }
 
-    CoordinateUnionizer unionizer = new CoordinateUnionizer();
+    CoordinateUniquify unionizer = new CoordinateUniquify();
     for (CoordinateND coordND : coordNDs) {
       unionizer.addCoords(coordND.getCoordinates());
     }

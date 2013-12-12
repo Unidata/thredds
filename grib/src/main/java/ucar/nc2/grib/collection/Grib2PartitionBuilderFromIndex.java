@@ -5,7 +5,6 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Description
@@ -99,11 +98,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
   protected GribCollection.VariableIndex readVariable(GribCollectionProto.Variable pv, GribCollection.GroupHcs group) {
     GribCollection.VariableIndex vi = super.readVariable(pv, group);
 
-    List<Integer> groupnoList = pv.getGroupnoList();
-    List<Integer> varnoList = pv.getVarnoList();
-    List<Integer> flagList = pv.getFlagList();
-
-    return tp.makeVariableIndexPartitioned(vi, groupnoList, varnoList, flagList);
+    return tp.makeVariableIndexPartitioned(vi, pv.getPartitionList());
   }
 
 }
