@@ -22,7 +22,7 @@ import java.util.*;
  * @author John
  * @since 12/7/13
  */
-public abstract class PartitionCollection extends GribCollection {
+public class PartitionCollection extends GribCollection {
   static public final byte VERT_COORDS_DIFFER = 1;
   static public final byte ENS_COORDS_DIFFER = 2;
 
@@ -89,7 +89,7 @@ public abstract class PartitionCollection extends GribCollection {
       nrecords += vi.nrecords;
 
       if (vi.density > 1.0)
-        System.out.println("HEY");
+        System.out.println("HEY vi.density");
 
       assert partno == this.partList.size();
       this.partList.add(b.build());

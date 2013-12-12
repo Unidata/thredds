@@ -41,20 +41,20 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   static public Grib2Partition factory(PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.readOrCreateIndex(force);
-    return builder.tp;
+    return builder.result;
   }
 
   // make the index
   static public boolean makePartitionIndex(PartitionManager tpc, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
-    builder.tp.close();
+    builder.result.close();
     return builder.createPartitionedIndex(errlog);
   }
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  private final PartitionManager tpc; // defines the partition
-  private Grib2Partition tp;  // build this object
+  private final PartitionManager partitionManager; // defines the partition
+  private Grib2Partition result;  // build this object
 
   protected Grib2PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(tpc, logger);
@@ -64,9 +64,9 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     FeatureCollectionConfig.GribConfig config = null;
     if (tpc != null)
       config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-    this.tp = new Grib2Partition(name, directory, config, logger);
-    this.gc = tp;
-    this.tpc = tpc;
+    this.result = new Grib2Partition(name, directory, config, logger);
+    this.gc = result;
+    this.partitionManager = tpc;
   }
 
   private boolean readOrCreateIndex(CollectionManager.Force ff) throws IOException {
@@ -88,7 +88,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   // LOOK not sure if this works
   private boolean needsUpdate(long collectionLastModified) throws IOException {
     CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
-    for (MCollection dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
+    for (MCollection dcm : partitionManager.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
       File idxFile = ucar.nc2.grib.GribCollection.getIndexFile(dcm);
       if (!idxFile.exists())
         return true;
@@ -110,8 +110,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
   private boolean readIndex(RandomAccessFile indexRaf) throws IOException {
     try {
-      this.tp = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, gc.getGribConfig(), logger);
-      this.gc = tp;
+      this.result = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, gc.getGribConfig(), logger);
+      this.gc = result;
       return true;
     } catch (IOException ioe) {
       return false;
@@ -126,12 +126,12 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     if (f == null) f = new Formatter(); // info will be discarded
 
     // create partitions
-    for (MCollection dcm : tpc.makePartitions()) {
-      tp.addPartition(dcm);
+    for (MCollection dcm : partitionManager.makePartitions()) {
+      result.addPartition(dcm);
     }
 
     List<PartitionCollection.Partition> bad = new ArrayList<>();
-    for (PartitionCollection.Partition tpp : tp.getPartitions()) {
+    for (PartitionCollection.Partition tpp : result.getPartitions()) {
       try {                                                                  // here we read in all collections at once. can we avoid this?
         tpp.gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists  LOOK force ??
         if (trace) logger.debug(" Open partition {}", tpp.getDcm().getCollectionName());
@@ -143,19 +143,20 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
     // remove ones that failed
     for (PartitionCollection.Partition tpp : bad)
-      tp.removePartition(tpp);
+      result.removePartition(tpp);
 
     // choose the "canonical" partition, aka prototype
-    int n = tp.getPartitions().size();
+    int n = result.getPartitions().size();
     if (n == 0) {
-      f.format("ERR Nothing in this partition = %s%n", tp.getName());
-      logger.error(" Nothing in this partition = {}", tp.getName());
+      f.format("ERR Nothing in this partition = %s%n", result.getName());
+      logger.error(" Nothing in this partition = {}", result.getName());
       return false;
     }
-    int idx = tpc.getProtoIndex(n);
-    PartitionCollection.Partition canon = tp.getPartitions().get(idx);
+    int idx = partitionManager.getProtoIndex(n);
+    PartitionCollection.Partition canon = result.getPartitions().get(idx);
     f.format(" INFO Using canonical partition %s%n", canon.getDcm().getCollectionName());
     logger.info("     Using canonical partition {}", canon.getDcm().getCollectionName());
+    result.set(canon.gc);
 
     // alternately one could choose a partition that has all the groups or maximum # variables
     // List<GroupAndPartitions> groupList = makeAllGroups();
@@ -164,8 +165,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     // also replace variables  in canonGc with partitioned variables
     // partition index is used - do not resort partitions
     if (!makeAllVariables(canon, f)) {
-      f.format(" ERR Partition check failed, index not written on %s%n", tp.getName());
-      logger.error(" Partition check failed, index not written on {} errors = \n{}", tp.getName(), f.toString());
+      f.format(" ERR Partition check failed, index not written on %s%n", result.getName());
+      logger.error(" Partition check failed, index not written on {} errors = \n{}", result.getName(), f.toString());
       return false;
     }
 
@@ -173,10 +174,10 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     //createPartitionedTimeCoordinates(canon.gc, f);
 
     // ready to write the index file
-    writeIndex(canon.gc, f);
+    writeIndex(result, f);
 
     // close open gc's
-    for (PartitionCollection.Partition tpp : tp.getPartitions()) {
+    for (PartitionCollection.Partition tpp : result.getPartitions()) {
       tpp.gc.close();
     }
     canon.gc.close();
@@ -197,13 +198,13 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
   private List<GroupPartitions> makeAllGroups() throws IOException {
     Map<Integer, GroupPartitions> groupMap = new HashMap<>(40);
-    for (PartitionCollection.Partition tpp : tp.getPartitions()) {
+    for (PartitionCollection.Partition tpp : result.getPartitions()) {
       GribCollection gc = tpp.gc;
       for (GribCollection.GroupHcs g : gc.getGroups()) {
-        GroupPartitions gs = groupMap.get(g.gdsHash);
+        GroupPartitions gs = groupMap.get(g.horizCoordSys.getGdsHash());
         if (gs == null) {
           gs = new GroupPartitions(g);
-          groupMap.put(g.gdsHash, gs);
+          groupMap.put(g.horizCoordSys.getGdsHash(), gs);
         }
         gs.parts.add(tpp);
       }
@@ -214,29 +215,32 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   // consistency check on variables : compare each variable to corresponding one in proto
   // also set the groupno and partno for each partition
   private boolean makeAllVariables(PartitionCollection.Partition canon, Formatter f) throws IOException {
-    List<PartitionCollection.Partition> partitions = tp.getPartitions();
+    List<PartitionCollection.Partition> partitions = result.getPartitions();
     int npart = partitions.size();
     boolean ok = true;
 
     // do each group
     GribCollection canonGc = canon.gc;
-    for (GribCollection.GroupHcs canonGroup : canonGc.getGroups()) {
-      String gname = canonGroup.getId();
-      String gdesc = canonGroup.getDescription();
+    for (GribCollection.GroupHcs canonGroup2 : canonGc.getGroups()) {
+      GribCollection.GroupHcs resultGroup = canon.gc.new GroupHcs(canonGroup2);
+      result.groups.add(resultGroup);
+
+      String gname = canonGroup2.getId();
+      String gdesc = canonGroup2.getDescription();
       if (trace) f.format(" Check Group %s%n", gname);
 
       // hash proto variables for quick lookup
-      Map<Integer, PartitionCollection.VariableIndexPartitioned> canonVars = new HashMap<>(2 * canonGroup.varIndex.size());
-      List<GribCollection.VariableIndex> varIndexP = new ArrayList<>(canonGroup.varIndex.size());
-      for (GribCollection.VariableIndex vi : canonGroup.varIndex) {
-        PartitionCollection.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, npart);
-        varIndexP.add(vip);
-        if (canonVars.containsKey(vi.cdmHash)) {
+      Map<Integer, PartitionCollection.VariableIndexPartitioned> resultVarMap = new HashMap<>(2 * canonGroup2.varIndex.size());
+      List<GribCollection.VariableIndex> resultVarList = new ArrayList<>(canonGroup2.varIndex.size());
+      for (GribCollection.VariableIndex vi : canonGroup2.varIndex) {
+        PartitionCollection.VariableIndexPartitioned vip = result.makeVariableIndexPartitioned(vi, npart);
+        resultVarList.add(vip);
+        if (resultVarMap.containsKey(vi.cdmHash)) {
           f.format(" WARN Duplicate variable hash %s%n", vi.toStringShort());
         }
-        canonVars.put(vi.cdmHash, vip);
+        resultVarMap.put(vi.cdmHash, vip);
       }
-      canonGroup.varIndex = varIndexP;// replace variable list with VariableIndexPartitioned in the group
+      resultGroup.varIndex = resultVarList;
 
       // make a single runtime coordinate
       CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder();
@@ -248,10 +252,10 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
         // get group corresponding to canonGroup
         GribCollection gc = tpp.gc;
-        int groupIdx = gc.findGroupIdxById(canonGroup.getId());
+        int groupIdx = gc.findGroupIdxById(canonGroup2.getId());
         if (groupIdx < 0) {
           f.format(" INFO Cant find canonical group %s in partition %s%n", gname, tpp.getName());
-          //ok = false;
+          //ok = false; LOOK can we add ??
           continue;
         }
         GribCollection.GroupHcs group = gc.getGroup(groupIdx); // note this will be the same as the canonGroup when partition == canonPartition
@@ -268,16 +272,16 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
           if (trace) f.format(" Check %s%n", viFromOtherPartition.toStringShort());
           int flag = 0;
 
-          PartitionCollection.VariableIndexPartitioned viCanon = canonVars.get(viFromOtherPartition.cdmHash); // match with proto variable hash
-          if (viCanon == null) {
+          PartitionCollection.VariableIndexPartitioned viResult = resultVarMap.get(viFromOtherPartition.cdmHash); // match with proto variable hash
+          if (viResult == null) {
             f.format(" WARN Cant find %s from %s / %s in proto %s - add to canon%n", viFromOtherPartition.toStringShort(), tpp.getName(), gdesc, canon.getName());
 
             //////////////// add it to the canonGroup
-            viCanon = tp.makeVariableIndexPartitioned(viFromOtherPartition, npart);
-            varIndexP.add(viCanon); // this is the canonGroup list of vars
-            if (canonVars.containsKey(viFromOtherPartition.cdmHash))
+            viResult = result.makeVariableIndexPartitioned(viFromOtherPartition, npart);
+            resultVarList.add(viResult); // this is the canonGroup list of vars
+            if (resultVarMap.containsKey(viFromOtherPartition.cdmHash))
               f.format(" WARN Duplicate variable hash %s%n", viFromOtherPartition.toStringShort());
-            canonVars.put(viFromOtherPartition.cdmHash, viCanon); // replace with its evil twin
+            resultVarMap.put(viFromOtherPartition.cdmHash, viResult); // replace with its evil twin
 
             /* reparent its vertical coordinate
             VertCoord vc = viCanon.getVertCoord();
@@ -323,15 +327,14 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
             flag |= PartitionCollection.ENS_COORDS_DIFFER;
           }  */
 
-          viCanon.addPartition(partno, groupIdx, varIdx, flag, viFromOtherPartition);
+          viResult.addPartition(partno, groupIdx, varIdx, flag, viFromOtherPartition);
         } // loop over variable
       } // loop over partition
 
       Coordinate runtimeCoord = runtimeAllBuilder.finish();
-      canonGroup.run2part = new int[runtimeCoord.getSize()];
-      for (int i=0; i<canonGroup.run2part.length; i++) canonGroup.run2part[i] = i; // LOOK wrong
-      canonGroup.coords.set(0, runtimeCoord);
-
+      resultGroup.run2part = new int[runtimeCoord.getSize()];
+      for (int i=0; i<resultGroup.run2part.length; i++) resultGroup.run2part[i] = i; // LOOK wrong
+      resultGroup.coords.set(0, runtimeCoord);
 
       /* for each variable, create union of coordinates
       for (int varIdx = 0; varIdx < canonGroup.varIndex.size(); varIdx++) {
@@ -478,7 +481,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   GribCollectionIndex (sizeIndex bytes)
   */
   private boolean writeIndex(GribCollection canonGc, Formatter f) throws IOException {
-    File file = tp.getIndexFile();
+    File file = result.getIndexFile();
     if (file.exists()) {
       if (!file.delete())
         logger.error("gc2tp cant delete " + file.getPath());
@@ -493,7 +496,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       raf.writeLong(0); // no record section
 
       GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
-      indexBuilder.setName(tp.getName());
+      indexBuilder.setName(result.getName());
 
       for (GribCollection.GroupHcs g : canonGc.getGroups())
         indexBuilder.addGroups(writeGroupProto(g));
@@ -506,7 +509,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
       // dont need files - these are stored in the partition objects
 
-      for (PartitionCollection.Partition p : tp.getPartitions()) {
+      for (PartitionCollection.Partition p : result.getPartitions()) {
         indexBuilder.addPartitions(writePartitionProto(p.getName(), p));
       }
 
@@ -524,8 +527,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   private GribCollectionProto.Group writeGroupProto(GribCollection.GroupHcs g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGds(ByteString.copyFrom(g.rawGds));
-    b.setGdsHash(g.gdsHash);
+    b.setGds(ByteString.copyFrom(g.horizCoordSys.getRawGds()));
+    b.setGdsHash(g.horizCoordSys.getGdsHash());
 
     for (GribCollection.VariableIndex vb : g.varIndex) {
       b.addVariables(writeVariableProto((PartitionCollection.VariableIndexPartitioned) vb));

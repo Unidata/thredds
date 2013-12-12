@@ -398,7 +398,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {
-    GdsHorizCoordSys hcs = gHcs.hcs;
+    GdsHorizCoordSys hcs = gHcs.getGdsHorizCoordSys();
     String grid_mapping = hcs.getName()+"_Projection";
 
     Group g;
@@ -416,13 +416,13 @@ public class Grib2Iosp extends GribIosp {
     }
 
     String horizDims;
-    if (hcs == null) {
+    /* if (hcs == null) {
       logger.error("No GdsHorizCoordSys for gds template {} center {}", gHcs.hcs.template, gribCollection.getCenter());
       throw new IllegalStateException();
-    }
+    } */
 
     // CurvilinearOrthogonal - lat and lon fields must be present in the file
-    boolean is2D = Grib2Utils.isLatLon2D(gHcs.hcs.template, gribCollection.getCenter());
+    boolean is2D = Grib2Utils.isLatLon2D(hcs.template, gribCollection.getCenter());
     if (is2D) {
       horizDims = "lat lon";  // LOOK: orthogonal curvilinear
 
@@ -430,7 +430,7 @@ public class Grib2Iosp extends GribIosp {
       ncfile.addDimension(g, new Dimension("lon", hcs.nx));
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
 
-    } else if (Grib2Utils.isLatLon(gHcs.hcs.template, gribCollection.getCenter())) {
+    } else if (Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter())) {
       horizDims = "lat lon";
       ncfile.addDimension(g, new Dimension("lon", hcs.nx));
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
@@ -924,9 +924,10 @@ public class Grib2Iosp extends GribIosp {
           show(Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode,
-                vindex.group.hcs.nxRaw, vindex.group.hcs.nyRaw, vindex.group.hcs.nptsInLine);
-        dataReceiver.addData(data, dr.resultIndex, vindex.group.hcs.nx);
+        GdsHorizCoordSys hcs = vindex.group.getGdsHorizCoordSys();
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, hcs.scanMode,
+                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
+        dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }
       if (rafData != null) rafData.close();
     }
@@ -1190,9 +1191,10 @@ public class Grib2Iosp extends GribIosp {
           show( Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, dr.vindex.group.hcs.gdsNumberPoints, dr.vindex.group.hcs.scanMode,
-                dr.vindex.group.hcs.nxRaw,  dr.vindex.group.hcs.nyRaw, dr.vindex.group.hcs.nptsInLine);
-        dataReceiver.addData(data, dr.resultIndex, dr.vindex.group.hcs.nx);
+        GdsHorizCoordSys hcs = dr.vindex.group.getGdsHorizCoordSys();
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, hcs.scanMode,
+                hcs.nxRaw,  hcs.nyRaw, hcs.nptsInLine);
+        dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }
       if (rafData != null) rafData.close();
     }

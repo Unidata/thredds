@@ -47,7 +47,7 @@ import java.io.IOException;
  * @author John
  * @since 9/5/11
  */
-public class Grib2Collection extends ucar.nc2.grib.collection.GribCollection {
+public class Grib2Collection extends GribCollection {
 
   public Grib2Collection(String name, File directory, FeatureCollectionConfig.GribConfig dcm) {
     super(name, directory, dcm, false);

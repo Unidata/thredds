@@ -203,9 +203,11 @@ public class CdmIndex2Panel extends JPanel {
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
       f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
-      f.format("run2Part: ");
-      for (int part : bean.group.run2part) f.format("%d, ", part);
-      f.format("%n");
+      if (bean.group.run2part != null) {
+        f.format("run2Part: ");
+        for (int part : bean.group.run2part) f.format("%d, ", part);
+        f.format("%n");
+      }
     }
 
     f.format("%n");
@@ -374,10 +376,11 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getGdsHash() {
-      return group.gdsHash;
+      return group.getGdsHash();
     }
 
     public int getNFiles() {
+      if (group.filenose == null) return 0;
       return group.filenose.length;
     }
 

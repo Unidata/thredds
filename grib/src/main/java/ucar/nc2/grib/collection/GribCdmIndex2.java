@@ -326,7 +326,7 @@ public class GribCdmIndex2 implements IndexReader {
   public static void main(String[] args) throws IOException {
      // need to configure the loggers
 
-     File cat = new File("B:/idd/RR-CONUS-40km/catalog.xml");
+     File cat = new File("F:/data/grib/catalog.xml");
      org.jdom2.Document doc;
      try {
        SAXBuilder builder = new SAXBuilder();
@@ -352,7 +352,7 @@ public class GribCdmIndex2 implements IndexReader {
      //Grib2TimePartition tp = makeTimePartitionIndexOneDirectory(config, CollectionManager.Force.always, topPath);
      //tp.close();
 
-     Path topPath = Paths.get("B:/idd/RR-CONUS-40km/");
+     Path topPath = Paths.get("F:\\data\\grib\\idd\\ndfdFire");
      rewriteFilePartition(config, topPath, false);
 
      long took = System.currentTimeMillis() - start;
