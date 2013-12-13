@@ -64,6 +64,10 @@ public class CoordinateRuntime implements Coordinate {
     return firstDate;
   }
 
+  public CalendarDate getLastDate() {
+    return runtimeSorted.get(getSize()-1);
+  }
+
   public List<? extends Object> getValues() {
     return runtimeSorted;
   }

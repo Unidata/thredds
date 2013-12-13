@@ -61,7 +61,7 @@ import java.util.*;
 import java.util.Formatter;
 
 /**
- * Grib-2 Collection IOSP.
+ * Grib-2 Collection IOSP, ver2.
  * Handles both collections and single GRIB files.
  *
  * @author caron
@@ -474,14 +474,14 @@ public class Grib2Iosp extends GribIosp {
       switch (type) {
         case runtime:
           runtime = (CoordinateRuntime) coord;
-          addRuntimeCoordinate(ncfile, g, runtime);
+          makeRuntimeCoordinate(ncfile, g, runtime);
           break;
         case timeIntv:
         case time:
-          addTimeCoordinate(ncfile, g, coord, runtime);
+          makeTimeCoordinate(ncfile, g, coord, runtime);
           break;
         case vert:
-          addVerticalCoordinate(ncfile, g, (CoordinateVert) coord);
+          makeVerticalCoordinate(ncfile, g, (CoordinateVert) coord);
           break;
       }
     }
@@ -603,7 +603,7 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
-  private void addRuntimeCoordinate(NetcdfFile ncfile, Group g, CoordinateRuntime tc) {
+  private void makeRuntimeCoordinate(NetcdfFile ncfile, Group g, CoordinateRuntime tc) {
     int n = tc.getSize();
     String tcName = tc.getName();
     ncfile.addDimension(g, new Dimension(tcName, n));
@@ -634,7 +634,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   // maybe do 1D if single runtime
-  private void addTimeCoordinate(NetcdfFile ncfile, Group g, Coordinate tc, CoordinateRuntime runtime) {
+  private void makeTimeCoordinate(NetcdfFile ncfile, Group g, Coordinate tc, CoordinateRuntime runtime) {
     int nruns = runtime.getSize();
     int ntimes = tc.getSize();
     String tcName = tc.getName();
@@ -731,7 +731,7 @@ public class Grib2Iosp extends GribIosp {
 }  */
 
 
-  private void addVerticalCoordinate(NetcdfFile ncfile, Group g, CoordinateVert vc) {
+  private void makeVerticalCoordinate(NetcdfFile ncfile, Group g, CoordinateVert vc) {
       int n = vc.getSize();
       String vcName = vc.getName().toLowerCase();
       ncfile.addDimension(g, new Dimension(vcName, n));

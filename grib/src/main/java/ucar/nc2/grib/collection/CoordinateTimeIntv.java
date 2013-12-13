@@ -1,5 +1,7 @@
 package ucar.nc2.grib.collection;
 
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.sparr.Coordinate;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.TimeCoord;
@@ -110,6 +112,21 @@ public class CoordinateTimeIntv implements Coordinate {
   public double getTimeUnitScale() {
      return timeUnit.getValue();
    }
+
+  public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
+    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, timeUnit+" since "+ refDate.toString());
+    List<CalendarDate> result = new ArrayList<>(getSize());
+    for (TimeCoord.Tinv val : getTimeIntervals())
+      result.add(cdu.makeCalendarDate(val.getBounds2())); // use the upper bound - same as iosp uses for coord
+    return result;
+  }
+
+  public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
+    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, timeUnit + " since " + refDate.toString());
+    CalendarDate start = cdu.makeCalendarDate(timeIntervals.get(0).getBounds2());
+    CalendarDate end = cdu.makeCalendarDate(timeIntervals.get(getSize()-1).getBounds2());
+    return CalendarDateRange.of(start, end);
+  }
 
   @Override
   public void showInfo(Formatter info, Indent indent) {

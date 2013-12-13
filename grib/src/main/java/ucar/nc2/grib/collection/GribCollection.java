@@ -7,6 +7,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
+import ucar.nc2.time.CalendarDate;
 import ucar.sparr.Coordinate;
 import ucar.sparr.SparseArray;
 import ucar.nc2.NetcdfFile;
@@ -258,7 +259,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   private File indexFile;
   public List<HorizCoordSys> hcs; // one for each gds
   public List<Dataset> dataset;   // 2D, best, 0hour etc
-  private List<GroupHcs> groups; // must be kept in order; unmodifiableList
+  List<GroupHcs> groups; // must be kept in order; unmodifiableList
 
   public List<GroupHcs> getGroups() {
     return groups;
@@ -694,16 +695,37 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       return varMap.get(cdmHash);
     }
 
-    public CalendarDateRange getTimeCoverage() {
-      return null;
-      /* TimeCoord useTc = null;
-      for (TimeCoord tc : timeCoords) {
-        if (useTc == null || useTc.getSize() < tc.getSize())  // use time coordinate with most values
-          useTc = tc;
+    private CalendarDateRange dateRange = null;
+    public CalendarDateRange getCalendarDateRange() {
+      if (dateRange == null) {
+        CalendarDate start = null;
+        CalendarDate lastRuntime = null;
+        CalendarDate end = null;
+        for (Coordinate coord : coords) {
+          Coordinate.Type type = coord.getType();
+          switch (type) {
+            case runtime:
+              CoordinateRuntime runtime = (CoordinateRuntime) coord;
+              start = runtime.getFirstDate();
+              lastRuntime = runtime.getLastDate();
+              end = lastRuntime;
+              break;
+            case time:
+              CoordinateTime time = (CoordinateTime) coord;
+              CalendarDateRange range = time.makeCalendarDateRange(null, lastRuntime);
+              if (end.isBefore(range.getEnd())) end = range.getEnd();
+              break;
+            case timeIntv:
+              CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) coord;
+              range = timeIntv.makeCalendarDateRange(null, lastRuntime);
+              if (end.isBefore(range.getEnd())) end = range.getEnd();
+              break;
+          }
+        }
+        dateRange = CalendarDateRange.of(start, end);
       }
-      return (useTc == null) ? null : useTc.getCalendarRange(); */
+      return dateRange;
     }
-
   }
 
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int cdmHash, int discipline,

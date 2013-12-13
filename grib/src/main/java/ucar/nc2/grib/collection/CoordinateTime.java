@@ -1,6 +1,9 @@
 package ucar.nc2.grib.collection;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.sparr.Coordinate;
 import ucar.sparr.CoordinateBuilderImpl;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -61,9 +64,20 @@ public class CoordinateTime implements Coordinate {
     return timeUnit;
   }
 
-  /* public void setRefDate(CalendarDate refDate) {
-    this.refDate = refDate;
-  } */
+  public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
+    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, timeUnit+" since "+ refDate.toString());
+    List<CalendarDate> result = new ArrayList<>(getSize());
+    for (int val : getOffsetSorted())
+      result.add(cdu.makeCalendarDate(val));
+    return result;
+  }
+
+  public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
+    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, timeUnit + " since " + refDate.toString());
+    CalendarDate start = cdu.makeCalendarDate(offsetSorted.get(0));
+    CalendarDate end = cdu.makeCalendarDate(offsetSorted.get(getSize()-1));
+    return CalendarDateRange.of(start, end);
+  }
 
   public void setTimeUnit(CalendarPeriod timeUnit) {
     this.timeUnit = timeUnit;

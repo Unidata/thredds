@@ -43,11 +43,10 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib1.Grib1Iosp;
-import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribCdmIndex;
+import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -80,7 +79,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
-    TimePartition timePartition;
+    PartitionCollection timePartition;
     GribCollection gribCollection;
 
     protected StateGrib(StateGrib from) {
@@ -110,6 +109,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     this.gribConfig = config.gribConfig;
 
     Formatter errlog = new Formatter();
+
     if (config.timePartition != null) {
       this.datasetCollection = TimePartitionCollectionManager.factory(config, topDirectory, new GribCdmIndex(), errlog, logger);
     } else {
@@ -245,8 +245,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     try {
       StateGrib localState = (StateGrib) state;
       if (config.timePartition != null) {
-        TimePartition previous = localState.timePartition;
-        localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (PartitionManager) this.datasetCollection, force, logger);
+        PartitionCollection previous = localState.timePartition;
+        localState.timePartition = PartitionCollection.factory(format == DataFormatType.GRIB1, (PartitionManager) this.datasetCollection, force, logger);
         localState.gribCollection = null;
 
         if (previous != null) previous.delete(); // LOOK may be another thread using - other thread will fail
@@ -304,7 +304,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
 
         ds.tmi.setGeospatialCoverage(extractGeospatial(group));
-        ds.tmi.setTimeCoverage(extractCalendarDateRange(group));
+        ds.tmi.setTimeCoverage(group.getCalendarDateRange());
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
@@ -354,7 +354,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
       }
 
-      for (TimePartition.Partition dc : localState.timePartition.getPartitionsSorted()) {
+      for (PartitionCollection.Partition dc : localState.timePartition.getPartitionsSorted()) {
         String dname = dc.getName();
         InvCatalogRef ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
         top.addDataset(ds);
@@ -428,7 +428,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           return makeCatalogPartition(localState.timePartition, catURI, localState);
         }
 
-        TimePartition.Partition tpp = localState.timePartition.getPartitionByName(match);
+        PartitionCollection.Partition tpp = localState.timePartition.getPartitionByName(match);
         if (tpp != null) {
           GribCollection gc = tpp.getGribCollection();
           InvCatalogImpl result = makeCatalogPartition(gc, catURI, localState);
@@ -508,7 +508,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
     Collections.sort(groups);
     boolean isSingleGroup = (groups.size() == 1);
-    boolean isBest = gribCollection instanceof TimePartition;
+    boolean isBest = gribCollection instanceof PartitionCollection;
 
     String tpath = getPath()+"/"+partitionName;
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
@@ -549,7 +549,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         // metadata is specific to each group
         ds.tmi.setGeospatialCoverage(extractGeospatial(group));
-        CalendarDateRange cdr = extractCalendarDateRange(group);
+        CalendarDateRange cdr = group.getCalendarDateRange();
         if (cdr != null) ds.tmi.setTimeCoverage(cdr);
 
         ds.finish();
@@ -605,14 +605,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       } else {
 
         if ((paths.length == 1) && paths[0].equals(FILES)) {
-          TimePartition.Partition p = localState.timePartition.getPartitionLast();
+          PartitionCollection.Partition p = localState.timePartition.getPartitionLast();
           GribCollection pgc = p.getGribCollection();
           InvCatalogImpl cat = makeLatestCatalog(pgc, groups.get(0), catURI, localState);  // case 1
           pgc.close();
           return cat;
 
          } if ((paths.length == 2) && paths[1].equals(FILES)) {
-           TimePartition.Partition p = localState.timePartition.getPartitionByName(paths[0]);
+           PartitionCollection.Partition p = localState.timePartition.getPartitionByName(paths[0]);
            GribCollection pgc = p.getGribCollection();
            InvCatalogImpl cat =  makeLatestCatalog(pgc, groups.get(0), catURI, localState);  // case 3
            pgc.close();
@@ -683,7 +683,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
 
   private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupHcs group) {
-    GdsHorizCoordSys gdsCoordSys = group.hcs;
+    GdsHorizCoordSys gdsCoordSys = group.getGdsHorizCoordSys();
     LatLonRect llbb = GridCoordSys.getLatLonBoundingBox(gdsCoordSys.proj, gdsCoordSys.getStartX(), gdsCoordSys.getStartY(),
             gdsCoordSys.getEndX(), gdsCoordSys.getEndY());
 
@@ -691,7 +691,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (llbb != null)
       gc.setBoundingBox(llbb);
 
-    if (group.hcs.isLatLon()) {
+    if (gdsCoordSys.isLatLon()) {
       gc.setLonResolution(gdsCoordSys.dx);
       gc.setLatResolution(gdsCoordSys.dy);
     }
@@ -702,35 +702,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private CalendarDateRange extractCalendarDateRange(List<GribCollection.GroupHcs> groups) {
     CalendarDateRange gcAll = null;
     for (GribCollection.GroupHcs group : groups) {
-      CalendarDateRange gc = extractCalendarDateRange(group);
+      CalendarDateRange gc = group.getCalendarDateRange();
       if (gcAll == null) gcAll = gc;
       else gcAll.extend(gc);
     }
     return gcAll;
   }
 
-
-  private CalendarDateRange extractCalendarDateRange(GribCollection.GroupHcs group) {
-    TimeCoord max = null;
-
-    for (TimeCoord tc : group.timeCoords) {
-      if (!tc.isInterval()) {
-        if ((max == null) || (max.getSize() < tc.getSize()))
-          max = tc;
-      }
-    }
-
-    if (max == null) {
-      for (TimeCoord tc : group.timeCoords) {
-        if (tc.isInterval()) {
-          if ((max == null) || (max.getSize() < tc.getSize()))
-            max = tc;
-        }
-      }
-    }
-
-    return (max == null) ? null : max.getCalendarRange();
-  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -843,7 +821,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (paths.length == 2) {
         boolean isBest = paths[1].equals(BEST_DATASET) || paths[1].equals(COLLECTION);
         if (isSingleGroup) {
-          TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
+          PartitionCollection.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
           if (tpp != null)
             return new DatasetParse(tpp, localState.timePartition.getGroup(0).getId()); // case 4 :  overall collection for partition, one group
         } else {
@@ -853,7 +831,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       if (paths.length == 3) {
          boolean isBest = paths[2].equals(BEST_DATASET) || paths[2].equals(COLLECTION);
-         TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
+         PartitionCollection.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
          String groupName = paths[1];
          return new DatasetParse(tpp, groupName); // case 6
       }
@@ -863,13 +841,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   private class DatasetParse {
-    TimePartition.Partition partition; // missing for collection level
+    PartitionCollection.Partition partition; // missing for collection level
     String group;
     String filename; // only for isFile
     //FeatureCollectionConfig.GribDatasetType dtype;
     //boolean isFile;
 
-    private DatasetParse(TimePartition.Partition tpp, String group) {
+    private DatasetParse(PartitionCollection.Partition tpp, String group) {
       this.partition = tpp;
       this.group = group;
     }
@@ -882,7 +860,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
   ///////////////////////////
 
-  private ThreddsMetadata.Variables extractThreddsVariables(GribCollection gribCollection, GribCollection.GroupHcs group) {
+  /* private ThreddsMetadata.Variables extractThreddsVariables(GribCollection gribCollection, GribCollection.GroupHcs group) {
     ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(format.toString());
     for (GribCollection.VariableIndex vindex : group.varIndex)
       vars.addVariable(extractThreddsVariables(gribCollection, vindex));
@@ -930,6 +908,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       map.put(vindex.cdmHash, tv);
       return tv;
     }
-  }
+  }  */
 
 }
