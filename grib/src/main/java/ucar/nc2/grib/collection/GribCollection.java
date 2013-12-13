@@ -197,7 +197,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   static public GribCollection factory(boolean isGrib1, MCollection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     /* if (isGrib1) {
       if (dcm.isPartition())
-        if (force == CollectionManager.Force.never) {  // LOOK not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
+        if (force == CollectionManager.Force.never) {  // not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
           FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
           return Grib1TimePartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
         } else {
@@ -214,7 +214,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     // grib2
     if (dcm.isPartition()) {
-      if (force == CollectionManager.Force.never) {  // LOOK not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
+      if (force == CollectionManager.Force.never) {  // not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
         FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
         return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
       } else {
@@ -252,13 +252,17 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
-  public List<GroupHcs> groups; // must be kept in order; unmodifiableList
   public List<Parameter> params;  // used ??
-
   private List<MFile> files;  // must be kept in order
   private Map<String, MFile> fileMap;
   private File indexFile;
+  public List<HorizCoordSys> hcs; // one for each gds
+  public List<Dataset> dataset;   // 2D, best, 0hour etc
+  private List<GroupHcs> groups; // must be kept in order; unmodifiableList
 
+  public List<GroupHcs> getGroups() {
+    return groups;
+  }
   // synchronize any access to indexRaf
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file
 
@@ -288,7 +292,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   public List<String> getFilenames() {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     for (MFile file : files)
       result.add(file.getPath());
     Collections.sort(result);
@@ -355,10 +359,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
     indexFile = null;
     return getIndexFile();
-  }
-
-  public List<GroupHcs> getGroups() {
-    return groups;
   }
 
   public List<Parameter> getParams() {
@@ -601,6 +601,15 @@ public class GribCollection implements FileCacheable, AutoCloseable {
         }  */
 
       return hcs.makeDescription(); // default desc
+    }
+  }
+
+  public class Dataset {
+    private List<GroupHcs> groups; // must be kept in order; unmodifiableList
+    GribCollectionProto.Dataset.Type type;
+
+    public List<GroupHcs> getGroups() {
+      return groups;
     }
   }
 

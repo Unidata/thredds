@@ -2687,12 +2687,12 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(showButt);
 
-      AbstractButton aggButton = BAMutil.makeButtcon("V3", "Run Rectilyser", false);
+      AbstractButton aggButton = BAMutil.makeButtcon("V3", "Show Statistics", false);
       aggButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
           try {
-            gribTable.runAggregator(f);
+            gribTable.showStats(f);
           } catch (IOException e1) {
             e1.printStackTrace();
           }

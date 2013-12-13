@@ -157,7 +157,7 @@ public class SparseArray<T> {
       if (s == 1) continue; // skip dimension len 1
       sizes.add(s);
     }
-    info.format("%n");
+    info.format("%n%n");
     showRecurse(0, sizes, info);
   }
 
@@ -169,7 +169,7 @@ public class SparseArray<T> {
         boolean hasRecord = track[offset+i] > 0;
         if (hasRecord) f.format("X"); else f.format("-");
       }
-      f.format("%n%n");
+      f.format("%n");
       return len;
 
     } else {

@@ -10282,6 +10282,996 @@ public final class GribCollectionProto {
     // @@protoc_insertion_point(class_scope:gribCollectionIndex.Group)
   }
 
+  public interface DatasetOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required .gribCollectionIndex.Dataset.Type type = 1;
+    /**
+     * <code>required .gribCollectionIndex.Dataset.Type type = 1;</code>
+     */
+    boolean hasType();
+    /**
+     * <code>required .gribCollectionIndex.Dataset.Type type = 1;</code>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type getType();
+
+    // repeated .gribCollectionIndex.Group groups = 2;
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Group> 
+        getGroupsList();
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.Group getGroups(int index);
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    int getGroupsCount();
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.GroupOrBuilder> 
+        getGroupsOrBuilderList();
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.GroupOrBuilder getGroupsOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code gribCollectionIndex.Dataset}
+   */
+  public static final class Dataset extends
+      com.google.protobuf.GeneratedMessage
+      implements DatasetOrBuilder {
+    // Use Dataset.newBuilder() to construct.
+    private Dataset(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private Dataset(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Dataset defaultInstance;
+    public static Dataset getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Dataset getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Dataset(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              int rawValue = input.readEnum();
+              ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type value = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(1, rawValue);
+              } else {
+                bitField0_ |= 0x00000001;
+                type_ = value;
+              }
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                groups_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Group>();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              groups_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Group.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          groups_ = java.util.Collections.unmodifiableList(groups_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_Dataset_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_Dataset_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.grib.collection.GribCollectionProto.Dataset.class, ucar.nc2.grib.collection.GribCollectionProto.Dataset.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Dataset> PARSER =
+        new com.google.protobuf.AbstractParser<Dataset>() {
+      public Dataset parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Dataset(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Dataset> getParserForType() {
+      return PARSER;
+    }
+
+    /**
+     * Protobuf enum {@code gribCollectionIndex.Dataset.Type}
+     */
+    public enum Type
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>TwoD = 0;</code>
+       */
+      TwoD(0, 0),
+      /**
+       * <code>Best = 1;</code>
+       */
+      Best(1, 1),
+      /**
+       * <code>Analysis = 2;</code>
+       */
+      Analysis(2, 2),
+      ;
+
+      /**
+       * <code>TwoD = 0;</code>
+       */
+      public static final int TwoD_VALUE = 0;
+      /**
+       * <code>Best = 1;</code>
+       */
+      public static final int Best_VALUE = 1;
+      /**
+       * <code>Analysis = 2;</code>
+       */
+      public static final int Analysis_VALUE = 2;
+
+
+      public final int getNumber() { return value; }
+
+      public static Type valueOf(int value) {
+        switch (value) {
+          case 0: return TwoD;
+          case 1: return Best;
+          case 2: return Analysis;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<Type>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static com.google.protobuf.Internal.EnumLiteMap<Type>
+          internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<Type>() {
+              public Type findValueByNumber(int number) {
+                return Type.valueOf(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        return getDescriptor().getValues().get(index);
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return ucar.nc2.grib.collection.GribCollectionProto.Dataset.getDescriptor().getEnumTypes().get(0);
+      }
+
+      private static final Type[] VALUES = values();
+
+      public static Type valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int index;
+      private final int value;
+
+      private Type(int index, int value) {
+        this.index = index;
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:gribCollectionIndex.Dataset.Type)
+    }
+
+    private int bitField0_;
+    // required .gribCollectionIndex.Dataset.Type type = 1;
+    public static final int TYPE_FIELD_NUMBER = 1;
+    private ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type type_;
+    /**
+     * <code>required .gribCollectionIndex.Dataset.Type type = 1;</code>
+     */
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required .gribCollectionIndex.Dataset.Type type = 1;</code>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type getType() {
+      return type_;
+    }
+
+    // repeated .gribCollectionIndex.Group groups = 2;
+    public static final int GROUPS_FIELD_NUMBER = 2;
+    private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Group> groups_;
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Group> getGroupsList() {
+      return groups_;
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.GroupOrBuilder> 
+        getGroupsOrBuilderList() {
+      return groups_;
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    public int getGroupsCount() {
+      return groups_.size();
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.Group getGroups(int index) {
+      return groups_.get(index);
+    }
+    /**
+     * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+     *
+     * <pre>
+     * separate group for each GDS
+     * </pre>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.GroupOrBuilder getGroupsOrBuilder(
+        int index) {
+      return groups_.get(index);
+    }
+
+    private void initFields() {
+      type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.TwoD;
+      groups_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getGroupsCount(); i++) {
+        if (!getGroups(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeEnum(1, type_.getNumber());
+      }
+      for (int i = 0; i < groups_.size(); i++) {
+        output.writeMessage(2, groups_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, type_.getNumber());
+      }
+      for (int i = 0; i < groups_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, groups_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.Dataset parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.grib.collection.GribCollectionProto.Dataset prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code gribCollectionIndex.Dataset}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.grib.collection.GribCollectionProto.DatasetOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_Dataset_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_Dataset_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.grib.collection.GribCollectionProto.Dataset.class, ucar.nc2.grib.collection.GribCollectionProto.Dataset.Builder.class);
+      }
+
+      // Construct using ucar.nc2.grib.collection.GribCollectionProto.Dataset.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getGroupsFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.TwoD;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (groupsBuilder_ == null) {
+          groups_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          groupsBuilder_.clear();
+        }
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_gribCollectionIndex_Dataset_descriptor;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.Dataset getDefaultInstanceForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.Dataset.getDefaultInstance();
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.Dataset build() {
+        ucar.nc2.grib.collection.GribCollectionProto.Dataset result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.Dataset buildPartial() {
+        ucar.nc2.grib.collection.GribCollectionProto.Dataset result = new ucar.nc2.grib.collection.GribCollectionProto.Dataset(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.type_ = type_;
+        if (groupsBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            groups_ = java.util.Collections.unmodifiableList(groups_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.groups_ = groups_;
+        } else {
+          result.groups_ = groupsBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.grib.collection.GribCollectionProto.Dataset) {
+          return mergeFrom((ucar.nc2.grib.collection.GribCollectionProto.Dataset)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.grib.collection.GribCollectionProto.Dataset other) {
+        if (other == ucar.nc2.grib.collection.GribCollectionProto.Dataset.getDefaultInstance()) return this;
+        if (other.hasType()) {
+          setType(other.getType());
+        }
+        if (groupsBuilder_ == null) {
+          if (!other.groups_.isEmpty()) {
+            if (groups_.isEmpty()) {
+              groups_ = other.groups_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureGroupsIsMutable();
+              groups_.addAll(other.groups_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.groups_.isEmpty()) {
+            if (groupsBuilder_.isEmpty()) {
+              groupsBuilder_.dispose();
+              groupsBuilder_ = null;
+              groups_ = other.groups_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              groupsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getGroupsFieldBuilder() : null;
+            } else {
+              groupsBuilder_.addAllMessages(other.groups_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasType()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getGroupsCount(); i++) {
+          if (!getGroups(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.grib.collection.GribCollectionProto.Dataset parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.grib.collection.GribCollectionProto.Dataset) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required .gribCollectionIndex.Dataset.Type type = 1;
+      private ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.TwoD;
+      /**
+       * <code>required .gribCollectionIndex.Dataset.Type type = 1;</code>
+       */
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required .gribCollectionIndex.Dataset.Type type = 1;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type getType() {
+        return type_;
+      }
+      /**
+       * <code>required .gribCollectionIndex.Dataset.Type type = 1;</code>
+       */
+      public Builder setType(ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .gribCollectionIndex.Dataset.Type type = 1;</code>
+       */
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        type_ = ucar.nc2.grib.collection.GribCollectionProto.Dataset.Type.TwoD;
+        onChanged();
+        return this;
+      }
+
+      // repeated .gribCollectionIndex.Group groups = 2;
+      private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Group> groups_ =
+        java.util.Collections.emptyList();
+      private void ensureGroupsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          groups_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Group>(groups_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.Group, ucar.nc2.grib.collection.GribCollectionProto.Group.Builder, ucar.nc2.grib.collection.GribCollectionProto.GroupOrBuilder> groupsBuilder_;
+
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Group> getGroupsList() {
+        if (groupsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(groups_);
+        } else {
+          return groupsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public int getGroupsCount() {
+        if (groupsBuilder_ == null) {
+          return groups_.size();
+        } else {
+          return groupsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Group getGroups(int index) {
+        if (groupsBuilder_ == null) {
+          return groups_.get(index);
+        } else {
+          return groupsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public Builder setGroups(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.Group value) {
+        if (groupsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureGroupsIsMutable();
+          groups_.set(index, value);
+          onChanged();
+        } else {
+          groupsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public Builder setGroups(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.Group.Builder builderForValue) {
+        if (groupsBuilder_ == null) {
+          ensureGroupsIsMutable();
+          groups_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          groupsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public Builder addGroups(ucar.nc2.grib.collection.GribCollectionProto.Group value) {
+        if (groupsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureGroupsIsMutable();
+          groups_.add(value);
+          onChanged();
+        } else {
+          groupsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public Builder addGroups(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.Group value) {
+        if (groupsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureGroupsIsMutable();
+          groups_.add(index, value);
+          onChanged();
+        } else {
+          groupsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public Builder addGroups(
+          ucar.nc2.grib.collection.GribCollectionProto.Group.Builder builderForValue) {
+        if (groupsBuilder_ == null) {
+          ensureGroupsIsMutable();
+          groups_.add(builderForValue.build());
+          onChanged();
+        } else {
+          groupsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public Builder addGroups(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.Group.Builder builderForValue) {
+        if (groupsBuilder_ == null) {
+          ensureGroupsIsMutable();
+          groups_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          groupsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public Builder addAllGroups(
+          java.lang.Iterable<? extends ucar.nc2.grib.collection.GribCollectionProto.Group> values) {
+        if (groupsBuilder_ == null) {
+          ensureGroupsIsMutable();
+          super.addAll(values, groups_);
+          onChanged();
+        } else {
+          groupsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public Builder clearGroups() {
+        if (groupsBuilder_ == null) {
+          groups_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          groupsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public Builder removeGroups(int index) {
+        if (groupsBuilder_ == null) {
+          ensureGroupsIsMutable();
+          groups_.remove(index);
+          onChanged();
+        } else {
+          groupsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Group.Builder getGroupsBuilder(
+          int index) {
+        return getGroupsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.GroupOrBuilder getGroupsOrBuilder(
+          int index) {
+        if (groupsBuilder_ == null) {
+          return groups_.get(index);  } else {
+          return groupsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.GroupOrBuilder> 
+           getGroupsOrBuilderList() {
+        if (groupsBuilder_ != null) {
+          return groupsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(groups_);
+        }
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Group.Builder addGroupsBuilder() {
+        return getGroupsFieldBuilder().addBuilder(
+            ucar.nc2.grib.collection.GribCollectionProto.Group.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.Group.Builder addGroupsBuilder(
+          int index) {
+        return getGroupsFieldBuilder().addBuilder(
+            index, ucar.nc2.grib.collection.GribCollectionProto.Group.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .gribCollectionIndex.Group groups = 2;</code>
+       *
+       * <pre>
+       * separate group for each GDS
+       * </pre>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Group.Builder> 
+           getGroupsBuilderList() {
+        return getGroupsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.Group, ucar.nc2.grib.collection.GribCollectionProto.Group.Builder, ucar.nc2.grib.collection.GribCollectionProto.GroupOrBuilder> 
+          getGroupsFieldBuilder() {
+        if (groupsBuilder_ == null) {
+          groupsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              ucar.nc2.grib.collection.GribCollectionProto.Group, ucar.nc2.grib.collection.GribCollectionProto.Group.Builder, ucar.nc2.grib.collection.GribCollectionProto.GroupOrBuilder>(
+                  groups_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          groups_ = null;
+        }
+        return groupsBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:gribCollectionIndex.Dataset)
+    }
+
+    static {
+      defaultInstance = new Dataset(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:gribCollectionIndex.Dataset)
+  }
+
   public interface GribCollectionIndexOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -14521,6 +15511,11 @@ public final class GribCollectionProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_gribCollectionIndex_Group_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_gribCollectionIndex_Dataset_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_gribCollectionIndex_Dataset_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_gribCollectionIndex_GribCollectionIndex_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -14565,19 +15560,23 @@ public final class GribCollectionProto {
       ".Variable\022*\n\006coords\030\005 \003(\0132\032.gribCollecti" +
       "onIndex.Coord\022.\n\006params\030\006 \003(\0132\036.gribColl" +
       "ectionIndex.Parameter\022\016\n\006fileno\030\007 \003(\005\022\020\n" +
-      "\010run2part\030\n \003(\r\"\366\002\n\023GribCollectionIndex\022" +
-      "\014\n\004name\030\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022*\n\006mfiles\030" +
-      "\003 \003(\0132\032.gribCollectionIndex.MFile\022*\n\006gro" +
-      "ups\030\004 \003(\0132\032.gribCollectionIndex.Group\022.\n",
-      "\006params\030\005 \003(\0132\036.gribCollectionIndex.Para" +
-      "meter\022\016\n\006center\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005" +
-      "\022\016\n\006master\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genPr" +
-      "ocessType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n" +
-      "\rbackProcessId\030\014 \001(\005\0222\n\npartitions\030\r \003(\013" +
-      "2\036.gribCollectionIndex.Partition\"A\n\tPart" +
-      "ition\022\014\n\004name\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\022\024\n" +
-      "\014lastModified\030\003 \001(\004B/\n\030ucar.nc2.grib.col" +
-      "lectionB\023GribCollectionProto"
+      "\010run2part\030\n \003(\r\"\220\001\n\007Dataset\022/\n\004type\030\001 \002(" +
+      "\0162!.gribCollectionIndex.Dataset.Type\022*\n\006" +
+      "groups\030\002 \003(\0132\032.gribCollectionIndex.Group" +
+      "\"(\n\004Type\022\010\n\004TwoD\020\000\022\010\n\004Best\020\001\022\014\n\010Analysis",
+      "\020\002\"\366\002\n\023GribCollectionIndex\022\014\n\004name\030\001 \002(\t" +
+      "\022\016\n\006topDir\030\002 \002(\t\022*\n\006mfiles\030\003 \003(\0132\032.gribC" +
+      "ollectionIndex.MFile\022*\n\006groups\030\004 \003(\0132\032.g" +
+      "ribCollectionIndex.Group\022.\n\006params\030\005 \003(\013" +
+      "2\036.gribCollectionIndex.Parameter\022\016\n\006cent" +
+      "er\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 " +
+      "\002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n \001" +
+      "(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProcessI" +
+      "d\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.gribCollec" +
+      "tionIndex.Partition\"A\n\tPartition\022\014\n\004name",
+      "\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\022\024\n\014lastModified" +
+      "\030\003 \001(\004B/\n\030ucar.nc2.grib.collectionB\023Grib" +
+      "CollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14632,14 +15631,20 @@ public final class GribCollectionProto {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Group_descriptor,
               new java.lang.String[] { "Gds", "GdsHash", "NameOverride", "Variables", "Coords", "Params", "Fileno", "Run2Part", });
-          internal_static_gribCollectionIndex_GribCollectionIndex_descriptor =
+          internal_static_gribCollectionIndex_Dataset_descriptor =
             getDescriptor().getMessageTypes().get(8);
+          internal_static_gribCollectionIndex_Dataset_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_gribCollectionIndex_Dataset_descriptor,
+              new java.lang.String[] { "Type", "Groups", });
+          internal_static_gribCollectionIndex_GribCollectionIndex_descriptor =
+            getDescriptor().getMessageTypes().get(9);
           internal_static_gribCollectionIndex_GribCollectionIndex_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_GribCollectionIndex_descriptor,
               new java.lang.String[] { "Name", "TopDir", "Mfiles", "Groups", "Params", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Partitions", });
           internal_static_gribCollectionIndex_Partition_descriptor =
-            getDescriptor().getMessageTypes().get(9);
+            getDescriptor().getMessageTypes().get(10);
           internal_static_gribCollectionIndex_Partition_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Partition_descriptor,

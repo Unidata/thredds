@@ -449,24 +449,25 @@ public class Grib2RectilyzePanel extends JPanel {
     f.format("%n%s%n", info);
   }
 
-  public void runAggregator(Formatter f) throws IOException {
-    Set<Object> runtimeCoords = new HashSet<>();
-    Set<Object> timeCoords = new HashSet<>();
-    Set<Object> timeIntvCoords = new HashSet<>();
+  public void showStats(Formatter f) throws IOException {
+    int total_ndups = 0;
+    int total_records = 0;
+    int total_missing= 0;
+    int total_size = 0;
 
     for (Object beano : param2BeanTable.getBeans()) {
       VariableBagBean bean = (VariableBagBean) beano;
-      for (Coordinate coord : bean.vb.coordND.getCoordinates()) {
-        Coordinate.Type type =  coord.getType();
-        if (type == Coordinate.Type.runtime) merge(runtimeCoords, coord);
-        if (type == Coordinate.Type.time) merge(timeCoords, coord);
-        if (type == Coordinate.Type.timeIntv) merge(timeIntvCoords, coord);
-      }
+      total_ndups += bean.getNDups();
+      total_records += bean.getNRecords();
+      total_missing += bean.getNMissing();
+      total_size += bean.getSize();
     }
 
-    f.format("Total Runtimes = %d%n", runtimeCoords.size());
-    f.format("Total Times = %d%n", timeCoords.size());
-    f.format("Total Time Intervals = %d%n", timeIntvCoords.size());
+    f.format("total_ndups = %d%n", total_ndups);
+    f.format("total_records = %d%n", total_records);
+    f.format("total_missing = %d%n", total_missing);
+    f.format("total_size = %d%n", total_size);
+    f.format("total_density = %f%n", ((float) total_records) / total_size);
   }
 
   private void merge(Set<Object> set, Coordinate coord) {
@@ -939,6 +940,10 @@ public class Grib2RectilyzePanel extends JPanel {
 
     public double getDensity() {
       return vb.coordND.getSparseArray().getDensity();
+    }
+
+    public int getSize() {
+      return vb.coordND.getSparseArray().getTotalSize();
     }
 
    public final String getStatType() {

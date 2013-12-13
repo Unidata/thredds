@@ -86,11 +86,22 @@ message Group {
   repeated uint32 run2part = 10; // partitions only: run index to partition index map
 }
 
+message Dataset {
+    enum Type {
+      TwoD = 0;
+      Best = 1;
+      Analysis = 2;
+    }
+
+  required Type type = 1;
+  repeated Group groups = 2;      // separate group for each GDS
+}
+
 message GribCollectionIndex {
   required string name = 1;       // must be unique - index filename is name.ncx
   required string topDir = 2;   // filenames are reletive to this
   repeated MFile mfiles = 3;    // list of grib MFiles
-  repeated Group groups = 4;      // separate group for each GDS
+  repeated Group groups = 4;  // separate group for each GDS
   repeated Parameter params = 5;  // global attributes
 
   required int32 center = 6;      // these 4 fields are to get a GribTable object
