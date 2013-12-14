@@ -596,12 +596,12 @@ public abstract class GribCollection implements FileCacheable, AutoCloseable {
       if (gribConfig != null && gribConfig.gdsNamer != null)
         result = gribConfig.gdsNamer.get(gdsHash);
       if (result != null) return result;
-      if (gribConfig != null && gribConfig.groupNamer != null) {
+      /* if (gribConfig != null && gribConfig.groupNamer != null) {
         MFile mfile = files.get(filenose[0]);
         File firstFile = new File(mfile.getPath()); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         return "First Run " + firstFile.getName().substring(15, 26) + ", Center " + centerPoint;
-      }
+      } */
 
       return hcs.makeDescription(); // default desc
     }

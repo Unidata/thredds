@@ -65,7 +65,7 @@ public class CoordinateTime implements Coordinate {
   }
 
   public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
-    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, timeUnit+" since "+ refDate.toString());
+    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName+" since "+ refDate.toString());
     List<CalendarDate> result = new ArrayList<>(getSize());
     for (int val : getOffsetSorted())
       result.add(cdu.makeCalendarDate(val));
@@ -73,7 +73,7 @@ public class CoordinateTime implements Coordinate {
   }
 
   public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
-    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, timeUnit + " since " + refDate.toString());
+    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName + " since " + refDate.toString());
     CalendarDate start = cdu.makeCalendarDate(offsetSorted.get(0));
     CalendarDate end = cdu.makeCalendarDate(offsetSorted.get(getSize()-1));
     return CalendarDateRange.of(start, end);

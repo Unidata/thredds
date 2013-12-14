@@ -274,7 +274,7 @@ public class Grib2Rectilyser {
 
     // only use the GenProcessType when "error" 2/8/2012 LOOK WTF ??
     int genType = pds2.getGenProcessType();
-    if (useGenType || (genType == 6 || genType == 7)) {
+    if (useGenType && (genType == 6 || genType == 7)) {
       result += result * 37 + genType;
     }
 

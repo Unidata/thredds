@@ -219,7 +219,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
         FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
         return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
       } else {
-        return Grib2PartitionBuilder.factory((PartitionManager) dcm, force, logger);
+        return Grib2PartitionBuilder.factory( dcm, force, logger);
       }
     } else {
       if (force == CollectionManager.Force.never) {
@@ -555,24 +555,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     private String makeId() {
-      // check for user defined group names
-      String result = null;
-        /* if (gribConfig != null && gribConfig.gdsNamer != null)
-          result = gribConfig.gdsNamer.get(gdsHash);
-        if (result != null) {
-          StringBuilder sb = new StringBuilder(result);
-          StringUtil2.replace(sb, ". :", "p--");
-          return sb.toString();
-        }  */
-        /* if (gribConfig != null && gribConfig.groupNamer != null) { LOOK not implemented
-          MFile mfile = files.get(filenose[0]);
-          //File firstFile = new File(mfile.getPath());
-          LatLonPoint centerPoint = hcs.getCenterLatLon();
-          StringBuilder sb = new StringBuilder(firstFile.getName().substring(15, 26) + "-" + centerPoint.toString());
-          StringUtil2.replace(sb, ". :", "p--");
-          return sb.toString();
-        } */
-
       // default id
       String base = hcs.makeId();
       // ensure uniqueness
@@ -592,14 +574,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       if (gribConfig != null && gribConfig.gdsNamer != null)
         result = gribConfig.gdsNamer.get(gdsHash);
       if (result != null) return result;
-
-        /* WTF ??
-        if (gribConfig != null && gribConfig.groupNamer != null) {
-          MFile mfile = files.get(filenose[0]);
-          File firstFile = new File(mfile.getPath()); //  NAM_Firewxnest_20111215_0600.grib2
-          LatLonPoint centerPoint = hcs.getCenterLatLon();
-          return "First Run " + firstFile.getName().substring(15, 26) + ", Center " + centerPoint;
-        }  */
 
       return hcs.makeDescription(); // default desc
     }

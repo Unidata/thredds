@@ -25,7 +25,7 @@
     </metadata>
 
     <collection spec="${cdmUnitTest}/ncss/CONUS_80km_nc/GFS_CONUS_80km_#yyyyMMdd_HHmm#.nc$" />
-    <update startup="true" rescan="* * 0/2 * * ? *" trigger="allow"/>
+    <update startup="true" trigger="allow"/>
     <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
   </featureCollection>
 
@@ -37,7 +37,7 @@
     </metadata>
 
     <collection spec="${cdmUnitTest}/ncml/agg/#yyyyMMdd_HHmm#.nc$" />
-    <update startup="true" rescan="10 43 * * * ? *" trigger="allow"/>
+    <update startup="true" trigger="allow"/>
 
     <protoDataset choice="Penultimate" change="0 43 * * * ? *">
 

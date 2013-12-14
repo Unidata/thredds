@@ -172,6 +172,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     // otherwise, we're good as long as the index file exists
     File idx = gc.getIndexFile();
     if (force || !idx.exists() || !readIndex(idx.getPath())) {
+
+      if (ff == CollectionManager.Force.never)
+        throw new IOException("failed to read "+idx.getPath());
+
       // write out index
       idx = gc.makeNewIndexFile(logger); // make sure we have a writeable index
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());

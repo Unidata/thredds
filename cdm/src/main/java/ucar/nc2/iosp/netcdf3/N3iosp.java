@@ -65,6 +65,13 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   static public final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
   static public final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
 
+  static public final byte NC_FILL_UBYTE = (byte) 255;
+  static public final short NC_FILL_USHORT = (short) 65535;
+  static public final int NC_FILL_UINT = (int) 4294967295L;
+  static public final long NC_FILL_INT64 = (long) -9223372036854775806L;
+  // static public final long NC_FILL_UINT64 = (long) 18446744073709551614L;
+  static public final String NC_FILL_STRING  = "";
+
   /* CLASSIC
      The maximum size of a record in the classic format in versions 3.5.1 and earlier is 2^32 - 4 bytes.
      In versions 3.6.0 and later, there is no such restriction on total record size for the classic format

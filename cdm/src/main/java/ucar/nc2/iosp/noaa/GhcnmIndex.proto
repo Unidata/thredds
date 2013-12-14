@@ -1,5 +1,3 @@
-package ghcnm;
-
 option java_package = "ucar.nc2.iosp.noaa";
 option java_outer_classname = "GhcnmProto";
 

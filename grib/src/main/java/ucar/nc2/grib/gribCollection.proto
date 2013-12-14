@@ -1,5 +1,3 @@
-package gribCollectionIndex;
-
 option java_package = "ucar.nc2.grib";
 option java_outer_classname = "GribCollectionProto";
 

@@ -1,5 +1,3 @@
-package ncstream;
-
 import "ucar/nc2/stream/ncStream.proto";
 
 option java_package = "ucar.nc2.stream";
@@ -35,7 +33,7 @@ message CoordSys {
   required string name = 1;
   repeated string coordVar = 2;
   repeated CoordTransform transforms = 3;
-  repeated CoordSys components = 3;
+  repeated CoordSys components = 4;
 }
 
 enum FeatureType {

@@ -1,5 +1,3 @@
-package bufrCdmIndex;
-
 option java_package = "ucar.nc2.ft.point.bufr";
 option java_outer_classname = "BufrCdmIndexProto";
 

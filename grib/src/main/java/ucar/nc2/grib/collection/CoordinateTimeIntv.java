@@ -114,7 +114,7 @@ public class CoordinateTimeIntv implements Coordinate {
    }
 
   public List<CalendarDate> makeCalendarDates(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
-    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, timeUnit+" since "+ refDate.toString());
+    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName+" since "+ refDate.toString());
     List<CalendarDate> result = new ArrayList<>(getSize());
     for (TimeCoord.Tinv val : getTimeIntervals())
       result.add(cdu.makeCalendarDate(val.getBounds2())); // use the upper bound - same as iosp uses for coord
@@ -122,7 +122,7 @@ public class CoordinateTimeIntv implements Coordinate {
   }
 
   public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal, CalendarDate refDate) {
-    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, timeUnit + " since " + refDate.toString());
+    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName + " since " + refDate.toString());
     CalendarDate start = cdu.makeCalendarDate(timeIntervals.get(0).getBounds2());
     CalendarDate end = cdu.makeCalendarDate(timeIntervals.get(getSize()-1).getBounds2());
     return CalendarDateRange.of(start, end);

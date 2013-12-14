@@ -1,11 +1,17 @@
 package thredds.catalog.parser.jdom;
 
 import org.jdom2.Element;
+import org.jdom2.filter.Filters;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.xpath.XPathExpression;
+import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +22,60 @@ import java.util.List;
  */
 public class FeatureCollectionReader {
   static private final Logger logger = LoggerFactory.getLogger(FeatureCollectionReader.class);
+
+  /**
+   * Read a catalog and extract a FeatureCollectionConfig from it
+   * @param catalogAndPath catalog filename, or catalog#featureName
+   * @return FeatureCollectionConfig or null
+   */
+  static public FeatureCollectionConfig readFeatureCollection(String catalogAndPath) {
+    String catFilename = null;
+    String fcName = null;
+
+    int pos = catalogAndPath.indexOf("#");
+    if (pos > 0) {
+      catFilename = catalogAndPath.substring(0, pos);
+      fcName = catalogAndPath.substring(pos+1);
+    } else {
+      catFilename = catalogAndPath;
+    }
+
+    File cat = new File(catFilename);
+    org.jdom2.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(cat);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    try {
+      List<Element> fcElems = new ArrayList<>();
+      findFeatureCollection(doc.getRootElement(), fcName, fcElems);
+      if (fcElems.size() > 0)
+        return readFeatureCollection(fcElems.get(0));
+
+    } catch (IllegalStateException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  static private void findFeatureCollection(Element parent, String name, List<Element> fcElems) {
+    List<Element> elist = parent.getChildren("featureCollection", InvCatalogFactory10.defNS);
+    if (name == null)
+      fcElems.addAll(elist);
+    else {
+      for (Element elem : elist) {
+        if (name.equals(elem.getAttributeValue("name")))
+          fcElems.add(elem);
+      }
+    }
+    for (Element child : parent.getChildren("dataset", InvCatalogFactory10.defNS))
+      findFeatureCollection(child, name, fcElems);
+  }
 
   static public FeatureCollectionConfig readFeatureCollection(Element featureCollectionElement) {
     String name = featureCollectionElement.getAttributeValue("name");

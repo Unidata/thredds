@@ -1,4 +1,3 @@
-package pointStream;
 
 import "ucar/nc2/stream/ncStream.proto";
 

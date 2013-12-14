@@ -1,20 +1,15 @@
 package thredds.inventory.partition;
 
-import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Partition consisting of single files, each is  a GribCollection .
+ * A Partition consisting of single files, each is a GribCollection .
  * This FilePartition represents the collection of the GribCollections.
  * Eg how we store files on motherlode.
  *

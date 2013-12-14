@@ -27,28 +27,29 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2Partition0Index";
   static private final boolean trace = false;
 
-  // called by tdm
+  // called by tdm: update partition, test children partitions
   static public boolean update(PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     if (!builder.needsUpdate()) return false;
-    builder.readOrCreateIndex(CollectionManager.Force.always);
+    builder.readOrCreateIndex(CollectionManager.Force.always, CollectionManager.Force.test, null);
     builder.gc.close();
     return true;
   }
 
-  // read in the index, create if it doesnt exist or is out of date
-  static public Grib2Partition factory(PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  // read in the index, create if it doesnt exist or is out of date (depends on force)
+  static public Grib2Partition factory(PartitionManager tpc, CollectionManager.Force forcePartition, CollectionManager.Force forceChildren,
+                                       Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
-    builder.readOrCreateIndex(force);
+    builder.readOrCreateIndex(forcePartition, forceChildren, errlog);
     return builder.result;
   }
 
-  // make the index
+  /* make the index
   static public boolean makePartitionIndex(PartitionManager tpc, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.result.close();
     return builder.createPartitionedIndex(errlog);
-  }
+  } */
 
   //////////////////////////////////////////////////////////////////////////////////
 
@@ -68,16 +69,18 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     this.partitionManager = tpc;
   }
 
-  private boolean readOrCreateIndex(CollectionManager.Force ff) throws IOException {
+  private boolean readOrCreateIndex(CollectionManager.Force forcePartition, CollectionManager.Force forceChildren, Formatter errlog) throws IOException {
     File idx = gc.getIndexFile();
 
     // force new index or test for new index needed
-    boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate(idx.lastModified())));
+    boolean force = ((forcePartition == CollectionManager.Force.always) || (forcePartition == CollectionManager.Force.test && needsUpdate(idx.lastModified())));
 
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath())) {
+      if (forcePartition == CollectionManager.Force.never) throw new IOException("failed to read "+idx.getPath());
+
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
-      if (createPartitionedIndex(null)) {  // write index
+      if (createPartitionedIndex(forceChildren, errlog)) {  // write index
         return readIndex(idx.getPath()); // read back in index
       }
     }
@@ -120,9 +123,9 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   ///////////////////////////////////////////////////
   // create the index
 
-  public boolean createPartitionedIndex(Formatter f) throws IOException {
+  private boolean createPartitionedIndex(CollectionManager.Force forceChildren, Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
-    if (f == null) f = new Formatter(); // info will be discarded
+    if (errlog == null) errlog = new Formatter(); // info will be discarded
 
     // create partitions
     for (MCollection dcm : partitionManager.makePartitions()) {
@@ -131,8 +134,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
     List<PartitionCollection.Partition> bad = new ArrayList<>();
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
-      try {                                                                  // here we read in all collections at once. can we avoid this?
-        tpp.gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists  LOOK force ??
+      try {
+        tpp.gc = tpp.makeGribCollection(forceChildren);                     // here we read in all collections at once. can we avoid this?
         if (trace) logger.debug(" Open partition {}", tpp.getDcm().getCollectionName());
       } catch (Throwable t) {
         logger.error(" Failed to open partition " + tpp.getName(), t);
@@ -147,13 +150,13 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     // choose the "canonical" partition, aka prototype
     int n = result.getPartitions().size();
     if (n == 0) {
-      f.format("ERR Nothing in this partition = %s%n", result.getName());
+      errlog.format("ERR Nothing in this partition = %s%n", result.getName());
       logger.error(" Nothing in this partition = {}", result.getName());
       return false;
     }
     int idx = partitionManager.getProtoIndex(n);
     PartitionCollection.Partition canon = result.getPartitions().get(idx);
-    f.format(" INFO Using canonical partition %s%n", canon.getDcm().getCollectionName());
+    errlog.format(" INFO Using canonical partition %s%n", canon.getDcm().getCollectionName());
     logger.info("     Using canonical partition {}", canon.getDcm().getCollectionName());
     result.set(canon.gc);
 
@@ -163,9 +166,9 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     // check consistency across vert and ens coords
     // also replace variables  in canonGc with partitioned variables
     // partition index is used - do not resort partitions
-    if (!makeAllVariables(canon, f)) {
-      f.format(" ERR Partition check failed, index not written on %s%n", result.getName());
-      logger.error(" Partition check failed, index not written on {} errors = \n{}", result.getName(), f.toString());
+    if (!makeAllVariables(canon, errlog)) {
+      errlog.format(" ERR Partition check failed, index not written on %s%n", result.getName());
+      logger.error(" Partition check failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
       return false;
     }
 
@@ -173,7 +176,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     //createPartitionedTimeCoordinates(canon.gc, f);
 
     // ready to write the index file
-    writeIndex(result, f);
+    writeIndex(result, errlog);
 
     // close open gc's
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
@@ -182,7 +185,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     canon.gc.close();
 
     long took = System.currentTimeMillis() - start;
-    f.format(" INFO CreatePartitionedIndex took %d msecs%n", took);
+    errlog.format(" INFO CreatePartitionedIndex took %d msecs%n", took);
     return true;
   }
 

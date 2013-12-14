@@ -62,7 +62,7 @@ public class FeatureCollectionConfig {
   }
 
   static public enum GribDatasetType {
-    Best, Files, LatestFile
+    TwoD, Best, Hour0, Files, LatestFile
   }
 
   public static void setRegularizeDefault(boolean t) {
@@ -335,14 +335,12 @@ public class FeatureCollectionConfig {
 
   static public class GribConfig {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
-    public Map<Integer, Integer> gdsHash;
-    public Map<Integer, String> gdsNamer;
-    public String groupNamer;
-    public String lookupTablePath, paramTablePath;
+    public Map<Integer, Integer> gdsHash;  // map one gds hash to another
+    public Map<Integer, String> gdsNamer;  // hash, group name
+    public Map<String, Boolean> pdsHash = new HashMap<>(); // featureName, yes/no
+    public String lookupTablePath, paramTablePath;         // user defined tables
     public String latestNamer, bestNamer;
     public Element paramTable;
-    public Map<String,Boolean> pdsHash = new HashMap<>();
-    //public Boolean useGenType = null;
     public Boolean filesSortIncreasing = true;
     public GribIntvFilter intvFilter;
 
@@ -379,8 +377,6 @@ public class FeatureCollectionConfig {
         paramTablePath = configElem.getChildText("gribParameterTable", ns);
       if (configElem.getChild("gribParameterTableLookup", ns) != null)
         lookupTablePath = configElem.getChildText("gribParameterTableLookup", ns);
-      if (configElem.getChild("groupNamer", ns) != null)
-        groupNamer = configElem.getChildText("groupNamer", ns);
       if (configElem.getChild("latestNamer", ns) != null)
         latestNamer = configElem.getChild("latestNamer", ns).getAttributeValue("name");
       if (configElem.getChild("bestNamer", ns) != null)

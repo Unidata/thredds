@@ -50,17 +50,19 @@ public class PartitionCollection extends GribCollection {
     partitionCache = null;
   }
 
-  ///////////////////////////////////////////////////////////////////////
 
   static public boolean update(boolean isGrib1, PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
     //if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, logger);
     return Grib2PartitionBuilder.update(tpc, logger);
   }
 
+  // called by InvDatasetFcGrib
   static public PartitionCollection factory(boolean isGrib1, PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
     //if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, logger);
-    return Grib2PartitionBuilder.factory(tpc, force, logger);
+    return Grib2PartitionBuilder.factory(tpc, force, force, null, logger);
   }
+
+  //////////////////////////////////////////////////////////////////////
 
   class PartVar {
     int partno, groupno, varno, flag;

@@ -1,5 +1,3 @@
-package grib1Index;
-
 // Grib1 Index version 9 (gbx9)
 
 option java_package = "ucar.nc2.grib.grib1";
