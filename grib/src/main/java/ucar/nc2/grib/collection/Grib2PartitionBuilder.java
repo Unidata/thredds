@@ -359,11 +359,9 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         viResult.setTotalSize(totalSize, totalSize / runtimeCoord.getSize());
        }
 
-
     } // loop over groups
 
     if (ok) {
-      f.format(" INFO Partition check OK%n");
       return true;
     } else {
       return false;

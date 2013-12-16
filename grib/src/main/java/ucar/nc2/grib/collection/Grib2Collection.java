@@ -40,6 +40,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * Grib2 specific part of GribCollection
@@ -53,7 +54,8 @@ public class Grib2Collection extends GribCollection {
     super(name, directory, dcm, false);
   }
 
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
+                                                         Formatter errlog, org.slf4j.Logger logger) throws IOException {
     GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
@@ -65,7 +67,7 @@ public class Grib2Collection extends GribCollection {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
+        GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
         Grib2Iosp iosp = new Grib2Iosp(gc);
         NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
         return new NetcdfDataset(ncfile);
@@ -74,7 +76,8 @@ public class Grib2Collection extends GribCollection {
     }
   }
 
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
+                                                     Formatter errlog, org.slf4j.Logger logger) throws IOException {
     GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
@@ -87,7 +90,7 @@ public class Grib2Collection extends GribCollection {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
+        GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
         NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);

@@ -17,8 +17,8 @@ public class Counter {
 
     public String show () {
       Formatter f = new Formatter();
-      float dupPercent = ((float) dups) / (recordsTotal - filter);
-      float density = ((float) recordsUnique) / (recordsTotal - filter);
+      float dupPercent = ((float) dups) / (recordsTotal);
+      float density = ((float) recordsUnique) / (recordsTotal);
       f.format(" Counter: nvars=%d records %d/%d (%f) filtered=%d dups=%d (%f)%n",
               vars, recordsUnique, recordsTotal, density, filter, dups, dupPercent);
       return f.toString();

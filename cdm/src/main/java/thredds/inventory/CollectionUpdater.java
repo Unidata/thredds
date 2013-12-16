@@ -128,7 +128,13 @@ public enum CollectionUpdater {
     }
   }   */
 
-  public void scheduleTasks(FeatureCollectionConfig config, MCollection manager, Logger logger) {
+  /**
+   *
+   * @param config
+   * @param manager CollectionUpdateListener
+   * @param logger
+   */
+  public void scheduleTasks(FeatureCollectionConfig config, CollectionUpdateListener manager, Logger logger) {
     if (disabled || failed) return;
 
     FeatureCollectionConfig.UpdateConfig updateConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
@@ -140,7 +146,7 @@ public enum CollectionUpdater {
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(DCM_NAME, manager);
-    map.put(LOGGER, logger);
+    if (logger != null) map.put(LOGGER, logger);
     JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
             .withIdentity(jobName, "UpdateCollection")
             .storeDurably()
@@ -151,10 +157,10 @@ public enum CollectionUpdater {
       if(!scheduler.checkExists(updateJob.getKey())) {
       	scheduler.addJob(updateJob, false);
       } else {
-    	  logger.warn("cronExecutor failed to add updateJob for " + updateJob.getKey() +". Another Job exists with that identification." );
+        if (logger != null) logger.warn("cronExecutor failed to add updateJob for " + updateJob.getKey() +". Another Job exists with that identification." );
       }
     } catch (SchedulerException e) {
-      logger.error("cronExecutor failed to add updateJob for " + config, e);
+      if (logger != null)logger.error("cronExecutor failed to add updateJob for " + config, e);
       return;
     }
 
@@ -168,9 +174,9 @@ public enum CollectionUpdater {
 
       try {
     	   scheduler.scheduleJob(startupTrigger);
-         logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
+        if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
       } catch (SchedulerException e) {
-        logger.error("cronExecutor failed to schedule startup Job for " + config, e);
+        if (logger != null)logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
       }
     }
@@ -184,9 +190,9 @@ public enum CollectionUpdater {
 
       try {
     		scheduler.scheduleJob(rescanTrigger);
-    		logger.info("Schedule recurring scan for '{}' cronExpr={}", config.name, updateConfig.rescan);
+        if (logger != null)logger.info("Schedule recurring scan for '{}' cronExpr={}", config.name, updateConfig.rescan);
       } catch (SchedulerException e) {
-        logger.error("cronExecutor failed to schedule cron Job", e);
+        if (logger != null)logger.error("cronExecutor failed to schedule cron Job", e);
         // e.printStackTrace();
       }
     }
@@ -209,10 +215,10 @@ public enum CollectionUpdater {
                 .withSchedule(CronScheduleBuilder.cronSchedule(pconfig.change))
                 .build();
         scheduler.scheduleJob(protoJob, protoTrigger);
-        logger.info("Schedule proto update for '{}' cronExpr={}", config.name, pconfig.change);
+        if (logger != null)logger.info("Schedule proto update for '{}' cronExpr={}", config.name, pconfig.change);
 
       } catch (SchedulerException e) {
-        logger.error("cronExecutor failed to schedule RereadProtoJob", e);
+        if (logger != null)logger.error("cronExecutor failed to schedule RereadProtoJob", e);
         // e.printStackTrace();
       }
     }
@@ -228,7 +234,7 @@ public enum CollectionUpdater {
     } catch (SchedulerException e) {
       startupLogger.error("Scheduler failed to shutdown", e);
       scheduler = null;
-      //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      //e.printStackTrace();
     }
   }
 
@@ -249,7 +255,7 @@ public enum CollectionUpdater {
     }
   }
 
-  // do the work in a seperate thread
+  // do the work in a separate thread
   public static class UpdateCollectionJob implements org.quartz.Job {
     public UpdateCollectionJob() {
     }
@@ -257,22 +263,18 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       CollectionUpdateListener manager = (CollectionUpdateListener) context.getJobDetail().getJobDataMap().get(DCM_NAME);
       org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
-      if (manager == null) {
-        loggerfc.error("UpdateCollection failed: no manager object on {}", context);
-        return;
-      }
 
       try {
         String groupName = context.getTrigger().getKey().getGroup();
         if (groupName.equals("nocheck")) {
-          loggerfc.info("UpdateCollection {} nocheck", manager.getCollectionName());
+          if (loggerfc != null) loggerfc.info("UpdateCollection {} updateNocheck", manager.getCollectionName());
           manager.sendEvent(CollectionUpdateListener.TriggerType.updateNocheck);
         } else {
-          loggerfc.debug("UpdateCollection {} scan(true)", manager.getCollectionName());
+          if (loggerfc != null) loggerfc.debug("UpdateCollection {} update", manager.getCollectionName());
           manager.sendEvent(CollectionUpdateListener.TriggerType.update);
         }
       } catch (Throwable e) {
-        loggerfc.error("UpdateCollectionJob.execute failed collection=" + manager.getCollectionName(), e);
+        if (loggerfc != null) loggerfc.error("UpdateCollectionJob.execute failed collection=" + manager.getCollectionName(), e);
       }
     }
   }
@@ -284,16 +286,12 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       CollectionUpdateListener manager = (CollectionUpdateListener) context.getJobDetail().getJobDataMap().get(DCM_NAME);
       org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
-      if (manager == null) {
-        loggerfc.error("Update resetProto failed: no manager object on {}", context);
-        return;
-      }
 
       try {
-        loggerfc.info("ResetProto for {}", manager.getCollectionName());
+        if (loggerfc != null) loggerfc.info("ResetProto for {}", manager.getCollectionName());
         manager.sendEvent(CollectionUpdateListener.TriggerType.resetProto);
       } catch (Throwable e) {
-        loggerfc.error("ChangeProtoJob.execute failed collection=" + manager.getCollectionName(), e);
+        if (loggerfc != null) loggerfc.error("ChangeProtoJob.execute failed collection=" + manager.getCollectionName(), e);
       }
     }
   }

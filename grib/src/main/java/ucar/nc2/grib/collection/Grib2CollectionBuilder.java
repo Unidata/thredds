@@ -68,18 +68,19 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   private static final boolean showFiles = false;
 
   // called by tdm
-  static public boolean update(MCollection dcm, org.slf4j.Logger logger) throws IOException {
+  static public boolean update(MCollection dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     if (!builder.needsUpdate()) return false;
-    builder.readOrCreateIndex(CollectionManager.Force.always);
+    builder.readOrCreateIndex(CollectionManager.Force.always, errlog);
     builder.gc.close();
     return true;
   }
 
   // from a single file, read in the index, create if it doesnt exist
-  static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionManager.Force force, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionManager.Force force,
+              FeatureCollectionConfig.GribConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, config, logger);
-    builder.readOrCreateIndex(force);
+    builder.readOrCreateIndex(force, errlog);
     return builder.gc;
   }
 
@@ -92,9 +93,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    * @return GribCollection
    * @throws IOException on IO error
    */
-  static public GribCollection factory(MCollection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection factory(MCollection dcm, CollectionManager.Force force, Formatter errlog,
+                                       org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
-    builder.readOrCreateIndex(force);
+    builder.readOrCreateIndex(force, errlog);
     return builder.gc;
   }
 
@@ -164,7 +166,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     this.gc = new Grib2Collection(this.name, this.directory, config);
   }
 
-  private void readOrCreateIndex(CollectionManager.Force ff) throws IOException {
+  private void readOrCreateIndex(CollectionManager.Force ff, Formatter errlog) throws IOException {
 
     // force new index or test for new index needed
     boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate()));
@@ -179,7 +181,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       // write out index
       idx = gc.makeNewIndexFile(logger); // make sure we have a writeable index
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
-      createIndex(idx, null);
+      if (errlog != null) errlog.format("%s: create Index at %s%n", gc.getName(), idx.getPath());
+      createIndex(idx, errlog);
 
       // read back in index
       RandomAccessFile indexRaf = new RandomAccessFile(idx.getPath(), "r");
@@ -288,7 +291,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           allFiles.add(mfile);  // add on success
 
         } catch (IOException ioe) {
-          if (errlog != null) errlog.format("ERR Grib2CollectionBuilder %s: reading/Creating gbx9 index for file %s failed err=%s%n", gc.getName(), mfile.getPath(), ioe.getMessage());
+          if (errlog != null) errlog.format(" ERR Grib2CollectionBuilder %s: reading/Creating gbx9 index for file %s failed err=%s%n", gc.getName(), mfile.getPath(), ioe.getMessage());
           logger.error("Grib2CollectionBuilder " + gc.getName() + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed", ioe);
           continue;
         }
@@ -332,13 +335,13 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       Counter stats = new Counter(); // debugging
       g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, pdsConvert);
       g.rect.make(stats, Collections.unmodifiableList(allFiles), errlog);
-      if (errlog != null) errlog.format("Group hash=%d %s%n", g.gdsHash, stats.show());
+      if (errlog != null) errlog.format(" Group hash=%d %s", g.gdsHash, stats.show());
       statsAll.add(stats);
     }
 
     // debugging and validation
     if (logger.isDebugEnabled()) logger.debug(statsAll.show());
-    if (errlog != null) errlog.format("%s%n", statsAll.show());
+    if (errlog != null && groups.size() > 1) errlog.format(" All groups=%s%n", statsAll.show());
 
     return groups;
   }

@@ -144,6 +144,7 @@ public class Grib2Rectilyser {
 
     int tot_used = 0;
     int tot_dups = 0;
+    int total = 0;
 
     // redo the variables against the shared coordinates (at the moment this is just possibly runtime)
     for (VariableBag vb : gribvars) {
@@ -151,11 +152,13 @@ public class Grib2Rectilyser {
       vb.coordND = uniquify.reindex(vb.coordND, vb.coordIndex);
       tot_used += vb.coordND.getSparseArray().countNotMissing();
       tot_dups += vb.coordND.getSparseArray().getNduplicates();
+      total += vb.coordND.getSparseArray().getTotalSize();
      }
 
     counter.recordsUnique += tot_used;
     counter.dups += tot_dups;
     counter.vars += gribvars.size();
+    counter.recordsTotal += total;
   }
 
   public void showInfo(Formatter f, Grib2Customizer tables) {

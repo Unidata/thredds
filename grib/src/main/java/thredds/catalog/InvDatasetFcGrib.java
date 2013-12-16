@@ -254,7 +254,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       } else {
         GribCollection previous = localState.gribCollection;
-        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, datasetCollection, force, logger);
+        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, datasetCollection, force, null, logger);
 
         localState.timePartition = null;
         if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail

@@ -256,7 +256,7 @@ public class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionManager.Force force) throws IOException {
-      GribCollection result = GribCollection.factory(isGrib1, dcm, force, logger); // LOOK caller must close
+      GribCollection result = GribCollection.factory(isGrib1, dcm, force, null, logger); // LOOK caller must close
       indexFilename = result.getIndexFile().getPath();
       return result;
     }
