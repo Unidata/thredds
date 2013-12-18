@@ -218,7 +218,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // LOOK maybe not best design to start tasks from here
   // LOOK we want to get notified of events, but no longer initiate changes.
   protected void finishConstruction() {
-    CollectionUpdater.INSTANCE.scheduleTasks(config, datasetCollection, logger); // see if any background tasks are needed
+    CollectionUpdater.INSTANCE.scheduleTasks(config, (CollectionUpdateListener) datasetCollection, logger); // see if any background tasks are needed
 
 /*     if ((datasetCollection instanceof CollectionManager)) {
       CollectionManager cm = (CollectionManager) datasetCollection;

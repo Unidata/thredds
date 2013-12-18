@@ -40,18 +40,14 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import thredds.catalog.DataFormatType;
-import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionUpdater;
-import thredds.inventory.MFile;
-import thredds.inventory.partition.PartitionManager;
+import thredds.inventory.*;
 import thredds.util.LoggerFactorySpecial;
 import thredds.util.PathAliasReplacement;
 import thredds.util.PathAliasReplacementImpl;
@@ -95,6 +91,8 @@ public class Tdm {
   private java.util.concurrent.ExecutorService executor;
   private Resource catalog;
   private boolean showOnly = false; // if true, just show dirs and exit
+
+  LoggerFactory loggerFactory;
 
   private class Server {
     String name;
@@ -167,8 +165,7 @@ public class Tdm {
     long maxFileSize = reader.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
     int maxBackupIndex = reader.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 10);
     String level = reader.get("FeatureCollection.RollingFileAppender.Level", "INFO");
-    LoggerFactory fac = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
-    InvDatasetFeatureCollection.setLoggerFactory(fac);
+    loggerFactory = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
 
     /* 4.3.15: grib index file placement, using DiskCache2  */
     String gribIndexDir = reader.get("GribIndex.dir", new File(contentDir, "/cache/grib/").getPath());
@@ -182,20 +179,98 @@ public class Tdm {
     return true;
   }
 
+  void start() throws IOException {
+     System.out.printf("Tdm startup at %s%n", new Date());
+
+     //CatalogConfigReader reader = new CatalogConfigReader(catalog, aliasExpanders);
+     CatalogConfigReader reader = new CatalogConfigReader();
+     List<FeatureCollectionConfig> fcList = reader.getFcList();
+
+     /* if (showOnly) {
+       List<String> result = new ArrayList<String>();
+       for (FeatureCollectionConfig fc : fcList) {
+         CollectionManager dcm = fc.getDatasetCollectionManager();
+         result.add(dcm.getRoot());
+       }
+       Collections.sort(result);
+
+       System.out.printf("Directories:%n");
+       for (String dir : result)
+         System.out.printf(" %s%n", dir);
+       return;
+     } */
+
+     for (FeatureCollectionConfig config : fcList) {
+       /* CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
+       if (config != null && config.gribConfig != null && config.gribConfig.gdsHash != null)
+         dcm.putAuxInfo("gdsHash", config.gribConfig.gdsHash); // sneak in extra config info  */
+
+       Logger logger = loggerFactory.getLogger("fc." + config.name); // seperate log file for each feature collection (!!)
+       CollectionUpdater.INSTANCE.scheduleTasks(config, new Listener(config, logger), logger); // now wired for events
+     }
+
+     /* show whats up
+     Formatter f = new Formatter();
+     f.format("Feature Collections found:%n");
+     for (FeatureCollectionConfig fc : fcList) {
+       CollectionManager dcm = fc.getDatasetCollectionManager();
+       f.format("  %s == %s%n%s%n%n", fc, fc.getClass().getName(), dcm);
+     }
+     System.out.printf("%s%n", f.toString()); */
+   }
+
+  // these objects listen for schedule events from quartz.
+  // one listener for each fc.
+  private class Listener implements CollectionUpdateListener {
+    FeatureCollectionConfig config;
+    //MCollection dcm;
+    AtomicBoolean inUse = new AtomicBoolean(false);
+    org.slf4j.Logger logger;
+
+    private Listener(FeatureCollectionConfig config, Logger logger) {
+      this.config = config;
+      this.logger = logger;
+    }
+
+    /* old
+    public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
+      if (event.getType() != CollectionManager.TriggerType.update) return;
+
+      // make sure that each collection is only being indexed by one thread at a time
+      if (inUse.get()) {
+        logger.debug("** Update already in progress for {} {}", config.name, event.getType());
+        return;
+      }
+      if (!inUse.compareAndSet(false, true)) return;
+
+      executor.execute(new IndexTask(config, dcm, this, logger));
+    } */
+
+    @Override
+    public String getCollectionName() {
+      return config.name;
+    }
+
+    @Override
+    public void sendEvent(TriggerType event) {
+      System.out.printf("trigger %s on %s%n",event, config.name);
+      executor.execute(new IndexTask(config, this, logger));
+    }
+  }
+
   // Task causes a new index to be written - we know collection has changed, dont test again
   // run these through the executor so we can control how many we can do at once.
   // thread pool set in spring config file
   private class IndexTask implements Runnable {
     String name;
-    //InvDatasetFeatureCollection fc;
-    CollectionManager dcm;
+    FeatureCollectionConfig config;
+    //MCollection dcm;
     Listener liz;
     org.slf4j.Logger logger;
 
-    private IndexTask(InvDatasetFeatureCollection fc, CollectionManager dcm, Listener liz, org.slf4j.Logger logger) {
-      this.name = fc.getName();
-      this.fc = fc;
-      this.dcm = dcm;
+    private IndexTask(FeatureCollectionConfig config, Listener liz, org.slf4j.Logger logger) {
+      this.name = config.name;
+      this.config = config;
       this.liz = liz;
       this.logger = logger;
     }
@@ -203,50 +278,24 @@ public class Tdm {
     @Override
     public void run() {
       try {
-        FeatureCollectionConfig config = fc.getConfig();
-        thredds.catalog.DataFormatType format = fc.getDataFormatType();
         Formatter errlog = new Formatter();
+
+        GribCdmIndex2.rewriteFilePartition(config, CollectionManager.Force.test, CollectionManager.Force.test);
 
         // delete any files first
         //if (config.tdmConfig.deleteAfter != null) {
         //  doManage(config.tdmConfig.deleteAfter);
         //}
 
-        if (dcm instanceof PartitionManager) {
-          PartitionManager tpc = (PartitionManager) dcm;
-          logger.debug("**** running TimePartitionBuilder.factory {} thread {}", name, Thread.currentThread().hashCode());
-          try {
-            // always = "we know collection has changed, dont test again"
-            PartitionCollection tp = PartitionCollection.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, logger);
-            tp.close();
-            if (config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
-              String path = "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
-              sendTriggers(path, errlog);
-            }
-            errlog.format("**** TimePartitionBuilder.factory complete %s%n", name);
-          } catch (Throwable e) {
-            logger.error("TimePartitionBuilder.factory " + name, e);
-          }
-          logger.debug("\n------------------------\n{}\n------------------------\n", errlog.toString());
-
-        } else {
-          logger.debug("**** running GribCollectionBuilder.factory {} Thread {}", name, Thread.currentThread().hashCode());
-          try {
-            GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always,
-                    errlog, logger);
-            gc.close();
-            if (config.tdmConfig.triggerOk && sendTriggers) { // LOOK is there any point if you dont have trigger = true ?
-              String path = "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
-              sendTriggers(path, errlog);
-            }
-            errlog.format("**** GribCollectionBuilder.factory complete %s%n", name);
-
-          } catch (Throwable e) {
-            logger.error("GribCollectionBuilder.factory " + name, e);
-          }
-          logger.debug("------------------------\n{}\n------------------------\n", errlog.toString());
+        if (config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
+          String path = "thredds/admin/collection/trigger?nocheck&collection=" + name;
+          sendTriggers(path, errlog);
         }
+        errlog.format("**** TimePartitionBuilder.factory complete %s%n", name);
+        logger.debug("\n------------------------\n{}\n------------------------\n", errlog.toString());
 
+      } catch (Throwable e) {
+        logger.error("TimePartitionBuilder.factory " + name, e);
       } finally {
         // tell liz that task is done
         if (!liz.inUse.getAndSet(false))
@@ -287,7 +336,7 @@ public class Tdm {
 
     }
 
-    private void doManage(String deleteAfterS) throws IOException {
+    /* private void doManage(String deleteAfterS) throws IOException {
       TimeDuration deleteAfter = null;
       if (deleteAfterS != null) {
         try {
@@ -317,79 +366,10 @@ public class Tdm {
           }
         }
       }
-    }
+    } */
 
   }
 
-  // these objects listen for schedule events from quartz and dcm.
-  // one listener for each dcm.
-  private class Listener implements CollectionManager.TriggerListener {
-    InvDatasetFeatureCollection fc;
-    CollectionManager dcm;
-    AtomicBoolean inUse = new AtomicBoolean(false);
-    org.slf4j.Logger logger;
-
-    private Listener(InvDatasetFeatureCollection fc, CollectionManager dcm) {
-      this.fc = fc;
-      this.dcm = dcm;
-      this.logger = fc.getLogger();
-    }
-
-    @Override
-    public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
-      if (event.getType() != CollectionManager.TriggerType.update) return;
-
-      // make sure that each collection is only being indexed by one thread at a time
-      if (inUse.get()) {
-        logger.debug("** Update already in progress for {} {}", fc.getName(), event.getType());
-        return;
-      }
-      if (!inUse.compareAndSet(false, true)) return;
-
-      executor.execute(new IndexTask(fc, dcm, this, logger));
-    }
-
-  }
-
-  void start() throws IOException {
-    System.out.printf("Tdm startup at %s%n", new Date());
-    CatalogReader reader = new CatalogReader(catalog, aliasExpanders);
-    List<InvDatasetFeatureCollection> fcList = reader.getFcList();
-
-    if (showOnly) {
-      List<String> result = new ArrayList<String>();
-      for (InvDatasetFeatureCollection fc : fcList) {
-        CollectionManager dcm = fc.getDatasetCollectionManager();
-        result.add(dcm.getRoot());
-      }
-      Collections.sort(result);
-
-      System.out.printf("Directories:%n");
-      for (String dir : result)
-        System.out.printf(" %s%n", dir);
-      return;
-    }
-
-    for (InvDatasetFeatureCollection fc : fcList) {
-      CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
-      FeatureCollectionConfig fcConfig = fc.getConfig();
-      if (fcConfig != null && fcConfig.gribConfig != null && fcConfig.gribConfig.gdsHash != null)
-        dcm.putAuxInfo("gdsHash", fcConfig.gribConfig.gdsHash); // sneak in extra config info
-
-      dcm.addEventListener(new Listener(fc, dcm)); // now wired for events
-      // dcm.removeEventListener(fc); // not needed
-      // CollectionUpdater.INSTANCE.scheduleTasks( CollectionUpdater.FROM.tdm, fc.getConfig(), dcm); // already done in finish() method
-    }
-
-    // show whats up
-    Formatter f = new Formatter();
-    f.format("Feature Collections found:%n");
-    for (InvDatasetFeatureCollection fc : fcList) {
-      CollectionManager dcm = fc.getDatasetCollectionManager();
-      f.format("  %s == %s%n%s%n%n", fc, fc.getClass().getName(), dcm);
-    }
-    System.out.printf("%s%n", f.toString());
-  }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
