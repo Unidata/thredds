@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * A Collection of MFiles
+ * Abstact superclass for Collections of MFiles.
  *
  * @author caron
  * @since 11/20/13
@@ -134,7 +134,7 @@ public abstract class CollectionAbstract implements MCollection {
     auxInfo.put(key, value);
   }
 
-    ////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////
   // proto dataset choosing
 
   @Override

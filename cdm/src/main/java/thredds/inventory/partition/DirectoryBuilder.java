@@ -20,7 +20,7 @@ import java.util.List;
  * A Builder of Directory Partitions and Collections
  * Each DirectoryBuilder is associated with one directory, and one ncx2 index.
  * This may contain collections of files, or subdirectories.
- * If there are subdirectories, these are children DirectoryPartitionBuilders.
+ * If there are subdirectories, these are children DirectoryBuilders.
  *
  * @author caron
  * @since 11/10/13
@@ -186,7 +186,7 @@ public class DirectoryBuilder {
   }
 
   /**
-   * Scan for subdirectories, make each into a DirectoryPartitionBuilder and add as a child
+   * Scan for subdirectories, make each into a DirectoryBuilder and add as a child
    */
   private void scanForChildren() {
     if (debug) System.out.printf("DirectoryPartitionBuilder.scanForChildren %s%n", dir);
@@ -209,7 +209,7 @@ public class DirectoryBuilder {
   //////////////////////////////////////////////////////////////////////////////////////
   // read the list of files from the index
 
-  public List<MFile> getFiles(IndexReader indexReader) throws IOException {
+  public List<MFile> readFilesFromIndex(IndexReader indexReader) throws IOException {
     List<MFile> result = new ArrayList<>(100);
     if (index == null) return result;
 

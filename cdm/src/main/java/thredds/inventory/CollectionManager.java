@@ -38,7 +38,7 @@ import java.io.IOException;
 
 /**
  * Manages a dynamic collection of MFile objects.
- * You must call scan() firsst.
+ * You must call scan() first.
  *
  * An MFile must have the property that
  * <pre>  NetcdfDataset.open(MFile.getPath, ...); </pre>

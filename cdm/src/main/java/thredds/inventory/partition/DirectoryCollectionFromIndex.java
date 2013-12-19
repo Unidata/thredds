@@ -7,7 +7,6 @@ import thredds.inventory.MFileIterator;
 import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 /**
 * A Directory Collection of MFile using an existing ncx2 index
@@ -44,7 +43,7 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {
-    return builder.getFiles(indexReader);
+    return builder.readFilesFromIndex(indexReader);
   }
 
 }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Partition consisting of single files, each is a GribCollection .
+ * A Partition consisting of single files, each is a GribCollection.
  * This FilePartition represents the collection of the GribCollections.
  * Eg how we store files on motherlode.
  *

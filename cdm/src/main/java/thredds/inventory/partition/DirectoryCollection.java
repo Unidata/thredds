@@ -50,7 +50,7 @@ import java.util.*;
 
 /**
  * Manage MFiles from just one directory.
- * Use getFileIterator() for nest performance on large directories
+ * Use getFileIterator() for best performance on large directories
  *
  * @author caron
  * @since 11/16/13

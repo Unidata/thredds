@@ -15,7 +15,7 @@ import java.util.List;
 public interface MCollection extends AutoCloseable {
 
   /**
-   * Is this a partition or a MFile Collection
+   * Is this a partition or MFile Collection
    * @return if partition
    */
   public boolean isPartition();
@@ -107,11 +107,9 @@ public interface MCollection extends AutoCloseable {
 
 
   ////////////////////////////////////////////////////
-  // ability to pass arbitrary information to users of the collection manager. kind of a kludge
+  // ability to pass arbitrary information to users of the collection manager.
 
   public Object getAuxInfo(String key);
   public void putAuxInfo(String key, Object value);
-
-  ///////////////////////////////////////////////////////////////////////////
 
 }
