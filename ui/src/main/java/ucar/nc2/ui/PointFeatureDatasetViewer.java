@@ -34,36 +34,36 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
-import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.ui.point.PointController;
+import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.constants.FeatureType;
-
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.Station;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTableSorted;
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
-import java.io.*;
-import java.util.*;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import javax.swing.*;
-import javax.swing.event.*;
 
 /**
  * A Swing widget to view the contents of a ucar.nc2.dt2.PointFeatureDataset
@@ -214,6 +214,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         ProfileFeatureBean sb = (ProfileFeatureBean) profileTable.getSelectedBean();
         try {
           setProfile(sb);
+          profileTable.fireBeanDataChanged(sb);
         } catch (IOException e1) {
           e1.printStackTrace();
         }
@@ -227,6 +228,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         StationBean sb = (StationBean) stnTable.getSelectedBean();
         try {
           setStation(sb, null);
+          stnTable.fireBeanDataChanged(sb);
         } catch (IOException e1) {
           e1.printStackTrace();
         }
@@ -241,6 +243,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         StnProfileFeatureBean sb = (StnProfileFeatureBean) stnProfileTable.getSelectedBean();
         try {
           setStnProfile(sb);
+          stnProfileTable.fireBeanDataChanged(sb);
         } catch (IOException e1) {
           e1.printStackTrace();
         }
@@ -254,6 +257,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         TrajectoryFeatureBean sb = (TrajectoryFeatureBean) trajTable.getSelectedBean();
         try {
           setTrajectory(sb);
+          trajTable.fireBeanDataChanged(sb);
         } catch (IOException e1) {
           e1.printStackTrace();
         }
@@ -267,6 +271,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         SectionFeatureBean sb = (SectionFeatureBean) trajTable.getSelectedBean();
         try {
           setSection(sb);
+          sectionTable.fireBeanDataChanged(sb);
         } catch (IOException e1) {
           e1.printStackTrace();
         }
