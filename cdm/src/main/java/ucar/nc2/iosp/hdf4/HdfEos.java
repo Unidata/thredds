@@ -185,7 +185,7 @@ public class HdfEos {
           log.warn("No SwathName element in {} {} ", elemSwath.getName(), ncfile.getLocation());
           continue;
         }
-        String swathName = NetcdfFile.makeValidCdmObjectName(swathNameElem.getText());
+        String swathName = NetcdfFile.makeValidCdmObjectName(swathNameElem.getText().trim());
         Group swathGroup = findGroupNested(rootg, swathName);
         //if (swathGroup == null)
         //  swathGroup = findGroupNested(rootg, H4header.createValidObjectName(swathName));
@@ -208,7 +208,7 @@ public class HdfEos {
           log.warn("No GridName element in {} {} ", elemGrid.getName(), ncfile.getLocation());
           continue;
         }
-        String gridName = NetcdfFile.makeValidCdmObjectName(gridNameElem.getText());
+        String gridName = NetcdfFile.makeValidCdmObjectName(gridNameElem.getText().trim());
         Group gridGroup = findGroupNested(rootg, gridName);
         //if (gridGroup == null)
         //  gridGroup = findGroupNested(rootg, H4header.createValidObjectName(gridName));
@@ -230,7 +230,7 @@ public class HdfEos {
           log.warn("No PointName element in {} {}", elem.getName(), ncfile.getLocation());
           continue;
         }
-        String name = nameElem.getText();
+        String name = nameElem.getText().trim();
         Group ptGroup = findGroupNested(rootg, name);
         //if (ptGroup == null)
         //  ptGroup = findGroupNested(rootg, H4header.createValidObjectName(name));
@@ -258,12 +258,12 @@ public class HdfEos {
     Element d = swathElem.getChild("Dimension");
     List<Element> dims = d.getChildren();
     for (Element elem : dims) {
-      String name = elem.getChild("DimensionName").getText();
+      String name = elem.getChild("DimensionName").getText().trim();
       name = NetcdfFile.makeValidCdmObjectName(name);
 
       if (name.equalsIgnoreCase("scalar"))
         continue;
-      String sizeS = elem.getChild("Size").getText();
+      String sizeS = elem.getChild("Size").getText().trim();
       int length = Integer.parseInt(sizeS);
       if (length > 0) {
         Dimension dim = parent.findDimensionLocal(name);
@@ -289,13 +289,13 @@ public class HdfEos {
     Element dmap = swathElem.getChild("DimensionMap");
     List<Element> dimMaps = dmap.getChildren();
     for (Element elem : dimMaps) {
-      String geoDimName = elem.getChild("GeoDimension").getText();
+      String geoDimName = elem.getChild("GeoDimension").getText().trim();
       geoDimName = NetcdfFile.makeValidCdmObjectName(geoDimName);
-      String dataDimName = elem.getChild("DataDimension").getText();
+      String dataDimName = elem.getChild("DataDimension").getText().trim();
       dataDimName = NetcdfFile.makeValidCdmObjectName(dataDimName);
 
-      String offsetS = elem.getChild("Offset").getText();
-      String incrS = elem.getChild("Increment").getText();
+      String offsetS = elem.getChild("Offset").getText().trim();
+      String incrS = elem.getChild("Increment").getText().trim();
       int offset = Integer.parseInt(offsetS);
       int incr = Integer.parseInt(incrS);
 
@@ -319,7 +319,7 @@ public class HdfEos {
       Element floc = swathElem.getChild("GeoField");
       List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
-        String varname = elem.getChild("GeoFieldName").getText();
+        String varname = elem.getChild("GeoFieldName").getText().trim();
         Variable v = geoFieldsG.findVariable(varname);
         //if (v == null)
         //  v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
@@ -349,7 +349,7 @@ public class HdfEos {
       for (Element elem : vars) {
         Element dataFieldNameElem = elem.getChild("DataFieldName");
         if (dataFieldNameElem == null) continue;
-        String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText());
+        String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
         Variable v = dataG.findVariable(varname);
         //if (v == null)
         //  v = dataG.findVariable( H4header.createValidObjectName(varname));
@@ -423,8 +423,8 @@ public class HdfEos {
     List<Dimension> unknownDims = new ArrayList<Dimension>();
 
     // always has x and y dimension
-    String xdimSizeS = gridElem.getChild("XDim").getText();
-    String ydimSizeS = gridElem.getChild("YDim").getText();
+    String xdimSizeS = gridElem.getChild("XDim").getText().trim();
+    String ydimSizeS = gridElem.getChild("YDim").getText().trim();
     int xdimSize = Integer.parseInt(xdimSizeS);
     int ydimSize = Integer.parseInt(ydimSizeS);
     parent.addDimensionIfNotExists(new Dimension("XDim", xdimSize));
@@ -456,12 +456,12 @@ public class HdfEos {
     Element d = gridElem.getChild("Dimension");
     List<Element> dims = d.getChildren();
     for (Element elem : dims) {
-      String name = elem.getChild("DimensionName").getText();
+      String name = elem.getChild("DimensionName").getText().trim();
       name = NetcdfFile.makeValidCdmObjectName(name);
       if (name.equalsIgnoreCase("scalar"))
         continue;
 
-      String sizeS = elem.getChild("Size").getText();
+      String sizeS = elem.getChild("Size").getText().trim();
       int length = Integer.parseInt(sizeS);
       Dimension old = parent.findDimension(name);
       if ((old == null) || (old.getLength() != length)) {
@@ -487,7 +487,7 @@ public class HdfEos {
       Element floc = gridElem.getChild("GeoField");
       List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
-        String varname = elem.getChild("GeoFieldName").getText();
+        String varname = elem.getChild("GeoFieldName").getText().trim();
         Variable v = geoFieldsG.findVariable(varname);
         //if (v == null)
         //  v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
@@ -507,7 +507,7 @@ public class HdfEos {
       Element f = gridElem.getChild("DataField");
       List<Element> vars = f.getChildren();
       for (Element elem : vars) {
-        String varname = elem.getChild("DataFieldName").getText();
+        String varname = elem.getChild("DataFieldName").getText().trim();
         varname = NetcdfFile.makeValidCdmObjectName( varname);
         Variable v = dataG.findVariable(varname);
         //if (v == null)
@@ -523,7 +523,7 @@ public class HdfEos {
       String projS = null;
       Element projElem = gridElem.getChild("Projection");
       if (projElem != null)
-        projS = projElem.getText();
+        projS = projElem.getText().trim();
       boolean isLatLon = "GCTP_GEO".equals(projS);
 
       // look for XDim, YDim coordinate variables
@@ -550,7 +550,7 @@ public class HdfEos {
       List<Element> vElems = child.getChildren();
       List<Double> values = new ArrayList<Double>();
       for (Element ve : vElems) {
-        String valueS = ve.getText();
+        String valueS = ve.getText().trim();
         try {
           values.add(Double.parseDouble(valueS));
         } catch (NumberFormatException e) {  }
@@ -558,7 +558,7 @@ public class HdfEos {
       Attribute att = new Attribute(name, values);
       v.addAttribute(att);
     } else {
-      String value = child.getText();
+      String value = child.getText().trim();
       Attribute att = new Attribute(name, value);
       v.addAttribute(att);
     }
@@ -573,7 +573,7 @@ public class HdfEos {
     Iterator<Element> iter = values.iterator();
     while (iter.hasNext()) {
       Element value = iter.next();
-      String dimName = value.getText();
+      String dimName = value.getText().trim();
       if (dimName.equalsIgnoreCase("scalar"))
         iter.remove();
     }
@@ -590,7 +590,7 @@ public class HdfEos {
 
     for (int i=0; i<values.size(); i++) {
       Element value = values.get(i);
-      String dimName = value.getText();
+      String dimName = value.getText().trim();
       dimName = NetcdfFile.makeValidCdmObjectName( dimName);
 
       Dimension dim = group.findDimension(dimName);
