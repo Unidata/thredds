@@ -61,4 +61,8 @@ public class Index0D extends Index {
   public Object clone() {
     return super.clone();
   }
+
+  public Index set() {
+      return this;
+  }
 }

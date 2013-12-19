@@ -51,6 +51,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import static ucar.unidata.util.StringUtil2.getTokens;
+
 /**
  * Read NcML and create NetcdfDataset.
  *
@@ -1032,6 +1034,11 @@ public class NcMLReader {
     }
 
     // look for logical views
+    processLogicalViews(varElem, v, g);
+  }
+
+  private void processLogicalViews(Element varElem, Variable v, Group g) {
+
     Element viewElem = varElem.getChild("logicalSection", ncNS);
     if (null != viewElem) {
       String sectionSpec = viewElem.getAttributeValue("section");
@@ -1089,6 +1096,35 @@ public class NcMLReader {
       } catch (InvalidRangeException e) {
         errlog.format("Invalid logicalSlice (%d,%d) on variable=%s error=%s %n", dim, index, v.getFullName(), e.getMessage());
       }
+    }
+
+    viewElem = varElem.getChild("logicalReduce", ncNS);
+    if (null != viewElem) {
+      String dimName = viewElem.getAttributeValue("dimNames");
+      if (null == dimName) {
+        errlog.format("NcML logicalReduce: dimNames is required, variable=%s %n", v.getFullName());
+        return;
+      }
+      String[] dims = StringUtil2.splitString(dimName);
+      List<Dimension> dimList = new ArrayList<Dimension>();
+      for (String s : dims) {
+        int idx = v.findDimensionIndex(s);
+        if (idx < 0) {
+          errlog.format("NcML logicalReduce: cant find dimension %s in variable=%s %n", dimName, v.getFullName());
+          return;
+        }
+        dimList.add(v.getDimension(idx));
+      }
+
+      try {
+        Variable view = v.reduce(dimList);
+        g.removeVariable(v.getShortName());
+        g.addVariable(view);
+
+      } catch (InvalidRangeException e) {
+        errlog.format("Failed logicalReduce (%s) on variable=%s error=%s %n", dimName, v.getFullName(), e.getMessage());
+      }
+
     }
 
   }
@@ -1329,18 +1365,10 @@ public class NcMLReader {
       Array dataArray = Array.factory(DataType.CHAR.getPrimitiveClassType(), v.getShape(), data);
       v.setCachedData(dataArray, true);
 
-    } else if (sep != null) {
-      List<String> valList = new ArrayList<String>();
-      StringTokenizer tokn = new StringTokenizer(values, sep);
-      while (tokn.hasMoreTokens())
-        valList.add(tokn.nextToken());
-      v.setValues(valList);
-
-    } else { // default is to use whitespace
-      String[] tokens = StringUtil2.splitString(values);
-      List<String> valList = Arrays.asList(tokens);
-      v.setValues(valList);
-    }
+    } else {
+        List<String> valList = getTokens(values, sep);
+        v.setValues(valList);
+      }
 
     } catch (Throwable t) {
       throw new RuntimeException("Ncml Reading on "+v.getFullName(), t);

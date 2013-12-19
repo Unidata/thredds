@@ -95,6 +95,21 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
       earth_radius = getEarthRadiusInKm(ctv);
     }
   }
+
+  /**
+   * Read a variable attribute as a String.
+   *
+   * @param v       the variable
+   * @param attname name of variable
+   * @param defValue default value if attribute is not found
+   * @return attribute value as a double, else NaN if not found
+   */
+  protected String readAttribute(Variable v, String attname, String defValue) {
+    Attribute att = v.findAttributeIgnoreCase(attname);
+    if (att == null) return defValue;
+    return att.getStringValue();
+  }
+
   
 
   /**

@@ -74,6 +74,8 @@ public class TestGribDiskCache {
         data.delete();
       if (data.getName().endsWith(".ncx"))
         data.delete();
+      if (data.getName().endsWith(".ncx2"))
+        data.delete();
     }
 
     for (File data : dd.listFiles()) {

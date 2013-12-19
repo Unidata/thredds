@@ -80,6 +80,7 @@ public interface CF {
   public static final String FALSE_EASTING = "false_easting";
   public static final String FALSE_NORTHING = "false_northing";
   public static final String GRID_MAPPING = "grid_mapping";
+  public static final String FIXED_ANGLE_AXIS = "fixed_angle_axis";  //  geostationary
   public static final String GRID_MAPPING_NAME = "grid_mapping_name";
   public static final String GRID_NORTH_POLE_LATITUDE = "grid_north_pole_latitude";
   public static final String GRID_NORTH_POLE_LONGITUDE = "grid_north_pole_longitude";
@@ -90,11 +91,12 @@ public interface CF {
   public static final String LONGITUDE_OF_PRIME_MERIDIAN = "longitude_of_prime_meridian";
   public static final String LONGITUDE_OF_CENTRAL_MERIDIAN = "longitude_of_central_meridian";
   public static final String NORTH_POLE_GRID_LONGITUDE = "north_pole_grid_longitude";
-  public static final String PERSPECTIVE_POINT_HEIGHT = "perspective_point_height";
+  public static final String PERSPECTIVE_POINT_HEIGHT = "perspective_point_height";   // geostationary
   public static final String SCALE_FACTOR_AT_CENTRAL_MERIDIAN = "scale_factor_at_central_meridian";
   public static final String SCALE_FACTOR_AT_PROJECTION_ORIGIN = "scale_factor_at_projection_origin";
   public static final String SEMI_MAJOR_AXIS = "semi_major_axis";
   public static final String SEMI_MINOR_AXIS = "semi_minor_axis";
+  public static final String SWEEP_ANGLE_AXIS = "sweep_angle_axis"; // geostationary
   public static final String STANDARD_PARALLEL = "standard_parallel";
   public static final String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE = "straight_vertical_longitude_from_pole";
 

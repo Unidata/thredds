@@ -42,39 +42,4 @@ import ucar.unidata.test.util.TestDir;
  */
 public class TestNcML {
   public static String topDir = TestDir.cdmLocalTestDataDir + "ncml/";
-
-  /* public static junit.framework.Test suite ( ) {
-    TestSuite suite= new TestSuite();
-
-    //test reading XML
-    suite.addTest(new TestSuite(TestNcMLequals.class)); // ncml == referenced dataset
-    suite.addTest(new TestSuite(TestNcMLRead.class)); // explicit;  metadata in xml
-    suite.addTest(new TestSuite(TestNcMLRead.TestRead2.class)); // readMetadata //
-
-    suite.addTest(new TestSuite(TestNcMLReadOverride.class)); // read and override
-    suite.addTest(new TestSuite(TestNcMLModifyAtts.class)); // modify atts
-    suite.addTest(new TestSuite(TestNcMLModifyVars.class)); // modify vars
-    suite.addTest(new TestSuite(TestNcMLRenameVar.class)); // all metadata in xml, rename vars
-
-    // test aggregations
-    suite.addTest(new TestSuite(TestAggUnionSimple.class));
-    suite.addTest(new TestSuite(TestAggUnion.class));
-
-    suite.addTest(new TestSuite(TestAggExistingCoordVars.class));
-    suite.addTest(new TestSuite(TestAggExisting.class));
-
-    suite.addTest(new TestSuite(TestAggSynthetic.class)); //
-
-    suite.addTest(new TestSuite(TestAggExistingPromote.class));
-    suite.addTest(new TestSuite(TestAggMisc.class));
-
-    // requires remote (network) access
-    // suite.addTest(new TestSuite(TestRemoteAggregation.class)); not working
-
-    // LOOK wait until grids are done - fails when cached
-    //suite.addTest(new TestSuite(TestAggSynGrid.class));
-
-    return suite;
-  } */
-
 }
