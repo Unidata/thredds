@@ -33,10 +33,11 @@
 
 package ucar.ma2;
 
+import net.jcip.annotations.Immutable;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-
 
 /**
  * Represents a set of integers, used as an index for arrays.
@@ -64,8 +65,10 @@ import java.util.StringTokenizer;
  * @author caron
  */
 
+@Immutable
 public final class Range {
   public static final Range EMPTY = new Range();
+  public static final Range ONE = new Range(1);
   public static final Range VLEN = new Range(-1);
 
   private final int n; // number of elements

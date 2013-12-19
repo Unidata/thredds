@@ -36,10 +36,15 @@ JAVA_PREFS_SYSTEM_ROOT=&quot;-Djava.util.prefs.systemRoot=$CATALINA_HOME/content
 #             
 JAVA_OPTS=&quot;$CONTENT_ROOT $NORMAL $MAX_PERM_GEN $HEADLESS $JAVA_PREFS_SYSTEM_ROOT&quot;            
 export JAVA_OPTS
-           </pre>
-        </blockquote>
-  </li>
+</pre>
+</blockquote>
+</li>
+  <p><strong>Troubleshooting</strong>: </p>
+  <p>If the content root is not correctly set, you will see a message like: &quot;<strong>SEVERE: Error listenerStart</strong>&quot; in <strong>{tomcat}/logs/catalina.out</strong> and &quot;<strong>Error creating bean with name 'tdsContext'</strong>&quot; in  <strong>{tomcat}/logs/localhost.log.</strong></p>
+  <p>By default, the content root is set to <strong>&quot;../content&quot;</strong> relative to where tomcat is started. Since this directory varies and is not standard across servlet containers, you should always explicitly set <strong>-Dtds.content.root.path</strong>.</p>
+  <p>Note  your catalogs are  under <strong>{tomcat}</strong><strong>/content/thredds</strong> but  <strong>tds.content.root.path</strong> does not include the <strong>thredds</strong> subdirectory.</p>
 </ul>
+<h3>&nbsp;</h3>
 <h3>Netcdf Subset Service Changes</h3>
 <blockquote>
   <p>The Netcdf Subset Service (ncss) has a different URL path, and the REST interface has changed.  If you have been using ncss from a script, you will need to check your URLs and parameters <a href="http://www.unidata.ucar.edu/software/thredds/v4.4/tds/reference/NetcdfSubsetServiceReference.html">(documentation</a>). If you are accessing the ncss from the HTML form, or are correctly parsing the catalog, nohting needs to be changed.<br>

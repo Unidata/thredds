@@ -51,7 +51,9 @@ import thredds.util.TdsPathUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +74,7 @@ public class RadarStationController extends AbstractController {
 
   @Autowired
   private TdsContext tdsContext;
+  public static boolean enabled;
 
   public RadarStationController() {
   }
@@ -87,11 +90,16 @@ public class RadarStationController extends AbstractController {
 
   @PostConstruct
   void init() {
-    radarDatasetRepository.init(tdsContext); // for some reason this is not working directly
+    enabled = radarDatasetRepository.init(tdsContext); // for some reason this is not working directly
   }
 
   @RequestMapping(value = {"**/stations.xml"}, method = RequestMethod.GET)
-  protected ModelAndView stationRequestXml(HttpServletRequest request) throws RadarServerException {
+  protected ModelAndView stationRequestXml(HttpServletRequest request, HttpServletResponse res) throws RadarServerException, IOException {
+    if (!enabled) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "No radar server");
+      return null;
+    }
+
     try {
       // Gather diagnostics for logging request.
       // setup

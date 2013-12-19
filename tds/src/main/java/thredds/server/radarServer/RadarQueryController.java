@@ -118,6 +118,11 @@ public class RadarQueryController extends AbstractController {
 
   @RequestMapping(value = {"**"}, method = RequestMethod.GET)
   protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    if (!RadarStationController.enabled) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "No radar server");
+      return null;
+    }
+
     try {
       // Gather diagnostics for logging request.
       // catch rogue invalid request here

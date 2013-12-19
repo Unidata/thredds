@@ -466,14 +466,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
     this.proxyReader = proxyReader;
   }
 
-
-  /** Get the proxy reader, or null.
-   * @return return the proxy reader, if any
-   *
-  public ProxyReader getProxyReader() {
-  return this.postReader;
-  } */
-
   /**
    * Create a new Variable that is a logical subsection of this Variable.
    * No data is read until a read method is called on it.
@@ -559,6 +551,35 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
 
     // remove that dimension - reduce rank
     sliceV.dimensions.remove(dim);
+    sliceV.resetShape();
+    return sliceV;
+  }
+
+  /**
+   * Create a new Variable that is a logical view of this Variable, by
+   * eliminating the specified dimension(s) of length 1.
+   * No data is read until a read method is called on it.
+   *
+   * @param dims   list of  dimensions of length 1 to reduce
+   * @return a new Variable which is a logical slice of this Variable.
+   * @throws InvalidRangeException if dimension or value is illegal
+   */
+  public Variable reduce(List<Dimension> dims) throws InvalidRangeException {
+    List<Integer> dimIdx = new ArrayList<Integer>(dims.size());
+    for (Dimension d : dims) {
+      assert dimensions.contains(d);
+      assert d.getLength() == 1;
+      dimIdx.add(dimensions.indexOf(d));
+    }
+
+    // create a copy of this variable with a proxy reader
+    Variable sliceV = copy(); // subclasses must override
+    sliceV.setProxyReader(new ReduceReader(this, dimIdx));
+    sliceV.createNewCache(); // dont share the cache
+    sliceV.setCaching(false); // dont cache
+
+    // remove dimension(s) - reduce rank
+    for (Dimension d : dims) sliceV.dimensions.remove(d);
     sliceV.resetShape();
     return sliceV;
   }

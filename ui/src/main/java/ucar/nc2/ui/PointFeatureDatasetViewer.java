@@ -82,7 +82,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private FeatureCollection selectedCollection;
   private FeatureType selectedType;
 
-  private BeanTableSorted fcTable, profileTable, stnTable, stnProfileTable, trajTable, sectionTable;
+  private BeanTableSorted fcTable, profileTable, stnTable, stnProfileTable;
   private JPanel changingPane = new JPanel(new BorderLayout());
   private StationRegionDateChooser stationMap;
   private StructureTable obsTable;
@@ -250,34 +250,6 @@ public class PointFeatureDatasetViewer extends JPanel {
       }
     });
 
-    // trajectory table
-    trajTable = new BeanTableSorted(TrajectoryFeatureBean.class, (PreferencesExt) prefs.node("TrajFeatureBean"), false);
-    trajTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        TrajectoryFeatureBean sb = (TrajectoryFeatureBean) trajTable.getSelectedBean();
-        try {
-          setTrajectory(sb);
-          trajTable.fireBeanDataChanged(sb);
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-      }
-    });
-
-    // section table
-    sectionTable = new BeanTableSorted(SectionFeatureBean.class, (PreferencesExt) prefs.node("TrajFeatureBean"), false);
-    sectionTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        SectionFeatureBean sb = (SectionFeatureBean) trajTable.getSelectedBean();
-        try {
-          setSection(sb);
-          sectionTable.fireBeanDataChanged(sb);
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-      }
-    });
-
     pointController = new PointController();    
 
     // the obs table
@@ -302,14 +274,12 @@ public class PointFeatureDatasetViewer extends JPanel {
     add(splitObs, BorderLayout.CENTER);
   }
 
-  void makePointController() {
-    //pointDisplayWindow = new IndependentWindow("PointData", BAMutil.getImage( "thredds"), pointController);
-    //pointDisplayWindow.setBounds((Rectangle) prefs.getBean("PointDisplayBounds", new Rectangle(300, 300, 500, 300)));
-  }
-
   public void save() {
     fcTable.saveState(false);
     stnTable.saveState(false);
+    profileTable.saveState(false);
+    stnProfileTable.saveState(false);
+
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     //if (pointDisplayWindow != null) prefs.putBeanObject("PointDisplayBounds", pointDisplayWindow.getBounds());
     prefs.putInt("splitPosO", splitObs.getDividerLocation());
@@ -333,8 +303,11 @@ public class PointFeatureDatasetViewer extends JPanel {
   public void setDataset(FeatureDatasetPoint dataset) {
     this.pfDataset = dataset;
 
+    stnTable.clearBeans();
+    profileTable.clearBeans();
+    stnProfileTable.clearBeans();
+
     infoTA.clear();
-    stnTable.setBeans(new ArrayList());
     stationMap.setStations(new ArrayList());
     obsTable.clear();
     selectedCollection = null;
@@ -376,7 +349,6 @@ public class PointFeatureDatasetViewer extends JPanel {
       ProfileFeatureCollection pfc = (ProfileFeatureCollection) fcb.fc;
       setProfileCollection(pfc);
       changingPane.add( stnTable, BorderLayout.CENTER);
-
     } else if (ftype == FeatureType.STATION) {
       StationCollection sfc = (StationCollection) fcb.fc;
       setStations(sfc);
@@ -387,7 +359,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       setStations(sfc);
 
       JSplitPane splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, stnTable, stnProfileTable);
-      splitExtra.setDividerLocation(prefs.getInt("splitPosX", 50));
+      splitExtra.setDividerLocation(changingPane.getHeight() / 2);
       changingPane.add( splitExtra, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.TRAJECTORY) {
@@ -400,12 +372,16 @@ public class PointFeatureDatasetViewer extends JPanel {
       setSectionCollection(pfc);
 
       JSplitPane splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, stnTable, profileTable);
-      splitExtra.setDividerLocation(prefs.getInt("splitPosX", 50));
+      splitExtra.setDividerLocation(changingPane.getHeight() / 2);
       changingPane.add( splitExtra, BorderLayout.CENTER);
     }
 
     this.selectedCollection = fcb.fc;
     this.selectedType = ftype;
+
+    // Redraw the GUI with the new tables.
+    revalidate();
+    repaint();
   }
 
   private void setStations(StationCollection stationCollection) {
@@ -723,8 +699,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       return;
     }
     obsTable.setPointFeatureData(obsList);
-    
-    if (pointController == null) makePointController();
+
     pointController.setPointFeatures(obsList);
     //pointDisplayWindow.setVisible(true);
   }
@@ -921,7 +896,7 @@ public class PointFeatureDatasetViewer extends JPanel {
           pf = pfc.next();
         }
       } catch (IOException ioe) {
-        log.warn("Trajectory empty ", ioe);
+        log.warn("Section empty ", ioe);
       }
       npts = pfc.size();
     }
@@ -988,7 +963,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         if (pfc.hasNext())
           pf = pfc.next();
       } catch (IOException ioe) {
-        log.warn("Trajectory empty ", ioe);
+        log.warn("Profile empty ", ioe);
       }
       pfc.finish();
       npts = pfc.size();
