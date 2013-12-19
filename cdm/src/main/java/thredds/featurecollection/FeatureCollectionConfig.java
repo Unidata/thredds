@@ -134,7 +134,8 @@ public class FeatureCollectionConfig {
     f.format("  hasInnerNcml =%s%n", innerNcml != null);
 
     switch (type) {
-      case GRIB:
+      case GRIB1:
+      case GRIB2:
         f.format("  gribConfig =%s%n", gribConfig);
         break;
       case FMRC:

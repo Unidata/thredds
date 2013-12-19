@@ -47,11 +47,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
-import thredds.util.LoggerFactorySpecial;
-import thredds.util.PathAliasReplacement;
-import thredds.util.PathAliasReplacementImpl;
-import thredds.util.ThreddsConfigReader;
+import thredds.util.*;
 import ucar.nc2.grib.collection.GribCdmIndex2;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.PartitionCollection;
@@ -146,9 +144,9 @@ public class Tdm {
     }
   }
 
-  List<PathAliasReplacement> aliasExpanders;
+  AliasHandler aliasHandler;
   public void setPathAliasReplacements(List<PathAliasReplacement> aliasExpanders) {
-    this.aliasExpanders = aliasExpanders;
+    aliasHandler = new AliasHandler(aliasExpanders);
   }
 
   boolean init() {
@@ -183,7 +181,7 @@ public class Tdm {
      System.out.printf("Tdm startup at %s%n", new Date());
 
      //CatalogConfigReader reader = new CatalogConfigReader(catalog, aliasExpanders);
-     CatalogConfigReader reader = new CatalogConfigReader();
+     CatalogConfigReader reader = new CatalogConfigReader(catalog, aliasHandler);
      List<FeatureCollectionConfig> fcList = reader.getFcList();
 
      /* if (showOnly) {
@@ -201,6 +199,7 @@ public class Tdm {
      } */
 
      for (FeatureCollectionConfig config : fcList) {
+       if (config.type != FeatureCollectionType.GRIB2) continue;
        /* CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
        if (config != null && config.gribConfig != null && config.gribConfig.gdsHash != null)
          dcm.putAuxInfo("gdsHash", config.gribConfig.gdsHash); // sneak in extra config info  */

@@ -13,7 +13,7 @@
   </service>
 
   <!-- test GRIB collection  -->
-  <featureCollection featureType="GRIB" name="GFS_CONUS_80km" path="gribCollection/GFS_CONUS_80km">
+  <featureCollection featureType="GRIB1" name="GFS_CONUS_80km" path="gribCollection/GFS_CONUS_80km">
     <dataFormat>GRIB-1</dataFormat>
     <metadata inherited="true">
       <serviceName>all</serviceName>
@@ -34,7 +34,7 @@
 
   </featureCollection>
 
-  <featureCollection name="NDFD-CONUS-5km" featureType="GRIB" harvest="true" path="grib/NDFD/CONUS_5km">
+  <featureCollection name="NDFD-CONUS-5km" featureType="GRIB2" harvest="true" path="grib/NDFD/CONUS_5km">
     <metadata inherited="true">
       <dataFormat>GRIB-2</dataFormat>
       <serviceName>all</serviceName>

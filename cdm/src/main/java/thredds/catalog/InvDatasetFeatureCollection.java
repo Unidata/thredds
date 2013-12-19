@@ -112,7 +112,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     if (fcType == FeatureCollectionType.FMRC)
       result = new InvDatasetFcFmrc(parent, name, path, fcType, config);
 
-    else if (fcType == FeatureCollectionType.GRIB) {
+    else if (fcType == FeatureCollectionType.GRIB1 || fcType == FeatureCollectionType.GRIB2) {
       // use reflection to decouple from grib.jar
       try {
         Class c = InvDatasetFeatureCollection.class.getClassLoader().loadClass("thredds.catalog.InvDatasetFcGrib");

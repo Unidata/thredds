@@ -1,20 +1,21 @@
 package thredds.tdm;
 
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import thredds.catalog.*;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
+import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.util.PathAliasReplacement;
-import ucar.nc2.time.CalendarDate;
+import thredds.inventory.CollectionSpecParser;
+import thredds.util.AliasHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * Description
@@ -32,24 +33,110 @@ public class CatalogConfigReader {
     return fcList;
   }
 
-  private List<PathAliasReplacement> aliasExpanders;
-  public CatalogConfigReader(Resource catR, List<PathAliasReplacement> aliasExpanders) {
-    this.aliasExpanders = aliasExpanders;
+  private AliasHandler aliasHandler;
+
+  public CatalogConfigReader(Resource catR, AliasHandler aliasHandler) throws IOException {
+    //FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("F:/data/grib/idd/modelsNcep.xml#DGEX-CONUS_12km");
+    //if (config != null) fcList.add(config);
+    this.aliasHandler = aliasHandler;
+    readCatalog(catR);
+  }
+
+  private boolean readCatalog(Resource catR) throws IOException {
+    String catFilename = catR.getURI().toString();
+    if (catFilename.startsWith("file:/")) catFilename = catFilename.substring("file:/".length());
+    File catFile = catR.getFile();
+    String fcName = null;
+
+     /* int pos = catalogAndPath.indexOf("#");
+     if (pos > 0) {
+       catFilename = catalogAndPath.substring(0, pos);
+       fcName = catalogAndPath.substring(pos+1);
+     } else {
+       catFilename = catalogAndPath;
+     }  */
+
+    File cat = new File(catFilename);
+    org.jdom2.Document doc;
     try {
-      log.info("\n**************************************\nCatalog init " + catR + "\n[" + CalendarDate.present() + "]");
-      initCatalog(catR, true);
-
-    } catch (Throwable e) {
-      log.error("initCatalogs(): Error initializing catalog " + catR + "; " + e.getMessage(), e);
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(cat);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
     }
+    Element root = doc.getRootElement();
+
+    // find direct fc elements
+    try {
+      List<Element> fcElems = new ArrayList<>();
+      findFeatureCollections(root, fcName, fcElems);
+      for (Element fcElem : fcElems) {
+        FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(fcElem);
+        // check spec
+        config.spec = aliasHandler.replaceAlias(config.spec);
+        Formatter errlog = new Formatter();
+        CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+        Path rootPath = Paths.get(specp.getRootDir());
+        if (!Files.exists(rootPath)) {
+          System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.name, catFilename);
+          continue;
+        }
+
+        fcList.add(config);
+        System.out.printf("Added  fc='%s' from catalog=%s%n", config.name, catFilename);
+      }
+
+    } catch (IllegalStateException e) {
+      e.printStackTrace();
+    }
+
+    // follow catrefs
+    try {
+      List<Element> catrefElems = new ArrayList<>();
+      findCatalogRefs(root, catrefElems);
+      for (Element catrefElem : catrefElems) {
+        String href = catrefElem.getAttributeValue("href", InvCatalogFactory10.xlinkNS);
+        File refCat = new File(catFile.getParent(), href);
+        Resource catRnested = new FileSystemResource(refCat);
+        if (!catRnested.exists()) {
+          log.error("Reletive catalog {} does not exist", catR);
+          continue;
+        }
+        readCatalog(catRnested);
+      }
+
+    } catch (IllegalStateException e) {
+      e.printStackTrace();
+    }
+
+    return true;
   }
 
-  public CatalogConfigReader() {
-    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("F:/data/grib/idd/modelsNcep.xml#DGEX-CONUS_12km");
-    fcList.add(config);
+  private void findFeatureCollections(Element parent, String name, List<Element> fcElems) {
+    List<Element> elist = parent.getChildren("featureCollection", InvCatalogFactory10.defNS);
+    if (name == null)
+      fcElems.addAll(elist);
+    else {
+      for (Element elem : elist) {
+        if (name.equals(elem.getAttributeValue("name")))
+          fcElems.add(elem);
+      }
+    }
+    for (Element child : parent.getChildren("dataset", InvCatalogFactory10.defNS))
+      findFeatureCollections(child, name, fcElems);
   }
 
-  private void initCatalog(Resource catR, boolean recurse) throws IOException {
+  private void findCatalogRefs(Element parent, List<Element> catrefElems) {
+    List<Element> elist = parent.getChildren("catalogRef", InvCatalogFactory10.defNS);
+    catrefElems.addAll(elist);
+
+    for (Element child : parent.getChildren("dataset", InvCatalogFactory10.defNS))
+      findCatalogRefs(child, catrefElems);
+  }
+
+
+  /* private void initCatalog(Resource catR, boolean recurse) throws IOException {
 
     // make sure we dont already have it
     String path = catR.getURI().toString();
@@ -77,13 +164,13 @@ public class CatalogConfigReader {
         if (catFile.exists()) {
           initFollowCatrefs(catFile, cat.getDatasets());
         }
-      } catch (IOException ioe ) {
+      } catch (IOException ioe) {
         // never mind - not a File
       }
     }
   }
 
-    // read the catalog
+  // read the catalog
   private InvCatalogImpl readCatalog(InvCatalogFactory factory, Resource catR) throws IOException {
     InputStream ios = catR.getInputStream();
     InvCatalogImpl cat = null;
@@ -115,13 +202,11 @@ public class CatalogConfigReader {
     return cat;
   }
 
-  /**
    * Finds datasetScan, datasetFmrc, NcML and restricted access datasets.
    * Look for duplicate Ids (give message). Dont follow catRefs.
    * Only called by synchronized methods.
    *
    * @param dsList the list of InvDatasetImpl
-   */
   private void initSpecialDatasets(List<InvDataset> dsList) {
 
     for (InvDataset invds : dsList) {
@@ -170,5 +255,5 @@ public class CatalogConfigReader {
         initFollowCatrefs(catFile, invDataset.getDatasets());
       }
     }
-  }
+  }   */
 }

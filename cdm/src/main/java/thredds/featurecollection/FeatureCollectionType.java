@@ -9,11 +9,12 @@ import ucar.nc2.constants.FeatureType;
  * @since 11/8/12
  */
 public enum FeatureCollectionType {
-    GRIB, FMRC, Point, Station, Station_Profile;
+  GRIB1, GRIB2, FMRC, Point, Station, Station_Profile;
 
   public FeatureType getFeatureType() {
     switch (this) {
-      case GRIB: return FeatureType.GRID;
+      case GRIB1: return FeatureType.GRID;
+      case GRIB2: return FeatureType.GRID;
       case FMRC: return FeatureType.FMRC;
       case Point: return FeatureType.POINT;
       case Station: return FeatureType.STATION;
