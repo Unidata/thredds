@@ -104,6 +104,7 @@ public class RadarDatasetRepository {
     this.tdsContext = tdsContext;
 
     File catalogFile = tdsContext.getConfigFileSource().getFile(mainCatalog);
+    if (catalogFile == null || !catalogFile.exists()) return false;
 
     // read in radarCollections.xml catalog no validation
     defaultCat = readCatalog(catalogFile);
