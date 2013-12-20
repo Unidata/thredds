@@ -1197,7 +1197,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
 
-  // This is a regression test for TDS-13: https://bugtracking.unidata.ucar.edu/browse/TDS-513
+  // This is a regression test for TDS-513: https://bugtracking.unidata.ucar.edu/browse/TDS-513
   public void testTimeSeriesProfile1dTime() throws IOException {
     FeatureType type = FeatureType.STATION_PROFILE;
     String location = CFpointObs_topdir + "stationProfileMultidim1dTime.ncml";
