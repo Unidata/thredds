@@ -5,6 +5,7 @@ import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
+import ucar.nc2.util.IO;
 
 import java.io.*;
 import java.net.URI;
@@ -50,6 +51,9 @@ public class TestRadarServer {
       // assertTrue(httpUriResolver.getResponseHeaderValue("Content-").equals(ContentType.xml.getContentHeader()));
 
       InputStream is = httpUriResolver.getResponseBodyAsInputStream();
+      System.out.printf("response= '%s'%n", IO.readContents(is));
+
+      /* InputStream is = httpUriResolver.getResponseBodyAsInputStream();
 
       InputStreamReader isr = new InputStreamReader(is, "UTF-8");
       int cnt = 1;
@@ -58,7 +62,7 @@ public class TestRadarServer {
         int num = isr.read(c);
         System.out.println(cnt + "[" + num + "]" + new String(c));
         cnt++;
-      }
+      }   */
 
     } catch (IOException e) {
       fail("Failed to read catalog [" + path + "]: " + e.getMessage());

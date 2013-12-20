@@ -44,6 +44,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 import thredds.catalog.query.Station;
 import thredds.server.AbstractController;
 import thredds.server.config.TdsContext;
@@ -94,7 +95,7 @@ public class RadarStationController extends AbstractController {
   }
 
   @RequestMapping(value = {"**/stations.xml"}, method = RequestMethod.GET)
-  protected ModelAndView stationRequestXml(HttpServletRequest request, HttpServletResponse res) throws RadarServerException, IOException {
+  protected ModelAndView stationRequestXml(HttpServletRequest request, HttpServletResponse res) throws RadarServerException, IOException, NoSuchRequestHandlingMethodException {
     if (!enabled) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "No radar server");
       return null;
