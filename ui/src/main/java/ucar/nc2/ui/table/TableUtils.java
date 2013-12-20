@@ -67,8 +67,7 @@ public abstract class TableUtils {
             this.headerOnly = headerOnly;
         }
 
-        @Override
-        public void tableChanged(TableModelEvent e) {
+        @Override public void tableChanged(TableModelEvent e) {
             TableUtils.resizeColumnWidths(table, headerOnly);
         }
     }

@@ -130,29 +130,4 @@ public class ImprovedFileChooser extends JFileChooser {
         this.dialog = super.createDialog(parent);  // Grab our own local reference to the dialog.
         return this.dialog;
     }
-
-  public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException,
-          InstantiationException, IllegalAccessException {
-//    // Ideally, we'd like to change the L&F to Nimbus, but it's only available in JDK 6u10 and up. So, first
-//    // change to the system L&F (which, whatever it looks like, has *got* to be better than the default, Metal).
-//    // Then, if Nimbus is available, switch to it.
-//    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//    for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-//      if ("Nimbus".equals(info.getName())) {
-//        UIManager.setLookAndFeel(info.getClassName());
-//        break;
-//      }
-//    }
-
-    EventQueue.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          ImprovedFileChooser fileChooser = new ImprovedFileChooser(new File("."));
-//          fileChooser.setPreferredSize(new Dimension(650, 550));
-          fileChooser.showDialog(null, "Yay?");
-        }
-      }
-    );
-  }
 }
