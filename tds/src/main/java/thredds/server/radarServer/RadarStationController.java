@@ -44,6 +44,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 import thredds.catalog.query.Station;
 import thredds.server.AbstractController;
 import thredds.server.config.TdsContext;
@@ -51,7 +52,9 @@ import thredds.util.TdsPathUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +75,7 @@ public class RadarStationController extends AbstractController {
 
   @Autowired
   private TdsContext tdsContext;
+  public static boolean enabled;
 
   public RadarStationController() {
   }
@@ -87,11 +91,16 @@ public class RadarStationController extends AbstractController {
 
   @PostConstruct
   void init() {
-    radarDatasetRepository.init(tdsContext); // for some reason this is not working directly
+    enabled = radarDatasetRepository.init(tdsContext); // for some reason this is not working directly
   }
 
   @RequestMapping(value = {"**/stations.xml"}, method = RequestMethod.GET)
-  protected ModelAndView stationRequestXml(HttpServletRequest request) throws RadarServerException {
+  protected ModelAndView stationRequestXml(HttpServletRequest request, HttpServletResponse res) throws RadarServerException, IOException, NoSuchRequestHandlingMethodException {
+    if (!enabled) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "No radar server");
+      return null;
+    }
+
     try {
       // Gather diagnostics for logging request.
       // setup

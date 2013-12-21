@@ -32,18 +32,23 @@
  */
 package ucar.nc2.dataset;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 
-public class TestDatasetWrap extends TestCase {
-
-  public TestDatasetWrap( String name) {
-    super(name);
-  }
-
+/**
+ * Test things are ok when wrapping by a Dataset
+ *
+ * @author caron
+ * @since 11/6/13
+ */
+public class TestDatasetWrap {
+  @Test
   public void testDatasetWrap() throws Exception {
     doOne(TestDir.cdmUnitTestDir + "conventions/nuwg/eta.nc");
     //readAllDir( TestAll.testdataDir+ "grid/netcdf");
@@ -78,5 +83,72 @@ public class TestDatasetWrap extends TestCase {
     ucar.unidata.test.util.CompareNetcdf.compareFiles(ncd, ncWrap);
     ncd.close();
     ncWrap.close();
+  }
+
+
+  @Test
+  public void testMissingDataReplaced() throws Exception {
+    // this one has misssing longitude data, but not getting set to NaN
+    String filename = TestDir.cdmUnitTestDir + "/ft/point/netcdf/Surface_Synoptic_20090921_0000.nc";
+    NetcdfFile ncfile = null;
+    NetcdfDataset ds = null;
+
+    try {
+      ncfile = NetcdfFile.open(filename);
+      ds = NetcdfDataset.openDataset(filename);
+
+      String varName = "Lon";
+      Variable wrap = ds.findVariable(varName);
+      Array data_wrap = wrap.read();
+
+      boolean ok = true;
+      CompareNetcdf2 compare = new CompareNetcdf2();
+
+      assert wrap instanceof CoordinateAxis1D;
+      CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
+
+      ok &= compare.compareData(varName, data_wrap, axis.getCoordValues());
+
+      assert ok;
+    } finally {
+
+      if (ncfile != null) ncfile.close();
+      if (ds != null) ds.close();
+    }
+  }
+
+  @Test
+  public void testLongitudeWrap() throws Exception {
+    // this one was getting clobbered by longitude wrapping
+    String filename = TestDir.cdmUnitTestDir + "/ft/profile/sonde/sgpsondewnpnC1.a1.20020507.112400.cdf";
+    NetcdfFile ncfile = null;
+    NetcdfDataset ds = null;
+
+    try {
+      ncfile = NetcdfFile.open(filename);
+      ds = NetcdfDataset.openDataset(filename);
+
+      String varName = "lon";
+      Variable org = ncfile.findVariable(varName);
+      Variable wrap = ds.findVariable(varName);
+
+      Array data_org = org.read();
+      Array data_wrap = wrap.read();
+
+      boolean ok;
+      CompareNetcdf2 compare = new CompareNetcdf2();
+      ok = compare.compareData(varName, data_org, data_wrap);
+
+      assert wrap instanceof CoordinateAxis1D;
+      CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
+
+      ok &= compare.compareData(varName, data_org, axis.getCoordValues());
+
+      assert ok;
+    } finally {
+
+      if (ncfile != null) ncfile.close();
+      if (ds != null) ds.close();
+    }
   }
 }

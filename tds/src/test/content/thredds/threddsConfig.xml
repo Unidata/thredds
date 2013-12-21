@@ -49,11 +49,6 @@
     <datasetIconAlt>Dataset</datasetIconAlt>
   </htmlSetup>
 
-  <contentRoots>
-    <contentRoot>motherlode</contentRoot>
-    <contentRoot>idd</contentRoot>
-  </contentRoots>
-
   <!--
    The <CatalogServices> element:
    -->

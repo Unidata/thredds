@@ -361,7 +361,8 @@ public class CFpointObs extends TableConfigurerImpl {
         TableConfig profileTable = makeStructTable(ds, FeatureType.PROFILE, new EncodingInfo().set(Encoding.multidim, info.childDim), errlog);
         if (profileTable == null) return null;
         if (time.getRank() == 1) // join time(time)
-          profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
+          //profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
+          profileTable.addJoin(new JoinArray(time, JoinArray.Type.level, 1));
 
         stationTable.addChild(profileTable);
 
@@ -406,7 +407,8 @@ public class CFpointObs extends TableConfigurerImpl {
         TableConfig profileTable = makeMultidimInner(ds, stationTable, info.childDim, info, errlog);
         if (profileTable == null) return null;
         if (time.getRank() == 1) {// join time(time)
-          profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));  // ??
+          // profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
+          profileTable.addJoin(new JoinArray(time, JoinArray.Type.level, 1));
           profileTable.time = time.getShortName();
         }
         stationTable.addChild(profileTable);

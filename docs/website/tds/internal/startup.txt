@@ -1,6 +1,6 @@
 TDS startup
 
-1. Log4j2 manages to get itself called first. All loggers in config get created. Apparently this "load firsst" was not happening
+1. Log4j2 manages to get itself called first. All loggers in config get created. Apparently this "load first" was not happening
 in Log4j1. Need to tell it where the log files go.
 
 2013-09-02 16:53:36,057 DEBUG Calling createProperty on class org.apache.logging.log4j.core.config.Property for element property with params(name="tds.content.root.path", value="../../content")
@@ -25,6 +25,7 @@ mappings are done, eg:
 2013-09-02T16:59:45.709-0600 [     14609][        ] INFO  org.springframework.web.context.ContextLoader: Root WebApplicationContext: initialization started
 
 not clear if classses are loaded here
+
 
 3. applicationContext-tdsConfig is processed, and TdsContext bean is made:
 

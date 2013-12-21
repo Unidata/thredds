@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 import thredds.server.ncss.QueryParams;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.units.DateRange;
@@ -118,6 +119,11 @@ public class RadarQueryController extends AbstractController {
 
   @RequestMapping(value = {"**"}, method = RequestMethod.GET)
   protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    if (!RadarStationController.enabled) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "No radar server");
+      return null;
+    }
+
     try {
       // Gather diagnostics for logging request.
       // catch rogue invalid request here

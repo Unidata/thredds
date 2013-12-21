@@ -37,17 +37,18 @@ import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.EventListenerList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
-
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.*;
-import javax.swing.table.*;
 
 /**
  * A JTable that uses JavaBeans to store the data.
@@ -477,6 +478,19 @@ public class BeanTable extends JPanel {
     }
     store.putBeanCollection("propertyCol", pcols);
   }
+
+    /**
+     * Notifies the TableModel that the data in the specified bean has changed.
+     * The TableModel will then fire an event of its own, which its listeners will hear (usually a JTable).
+     *
+     * @param bean  a bean that has changed.
+     */
+    public void fireBeanDataChanged(Object bean) {
+        int row = beans.indexOf(bean);
+        if (row >= 0) {
+            model.fireTableRowsUpdated(row, row);
+        }
+    }
 
   //public void repaint() {
   //   jtable.repaint();

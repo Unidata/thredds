@@ -56,6 +56,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDatasetImpl;
@@ -102,6 +103,11 @@ public class RadarCatalogController {
    */
   @RequestMapping(value = {"**/catalog.xml", "**/catalog.html", "catalog.xml", "catalog.html"}, method = RequestMethod.GET)
   protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    if (!RadarStationController.enabled) {
+        response.sendError(HttpServletResponse.SC_NOT_FOUND, "No radar server");
+        return null;
+      }
+
     try {
       String path = TdsPathUtils.extractPath(request, getControllerPath());
       if (path == null) path = "";

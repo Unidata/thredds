@@ -84,6 +84,7 @@
         <xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="logicalSection" minOccurs="0"/>
         <xsd:element ref="logicalSlice" minOccurs="0"/>
+        <xsd:element ref="logicalReduce" minOccurs="0"/>
         <xsd:element ref="remove" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
       <xsd:attribute name="name" type="xsd:token" use="required"/>
@@ -180,12 +181,18 @@
 
   <xsd:element name="logicalSlice">
     <xsd:complexType>
-      <xsd:attribute name="dimName" type="xsd:token" use="required"/>
+      <xsd:attribute name="dimNames" type="xsd:token" use="required"/>
       <xsd:attribute name="index" type="xsd:int" use="required"/>
     </xsd:complexType>
   </xsd:element>
 
-  <!-- aggregation  -->
+  <xsd:element name="logicalReduce">
+     <xsd:complexType>
+       <xsd:attribute name="dimName" type="xsd:string" use="required"/>
+     </xsd:complexType>
+   </xsd:element>
+
+   <!-- aggregation  -->
   <xsd:element name="aggregation">
     <xsd:complexType>
       <xsd:sequence>

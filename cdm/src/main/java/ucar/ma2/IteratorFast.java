@@ -61,15 +61,15 @@ package ucar.ma2;
 
     private Index counter = null; // usually not used
     public String toString() {
-      if (counter == null)
-        counter = new Index(maa.getShape());
+      if (counter == null || counter.toString() == "")   // not sure about the second condition
+        counter = Index.factory(maa.getShape());
       counter.setCurrentCounter( currElement);
       return counter.toString();
     }
 
     public int[] getCurrentCounter() {
-      if (counter == null)
-        counter = new Index(maa.getShape());
+      if (counter == null)   // or counter == "" ?
+        counter = Index.factory(maa.getShape());
       counter.setCurrentCounter( currElement);
       return counter.current;
     }

@@ -33,28 +33,27 @@
 
 package ucar.nc2.ft;
 
+import org.junit.Assert;
 import junit.framework.TestCase;
-
-import java.io.IOException;
-import java.io.FileFilter;
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.*;
-
+import ucar.ma2.DataType;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.*;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.NCdumpW;
-import ucar.nc2.NetcdfFile;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
-import ucar.ma2.DataType;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
 
 /**
  * Test PointFeatureTypes.
@@ -1197,11 +1196,30 @@ public class TestPointFeatureTypes extends TestCase {
 
   }
 
-  public static void main(String arg[]) throws Exception {
-    TestPointFeatureTypes test = new TestPointFeatureTypes("");
-    test.testGempakMissing("C:\\data\\ft\\station\\20090524_sao.gem");
+
+  // This is a regression test for TDS-513: https://bugtracking.unidata.ucar.edu/browse/TDS-513
+  public void testTimeSeriesProfile1dTime() throws IOException {
+    FeatureType type = FeatureType.STATION_PROFILE;
+    String location = CFpointObs_topdir + "stationProfileMultidim1dTime.ncml";
+    ucar.nc2.util.CancelTask task = null;
+    Formatter out = new Formatter();
+
+    FeatureDataset featDset = FeatureDatasetFactoryManager.open(type, location, task, out);
+    assert featDset != null && featDset instanceof FeatureDatasetPoint;
+    FeatureDatasetPoint featDsetPoint = (FeatureDatasetPoint) featDset;
+
+    List<FeatureCollection> featCols = featDsetPoint.getPointFeatureCollectionList();
+    assert !featCols.isEmpty();
+    FeatureCollection featCol = featCols.get(0);  // We only care about the first one.
+
+    assert featCol instanceof StationProfileFeatureCollection;
+    StationProfileFeatureCollection stationProfileFeatCol = (StationProfileFeatureCollection) featCol;
+
+    assert stationProfileFeatCol.hasNext();
+    StationProfileFeature stationProfileFeat = stationProfileFeatCol.next();  // We only care about the first one.
+
+    List<Date> timesList = stationProfileFeat.getTimes();
+    Set<Date> timesSet = new TreeSet<Date>(stationProfileFeat.getTimes());
+    Assert.assertEquals(timesList.size(), timesSet.size());  // Assert that the times are unique.
   }
-
-
 }
-

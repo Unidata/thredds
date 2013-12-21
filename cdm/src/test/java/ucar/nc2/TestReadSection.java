@@ -51,13 +51,13 @@ public class TestReadSection extends TestCase {
   public void testReadVariableSection() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
-    Variable temp = null;
-    assert(null != (temp = ncfile.findVariable("temperature")));
+    Variable temp = ncfile.findVariable("temperature");
+    assert(null != temp);
 
     int[] origin = {3,6};
     int[] shape = {12,17};
 
-    Variable tempSection = temp.section(Range.factory(origin, shape));
+    Variable tempSection = temp.section(new Section(origin, shape));
 
     // read array section
     Array Asection;
@@ -111,7 +111,7 @@ public class TestReadSection extends TestCase {
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("temperature")));
 
-    ArrayList ranges = new ArrayList();
+    ArrayList<Range> ranges = new ArrayList<Range>();
     Range r0 = new Range(3,14);
     Range r1 = new Range(6,22);
     ranges.add( r0);

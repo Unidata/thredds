@@ -6103,7 +6103,7 @@ public class ToolsUI extends JPanel {
       System.out.println("ToolsUI arguments=" + arguments);
 
       // LOOK - why does it have to start with http ??
-      if (arguments.startsWith("http:")) {
+      if(arguments.matches("[a-zA-Z]+:")) {// assume this is a url
         wantDataset = arguments;
 
         // see if another version is running, if so send it the message
