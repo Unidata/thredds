@@ -24,7 +24,8 @@ import java.util.*;
  * @since 12/18/13
  */
 public class CatalogConfigReader {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogReader.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogConfigReader.class);
+  static private final boolean debug = false;
 
   private final Set<String> staticCatalogHash = new HashSet<String>();
   private final List<FeatureCollectionConfig> fcList = new ArrayList<>();
@@ -43,8 +44,8 @@ public class CatalogConfigReader {
   }
 
   private boolean readCatalog(Resource catR) throws IOException {
-    String catFilename = catR.getURI().toString();
-    if (catFilename.startsWith("file:/")) catFilename = catFilename.substring("file:/".length());
+    //String catFilename = catR.getURI().toString();
+    //if (catFilename.startsWith("file:/")) catFilename = catFilename.substring("file:/".length());
     File catFile = catR.getFile();
     String fcName = null;
 
@@ -56,11 +57,11 @@ public class CatalogConfigReader {
        catFilename = catalogAndPath;
      }  */
 
-    File cat = new File(catFilename);
+    //File cat = new File(catFilename);
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(cat);
+      doc = builder.build(catFile);
     } catch (Exception e) {
       e.printStackTrace();
       return false;
@@ -79,12 +80,12 @@ public class CatalogConfigReader {
         CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
         Path rootPath = Paths.get(specp.getRootDir());
         if (!Files.exists(rootPath)) {
-          System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.name, catFilename);
+          System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.name, catFile.getPath());
           continue;
         }
 
         fcList.add(config);
-        System.out.printf("Added  fc='%s' from catalog=%s%n", config.name, catFilename);
+        if (debug) System.out.printf("Added  fc='%s' from catalog=%s%n", config.name, catFile.getPath());
       }
 
     } catch (IllegalStateException e) {
@@ -100,7 +101,7 @@ public class CatalogConfigReader {
         File refCat = new File(catFile.getParent(), href);
         Resource catRnested = new FileSystemResource(refCat);
         if (!catRnested.exists()) {
-          log.error("Reletive catalog {} does not exist", catR);
+          log.error("Relative catalog {} does not exist", catR);
           continue;
         }
         readCatalog(catRnested);

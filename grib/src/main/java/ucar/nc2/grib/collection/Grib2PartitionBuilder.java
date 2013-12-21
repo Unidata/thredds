@@ -44,6 +44,15 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     return builder.result;
   }
 
+  // recreate if partition doesnt exist or is out of date (depends on force). return true if it was recreated
+  static public boolean recreateIfNeeded(PartitionManager tpc, CollectionManager.Force forcePartition, CollectionManager.Force forceChildren,
+                                       Formatter errlog, org.slf4j.Logger logger) throws IOException {
+    Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
+    boolean recreated = builder.readOrCreateIndex(forcePartition, forceChildren, errlog);
+    builder.result.close();
+    return recreated;
+  }
+
   /* make the index
   static public boolean makePartitionIndex(PartitionManager tpc, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
@@ -69,6 +78,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     this.partitionManager = tpc;
   }
 
+  // return true if the partition was recreated
   private boolean readOrCreateIndex(CollectionManager.Force forcePartition, CollectionManager.Force forceChildren, Formatter errlog) throws IOException {
     File idx = gc.getIndexFile();
 
@@ -87,21 +97,13 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     return false;
   }
 
-  // LOOK not sure if this works
   private boolean needsUpdate(long collectionLastModified) throws IOException {
-    CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
-    for (MCollection dcm : partitionManager.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
-      File idxFile = ucar.nc2.grib.GribCollection.getIndexFile(dcm);
+    for (MCollection dcm : partitionManager.makePartitions()) {
+      File idxFile = ucar.nc2.grib.collection.GribCollection.getIndexFile(dcm);
       if (!idxFile.exists())
         return true;
       if (collectionLastModified < idxFile.lastModified())
         return true;
-      try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
-        while (iter.hasNext()) {
-          if (cc.hasChangedSince(iter.next(), idxFile.lastModified())) return true;
-        }
-      }
-
     }
     return false;
   }

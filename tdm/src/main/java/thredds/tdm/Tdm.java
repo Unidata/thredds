@@ -52,11 +52,6 @@ import thredds.inventory.*;
 import thredds.util.*;
 import ucar.nc2.grib.collection.GribCdmIndex2;
 import ucar.nc2.grib.collection.GribCollection;
-import ucar.nc2.grib.collection.PartitionCollection;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.units.TimeDuration;
-import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.net.HTTPException;
@@ -68,6 +63,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ConnectException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -81,7 +79,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Tdm {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( Tdm.class);
 
-  private File contentDir;
+  private Path contentDir;
+  private Path contentThreddsDir;
+  private Path contentTdmDir;
+  private Path threddsConfig;
+
   private String user, pass;
   private boolean sendTriggers;
   private List<Server> servers;
@@ -102,9 +104,14 @@ public class Tdm {
     }
   }
 
-  public void setContentDir(String contentDir) {
-    this.contentDir = new File(contentDir);
-    this.catalog = new FileSystemResource(new File(contentDir, "catalog.xml"));
+  public void setContentDir(String contentDir) throws IOException {
+    System.out.printf("contentDir=%s%n", contentDir);
+    this.contentDir = Paths.get(contentDir);
+    this.contentThreddsDir = Paths.get(contentDir, "thredds");
+    this.threddsConfig = Paths.get(contentDir, "thredds", "threddsConfig.xml");
+    this.contentTdmDir = Paths.get(contentDir, "tdm");
+    this.catalog = new FileSystemResource(contentThreddsDir.toString() + "/catalog.xml");
+    System.out.printf("catalog=%s%n", catalog.getFile().getPath());
   }
 
   public void setShowOnly(boolean showOnly) {
@@ -150,12 +157,14 @@ public class Tdm {
   }
 
   boolean init() {
-    File configFile = new File(contentDir, "threddsConfig.xml");
-    if (!configFile.exists()) {
-      log.error("config file {} does not exist, set -contentDir <dir>", configFile.getPath());
+    System.setProperty("tds.log.dir", contentTdmDir.toString());
+
+    if (!Files.exists(threddsConfig)) {
+      log.error("config file {} does not exist, set -Dtds.content.root.path=<dir>", threddsConfig);
+      System.out.printf("threddsConfig does not exist=%s%n", threddsConfig);
       return false;
     }
-    ThreddsConfigReader reader = new ThreddsConfigReader(configFile.getPath(), log);
+    ThreddsConfigReader reader = new ThreddsConfigReader(threddsConfig.toString(), log);
 
    // LOOK following has been duplicated from tds cdmInit
 
@@ -166,7 +175,7 @@ public class Tdm {
     loggerFactory = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
 
     /* 4.3.15: grib index file placement, using DiskCache2  */
-    String gribIndexDir = reader.get("GribIndex.dir", new File(contentDir, "/cache/grib/").getPath());
+    String gribIndexDir = reader.get("GribIndex.dir", new File(contentThreddsDir.toString(), "thredds/cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = reader.getBoolean("GribIndex.alwaysUse", false);
     String gribIndexPolicy = reader.get("GribIndex.policy", null);
     DiskCache2 gribCache = new DiskCache2(gribIndexDir, false, -1, -1);
@@ -184,22 +193,22 @@ public class Tdm {
      CatalogConfigReader reader = new CatalogConfigReader(catalog, aliasHandler);
      List<FeatureCollectionConfig> fcList = reader.getFcList();
 
-     /* if (showOnly) {
-       List<String> result = new ArrayList<String>();
-       for (FeatureCollectionConfig fc : fcList) {
-         CollectionManager dcm = fc.getDatasetCollectionManager();
-         result.add(dcm.getRoot());
+     if (showOnly) {
+       List<String> result = new ArrayList<>();
+       for (FeatureCollectionConfig config : fcList) {
+         result.add(config.name);
        }
        Collections.sort(result);
 
-       System.out.printf("Directories:%n");
+       System.out.printf("Feature Collections:%n");
        for (String dir : result)
          System.out.printf(" %s%n", dir);
        return;
-     } */
+     }
 
      for (FeatureCollectionConfig config : fcList) {
        if (config.type != FeatureCollectionType.GRIB2) continue;
+       System.out.printf("FeatureCollection %s scheduled %n", config.name);
        /* CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
        if (config != null && config.gribConfig != null && config.gribConfig.gdsHash != null)
          dcm.putAuxInfo("gdsHash", config.gribConfig.gdsHash); // sneak in extra config info  */
@@ -253,6 +262,7 @@ public class Tdm {
     @Override
     public void sendEvent(TriggerType event) {
       System.out.printf("trigger %s on %s%n",event, config.name);
+      if (!inUse.compareAndSet(false, true)) return; // if already working, skip another execution
       executor.execute(new IndexTask(config, this, logger));
     }
   }
@@ -279,14 +289,14 @@ public class Tdm {
       try {
         Formatter errlog = new Formatter();
 
-        GribCdmIndex2.rewriteFilePartition(config, CollectionManager.Force.test, CollectionManager.Force.test);
+        boolean changed = GribCdmIndex2.rewriteFilePartition(config, CollectionManager.Force.test, CollectionManager.Force.test, logger);
 
         // delete any files first
         //if (config.tdmConfig.deleteAfter != null) {
         //  doManage(config.tdmConfig.deleteAfter);
         //}
 
-        if (config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
+        if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
           String path = "thredds/admin/collection/trigger?nocheck&collection=" + name;
           sendTriggers(path, errlog);
         }
@@ -295,6 +305,7 @@ public class Tdm {
 
       } catch (Throwable e) {
         logger.error("TimePartitionBuilder.factory " + name, e);
+
       } finally {
         // tell liz that task is done
         if (!liz.inUse.getAndSet(false))
@@ -372,7 +383,7 @@ public class Tdm {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static void main2(String[] args) throws IOException {
+  /* public static void main2(String[] args) throws IOException {
     long start = System.currentTimeMillis();
 
     FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("F:/data/grib/idd/modelsNcep.xml#DGEX-CONUS_12km");
@@ -382,7 +393,7 @@ public class Tdm {
      Path topPath = Paths.get("B:/ndfd/200901/20090101");
      GribCollection gc = makeGribCollectionIndexOneDirectory(config, CollectionManager.Force.always, topPath, errlog);
      System.out.printf("%s%n", errlog);
-     gc.close(); */
+     gc.close();
 
 
     //Path topPath = Paths.get("B:/ndfd/200906");
@@ -398,7 +409,7 @@ public class Tdm {
 
     long took = System.currentTimeMillis() - start;
     System.out.printf("that all took %s msecs%n", took);
-  }
+  } */
 
   public static void main(String args[]) throws IOException, InterruptedException {
     ApplicationContext springContext = new FileSystemXmlApplicationContext("classpath:resources/application-config.xml");
@@ -412,12 +423,12 @@ public class Tdm {
     HTTPSession.setGlobalUserAgent("TDM v4.5");
     // GribCollection.getDiskCache2().setNeverUseCache(true);
     String logLevel = "INFO";
-    String contentDir;
+    //String contentDir;
 
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
-        System.out.printf("usage: <Java> <Java_OPTS> -contentDir <contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-log level]%n");
-        System.out.printf("example: /opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -catalog /tomcat/webapps/thredds/WEB-INF/altContent/idd/thredds/catalog.xml -cred user:passwd%n");
+        System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-log level]%n");
+        System.out.printf("example: /opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -Dtds.content.root.path=/my/content -cred user:passwd%n");
         System.exit(0);
       }
 
@@ -466,6 +477,10 @@ public class Tdm {
     }
 
     CollectionUpdater.INSTANCE.setTdm(true);
+
+    String contentDir = System.getProperty("tds.content.root.path");
+    if (contentDir == null)  contentDir = "../content";
+    driver.setContentDir(contentDir);
 
     if (driver.init()) {
       driver.start();

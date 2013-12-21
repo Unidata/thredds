@@ -180,7 +180,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
       // write out index
       idx = gc.makeNewIndexFile(logger); // make sure we have a writeable index
-      logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
+      logger.info("Grib2CollectionBuilder on {}: createIndex {}", gc.getName(), idx.getPath());
       if (errlog != null) errlog.format("%s: create Index at %s%n", gc.getName(), idx.getPath());
       createIndex(idx, errlog);
 

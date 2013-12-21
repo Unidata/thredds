@@ -25,6 +25,7 @@ import java.util.Map;
  */
 public class LoggerFactorySpecial implements LoggerFactory {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  static private Map<String, org.slf4j.Logger> map = new HashMap<String, org.slf4j.Logger>();
 
   private String dir = "./";
   private long maxSize;
@@ -44,8 +45,6 @@ public class LoggerFactorySpecial implements LoggerFactory {
       startupLog.error("Illegal Logger level="+levels);
     }
   }
-
-  private static Map<String, org.slf4j.Logger> map = new HashMap<String, org.slf4j.Logger>();
 
   /* @Override
   public org.slf4j.Logger getLogger(String name) {

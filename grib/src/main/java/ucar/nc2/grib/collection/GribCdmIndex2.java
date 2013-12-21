@@ -1,9 +1,7 @@
 package ucar.nc2.grib.collection;
 
-import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionSpecParser;
@@ -189,11 +187,13 @@ public class GribCdmIndex2 implements IndexReader {
    * @param config                FeatureCollectionConfig
    * @param forceCollection       always, test, nocheck, never
    * @param forceChildren         always, test, nocheck, never
+   * @return true if partition was rewritten
    * @throws IOException
    */
-  static public void rewriteFilePartition(final FeatureCollectionConfig config,
-                                          final CollectionManager.Force forceCollection,
-                                          final CollectionManager.Force forceChildren) throws IOException {
+  static public boolean rewriteFilePartition(final FeatureCollectionConfig config,
+                                            final CollectionManager.Force forceCollection,
+                                            final CollectionManager.Force forceChildren,
+                                            final Logger logger) throws IOException {
     long start = System.currentTimeMillis();
 
     final Formatter errlog = new Formatter();
@@ -217,11 +217,13 @@ public class GribCdmIndex2 implements IndexReader {
       });
     }
 
-    // redo partition index
-    try (GribCollection gcNew = Grib2PartitionBuilder.factory(partition, forceCollection, CollectionManager.Force.never, errlog, logger)) { }
+    // redo partition index if needed
+    boolean recreated = Grib2PartitionBuilder.recreateIfNeeded(partition, forceCollection, CollectionManager.Force.never, errlog, logger);
 
     long took = System.currentTimeMillis() - start;
-    System.out.printf("rewriteFilePartition %s took %s msecs%n%s%n", collectionName, took, errlog);
+    if (recreated) logger.info("RewriteFilePartition {} took {} msecs \n errs={}", collectionName, took, errlog);
+
+    return recreated;
   }
 
   /**
@@ -350,35 +352,6 @@ public class GribCdmIndex2 implements IndexReader {
       logger.error("Error reading index " + indexRaf.getLocation(), t);
       return false;
     }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  public static void main(String[] args) throws IOException {
-    long start = System.currentTimeMillis();
-
-    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("C:\\dev\\github\\thredds\\tds\\src\\test\\content\\thredds\\catalogGrib.xml#NDFD-CONUS-5km");
-    if (config == null) return;
-
-     /* Formatter errlog = new Formatter();
-     Path topPath = Paths.get("B:/ndfd/200901/20090101");
-     GribCollection gc = makeGribCollectionIndexOneDirectory(config, CollectionManager.Force.always, topPath, errlog);
-     System.out.printf("%s%n", errlog);
-     gc.close(); */
-
-
-    //Path topPath = Paths.get("B:/ndfd/200906");
-    // rewriteIndexesPartitionAll(config, topPath);
-    //Grib2TimePartition tp = makeTimePartitionIndexOneDirectory(config, CollectionManager.Force.always, topPath);
-    //tp.close();
-
-    System.out.printf("name = '%s' spec='%s'%n", config.name, config.spec);
-
-    rewriteFilePartition(config, CollectionManager.Force.always, CollectionManager.Force.always);
-    //rewriteDirectoryCollection(config, topPath, false);
-
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("that all took %s msecs%n", took);
   }
 
 }

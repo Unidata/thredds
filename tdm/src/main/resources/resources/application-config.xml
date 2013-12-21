@@ -40,12 +40,12 @@
       </property>
     </bean>
 
-  <bean id="diskCache" class="ucar.nc2.util.DiskCache2"  destroy-method="exit">
+  <!-- bean id="diskCache" class="ucar.nc2.util.DiskCache2"  destroy-method="exit">
     <constructor-arg value="cache/grib/"/>
     <constructor-arg value="false"/>
     <constructor-arg value="30"/>
     <constructor-arg value="60"/>
-  </bean>
+  </bean -->
 
    <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
      <entry key="cdmUnitTest" value="Q:/cdmUnitTest"/>
