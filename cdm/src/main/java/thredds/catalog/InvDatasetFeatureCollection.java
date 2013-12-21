@@ -235,7 +235,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   public void sendEvent(TriggerType event) {
 
     if (event == CollectionUpdateListener.TriggerType.updateNocheck)
-      update(CollectionManager.Force.nocheck);
+      update(CollectionManager.Force.never);
 
     else if (event == CollectionUpdateListener.TriggerType.update)
       update(CollectionManager.Force.always);
@@ -282,7 +282,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     synchronized (lock) {
       if (first) {
         firstInit();
-        updateCollection(state, CollectionManager.Force.nocheck);
+        updateCollection(state, CollectionManager.Force.never);
         makeDatasetTop(state);
         first = false;
       }

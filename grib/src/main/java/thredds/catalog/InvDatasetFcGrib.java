@@ -101,7 +101,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private final FeatureCollectionConfig.GribConfig gribConfig;
   private final AtomicBoolean needsUpdate = new AtomicBoolean(); // not used
   private final AtomicBoolean needsProto = new AtomicBoolean();  // not used
-  private DataFormatType format;
+  private boolean isGrib1;
   private String bestDatasetName = "Best Timeseries";
 
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
@@ -144,7 +144,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   @Override
   protected void firstInit() {
     super.firstInit();
-    this.format = getDataFormatType();
+    this.isGrib1 = config.type == FeatureCollectionType.GRIB1;
   }
 
   @Override
@@ -246,7 +246,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       StateGrib localState = (StateGrib) state;
       if (config.timePartition != null) {
         PartitionCollection previous = localState.timePartition;
-        localState.timePartition = PartitionCollection.factory(format == DataFormatType.GRIB1, (PartitionManager) this.datasetCollection, force, logger);
+        localState.timePartition = PartitionCollection.factory(isGrib1, (PartitionManager) this.datasetCollection, force, logger);
         localState.gribCollection = null;
 
         if (previous != null) previous.delete(); // LOOK may be another thread using - other thread will fail
@@ -254,7 +254,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       } else {
         GribCollection previous = localState.gribCollection;
-        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, datasetCollection, force, null, logger);
+        localState.gribCollection = GribCollection.factory(isGrib1, datasetCollection, force, null, logger);
 
         localState.timePartition = null;
         if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
