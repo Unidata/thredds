@@ -179,44 +179,7 @@
 
     </dataset>
 
-    <dataset name="Global Forecast System (GFS)">
-
-      <metadata inherited="true">
-        <documentation type="summary">NCEP Global Forecast System Model, previously called AVN/MRF (Medium Range
-          Forecast)
-        </documentation>
-        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/avintro.htm"
-                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
-        <documentation xlink:href="http://www.nco.ncep.noaa.gov/pmb/products/gfs/"
-                       xlink:title="NCEP Model Notes"/>
-      </metadata>
-
-      <featureCollection name="GFS-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_0p5deg">
-        <metadata inherited="true">
-          <documentation type="summary">NCEP GFS Model : AWIPS 230 (G) Grid. Global Lat/Lon grid.
-            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours from 96 to 180 hours (4
-            to 7.5 days).
-            Horizontal= 361 by 720 points, resolution 0.5 degree, Lat/Lon projection.
-            Vertical= 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
-            layers.
-          </documentation>
-        </metadata>
-
-        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/.*grib2$"
-                    dateFormatMark="#GFS_Global_0p5deg_#yyyyMMdd_HHmm"
-                    timePartition="1 day"
-                    olderThan="5 min"/>
-        <update startup="nocheck" trigger="allow"/>
-        <tdm startup="true" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
-        <gribConfig datasetTypes="Best LatestFile Files">
-          <latestNamer name="Latest NCEP GFS Global 0.5 degree"/>
-          <bestNamer name="Best NCEP GFS Global 0.5 degree Time Series"/>
-          <filesSort>
-            <lexigraphicByName increasing="false"/>
-          </filesSort>
-        </gribConfig>
-      </featureCollection>
-
+i
       <featureCollection name="GFS-Global_onedeg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_onedeg">
         <metadata inherited="true">
           <documentation type="summary">NCEP GFS Model : AWIPS 229 (F) Grid. Global Lat/Lon grid.

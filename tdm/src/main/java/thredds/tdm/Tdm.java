@@ -45,13 +45,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.util.*;
 import ucar.nc2.grib.collection.GribCdmIndex2;
 import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.net.HTTPException;
@@ -177,10 +177,12 @@ public class Tdm {
     /* 4.3.15: grib index file placement, using DiskCache2  */
     String gribIndexDir = reader.get("GribIndex.dir", new File(contentThreddsDir.toString(), "thredds/cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = reader.getBoolean("GribIndex.alwaysUse", false);
+    Boolean gribIndexNeverUse = reader.getBoolean("GribIndex.neverUse", true);
     String gribIndexPolicy = reader.get("GribIndex.policy", null);
     DiskCache2 gribCache = new DiskCache2(gribIndexDir, false, -1, -1);
     gribCache.setPolicy(gribIndexPolicy);
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
+    gribCache.setNeverUseCache(gribIndexNeverUse);
     GribCollection.setDiskCache2(gribCache);
 
     return true;
@@ -261,7 +263,6 @@ public class Tdm {
 
     @Override
     public void sendEvent(TriggerType event) {
-      System.out.printf("trigger %s on %s%n",event, config.name);
       if (!inUse.compareAndSet(false, true)) return; // if already working, skip another execution
       executor.execute(new IndexTask(config, this, logger));
     }
@@ -295,6 +296,9 @@ public class Tdm {
         //if (config.tdmConfig.deleteAfter != null) {
         //  doManage(config.tdmConfig.deleteAfter);
         //}
+
+        if (changed)
+          System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
           String path = "thredds/admin/collection/trigger?nocheck&collection=" + name;

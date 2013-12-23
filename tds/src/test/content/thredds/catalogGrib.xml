@@ -49,15 +49,10 @@
     <update startup="never" trigger="allow"/>
     <tdm startup="true" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
 
-    <gribConfig datasetTypes="Best LatestFile Files">
+    <gribConfig datasetTypes="TwoD LatestFile Files">
       <pdsHash>
         <useGenType>true</useGenType>
       </pdsHash>
-      <latestNamer name="Latest NDFD CONUS 2.5km"/>
-      <bestNamer name="Best NDFD CONUS 2.5km Time Series"/>
-      <filesSort>
-        <lexigraphicByName increasing="false"/>
-      </filesSort>
     </gribConfig>
   </featureCollection>
 

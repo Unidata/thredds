@@ -44,7 +44,6 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.grib.GdsHorizCoordSys;
-import ucar.nc2.grib.GribCdmIndex;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDateRange;
@@ -75,7 +74,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @ThreadSafe
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final String COLLECTION = "collection";
-  static private final String BEST_DATASET = "best";
+  static private final String BEST_DATASET = "Best";
+  static private final String TWOD_DATASET = "TwoD";
+  static private final String twoDDatasetNameDefault = "Two Time (Forecast / Reference Time) Dataset";
+  static private final String bestDatasetNameDefault = "Best Estimate Dataset";
+  static private final String zeroHourDatasetNameDefault = "Zero hour (Analysis) Dataset";
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -99,19 +102,27 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   //////////////////////////////////////////////////////////////////////////////
 
   private final FeatureCollectionConfig.GribConfig gribConfig;
-  private final AtomicBoolean needsUpdate = new AtomicBoolean(); // not used
-  private final AtomicBoolean needsProto = new AtomicBoolean();  // not used
-  private boolean isGrib1;
-  private String bestDatasetName = "Best Timeseries";
+  //private final AtomicBoolean needsUpdate = new AtomicBoolean(); // not used
+  //private final AtomicBoolean needsProto = new AtomicBoolean();  // not used
+  private final boolean isGrib1;
+  private final boolean isFilePartition;
+  private final boolean isDirectoryPartition;
+  private final boolean isOtherPartition;
+
+  private final String bestDatasetName;
 
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, path, fcType, config);
     this.gribConfig = config.gribConfig;
+    this.isGrib1 = config.type == FeatureCollectionType.GRIB1;
+    this.isFilePartition = (config.timePartition != null) && config.timePartition.equalsIgnoreCase("file");
+    this.isDirectoryPartition = (config.timePartition != null) && config.timePartition.equalsIgnoreCase("directory");
+    this.isOtherPartition = (config.timePartition != null) && !isFilePartition && !isDirectoryPartition;
 
     Formatter errlog = new Formatter();
 
-    if (config.timePartition != null) {
-      this.datasetCollection = TimePartitionCollectionManager.factory(config, topDirectory, new GribCdmIndex(), errlog, logger);
+    if (config.timePartition != null) {  // LOOK
+      this.datasetCollection = TimePartitionCollectionManager.factory(config, topDirectory, new GribCdmIndex2(), errlog, logger);
     } else {
       this.datasetCollection = new MFileCollectionManager(config, errlog, logger);
     }
@@ -130,6 +141,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (config.gribConfig != null && config.gribConfig.bestNamer != null) {
       this.bestDatasetName = config.gribConfig.bestNamer;
+    } else {
+      this.bestDatasetName = bestDatasetNameDefault;
     }
 
     state = new StateGrib(null);
@@ -144,12 +157,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   @Override
   protected void firstInit() {
     super.firstInit();
-    this.isGrib1 = config.type == FeatureCollectionType.GRIB1;
   }
 
   @Override
   public void updateProto() {
-    needsProto.set(true);
+    // needsProto.set(true);
     // no actual work, wait until next call to updateCollection (??)
     // not sure proto is used in GribFc
   }
@@ -244,7 +256,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   protected void updateCollection(State state, CollectionManager.Force force) {
     try {
       StateGrib localState = (StateGrib) state;
-      if (config.timePartition != null) {
+      if (isFilePartition || isDirectoryPartition || isOtherPartition) {
         PartitionCollection previous = localState.timePartition;
         localState.timePartition = PartitionCollection.factory(isGrib1, (PartitionManager) this.datasetCollection, force, logger);
         localState.gribCollection = null;
@@ -280,7 +292,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     top.setID(tpath);
 
     GribCollection gc = localState.timePartition == null ? localState.gribCollection : localState.timePartition;
-    List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gc.getGroups());
+    List<GribCollection.GroupHcs> groups = new ArrayList<>(gc.getGroups());
     Collections.sort(groups);
     boolean isSingleGroup = (groups.size() == 1);
 
@@ -290,7 +302,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     tmi.setTimeCoverage(extractCalendarDateRange(groups));
     tmi.setServiceName(virtualService.getName());
 
-    if (localState.timePartition == null) { // no time partitions
+    if (localState.timePartition == null || isFilePartition) { // are these identical ??
 
       for (GribCollection.GroupHcs group : groups) {
         InvDatasetImpl ds = isSingleGroup ? top : new InvDatasetImpl(this, group.getDescription());
@@ -305,6 +317,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         ds.tmi.setGeospatialCoverage(extractGeospatial(group));
         ds.tmi.setTimeCoverage(group.getCalendarDateRange());
+
+        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
+          InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
+          String path = dpath + "/" + TWOD_DATASET;
+          twoD.setUrlPath(path);
+          twoD.setID(path);
+          twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+          ds.addDataset(twoD);
+        }
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
@@ -324,9 +345,18 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       }
 
-    } else { // is a time partition
+    } else if (isDirectoryPartition || isOtherPartition) { // is a time partition
 
       if (isSingleGroup) {
+        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
+          InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
+          String path = getPath() + "/" + TWOD_DATASET;
+          twoD.setUrlPath(path);
+          twoD.setID(path);
+          twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+          top.addDataset(twoD);
+        }
+
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
           String path = getPath() + "/" + BEST_DATASET;
@@ -352,12 +382,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           InvCatalogRef ds = new InvCatalogRef(this, getBestDatasetName(), getCatalogHref(dname));
           top.addDataset(ds);
         }
-      }
+      } // multiple groups
 
-      for (PartitionCollection.Partition dc : localState.timePartition.getPartitionsSorted()) {
-        String dname = dc.getName();
-        InvCatalogRef ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
-        top.addDataset(ds);
+        for (PartitionCollection.Partition dc : localState.timePartition.getPartitionsSorted()) {
+          String dname = dc.getName();
+          InvCatalogRef ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
+          top.addDataset(ds);
       }
 
     }
@@ -409,7 +439,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         //return main;
       }
 
-      if (localState.timePartition == null) {
+      if (localState.timePartition == null || isFilePartition) {
         String[] path = match.split("/");
         GribCollection.GroupHcs group;
         if ((path.length == 1) && (path[0].equals(FILES))) { // single group case
@@ -594,7 +624,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (paths.length < 1) return null;
 
     try {
-      if (localState.timePartition == null) {
+      if (localState.timePartition == null || isFilePartition) {
 
         if ((paths.length == 1) && paths[0].equals(FILES)) {
           return makeLatestCatalog(gc, groups.get(0), catURI, localState);  // case 1
@@ -713,7 +743,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   //////////////////////////////////////////////////////////////////////////////
 
   protected String getBestDatasetName() {
-      return bestDatasetName;
+    return bestDatasetName;
+  }
+
+  protected String getTwodDatasetName() {
+    return "TwoD Dataset";
   }
 
   @Override

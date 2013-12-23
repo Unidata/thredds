@@ -204,7 +204,6 @@ public class GribCdmIndex2 implements IndexReader {
     partition.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
     // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if advantage
-    String collectionName = DirectoryCollection.makeCollectionName(config.name, rootPath);
     if (forceChildren != CollectionManager.Force.never) {
       partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
         public void consume(MFile mfile) {
@@ -221,6 +220,7 @@ public class GribCdmIndex2 implements IndexReader {
     boolean recreated = Grib2PartitionBuilder.recreateIfNeeded(partition, forceCollection, CollectionManager.Force.never, errlog, logger);
 
     long took = System.currentTimeMillis() - start;
+    String collectionName = partition.getCollectionName();
     if (recreated) logger.info("RewriteFilePartition {} took {} msecs \n errs={}", collectionName, took, errlog);
 
     return recreated;

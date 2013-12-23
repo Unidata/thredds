@@ -38,6 +38,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.net.URLDecoder;
 
@@ -69,7 +72,7 @@ public class DiskCache2 {
   public static int CACHEPATH_POLICY_NESTED_TRUNCATE = 2;
 
   private CachePathPolicy cachePathPolicy = CachePathPolicy.OneDirectory;
-  private boolean alwaysUseCache = true;
+  private boolean alwaysUseCache = false;
   private boolean neverUseCache = false;
   private String cachePathPolicyParam = null;
 
@@ -242,15 +245,8 @@ public class DiskCache2 {
   // File.canWrite() appears to be flaky on some systems
   // will java 7 help ??
   private static boolean canWrite(File f) {
-    // now comes the tricky part to make sure we can open and write to it
-    try {
-      if (f.createNewFile()) {
-        f.delete();
-        return true;
-      }
-    } catch (IOException e) {
-    }
-    return false;
+    Path p = f.getParentFile().toPath(); // see if we can parent directory exists and is writeable
+    return Files.isWritable(p);
   }
 
   /**
@@ -486,14 +482,26 @@ public class DiskCache2 {
     System.out.println(" original=" + EscapeStrings.urlDecode(filename));
   }
 
+  static void testCanWrite(String filename) throws IOException {
+    File want = new File(filename);
+    Path p = want.toPath(); // see if we can write into this directory
+    boolean isWriteable = Files.isWritable(p);
+
+    Path p2 = want.getParentFile().toPath();
+    boolean isWriteable2 = Files.isWritable(p2);
+
+    System.out.printf("%s %s canWrite %s%n", isWriteable, isWriteable2, filename);
+  }
+
   /** debug */
   static public void main(String[] args) throws IOException {
     DiskCache2 dc = new DiskCache2("C:/TEMP/test/", false, 0, 0);
-
     dc.setRootDirectory("C:/temp/chill/");
-    make(dc, "C:/junk.txt");
-    make(dc, "C:/some/enchanted/evening/joots+3478.txt");
-    make(dc, "http://www.unidata.ucar.edu/some/enc hanted/eve'ning/nowrite.gibberish");
+
+    testCanWrite("C:/temp/wms.xml");
+    testCanWrite("C:/temp/junk.txt");
+    testCanWrite("C:/some/enchanted/evening/joots+3478.txt");
+    testCanWrite("C:/Users/mschmidt/test.txt");
 
     dc.showCache( System.out);
     StringBuilder sbuff = new StringBuilder();

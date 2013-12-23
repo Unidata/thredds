@@ -54,8 +54,8 @@ import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import thredds.util.LoggerFactorySpecial;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.TimePartition;
+import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.PartitionCollection;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -118,12 +118,14 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     /* 4.3.15: grib index file placement, using DiskCache2  */
     String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = ThreddsConfig.getBoolean("GribIndex.alwaysUse", false);
+    Boolean gribIndexNeverUse = ThreddsConfig.getBoolean("GribIndex.neverUse", false);
     String gribIndexPolicy = ThreddsConfig.get("GribIndex.policy", null);
     int gribIndexScourSecs = ThreddsConfig.getSeconds("GribIndex.scour", 0);
     int gribIndexMaxAgeSecs = ThreddsConfig.getSeconds("GribIndex.maxAge", 90 * 24 * 60 * 60);
     gribCache = new DiskCache2(gribIndexDir, false, gribIndexMaxAgeSecs / 60, gribIndexScourSecs / 60);
     gribCache.setPolicy(gribIndexPolicy);
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
+    gribCache.setNeverUseCache(gribIndexNeverUse);
     GribCollection.setDiskCache2(gribCache);
     startupLog.info("CdmInit: GribIndex="+gribCache);
 
@@ -189,7 +191,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     max = ThreddsConfig.getInt("TimePartition.maxFiles", 100);
     secs = ThreddsConfig.getSeconds("TimePartition.scour", 12 * 60);
     if (max > 0) {
-      TimePartition.initPartitionCache(min, max, secs);
+      PartitionCollection.initPartitionCache(min, max, secs);
       startupLog.info("CdmInit: TimePartition.initPartitionCache= ["+min+","+max+"] scour = "+secs);
     }
 
