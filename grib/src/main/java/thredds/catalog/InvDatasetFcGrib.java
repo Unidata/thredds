@@ -36,6 +36,7 @@ import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
+import thredds.inventory.partition.FilePartition;
 import thredds.inventory.partition.PartitionManager;
 import thredds.inventory.partition.TimePartitionCollectionManager;
 import ucar.nc2.constants.FeatureType;
@@ -53,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -82,13 +84,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
-    PartitionCollection timePartition;
+    // PartitionCollection timePartition;
     GribCollection gribCollection;
 
     protected StateGrib(StateGrib from) {
       super(from);
       if (from != null) {
-        this.timePartition = from.timePartition;
+        //this.timePartition = from.timePartition;
         this.gribCollection = from.gribCollection;
       }
     }
@@ -105,6 +107,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   //private final AtomicBoolean needsUpdate = new AtomicBoolean(); // not used
   //private final AtomicBoolean needsProto = new AtomicBoolean();  // not used
   private final boolean isGrib1;
+  private final boolean isGribCollection;
   private final boolean isFilePartition;
   private final boolean isDirectoryPartition;
   private final boolean isOtherPartition;
@@ -115,13 +118,16 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     super(parent, name, path, fcType, config);
     this.gribConfig = config.gribConfig;
     this.isGrib1 = config.type == FeatureCollectionType.GRIB1;
+    this.isGribCollection = (config.timePartition == null);
     this.isFilePartition = (config.timePartition != null) && config.timePartition.equalsIgnoreCase("file");
     this.isDirectoryPartition = (config.timePartition != null) && config.timePartition.equalsIgnoreCase("directory");
     this.isOtherPartition = (config.timePartition != null) && !isFilePartition && !isDirectoryPartition;
 
     Formatter errlog = new Formatter();
 
-    if (config.timePartition != null) {  // LOOK
+    if (isFilePartition) {
+      this.datasetCollection = new FilePartition(config.name, Paths.get(topDirectory), logger);
+    } else if (isOtherPartition) {   // LOOK ??
       this.datasetCollection = TimePartitionCollectionManager.factory(config, topDirectory, new GribCdmIndex2(), errlog, logger);
     } else {
       this.datasetCollection = new MFileCollectionManager(config, errlog, logger);
@@ -256,22 +262,18 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   protected void updateCollection(State state, CollectionUpdateType force) {
     try {
       StateGrib localState = (StateGrib) state;
-      if (isFilePartition || isDirectoryPartition || isOtherPartition) {
-        PartitionCollection previous = localState.timePartition;
-        localState.timePartition = PartitionCollection.factory(isGrib1, (PartitionManager) this.datasetCollection, force, logger);
-        localState.gribCollection = null;
+      GribCollection previous = localState.gribCollection;
 
-        if (previous != null) previous.delete(); // LOOK may be another thread using - other thread will fail
+      if (isFilePartition || isDirectoryPartition || isOtherPartition) {
+        localState.gribCollection = PartitionCollection.factory(isGrib1, (PartitionManager) this.datasetCollection, force, logger);
         logger.debug("{}: TimePartition object was recreated", getName());
 
       } else {
-        GribCollection previous = localState.gribCollection;
         localState.gribCollection = GribCollection.factory(isGrib1, datasetCollection, force, null, logger);
-
-        localState.timePartition = null;
-        if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
         logger.debug("{}: GribCollection object was recreated", getName());
       }
+      if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
+
     } catch (IOException ioe) {
       logger.error("GribFc updateCollection", ioe);
     }
@@ -291,7 +293,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String tpath = getPath()+"/"+COLLECTION;
     top.setID(tpath);
 
-    GribCollection gc = localState.timePartition == null ? localState.gribCollection : localState.timePartition;
+    GribCollection gc = localState.gribCollection;
     List<GribCollection.GroupHcs> groups = new ArrayList<>(gc.getGroups());
     Collections.sort(groups);
     boolean isSingleGroup = (groups.size() == 1);
@@ -302,7 +304,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     tmi.setTimeCoverage(extractCalendarDateRange(groups));
     tmi.setServiceName(virtualService.getName());
 
-    if (localState.timePartition == null || isFilePartition) { // are these identical ??
+    if (isGribCollection || isFilePartition) { // are these identical ??
 
       for (GribCollection.GroupHcs group : groups) {
         InvDatasetImpl ds = isSingleGroup ? top : new InvDatasetImpl(this, group.getDescription());
@@ -384,10 +386,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
       } // multiple groups
 
-        for (PartitionCollection.Partition dc : localState.timePartition.getPartitionsSorted()) {
-          String dname = dc.getName();
-          InvCatalogRef ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
-          top.addDataset(ds);
+      PartitionCollection pc =  (PartitionCollection) localState.gribCollection;
+      for (PartitionCollection.Partition dc : pc.getPartitionsSorted()) {
+        String dname = dc.getName();
+        InvCatalogRef ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
+        top.addDataset(ds);
       }
 
     }
@@ -439,7 +442,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         //return main;
       }
 
-      if (localState.timePartition == null || isFilePartition) {
+      if (isGribCollection || isFilePartition) {
         String[] path = match.split("/");
         GribCollection.GroupHcs group;
         if ((path.length == 1) && (path[0].equals(FILES))) { // single group case
@@ -455,10 +458,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       } else { // time partitions
 
         if (match.endsWith(BEST_DATASET)) {
-          return makeCatalogPartition(localState.timePartition, catURI, localState);
+          return makeCatalogPartition(localState.gribCollection, catURI, localState);
         }
 
-        PartitionCollection.Partition tpp = localState.timePartition.getPartitionByName(match);
+        PartitionCollection pc =  (PartitionCollection) localState.gribCollection;
+        PartitionCollection.Partition tpp = pc.getPartitionByName(match);
         if (tpp != null) {
           GribCollection gc = tpp.getGribCollection();
           InvCatalogImpl result = makeCatalogPartition(gc, catURI, localState);
@@ -478,7 +482,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         } */
 
         // otherwise of form <partition>/<hcs>/files eg 200808/LatLon-181X360/files
-        tpp = localState.timePartition.getPartitionByName(path[0]);
+        tpp = pc.getPartitionByName(path[0]);
         if (tpp != null) {
           InvCatalogImpl result;
           GribCollection gc = tpp.getGribCollection();
@@ -613,7 +617,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) {
     StateGrib localState = (StateGrib) checkState();
 
-    GribCollection gc = localState.timePartition == null ? localState.gribCollection : localState.timePartition;
+    GribCollection gc = localState.gribCollection;
     List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gc.getGroups());
 
     /*
@@ -624,7 +628,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (paths.length < 1) return null;
 
     try {
-      if (localState.timePartition == null || isFilePartition) {
+      if (isGribCollection || isFilePartition) {
 
         if ((paths.length == 1) && paths[0].equals(FILES)) {
           return makeLatestCatalog(gc, groups.get(0), catURI, localState);  // case 1
@@ -634,15 +638,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       } else {
 
+        PartitionCollection pc =  (PartitionCollection) localState.gribCollection;
+
         if ((paths.length == 1) && paths[0].equals(FILES)) {
-          PartitionCollection.Partition p = localState.timePartition.getPartitionLast();
+          PartitionCollection.Partition p = pc.getPartitionLast();
           GribCollection pgc = p.getGribCollection();
           InvCatalogImpl cat = makeLatestCatalog(pgc, groups.get(0), catURI, localState);  // case 1
           pgc.close();
           return cat;
 
          } if ((paths.length == 2) && paths[1].equals(FILES)) {
-           PartitionCollection.Partition p = localState.timePartition.getPartitionByName(paths[0]);
+           PartitionCollection.Partition p = pc.getPartitionByName(paths[0]);
            GribCollection pgc = p.getGribCollection();
            InvCatalogImpl cat =  makeLatestCatalog(pgc, groups.get(0), catURI, localState);  // case 3
            pgc.close();
@@ -763,7 +769,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return new ucar.nc2.dt.grid.GridDataset(ncd);
     }
 
-    if (localState.timePartition == null) { // not a time partition
+    if (isGribCollection || isFilePartition ) { // not a time partition
       return localState.gribCollection.getGridDataset(dp.group, dp.filename, gribConfig, logger);
 
     } else {
@@ -774,7 +780,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         return gd;
 
       } else {  // entire collection
-        return localState.timePartition.getGridDataset(dp.group, dp.filename, gribConfig, logger);
+        return localState.gribCollection.getGridDataset(dp.group, dp.filename, gribConfig, logger);
       }
     }
 
@@ -792,7 +798,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return NetcdfDataset.acquireDataset(null, want.getPath(), null, -1, null, gribConfig.getIospMessage());
     }
 
-    if (localState.timePartition == null) { // not a time partition
+    if (isGribCollection || isFilePartition) { // not a time partition
       return localState.gribCollection.getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 1 and 2
 
     } else {
@@ -803,7 +809,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         return gd;
 
       } else { // entire collection
-        return localState.timePartition.getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 3
+        return localState.gribCollection.getNetcdfDataset(dp.group, dp.filename, gribConfig, logger); // case 3
       }
     }
   }
@@ -835,19 +841,21 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (paths.length >= 2  && paths[0].equals(FILES))
         return new DatasetParse(matchPath.substring(paths[0].length()));  // case 7
 
-    if (localState.timePartition == null) {
+    if (isGribCollection || isFilePartition) {
       boolean isBest = paths[0].equals(BEST_DATASET) || paths[0].equals(COLLECTION);
       String groupName = isBest ? localState.gribCollection.getGroup(0).getId() : paths[0];
       return new DatasetParse(null, groupName); // case 1 and 2
 
     } else { // is a time partition
-      List<GribCollection.GroupHcs> groups = localState.timePartition.getGroups();
+      PartitionCollection pc = (PartitionCollection) localState.gribCollection;
+
+      List<GribCollection.GroupHcs> groups = localState.gribCollection.getGroups();
       boolean isSingleGroup = groups.size() == 1;
 
       if (paths.length == 1) {
         boolean isBest = paths[0].equals(BEST_DATASET) || paths[0].equals(COLLECTION);
         if (isBest) {
-          String groupName = localState.timePartition.getGroup(0).getId();
+          String groupName = localState.gribCollection.getGroup(0).getId();
           return new DatasetParse(null, groupName); // case 3
         }
       }
@@ -855,9 +863,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (paths.length == 2) {
         boolean isBest = paths[1].equals(BEST_DATASET) || paths[1].equals(COLLECTION);
         if (isSingleGroup) {
-          PartitionCollection.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
+          PartitionCollection.Partition tpp = pc.getPartitionByName(paths[0]);
           if (tpp != null)
-            return new DatasetParse(tpp, localState.timePartition.getGroup(0).getId()); // case 4 :  overall collection for partition, one group
+            return new DatasetParse(tpp, pc.getGroup(0).getId()); // case 4 :  overall collection for partition, one group
         } else {
           return new DatasetParse(null, paths[0]);  // case 5 : overall collection for group, multiple partitions
         }
@@ -865,7 +873,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       if (paths.length == 3) {
          boolean isBest = paths[2].equals(BEST_DATASET) || paths[2].equals(COLLECTION);
-         PartitionCollection.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
+         PartitionCollection.Partition tpp = pc.getPartitionByName(paths[0]);
          String groupName = paths[1];
          return new DatasetParse(tpp, groupName); // case 6
       }

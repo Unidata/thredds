@@ -176,7 +176,7 @@ public class FeatureCollectionConfig {
       this.deleteAfter = deleteAfter; // may be null
       if (startupS != null) {
         startupS = startupS.toLowerCase();
-        if (startupS.equalsIgnoreCase("test"))
+        if (startupS.equalsIgnoreCase("true"))
           this.startupUpdateType = CollectionUpdateType.test;
         else
           this.startupUpdateType = CollectionUpdateType.valueOf(startupS);

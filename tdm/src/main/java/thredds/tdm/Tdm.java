@@ -301,7 +301,7 @@ public class Tdm {
           System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
-          String path = "thredds/admin/collection/trigger?nocheck&collection=" + name;
+          String path = "thredds/admin/collection/trigger?trigger=nocheck&collection=" + name;
           sendTriggers(path, errlog);
         }
         errlog.format("**** TimePartitionBuilder.factory complete %s%n", name);

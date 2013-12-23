@@ -42,8 +42,8 @@ package thredds.inventory;
  * @since 12/23/13
  */
 public enum CollectionUpdateType {
-  always,  // force new index
-  test,    // test if new index is needed
-  nocheck, // if index exists, use it
-  never   // only use existing
+  always,   // force new index, scanning files and directories as needed
+  test,     // test if new index is needed, scanning files and directories as needed
+  nocheck,  // if index exists, use it, otherwise create it
+  never     // only use existing, fail if doesnt already exist
 }
