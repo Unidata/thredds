@@ -34,6 +34,7 @@ package ucar.nc2.grib.grib1;
 
 import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -72,7 +73,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
 
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
+        GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionUpdateType.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
         iosp.setLookupTablePath(gribConfig.lookupTablePath);
@@ -103,7 +104,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
+        GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionUpdateType.nocheck, gribConfig, logger);  // LOOK thread-safety : creating ncx
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
         iosp.setLookupTablePath(gribConfig.lookupTablePath);

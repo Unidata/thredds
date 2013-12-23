@@ -370,7 +370,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     if (map == null) {
       boolean changed = scanFirstTime();
       if (changed && sendEvent)
-        sendEvent(new TriggerEvent(this, TriggerType.update));  // watch out for infinite loop
+        sendEvent(new TriggerEvent(this, CollectionUpdateType.always));  // watch out for infinite loop
       return changed;
     }
 
@@ -437,7 +437,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
 
     if (changed && sendEvent) {  // event is processed on this thread
-      sendEvent(new TriggerEvent(this, TriggerType.update));  // watch out for infinite loop
+      sendEvent(new TriggerEvent(this, CollectionUpdateType.always));  // watch out for infinite loop
     }
 
     return changed;

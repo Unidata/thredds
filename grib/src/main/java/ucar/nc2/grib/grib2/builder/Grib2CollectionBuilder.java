@@ -66,13 +66,13 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   static public boolean update(MCollection dcm, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     if (!builder.needsUpdate()) return false;
-    builder.readOrCreateIndex(CollectionManager.Force.always);
+    builder.readOrCreateIndex(CollectionUpdateType.always);
     builder.gc.close();
     return true;
   }
 
   // from a single file, read in the index, create if it doesnt exist
-  static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionManager.Force force, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionUpdateType force, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, config, logger);
     builder.readOrCreateIndex(force);
     return builder.gc;
@@ -86,7 +86,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    * @return GribCollection
    * @throws IOException on IO error
    */
-  static public GribCollection factory(MCollection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection factory(MCollection dcm, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     builder.readOrCreateIndex(force);
     return builder.gc;
@@ -152,10 +152,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   // read or create index
-  private void readOrCreateIndex(CollectionManager.Force ff) throws IOException {
+  private void readOrCreateIndex(CollectionUpdateType ff) throws IOException {
 
     // force new index or test for new index needed
-    boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate()));
+    boolean force = ((ff == CollectionUpdateType.always) || (ff == CollectionUpdateType.test && needsUpdate()));
 
     // otherwise, we're good as long as the index file exists
     File idx = gc.getIndexFile();
@@ -266,7 +266,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     for (MFile mfile : dcm.getFilesSorted()) { // LOOK do we need sorted ??
       Grib2Index index;
       try {                  // LOOK here is where gbx9 files get recreated
-        index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, !isSingleFile, mfile, config, CollectionManager.Force.test, logger);
+        index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, !isSingleFile, mfile, config, CollectionUpdateType.test, logger);
         allFiles.add(mfile);  // add on success
 
       } catch (IOException ioe) {

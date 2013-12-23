@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.Attribute;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -131,7 +132,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   } */
 
   @Override
-  public void updateCollection(State localState, CollectionManager.Force force) {
+  public void updateCollection(State localState, CollectionUpdateType force) {
     try {
       ((UpdateableCollection)fd).update();
     } catch (IOException e) {

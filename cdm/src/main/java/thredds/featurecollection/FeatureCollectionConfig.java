@@ -34,7 +34,7 @@ package thredds.featurecollection;
 
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
@@ -163,7 +163,7 @@ public class FeatureCollectionConfig {
     public String rescan;
     public boolean triggerOk;
     public boolean startup;
-    public CollectionManager.Force startupForce;
+    public CollectionUpdateType startupUpdateType = CollectionUpdateType.nocheck;
     public String deleteAfter = null;
 
     public UpdateConfig() { // defaults
@@ -175,11 +175,12 @@ public class FeatureCollectionConfig {
       if (rescan != null) this.recheckAfter = null;               // both not allowed
       this.deleteAfter = deleteAfter; // may be null
       if (startupS != null) {
-        if (startupS.equalsIgnoreCase("true") || startupS.equalsIgnoreCase("test"))
-          this.startupForce = CollectionManager.Force.test;
-        else if (startupS.equalsIgnoreCase("nocheck"))
-          this.startupForce = CollectionManager.Force.nocheck;
-        startup = (this.startupForce != null);
+        startupS = startupS.toLowerCase();
+        if (startupS.equalsIgnoreCase("test"))
+          this.startupUpdateType = CollectionUpdateType.test;
+        else
+          this.startupUpdateType = CollectionUpdateType.valueOf(startupS);
+        startup = (this.startupUpdateType != null);
       }
       if (triggerS != null)
         this.triggerOk = triggerS.equalsIgnoreCase("allow");
@@ -597,7 +598,7 @@ public class FeatureCollectionConfig {
   }
 
   private static class TimeUnitConverterHash implements TimeUnitConverter {
-    Map<Integer, Integer> map = new HashMap<Integer, Integer>(5);
+    Map<Integer, Integer> map = new HashMap<>(5);
 
     public int convertTimeUnit(int timeUnit) {
       if (map == null) return timeUnit;

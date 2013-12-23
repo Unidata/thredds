@@ -155,25 +155,28 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   // events; keep the code from getting too coupled
 
   @Override
-  public void sendEvent(TriggerType event) {
-    switch (event) {
+  public void sendEvent(CollectionUpdateType type) {
+    sendEvent(new TriggerEvent(this, type));
+  }
+
+  /*  switch (type) {
       case update:
         try {
-          scan(true);
+          scan(true);    // LOOK
         } catch (IOException e) {
           logger.error("Error on scan", e);
         }
         break;
 
       case updateNocheck:
-        sendEvent(new TriggerEvent(this, TriggerType.updateNocheck));
+        sendEvent(new TriggerEvent(this, type));
         break;
 
       case resetProto:
         sendEvent(new TriggerEvent(this, TriggerType.resetProto));
         break;
     }
-  }
+  } */
 
   void sendEvent(TriggerEvent event) {
     if (lm != null)

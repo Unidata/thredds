@@ -34,6 +34,7 @@ package ucar.nc2.grib.grib1;
 
 import thredds.catalog.DataFormatType;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
@@ -137,7 +138,7 @@ public class Grib1Iosp extends GribIosp {
     // create the gbx9 index file if not already there
     boolean isGrib = (raf != null) && Grib1RecordScanner.isValidFile(raf);
     if (isGrib) {
-      this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(true, raf, gribConfig, CollectionManager.Force.test, logger);
+      this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(true, raf, gribConfig, CollectionUpdateType.test, logger);
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
     }
 

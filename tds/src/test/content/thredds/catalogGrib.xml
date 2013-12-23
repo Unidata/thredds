@@ -46,7 +46,7 @@
         dateFormatMark="#NDFD_CONUS_5km_#yyyyMMdd_HHmm"
         timePartition="file" />
 
-    <update startup="never" trigger="allow"/>
+    <update startup="test" trigger="allow"/>
     <tdm startup="true" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
 
     <gribConfig datasetTypes="TwoD LatestFile Files">

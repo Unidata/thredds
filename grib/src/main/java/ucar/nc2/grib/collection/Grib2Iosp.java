@@ -34,6 +34,7 @@ package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.sparr.Coordinate;
 import ucar.ma2.*;
@@ -317,7 +318,7 @@ public class Grib2Iosp extends GribIosp {
 
     boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
     if (isGribFile) {
-      this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(false, raf, gribConfig, CollectionManager.Force.test, null, logger);
+      this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(false, raf, gribConfig, CollectionUpdateType.test, null, logger);
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
     }
 

@@ -3,6 +3,7 @@ package ucar.nc2.grib.collection;
 import net.jcip.annotations.Immutable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
@@ -157,7 +158,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
    * @throws IOException on io error
    */
   public static GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
-            CollectionManager.Force force, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+            CollectionUpdateType force, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index();
 
@@ -195,18 +196,18 @@ public class GribCollection implements FileCacheable, AutoCloseable {
    * @return GribCollection
    * @throws IOException on io error
    */
-  static public GribCollection factory(boolean isGrib1, MCollection dcm, CollectionManager.Force force,
+  static public GribCollection factory(boolean isGrib1, MCollection dcm, CollectionUpdateType force,
                                        Formatter errlog, org.slf4j.Logger logger) throws IOException {
     /* if (isGrib1) {
       if (dcm.isPartition())
-        if (force == CollectionManager.Force.never) {  // not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
+        if (force == CollectionUpdateType.never) {  // not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
           FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
           return Grib1TimePartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
         } else {
           return Grib1TimePartitionBuilder.factory(dcm, force, logger);
         }
       else
-      if (force == CollectionManager.Force.never) {
+      if (force == CollectionUpdateType.never) {
         FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
         return Grib1CollectionBuilderFromIndex.createFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
       } else {
@@ -216,14 +217,14 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
     // grib2
     if (dcm.isPartition()) {
-      if (force == CollectionManager.Force.never) {  // not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
+      if (force == CollectionUpdateType.never) {  // not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex
         FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
         return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
       } else {
         return Grib2PartitionBuilder.factory( dcm, force, errlog, logger);
       }
     } else {
-      if (force == CollectionManager.Force.never) {
+      if (force == CollectionUpdateType.never) {
         FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
         return Grib2CollectionBuilderFromIndex.readFromIndex(dcm.getCollectionName(), new File(dcm.getRoot()), config, logger);
       } else {

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
@@ -70,7 +71,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public void update(CollectionManager.Force force) {
+  public void update(CollectionUpdateType force) {
     fmrc.update();       // so when is work done?
   }
 
@@ -80,7 +81,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   }
 
   @Override
-  protected void updateCollection(State localState, CollectionManager.Force force) {  // LOOK probably not right
+  protected void updateCollection(State localState, CollectionUpdateType force) {  // LOOK probably not right
     try {
       fmrc.update();
 

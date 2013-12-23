@@ -2,6 +2,7 @@ package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.partition.PartitionManager;
 import ucar.nc2.time.CalendarDate;
@@ -57,7 +58,7 @@ public class PartitionCollection extends GribCollection {
   }
 
   // called by InvDatasetFcGrib
-  static public PartitionCollection factory(boolean isGrib1, PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public PartitionCollection factory(boolean isGrib1, PartitionManager tpc, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
     //if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, logger);
     return Grib2PartitionBuilder.factory(tpc, force, force, null, logger);
   }
@@ -255,7 +256,7 @@ public class PartitionCollection extends GribCollection {
       this.directory = dcm.getRoot();
     }
 
-    public GribCollection makeGribCollection(CollectionManager.Force force) throws IOException {
+    public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
       GribCollection result = GribCollection.factory(isGrib1, dcm, force, null, logger); // LOOK caller must close
       indexFilename = result.getIndexFile().getPath();
       return result;

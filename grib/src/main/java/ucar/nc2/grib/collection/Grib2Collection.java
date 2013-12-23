@@ -34,6 +34,7 @@ package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -67,7 +68,7 @@ public class Grib2Collection extends GribCollection {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
+        GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
         Grib2Iosp iosp = new Grib2Iosp(gc);
         NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
         return new NetcdfDataset(ncfile);
@@ -90,7 +91,7 @@ public class Grib2Collection extends GribCollection {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionManager.Force.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
+        GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
         NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);

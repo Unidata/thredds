@@ -167,7 +167,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   /* @Override
-  public void update(CollectionManager.Force force) {  // this may be called from a background thread
+  public void update(CollectionUpdateType force) {  // this may be called from a background thread
     // deal with the first call
     boolean firstTime;
     synchronized (lock) {
@@ -182,7 +182,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return;
     }
 
-    /* if (force == CollectionManager.Force.nocheck) {
+    /* if (force == CollectionUpdateType.nocheck) {
       // we need to update the dcm without triggering an index rewrite
       try {
         dcm.scan(false);
@@ -235,8 +235,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       // if there is no update config, assume static, and try to skip checking for changes. got that?
       // major crapola
       // boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
-      //CollectionManager.Force ff = (tdsUsingTdm || datasetCollection.isStatic()) ? CollectionManager.Force.nocheck : CollectionManager.Force.test;
-      CollectionManager.Force ff = CollectionManager.Force.nocheck;
+      //CollectionUpdateType ff = (tdsUsingTdm || datasetCollection.isStatic()) ? CollectionUpdateType.nocheck : CollectionUpdateType.test;
+      CollectionUpdateType ff = CollectionUpdateType.nocheck;
 
       // update local copy of state, then switch all at once
       StateGrib localState = new StateGrib((StateGrib) state);
@@ -253,7 +253,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   } */
 
   @Override
-  protected void updateCollection(State state, CollectionManager.Force force) {
+  protected void updateCollection(State state, CollectionUpdateType force) {
     try {
       StateGrib localState = (StateGrib) state;
       if (isFilePartition || isDirectoryPartition || isOtherPartition) {

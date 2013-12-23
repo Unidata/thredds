@@ -262,7 +262,7 @@ public class Tdm {
     }
 
     @Override
-    public void sendEvent(TriggerType event) {
+    public void sendEvent(CollectionUpdateType event) {
       if (!inUse.compareAndSet(false, true)) return; // if already working, skip another execution
       executor.execute(new IndexTask(config, this, logger));
     }
@@ -290,7 +290,7 @@ public class Tdm {
       try {
         Formatter errlog = new Formatter();
 
-        boolean changed = GribCdmIndex2.rewriteFilePartition(config, CollectionManager.Force.test, CollectionManager.Force.test, logger);
+        boolean changed = GribCdmIndex2.rewriteFilePartition(config, CollectionUpdateType.test, CollectionUpdateType.test, logger);
 
         // delete any files first
         //if (config.tdmConfig.deleteAfter != null) {

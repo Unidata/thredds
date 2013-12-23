@@ -232,16 +232,16 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   @Override
   // DatasetCollectionManager was changed asynchronously
-  public void sendEvent(TriggerType event) {
+  public void sendEvent(CollectionUpdateType type) {
+    update(type);
 
-    if (event == CollectionUpdateListener.TriggerType.updateNocheck)
-      update(CollectionManager.Force.never);
+/*     if (event == CollectionUpdateListener.TriggerType.updateNocheck)
 
     else if (event == CollectionUpdateListener.TriggerType.update)
       update(CollectionManager.Force.always);
 
     else if (event == CollectionUpdateListener.TriggerType.resetProto)
-      updateProto();
+      updateProto();  */
   }
 
   /**
@@ -250,7 +250,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    */
   abstract protected void updateProto();
 
-  abstract protected void updateCollection(State localState, CollectionManager.Force force);
+  abstract protected void updateCollection(State localState, CollectionUpdateType force);
 
   abstract protected void makeDatasetTop(State localState);
 
@@ -282,7 +282,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     synchronized (lock) {
       if (first) {
         firstInit();
-        updateCollection(state, CollectionManager.Force.never);
+        updateCollection(state, config.updateConfig.startupUpdateType);
         makeDatasetTop(state);
         first = false;
       }
@@ -298,7 +298,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * @param force test : update index if anything changed or nocheck - use index if it exists
    */
   //abstract public void update(CollectionManager.Force force);
-  protected void update(CollectionManager.Force force) {  // this may be called from a background thread
+  protected void update(CollectionUpdateType force) {  // this may be called from a background thread
     synchronized (lock) {
       if (first) {
         firstInit();

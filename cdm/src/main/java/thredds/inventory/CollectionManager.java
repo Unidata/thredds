@@ -81,10 +81,10 @@ The XML Schema:
  */
 public interface CollectionManager extends MCollection, CollectionUpdateListener {
 
-  public enum Force {always,  // force new index
+  /* public enum Force {always,  // force new index
                      test,    // test if new index is needed
                      nocheck, // if index exists, use it
-                     never }  // only use existing
+                     never }  // only use existing  */
 
 
 
@@ -171,14 +171,14 @@ public interface CollectionManager extends MCollection, CollectionUpdateListener
   }
 
   public class TriggerEvent extends java.util.EventObject {
-     private final TriggerType type;
+     private final CollectionUpdateType type;
 
-     TriggerEvent(Object source, TriggerType type) {
+     TriggerEvent(Object source, CollectionUpdateType type) {
        super(source);
        this.type = type;
      }
 
-     public TriggerType getType() {
+     public CollectionUpdateType getType() {
        return type;
      }
 

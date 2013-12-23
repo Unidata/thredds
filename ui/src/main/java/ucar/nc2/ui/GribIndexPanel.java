@@ -153,7 +153,7 @@ public class GribIndexPanel extends JPanel {
       filename = filename.substring(0, filename.length()-GribIndex.GBX9_IDX.length());
 
     Grib1Index g1idx =  new Grib1Index();
-    g1idx.readIndex(filename, 0, thredds.inventory.CollectionManager.Force.nocheck);
+    g1idx.readIndex(filename, 0, thredds.inventory.CollectionUpdateType.nocheck);
 
     java.util.List<RecordBean> records = new ArrayList<RecordBean>();
      for (Grib1Record gr : g1idx.getRecords())
@@ -166,7 +166,7 @@ public class GribIndexPanel extends JPanel {
       filename = filename.substring(0, filename.length()-GribIndex.GBX9_IDX.length());
 
     Grib2Index g2idx =  new Grib2Index();
-    g2idx.readIndex(filename, 0, thredds.inventory.CollectionManager.Force.nocheck);
+    g2idx.readIndex(filename, 0, thredds.inventory.CollectionUpdateType.nocheck);
 
     java.util.List<RecordBean> records = new ArrayList<RecordBean>();
      for (Grib2Record gr : g2idx.getRecords())

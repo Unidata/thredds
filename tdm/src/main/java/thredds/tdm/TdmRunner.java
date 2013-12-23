@@ -216,7 +216,7 @@ public class TdmRunner {
           Formatter f = new Formatter();
           try {
             // always = "we know collection has changed, dont test again"
-            TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, logger);
+            TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionUpdateType.always, logger);
             tp.close();
             if (config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
               String path = "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
@@ -232,7 +232,7 @@ public class TdmRunner {
           logger.debug("**** running GribCollectionBuilder.factory {} Thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
-            GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, logger);
+            GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionUpdateType.always, logger);
             gc.close();
             if (config.tdmConfig.triggerOk && sendTriggers) { // LOOK is there any point if you dont have trigger = true ?
               String path = "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
@@ -356,7 +356,7 @@ public class TdmRunner {
 
     @Override
     public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
-      if (event.getType() != CollectionManager.TriggerType.update) return;
+      if (event.getType() != CollectionUpdateType.always) return;
 
       // make sure that each collection is only being indexed by one thread at a time
       if (inUse.get()) {

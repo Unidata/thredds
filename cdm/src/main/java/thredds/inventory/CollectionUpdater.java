@@ -167,14 +167,14 @@ public enum CollectionUpdater {
     if (updateConfig.startup) {
       Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
       SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
-              .withIdentity(jobName, updateConfig.startupForce.toString())
+              .withIdentity(jobName, updateConfig.startupUpdateType.toString())
               .startAt(runTime)
               .forJob(updateJob)
               .build();
 
       try {
     	   scheduler.scheduleJob(startupTrigger);
-        if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupForce.toString(), config.name, runTime);
+        if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupUpdateType.toString(), config.name, runTime);
       } catch (SchedulerException e) {
         if (logger != null)logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
@@ -239,9 +239,9 @@ public enum CollectionUpdater {
   }
 
   // Called by TDS collectionController when trigger is received externally
-  public void triggerUpdate(String collectionName, String triggerType) {
+  public void triggerUpdate(String collectionName, CollectionUpdateType triggerType) {
     Trigger trigger = TriggerBuilder.newTrigger()
-            .withIdentity(collectionName+"-trigger", triggerType)
+            .withIdentity(collectionName+"-trigger", triggerType.toString()) // dorky
             .forJob(collectionName, "UpdateCollection") // ??
             .startNow()
             .build();
@@ -266,13 +266,14 @@ public enum CollectionUpdater {
 
       try {
         String groupName = context.getTrigger().getKey().getGroup();
-        if (groupName.equals("nocheck")) {
-          if (loggerfc != null) loggerfc.info("UpdateCollection {} updateNocheck", manager.getCollectionName());
-          manager.sendEvent(CollectionUpdateListener.TriggerType.updateNocheck);
-        } else {
-          if (loggerfc != null) loggerfc.debug("UpdateCollection {} update", manager.getCollectionName());
-          manager.sendEvent(CollectionUpdateListener.TriggerType.update);
+        CollectionUpdateType type = CollectionUpdateType.valueOf(groupName);
+        if (type == null) {
+          if (loggerfc != null) loggerfc.error("UpdateCollectionJob {} bad trigger type {}" + manager.getCollectionName(), groupName);
+          return;
         }
+
+        manager.sendEvent(type);
+
       } catch (Throwable e) {
         if (loggerfc != null) loggerfc.error("UpdateCollectionJob.execute failed collection=" + manager.getCollectionName(), e);
       }
@@ -289,7 +290,7 @@ public enum CollectionUpdater {
 
       try {
         if (loggerfc != null) loggerfc.info("ResetProto for {}", manager.getCollectionName());
-        manager.sendEvent(CollectionUpdateListener.TriggerType.resetProto);
+        // manager.sendEvent(CollectionUpdateListener.TriggerType.resetProto);
       } catch (Throwable e) {
         if (loggerfc != null) loggerfc.error("ChangeProtoJob.execute failed collection=" + manager.getCollectionName(), e);
       }

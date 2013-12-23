@@ -276,7 +276,7 @@ public class DirectoryPartitionViewer extends JPanel {
            final List<GribCollection> gclist = new ArrayList<>();
            for (TimePartition.Partition tpp : tp.getPartitions()) {
              try {
-               GribCollection gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists
+               GribCollection gc = tpp.makeGribCollection(CollectionUpdateType.nocheck);    // use index if it exists
                gclist.add(gc);
                gc.close(); // ??
 

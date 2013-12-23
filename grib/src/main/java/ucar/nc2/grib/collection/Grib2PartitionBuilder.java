@@ -3,6 +3,7 @@ package ucar.nc2.grib.collection;
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
@@ -31,13 +32,13 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   static public boolean update(PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     if (!builder.needsUpdate()) return false;
-    builder.readOrCreateIndex(CollectionManager.Force.always, CollectionManager.Force.test, null);
+    builder.readOrCreateIndex(CollectionUpdateType.always, CollectionUpdateType.test, null);
     builder.gc.close();
     return true;
   }
 
   // read in the index, create if it doesnt exist or is out of date (depends on force)
-  static public Grib2Partition factory(PartitionManager tpc, CollectionManager.Force forcePartition, CollectionManager.Force forceChildren,
+  static public Grib2Partition factory(PartitionManager tpc, CollectionUpdateType forcePartition, CollectionUpdateType forceChildren,
                                        Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.readOrCreateIndex(forcePartition, forceChildren, errlog);
@@ -45,7 +46,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   }
 
   // recreate if partition doesnt exist or is out of date (depends on force). return true if it was recreated
-  static public boolean recreateIfNeeded(PartitionManager tpc, CollectionManager.Force forcePartition, CollectionManager.Force forceChildren,
+  static public boolean recreateIfNeeded(PartitionManager tpc, CollectionUpdateType forcePartition, CollectionUpdateType forceChildren,
                                        Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     boolean recreated = builder.readOrCreateIndex(forcePartition, forceChildren, errlog);
@@ -79,15 +80,15 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   }
 
   // return true if the partition was recreated
-  private boolean readOrCreateIndex(CollectionManager.Force forcePartition, CollectionManager.Force forceChildren, Formatter errlog) throws IOException {
+  private boolean readOrCreateIndex(CollectionUpdateType forcePartition, CollectionUpdateType forceChildren, Formatter errlog) throws IOException {
     File idx = gc.getIndexFile();
 
     // force new index or test for new index needed
-    boolean force = ((forcePartition == CollectionManager.Force.always) || (forcePartition == CollectionManager.Force.test && needsUpdate(idx.lastModified())));
+    boolean force = ((forcePartition == CollectionUpdateType.always) || (forcePartition == CollectionUpdateType.test && needsUpdate(idx.lastModified())));
 
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath())) {
-      if (forcePartition == CollectionManager.Force.never) throw new IOException("failed to read "+idx.getPath());
+      if (forcePartition == CollectionUpdateType.never) throw new IOException("failed to read "+idx.getPath());
 
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
       if (createPartitionedIndex(forceChildren, errlog)) {  // write index
@@ -125,7 +126,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   ///////////////////////////////////////////////////
   // create the index
 
-  private boolean createPartitionedIndex(CollectionManager.Force forceChildren, Formatter errlog) throws IOException {
+  private boolean createPartitionedIndex(CollectionUpdateType forceChildren, Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
     if (errlog == null) errlog = new Formatter(); // info will be discarded
 

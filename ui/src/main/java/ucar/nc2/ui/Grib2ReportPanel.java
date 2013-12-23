@@ -7,10 +7,8 @@ import org.jdom2.output.Format;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import thredds.inventory.CollectionManager;
+import thredds.inventory.*;
 import thredds.inventory.MCollection;
-import thredds.inventory.MCollection;
-import thredds.inventory.MFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -529,7 +527,7 @@ public class Grib2ReportPanel extends ReportPanel {
     Grib2Index index = createIndex(ff, fm);
     if (index == null) return;
 
-    GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(ff, CollectionManager.Force.nocheck, null, logger);
+    GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(ff, CollectionUpdateType.nocheck, null, logger);
     gc.close();
 
     GridDataset ncfile = null;

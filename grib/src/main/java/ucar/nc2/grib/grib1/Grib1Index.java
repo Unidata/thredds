@@ -34,6 +34,7 @@ package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribIndex;
@@ -107,14 +108,14 @@ public class Grib1Index extends GribIndex {
   }
 
   public boolean readIndex(String filename, long gribLastModified) throws IOException {
-    return readIndex(filename, gribLastModified, CollectionManager.Force.test);
+    return readIndex(filename, gribLastModified, CollectionUpdateType.test);
   }
 
-  public boolean readIndex(String filename, long gribLastModified, CollectionManager.Force force) throws IOException {
+  public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) throws IOException {
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
     if (!idxFile.exists()) return false;
     long idxModified = idxFile.lastModified();
-    if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
+    if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
     FileInputStream fin = new FileInputStream(idxFile);
 

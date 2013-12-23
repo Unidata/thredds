@@ -35,6 +35,7 @@ package ucar.nc2.grib;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1Index;
@@ -94,7 +95,7 @@ public abstract class GribIndex {
    * @throws IOException on io error
    */
   public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, boolean createCollectionIndex,
-         MFile mfile, FeatureCollectionConfig.GribConfig config, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+         MFile mfile, FeatureCollectionConfig.GribConfig config, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
 
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
 
@@ -127,7 +128,7 @@ public abstract class GribIndex {
    * @return true if index was successfully read, false if index must be (re)created
    * @throws IOException on io error
    */
-  public abstract boolean readIndex(String location, long dataModified, CollectionManager.Force force) throws IOException;
+  public abstract boolean readIndex(String location, long dataModified, CollectionUpdateType force) throws IOException;
 
   /**
    * Make the gbx9 index file.

@@ -7,9 +7,9 @@ package thredds.inventory;
  * @since 11/20/13
  */
 public interface CollectionUpdateListener {
-  public enum TriggerType {updateNocheck, update, resetProto }
+  //public enum TriggerType {updateNocheck, update, resetProto}
 
   public String getCollectionName();
 
-  public void sendEvent(TriggerType event);
+  public void sendEvent(CollectionUpdateType type);
 }

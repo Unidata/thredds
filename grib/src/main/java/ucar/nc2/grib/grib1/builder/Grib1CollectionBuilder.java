@@ -62,7 +62,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   public static final String MAGIC_START = "Grib1CollectionIndex";
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
-  static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionManager.Force force,
+  static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionUpdateType force,
                                                                FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(file, config, logger);
     builder.readOrCreateIndex(force);
@@ -73,14 +73,14 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   static public boolean update(CollectionManager dcm, org.slf4j.Logger logger) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm, logger);
     if (!builder.needsUpdate()) return false;
-    builder.readOrCreateIndex(CollectionManager.Force.always);
+    builder.readOrCreateIndex(CollectionUpdateType.always);
     builder.gc.close();
     return true;
   }
 
   // from a collection, read in the index, create if it doesnt exist or is out of date
   // assume that the CollectionManager is up to date, eg doesnt need to be scanned
-  static public GribCollection factory(MCollection dcm, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public GribCollection factory(MCollection dcm, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm, logger);
     builder.readOrCreateIndex(force);
     return builder.gc;
@@ -143,10 +143,10 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
 
   // read or create index
-  private void readOrCreateIndex(CollectionManager.Force ff) throws IOException {
+  private void readOrCreateIndex(CollectionUpdateType ff) throws IOException {
 
     // force new index or test for new index needed
-    boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate()));
+    boolean force = ((ff == CollectionUpdateType.always) || (ff == CollectionUpdateType.test && needsUpdate()));
 
     // otherwise, we're good as long as the index file exists
     File idx = gc.getIndexFile(); // LOOK problem - index exists but its out of date - trigger rewrite, but not writeable.
@@ -258,7 +258,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
       Grib1Index index;
       try {
-        index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, !isSingleFile, mfile, config, CollectionManager.Force.test, logger);
+        index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, !isSingleFile, mfile, config, CollectionUpdateType.test, logger);
         files.add(mfile);  // only add on success
 
       } catch (IOException ioe) {

@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.CollectionUpdater;
 import thredds.inventory.MFile;
 import thredds.monitor.FmrcCacheMonitorImpl;
@@ -42,7 +43,7 @@ public class CollectionController  {
   private static final String PATH = "/admin/collection";
   private static final String COLLECTION = "collection";
   private static final String TRIGGER = "trigger";
-  private static final String NOCHECK = "nocheck";
+  // private static final String NOCHECK = "nocheck";
   
   @Autowired
   private TdsContext tdsContext;
@@ -148,12 +149,18 @@ public class CollectionController  {
 
     // find the collection
     String collectName = req.getParameter(COLLECTION);
-    boolean trigger = false;
-    boolean nocheck = false;
+    CollectionUpdateType type = null;
     if (path.equals("/"+COLLECTION+"/"+TRIGGER)) {
-      trigger = true;
-      nocheck = req.getParameter(NOCHECK) != null;
+      String triggerType = req.getParameter(TRIGGER);
+      type = CollectionUpdateType.valueOf(triggerType);
+      if (type == null) {
+        res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        pw.printf(" TRIGGER Type %s not legal%n", triggerType);
+        pw.flush();
+        return null;
+      }
     }
+
     InvDatasetFeatureCollection fc = DataRootHandler.getInstance().getFeatureCollection(collectName);
     if (fc == null) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -165,7 +172,7 @@ public class CollectionController  {
     CollectionManager dcm = fc.getDatasetCollectionManager();
     pw.printf("<h3>Collection Name %s</h3>%n", dcm.getCollectionName());
 
-    if (trigger) {
+    if (type != null) {
       if (!fc.getConfig().isTrigggerOk()) {
         res.setStatus(HttpServletResponse.SC_FORBIDDEN);
         pw.printf(" TRIGGER NOT ENABLED%n");
@@ -173,7 +180,7 @@ public class CollectionController  {
         return null;
       }
 
-      CollectionUpdater.INSTANCE.triggerUpdate(dcm.getCollectionName(), nocheck ? NOCHECK : TRIGGER);
+      CollectionUpdater.INSTANCE.triggerUpdate(dcm.getCollectionName(), type);
       pw.printf(" TRIGGER SENT%n");
 
     } else {

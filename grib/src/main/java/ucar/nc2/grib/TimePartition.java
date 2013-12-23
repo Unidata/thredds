@@ -91,7 +91,7 @@ public abstract class TimePartition extends GribCollection {
     return Grib2TimePartitionBuilder.update(tpc, logger);
   }
 
-  static public TimePartition factory(boolean isGrib1, PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public TimePartition factory(boolean isGrib1, PartitionManager tpc, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
     if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, logger);
     return Grib2TimePartitionBuilder.factory(tpc, force, logger);
   }
@@ -180,7 +180,7 @@ public abstract class TimePartition extends GribCollection {
       this.directory = dcm.getRoot();
     }
 
-    public GribCollection makeGribCollection( CollectionManager.Force force) throws IOException {
+    public GribCollection makeGribCollection( CollectionUpdateType force) throws IOException {
       GribCollection result = GribCollection.factory(isGrib1, dcm, force, logger); // LOOK caller must close
       indexFilename = result.getIndexFile().getPath();
       return result;

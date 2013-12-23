@@ -65,13 +65,13 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   static public boolean update(PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     if (!builder.needsUpdate()) return false;
-    builder.readOrCreateIndex(CollectionManager.Force.always);
+    builder.readOrCreateIndex(CollectionUpdateType.always);
     builder.gc.close();
     return true;
   }
 
   // read in the index, create if it doesnt exist or is out of date
-  static public Grib2TimePartition factory(PartitionManager tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+  static public Grib2TimePartition factory(PartitionManager tpc, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     builder.readOrCreateIndex(force);
     return builder.tp;
@@ -92,7 +92,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
    * @return true if index was written
    * @throws IOException on error
    * <p/>
-   * static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionManager.Force force, org.slf4j.Logger logger) throws IOException {
+   * static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
    * Grib2TimePartitionBuilder builder = null;
    * try {
    * builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
@@ -122,11 +122,11 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     this.tpc = tpc;
   }
 
-  private boolean readOrCreateIndex(CollectionManager.Force ff) throws IOException {
+  private boolean readOrCreateIndex(CollectionUpdateType ff) throws IOException {
     File idx = gc.getIndexFile();
 
     // force new index or test for new index needed
-    boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate(idx.lastModified())));
+    boolean force = ((ff == CollectionUpdateType.always) || (ff == CollectionUpdateType.test && needsUpdate(idx.lastModified())));
 
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath())) {
@@ -186,7 +186,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     List<TimePartition.Partition> bad = new ArrayList<>();
     for (TimePartition.Partition tpp : tp.getPartitions()) {
       try {
-        tpp.gc = tpp.makeGribCollection(CollectionManager.Force.nocheck);    // use index if it exists  LOOK force ??
+        tpp.gc = tpp.makeGribCollection(CollectionUpdateType.nocheck);    // use index if it exists  LOOK force ??
         if (trace) logger.debug(" Open partition {}", tpp.getDcm().getCollectionName());
       } catch (Throwable t) {
         logger.error(" Failed to open partition " + tpp.getName(), t);
