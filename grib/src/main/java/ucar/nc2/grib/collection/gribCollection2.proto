@@ -81,7 +81,7 @@ message Group {
   repeated int32 fileno = 7;          // the component files that are in this group, index into gc.files
 
   // partitions
-  repeated uint32 run2part = 10; // partitions only: run index to partition index map
+  repeated uint32 run2part = 10;    // partitions only: run index to partition index map
 }
 
 message Dataset {
@@ -107,7 +107,7 @@ message GribCollectionIndex {
   required int32 master = 8;
   required int32 local = 9;       // grib1 table Version
 
-  optional int32 genProcessType = 10;   // why ??
+  optional int32 genProcessType = 10;   // assume constant for all records
   optional int32 genProcessId = 11;
   optional int32 backProcessId = 12;
 

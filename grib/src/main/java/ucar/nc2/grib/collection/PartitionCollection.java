@@ -314,7 +314,7 @@ public class PartitionCollection extends GribCollection {
         p.gribCollection.close();
   } */
 
-
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
   // read from index
   public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi, List<GribCollectionProto.PartVar> parts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(vi);

@@ -33,8 +33,10 @@
 package ucar.nc2.dataset;
 
 import ucar.ma2.*;
+import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CF;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,7 +53,11 @@ import java.util.List;
 public class CoordinateAxis2D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
   static private final boolean debug = false;
-  
+
+  private ArrayDouble.D2 coords = null;
+  private boolean wasBoundsDone = false;
+  private boolean isInterval = false;
+
   /**
    * Create a 2D coordinate axis from an existing VariableDS
    * @param ncd the containing dataset
@@ -73,11 +79,10 @@ public class CoordinateAxis2D extends CoordinateAxis {
    *  @return midpoint.get( j,i).
    */
   public double getCoordValue(int j, int i) {
-    if (midpoint == null) doRead();
-    return midpoint.get( j, i);
+    if (coords == null) doRead();
+    return coords.get( j, i);
   }
 
-  private ArrayDouble.D2 midpoint = null;
   private void doRead() {
     Array data;
     try {
@@ -89,16 +94,21 @@ public class CoordinateAxis2D extends CoordinateAxis {
     }
 
 
-    data = data.reduce();
+    // data = data.reduce();
     if (data.getRank() != 2)
       throw new IllegalArgumentException("must be 2D");
     if (debug)
       System.out.printf("Coordinate2D read%n");
 
-    midpoint = (ArrayDouble.D2) Array.factory(double.class, data.getShape(), data.get1DJavaArray( double.class) );
+    coords = (ArrayDouble.D2) Array.factory(double.class, data.getShape(), data.get1DJavaArray( double.class) );
 
     if (this.axisType == AxisType.Lon)
-      makeConnectedLon(midpoint);
+      makeConnectedLon(coords);
+  }
+
+  public boolean isInterval() {
+    if (!wasBoundsDone) makeBounds();
+    return isInterval;
   }
 
   private void makeConnectedLon(ArrayDouble.D2 mid) {
@@ -146,10 +156,10 @@ public class CoordinateAxis2D extends CoordinateAxis {
    *  @exception UnsupportedOperationException if !isNumeric()
    */
   public double[] getCoordValues() {
-    if (midpoint == null) doRead();
+    if (coords == null) doRead();
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis2D.getCoordValues() on non-numeric");
-    return (double[]) midpoint.get1DJavaArray( double.class);
+    return (double[]) coords.get1DJavaArray( double.class);
   }
 
   /**
@@ -163,12 +173,29 @@ public class CoordinateAxis2D extends CoordinateAxis {
     List<Range> section = new ArrayList<Range>();
     section.add(r1);
     section.add(r2);
-    return (CoordinateAxis2D) section( section);
+    return (CoordinateAxis2D) section(section);
   }
 
+  public ArrayDouble.D2 getCoordValuesArray() {
+    if (coords == null) doRead();
+    return coords;
+  }
+
+  /**
+   * Only call if isInterval()
+   * @return bounds array pr null if not an interval
+   */
+  public ArrayDouble.D3 getCoordBoundsArray() {
+    if (!wasBoundsDone) makeBounds();
+    if (!isInterval) return null;
+    return bounds;
+  }
+
+  /**
+   * @deprecated use getCoordValuesArray
+   */
   public ArrayDouble.D2 getMidpoints() {
-    if (midpoint == null) doRead();
-    return midpoint;
+    return getCoordValuesArray();
   }
 
   public ArrayDouble.D2 getXEdges() {
@@ -376,71 +403,83 @@ public class CoordinateAxis2D extends CoordinateAxis {
         lastIndex++;
       return lastIndex;
     }
-  }
+  }   */
 
   ///////////////////////////////////////////////////////////////////////////////
+  // bounds calculations
 
-  private boolean isAscending;
-  private boolean wasRead = false;
-  private void doRead() {
+  // defer making until asked, use makeBounds()
+  //private double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
+  private ArrayDouble.D3 bounds;
+
+  private void makeBounds() {
+    if (coords == null) doRead();
     if (isNumeric()) {
-      readValues();
-      wasRead = true;
-      //calcIsRegular();
-    } else {
-      readStringValues();
-      wasRead = true;
+      makeBoundsFromAux();
     }
-
-    isAscending = getCoordEdge(0) < getCoordEdge(1);
+    wasBoundsDone = true;
   }
 
-  private String[] names = null;
-  private void readStringValues() {
-    int count = 0;
-    ArrayChar data;
-    try {
-      data = (ArrayChar) read();
-    } catch (IOException ioe) { return; }
-    ArrayChar.StringIterator iter = data.getStringIterator();
-    names = new String[ iter.getNumElems()];
-    while (iter.hasNext())
-      names[count++] = iter.next();
-  }
+  private boolean makeBoundsFromAux() {
+    Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
+    if ((null == boundsAtt) || !boundsAtt.isString()) return false;
+    String boundsVarName = boundsAtt.getStringValue();
+    VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
+    if (null == boundsVar) return false;
+    if (3 != boundsVar.getRank()) return false;
 
+    if (getDimension(0) != boundsVar.getDimension(0)) return false;
+    if (2 != boundsVar.getDimension(2).getLength()) return false;
 
-  private double[] midpoint, edge;
-  private void readValues() {
-    midpoint = new double[ (int) getSize()];
-    int count = 0;
     Array data;
     try {
-      data = read();
-    } catch (IOException ioe) { return; }
+      //boundsVar.setUseNaNs(false); // missing values not allowed
+      data = boundsVar.read();
+    } catch (IOException e) {
+      log.warn("CoordinateAxis2D.makeBoundsFromAux read failed ", e);
+      return false;
+    }
 
-    IndexIterator iter = data.getIndexIterator();
-    while (iter.hasNext())
-      midpoint[count++] = iter.getDoubleNext();
+    assert (data.getRank() == 3) && (data.getShape()[2] == 2) : "incorrect shape data for variable " + boundsVar;
+    isInterval = true;
+     if (data instanceof ArrayDouble.D3) {
+      bounds = (ArrayDouble.D3) data;
+    } else {
+      bounds = (ArrayDouble.D3) Array.factory(DataType.DOUBLE, data.getShape());
+      MAMath.copy(data, bounds);
+    }
 
-    makeEdges();
+    return true;
   }
 
-  private void makeEdges() {
+  /* private void makeEdges() {
     int size = (int) getSize();
-    edge = new double[size+1];
-    for(int i=1; i<size; i++)
-      edge[i] = (midpoint[i-1] + midpoint[i])/2;
-    edge[0] = midpoint[0] - (edge[1] - midpoint[0]);
-    edge[size] = midpoint[size-1] + (midpoint[size-1] - edge[size-1]);
+    edge = new double[size + 1];
+    if (size < 1) return;
+    for (int i = 1; i < size; i++)
+      edge[i] = (coords[i - 1] + coords[i]) / 2;
+    edge[0] = coords[0] - (edge[1] - coords[0]);
+    edge[size] = coords[size - 1] + (coords[size - 1] - edge[size - 1]);
   }
 
-  private void makeMidpoints() {
+  private void makeBoundsFromEdges() {
     int size = (int) getSize();
-    midpoint = new double[size];
-    for(int i=0; i<size; i++)
-      midpoint[i] = (edge[i] + edge[i+1])/2;
-  }
-  */
+    if (size == 0) return;
+
+    bound1 = new double[size];
+    bound2 = new double[size];
+    for (int i = 0; i < size; i++) {
+      bound1[i] = edge[i];
+      bound2[i] = edge[i + 1];
+    }
+
+    // flip if needed
+    if (bound1[0] > bound2[0]) {
+      double[] temp = bound1;
+      bound1 = bound2;
+      bound2 = temp;
+    }
+  } */
 
 
   public static void main(String[] args) {

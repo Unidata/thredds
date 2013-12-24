@@ -163,7 +163,7 @@ public class FeatureCollectionConfig {
     public String rescan;
     public boolean triggerOk;
     public boolean startup;
-    public CollectionUpdateType startupUpdateType = CollectionUpdateType.nocheck;
+    public CollectionUpdateType updateType = CollectionUpdateType.nocheck;
     public String deleteAfter = null;
 
     public UpdateConfig() { // defaults
@@ -177,10 +177,10 @@ public class FeatureCollectionConfig {
       if (startupS != null) {
         startupS = startupS.toLowerCase();
         if (startupS.equalsIgnoreCase("true"))
-          this.startupUpdateType = CollectionUpdateType.test;
+          this.updateType = CollectionUpdateType.test;
         else
-          this.startupUpdateType = CollectionUpdateType.valueOf(startupS);
-        startup = (this.startupUpdateType != null);
+          this.updateType = CollectionUpdateType.valueOf(startupS);
+        startup = (this.updateType != null);
       }
       if (triggerS != null)
         this.triggerOk = triggerS.equalsIgnoreCase("allow");

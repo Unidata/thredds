@@ -40,8 +40,6 @@ import ucar.nc2.ft.grid.impl.CoverageCSFactory;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.radial.RadialCoordSys;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
@@ -233,6 +231,7 @@ public class CoordSysTable extends JPanel {
   }
 
   private BeanTableSorted attTable;
+
   public void showAtts() {
     if (ds == null) return;
     if (attTable == null) {
@@ -249,8 +248,8 @@ public class CoordSysTable extends JPanel {
           }
         }
       });
-      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage( "netcdfUI"), attTable);
-      attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
+      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage("netcdfUI"), attTable);
+      attWindow.setBounds((Rectangle) prefs.getBean("AttWindowBounds", new Rectangle(300, 100, 500, 800)));
     }
 
     List<AttributeBean> attlist = new ArrayList<AttributeBean>();
@@ -285,17 +284,24 @@ public class CoordSysTable extends JPanel {
         }
 
       } else if (axis instanceof CoordinateAxis2D && axis.isNumeric()) {
-        CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
-        ArrayDouble.D2 mids = axis2D.getMidpoints();
-        int[] shape = mids.getShape();
+        showValues2D((CoordinateAxis2D) axis);
+        /* CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
+        ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
+        /* int[] shape = coords.getShape();
         Formatter f = new Formatter();
         for (int j = 0; j < shape[0]; j++) {
           f.format("%d: ", j);
           for (int i = 0; i < shape[1]; i++)
-            f.format("%f, ", mids.get(j, i));
+            f.format("%f, ", coords.get(j, i));
           f.format("%n%n");
         }
-        infoTA.appendLine(f.toString());
+        //infoTA.appendLine(f.toString());
+        infoTA.appendLine(NCdumpW.printArray(coords, "coordinates", null));
+
+        if (axis2D.isInterval()) {
+          ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+          infoTA.appendLine(NCdumpW.printArray(bounds, "intervals", null));
+        } */
 
       } else {
         infoTA.appendLine(NCdumpW.printVariableData(axis, null));
@@ -307,6 +313,41 @@ public class CoordSysTable extends JPanel {
     }
 
   }
+
+
+  private void showValues2D(CoordinateAxis2D axis2D) {
+    Formatter f = new Formatter();
+
+    if (axis2D.isInterval()) {
+      ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
+      ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+
+      IndexIterator coordIter = coords.getIndexIterator();
+      IndexIterator boundsIter = bounds.getIndexIterator();
+      while (coordIter.hasNext()) {
+        double coordValue = coordIter.getDoubleNext();
+        if (!boundsIter.hasNext()) break;
+        double bounds1 = boundsIter.getDoubleNext();
+        if (!boundsIter.hasNext()) break;
+        double bounds2 = boundsIter.getDoubleNext();
+        f.format("%f (%f,%f) = %f%n", coordValue, bounds1, bounds2, bounds2 - bounds1);
+      }
+
+    } else {
+      ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
+      IndexIterator coordIter = coords.getIndexIterator();
+      while (coordIter.hasNext()) {
+        double coordValue = coordIter.getDoubleNext();
+        f.format("%f%n", coordValue);
+      }
+
+    }
+
+
+    infoTA.appendLine(f.toString());
+  }
+
+
 
   private void showValueDiffs(CoordinateAxis axis) {
     if (!axis.isNumeric()) return;
@@ -321,7 +362,7 @@ public class CoordSysTable extends JPanel {
 
       } else if (axis instanceof CoordinateAxis2D) {
         CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
-        ArrayDouble.D2 mids = axis2D.getMidpoints();
+        ArrayDouble.D2 mids = axis2D.getCoordValuesArray();
         int[] shape = mids.getShape();
         ArrayDouble.D2 diffx = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[]{shape[0], shape[1] - 1});
         for (int j = 0; j < shape[0]; j++) {
@@ -350,38 +391,28 @@ public class CoordSysTable extends JPanel {
     }
   }
 
-
   private void showValuesAsDates(CoordinateAxis axis) {
     String units = axis.getUnitsString();
+    String cal = getCalendarAttribute(axis);
+    CalendarDateUnit cdu = CalendarDateUnit.of(cal, units);
 
     try {
       infoTA.appendLine(units);
+      infoTA.appendLine(NCdumpW.printVariableData(axis, null));
+
       if (axis.getDataType().isNumeric()) {
-        if (!(axis instanceof CoordinateAxis1D)) {
-          showDates2D(axis, units);
+        if (axis instanceof CoordinateAxis2D) {
+          showDates2D((CoordinateAxis2D) axis, cdu);
 
-        } else {  // 1D
-          CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
-          infoTA.appendLine(NCdumpW.printVariableData(axis, null));
+        } else if (axis instanceof CoordinateAxis1D) {  // 1D
+          showDates1D((CoordinateAxis1D) axis, cdu);
 
-          if (!showCalendarDates(axis1D, units)) {
-            // old way
-            DateFormatter format = new DateFormatter();
-            DateUnit du = new DateUnit(units);
-            if (!axis1D.isInterval()) {
-              for (double val : axis1D.getCoordValues()) {
-                if (Double.isNaN(val)) infoTA.appendLine(" N/A");
-                else infoTA.appendLine(" " + format.toDateTimeString(du.makeDate(val)));
-              }
-            } else { // is interval
-              Formatter f = new Formatter();
-              double[] b1 = axis1D.getBound1();
-              double[] b2 = axis1D.getBound2();
-              for (int i = 0; i < b1.length; i++) {
-                f.format(" (%f, %f) == (%s, %s)%n", b1[i], b2[i], format.toDateTimeString(du.makeDate(b1[i])), format.toDateTimeString(du.makeDate(b2[i])));
-              }
-              infoTA.appendLine(f.toString());
-            }
+        } else { // > 2D
+          Array data = axis.read();
+          IndexIterator ii = data.getIndexIterator();
+          while (ii.hasNext()) {
+            double val = ii.getDoubleNext();
+            infoTA.appendLine(makeCalendarDateStringOrMissing(cdu, val));
           }
         }
 
@@ -409,52 +440,64 @@ public class CoordSysTable extends JPanel {
     }
   }
 
-  private void showDates2D(VariableEnhanced axis, String units) throws Exception {
-    infoTA.appendLine(NCdumpW.printVariableData(axis, null));
-    String cal = getCalendarAttribute(axis);
-    CalendarDateUnit cdu = CalendarDateUnit.of(cal, units);
-
+  private void showDates2D(CoordinateAxis2D axis2D, CalendarDateUnit cdu) {
     Formatter f = new Formatter();
-    Array data = axis.read();
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      double val = ii.getDoubleNext();
-      if (Double.isNaN(val)) {
-        f.format(" N/A%n");
-      } else {
-        f.format(" %s%n", cdu.makeCalendarDate(val));
+
+    if (axis2D.isInterval()) {
+      ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
+      ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+
+      IndexIterator coordIter = coords.getIndexIterator();
+      IndexIterator boundsIter = bounds.getIndexIterator();
+      while (coordIter.hasNext()) {
+        double coordValue = coordIter.getDoubleNext();
+        if (!boundsIter.hasNext()) break;
+        double bounds1 = boundsIter.getDoubleNext();
+        if (!boundsIter.hasNext()) break;
+        double bounds2 = boundsIter.getDoubleNext();
+        f.format("%s (%s,%s)%n", makeCalendarDateStringOrMissing(cdu, coordValue),
+                makeCalendarDateStringOrMissing(cdu, bounds1),
+                makeCalendarDateStringOrMissing(cdu, bounds2));
       }
+
+    } else {
+      ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
+      IndexIterator coordIter = coords.getIndexIterator();
+      while (coordIter.hasNext()) {
+        double coordValue = coordIter.getDoubleNext();
+        f.format("%s%n", makeCalendarDateStringOrMissing(cdu, coordValue));
+      }
+
     }
+
+
     infoTA.appendLine(f.toString());
   }
 
-   private String getCalendarAttribute(VariableEnhanced vds) {
+  private String makeCalendarDateStringOrMissing(CalendarDateUnit cdu, double value) {
+    if (Double.isNaN(value)) return "missing";
+    return cdu.makeCalendarDate(value).toString();
+  }
+
+  private String getCalendarAttribute(VariableEnhanced vds) {
     Attribute cal = vds.findAttribute("calendar");
     return (cal == null) ? null : cal.getStringValue();
   }
 
-  private boolean showCalendarDates(CoordinateAxis1D axis1D, String units) throws Exception {
-    try {
-      String cal = getCalendarAttribute(axis1D);
-      CalendarDateUnit cdu = CalendarDateUnit.of(cal, units);
-      if (!axis1D.isInterval()) {
-        for (double val : axis1D.getCoordValues()) {
-          if (Double.isNaN(val)) infoTA.appendLine(" N/A");
-          else infoTA.appendLine(" " + cdu.makeCalendarDate(val));
-        }
-      } else { // is interval
-          Formatter f= new Formatter();
-          double[] b1 = axis1D.getBound1();
-          double[] b2 = axis1D.getBound2();
-          for (int i=0; i<b1.length; i++)
-            f.format(" (%f, %f) == (%s, %s)%n", b1[i], b2[i], cdu.makeCalendarDate((b1[i])), cdu.makeCalendarDate((b2[i])));
-          infoTA.appendLine(f.toString());
-        }
-    } catch (Exception ee) {
-      infoTA.appendLine(" CalendarDateUnit failed to parse units =" + ee.getMessage());
-      return false;
+  private void showDates1D(CoordinateAxis1D axis1D, CalendarDateUnit cdu) {
+    if (!axis1D.isInterval()) {
+      for (double val : axis1D.getCoordValues()) {
+        if (Double.isNaN(val)) infoTA.appendLine(" N/A");
+        else infoTA.appendLine(" " + cdu.makeCalendarDate(val));
+      }
+    } else { // is interval
+      Formatter f = new Formatter();
+      double[] b1 = axis1D.getBound1();
+      double[] b2 = axis1D.getBound2();
+      for (int i = 0; i < b1.length; i++)
+        f.format(" (%f, %f) == (%s, %s)%n", b1[i], b2[i], cdu.makeCalendarDate((b1[i])), cdu.makeCalendarDate((b2[i])));
+      infoTA.appendLine(f.toString());
     }
-    return true;
   }
 
   private void printArray(String title, double vals[]) {
@@ -837,14 +880,18 @@ public class CoordSysTable extends JPanel {
     private Attribute att;
 
     // no-arg constructor
-    public AttributeBean() {}
+    public AttributeBean() {
+    }
 
     // create from a dataset
-    public AttributeBean( Attribute att) {
+    public AttributeBean(Attribute att) {
       this.att = att;
     }
 
-    public String getName() { return att.getShortName(); }
+    public String getName() {
+      return att.getShortName();
+    }
+
     public String getValue() {
       Array value = att.getValues();
       return NCdumpW.printArray(value, null, null);
@@ -904,11 +951,10 @@ public class CoordSysTable extends JPanel {
 
       if (v instanceof CoordinateAxis1D) {
         CoordinateAxis1D v1 = (CoordinateAxis1D) v;
-        if (v1.isRegular())
-          setRegular(Double.toString(v1.getIncrement()));
-        isLayer = (null != axis.findAttribute(_Coordinate.ZisLayer));
-        isInterval = v1.isInterval();
+        if (v1.isRegular()) setRegular(Double.toString(v1.getIncrement()));
       }
+      isLayer = (null != axis.findAttribute(_Coordinate.ZisLayer));
+      isInterval = axis.isInterval();
     }
 
     public String getName() {

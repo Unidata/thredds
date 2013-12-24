@@ -284,9 +284,4 @@ public class Grib2Rectilyser {
     return result;
   }
 
-  /* public String getTimeIntervalName(int timeIdx) {
-    TimeCoord tc = timeCoords.get(timeIdx);
-    return tc.getTimeIntervalName();
-  } */
-
 }

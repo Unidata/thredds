@@ -24,7 +24,7 @@ public enum CollectionUpdater {
   static private final org.slf4j.Logger startupLogger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
   static private final String DCM_NAME = "dcm";
   static private final String LOGGER = "logger";
-  static private final long startupWait = 10 * 1000; // 10 secs
+  static private final long startupWait = 3 * 1000; // 3 secs
   static private boolean disabled = false;
 
   // could use Spring DI
@@ -167,14 +167,14 @@ public enum CollectionUpdater {
     if (updateConfig.startup) {
       Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
       SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
-              .withIdentity(jobName, updateConfig.startupUpdateType.toString())
+              .withIdentity(jobName, updateConfig.updateType.toString())
               .startAt(runTime)
               .forJob(updateJob)
               .build();
 
       try {
     	   scheduler.scheduleJob(startupTrigger);
-        if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupUpdateType.toString(), config.name, runTime);
+        if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.updateType.toString(), config.name, runTime);
       } catch (SchedulerException e) {
         if (logger != null)logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
@@ -183,7 +183,7 @@ public enum CollectionUpdater {
 
     if (updateConfig.rescan != null) {
         CronTrigger rescanTrigger = TriggerBuilder.newTrigger()
-                .withIdentity(jobName, "rescan")
+                .withIdentity(jobName, updateConfig.updateType.toString())
                 .withSchedule(CronScheduleBuilder.cronSchedule(updateConfig.rescan))
                 .forJob(updateJob)
                 .build();

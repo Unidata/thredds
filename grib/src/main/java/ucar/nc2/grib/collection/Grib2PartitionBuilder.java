@@ -2,16 +2,12 @@ package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
-import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import ucar.sparr.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -364,11 +360,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
     } // loop over groups
 
-    if (ok) {
-      return true;
-    } else {
-      return false;
-    }
+    return ok;
   }
 
   private class PartGroup {

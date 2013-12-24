@@ -42,7 +42,6 @@ import ucar.unidata.util.Format;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -57,7 +56,7 @@ import java.util.List;
  * <p/>
  * This will also set "cell bounds" for this axis. By default, the cell bounds are midway between the coordinates values,
  * and are therefore contiguous, and can be accessed though getCoordEdge(i).
- * The only way the bunds can be set is if the coordinate variable has an attribute "bounds" that points to another variable
+ * The only way the bounds can be set is if the coordinate variable has an attribute "bounds" that points to another variable
  * bounds(ncoords,2). These contain the cell bounds, and must be ascending or descending as the coordinate values are. In
  * this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
  *
@@ -75,12 +74,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private boolean isAscending;
 
   // read in on doRead()
-  private double[] midpoint; // n midpoints
+  private double[] coords; // coordinate values, must be between edges
   private String[] names = null; // only set if String or char values
 
-  // defer until ask, use makeBounds()
+  // defer making until asked, use makeBounds()
   private double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
-  private double[] bound1, bound2; // may not be not contiguous
+  private double[] bound1, bound2; // may be contiguous or not
 
   /**
    * Create a 1D coordinate axis from an existing Variable
@@ -110,7 +109,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     this.isInterval = org.isInterval();
     this.isRegular = org.isRegular();
 
-    this.midpoint = org.getCoordValues();
+    this.coords = org.getCoordValues();
     this.edge = org.getCoordEdges();
     this.names = org.names;
 
@@ -157,9 +156,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
     double[] new_mids = new double[len];
     for (int idx = 0; idx < len; idx++) {
       int old_idx = r.element(idx);
-      new_mids[idx] = midpoint[old_idx];
+      new_mids[idx] = coords[old_idx];
     }
-    result.midpoint = new_mids;
+    result.coords = new_mids;
 
     if (isInterval) {
       double[] new_bound1 = new double[len];
@@ -221,6 +220,20 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   /**
+    * Get the list of names, to be used for user selection.
+    * The ith one refers to the ith coordinate.
+    *
+    * @return List of ucar.nc2.util.NamedObject, or empty list.
+    */
+   public List<NamedObject> getNames() {
+     int n = getDimension(0).getLength();
+     List<NamedObject> names = new ArrayList<NamedObject>(n);
+     for (int i = 0; i < n; i++)
+       names.add(new ucar.nc2.util.NamedAnything(getCoordName(i), getUnitsString()));
+     return names;
+   }
+
+  /**
    * The "name" of the ith coordinate. If nominal, this is all there is to a coordinate.
    * If numeric, this will return a String representation of the coordinate.
    *
@@ -247,7 +260,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     if (!wasRead) doRead();
-    return midpoint[index];
+    return coords[index];
   }
 
   @Override
@@ -256,7 +269,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     if (!wasRead) doRead();
 
-    return Math.min(midpoint[0], midpoint[(int) getSize() - 1]);
+    return Math.min(coords[0], coords[(int) getSize() - 1]);
   }
 
   @Override
@@ -265,7 +278,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     if (!wasRead) doRead();
 
-    return Math.max(midpoint[0], midpoint[(int) getSize() - 1]);
+    return Math.max(coords[0], coords[(int) getSize() - 1]);
   }
 
   /**
@@ -302,7 +315,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValues() on non-numeric");
     if (!wasRead) doRead();
-    return midpoint.clone();
+    return coords.clone();
   }
 
   /**
@@ -736,27 +749,27 @@ public class CoordinateAxis1D extends CoordinateAxis {
       doRead();
 
     boolean monotonic = true;
-    for (int i = 0; i < midpoint.length - 1; i++)
-      monotonic &= isAscending ? midpoint[i] < midpoint[i + 1] : midpoint[i] > midpoint[i + 1];
+    for (int i = 0; i < coords.length - 1; i++)
+      monotonic &= isAscending ? coords[i] < coords[i + 1] : coords[i] > coords[i + 1];
 
     if (!monotonic) {
       boolean cross = false;
       if (isAscending) {
-        for (int i = 0; i < midpoint.length; i++) {
-          if (cross) midpoint[i] += 360;
-          if (!cross && (i < midpoint.length - 1) && (midpoint[i] > midpoint[i + 1]))
+        for (int i = 0; i < coords.length; i++) {
+          if (cross) coords[i] += 360;
+          if (!cross && (i < coords.length - 1) && (coords[i] > coords[i + 1]))
             cross = true;
         }
       } else {
-        for (int i = 0; i < midpoint.length; i++) {
-          if (cross) midpoint[i] -= 360;
-          if (!cross && (i < midpoint.length - 1) && (midpoint[i] < midpoint[i + 1]))
+        for (int i = 0; i < coords.length; i++) {
+          if (cross) coords[i] -= 360;
+          if (!cross && (i < coords.length - 1) && (coords[i] < coords[i + 1]))
             cross = true;
         }
       }
 
       // LOOK - need to make sure we get stuff from the cache
-      Array cachedData = Array.factory(DataType.DOUBLE, getShape(), midpoint);
+      Array cachedData = Array.factory(DataType.DOUBLE, getShape(), coords);
       if (getDataType() != DataType.DOUBLE)
         cachedData = MAMath.convert(cachedData, getDataType());
       setCachedData(cachedData);
@@ -802,7 +815,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private void readValues() {
-    midpoint = new double[(int) getSize()];
+    coords = new double[(int) getSize()];
     int count = 0;
     Array data;
     try {
@@ -816,7 +829,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     IndexIterator iter = data.getIndexIterator();
     while (iter.hasNext())
-      midpoint[count++] = iter.getDoubleNext();
+      coords[count++] = iter.getDoubleNext();
   }
 
   private void makeBounds() {
@@ -910,16 +923,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
     edge = new double[size + 1];
     if (size < 1) return;
     for (int i = 1; i < size; i++)
-      edge[i] = (midpoint[i - 1] + midpoint[i]) / 2;
-    edge[0] = midpoint[0] - (edge[1] - midpoint[0]);
-    edge[size] = midpoint[size - 1] + (midpoint[size - 1] - edge[size - 1]);
-  }
-
-  private void makeMidpoints() {
-    int size = (int) getSize();
-    midpoint = new double[size];
-    for (int i = 0; i < size; i++)
-      midpoint[i] = (edge[i] + edge[i + 1]) / 2;
+      edge[i] = (coords[i - 1] + coords[i]) / 2;
+    edge[0] = coords[0] - (edge[1] - coords[0]);
+    edge[size] = coords[size - 1] + (coords[size - 1] - edge[size - 1]);
   }
 
   private void makeBoundsFromEdges() {
@@ -939,20 +945,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
       bound1 = bound2;
       bound2 = temp;
     }
-  }
-
-  /**
-   * Get the list of names, to be used for user selection.
-   * The ith one refers to the ith coordinate.
-   *
-   * @return List of ucar.nc2.util.NamedObject, or empty list.
-   */
-  public List<NamedObject> getNames() {
-    int n = getDimension(0).getLength();
-    List<NamedObject> names = new ArrayList<NamedObject>(n);
-    for (int i = 0; i < n; i++)
-      names.add(new ucar.nc2.util.NamedAnything(getCoordName(i), getUnitsString()));
-    return names;
   }
 
 }

@@ -290,7 +290,8 @@ public class Tdm {
       try {
         Formatter errlog = new Formatter();
 
-        boolean changed = GribCdmIndex2.rewriteFilePartition(config, CollectionUpdateType.test, CollectionUpdateType.test, logger);
+        boolean changed = GribCdmIndex2.rewriteFilePartition(config, config.tdmConfig.updateType,
+                config.tdmConfig.updateType, logger);
 
         // delete any files first
         //if (config.tdmConfig.deleteAfter != null) {

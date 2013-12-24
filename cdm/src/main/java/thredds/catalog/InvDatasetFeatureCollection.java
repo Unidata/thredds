@@ -283,7 +283,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     synchronized (lock) {
       if (first) {
         firstInit();
-        updateCollection(state, config.updateConfig.startupUpdateType);
+        updateCollection(state, config.updateConfig.updateType);
         makeDatasetTop(state);
         first = false;
       }

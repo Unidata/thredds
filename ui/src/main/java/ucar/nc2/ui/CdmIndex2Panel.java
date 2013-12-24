@@ -137,7 +137,7 @@ public class CdmIndex2Panel extends JPanel {
       }
     }); */
 
-    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Vertical Coordinates", "VertCoord", null);
+    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates in group", "Coordinates", null);
     varPopup = new PopupMenu(coordTable.getJTable(), "Options");
 
     varPopup.addAction("Show", new AbstractAction() {

@@ -203,6 +203,11 @@ public class CoordinateAxis extends VariableDS {
     return isContiguous;
   }
 
+  // interval detection is done in subclasses
+  public boolean isInterval() {
+    return false;
+  }
+
   // causes TDS ERROR thredds.server.opendap.NcDDS:  NcDDS: Variable time1_run missing coordinate variable in hash; dataset=fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd
   //@Override
   //public boolean isCoordinateVariable() {
