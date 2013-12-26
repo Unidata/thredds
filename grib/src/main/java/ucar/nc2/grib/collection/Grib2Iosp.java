@@ -267,7 +267,7 @@ public class Grib2Iosp extends GribIosp {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private Grib2Partition gribPartition;
+  private PartitionCollection gribPartition;
   private GribCollection gribCollection;
   private Grib2Customizer cust;
   private GribCollection.GroupHcs gHcs;
@@ -394,8 +394,9 @@ public class Grib2Iosp extends GribIosp {
     ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
     ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
 
-    for (Parameter p : gribCollection.getParams())
-      ncfile.addAttribute(null, new Attribute(p));
+    if (gribCollection.getParams() != null)
+      for (Parameter p : gribCollection.getParams())
+        ncfile.addAttribute(null, new Attribute(p));
   }
 
   private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {

@@ -30,7 +30,9 @@ public class FilePartition extends DirectoryCollection implements PartitionManag
     List<MCollection> result = new ArrayList<>(100);
     try (CloseableIterator<MFile> iter = getFileIterator()) {
        while (iter.hasNext()) {
-         result.add( new CollectionSingleFile(iter.next(), logger));
+         MCollection part = new CollectionSingleFile(iter.next(), logger);
+         result.add( part);
+         lastModified = Math.max(lastModified, part.getLastModified());
        }
      }
 

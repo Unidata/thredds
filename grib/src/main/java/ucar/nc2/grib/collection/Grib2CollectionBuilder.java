@@ -47,7 +47,6 @@ import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Parameter;
 
 import java.io.*;
 import java.util.*;
@@ -78,7 +77,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
   // from a single file, read in the index, create if it doesnt exist
   static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionUpdateType force,
-              FeatureCollectionConfig.GribConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                                               FeatureCollectionConfig.GribConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, config, logger);
     builder.readOrCreateIndex(force, errlog);
     return builder.gc;
@@ -124,7 +123,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return ok;
   }
 
-    // for debugging
+  // for debugging
   static public Grib2CollectionBuilder debugOnly(MCollection dcm, org.slf4j.Logger logger) {
     return new Grib2CollectionBuilder(dcm, logger);
   }
@@ -176,7 +175,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     if (force || !idx.exists() || !readIndex(idx.getPath())) {
 
       if (ff == CollectionUpdateType.never)
-        throw new IOException("failed to read "+idx.getPath());
+        throw new IOException("failed to read " + idx.getPath());
 
       // write out index
       idx = gc.makeNewIndexFile(logger); // make sure we have a writeable index
@@ -264,7 +263,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
   public List<Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException {
-    Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
+    Map<Integer, Group> gdsMap = new HashMap<>();
     Map<String, Boolean> pdsConvert = null;
 
     logger.debug("GribCollection {}: makeAggregatedGroups", gc.getName());
@@ -291,7 +290,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           allFiles.add(mfile);  // add on success
 
         } catch (IOException ioe) {
-          if (errlog != null) errlog.format(" ERR Grib2CollectionBuilder %s: reading/Creating gbx9 index for file %s failed err=%s%n", gc.getName(), mfile.getPath(), ioe.getMessage());
+          if (errlog != null)
+            errlog.format(" ERR Grib2CollectionBuilder %s: reading/Creating gbx9 index for file %s failed err=%s%n", gc.getName(), mfile.getPath(), ioe.getMessage());
           logger.error("Grib2CollectionBuilder " + gc.getName() + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed", ioe);
           continue;
         }
@@ -428,9 +428,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         }
       }
 
-      long bytesPerRecord = countBytes / ((countRecords == 0) ? 1 : countRecords);
-      if (logger.isDebugEnabled())
+      if (logger.isDebugEnabled()) {
+        long bytesPerRecord = countBytes / ((countRecords == 0) ? 1 : countRecords);
         logger.debug("  write RecordMaps: bytes = {} record = {} bytesPerRecord={}", countBytes, countRecords, bytesPerRecord);
+      }
 
       if (first == null) {
         deleteOnClose = true;
@@ -443,7 +444,26 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       raf.writeLong(countBytes);
       raf.seek(pos); // back to the output.
 
-      GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
+      /*
+      message GribCollection {
+        required string name = 1;       // must be unique - index filename is name.ncx
+        required string topDir = 2;   // filenames are reletive to this
+        repeated MFile mfiles = 3;    // list of grib MFiles
+        repeated Group groups = 4;      // separate group for each GDS
+
+        required int32 center = 6;      // these 4 fields are to get a GribTable object
+        required int32 subcenter = 7;
+        required int32 master = 8;
+        required int32 local = 9;       // grib1 table Version
+
+        optional int32 genProcessType = 10;   // why ??
+        optional int32 genProcessId = 11;
+        optional int32 backProcessId = 12;
+
+        extensions 100 to 199;
+      }
+       */
+      GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(gc.getName());
       indexBuilder.setTopDir(gc.getDirectory().getPath());
 
@@ -453,17 +473,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
         b.setFilename(gcmfile.getName());
         b.setLastModified(gcmfile.getLastModified());
-        indexBuilder.addMfiles( b.build());
+        indexBuilder.addMfiles(b.build());
       }
 
       for (Group g : groups)
         indexBuilder.addGroups(writeGroupProto(g));
-
-      /* int count = 0;
-      for (DatasetCollectionManager dcm : collections) {
-        indexBuilder.addParams(makeParamProto(new Parameter("spec" + count, dcm.())));
-        count++;
-      } */
 
       // LOOK what about just storing first ??
       Grib2SectionIdentification ids = first.getId();
@@ -477,7 +491,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       indexBuilder.setGenProcessId(pds.getGenProcessId());
       indexBuilder.setBackProcessId(pds.getBackProcessId());
 
-      GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
+      GribCollectionProto.GribCollection index = indexBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
@@ -540,23 +554,22 @@ message Group {
 
   repeated Variable variables = 4;    // list of variables
   repeated Coord coords = 5;          // list of coordinates
-  repeated Parameter params = 6;      // group attributes  used ??
   repeated int32 fileno = 7;          // the component files that are in this group, index into gc.files
 
-  // partitions
-  repeated TimeCoordUnion timeCoordUnions = 10; // partitions only
+  extensions 100 to 199;
+}
 }
    */
-  private GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
+  protected GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     // LOOK predefinedGds ??
-
     b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
     b.setGdsHash(g.gdsHash);
+    // LOOK nameOverride ??
 
     for (Grib2Rectilyser.VariableBag vbag : g.rect.getGribvars()) {
-      b.addVariables(writeVariableProto( vbag));
+      b.addVariables(writeVariableProto(vbag));
     }
 
     int count = 0;
@@ -594,10 +607,13 @@ message Variable {
 
   repeated uint32 coordIdx = 6;    // index into Group.coords
 
-  // partitions
-  repeated uint32 groupno = 10;
-  repeated uint32 varno = 11;
-  repeated int32 flag = 12;
+  // optionally keep stats
+  optional float density = 7;
+  optional uint32 ndups = 8;
+  optional uint32 nrecords = 9;
+  optional uint32 missing = 10;
+
+  extensions 100 to 199;
 }
    */
   private GribCollectionProto.Variable writeVariableProto(Grib2Rectilyser.VariableBag vb) throws IOException {
@@ -625,20 +641,6 @@ message Variable {
     return b.build();
   }
 
-  protected GribCollectionProto.Parameter writeParamProto(Parameter param) throws IOException {
-    GribCollectionProto.Parameter.Builder b = GribCollectionProto.Parameter.newBuilder();
-
-    b.setName(param.getName());
-    if (param.isString())
-      b.setSdata(param.getStringValue());
-    else {
-      for (int i = 0; i < param.getLength(); i++)
-        b.addData(param.getNumericValue(i));
-    }
-
-    return b.build();
-  }
-
   /*
   message Coord {
     required int32 type = 1;   // Coordinate.Type.oridinal
@@ -647,7 +649,6 @@ message Variable {
     repeated float values = 4;
     repeated float bound = 5; // only used if interval, then = (value, bound)
     repeated int64 msecs = 6; // calendar date
-  }
    */
   protected GribCollectionProto.Coord writeCoordProto(CoordinateRuntime coord) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();

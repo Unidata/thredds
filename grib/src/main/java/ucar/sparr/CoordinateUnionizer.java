@@ -5,7 +5,8 @@ import ucar.nc2.grib.collection.*;
 import java.util.*;
 
 /**
- * Create shared coordinates across the same variable in a partition
+ * Create shared coordinates across the same variable in different partitions
+ * Create the union of all coordinates.
  *
  * @author John
  * @since 12/10/13

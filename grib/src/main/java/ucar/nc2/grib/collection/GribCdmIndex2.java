@@ -266,7 +266,7 @@ public class GribCdmIndex2 implements IndexReader {
   private static final boolean debug = true;
   private byte[] magic;
   private int version;
-  private GribCollectionProto.GribCollectionIndex gribCollectionIndex;
+  private GribCollectionProto.GribCollection gribCollectionIndex;
 
   /// IndexReader interface
   @Override
@@ -277,8 +277,10 @@ public class GribCdmIndex2 implements IndexReader {
       if (type == GribCollectionType.Partition1 || type == GribCollectionType.Partition2) {
         if (openIndex(raf, logger)) {
           String dirName = gribCollectionIndex.getTopDir();
-          for (GribCollectionProto.Partition part : gribCollectionIndex.getPartitionsList()) {
-            callback.addChild(dirName, part.getFilename(), part.getLastModified());
+          int n = gribCollectionIndex.getMfilesCount(); // partition index files stored in MFiles
+          for (int i = 0; i < n; i++) {
+            GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
+            callback.addChild(dirName, mfilep.getFilename(), mfilep.getLastModified());
           }
           return true;
         }
@@ -342,7 +344,7 @@ public class GribCdmIndex2 implements IndexReader {
 
       byte[] m = new byte[size];
       indexRaf.readFully(m);
-      gribCollectionIndex = GribCollectionProto.GribCollectionIndex.parseFrom(m);
+      gribCollectionIndex = GribCollectionProto.GribCollection.parseFrom(m);
       return true;
 
     } catch (Throwable t) {

@@ -7,7 +7,6 @@ import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
-import thredds.inventory.partition.PartitionManager;
 import ucar.nc2.time.CalendarDate;
 import ucar.sparr.Coordinate;
 import ucar.sparr.SparseArray;
@@ -85,7 +84,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   static public DiskCache2 getDiskCache2() {
     if (diskCache == null)
-      diskCache = new DiskCache2();
+      diskCache = DiskCache2.getDefault();
 
     return diskCache;
   }
@@ -245,6 +244,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
   ////////////////////////////////////////////////////////////////
   protected final String name;
+  protected String indexName;
   protected File directory;
   protected final FeatureCollectionConfig.GribConfig gribConfig;
   protected final boolean isGrib1;
@@ -259,14 +259,9 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   private List<MFile> files;  // must be kept in order
   private Map<String, MFile> fileMap;
   private File indexFile;
-  public List<HorizCoordSys> hcs; // one for each gds
-  public List<Dataset> dataset;   // 2D, best, 0hour etc
   List<GroupHcs> groups; // must be kept in order; unmodifiableList
 
-  public List<GroupHcs> getGroups() {
-    return groups;
-  }
-  // synchronize any access to indexRaf
+  // synchronize any access to indexRaf                                     ```
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file
 
   // for making partition collection
@@ -278,8 +273,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     this.genProcessType = from.genProcessType;
     this.genProcessId = from.genProcessId;
     this.backProcessId = from.backProcessId;
-
-    groups = new ArrayList<>(from.groups.size());
   }
 
   public String getName() {
@@ -302,6 +295,29 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return result;
   }
 
+  public List<GroupHcs> getGroups() {
+    return groups;
+  }
+
+  public GroupHcs getGroup(int index) {
+    return groups.get(index);
+  }
+
+  public GroupHcs findGroupById(String id) {
+    for (GroupHcs g : getGroups()) {
+      if (g.getId().equals(id))
+        return g;
+    }
+    return null;
+  }
+
+  public int findGroupIdxById(String id) {
+    for (int i = 0; i < groups.size(); i++) {
+      GroupHcs g = groups.get(i);
+      if (g.getId().equals(id)) return i;
+    }
+    return -1;
+  }
 
   public MFile findMFileByName(String filename) {
     if (fileMap == null) {
@@ -426,26 +442,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return null;
   }
 
-  public GroupHcs getGroup(int index) {
-    return groups.get(index);
-  }
-
-  public GroupHcs findGroupById(String id) {
-    for (GroupHcs g : getGroups()) {
-      if (g.getId().equals(id))
-        return g;
-    }
-    return null;
-  }
-
-  public int findGroupIdxById(String id) {
-    for (int i = 0; i < groups.size(); i++) {
-      GroupHcs g = groups.get(i);
-      if (g.getId().equals(id)) return i;
-    }
-    return -1;
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
 
@@ -525,11 +521,13 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     private final byte[] rawGds;
     private final int gdsHash;
     private final String id, description;
+    private final String nameOverride;
 
-    public HorizCoordSys(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash) {
+    public HorizCoordSys(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride) {
       this.hcs = hcs;
       this.rawGds = rawGds;
       this.gdsHash = gdsHash;
+      this.nameOverride = nameOverride;
       this.id = makeId();
       this.description = makeDescription();
     }
@@ -554,6 +552,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     // human readable
     public String getDescription() {
       return description;
+    }
+
+    public String getNameOverride() {
+      return nameOverride;
     }
 
     private String makeId() {
@@ -581,22 +583,13 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
   }
 
-  public class Dataset {
-    private List<GroupHcs> groups; // must be kept in order; unmodifiableList
-    GribCollectionProto.Dataset.Type type;
-
-    public List<GroupHcs> getGroups() {
-      return groups;
-    }
-  }
-
-  // this class needs to be immutable, because its escapes
+  // this class needs to be immutable, because it escapes
   public class GroupHcs implements Comparable<GroupHcs> {
     HorizCoordSys horizCoordSys;
     public List<VariableIndex> variList;   // GribCollection.VariableIndex
     public List<Coordinate> coords;
     public int[] filenose;
-    public int[] run2part;   // same length as runtime coordinate; which partition to use for that runtime
+    public List<Integer> run2part;   // runtimeCoord.length; partitions only; which partition to use for that runtime
     private Map<Integer, GribCollection.VariableIndex> varMap;
 
     GroupHcs() {}
@@ -607,8 +600,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       // this.coords = new ArrayList<>(from.coords);  // copy the coord list
     }
 
-    public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash) {
-      horizCoordSys = new HorizCoordSys(hcs, rawGds, gdsHash);
+    public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride) {
+      horizCoordSys = new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride);
     }
 
     public GribCollection getGribCollection() {
@@ -996,16 +989,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     for (GroupHcs g : groups) {
-      f.format("Hcs = %s%n", g.horizCoordSys.hcs);
-
-      f.format("%nVarIndex (%d)%n", g.variList.size());
-      for (VariableIndex v : g.variList)
+      for (VariableIndex v : g.variList) {
         f.format("  %s%n", v.toStringComplete());
-
-      f.format("%nCoords (%d)%n", g.coords.size());
-      for (int i = 0; i < g.coords.size(); i++) {
-        Coordinate tc = g.coords.get(i);
-        f.format(" %d: %s%n", i, tc);
       }
     }
   }

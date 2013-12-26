@@ -56,6 +56,7 @@ public abstract class CollectionAbstract implements MCollection {
 
   protected DateExtractor dateExtractor;
   protected CalendarDate startCollection;
+  protected long lastModified;
 
   protected CollectionAbstract( String collectionName, org.slf4j.Logger logger) {
     this.collectionName = cleanName(collectionName);
@@ -83,6 +84,10 @@ public abstract class CollectionAbstract implements MCollection {
 
   public void setRoot(String root) {
     this.root = root;
+  }
+
+  public long getLastModified() {
+    return lastModified;
   }
 
   @Override

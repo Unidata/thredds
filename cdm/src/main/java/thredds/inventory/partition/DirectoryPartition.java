@@ -49,6 +49,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     for (DirectoryBuilder child : builder.getChildren()) {
       MCollection dc = DirectoryBuilder.factory(config, child.getDir(), indexReader, logger);
       result.add(dc);
+      lastModified = Math.max(lastModified, dc.getLastModified());
     }
 
     return result;

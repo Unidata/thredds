@@ -179,7 +179,7 @@ public class Tdm {
     Boolean gribIndexAlwaysUse = reader.getBoolean("GribIndex.alwaysUse", false);
     Boolean gribIndexNeverUse = reader.getBoolean("GribIndex.neverUse", true);
     String gribIndexPolicy = reader.get("GribIndex.policy", null);
-    DiskCache2 gribCache = new DiskCache2(gribIndexDir, false, -1, -1);
+    DiskCache2 gribCache = gribIndexNeverUse ? DiskCache2.getNoop() : new DiskCache2(gribIndexDir, false, -1, -1);
     gribCache.setPolicy(gribIndexPolicy);
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
     gribCache.setNeverUseCache(gribIndexNeverUse);

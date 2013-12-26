@@ -67,6 +67,12 @@ public interface MCollection extends AutoCloseable {
    */
   public int getProtoIndex(int n);
 
+  /**
+   * last time this collection was modified
+   * @return msess since epoch
+   */
+  public long getLastModified();
+
   //////////////////////////////////////////////////////////////////////////////////////
 
   /**

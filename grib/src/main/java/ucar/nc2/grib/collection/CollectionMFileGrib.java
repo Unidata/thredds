@@ -79,7 +79,10 @@ public class CollectionMFileGrib extends CollectionAbstract {
 
     public MFile next() {
       try {
-        return new MFileOS7(dirStreamIterator.next());
+        MFileOS7 mfile = new MFileOS7(dirStreamIterator.next());
+        lastModified = Math.max(lastModified, mfile.getLastModified());
+        return mfile;
+
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

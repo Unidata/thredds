@@ -51,6 +51,8 @@ public class CollectionSingleFile extends CollectionList {
       this.root = p.getParent().toString();
     else
       this.root = System.getProperty("user.dir");
+
+    this.lastModified = file.getLastModified();
   }
 
 }

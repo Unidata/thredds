@@ -28,16 +28,22 @@ public class CollectionList extends CollectionAbstract {
     if (list.startsWith(MFileCollectionManager.LIST))
       list = list.substring(MFileCollectionManager.LIST.length());
 
+    long lastModified = 0;
     String[] files = list.split(";");
     for (String s : files) {
       String filename = s.trim();
       if (filename.length() == 0) continue;
       Path p = Paths.get(filename);
-      if (Files.exists(p))
+      if (Files.exists(p)) {
+        MFileOS mfile = new MFileOS(filename);
         mfiles.add(new MFileOS(filename));
+        lastModified = Math.max(lastModified, mfile.getLastModified());
+      }
     }
 
     Collections.sort(mfiles);
+    this.lastModified = lastModified;
+
   }
 
   protected CollectionList(String collectionName, Logger logger) {

@@ -86,7 +86,7 @@ public class DiskCache2 {
    * Default DiskCache2 strategy: use $user_home/.unidata/cache/, no scouring, alwaysUseCache = false
    * Mimics default DiskCache static class
    */
-  public DiskCache2() {
+  static public DiskCache2 getDefault() {
     String root = System.getProperty("nj22.cache");
 
     if (root == null) {
@@ -100,11 +100,21 @@ public class DiskCache2 {
 
       root = home + "/.unidata/cache/";
     }
-    setRootDirectory(root);
-    this.alwaysUseCache = false;
+
+    DiskCache2 result = new DiskCache2();
+    result.setRootDirectory(root);
+    result.alwaysUseCache = false;
+    return result;
   }
 
+  // NOOP
+  static public DiskCache2 getNoop() {
+    DiskCache2 noop = new DiskCache2();
+    noop.neverUseCache = true;
+    return noop;
+  }
 
+  private DiskCache2() {}
   /**
    * Create a cache on disk. Use default policy (CachePathPolicy.OneDirectory)
    * @param root the root directory of the cache. Must be writeable.
@@ -193,6 +203,9 @@ public class DiskCache2 {
    * @return physical File in the cache.
    */
   public File getCacheFile(String fileLocation) {
+    if (neverUseCache)
+      return null;
+
     if (!alwaysUseCache) {
       File f = new File(fileLocation);
       if (canWrite(f)) return f;

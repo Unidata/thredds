@@ -9,6 +9,7 @@ import ucar.sparr.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.Parameter;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
   // recreate if partition doesnt exist or is out of date (depends on force). return true if it was recreated
   static public boolean recreateIfNeeded(PartitionManager tpc, CollectionUpdateType forcePartition, CollectionUpdateType forceChildren,
-                                       Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                         Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     boolean recreated = builder.readOrCreateIndex(forcePartition, forceChildren, errlog);
     builder.result.close();
@@ -84,7 +85,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath())) {
-      if (forcePartition == CollectionUpdateType.never) throw new IOException("failed to read "+idx.getPath());
+      if (forcePartition == CollectionUpdateType.never) throw new IOException("failed to read " + idx.getPath());
 
       logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
       if (createPartitionedIndex(forceChildren, errlog)) {  // write index
@@ -111,7 +112,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
   private boolean readIndex(RandomAccessFile indexRaf) throws IOException {
     try {
-      this.result = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, gc.getGribConfig(), logger);
+      this.result = (Grib2Partition) Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(this.name, this.directory, indexRaf, gc.getGribConfig(), logger);
       this.gc = result;
       return true;
     } catch (IOException ioe) {
@@ -165,11 +166,17 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     // check consistency across vert and ens coords
     // also replace variables  in canonGc with partitioned variables
     // partition index is used - do not resort partitions
-    if (!makeAllVariables(canon, errlog)) {
+    PartitionCollection.Dataset ds = result.makeDataset(PartitionCollectionProto.Dataset.Type.TwoD);
+    if (!makeAllVariables(canon, ds, errlog)) {
       errlog.format(" ERR Partition check failed, index not written on %s%n", result.getName());
       logger.error(" Partition check failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
       return false;
     }
+
+    // this finishes the 2D stuff
+    result.finish();
+
+    // makeBest(errlog);
 
     // make the time coordinates, place results into canon
     //createPartitionedTimeCoordinates(canon.gc, f);
@@ -203,7 +210,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     Map<Integer, GroupPartitions> groupMap = new HashMap<>(40);
     for (PartitionCollection.Partition tpp : result.getPartitions()) {
       GribCollection gc = tpp.gc;
-      for (GribCollection.GroupHcs g : gc.getGroups()) {
+      for (GribCollection.GroupHcs g : gc.groups) {
         GroupPartitions gs = groupMap.get(g.horizCoordSys.getGdsHash());
         if (gs == null) {
           gs = new GroupPartitions(g);
@@ -215,16 +222,18 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     return new ArrayList<>(groupMap.values());
   }
 
-  private boolean makeAllVariables(PartitionCollection.Partition canon, Formatter f) throws IOException {
+  private boolean makeAllVariables(PartitionCollection.Partition canon, PartitionCollection.Dataset ds, Formatter f) throws IOException {
     List<PartitionCollection.Partition> partitions = result.getPartitions();
     int npart = partitions.size();
     boolean ok = true;
 
     // do each group
+    ds.groups = new ArrayList<>();
+
     GribCollection canonGc = canon.gc;
-    for (GribCollection.GroupHcs canonGroup2 : canonGc.getGroups()) {
-      GribCollection.GroupHcs resultGroup = canon.gc.new GroupHcs(canonGroup2);
-      result.groups.add(resultGroup);       // use copy of group, dont modify canonGroup
+    for (GribCollection.GroupHcs canonGroup2 : canonGc.groups) {
+      GribCollection.GroupHcs resultGroup = canon.gc.new GroupHcs(canonGroup2);  // LOOK fishy
+      ds.groups.add(resultGroup);       // use copy of group, dont modify canonGroup
 
       String gname = canonGroup2.getId();
       String gdesc = canonGroup2.getDescription();
@@ -319,8 +328,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       } // loop over partition
 
       Coordinate runtimeCoord = runtimeAllBuilder.finish();
-      resultGroup.run2part = new int[runtimeCoord.getSize()];
-      for (int i=0; i<resultGroup.run2part.length; i++) resultGroup.run2part[i] = i; // LOOK wrong
+      resultGroup.run2part = new ArrayList<>(runtimeCoord.getSize());
+      for (int i = 0; i < resultGroup.run2part.size(); i++) resultGroup.run2part.set(i,i); // LOOK wrong
       resultGroup.coords = new ArrayList<>();
       resultGroup.coords.add(runtimeCoord);
 
@@ -356,12 +365,69 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         for (int idx : viResult.coordIndex)
           totalSize *= resultGroup.coords.get(idx).getSize();
         viResult.setTotalSize(totalSize, totalSize / runtimeCoord.getSize());
-       }
+      }
 
     } // loop over groups
 
     return ok;
   }
+
+  /* private PartitionCollection.Dataset makeBest(Grib2Partition partition, Formatter f) throws IOException {
+    PartitionCollection.Dataset best = partition.makeDataset(PartitionCollectionProto.Dataset.Type.Best);
+
+    List<PartitionCollection.Partition> partitions = result.getPartitions();
+    int npart = partitions.size();
+    boolean ok = true;
+
+    // do each group
+    for (GribCollection.GroupHcs groupAll : partition.getGroups()) {
+      GribCollection.GroupHcs bestGroup = best.addGroup(groupAll);
+      bestGroup.coords = new ArrayList<>();
+
+      List<Coordinate> timeCoords = new ArrayList<>();
+
+      for (Coordinate coord : groupAll.coords) {
+        // for each time, timeIntv, make a "best"
+        Coordinate bestCoord = new CoordinateTime();
+        timeCoords.add(bestCoord);
+      }
+
+      for (GribCollection.VariableIndex vi : groupAll.variList) {
+        Coordinate viTime = vi.getCoordinate(Coordinate.Type.time);
+        Coordinate viRuntime = vi.getCoordinate(Coordinate.Type.runtime);
+        CoordinateTwoDTime twodTime = new CoordinateTwoDTime(viRuntime, viTime);
+
+        // loop over partitions, make union coordinate
+        for (int partno = 0; partno < npart; partno++) {
+          PartitionCollection.Partition tpp = partitions.get(partno);
+          GribCollection.GroupHcs group = tpp.gc.findGroupById(groupAll.getId());
+          if (group == null) continue; // tolerate missing groups
+          GribCollection.VariableIndex viPart = group.findVariableByHash(vi.cdmHash);
+          if (viPart == null) continue; // tolerate missing variables
+          twodTime.addCoords(vi.getCoordinates());
+        }
+        viResult.coords = twodTime.finish();
+      }
+
+      uniquify.finish();
+      resultGroup.coords = uniquify.getUnionCoords();
+
+      // redo the variables against the shared coordinates
+      for (GribCollection.VariableIndex viResult : resultGroup.variList) {
+        viResult.coordIndex = uniquify.reindex(viResult.coords);
+
+        // calc size / runtime
+        int totalSize = 1;
+        for (int idx : viResult.coordIndex)
+          totalSize *= resultGroup.coords.get(idx).getSize();
+        viResult.setTotalSize(totalSize, totalSize / runtimeCoord.getSize());
+      }
+
+    } // loop over groups
+
+    return ok;
+  }   */
+
 
   private class PartGroup {
     GribCollection.GroupHcs group;
@@ -468,8 +534,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   sizeIndex
   GribCollectionIndex (sizeIndex bytes)
   */
-  private boolean writeIndex(GribCollection canonGc, Formatter f) throws IOException {
-    File file = result.getIndexFile();
+  private boolean writeIndex(PartitionCollection pc, Formatter f) throws IOException {
+    File file = pc.getIndexFile();
     if (file.exists()) {
       if (!file.delete())
         logger.error("gc2tp cant delete " + file.getPath());
@@ -483,40 +549,139 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       raf.writeInt(version);
       raf.writeLong(0); // no record section
 
-      GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
-      indexBuilder.setName(result.getName());
+      /*
+      message GribCollection {
+        required string name = 1;       // must be unique - index filename is name.ncx
+        required string topDir = 2;   // filenames are reletive to this
+        repeated MFile mfiles = 3;    // list of grib MFiles
+        repeated Group groups = 4;      // separate group for each GDS
 
-      for (GribCollection.GroupHcs g : canonGc.getGroups())
-        indexBuilder.addGroups(writeGroupProto(g));
+        required int32 center = 6;      // these 4 fields are to get a GribTable object
+        required int32 subcenter = 7;
+        required int32 master = 8;
+        required int32 local = 9;       // grib1 table Version
 
-      indexBuilder.setCenter(canonGc.getCenter());
-      indexBuilder.setSubcenter(canonGc.getSubcenter());
-      indexBuilder.setMaster(canonGc.getMaster());
-      indexBuilder.setLocal(canonGc.getLocal());
-      indexBuilder.setTopDir(gc.getDirectory().getPath());
+        optional int32 genProcessType = 10;   // why ??
+        optional int32 genProcessId = 11;
+        optional int32 backProcessId = 12;
 
-      // dont need files - these are stored in the partition objects
-
-      for (PartitionCollection.Partition p : result.getPartitions()) {
-        indexBuilder.addPartitions(writePartitionProto(p.getName(), p));
+        extensions 100 to 199;
       }
 
-      GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
+
+      extend GribCollection {
+        repeated Gds gds = 100;
+        repeated Dataset dataset = 101;
+        repeated Partition partitions = 102;
+        repeated Parameter pparams = 103;      // not used yet
+      }
+       */
+
+      GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
+      indexBuilder.setName(pc.getName());
+      indexBuilder.setTopDir(pc.getDirectory().getPath()); // LOOK
+
+      // mfiles are the partition indexes
+      for (PartitionCollection.Partition part : pc.partitions) {
+        GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
+        b.setFilename(part.getIndexFilename());
+        b.setLastModified(part.getLastModified());
+        indexBuilder.addMfiles(b.build());
+      }
+
+      // dont use groups
+
+      indexBuilder.setCenter(pc.getCenter());
+      indexBuilder.setSubcenter(pc.getSubcenter());
+      indexBuilder.setMaster(pc.getMaster());
+      indexBuilder.setLocal(pc.getLocal());
+
+      indexBuilder.setGenProcessId(pc.getGenProcessId());
+      indexBuilder.setGenProcessType(pc.getGenProcessType());
+      indexBuilder.setBackProcessId(pc.getBackProcessId());
+
+      List<PartitionCollectionProto.Gds> gdsProtoList = new ArrayList<>();
+      for (GribCollection.HorizCoordSys hcs : pc.gdsList)
+        gdsProtoList.add(writeGdsProto(hcs));
+      indexBuilder.setExtension(PartitionCollectionProto.gds, gdsProtoList);
+
+      List<PartitionCollectionProto.Dataset> dsProtoList = new ArrayList<>();
+      for (PartitionCollection.Dataset ds : pc.datasets)
+        dsProtoList.add(writeDatasetProto(pc, ds));
+      indexBuilder.setExtension(PartitionCollectionProto.dataset, dsProtoList);
+
+      List<PartitionCollectionProto.Partition> partProtoList = new ArrayList<>();
+      for (PartitionCollection.Partition part : pc.partitions)
+        partProtoList.add(writePartitionProto(part));
+      indexBuilder.setExtension(PartitionCollectionProto.partitions, partProtoList);
+
+      GribCollectionProto.GribCollection index = indexBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
       f.format("Grib2PartitionIndex= %d bytes file size =  %d bytes%n%n", b.length, raf.length());
-
     }
 
     return true;
   }
 
-  private GribCollectionProto.Group writeGroupProto(GribCollection.GroupHcs g) throws IOException {
+  /*
+  message Gds {
+    optional bytes gds = 1;             // all variables in the group use the same GDS
+    optional sint32 gdsHash = 2 [default = 0];
+    optional string nameOverride = 3;  // only when user overrides default name
+  }
+   */
+  private PartitionCollectionProto.Gds writeGdsProto(GribCollection.HorizCoordSys hcs) throws IOException {
+    PartitionCollectionProto.Gds.Builder b = PartitionCollectionProto.Gds.newBuilder();
+
+    b.setGds(ByteString.copyFrom(hcs.getRawGds()));
+    b.setGdsHash(hcs.getGdsHash());
+    if (hcs.getNameOverride() != null)
+      b.setNameOverride(hcs.getNameOverride());
+
+    return b.build();
+  }
+
+  /*
+  message Dataset {
+    required Type type = 1;
+    repeated Group groups = 2;
+  }
+   */
+  private PartitionCollectionProto.Dataset writeDatasetProto(PartitionCollection pc, PartitionCollection.Dataset ds) throws IOException {
+    PartitionCollectionProto.Dataset.Builder b = PartitionCollectionProto.Dataset.newBuilder();
+
+    b.setType(ds.type);
+
+    for (GribCollection.GroupHcs group : ds.groups)
+      b.addGroups(writeGroupProto(pc, group));
+
+    return b.build();
+  }
+
+  /*
+  message Group {
+    optional bytes gds = 1;             // all variables in the group use the same GDS
+    optional sint32 gdsHash = 2 [default = 0];
+    optional string nameOverride = 3;         // only when user overrides default name
+
+    repeated Variable variables = 4;    // list of variables
+    repeated Coord coords = 5;          // list of coordinates
+    repeated int32 fileno = 7;          // the component files that are in this group, index into gc.files
+
+    extensions 100 to 199;
+  }
+  extend Group {
+    required uint32 gdsIndex = 100;       // index into TimePartition.gds
+    repeated uint32 run2part = 101;       // partitions only: run index to partition index map
+    repeated Parameter gparams = 102;      // not used yet
+  }
+   */
+  private GribCollectionProto.Group writeGroupProto(PartitionCollection pc, GribCollection.GroupHcs g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGds(ByteString.copyFrom(g.horizCoordSys.getRawGds()));
-    b.setGdsHash(g.horizCoordSys.getGdsHash());
+    // dont store gds directly, use GdsIndex
 
     for (GribCollection.VariableIndex vb : g.variList) {
       b.addVariables(writeVariableProto((PartitionCollection.VariableIndexPartitioned) vb));
@@ -539,13 +704,47 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       }
     }
 
-    for (int i = 0; i < g.run2part.length; i++)
-      b.addRun2Part(g.run2part[i]);
+    // LOOK probably not used?
+    if (g.filenose != null)
+      for (Integer fileno : g.filenose)
+        b.addFileno(fileno);
+
+    // extensions
+    b.setExtension(PartitionCollectionProto.gdsIndex, pc.findIndex(g.horizCoordSys));
+
+    List<Integer> run2partList = new ArrayList<>();
+    for (int part : g.run2part) run2partList.add(part);
+    b.setExtension(PartitionCollectionProto.run2Part, run2partList);
 
     return b.build();
   }
 
+  /*
+  message Variable {
+     required uint32 discipline = 1;
+     required bytes pds = 2;
+     required fixed32 cdmHash = 3;
+
+     required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
+     required uint32 recordsLen = 5;  // size of SparseArray message for this Variable (could be in stream instead)
+
+     repeated uint32 coordIdx = 6;    // index into Group.coords
+
+     // optionally keep stats
+     optional float density = 7;
+     optional uint32 ndups = 8;
+     optional uint32 nrecords = 9;
+     optional uint32 missing = 10;
+
+     extensions 100 to 199;
+   }
+   extend Variable {
+     repeated PartitionVariable partition = 100;
+     repeated Parameter vparams = 101;    // not used yet
+   }
+   */
   private GribCollectionProto.Variable writeVariableProto(PartitionCollection.VariableIndexPartitioned vp) throws IOException {
+
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
 
     b.setDiscipline(vp.discipline);
@@ -558,57 +757,80 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     for (int idx : vp.coordIndex)
       b.addCoordIdx(idx);
 
-    for (PartitionCollection.PartVar pvar : vp.partList) {
-      GribCollectionProto.PartVar.Builder pb = GribCollectionProto.PartVar.newBuilder();
-      pb.setPartno(pvar.partno);
-      pb.setGroupno(pvar.groupno);
-      pb.setVarno(pvar.varno);
-      pb.setFlag(pvar.flag);
-      pb.setNdups(pvar.ndups);
-      pb.setNrecords(pvar.nrecords);
-      pb.setMissing(pvar.missing);
-      pb.setDensity(pvar.density);
-      b.addPartition(pb);
-    }
-
     b.setDensity(vp.density);
     b.setNdups(vp.ndups);
     b.setNrecords(vp.nrecords);
     b.setMissing(vp.missing);
 
+    // extensions
+    List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
+    for (PartitionCollection.PartitionVariable pvar : vp.partList)
+      pvarList.add(writePartitionVariableProto(pvar));
+    b.setExtension(PartitionCollectionProto.partition, pvarList);
+
     return b.build();
   }
 
-  /* protected GribCollectionProto.TimeCoordUnion writeTimeCoordUnionProto(TimeCoordUnion tcu, int index) throws IOException {
-    GribCollectionProto.TimeCoordUnion.Builder b = GribCollectionProto.TimeCoordUnion.newBuilder();
-    b.setCode(index);
-    b.setUnit(tcu.getUnits());
+  /*
+  message PartitionVariable {
+    required uint32 groupno = 1;
+    required uint32 varno = 2;
+    required uint32 flag = 3;
+    required uint32 partno = 4;
 
-    if (tcu.isInterval()) {
-      for (TimeCoord.Tinv tinv : tcu.getIntervals()) {
-        b.addValues((float) tinv.getBounds1());
-        b.addBound((float) tinv.getBounds2());
-      }
-    } else {
-      for (int value : tcu.getCoords())
-        b.addValues((float) value);
-    }
-    for (TimeCoordUnion.Val val : tcu.getValues()) {
-      b.addPartition(val.getPartition());
-      b.addIndex(val.getIndex());
-    }
+    // optionally keep stats
+    optional float density = 7;
+    optional uint32 ndups = 8;
+    optional uint32 nrecords = 9;
+    optional uint32 missing = 10;
+  }
+   */
+  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(PartitionCollection.PartitionVariable pvar) throws IOException {
+    PartitionCollectionProto.PartitionVariable.Builder pb = PartitionCollectionProto.PartitionVariable.newBuilder();
+    pb.setPartno(pvar.partno);
+    pb.setGroupno(pvar.groupno);
+    pb.setVarno(pvar.varno);
+    pb.setFlag(pvar.flag);
+    pb.setNdups(pvar.ndups);
+    pb.setNrecords(pvar.nrecords);
+    pb.setMissing(pvar.missing);
+    pb.setDensity(pvar.density);
 
-    return b.build();
-  } */
+    return pb.build();
+  }
 
-  private GribCollectionProto.Partition writePartitionProto(String name, PartitionCollection.Partition p) throws IOException {
-    GribCollectionProto.Partition.Builder b = GribCollectionProto.Partition.newBuilder();
+  /*
+message Partition {
+  required string name = 1;       // name is used in TDS - eg the subdirectory when generated by TimePartitionCollections
+  required string filename = 2;   // the gribCollection.ncx2 file
+  required string directory = 3;   // top directory
+  optional uint64 lastModified = 4;
+}
+  }
+   */
+  private PartitionCollectionProto.Partition writePartitionProto(PartitionCollection.Partition p) throws IOException {
+    PartitionCollectionProto.Partition.Builder b = PartitionCollectionProto.Partition.newBuilder();
 
     b.setFilename(p.getIndexFilename());
-    b.setName(name);
-    if (p.getLastModified() > 0)
-      b.setLastModified(p.getLastModified());
+    b.setName(p.getName());
+    b.setDirectory(p.getDirectory());
+    b.setLastModified(p.getLastModified());
 
     return b.build();
   }
+
+  protected PartitionCollectionProto.Parameter writeParamProto(Parameter param) throws IOException {
+    PartitionCollectionProto.Parameter.Builder b = PartitionCollectionProto.Parameter.newBuilder();
+
+    b.setName(param.getName());
+    if (param.isString())
+      b.setSdata(param.getStringValue());
+    else {
+      for (int i = 0; i < param.getLength(); i++)
+        b.addData(param.getNumericValue(i));
+    }
+
+    return b.build();
+  }
+
 }

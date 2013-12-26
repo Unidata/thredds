@@ -6,7 +6,9 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import java.util.*;
 
 /**
- * Create shared coordinates across variables in a group.
+ * Create shared coordinates across variables in the same group,
+ * to form the set of group coordinates.
+ * Use object.equals() to find unique coordinates.
  *
  * @author caron
  * @since 12/10/13
@@ -73,7 +75,7 @@ public class CoordinateUniquify {
    /**
     * Reindex with shared coordinates and return new CoordinateND
     * @param prev  previous
-    * @param index new index into chared coordinates; may be null
+    * @param index new index into shared coordinates; may be null
     * @return new CoordinateND containing shared coordinates and sparseArray for the new coordinates
     */
    public CoordinateND<Grib2Record> reindex(CoordinateND<Grib2Record> prev, List<Integer> index) {
@@ -83,7 +85,7 @@ public class CoordinateUniquify {
      List<Coordinate> sharedCoords = new ArrayList<>();
      boolean needReindex = false;
 
-     // redo the variables against the shared coordinates (at the moment this is just possibly runtime
+     // redo the variables against the shared coordinates (LOOK this is just possibly runtime
      for (Coordinate coord : prev.getCoordinates()) {
        if (coord.getType() == Coordinate.Type.runtime) {
          if (!coord.equals(runtimeAll)) {
@@ -107,8 +109,6 @@ public class CoordinateUniquify {
        return new CoordinateND<>(sharedCoords, prev.getSparseArray());
      }
    }
-
-
 
    public List<Coordinate> getUnionCoords() {
      return unionCoords;

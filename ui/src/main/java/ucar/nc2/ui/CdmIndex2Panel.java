@@ -298,8 +298,16 @@ public class CdmIndex2Panel extends JPanel {
       throw new IOException("Not a grib collection index file =" + magic);
 
     List<GroupBean> groups = new ArrayList<GroupBean>();
-    for (GribCollection.GroupHcs g : gc.getGroups()) {
-      groups.add(new GroupBean(g));
+
+    if (gc instanceof PartitionCollection) {
+      PartitionCollection pc = (PartitionCollection) gc;
+      for (PartitionCollection.Dataset ds : pc.getDatasets())
+        for (GribCollection.GroupHcs g : ds.getGroups())
+          groups.add(new GroupBean(g, ds.getType()));
+
+    } else {
+      for (GribCollection.GroupHcs g : gc.getGroups())
+        groups.add(new GroupBean(g, "gc"));
     }
     groupTable.setBeans(groups);
     groupTable.setHeader(indexFile.toString());
@@ -365,12 +373,14 @@ public class CdmIndex2Panel extends JPanel {
 
   public class GroupBean {
     GribCollection.GroupHcs group;
+    String type;
 
     public GroupBean() {
     }
 
-    public GroupBean(GribCollection.GroupHcs g) {
+    public GroupBean(GribCollection.GroupHcs g, String type) {
       this.group = g;
+      this.type = type;
     }
 
     public String getGroupId() {
@@ -379,6 +389,10 @@ public class CdmIndex2Panel extends JPanel {
 
     public int getGdsHash() {
       return group.getGdsHash();
+    }
+
+    public String getType() {
+      return type;
     }
 
     public int getNFiles() {

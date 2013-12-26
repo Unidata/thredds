@@ -1,7 +1,5 @@
 package ucar.sparr;
 
-import ucar.ma2.Section;
-
 import java.util.*;
 
 /**
