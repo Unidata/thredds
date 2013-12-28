@@ -84,6 +84,10 @@ public class SparseArray<T> {
     return size;
   }
 
+  public int getRank() {
+    return size.length;
+  }
+
   public int getTotalSize() {
     return totalSize;
   }

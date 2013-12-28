@@ -18,6 +18,7 @@ public interface Coordinate {
   void showCoords(Formatter info);
 
   List<? extends Object> getValues();
+  Object getValue(int idx);
 
   int getSize();
 

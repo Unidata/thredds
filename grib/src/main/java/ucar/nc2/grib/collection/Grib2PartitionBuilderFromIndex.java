@@ -151,10 +151,10 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
   }
    */
   @Override
-  protected GribCollection.VariableIndex readVariableExtensions(GribCollectionProto.Variable proto, GribCollection.VariableIndex vi) {
+  protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupHcs group, GribCollectionProto.Variable proto, GribCollection.VariableIndex vi) {
     List<PartitionCollectionProto.PartitionVariable> pvList = proto.getExtension(PartitionCollectionProto.partition);
 
-    PartitionCollection.VariableIndexPartitioned vip = pc.makeVariableIndexPartitioned(vi, pvList.size());
+    PartitionCollection.VariableIndexPartitioned vip = pc.makeVariableIndexPartitioned(group, vi, pvList.size());
     /* vip.density = vi.density;   // ??
     vip.missing = vi.missing;
     vip.ndups = vi.ndups;

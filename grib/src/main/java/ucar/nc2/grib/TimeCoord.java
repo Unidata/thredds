@@ -335,6 +335,10 @@ public class TimeCoord {
       return b2;
     }
 
+    public int getIntervalSize() {
+      return Math.abs(b2 - b1);
+    }
+
     public Tinv convertReferenceDate(CalendarDate fromDate, CalendarPeriod fromUnit, CalendarDate toDate, CalendarPeriod toUnit) {
       CalendarDate start = fromDate.add(fromUnit.multiply(b1));
       CalendarDate end = fromDate.add(fromUnit.multiply(b2));

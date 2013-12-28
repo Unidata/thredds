@@ -223,6 +223,10 @@ public class VertCoord { // implements Comparable<VertCoord> {
       return value2;
     }
 
+    public boolean isLayer() {
+      return isLayer;
+    }
+
     @Override
     public int compareTo(Level o) {
       if (mid < o.mid) return -1;

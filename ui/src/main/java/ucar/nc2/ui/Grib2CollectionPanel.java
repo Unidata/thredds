@@ -1156,6 +1156,10 @@ public class Grib2CollectionPanel extends JPanel {
       return pds.getExtraCoordinatesCount();
     }
 
+    public boolean isLayer() {
+      return Grib2Utils.isLayer(pds);
+    }
+
     public final String getStatType() {
       if (pds.isTimeInterval()) {
         Formatter f = new Formatter();

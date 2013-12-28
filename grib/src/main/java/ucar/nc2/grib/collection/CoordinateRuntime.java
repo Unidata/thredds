@@ -68,10 +68,12 @@ public class CoordinateRuntime implements Coordinate {
     return runtimeSorted.get(getSize()-1);
   }
 
+  @Override
   public List<? extends Object> getValues() {
     return runtimeSorted;
   }
 
+  @Override
   public Object getValue(int idx) {
     return runtimeSorted.get(idx);
   }

@@ -60,6 +60,11 @@ public class TestCoordinate implements Coordinate {
   }
 
   @Override
+  public Object getValue(int idx) {
+    return vals.get(idx);
+  }
+
+  @Override
   public int getSize() {
     return vals.size();
   }

@@ -168,7 +168,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     return true;
   }
 
-  protected GribCollection.VariableIndex readVariableExtensions(GribCollectionProto.Variable pv, GribCollection.VariableIndex vi) {
+  protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupHcs group, GribCollectionProto.Variable pv, GribCollection.VariableIndex vi) {
     return vi;
   }
 
@@ -195,10 +195,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, null);    // LOOK nameOverrride
     }
 
-    group.variList = new ArrayList<>();
-    for (int i = 0; i < p.getVariablesCount(); i++)
-      group.variList.add(readVariable(p.getVariables(i), group));
-
+    // read coords before variables
     group.coords = new ArrayList<>();
     for (int i = 0; i < p.getCoordsCount(); i++)
       group.coords.add(readCoord(p.getCoords(i)));
@@ -206,6 +203,10 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     group.filenose = new int[p.getFilenoCount()];
     for (int i = 0; i < p.getFilenoCount(); i++)
       group.filenose[i] = p.getFileno(i);
+
+    group.variList = new ArrayList<>();
+    for (int i = 0; i < p.getVariablesCount(); i++)
+      group.variList.add(readVariable(group, p.getVariables(i)));
 
     // assign names, units to coordinates
     CalendarDate firstRef = null;
@@ -304,8 +305,7 @@ message Coord {
         return new CoordinateTimeIntv(tinvs, code);
 
       case vert:
-        VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(code);
-        boolean isLayer = vertUnit.isLayer();
+        boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
         List<VertCoord.Level> levels = new ArrayList<>(pc.getValuesCount());
         for (int i = 0; i < pc.getValuesCount(); i++) {
           double val1 = pc.getValues(i);
@@ -337,7 +337,7 @@ message Variable {
   extensions 100 to 199;
 }
  */
-  protected GribCollection.VariableIndex readVariable(GribCollectionProto.Variable pv, GribCollection.GroupHcs group) {
+  protected GribCollection.VariableIndex readVariable(GribCollection.GroupHcs group, GribCollectionProto.Variable pv) {
     int discipline = pv.getDiscipline();
 
     byte[] rawPds = pv.getPds().toByteArray();
@@ -361,7 +361,7 @@ message Variable {
     result.nrecords = pv.getNrecords();
     result.missing = pv.getMissing();
 
-    return readVariableExtensions(pv, result);
+    return readVariableExtensions(group, pv, result);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////

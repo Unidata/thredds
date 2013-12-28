@@ -1,5 +1,7 @@
 package ucar.sparr;
 
+import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.collection.*;
 
 import java.util.*;
@@ -12,6 +14,13 @@ import java.util.*;
  * @since 12/10/13
  */
 public class CoordinateUnionizer {
+  FeatureCollectionConfig.GribIntvFilter intvFilter;
+  int varId;
+
+  public CoordinateUnionizer(int varId, FeatureCollectionConfig.GribIntvFilter intvFilter) {
+    this.intvFilter = intvFilter;
+    this.varId = varId;
+  }
 
   List<Coordinate> unionCoords = new ArrayList<>();
   CoordinateND<GribCollection.Record> result;
@@ -34,7 +43,7 @@ public class CoordinateUnionizer {
           break;
         case timeIntv:
           if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder(null, null, coord.getCode());
-          timeIntvBuilder.addAll(coord);
+          timeIntvBuilder.addAll(intervalFilter((CoordinateTimeIntv)coord));
           break;
         case vert:
           if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder(coord.getCode());
@@ -42,6 +51,16 @@ public class CoordinateUnionizer {
           break;
       }
     }
+  }
+
+  private List<TimeCoord.Tinv> intervalFilter(CoordinateTimeIntv coord) {
+    if (intvFilter == null) return coord.getTimeIntervals();
+    List<TimeCoord.Tinv> result = new ArrayList<>();
+    for (TimeCoord.Tinv tinv : coord.getTimeIntervals()) {
+      if (intvFilter.filterOk(varId, tinv.getIntervalSize(), 0))
+        result.add(tinv);
+    }
+    return result;
   }
 
   public List<Coordinate> finish() {

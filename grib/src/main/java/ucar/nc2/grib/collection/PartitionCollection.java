@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Collection of GribCollections, partitioned by time
+ * Collection of GribCollections or other PartionCollections, partitioned by reference time.
  *
  * @author John
  * @since 12/7/13
@@ -117,22 +117,23 @@ public class PartitionCollection extends GribCollection {
 
   }
 
-  class PartitionVariable {
+  class PartitionForVariable {
     int partno, groupno, varno, flag;
     public int ndups, nrecords, missing;
     public float density;
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
-    public List<PartitionVariable> partList; // must not change order
+    public List<PartitionForVariable> partList; // must not change order
 
-    public VariableIndexPartitioned(VariableIndex other) {
-      super(other);
+    public VariableIndexPartitioned(GroupHcs g, VariableIndex other) {
+      super(g, other);
     }
 
     public void addPartition(int partno, int groupno, int varno, int flag, int ndups, int nrecords,
                              int missing, float density) {
-      PartitionVariable partVar = new PartitionVariable();
+
+      PartitionForVariable partVar = new PartitionForVariable();
       partVar.partno = partno;
       partVar.groupno = groupno;
       partVar.varno = varno;
@@ -169,8 +170,8 @@ public class PartitionCollection extends GribCollection {
     public GribCollection.VariableIndex getVindex(int partno) throws IOException {
       // at this point, we need to instantiate the Partition and the vindex.records
 
-      PartitionVariable partVar = null;
-      for (PartitionVariable pvar : partList)
+      PartitionForVariable partVar = null;
+      for (PartitionForVariable pvar : partList)
         if (pvar.partno == partno) partVar = pvar;
       if (partVar == null) return null;
 
@@ -189,24 +190,30 @@ public class PartitionCollection extends GribCollection {
       Formatter sb = new Formatter();
       sb.format("VariableIndexPartitioned%n");
       sb.format(" partno=");
-      for (PartitionVariable partVar : partList)
+      for (PartitionForVariable partVar : partList)
         sb.format("%d,", partVar.partno);
       sb.format("%n groupno=");
-      for (PartitionVariable partVar : partList)
+      for (PartitionForVariable partVar : partList)
          sb.format("%d,", partVar.groupno);
       sb.format("%n varno=");
-      for (PartitionVariable partVar : partList)
+      for (PartitionForVariable partVar : partList)
         sb.format("%d,", partVar.varno);
       sb.format("%n flags=");
-      for (PartitionVariable partVar : partList)
+      for (PartitionForVariable partVar : partList)
         sb.format("%d,", partVar.flag);
       sb.format("%n");
       int count = 0;
       sb.format("  %s %4s %3s %3s %6s%n", "part", "N", "dups", "Miss", "density");
-      for (PartitionVariable partVar : partList)  {
+      int totalN = 0, totalDups = 0, totalMiss = 0;
+      for (PartitionForVariable partVar : partList)  {
         sb.format("   %2d: %4d %3d %3d %6.2f%n", count++, partVar.nrecords, partVar.ndups,  partVar.missing,  partVar.density);
+        totalN += partVar.nrecords;
+        totalDups += partVar.ndups;
+        totalMiss += partVar.missing;
       }
+      sb.format(  "total: %4d %3d %3d %n", totalN, totalDups, totalMiss);
       sb.format("%n");
+      sb.format(  "totalSize = %4d density=%6.2f%n", this.totalSize, this.density);
 
       sb.format(super.toStringComplete());
       return sb.toString();
@@ -215,13 +222,6 @@ public class PartitionCollection extends GribCollection {
     // doesnt work because not threadsafe
     public void cleanup() throws IOException {
       // TimePartition.this.cleanup(); LOOK!!
-    }
-
-    @Override
-    void setTotalSize(int totalSize, int sizePerRun) {
-      super.setTotalSize(totalSize, sizePerRun);
-      for (PartitionVariable pvar : partList)
-        pvar.density = ((float) pvar.nrecords) / sizePerRun;
     }
   }
 
@@ -346,14 +346,15 @@ public class PartitionCollection extends GribCollection {
     this.horizCS = new ArrayList<>();
   }
 
-  protected void set(PartitionCollection from) {
+  /* protected void set(PartitionCollection from) {
     super.set(from);
 
+    // ?? LOOK needed?
     datasets = new ArrayList<>(from.datasets.size());
     for (Dataset fromDset : from.datasets) {
       datasets.add (new Dataset(fromDset));
     }
-  }
+  } */
 
   protected void finish() {
     Set<HorizCoordSys> gdsSet = new HashSet<>();
@@ -425,8 +426,9 @@ public class PartitionCollection extends GribCollection {
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // construct - going to write index
-  public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi, int nparts) {
-    VariableIndexPartitioned vip = new VariableIndexPartitioned(vi);
+  public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.GroupHcs group,
+                                        GribCollection.VariableIndex vi, int nparts) {
+    VariableIndexPartitioned vip = new VariableIndexPartitioned(group, vi);
     vip.partList = new ArrayList<>(nparts);
     return vip;
   }

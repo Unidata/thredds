@@ -41,8 +41,16 @@ public class CoordinateTimeIntv implements Coordinate {
     return timeIntervals;
   }
 
+  @Override
   public List<? extends Object> getValues() {
     return timeIntervals;
+  }
+
+  @Override
+  public Object getValue(int idx) {
+    if (idx >= timeIntervals.size())
+      System.out.println("HEY");
+    return timeIntervals.get(idx);
   }
 
   public int getSize() {

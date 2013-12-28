@@ -18,24 +18,26 @@ import java.util.*;
  * @since 11/27/13
  */
 public class CoordinateVert implements Coordinate {
-  private final List<VertCoord.Level> levelSorted;
-  private final int code;
-  private String name;
-  private VertCoord.VertUnit vunit;
-
-  public CoordinateVert(List<VertCoord.Level> levelSorted, int code) {
-    this.levelSorted = Collections.unmodifiableList(levelSorted);
-    this.code = code;
-    this.vunit = Grib2Utils.getLevelUnit(code);
-  }
 
   static public VertCoord.Level extractLevel(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     boolean hasLevel2 = pds.getLevelType2() != GribNumbers.MISSING;
     double level2val =  hasLevel2 ?  pds.getLevelValue2() :  GribNumbers.UNDEFINEDD;
     boolean isLayer = Grib2Utils.isLayer(pds);
-
     return new VertCoord.Level(pds.getLevelValue1(), level2val, isLayer);
+  }
+
+  private final List<VertCoord.Level> levelSorted;
+  private final int code;
+  private String name;
+  private final VertCoord.VertUnit vunit;
+  private final boolean isLayer;
+
+  public CoordinateVert(List<VertCoord.Level> levelSorted, int code) {
+    this.levelSorted = Collections.unmodifiableList(levelSorted);
+    this.code = code;
+    this.vunit = Grib2Utils.getLevelUnit(code);
+    this.isLayer = levelSorted.get(0).isLayer();
   }
 
   public Object extract(Grib2Record gr) {
@@ -46,8 +48,14 @@ public class CoordinateVert implements Coordinate {
     return levelSorted;
   }
 
+  @Override
   public List<? extends Object> getValues() {
     return levelSorted;
+  }
+
+  @Override
+  public Object getValue(int idx) {
+    return levelSorted.get(idx);
   }
 
   public int getSize() {
@@ -64,7 +72,7 @@ public class CoordinateVert implements Coordinate {
   }
 
   public boolean isLayer() {
-    return vunit.isLayer();
+    return isLayer;
   }
 
   public boolean isPositiveUp() {
@@ -97,21 +105,6 @@ public class CoordinateVert implements Coordinate {
     info.format("Levels: (%s)%n", getUnit());
     for (VertCoord.Level level : levelSorted)
       info.format("   %s%n", level);
-  }
-
-  public boolean equals2(CoordinateVert other) {
-    if (getCode() != other.getCode())
-      return false;
-
-    if (getSize() != other.getSize())
-      return false;
-
-    for (int i = 0; i < levelSorted.size(); i++) {
-      if (!levelSorted.get(i).equals(other.levelSorted.get(i)))
-        return false;
-    }
-
-    return true;
   }
 
   @Override
@@ -149,7 +142,7 @@ public class CoordinateVert implements Coordinate {
     }
 
     @Override
-   public Coordinate makeCoordinate(List<Object> values) {
+    public Coordinate makeCoordinate(List<Object> values) {
       List<VertCoord.Level> levelSorted = new ArrayList<>(values.size());
       for (Object val : values) levelSorted.add( (VertCoord.Level) val);
       Collections.sort(levelSorted);

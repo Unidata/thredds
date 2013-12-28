@@ -69,7 +69,7 @@ public class Grib2Rectilyser {
     this.gdsHash = gdsHash;
 
     intvMerge = assignValue(pdsConfig, "intvMerge", true);
-    // useTableVersion = assignValue(pdsConfig, "useTableVersion", true);
+    // useTableVersion = assignValue(pdsConfig, "useTableVersion", true);  // only for GRIB1
     useGenType = assignValue(pdsConfig, "useGenType", false);
   }
 
@@ -128,6 +128,7 @@ public class Grib2Rectilyser {
       if (vertUnit.isVerticalCoordinate())
         vb.coordND.addBuilder(new CoordinateVert.Builder(pdsFirst.getLevelType1()));
 
+      // populate the coordinates with the inventory of data
       for (Grib2Record gr : vb.atomList)
         vb.coordND.addRecord(gr);
 
@@ -146,7 +147,7 @@ public class Grib2Rectilyser {
     int tot_dups = 0;
     int total = 0;
 
-    // redo the variables against the shared coordinates (at the moment this is just possibly runtime)
+    // redo the variables against the shared coordinates
     for (VariableBag vb : gribvars) {
       vb.coordIndex = new ArrayList<>();
       vb.coordND = uniquify.reindex(vb.coordND, vb.coordIndex);
@@ -275,6 +276,9 @@ public class Grib2Rectilyser {
         result += result * 37 + id.getSubcenter_id();
     }
 
+    /* LOOK may be need to be variable specific, using
+    <useGen><variable></useGen> ??
+     */
     // only use the GenProcessType when "error" 2/8/2012 LOOK WTF ??
     int genType = pds2.getGenProcessType();
     if (useGenType && (genType == 6 || genType == 7)) {

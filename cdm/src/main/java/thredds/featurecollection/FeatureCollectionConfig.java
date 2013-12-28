@@ -542,20 +542,20 @@ public class FeatureCollectionConfig {
 
      */
 
-    // true means remove
-    public boolean filterOut(int id, int hasLength, int prob) {
-      if (filter == null) return false;
+    // true means use, false means discard
+    public boolean filterOk(int id, int hasLength, int prob) {
+      if (filter == null) return true;
+      if (hasLength == 0 && isZeroExcluded()) return false;
       for (GribIntvFilterParam param : filter) {
         boolean needProb = (param.prob != Integer.MIN_VALUE); // filter uses prob
         boolean hasProb = (prob != Integer.MIN_VALUE); // record has prob
         boolean isMine = !needProb || hasProb && (param.prob == prob);
         if (param.id == id && isMine) { // first match in the filter list is used
           if (param.intvLength != hasLength)
-            return true; // remove the ones whose intervals dont match
-          return false;
+            return false; // remove the ones whose intervals dont match
         }
       }
-      return false;
+      return true;
     }
 
     void addVariable(int intvLength, String idS, String probS) {
@@ -572,12 +572,12 @@ public class FeatureCollectionConfig {
 
       try {
         int id;
-        if (s.length == 3) {
+        if (s.length == 3) { // GRIB1
           int discipline = Integer.parseInt(s[0]);
           int category = Integer.parseInt(s[1]);
           int number = Integer.parseInt(s[2]);
           id = (discipline << 16) + (category << 8) + number;
-        } else {
+        } else {   // GRIB2
           int center = Integer.parseInt(s[0]);
           int subcenter = Integer.parseInt(s[1]);
           int version = Integer.parseInt(s[2]);

@@ -24,16 +24,23 @@
   <li>Collection level datasets are automatically created. These correspond to the FMRC <em>best</em> dataset.</li>
   <li>All individual files are also made available.</li>
 </ul>
+<p>Some of the new capabilities in version 4.4 are:</p>
+<ul>
+  <li>Collections in the millions of files are now feasible. Java 7 nio package is used to efficiently scan directories. </li>
+  <li>Updating of colletions is significantly different than in version 4.3, in order to support very large collections.</li>
+  <li>GribCollections keep two time coordinates - reference time (aka run time) and valid time (aka forecast time).</li>
+  <li>PartitionCollections can be built on top of GribCollections that can show the equivilent of FMRC <em>best</em> dataset.</li>
+  <li>PartitionCollections allow filtering on time interval coordinates.</li>
+</ul>
 <p>Implementation notes:</p>
 <ul>
   <li>For each grib file, a <em>grib index</em> is written in the same directory, named <strong>&lt;grib filename&gt;.gbx9</strong>. Once written, this never
     has to be rewritten.
   </li>
-  <li>For each grib file, a <em>cdm index</em> is written in the same directory, named <strong>&lt;grib filename&gt;.ncx</strong>. This occasionally has to be
-    rewritten when new CDM versions are released, or if you modify your grib configuration.
-  </li>
+  <li>For each grib file, a <em>cdm index</em> may be written in the same directory, named <strong>&lt;grib filename&gt;.ncx</strong>2 This occasionally has to be
+    rewritten when new CDM versions are released, or if you modify your grib configuration.  </li>
   <li>For each collection, a <em>grib collection index</em> is written in the <em>collection root directory, </em>named <strong>&lt;collection
-    name&gt;.ncx</strong>. This must be rewritten if any of the collection files change.
+    name&gt;.ncx2</strong>. This must be rewritten if any of the collection files change.
   </li>
 </ul>
 <p>For background, please read:</p>
@@ -575,6 +582,17 @@ de-referencing the catalogRefs, and simplifying:
 </blockquote>
 <p>If you make changes to <strong>gribConfig</strong> parameters (except <strong>datasetTypes</strong>, <strong>LatestNamer</strong>, <strong>BestNamer</strong>,
   and <strong>filesSort</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
+<hr width="100%"/>
+<p>GribCollections</p>
+<p>Reference time and forecast time. This allows all grib records to be accessed by the user.</p>
+<p>gdsHash</p>
+<p>PartitionCollection</p>
+<p>partition=&quot;file&quot;. All records with the same reference time are in a single file. Each file is made into a GribCollection. All the files in a directory are made into a PartitionCollection.</p>
+<p>partition=&quot;directory&quot;. All records in all files in a directory are made into a GribCollection. All nested directories are combined into a PartitionCollection. Directories can be arbitrarily nested. Only partitions that change need to be reindexed. Existing indexes are reused when possible. This is the way to handle very large collections.</p>
+<p>intvFilter</p>
+<p>xsd</p>
+<p> &lt;xsd:element name=&quot;useGenType&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt; now in pdsHash</p>
+<p>&nbsp;</p>
 <hr width="100%"/>
 <address>
   <img src="../../thread.png" alt="" width="76" height="67"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a>

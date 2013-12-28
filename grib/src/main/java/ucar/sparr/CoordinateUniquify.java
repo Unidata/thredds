@@ -65,7 +65,7 @@ public class CoordinateUniquify {
          if (coord.getType() == Coordinate.Type.runtime)
            idx = 0;
          else
-           System.out.println("HEY");
+           System.out.println("CoordinateUniquify HEY");
        }
        result.add(idx);
      }

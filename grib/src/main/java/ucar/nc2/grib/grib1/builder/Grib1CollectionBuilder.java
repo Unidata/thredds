@@ -327,7 +327,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       int param = pdss.getParameterNumber();
       int id = (center << 8) + (subcenter << 16) + (version << 24) + param;
 
-      return intvFilter.filterOut(id, haveLength, Integer.MIN_VALUE);
+      return !intvFilter.filterOk(id, haveLength, Integer.MIN_VALUE);
     }
     return false;
   }

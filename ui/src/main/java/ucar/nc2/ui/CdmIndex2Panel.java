@@ -128,14 +128,19 @@ public class CdmIndex2Panel extends JPanel {
         }
       }
     });
-    /* varPopup.addAction("Send Files to Grib2Collection", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        VarBean bean = (VarBean) varTable.getSelectedBean();
-        if (bean != null) {
-          bean.sendFilesToGrib2Collection();
-        }
-      }
-    }); */
+    varPopup.addAction("Make Variable(s) GribConfig", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         List<VarBean> beans = varTable.getSelectedBeans();
+         infoTA.clear();
+         Formatter f = new Formatter();
+         for (VarBean bean : beans)
+           bean.makeGribConfig(f);
+         infoTA.appendLine(f.toString());
+         infoTA.gotoTop();
+         infoWindow.show();
+       }
+     });
+
 
     coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates in group", "Coordinates", null);
     varPopup = new PopupMenu(coordTable.getJTable(), "Options");
@@ -488,6 +493,7 @@ public class CdmIndex2Panel extends JPanel {
     public VarBean(GribCollection.VariableIndex v, GribCollection.GroupHcs group) {
       this.v = v;
       this.group = group;
+      v.calcTotalSize();
     }
 
     public int getNRecords() {
@@ -526,6 +532,10 @@ public class CdmIndex2Panel extends JPanel {
 
     public String getVariableId() {
       return v.discipline + "-" + v.category + "-" + v.parameter;
+    }
+
+    public void makeGribConfig(Formatter f) {
+      f.format("<variable id='%s'/>%n", getVariableId());
     }
 
     private void showSparseArray(Formatter f) {
