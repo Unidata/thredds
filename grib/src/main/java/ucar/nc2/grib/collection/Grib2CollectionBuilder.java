@@ -61,7 +61,7 @@ import java.util.*;
  */
 public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
-  public static final String MAGIC_START = "Grib2Collectio2Index";
+  public static final String MAGIC_START = "Grib2Collectio2Index";  // was Grib2CollectionIndex
   protected static final int minVersionSingle = 1;
   protected static final int version = 1;
   private static final boolean showFiles = false;

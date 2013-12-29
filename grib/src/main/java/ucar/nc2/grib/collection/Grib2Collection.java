@@ -33,7 +33,6 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;

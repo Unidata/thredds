@@ -32,7 +32,6 @@
 
 package ucar.nc2.grib;
 
-import thredds.filesystem.MFileOS;
 import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
@@ -124,7 +123,7 @@ public abstract class GribIndex {
    *
    * @param location location of the data file
    * @param dataModified last modified date of the data file
-   * @param force always, test or nocheck
+   * @param force rewrite? always, test, nocheck, never
    * @return true if index was successfully read, false if index must be (re)created
    * @throws IOException on io error
    */

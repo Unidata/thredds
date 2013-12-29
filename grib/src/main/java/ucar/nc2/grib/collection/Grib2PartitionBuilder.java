@@ -19,13 +19,13 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Description
+ * Builds Grib2 PartitionCollections (version 2)
  *
  * @author John
  * @since 12/7/13
  */
 public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
-  public static final String MAGIC_START = "Grib2Partition0Index";
+  public static final String MAGIC_START = "Grib2Partition2Index";  // was Grib2Partition0Index
   static private final boolean trace = false;
 
   // called by tdm: update partition, test children partitions

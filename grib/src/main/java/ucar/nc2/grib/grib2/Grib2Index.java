@@ -118,7 +118,7 @@ public class Grib2Index extends GribIndex {
     File idxFile = GribCollection.getIndexFile(filename + GBX9_IDX);
     if (!idxFile.exists()) return false;
     long idxModified = idxFile.lastModified();
-    if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
+    if ((force == CollectionUpdateType.test) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
     try (FileInputStream fin = new FileInputStream(idxFile)) {
         //// check header is ok

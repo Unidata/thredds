@@ -274,7 +274,7 @@ public class Grib2Iosp extends GribIosp {
   private boolean isPartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
 
-  // accept grib2 or ncx files
+  // accept grib2 or ncx2 files
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
@@ -316,6 +316,7 @@ public class Grib2Iosp extends GribIosp {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
 
+    // check if its a plain ole GRIB2 data file
     boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
     if (isGribFile) {
       this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(false, raf, gribConfig, CollectionUpdateType.test, null, logger);
@@ -331,7 +332,7 @@ public class Grib2Iosp extends GribIosp {
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
       addGroup(ncfile, gHcs, false);
 
-    } else if (gribCollection != null) { // use the gribCollection that was set in the constructor
+    } else if (gribCollection != null) { // use the gribCollection that was set in the constructor or opened as a data file
       if (this.gribCollection instanceof Grib2Partition) {
         isPartitioned = true;
         gribPartition = (Grib2Partition) gribCollection;
@@ -344,13 +345,17 @@ public class Grib2Iosp extends GribIosp {
       for (GribCollection.GroupHcs g : groups)
         addGroup(ncfile, g, useGroups);
 
-    } else { // otherwise, its an ncx file : read in entire collection
-
+    } else {
+      // see if its an ncx2 file : read in entire collection
       raf.seek(0);
       byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.length()];
       raf.readFully(b);
       String magic = new String(b);
+      boolean isNcx = magic.equals(Grib2CollectionBuilder.MAGIC_START);
       isPartitioned = magic.equals(Grib2PartitionBuilder.MAGIC_START);
+
+      if (!isNcx && !isPartitioned)
+        throw new IllegalStateException("Not a GRIB2 data file or ncx2 file");
 
       String location = raf.getLocation();
       File f = new File(location);

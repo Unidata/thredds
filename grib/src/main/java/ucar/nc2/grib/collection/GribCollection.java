@@ -160,13 +160,15 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   public static GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
             CollectionUpdateType force, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-    GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index();
-
     String filename = dataRaf.getLocation();
     File dataFile = new File(filename);
+
+    /* not needed: Grib2CollectionBuilder.readOrCreateIndexFromSingleFile does all this
+    GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index();
     boolean readOk;
     try {
-      readOk = gribIndex.readIndex(filename, dataFile.lastModified(), force); // heres where the gbx9 file date is checked against the data file
+      // heres where the gbx9 file date is checked against the data file
+      readOk = gribIndex.readIndex(filename, dataFile.lastModified(), force);
     } catch (IOException ioe) {
       readOk = false;
     }
@@ -177,10 +179,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       logger.debug("  Index written: {}", filename + GribIndex.GBX9_IDX);
     } else if (logger.isDebugEnabled()) {
       logger.debug("  Index read: {}", filename + GribIndex.GBX9_IDX);
-    }
+    }  */
 
-    // heres where the ncx file date is checked against the data file
     MFile mfile = new MFileOS(dataFile);
+
     //if (isGrib1)
     //  return Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
     //else
