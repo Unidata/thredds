@@ -33,8 +33,8 @@
 
 package ucar.nc2.ft;
 
-import org.junit.Assert;
 import junit.framework.TestCase;
+import org.junit.Assert;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
@@ -1198,7 +1198,7 @@ public class TestPointFeatureTypes extends TestCase {
 
 
   // This is a regression test for TDS-513: https://bugtracking.unidata.ucar.edu/browse/TDS-513
-  public void testTimeSeriesProfile1dTime() throws IOException {
+  public void testStationProfileMultidim1dTime() throws IOException {
     FeatureType type = FeatureType.STATION_PROFILE;
     String location = CFpointObs_topdir + "stationProfileMultidim1dTime.ncml";
     ucar.nc2.util.CancelTask task = null;
@@ -1219,7 +1219,7 @@ public class TestPointFeatureTypes extends TestCase {
     StationProfileFeature stationProfileFeat = stationProfileFeatCol.next();  // We only care about the first one.
 
     List<Date> timesList = stationProfileFeat.getTimes();
-    Set<Date> timesSet = new TreeSet<Date>(stationProfileFeat.getTimes());
+    Set<Date> timesSet = new TreeSet<Date>(stationProfileFeat.getTimes());  // Nukes dupes.
     Assert.assertEquals(timesList.size(), timesSet.size());  // Assert that the times are unique.
   }
 }
