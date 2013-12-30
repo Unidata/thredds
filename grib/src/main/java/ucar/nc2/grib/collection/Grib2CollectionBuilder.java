@@ -66,7 +66,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   protected static final int version = 1;
   private static final boolean showFiles = false;
 
-  // called by tdm
+  /* called by tdm
   static public boolean update(MCollection dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     if (!builder.needsUpdate()) return false;
@@ -91,7 +91,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    * @param logger log here
    * @return GribCollection
    * @throws IOException on IO error
-   */
+   *
   static public GribCollection factory(MCollection dcm, CollectionUpdateType force, Formatter errlog,
                                        org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
@@ -113,7 +113,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return builder.createIndex(indexFile);
   } */
 
-  // this writes the index always
+  /* this writes the index always
   static public boolean makeIndex(MCollection dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     File indexFile = builder.gc.getIndexFile();
@@ -126,6 +126,14 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   // for debugging
   static public Grib2CollectionBuilder debugOnly(MCollection dcm, org.slf4j.Logger logger) {
     return new Grib2CollectionBuilder(dcm, logger);
+  }  */
+
+    // from a single file, read in the index, create if it doesnt exist
+  static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionUpdateType force,
+                                                               FeatureCollectionConfig.GribConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, config, logger);
+    builder.readOrCreateIndex(force, errlog);
+    return builder.gc;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -156,6 +164,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     super(tpc, false, logger);
   }
 
+  // from a collection of files
   private Grib2CollectionBuilder(MCollection dcm, org.slf4j.Logger logger) {
     super(dcm, false, logger);
     this.name = dcm.getCollectionName();

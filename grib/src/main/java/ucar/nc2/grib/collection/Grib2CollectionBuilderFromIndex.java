@@ -18,22 +18,23 @@ import java.util.*;
 /**
  * Build a GribCollection object for Grib-2 files. Only from ncx files.
  * No updating, no nuthin.
+ * Data file is not opened.
  *
  * @author caron
  * @since 11/9/13
  */
 public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
-  // read in the index, open raf
-  static public GribCollection readFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
-    File idxFile = GribCollection.getIndexFile(name, directory);
+  // read in the index, open raf and leave open in the GribCollection
+  static public GribCollection readFromIndex(String idxFilename, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+    File idxFile = GribCollection.getIndexFile(idxFilename, directory);
     RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
-    return readFromIndex(name, directory, raf, config, logger);
+    return readFromIndex(idxFilename, directory, raf, config, logger);
   }
 
   // read in the index, index raf already open
-  static public GribCollection readFromIndex(String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
-    Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, directory, config, logger);
+  static public GribCollection readFromIndex(String idxFilename, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+    Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(idxFilename, directory, config, logger);
     if (!builder.readIndex(raf))
       throw new IOException("Reading index failed"); // or return null ??
 
@@ -132,14 +133,16 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       gc.local = proto.getLocal();
       this.tables = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local);
 
-      gc.indexName = proto.getName();
+      if (!gc.name.equals(proto.getName())) {
+        logger.info("Grib2CollectionBuilderFromIndex {}: has different name= {} than index= {} ", gc.getName(), proto.getName());
+      }
       File dir = gc.getDirectory();
       File protoDir = new File(proto.getTopDir());
       if (dir != null && protoDir != null && !dir.getCanonicalPath().equals(protoDir.getCanonicalPath())) {
         logger.info("Grib2CollectionBuilderFromIndex {}: has different directory= {} than index= {} ", gc.getName(), dir.getCanonicalPath(), protoDir.getCanonicalPath());
         //return false;
       }
-      // gc.setDirectory(dir);  // correct the directory
+      // gc.setDirectory(dir);  // correct the directory LOOK
 
       int n = proto.getMfilesCount();
       List<MFile> files = new ArrayList<>(n);

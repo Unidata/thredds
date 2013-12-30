@@ -33,7 +33,6 @@
 package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
-import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.sparr.Coordinate;
@@ -54,7 +53,6 @@ import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
@@ -277,14 +275,11 @@ public class Grib2Iosp extends GribIosp {
   // accept grib2 or ncx2 files
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    raf.seek(0);
-    byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.length()];
-    raf.readFully(b);
-    String magic = new String(b);
-    if (magic.equals(Grib2CollectionBuilder.MAGIC_START)) return true;
-    if (magic.equals(Grib2PartitionBuilder.MAGIC_START)) return true;  // so must be same length as Grib2CollectionBuilder.MAGIC_START
+    GribCdmIndex2.GribCollectionType type = GribCdmIndex2.getType(raf);
+    if (type == GribCdmIndex2.GribCollectionType.GRIB2) return true;
+    if (type == GribCdmIndex2.GribCollectionType.Partition2) return true;
 
-    // check for GRIB2 file
+    // check for GRIB2 data file
     return Grib2RecordScanner.isValidFile(raf);
   }
 
@@ -319,8 +314,12 @@ public class Grib2Iosp extends GribIosp {
     // check if its a plain ole GRIB2 data file
     boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
     if (isGribFile) {
-      this.gribCollection = GribCollection.makeGribCollectionFromSingleFile(false, raf, gribConfig, CollectionUpdateType.test, null, logger);
+      this.gribCollection = GribCdmIndex2.makeGribCollectionFromDataFile(false, raf, gribConfig, CollectionUpdateType.test, null, logger);
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+
+      // close the data file, the ncx2 raf file is managed by gribCollection
+      raf.close();
+      this.raf = null;
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor
@@ -332,7 +331,7 @@ public class Grib2Iosp extends GribIosp {
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
       addGroup(ncfile, gHcs, false);
 
-    } else if (gribCollection != null) { // use the gribCollection that was set in the constructor or opened as a data file
+    } else if (gribCollection != null) { // use gribCollection set in the constructor or opened as a data file
       if (this.gribCollection instanceof Grib2Partition) {
         isPartitioned = true;
         gribPartition = (Grib2Partition) gribCollection;
@@ -346,32 +345,32 @@ public class Grib2Iosp extends GribIosp {
         addGroup(ncfile, g, useGroups);
 
     } else {
-      // see if its an ncx2 file : read in entire collection
-      raf.seek(0);
-      byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.length()];
-      raf.readFully(b);
-      String magic = new String(b);
-      boolean isNcx = magic.equals(Grib2CollectionBuilder.MAGIC_START);
-      isPartitioned = magic.equals(Grib2PartitionBuilder.MAGIC_START);
-
-      if (!isNcx && !isPartitioned)
+      this.gribCollection = GribCdmIndex2.makeGribCollectionFromIndexFile(raf, gribConfig, CollectionUpdateType.test, null, logger);
+      if (gribCollection == null)
         throw new IllegalStateException("Not a GRIB2 data file or ncx2 file");
-
-      String location = raf.getLocation();
-      File f = new File(location);
-      int pos = f.getName().lastIndexOf(".");
-      String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName();
-
-      if (isPartitioned) {
-        gribPartition = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, null, raf, null, logger);
-        gribCollection = gribPartition;
-      } else {
-        gribCollection = Grib2CollectionBuilderFromIndex.readFromIndex(name, null, raf, gribConfig, logger);
-      }
 
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
-      List<GribCollection.GroupHcs> groups = new ArrayList<>(gribCollection.getGroups());
+      List<GribCollection.GroupHcs> groups;
+      if (gribCollection instanceof PartitionCollection) {
+        isPartitioned = true;
+        gribPartition = (PartitionCollection) gribCollection;
+
+        groups = new ArrayList<>();
+        for (PartitionCollection.Dataset ds : gribPartition.getDatasets()) {
+          for (GribCollection.GroupHcs g : ds.getGroups())
+            groups.add(g);
+        }
+
+        Collections.sort(groups);
+        boolean useGroups = groups.size() > 1;
+        for (GribCollection.GroupHcs g : groups)
+          addGroup(ncfile, g, useGroups);
+
+      } else {
+        groups = new ArrayList<>(gribCollection.getGroups());
+      }
+
       Collections.sort(groups);
       boolean useGroups = groups.size() > 1;
       for (GribCollection.GroupHcs g : groups)

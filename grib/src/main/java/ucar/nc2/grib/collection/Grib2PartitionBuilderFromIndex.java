@@ -12,14 +12,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Read Grib2Partition From ncx2 Index
+ * Read Grib2Partition From ncx2 Index,
+ * Data file never opened.
  *
  * @author John
  * @since 12/7/13
  */
 public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIndex {
 
-    // read in the index, open raf
+    // read in the index, open raf and leave open in the GribCollection
   static public GribCollection createTimePartitionFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     File idxFile = ucar.nc2.grib.GribCollection.getIndexFile(name, directory);
     RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");

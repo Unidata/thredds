@@ -39,6 +39,12 @@ public class PartitionCollection extends GribCollection {
     return partitionCache;
   }
 
+  static public void disableNetcdfFileCache() {
+    if (null != partitionCache) partitionCache.disable();
+    partitionCache = null;
+  }
+
+
   static private final ucar.nc2.util.cache.FileFactory collectionFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = new RandomAccessFile(location, "r");
@@ -47,13 +53,7 @@ public class PartitionCollection extends GribCollection {
     }
   };
 
-  static public void disableNetcdfFileCache() {
-    if (null != partitionCache) partitionCache.disable();
-    partitionCache = null;
-  }
-
-
-  static public boolean update(boolean isGrib1, PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
+  /* static public boolean update(boolean isGrib1, PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
     //if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, logger);
     return Grib2PartitionBuilder.update(tpc, logger);
   }
@@ -62,7 +62,7 @@ public class PartitionCollection extends GribCollection {
   static public PartitionCollection factory(boolean isGrib1, PartitionManager tpc, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
     //if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, logger);
     return Grib2PartitionBuilder.factory(tpc, force, force, null, logger);
-  }
+  }   */
 
   //////////////////////////////////////////////////////////////////////
 
@@ -306,7 +306,7 @@ public class PartitionCollection extends GribCollection {
     // only used during creation of index
     private MCollection dcm;
 
-    // constructor from a TimePartition object
+    // constructor from a MCollection object
     public Partition(MCollection dcm) {
       this.dcm = dcm;
       this.name = dcm.getCollectionName();
@@ -315,7 +315,7 @@ public class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
-      GribCollection result = GribCollection.factory(isGrib1, dcm, force, null, logger); // LOOK caller must close
+      GribCollection result = GribCdmIndex2.factory(isGrib1, dcm, force, null, logger); // LOOK caller must close
       indexFilename = result.getIndexFile().getPath();
       return result;
     }
@@ -487,7 +487,7 @@ public class PartitionCollection extends GribCollection {
     Partition part = getPartitions().get(partno);
     GribCollection gc = part.getGribCollection();
     RandomAccessFile raf = gc.getDataRaf(fileno);
-    gc.close();
+    gc.close(); // LOOK ??
     return raf;
   }
 

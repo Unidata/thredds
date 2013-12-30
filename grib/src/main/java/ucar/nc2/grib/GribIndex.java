@@ -133,7 +133,7 @@ public abstract class GribIndex {
    * Make the gbx9 index file.
    *
    * @param location location of the data file
-   * @param dataRaf already opened data raf; may be null
+   * @param dataRaf already opened data raf (leave open); if null, makeIndex opens and closes)
    * @return true
    * @throws IOException on io error
    */
