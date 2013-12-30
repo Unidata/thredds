@@ -34,25 +34,22 @@
 package thredds.ui.catalog;
 
 import thredds.catalog.*;
-
 import thredds.cataloggen.DirectoryScanner;
-
 import ucar.nc2.ui.widget.*;
-import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.ComboBox;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.event.*;
 
 /**
  * A Swing widget for THREDDS clients to access and choose from Dataset Inventory catalogs.
@@ -99,7 +96,6 @@ public class CatalogChooser extends JPanel {
   private static final String FILECHOOSER_DEFAULTDIR = "FileChooserDefaultDir";
   private PreferencesExt prefs;
 
-  private EventListenerList listenerList = new EventListenerList();
   private String eventType = null;
 
     // ui
@@ -267,7 +263,7 @@ public class CatalogChooser extends JPanel {
             setCurrentURL(tree.getCatalogURL());
           }
 
-        } else { // Dataset or File
+        } else if (e.getNewValue() instanceof InvDataset) { // Dataset or File
           firePropertyChangeEvent((InvDataset) e.getNewValue(), e.getPropertyName());
         }
       }
@@ -402,41 +398,22 @@ public class CatalogChooser extends JPanel {
     }
   }
 
-  /**
-   * Add a PropertyChangeEvent Listener. Throws a PropertyChangeEvent:
-   * <ul><li>  propertyName = "Catalog", getNewValue() = catalog URL string
-   * <li>  propertyName = "Dataset" or "File", getNewValue() = InvDataset chosen.
-   * <li>  propertyName = "InvAccess" getNewValue() = InvAccess chosen.
-   * <li>  propertyName = "catrefURL", getNewValue() = catref URL was chosen.
-   * </ul>
-   */
-  public void addPropertyChangeListener( PropertyChangeListener l) {
-    listenerList.add(PropertyChangeListener.class, l);
-  }
-
-  /**
-   * Remove a PropertyChangeEvent Listener.
-   */
-  public void removePropertyChangeListener( PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
-  }
-
   private void firePropertyChangeEvent(InvDataset ds, String oldPropertyName) {
     String propertyName = (eventType != null) ? eventType : oldPropertyName;
     PropertyChangeEvent event = new PropertyChangeEvent(this, propertyName, null, ds);
     firePropertyChangeEvent( event);
   }
 
+  /**
+   * Fires a PropertyChangeEvent:
+   * <ul><li>  propertyName = "Catalog", getNewValue() = catalog URL string
+   * <li>  propertyName = "Dataset" or "File", getNewValue() = InvDataset chosen.
+   * <li>  propertyName = "InvAccess" getNewValue() = InvAccess chosen.
+   * <li>  propertyName = "catrefURL", getNewValue() = catref URL was chosen.
+   * </ul>
+   */
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
-    // System.out.println("firePropertyChangeEvent "+event);
-
-    // Process the listeners last to first
-    Object[] listeners = listenerList.getListenerList();
-    for (int i = listeners.length-2; i>=0; i-=2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener)listeners[i+1]).propertyChange(event);
-      }
-    }
+    firePropertyChange(event.getPropertyName(), event.getOldValue(), event.getNewValue());
   }
 
   /**

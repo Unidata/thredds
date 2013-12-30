@@ -37,18 +37,23 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.ui.Debug;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import javax.swing.text.html.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.EditorKit;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLFrameHyperlinkEvent;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
 
 /**
  * A simple HTML Browser based on JEditPane.
@@ -61,7 +66,6 @@ public class HtmlBrowser extends JPanel {
   private PreferencesExt prefs;
   private RootPaneContainer parent = null;
 
-  private EventListenerList listenerList = new EventListenerList();
   private boolean eventsOK = true;
 
     // ui
@@ -189,31 +193,13 @@ public class HtmlBrowser extends JPanel {
   }
 
   // event handling
-  /**
-   * Add a PropertyChangeEvent Listener. Throws a PropertyChangeEvent:
-   *   propertyName = "datasetURL", getNewValue() = dataset URL string
-   */
-  public void addPropertyChangeListener( PropertyChangeListener l) {
-    listenerList.add(PropertyChangeListener.class, l);
-  }
 
   /**
-   * Remove a PropertyChangeEvent Listener.
+   * Fires a PropertyChangeEvent:
+   * propertyName = "datasetURL", getNewValue() = dataset URL string
    */
-  public void removePropertyChangeListener( PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
-  }
-
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
-    // System.out.println("firePropertyChangeEvent "+event);
-
-    // Process the listeners last to first
-    Object[] listeners = listenerList.getListenerList();
-    for (int i = listeners.length-2; i>=0; i-=2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener)listeners[i+1]).propertyChange(event);
-      }
-    }
+    firePropertyChange(event.getPropertyName(), event.getOldValue(), event.getNewValue());
   }
 
   // set new content from outside
