@@ -28,14 +28,14 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2Partition2Index";  // was Grib2Partition0Index
   static private final boolean trace = false;
 
-  // called by tdm: update partition, test children partitions
+  /* called by tdm: update partition, test children partitions
   static public boolean update(PartitionManager tpc, org.slf4j.Logger logger) throws IOException {
     Grib2PartitionBuilder builder = new Grib2PartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc, logger);
     if (!builder.needsUpdate()) return false;
     builder.readOrCreateIndex(CollectionUpdateType.always, CollectionUpdateType.test, null);
     builder.gc.close();
     return true;
-  }
+  }  */
 
   // read in the index, create if it doesnt exist or is out of date (depends on force)
   static public Grib2Partition factory(PartitionManager tpc, CollectionUpdateType forcePartition, CollectionUpdateType forceChildren,

@@ -81,7 +81,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, config, logger);
     builder.readOrCreateIndex(force, errlog);
     return builder.gc;
-  }
+  } */
 
   /**
    * From a CollectionManagerRO, read in the index, create if it doesnt exist or is out of date
@@ -91,7 +91,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    * @param logger log here
    * @return GribCollection
    * @throws IOException on IO error
-   *
+   */
   static public GribCollection factory(MCollection dcm, CollectionUpdateType force, Formatter errlog,
                                        org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
@@ -113,7 +113,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return builder.createIndex(indexFile);
   } */
 
-  /* this writes the index always
+  /// for ToolsUI
   static public boolean makeIndex(MCollection dcm, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
     File indexFile = builder.gc.getIndexFile();
@@ -126,7 +126,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   // for debugging
   static public Grib2CollectionBuilder debugOnly(MCollection dcm, org.slf4j.Logger logger) {
     return new Grib2CollectionBuilder(dcm, logger);
-  }  */
+  }
 
     // from a single file, read in the index, create if it doesnt exist
   static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionUpdateType force,

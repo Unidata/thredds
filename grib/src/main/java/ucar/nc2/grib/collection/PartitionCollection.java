@@ -44,12 +44,12 @@ public class PartitionCollection extends GribCollection {
     partitionCache = null;
   }
 
-
   static private final ucar.nc2.util.cache.FileFactory collectionFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return ucar.nc2.grib.collection.GribCollection.readFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger());
+      return GribCdmIndex2.makeGribCollectionFromIndexFile(raf, p.getConfig(), CollectionUpdateType.never, null, p.getLogger());
+      // return ucar.nc2.grib.collection.GribCollection.readFromIndex(p.isGrib1(), p.getName(), new File(p.getDirectory()), raf, p.getConfig(), p.getLogger());
     }
   };
 
@@ -315,7 +315,7 @@ public class PartitionCollection extends GribCollection {
     }
 
     public GribCollection makeGribCollection(CollectionUpdateType force) throws IOException {
-      GribCollection result = GribCdmIndex2.factory(isGrib1, dcm, force, null, logger); // LOOK caller must close
+      GribCollection result = GribCdmIndex2.makeGribCollectionFromMCollection(isGrib1, dcm, force, null, logger); // LOOK caller must close
       indexFilename = result.getIndexFile().getPath();
       return result;
     }

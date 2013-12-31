@@ -264,14 +264,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       StateGrib localState = (StateGrib) state;
       GribCollection previous = localState.gribCollection;
 
-      if (isFilePartition || isDirectoryPartition || isOtherPartition) {
-        localState.gribCollection = PartitionCollection.factory(isGrib1, (PartitionManager) this.datasetCollection, force, logger);
-        logger.debug("{}: TimePartition object was recreated", getName());
-
-      } else {
-        localState.gribCollection = GribCollection.factory(isGrib1, datasetCollection, force, null, logger);
-        logger.debug("{}: GribCollection object was recreated", getName());
-      }
+      localState.gribCollection = GribCdmIndex2.makeGribCollectionFromMCollection(isGrib1, this.datasetCollection, force, null, logger);
+      logger.debug("{}: GribCollection object was recreated", getName());
       if (previous != null) previous.close(); // LOOK may be another thread using - other thread will fail
 
     } catch (IOException ioe) {

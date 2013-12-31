@@ -362,11 +362,6 @@ public class Grib2Iosp extends GribIosp {
             groups.add(g);
         }
 
-        Collections.sort(groups);
-        boolean useGroups = groups.size() > 1;
-        for (GribCollection.GroupHcs g : groups)
-          addGroup(ncfile, g, useGroups);
-
       } else {
         groups = new ArrayList<>(gribCollection.getGroups());
       }
