@@ -34,30 +34,30 @@
 package ucar.nc2.ui;
 
 import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.dt.PointObsDatatype;
+import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ui.table.TableUtils;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.HashMapLRU;
-import ucar.nc2.dt.TrajectoryObsDatatype;
-import ucar.nc2.dt.PointObsDatatype;
-
-import java.io.*;
-import java.util.*;
-import java.util.List;
-
-import java.awt.*;
-import java.awt.event.MouseEvent;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.table.*;
-
 import ucar.nc2.util.Indent;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.TableSorter;
+
+import javax.swing.*;
+import javax.swing.event.EventListenerList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.io.*;
+import java.util.*;
+import java.util.List;
 
 /**
  * This puts the data values of a 1D Structure or Sequence into a JTable.
@@ -212,6 +212,20 @@ public class StructureTable extends JPanel {
   private void initTable(StructureTableModel m) {
     jtable = setModel(m);
 
+    // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
+    ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
+
+    // Left-align every cell, including header cells.
+    TableUtils.alignTable(jtable, SwingConstants.LEADING);
+
+    // Set the preferred column widths so that they're just big enough to display all contents without truncation.
+    jtable.getModel().addTableModelListener(new TableUtils.ResizeColumnWidthsListener(jtable));
+
+    // Don't resize the columns to fit the available space. We do this because there may be a LOT of columns, and
+    // auto-resize would cause them to be squished together to the point of uselessness. For an example, see
+    // Q:/cdmUnitTest/ft/stationProfile/noaa-cap/XmadisXdataXLDADXprofilerXnetCDFX20100501_0200
+    jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
     ListSelectionModel rowSM = jtable.getSelectionModel();
     rowSM.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
@@ -226,8 +240,6 @@ public class StructureTable extends JPanel {
       jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
       jtable.getColumnModel().getColumn(1).setCellRenderer(new DateRenderer());
     }
-    // jtable.setDefaultRenderer(Date.class, new DateRenderer()); // LOOK this doesnt work!
-    jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
     // reset popup
     popup = null;

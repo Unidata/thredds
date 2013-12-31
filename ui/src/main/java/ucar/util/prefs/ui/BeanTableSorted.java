@@ -33,8 +33,10 @@
 
 package ucar.util.prefs.ui;
 
+import ucar.nc2.ui.table.TableUtils;
 import ucar.util.prefs.PreferencesExt;
 
+import javax.swing.*;
 import java.beans.BeanInfo;
 
 /**
@@ -66,12 +68,7 @@ public class BeanTableSorted extends BeanTable {
 
   public BeanTableSorted( Class bc, PreferencesExt pstore, String header, String tooltip, BeanInfo info) {
     super( bc, pstore, header, tooltip, info);
-
-    sortedModel = new TableSorter(model);
-    jtable.setModel( sortedModel);
-    sortedModel.setTableHeader(jtable.getTableHeader());
-
-    restoreState();
+    init();
   }
 
 
@@ -86,10 +83,22 @@ public class BeanTableSorted extends BeanTable {
    */
   public BeanTableSorted(Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip, Object bean) {
     super( bc, pstore, canAddDelete, header, tooltip, bean);
+    init();
+  }
 
+  private void init() {
     sortedModel = new TableSorter(model);
-    jtable.setModel( sortedModel);
+    jtable.setModel(sortedModel);
     sortedModel.setTableHeader(jtable.getTableHeader());
+
+    // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
+    ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
+
+    // Left-align every cell, including header cells.
+    TableUtils.alignTable(jtable, SwingConstants.LEADING);
+
+    // Set the preferred column widths so that they're just big enough to display all contents without truncation.
+    jtable.getModel().addTableModelListener(new TableUtils.ResizeColumnWidthsListener(jtable));
 
     restoreState();
   }
@@ -101,5 +110,4 @@ public class BeanTableSorted extends BeanTable {
   protected int viewIndex(int rowIndex) {
     return sortedModel.viewIndex(rowIndex);
   }
-
 }
