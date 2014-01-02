@@ -150,8 +150,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
 
 
   ////////////////////////////////////////////////////////////////
-  protected final String name; // collection name; index filename must be name.ncx2
-  //protected String indexName;
+  protected String name; // collection name; index filename must be directory/name.ncx2
   protected File directory;
   protected final FeatureCollectionConfig.GribConfig gribConfig;
   protected final boolean isGrib1;

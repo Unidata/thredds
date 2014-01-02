@@ -241,7 +241,7 @@ public class CdmIndex2Panel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getPath(), file.getParentFile(), raf, null, logger);
+      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), file.getParentFile(), raf, null, logger);
       List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
@@ -539,17 +539,21 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     private void showSparseArray(Formatter f) {
-      try {
-        v.readRecords();
-      } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      }
-      if (v.sa != null) v.sa.showInfo(f, null);
+      if (v instanceof PartitionCollection.VariableIndexPartitioned) {
+        PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) v;
+        if (vip.twot != null)
+          vip.twot.showMissing(f);
 
-      // if (v instanceof PartitionCollection.VariableIndexPartitioned)
-      //   showRecordsInPartition(f);
-      // else
-      //   showRecordsInCollection(f);
+      } else {
+        try {
+          v.readRecords();
+        } catch (IOException e) {
+          e.printStackTrace();
+          return;
+        }
+        if (v.sa != null)
+          v.sa.showInfo(f, null);
+      }
     }
 
      /* private void showRecordsInCollection(Formatter f) {

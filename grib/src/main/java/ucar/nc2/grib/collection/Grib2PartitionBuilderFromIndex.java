@@ -3,6 +3,8 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.grib2.Grib2Gds;
 import ucar.nc2.grib.grib2.Grib2SectionGridDefinition;
+import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateTwoTimer;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -165,6 +167,14 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
       vip.addPartition(pv.getPartno(), pv.getGroupno(), pv.getVarno(), pv.getFlag(), pv.getNdups(),
               pv.getNrecords(), pv.getMissing(), pv.getDensity());
     }
+
+    List<Integer> invCountList = proto.getExtension(PartitionCollectionProto.invCount);
+    vip.twot = new CoordinateTwoTimer(invCountList);
+
+    Coordinate runtime = vip.getCoordinate(Coordinate.Type.runtime);
+    Coordinate time = vip.getCoordinate(Coordinate.Type.time);
+    if (time == null) time = vip.getCoordinate(Coordinate.Type.timeIntv);
+    vip.twot.setSize(runtime.getSize(), time.getSize());
 
     return vip;
   }

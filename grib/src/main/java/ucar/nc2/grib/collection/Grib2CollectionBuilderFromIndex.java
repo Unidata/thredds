@@ -34,6 +34,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
 
   // read in the index, index raf already open
   static public GribCollection readFromIndex(String idxFilename, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
+
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(idxFilename, directory, config, logger);
     if (!builder.readIndex(raf))
       throw new IOException("Reading index failed"); // or return null ??
@@ -134,7 +135,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       this.tables = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local);
 
       if (!gc.name.equals(proto.getName())) {
-        logger.info("Grib2CollectionBuilderFromIndex {}: has different name= {} than index= {} ", gc.getName(), proto.getName());
+        logger.info("Grib2CollectionBuilderFromIndex {}: has different name= {} than index= {} ", raf.getLocation(), gc.getName(), proto.getName());
       }
       File dir = gc.getDirectory();
       File protoDir = new File(proto.getTopDir());
@@ -142,7 +143,8 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
         logger.info("Grib2CollectionBuilderFromIndex {}: has different directory= {} than index= {} ", gc.getName(), dir.getCanonicalPath(), protoDir.getCanonicalPath());
         //return false;
       }
-      // gc.setDirectory(dir);  // correct the directory LOOK
+      if (gc.getDirectory() == null)
+        gc.setDirectory(protoDir);
 
       int n = proto.getMfilesCount();
       List<MFile> files = new ArrayList<>(n);

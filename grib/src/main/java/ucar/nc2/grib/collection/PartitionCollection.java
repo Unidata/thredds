@@ -11,6 +11,8 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.sparr.Coordinate;
+import ucar.sparr.CoordinateTwoTimer;
+import ucar.sparr.SparseArray;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -125,6 +127,7 @@ public class PartitionCollection extends GribCollection {
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
     public List<PartitionForVariable> partList; // must not change order
+    public CoordinateTwoTimer twot;
 
     public VariableIndexPartitioned(GroupHcs g, VariableIndex other) {
       super(g, other);

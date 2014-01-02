@@ -20,6 +20,7 @@ message PartitionVariable {
 extend Variable {
   repeated PartitionVariable partition = 100;
   repeated Parameter vparams = 101;    // not used yet
+  repeated uint32 invCount = 102;
 }
 
 message Gds {

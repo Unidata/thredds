@@ -32,35 +32,6 @@ public class GribCdmIndex2 implements IndexReader {
 
   static public enum GribCollectionType {GRIB1, GRIB2, Partition1, Partition2, none}
 
-  // open GribCollection. caller must close
-  static public GribCollection openCdmIndex(String indexFile, FeatureCollectionConfig.GribConfig config, Logger logger) throws IOException {
-    GribCollection gc = null;
-    String magic = null;
-    RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
-
-    try {
-      raf.seek(0);
-      byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.getBytes().length];   // they are all the same
-      raf.read(b);
-      magic = new String(b);
-
-      switch (magic) {
-        case Grib2CollectionBuilder.MAGIC_START:
-          gc = Grib2CollectionBuilderFromIndex.readFromIndex(indexFile, null, raf, config, logger);
-          break;
-        case Grib2PartitionBuilder.MAGIC_START:
-          gc = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(
-                  indexFile, null, raf, config, logger);
-          break;
-      }
-      return gc;
-
-    } catch (Throwable t) {
-      raf.close();
-      throw t;
-    }
-  }
-
   /**
    * Find out what kind of index this is
    *
@@ -92,6 +63,34 @@ public class GribCdmIndex2 implements IndexReader {
     }
     return GribCollectionType.none;
   }
+
+    // open GribCollection. caller must close
+  static public GribCollection openCdmIndex(String indexFile, FeatureCollectionConfig.GribConfig config, Logger logger) throws IOException {
+    RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
+
+    File f = new File(indexFile);
+    int pos = f.getName().lastIndexOf(".");
+    String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName(); // remove ".ncx2"
+
+
+    try {
+      GribCollectionType type = getType(raf);
+
+      switch (type) {
+        case GRIB2:
+          return Grib2CollectionBuilderFromIndex.readFromIndex(name, f.getParentFile(), raf, config, logger);
+        case Partition2:
+          return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, f.getParentFile(), raf, config, logger);
+      }
+
+      return null;
+
+    } catch (Throwable t) {
+      raf.close();
+      throw t;
+    }
+  }
+
 
   /**
    * Rewrite all the collection indices for all the directories in a directory partition recursively
