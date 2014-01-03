@@ -18,11 +18,22 @@ public abstract class TableUtils {
      * of their contents without truncation.
      */
     public static class ResizeColumnWidthsListener implements TableModelListener {
+        /**
+         * The default maximum number of table rows for which a full scan will be performed. If a table has more rows
+         * than this, only a partial scan will be done.
+         */
+        public static final int DEFAULT_FULL_SCAN_CUTOFF = 10000;
+
         private final JTable table;
-        private final boolean headerOnly;
+        private final int fullScanCutoff;
 
         /**
          * Creates a listener that resizes {@code table}'s column widths when its data changes.
+         * <p>
+         * If {@code table.getRowCount() <= }{@link #DEFAULT_FULL_SCAN_CUTOFF}, a full scan will be performed. That is,
+         * every row will be examined to determine the <b>optimal</b> column widths. Otherwise, a partial scan will be
+         * performed. That is, only the header and the first, middle, and last rows will be examined to determine the
+         * <b>approximate</b> column widths.
          * <p>
          * <b>Important:</b> This constructor <i>removes</i> {@code table} as a listener of its own {@link TableModel}.
          * However, all events are <i>forwarded</i> to {@code table} in {@link #tableChanged}. This ensures that
@@ -32,41 +43,36 @@ public abstract class TableUtils {
          * @see <a href="http://goo.gl/RH9thw">Swing in a better world: Listeners</a>
          */
         public ResizeColumnWidthsListener(JTable table) {
-            this(table, false);
+            this(table, DEFAULT_FULL_SCAN_CUTOFF);
+        }
+
+        public ResizeColumnWidthsListener(JTable table, int fullScanCutoff) {
+            this.table = table;
+            this.fullScanCutoff = fullScanCutoff;
 
             // Remove table as a listener. That way, we can control when it gets notified of events.
             table.getModel().removeTableModelListener(table);
 
             // Perform initial resize.
-            TableUtils.resizeColumnWidths(table, headerOnly);
-        }
-
-        public ResizeColumnWidthsListener(JTable table, boolean headerOnly) {
-            this.table = table;
-            this.headerOnly = headerOnly;
+            boolean doFullScan = table.getRowCount() <= fullScanCutoff;
+            TableUtils.resizeColumnWidths(table, doFullScan);
         }
 
         @Override public void tableChanged(TableModelEvent e) {
             table.tableChanged(e);  // table MUST be notified first.
-            TableUtils.resizeColumnWidths(table, headerOnly);
+
+            // Do not cache the value of doFullScan; we need to reevaluate each time because the table model could
+            // have changed.
+            boolean doFullScan = table.getRowCount() <= fullScanCutoff;
+            TableUtils.resizeColumnWidths(table, doFullScan);
         }
     }
 
-    public static void resizeColumnWidths(JTable table, boolean headerOnly) {
+    public static void resizeColumnWidths(JTable table, boolean doFullScan) {
         for (int col = 0; col < table.getColumnCount(); ++col) {
-            int maxwidth = 0;
+            int maxWidth = 0;
 
-            if (!headerOnly) {
-                for (int row = 0; row < table.getRowCount(); ++row) {
-                    TableCellRenderer cellRenderer = table.getCellRenderer(row, col);
-                    Object value = table.getValueAt(row, col);
-
-                    Component cellRendererComp =
-                            cellRenderer.getTableCellRendererComponent(table, value, false, false, row, col);
-                    maxwidth = Math.max(cellRendererComp.getPreferredSize().width, maxwidth);
-                }
-            }
-
+            // Get header width.
             TableColumn column = table.getColumnModel().getColumn(col);
             TableCellRenderer headerRenderer = column.getHeaderRenderer();
 
@@ -78,14 +84,35 @@ public abstract class TableUtils {
             Component headerRendererComp =
                     headerRenderer.getTableCellRendererComponent(table, headerValue, false, false, 0, col);
 
-            maxwidth = Math.max(maxwidth, headerRendererComp.getPreferredSize().width);
+            maxWidth = Math.max(maxWidth, headerRendererComp.getPreferredSize().width);
+
+
+            // Get cell widths.
+            if (doFullScan) {
+                for (int row = 0; row < table.getRowCount(); ++row) {
+                    maxWidth = Math.max(maxWidth, getCellWidth(table, row, col));
+                }
+            } else {
+                maxWidth = Math.max(maxWidth, getCellWidth(table, 0,                       col));
+                maxWidth = Math.max(maxWidth, getCellWidth(table, table.getRowCount() / 2, col));
+                maxWidth = Math.max(maxWidth, getCellWidth(table, table.getRowCount() - 1, col));
+            }
 
             // For some reason, the calculation above gives a value that is 1 pixel too small.
             // Maybe that's because of the cell divider line?
-            ++maxwidth;
+            ++maxWidth;
 
-            column.setPreferredWidth(maxwidth);
+            column.setPreferredWidth(maxWidth);
         }
+    }
+
+    private static int getCellWidth(JTable table, int row, int col) {
+        TableCellRenderer cellRenderer = table.getCellRenderer(row, col);
+        Object value = table.getValueAt(row, col);
+
+        Component cellRendererComp =
+                cellRenderer.getTableCellRendererComponent(table, value, false, false, row, col);
+        return cellRendererComp.getPreferredSize().width;
     }
 
 
@@ -138,7 +165,7 @@ public abstract class TableUtils {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                int numRows = 3;
+                int numRows = 1000000;
                 int numCols = 4;
 
                 DefaultTableModel model = new DefaultTableModel(numRows, 0);
