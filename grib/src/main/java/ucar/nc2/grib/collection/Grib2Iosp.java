@@ -604,13 +604,13 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
-  private void makeRuntimeCoordinate(NetcdfFile ncfile, Group g, CoordinateRuntime tc) {
-    int n = tc.getSize();
-    String tcName = tc.getName();
+  private void makeRuntimeCoordinate(NetcdfFile ncfile, Group g, CoordinateRuntime rtc) {
+    int n = rtc.getSize();
+    String tcName = rtc.getName();
     ncfile.addDimension(g, new Dimension(tcName, n));
 
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, tcName));
-    v.addAttribute(new Attribute(CDM.UNITS, tc.getUnit()));
+    v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, "forecast_reference_time"));
 
     String vsName = tcName + "_ISO";
@@ -620,7 +620,7 @@ public class Grib2Iosp extends GribIosp {
     // coordinate values
     String[] dataS = new String[n];
     int count = 0;
-    for (CalendarDate val : tc.getRuntimesSorted()) {
+    for (CalendarDate val : rtc.getRuntimesSorted()) {
       dataS[count++] = val.toString();
     }
     vs.setCachedData(Array.factory(DataType.STRING, new int[]{n}, dataS));
@@ -628,7 +628,7 @@ public class Grib2Iosp extends GribIosp {
     // now convert to udunits
     double[] data = new double[n];
     count = 0;
-    for (double val : tc.getRuntimesUdunits()) {
+    for (double val : rtc.getRuntimesUdunits()) {
       data[count++] = val;
     }
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{n}, data));
@@ -1167,11 +1167,6 @@ public class Grib2Iosp extends GribIosp {
         records.add(new DataRecord(partno, vindex, resultIndex, record.fileno, record.pos, record.bmsPos));
     }
 
-
-    //void addRecord(GribCollection.VariableIndex vindex, int partno, int fileno, long drsPos, long bmsPos, int resultIndex) {
-    //  records.add(new DataRecord(partno, vindex, resultIndex, fileno, drsPos, bmsPos));
-    //}
-
     void read(DataReceiverIF dataReceiver) throws IOException {
       Collections.sort(records);
 
@@ -1194,7 +1189,7 @@ public class Grib2Iosp extends GribIosp {
 
         GdsHorizCoordSys hcs = dr.vindex.group.getGdsHorizCoordSys();
         float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.bmsPos, hcs.gdsNumberPoints, hcs.scanMode,
-                hcs.nxRaw,  hcs.nyRaw, hcs.nptsInLine);
+                hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
         dataReceiver.addData(data, dr.resultIndex, hcs.nx);
       }
       if (rafData != null) rafData.close();

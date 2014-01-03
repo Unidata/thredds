@@ -209,9 +209,8 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     for (int i = 0; i < p.getFilenoCount(); i++)
       group.filenose[i] = p.getFileno(i);
 
-    group.variList = new ArrayList<>();
     for (int i = 0; i < p.getVariablesCount(); i++)
-      group.variList.add(readVariable(group, p.getVariables(i)));
+      group.addVariable(readVariable(group, p.getVariables(i)));
 
     // assign names, units to coordinates
     CalendarDate firstRef = null;

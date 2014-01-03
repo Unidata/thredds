@@ -2,6 +2,7 @@ package ucar.nc2.ui;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.collection.*;
 import ucar.sparr.Coordinate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -539,6 +540,7 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     private void showSparseArray(Formatter f) {
+
       if (v instanceof PartitionCollection.VariableIndexPartitioned) {
         PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) v;
         if (vip.twot != null)

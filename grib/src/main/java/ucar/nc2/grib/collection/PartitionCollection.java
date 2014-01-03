@@ -83,7 +83,7 @@ public class PartitionCollection extends GribCollection {
       groups = new ArrayList<>(from.groups.size());
     }
 
-    public GroupHcs addGroup(GroupHcs from) {
+    public GroupHcs addGroupCopy(GroupHcs from) {
       GroupHcs g = new GroupHcs(from);
       groups.add(g);
       return g;
@@ -128,9 +128,11 @@ public class PartitionCollection extends GribCollection {
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
     public List<PartitionForVariable> partList; // must not change order
     public CoordinateTwoTimer twot;
+    public int[] partitionMap;
 
-    public VariableIndexPartitioned(GroupHcs g, VariableIndex other) {
+    VariableIndexPartitioned(GroupHcs g, VariableIndex other, int nparts) {
       super(g, other);
+      partList = new ArrayList<>(nparts);
     }
 
     public void addPartition(int partno, int groupno, int varno, int flag, int ndups, int nrecords,
@@ -160,12 +162,17 @@ public class PartitionCollection extends GribCollection {
       addPartition(partno, groupno, varno, flag, vi.ndups, vi.nrecords, vi.missing, vi.density);
     }
 
+    public void addPartition(PartitionForVariable pv) {
+      addPartition(pv.partno, pv.groupno, pv.varno, pv.flag, pv.ndups, pv.nrecords, pv.missing, pv.density);
+    }
+
     public int getPartition(int runtimeIdx) {
       return group.run2part.get(runtimeIdx);
     }
 
     /**
      * Get VariableIndex for this partition
+     *
      * @param partno partition number
      * @return VariableIndex or null if not exists
      * @throws IOException
@@ -197,7 +204,7 @@ public class PartitionCollection extends GribCollection {
         sb.format("%d,", partVar.partno);
       sb.format("%n groupno=");
       for (PartitionForVariable partVar : partList)
-         sb.format("%d,", partVar.groupno);
+        sb.format("%d,", partVar.groupno);
       sb.format("%n varno=");
       for (PartitionForVariable partVar : partList)
         sb.format("%d,", partVar.varno);
@@ -208,15 +215,15 @@ public class PartitionCollection extends GribCollection {
       int count = 0;
       sb.format("  %s %4s %3s %3s %6s%n", "part", "N", "dups", "Miss", "density");
       int totalN = 0, totalDups = 0, totalMiss = 0;
-      for (PartitionForVariable partVar : partList)  {
-        sb.format("   %2d: %4d %3d %3d %6.2f%n", count++, partVar.nrecords, partVar.ndups,  partVar.missing,  partVar.density);
+      for (PartitionForVariable partVar : partList) {
+        sb.format("   %2d: %4d %3d %3d %6.2f%n", count++, partVar.nrecords, partVar.ndups, partVar.missing, partVar.density);
         totalN += partVar.nrecords;
         totalDups += partVar.ndups;
         totalMiss += partVar.missing;
       }
-      sb.format(  "total: %4d %3d %3d %n", totalN, totalDups, totalMiss);
+      sb.format("total: %4d %3d %3d %n", totalN, totalDups, totalMiss);
       sb.format("%n");
-      sb.format(  "totalSize = %4d density=%6.2f%n", this.totalSize, this.density);
+      sb.format("totalSize = %4d density=%6.2f%n", this.totalSize, this.density);
 
       sb.format(super.toStringComplete());
       return sb.toString();
@@ -429,10 +436,25 @@ public class PartitionCollection extends GribCollection {
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // construct - going to write index
+
+  /**
+   * Create a VariableIndexPartitioned
+   *
+   * @param group  new  VariableIndexPartitioned is in this group
+   * @param from   copy info from here
+   * @param nparts size of partition list
+   * @return a new VariableIndexPartitioned
+   */
   public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.GroupHcs group,
-                                        GribCollection.VariableIndex vi, int nparts) {
-    VariableIndexPartitioned vip = new VariableIndexPartitioned(group, vi);
-    vip.partList = new ArrayList<>(nparts);
+                                                               GribCollection.VariableIndex from, int nparts) {
+    VariableIndexPartitioned vip = new VariableIndexPartitioned(group, from, nparts);
+    group.addVariable(vip);
+
+    if (from instanceof VariableIndexPartitioned) {
+      VariableIndexPartitioned fromp = (VariableIndexPartitioned) from;
+      for (PartitionForVariable pv : fromp.partList)
+        vip.addPartition(pv);
+    }
     return vip;
   }
 

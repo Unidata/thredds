@@ -495,22 +495,32 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     public List<VariableIndex> variList;   // GribCollection.VariableIndex
     public List<Coordinate> coords;
     public int[] filenose;
-    public List<Integer> run2part;   // runtimeCoord.length; partitions only; which partition to use for that runtime
     private Map<Integer, GribCollection.VariableIndex> varMap;
+    // partitions only
+    List<Integer> run2part;   // runtimeCoord.length; which partition to use for runtime i
 
-    GroupHcs() {}
+    GroupHcs() {
+      this.variList = new ArrayList<>();
+      this.coords = new ArrayList<>();
+    }
 
     // copy constructor for PartitionBuilder
     GroupHcs( GroupHcs from) {
       this.horizCoordSys = from.horizCoordSys;     // reference
-      // this.coords = new ArrayList<>(from.coords);  // copy the coord list
+      this.variList = new ArrayList<>(from.variList.size());
+      this.coords = new ArrayList<>(from.coords.size());
     }
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride) {
       horizCoordSys = new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride);
     }
 
-    public GribCollection getGribCollection() {
+    public VariableIndex addVariable(VariableIndex vi) {
+      variList.add(vi);
+      return vi;
+    }
+
+   public GribCollection getGribCollection() {
       return GribCollection.this;
     }
 
@@ -554,12 +564,6 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       Collections.sort(result);
       return result;
     }
-
-    /* public GribCollection.VariableIndex findAnyVariableWithTime(int usesTimeIndex) {
-      for (VariableIndex vi : varIndex)
-        if (vi.timeIdx == usesTimeIndex) return vi;
-      return null;
-    } */
 
     public GribCollection.VariableIndex findVariableByHash(int cdmHash) {
       if (varMap == null) {
@@ -679,7 +683,7 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       this.discipline = other.discipline;
       this.rawPds = other.rawPds;
       this.cdmHash = other.cdmHash;
-      this.coordIndex = other.coordIndex;
+      this.coordIndex = new ArrayList<>(other.coordIndex);
       this.recordsPos = 0;
       this.recordsLen = 0;
 
@@ -706,6 +710,13 @@ public class GribCollection implements FileCacheable, AutoCloseable {
         if (group.coords.get(idx).getType() == want)
           return group.coords.get(idx);
       return null;
+    }
+
+    public int getCoordinateIndex(Coordinate.Type want) {
+      for (int idx : coordIndex)
+        if (group.coords.get(idx).getType() == want)
+          return idx;
+      return -1;
     }
 
     public String getTimeIntvName() {

@@ -44,6 +44,11 @@ public class CoordinateTwoTimer {
     return count;
   }
 
+  public int getCount(int runIdx, int timeIdx) {
+    int idx = runIdx * ntimes + timeIdx;
+    return count[idx];
+  }
+
   ////////////////////////
   // read back in
   public CoordinateTwoTimer(List<Integer> count) {

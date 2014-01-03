@@ -63,6 +63,38 @@ public class CoordinateUnionizer {
     return result;
   }
 
+      /* true means remove
+  private boolean filterOut(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
+    int[] intv = tables.getForecastTimeIntervalOffset(gr);
+    if (intv == null) return false;
+    int haveLength = intv[1] - intv[0];
+
+    // HACK
+    if (haveLength == 0 && intvFilter.isZeroExcluded()) {  // discard 0,0
+      if ((intv[0] == 0) && (intv[1] == 0)) {
+        //f.format(" FILTER INTV [0, 0] %s%n", gr);
+        return true;
+      }
+      return false;
+
+    } else if (intvFilter.hasFilter()) {
+      int discipline = gr.getIs().getDiscipline();
+      Grib2Pds pds = gr.getPDS();
+      int category = pds.getParameterCategory();
+      int number = pds.getParameterNumber();
+      int id = (discipline << 16) + (category << 8) + number;
+
+      int prob = Integer.MIN_VALUE;
+      if (pds.isProbability()) {
+        Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+        prob = (int) (1000 * pdsProb.getProbabilityUpperLimit());
+      }
+      return intvFilter.filterOut(id, haveLength, prob);
+    }
+    return false;
+  }  */
+
+
   public List<Coordinate> finish() {
     if (runtimeBuilder != null)
       unionCoords.add(runtimeBuilder.finish());

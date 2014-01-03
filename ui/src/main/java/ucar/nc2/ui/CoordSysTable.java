@@ -284,24 +284,8 @@ public class CoordSysTable extends JPanel {
         }
 
       } else if (axis instanceof CoordinateAxis2D && axis.isNumeric()) {
+        infoTA.appendLine(NCdumpW.printVariableData(axis, null));
         showValues2D((CoordinateAxis2D) axis);
-        /* CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
-        ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
-        /* int[] shape = coords.getShape();
-        Formatter f = new Formatter();
-        for (int j = 0; j < shape[0]; j++) {
-          f.format("%d: ", j);
-          for (int i = 0; i < shape[1]; i++)
-            f.format("%f, ", coords.get(j, i));
-          f.format("%n%n");
-        }
-        //infoTA.appendLine(f.toString());
-        infoTA.appendLine(NCdumpW.printArray(coords, "coordinates", null));
-
-        if (axis2D.isInterval()) {
-          ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
-          infoTA.appendLine(NCdumpW.printArray(bounds, "intervals", null));
-        } */
 
       } else {
         infoTA.appendLine(NCdumpW.printVariableData(axis, null));
@@ -316,6 +300,7 @@ public class CoordSysTable extends JPanel {
 
 
   private void showValues2D(CoordinateAxis2D axis2D) {
+
     Formatter f = new Formatter();
 
     if (axis2D.isInterval()) {
@@ -342,7 +327,6 @@ public class CoordSysTable extends JPanel {
       }
 
     }
-
 
     infoTA.appendLine(f.toString());
   }
