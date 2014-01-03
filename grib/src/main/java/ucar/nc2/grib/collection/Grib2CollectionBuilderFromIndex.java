@@ -174,6 +174,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
   }
 
   protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupHcs group, GribCollectionProto.Variable pv, GribCollection.VariableIndex vi) {
+    group.addVariable(vi);
     return vi;
   }
 
@@ -210,7 +211,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
       group.filenose[i] = p.getFileno(i);
 
     for (int i = 0; i < p.getVariablesCount(); i++)
-      group.addVariable(readVariable(group, p.getVariables(i)));
+      readVariable(group, p.getVariables(i));
 
     // assign names, units to coordinates
     CalendarDate firstRef = null;

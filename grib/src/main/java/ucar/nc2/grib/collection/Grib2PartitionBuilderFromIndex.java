@@ -168,13 +168,26 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
               pv.getNrecords(), pv.getMissing(), pv.getDensity());
     }
 
-    List<Integer> invCountList = proto.getExtension(PartitionCollectionProto.invCount);
-    vip.twot = new CoordinateTwoTimer(invCountList);
-
     Coordinate runtime = vip.getCoordinate(Coordinate.Type.runtime);
     Coordinate time = vip.getCoordinate(Coordinate.Type.time);
     if (time == null) time = vip.getCoordinate(Coordinate.Type.timeIntv);
-    vip.twot.setSize(runtime.getSize(), time.getSize());
+
+    // 2d only
+    List<Integer> invCountList = proto.getExtension(PartitionCollectionProto.invCount);
+    if (invCountList.size() > 0) {
+      vip.twot = new CoordinateTwoTimer(invCountList);
+      vip.twot.setSize(runtime.getSize(), time.getSize());
+    }
+
+    // 1d only
+    List<Integer> time2runList = proto.getExtension(PartitionCollectionProto.time2Runtime);
+    if (time2runList.size() > 0) {
+      vip.time2runtime = new int[time2runList.size()];
+      int count = 0;
+      for (int idx : time2runList) vip.time2runtime[count++] = idx;
+    }
+
+
 
     return vip;
   }

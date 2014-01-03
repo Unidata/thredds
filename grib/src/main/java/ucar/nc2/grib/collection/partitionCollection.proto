@@ -20,7 +20,8 @@ message PartitionVariable {
 extend Variable {
   repeated PartitionVariable partition = 100;
   repeated Parameter vparams = 101;    // not used yet
-  repeated uint32 invCount = 102;
+  repeated uint32 invCount = 102;      // for Coordinate TwoTimer, only 2D vars
+  repeated uint32 time2runtime = 103;  // time index to runtime index, only 1D vars
 }
 
 message Gds {
@@ -36,8 +37,8 @@ message Parameter {
 }
 
 extend Group {
-  required uint32 gdsIndex = 100;       // index into TimePartition.gds
-  repeated uint32 run2part = 101;       // partitions only: run index to partition index map
+  required uint32 gdsIndex = 100;       // index into GribCollection.gds array
+  repeated uint32 run2part = 101;       // runtime index to partition index
   repeated Parameter gparams = 102;      // not used yet
 }
 
@@ -60,7 +61,7 @@ message Partition {
 }
 
 extend GribCollection {
-  repeated Gds gds = 100;
+  repeated Gds gds = 100;               // all gds are stored here and shared among datasets
   repeated Dataset dataset = 101;
   repeated Partition partitions = 102;
   repeated Parameter pparams = 103;      // not used yet

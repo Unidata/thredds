@@ -6,6 +6,7 @@ import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.partition.PartitionManager;
 import ucar.ma2.Section;
+import ucar.nc2.grib.TimeCoord;
 import ucar.sparr.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.stream.NcStream;
@@ -334,9 +335,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
 
       Coordinate runtimeCoord = runtimeAllBuilder.finish();
       resultGroup.run2part = new ArrayList<>(runtimeCoord.getSize());
-      for (int i = 0; i < resultGroup.run2part.size(); i++)
-        resultGroup.run2part.set(i,i); // LOOK wrong
-      resultGroup.coords = new ArrayList<>();
+      for (int i = 0; i < runtimeCoord.getSize(); i++)
+        resultGroup.run2part.add(i); // LOOK wrong
       resultGroup.coords.add(runtimeCoord);
 
       // overall set of unique coordinates
@@ -432,6 +432,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
      // do each group
     for (GribCollection.GroupHcs group2D : ds2D.groups) {
       GribCollection.GroupHcs groupB = dsa.addGroupCopy(group2D);  // make copy of group, add to dataset
+      groupB.run2part = group2D.run2part;                          // use same run -> partition map
 
       String gname = groupB.getId();
       String gdesc = groupB.getDescription();
@@ -449,6 +450,9 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         if (coord.getType() == Coordinate.Type.time) {
           Coordinate best = convertBestTimeCoordinate(runOffset, (CoordinateTime) coord);
           groupB.coords.add(best);
+        } else if (coord.getType() == Coordinate.Type.timeIntv) {
+            Coordinate best = convertBestTimeCoordinateIntv(runOffset, (CoordinateTimeIntv) coord);
+            groupB.coords.add(best);
         } else {
           groupB.coords.add(coord);
         }
@@ -459,10 +463,18 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         // copy vi and add to groupB
         PartitionCollection.VariableIndexPartitioned vip = result.makeVariableIndexPartitioned(groupB, vi2d, npart);
         int timeIdx = vip.getCoordinateIndex(Coordinate.Type.time);
-        CoordinateTime time2d = (CoordinateTime) group2D.coords.get(timeIdx);
-        CoordinateTime timeBest = (CoordinateTime) groupB.coords.get(timeIdx);
+        if (timeIdx >= 0) {
+          CoordinateTime time2d = (CoordinateTime) group2D.coords.get(timeIdx);
+          CoordinateTime timeBest = (CoordinateTime) groupB.coords.get(timeIdx);
+          vip.time2runtime = makeTime2RuntimeMap(runOffset, time2d, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
 
-        vip.partitionMap = makePartitionMap(runOffset, time2d, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
+        } else {
+          timeIdx = vip.getCoordinateIndex(Coordinate.Type.timeIntv);
+          CoordinateTimeIntv time2d = (CoordinateTimeIntv) group2D.coords.get(timeIdx);
+          CoordinateTimeIntv timeBest = (CoordinateTimeIntv) groupB.coords.get(timeIdx);
+          vip.time2runtime = makeTime2RuntimeMap(runOffset, time2d, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
+        }
+        vip.coordIndex = vip.coordIndex.subList(1, vip.coordIndex.size()); // remove runtime co9ordinate - always first one
       }
 
     } // loop over groups
@@ -484,6 +496,20 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     return new CoordinateTime(offsetSorted, timeCoord.getCode());
   }
 
+  // make the union of all the offsets from base date
+  private CoordinateTimeIntv convertBestTimeCoordinateIntv(List<Double> runOffsets, CoordinateTimeIntv timeCoord) {
+    Set<TimeCoord.Tinv> values = new HashSet<>();
+    for (double runOffset : runOffsets) {
+      for (TimeCoord.Tinv val : timeCoord.getTimeIntervals())
+        values.add( val.offset(runOffset)); // LOOK possible roundoff
+    }
+
+    List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
+    for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
+    Collections.sort(offsetSorted);
+    return new CoordinateTimeIntv(offsetSorted, timeCoord.getCode());
+  }
+
   /**
    * calculate which partition to use, based on missing
    * @param runOffsets for each runtime, the offset from base time
@@ -492,19 +518,48 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
    * @param twot       variable missing array
    * @return           for each time in coordBest, which runtime to use
    */
-  private int[] makePartitionMap(List<Double> runOffsets, CoordinateTime timeCoord, CoordinateTime coordBest, CoordinateTwoTimer twot) {
+  private int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTime timeCoord, CoordinateTime coordBest, CoordinateTwoTimer twot) {
     int[] result = new int[ coordBest.getSize()];
-    Map<Integer, Integer> map = new HashMap<>();
-    for (Integer val : coordBest.getOffsetSorted()) map.put(val, -1);
+
+    Map<Integer, Integer> map = new HashMap<>();  // lookup coord val to index
+    int count = 0;
+    for (Integer val : coordBest.getOffsetSorted()) map.put(val, count++);
+
     int runIdx = 0;
     for (double runOffset : runOffsets) {
       int timeIdx = 0;
       for (Integer val : timeCoord.getOffsetSorted()) {
-        if (twot.getCount(runIdx, timeIdx) == 0) continue; // check for missing;
-        Integer bestVal = (int) (runOffset + val);
-        Integer bestValIdx = map.get(bestVal);
-        if (bestValIdx == null) throw new IllegalStateException();
-        result[bestValIdx] = runIdx; // use this partition
+        if (twot.getCount(runIdx, timeIdx) > 0) { // skip missing
+          Integer bestVal = (int) (runOffset + val);
+          Integer bestValIdx = map.get(bestVal);
+          if (bestValIdx == null) throw new IllegalStateException();
+          result[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
+        }
+
+        timeIdx++;
+      }
+      runIdx++;
+    }
+    return result;
+  }
+
+  private int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTimeIntv timeCoord, CoordinateTimeIntv coordBest, CoordinateTwoTimer twot) {
+    int[] result = new int[ coordBest.getSize()];
+
+    Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index
+    int count = 0;
+    for (TimeCoord.Tinv val : coordBest.getTimeIntervals()) map.put(val, count++);
+
+    int runIdx = 0;
+    for (double runOffset : runOffsets) {
+      int timeIdx = 0;
+      for (TimeCoord.Tinv val : timeCoord.getTimeIntervals()) {
+        if (twot.getCount(runIdx, timeIdx) > 0) { // skip missing;
+          TimeCoord.Tinv bestVal = val.offset(runOffset);
+          Integer bestValIdx = map.get(bestVal);
+          if (bestValIdx == null) throw new IllegalStateException();
+          result[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
+        }
 
         timeIdx++;
       }
@@ -707,7 +762,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     b.setExtension(PartitionCollectionProto.gdsIndex, pc.findIndex(g.horizCoordSys));
 
     List<Integer> run2partList = new ArrayList<>();
-    if (g.run2part != null) {// temp
+    if (g.run2part != null) {
       for (int part : g.run2part) run2partList.add(part);
       b.setExtension(PartitionCollectionProto.run2Part, run2partList);
     }
@@ -768,6 +823,12 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       List<Integer> invCountList = new ArrayList<>(vp.twot.getCount().length);
       for (int count : vp.twot.getCount()) invCountList.add(count);
       b.setExtension(PartitionCollectionProto.invCount, invCountList);
+    }
+
+    if (vp.time2runtime != null) { // only for 1D
+      List<Integer> list = new ArrayList<>(vp.time2runtime.length);
+      for (int idx : vp.time2runtime) list.add(idx);
+      b.setExtension(PartitionCollectionProto.time2Runtime, list);
     }
 
     return b.build();

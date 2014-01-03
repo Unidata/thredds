@@ -546,6 +546,12 @@ public class CdmIndex2Panel extends JPanel {
         if (vip.twot != null)
           vip.twot.showMissing(f);
 
+        if (vip.time2runtime != null) {
+          f.format("time2runtime: ");
+          for (int idx : vip.time2runtime) f.format("%2d", idx);
+          f.format("%n");
+        }
+
       } else {
         try {
           v.readRecords();

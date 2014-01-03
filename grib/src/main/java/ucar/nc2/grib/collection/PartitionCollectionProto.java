@@ -10,6 +10,7 @@ public final class PartitionCollectionProto {
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.partition);
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.vparams);
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.invCount);
+    registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.time2Runtime);
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.gdsIndex);
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.run2Part);
     registry.add(ucar.nc2.grib.collection.PartitionCollectionProto.gparams);
@@ -4553,6 +4554,17 @@ public final class PartitionCollectionProto {
           .newFileScopedGeneratedExtension(
         java.lang.Integer.class,
         null);
+  public static final int TIME2RUNTIME_FIELD_NUMBER = 103;
+  /**
+   * <code>extend .Variable { ... }</code>
+   */
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      ucar.nc2.grib.collection.GribCollectionProto.Variable,
+      java.util.List<java.lang.Integer>> time2Runtime = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Integer.class,
+        null);
   public static final int GDSINDEX_FIELD_NUMBER = 100;
   /**
    * <code>extend .Group { ... }</code>
@@ -4681,14 +4693,15 @@ public final class PartitionCollectionProto {
       "\004:0\n\tpartition\022\t.Variable\030d \003(\0132\022.Partit" +
       "ionVariable:&\n\007vparams\022\t.Variable\030e \003(\0132" +
       "\n.Parameter:\033\n\010invCount\022\t.Variable\030f \003(\r" +
-      ":\030\n\010gdsIndex\022\006.Group\030d \002(\r:\030\n\010run2part\022\006" +
-      ".Group\030e \003(\r:#\n\007gparams\022\006.Group\030f \003(\0132\n." +
-      "Parameter:\"\n\003gds\022\017.GribCollection\030d \003(\0132",
-      "\004.Gds:*\n\007dataset\022\017.GribCollection\030e \003(\0132" +
-      "\010.Dataset:/\n\npartitions\022\017.GribCollection" +
-      "\030f \003(\0132\n.Partition:,\n\007pparams\022\017.GribColl" +
-      "ection\030g \003(\0132\n.ParameterB4\n\030ucar.nc2.gri" +
-      "b.collectionB\030PartitionCollectionProto"
+      ":\037\n\014time2runtime\022\t.Variable\030g \003(\r:\030\n\010gds" +
+      "Index\022\006.Group\030d \002(\r:\030\n\010run2part\022\006.Group\030" +
+      "e \003(\r:#\n\007gparams\022\006.Group\030f \003(\0132\n.Paramet",
+      "er:\"\n\003gds\022\017.GribCollection\030d \003(\0132\004.Gds:*" +
+      "\n\007dataset\022\017.GribCollection\030e \003(\0132\010.Datas" +
+      "et:/\n\npartitions\022\017.GribCollection\030f \003(\0132" +
+      "\n.Partition:,\n\007pparams\022\017.GribCollection\030" +
+      "g \003(\0132\n.ParameterB4\n\030ucar.nc2.grib.colle" +
+      "ctionB\030PartitionCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4728,13 +4741,14 @@ public final class PartitionCollectionProto {
           partition.internalInit(descriptor.getExtensions().get(0));
           vparams.internalInit(descriptor.getExtensions().get(1));
           invCount.internalInit(descriptor.getExtensions().get(2));
-          gdsIndex.internalInit(descriptor.getExtensions().get(3));
-          run2Part.internalInit(descriptor.getExtensions().get(4));
-          gparams.internalInit(descriptor.getExtensions().get(5));
-          gds.internalInit(descriptor.getExtensions().get(6));
-          dataset.internalInit(descriptor.getExtensions().get(7));
-          partitions.internalInit(descriptor.getExtensions().get(8));
-          pparams.internalInit(descriptor.getExtensions().get(9));
+          time2Runtime.internalInit(descriptor.getExtensions().get(3));
+          gdsIndex.internalInit(descriptor.getExtensions().get(4));
+          run2Part.internalInit(descriptor.getExtensions().get(5));
+          gparams.internalInit(descriptor.getExtensions().get(6));
+          gds.internalInit(descriptor.getExtensions().get(7));
+          dataset.internalInit(descriptor.getExtensions().get(8));
+          partitions.internalInit(descriptor.getExtensions().get(9));
+          pparams.internalInit(descriptor.getExtensions().get(10));
           return null;
         }
       };

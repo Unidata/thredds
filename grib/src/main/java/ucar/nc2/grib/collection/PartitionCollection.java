@@ -128,7 +128,7 @@ public class PartitionCollection extends GribCollection {
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
     public List<PartitionForVariable> partList; // must not change order
     public CoordinateTwoTimer twot;
-    public int[] partitionMap;
+    public int[] time2runtime;
 
     VariableIndexPartitioned(GroupHcs g, VariableIndex other, int nparts) {
       super(g, other);
@@ -166,8 +166,14 @@ public class PartitionCollection extends GribCollection {
       addPartition(pv.partno, pv.groupno, pv.varno, pv.flag, pv.ndups, pv.nrecords, pv.missing, pv.density);
     }
 
-    public int getPartition(int runtimeIdx) {
+    public int getPartition2D(int runtimeIdx) {
       return group.run2part.get(runtimeIdx);
+    }
+
+    public int getPartition1D(int timeIdx) {
+      int runtimeIdx = time2runtime[timeIdx];
+      if (runtimeIdx == 0) return -1;  // 0 = missing
+      return group.run2part.get(runtimeIdx-1);
     }
 
     /**

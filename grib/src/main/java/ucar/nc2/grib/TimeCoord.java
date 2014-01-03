@@ -376,6 +376,10 @@ public class TimeCoord {
       return out.toString();
     }
 
+    public Tinv offset(double offset) {
+      return new Tinv((int) (offset + b1), (int) (offset + b2));
+    }
+
   }
 
   // use for time intervals not represented by integer bounds from reference
