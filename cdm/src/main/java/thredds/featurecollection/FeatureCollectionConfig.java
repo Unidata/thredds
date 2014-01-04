@@ -349,6 +349,8 @@ public class FeatureCollectionConfig {
     private TimeUnitConverterHash tuc;
     private boolean explicitDatasets = false;
 
+    public Map<String, String> params;
+
     public GribConfig() { // defaults
     }
 
@@ -406,6 +408,14 @@ public class FeatureCollectionConfig {
         for (Element varElem : varElems) {
           intvFilter.addVariable(intvLength, varElem.getAttributeValue("id"), varElem.getAttributeValue("prob"));
         }
+      }
+
+      List<Element> paramElems = configElem.getChildren("parameter", ns);
+      for (Element param : paramElems) {
+        if (params == null) params = new HashMap<>();
+        String name = param.getAttributeValue("name");
+        String value = param.getAttributeValue("value");
+        if (name != null && value != null) params.put(name,value);
       }
 
       Element pdsHashElement = configElem.getChild("pdsHash", ns);
@@ -506,6 +516,11 @@ public class FeatureCollectionConfig {
       if (lookupTablePath != null) return "gribParameterTableLookup="+lookupTablePath;
       if (paramTablePath != null) return "gribParameterTable="+paramTablePath;
       return null;
+    }
+
+    public String getParameter(String name) {
+      if (params == null) return null;
+      return params.get(name);
     }
   }
 

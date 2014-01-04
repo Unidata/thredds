@@ -481,6 +481,13 @@
         </xsd:complexType>
       </xsd:element>
 
+      <xsd:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+         <xsd:complexType>
+           <xsd:attribute name="name" type="xsd:string" use="required"/>
+           <xsd:attribute name="value" type="xsd:string" use="required"/>
+         </xsd:complexType>
+       </xsd:element>
+
       <xsd:element name="latestNamer" minOccurs="0" maxOccurs="1">
         <xsd:complexType>
           <xsd:attribute name="name" type="xsd:string" use="required"/>

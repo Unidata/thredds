@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.collection;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.sparr.*;
 import ucar.nc2.grib.*;
@@ -94,7 +95,7 @@ public class Grib2Rectilyser {
   }
 
   List<MFile> files = null; // temp debug
-  public void make(Counter counter, List<MFile> files, Formatter info) throws IOException {
+  public void make(FeatureCollectionConfig.GribConfig config, List<MFile> files, Counter counter, Formatter info) throws IOException {
     this.files = files;
 
     // assign each record to unique variable using cdmVariableHash()
@@ -136,12 +137,13 @@ public class Grib2Rectilyser {
     }
 
     // make shared coordinates
-    CoordinateUniquify uniquify = new CoordinateUniquify();
+    boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
+    CoordinateSharer sharify = new CoordinateSharer(!isDense);
     for (VariableBag vb : gribvars) {
-      uniquify.addCoords(vb.coordND.getCoordinates());
+      sharify.addCoords(vb.coordND.getCoordinates());
     }
-    uniquify.finish();
-    this.coords = uniquify.getUnionCoords();
+    sharify.finish();
+    this.coords = sharify.getUnionCoords();
 
     int tot_used = 0;
     int tot_dups = 0;
@@ -150,7 +152,7 @@ public class Grib2Rectilyser {
     // redo the variables against the shared coordinates
     for (VariableBag vb : gribvars) {
       vb.coordIndex = new ArrayList<>();
-      vb.coordND = uniquify.reindex(vb.coordND, vb.coordIndex);
+      vb.coordND = sharify.reindex(vb.coordND, vb.coordIndex);
       tot_used += vb.coordND.getSparseArray().countNotMissing();
       tot_dups += vb.coordND.getSparseArray().getNduplicates();
       total += vb.coordND.getSparseArray().getTotalSize();

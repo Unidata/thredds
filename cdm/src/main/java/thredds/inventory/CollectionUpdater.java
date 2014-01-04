@@ -24,6 +24,7 @@ public enum CollectionUpdater {
   static private final org.slf4j.Logger startupLogger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
   static private final String DCM_NAME = "dcm";
   static private final String LOGGER = "logger";
+  static private final String UpdateType = "updateType";
   static private final long startupWait = 3 * 1000; // 3 secs
   static private boolean disabled = false;
 
@@ -146,6 +147,7 @@ public enum CollectionUpdater {
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(DCM_NAME, manager);
+    map.put(UpdateType, updateConfig.updateType);
     if (logger != null) map.put(LOGGER, logger);
     JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
             .withIdentity(jobName, "UpdateCollection")
@@ -167,7 +169,7 @@ public enum CollectionUpdater {
     if (updateConfig.startup) {
       Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
       SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
-              .withIdentity(jobName, updateConfig.updateType.toString())
+              .withIdentity(jobName, "startup")
               .startAt(runTime)
               .forJob(updateJob)
               .build();
@@ -183,7 +185,7 @@ public enum CollectionUpdater {
 
     if (updateConfig.rescan != null) {
         CronTrigger rescanTrigger = TriggerBuilder.newTrigger()
-                .withIdentity(jobName, updateConfig.updateType.toString())
+                .withIdentity(jobName, "rescan")
                 .withSchedule(CronScheduleBuilder.cronSchedule(updateConfig.rescan))
                 .forJob(updateJob)
                 .build();
@@ -263,23 +265,19 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       CollectionUpdateListener manager = (CollectionUpdateListener) context.getJobDetail().getJobDataMap().get(DCM_NAME);
       org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
+      CollectionUpdateType type= (CollectionUpdateType) context.getJobDetail().getJobDataMap().get(UpdateType);
+      String groupName = context.getTrigger().getKey().getGroup();
 
       try {
-        String groupName = context.getTrigger().getKey().getGroup();
-        CollectionUpdateType type = CollectionUpdateType.valueOf(groupName);
-        if (type == null) {
-          if (loggerfc != null) loggerfc.error("UpdateCollectionJob {} bad trigger type {}" + manager.getCollectionName(), groupName);
-          return;
-        }
-
         manager.sendEvent(type);
 
       } catch (Throwable e) {
-        if (loggerfc != null) loggerfc.error("UpdateCollectionJob.execute failed collection=" + manager.getCollectionName(), e);
+        if (loggerfc != null) loggerfc.error("UpdateCollectionJob.execute "+groupName+" failed collection=" + manager.getCollectionName(), e);
       }
     }
   }
 
+  // disabled LOOK
   public static class ChangeProtoJob implements org.quartz.Job {
     public ChangeProtoJob() {
     }

@@ -340,7 +340,8 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
       resultGroup.coords.add(runtimeCoord);
 
       // overall set of unique coordinates
-      CoordinateUniquify uniquify = new CoordinateUniquify();
+      boolean isDense = (config != null) && "dense".equals(config.getParameter("CoordSys"));
+      CoordinateSharer sharify = new CoordinateSharer(!isDense);
 
       // for each variable, create union of coordinates
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
@@ -356,15 +357,15 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
         }
 
         viResult.coords = unionizer.finish();
-        uniquify.addCoords(viResult.coords);
+        sharify.addCoords(viResult.coords);
       }
 
-      uniquify.finish();
-      resultGroup.coords = uniquify.getUnionCoords();
+      sharify.finish();
+      resultGroup.coords = sharify.getUnionCoords();
 
       // redo the variables against the shared coordinates
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
-        viResult.coordIndex = uniquify.reindex(viResult.coords);
+        viResult.coordIndex = sharify.reindex(viResult.coords);
       }
 
       // figure out missing

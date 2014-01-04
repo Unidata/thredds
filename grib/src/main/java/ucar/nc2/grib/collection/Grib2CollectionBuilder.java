@@ -336,7 +336,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     for (Group g : groups) {
       Counter stats = new Counter(); // debugging
       g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, pdsConvert);
-      g.rect.make(stats, Collections.unmodifiableList(allFiles), errlog);
+      g.rect.make(config, Collections.unmodifiableList(allFiles), stats, errlog);
       if (errlog != null) errlog.format(" Group hash=%d %s", g.gdsHash, stats.show());
       statsAll.add(stats);
     }

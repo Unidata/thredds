@@ -218,7 +218,7 @@ public class GribCdmIndex2 implements IndexReader {
 
     long took = System.currentTimeMillis() - start;
     String collectionName = partition.getCollectionName();
-    if (recreated) logger.info("RewriteFilePartition {} took {} msecs \n errs={}", collectionName, took, errlog);
+    if (recreated) logger.info("RewriteFilePartition {} took {} msecs", collectionName, took);
 
     return recreated;
   }
@@ -263,7 +263,7 @@ public class GribCdmIndex2 implements IndexReader {
     }
 
     long took = System.currentTimeMillis() - start;
-    System.out.printf("rewriteDirectoryCollection %s took %s msecs%n%s%n", collectionName, took, errlog);
+    logger.info("RewriteDirectoryPartition {} took {} msecs", collectionName, took);
     return true;
   }
 
