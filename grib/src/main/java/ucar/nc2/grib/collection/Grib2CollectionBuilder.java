@@ -317,7 +317,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
           if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
-            gdsHash = gdsConvert.get(gdsHash);             // and we need exact hash matching
+            gdsHash = gdsConvert.get(gdsHash);                       // and we need exact hash matching
 
           Group g = gdsMap.get(gdsHash);
           if (g == null) {

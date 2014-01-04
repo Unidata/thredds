@@ -228,22 +228,28 @@ public class GribCdmIndex2 implements IndexReader {
    * Rewrite the DirectoryCollection
    *
    * @param config       FeatureCollectionConfig
-   * @param dirPath      directory path
-   * @param makeChildren if true, make a GribCollection index for each file. Not needed for the DirectoryCollection.
+   * @param forceCollection       always, test, nocheck, never
+   * @param forceChildren         always, test, nocheck, never
    * @throws IOException
    */
-  static public void rewriteDirectoryCollection(final FeatureCollectionConfig config, Path dirPath, boolean makeChildren) throws IOException {
+  static public boolean rewriteDirectoryCollection(final FeatureCollectionConfig config,
+                                              final CollectionUpdateType forceCollection,
+                                              final CollectionUpdateType forceChildren,
+                                              final Logger logger) throws IOException {
     long start = System.currentTimeMillis();
     final Formatter errlog = new Formatter();
+
+    int pos = config.spec.lastIndexOf("/");
+    Path dirPath = Paths.get(config.spec.substring(0,pos));
 
     DirectoryCollection dirCollection = new DirectoryCollection(config.name, dirPath, logger);
     String collectionName = DirectoryCollection.makeCollectionName(config.name, dirPath);
 
-    if (makeChildren) {
+    if (forceChildren != CollectionUpdateType.never) {
       dirCollection.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
         public void consume(MFile mfile) {
           try (GribCollection gcNested =
-                       Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, CollectionUpdateType.always, config.gribConfig, errlog, logger)) {
+                       Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, forceChildren, config.gribConfig, errlog, logger)) {
           } catch (IOException e) {
             logger.error("rewriteIndexesFilesAndCollection", e);
           }
@@ -253,11 +259,12 @@ public class GribCdmIndex2 implements IndexReader {
 
     // redo partition index
     dirCollection.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
-    try (GribCollection gcNew = makeGribCollectionFromMCollection(false, dirCollection, CollectionUpdateType.always, errlog, logger)) {
+    try (GribCollection gcNew = makeGribCollectionFromMCollection(false, dirCollection, forceCollection, errlog, logger)) {
     }
 
     long took = System.currentTimeMillis() - start;
     System.out.printf("rewriteDirectoryCollection %s took %s msecs%n%s%n", collectionName, took, errlog);
+    return true;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -265,7 +272,7 @@ public class GribCdmIndex2 implements IndexReader {
   /**
    * Create a grib collection from a single grib1 or grib2 file.
    * Use the existing index if it already exists.
-   * Cerate the gbx9 and ncx2 files if needed.
+   * Create the gbx9 and ncx2 files if needed.
    *
    * @param isGrib1 true if grib1
    * @param dataRaf the data file already open

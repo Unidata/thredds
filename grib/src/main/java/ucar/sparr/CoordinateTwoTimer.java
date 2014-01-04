@@ -21,6 +21,8 @@ public class CoordinateTwoTimer {
 
   public void add(int runIdx, int timeIdx) {
     int idx = runIdx * ntimes + timeIdx;
+    if (idx >= count.length)
+      System.out.println("HEY");
     count[idx]++;
   }
 

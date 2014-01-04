@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
-  targetNamespace="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
-  elementFormDefault="qualified"
-  attributeFormDefault="unqualified"
-  version="1.0.5">
+    targetNamespace="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="1.0.6">
 
   <!-- import other namespaces -->
   <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.unidata.ucar.edu/schemas/other/xlink.xsd"/>
@@ -22,10 +22,10 @@
         <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
+        <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded"/>
       </xsd:sequence>
 
-      <xsd:attribute name="base" type="xsd:anyURI" />
+      <xsd:attribute name="base" type="xsd:anyURI"/>
       <xsd:attribute name="name" type="xsd:string"/>
       <xsd:attribute name="expires" type="dateType"/>
       <xsd:attribute name="version" type="xsd:token" default="1.0.2"/>
@@ -82,8 +82,9 @@
       <xsd:sequence>
         <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>  <!-- deprecated -->
-     </xsd:sequence>
+        <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>
+        <!-- deprecated -->
+      </xsd:sequence>
       <xsd:attribute name="name" type="xsd:string" use="required"/>
       <xsd:attribute name="base" type="xsd:string" use="required"/>
       <xsd:attribute name="serviceType" type="serviceTypes" use="required"/>
@@ -94,28 +95,32 @@
 
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
   <!-- Dataset element -->
-  <xsd:element name="dataset" type="DatasetType" />
+  <xsd:element name="dataset" type="DatasetType"/>
   <xsd:complexType name="DatasetType">
     <xsd:sequence>
-      <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/> <!-- deprecated -->
+      <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+      <!-- deprecated -->
 
       <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded"/>
 
       <xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element ref="ncml:netcdf" minOccurs="0"/>
-      <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
 
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="alias" type="xsd:token"/>
-    <xsd:attribute name="authority" type="xsd:string"/>  <!-- deprecated : use element -->
+    <xsd:attribute name="authority" type="xsd:string"/>
+    <!-- deprecated : use element -->
     <xsd:attribute name="collectionType" type="collectionTypes"/>
-    <xsd:attribute name="dataType" type="dataTypes"/> <!-- deprecated : use element -->
+    <xsd:attribute name="dataType" type="dataTypes"/>
+    <!-- deprecated : use element -->
     <xsd:attribute name="harvest" type="xsd:boolean"/>
     <xsd:attribute name="ID" type="xsd:token"/>
     <xsd:attribute name="restrictAccess" type="xsd:string"/>
 
-    <xsd:attribute name="serviceName" type="xsd:string"/>  <!-- deprecated : use element -->
+    <xsd:attribute name="serviceName" type="xsd:string"/>
+    <!-- deprecated : use element -->
     <xsd:attribute name="urlPath" type="xsd:token"/>
 
   </xsd:complexType>
@@ -140,7 +145,7 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="DatasetType">
-           <xsd:attributeGroup ref="XLink"/>
+          <xsd:attributeGroup ref="XLink"/>
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
@@ -154,7 +159,7 @@
       <xsd:complexContent>
         <xsd:extension base="DatasetType">
           <xsd:sequence>
-            <xsd:element name="crawlableDatasetImpl" minOccurs="0" type="UserImplType" />
+            <xsd:element name="crawlableDatasetImpl" minOccurs="0" type="UserImplType"/>
             <xsd:element ref="filter" minOccurs="0"/>
             <xsd:element ref="addID" minOccurs="0"/>
             <xsd:element ref="namer" minOccurs="0"/>
@@ -171,11 +176,16 @@
 
           <xsd:attribute name="path" type="xsd:string" use="required"/>
           <xsd:attribute name="location" type="xsd:string"/>
-          <xsd:attribute name="dirLocation" type="xsd:string"/> <!-- deprecated : use location attribute -->
-          <xsd:attribute name="filter" type="xsd:string"/> <!-- deprecated : use filter element -->
-          <xsd:attribute name="addDatasetSize" type="xsd:boolean"/> <!-- deprecated : use enhance/addDatasetSize element -->
-          <xsd:attribute name="addLatest" type="xsd:boolean"/> <!-- deprecated : use addLatest element -->
-          <xsd:attribute name="addId" type="xsd:boolean"/> <!-- deprecated : use addID element -->
+          <xsd:attribute name="dirLocation" type="xsd:string"/>
+          <!-- deprecated : use location attribute -->
+          <xsd:attribute name="filter" type="xsd:string"/>
+          <!-- deprecated : use filter element -->
+          <xsd:attribute name="addDatasetSize" type="xsd:boolean"/>
+          <!-- deprecated : use enhance/addDatasetSize element -->
+          <xsd:attribute name="addLatest" type="xsd:boolean"/>
+          <!-- deprecated : use addLatest element -->
+          <xsd:attribute name="addId" type="xsd:boolean"/>
+          <!-- deprecated : use addID element -->
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
@@ -294,7 +304,7 @@
     <xsd:complexType>
       <xsd:attribute name="path" type="xsd:string" use="required"/>
       <xsd:attribute name="location" type="xsd:string" use="required"/>
-      <xsd:attribute name="cache" type="xsd:boolean" />
+      <xsd:attribute name="cache" type="xsd:boolean"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -322,23 +332,23 @@
   </xsd:element>
 
   <xsd:simpleType name="featureTypeChoice">
-   <xsd:union memberTypes="xsd:token">
-     <xsd:simpleType>
-       <xsd:restriction base="xsd:token">
-         <xsd:enumeration value="FMRC"/>
-         <xsd:enumeration value="GRIB"/>
-         <xsd:enumeration value="Station"/>
-         <xsd:enumeration value="Point"/>
-         <xsd:enumeration value="Station_Profile"/>
-       </xsd:restriction>
-     </xsd:simpleType>
-   </xsd:union>
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="FMRC"/>
+          <xsd:enumeration value="GRIB"/>
+          <xsd:enumeration value="Station"/>
+          <xsd:enumeration value="Point"/>
+          <xsd:enumeration value="Station_Profile"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
   </xsd:simpleType>
 
   <xsd:complexType name="collectionType">
     <xsd:attribute name="spec" type="xsd:string" use="required"/>
     <xsd:attribute name="name" type="xsd:token"/>
-    <xsd:attribute name="olderThan" type="xsd:string" />
+    <xsd:attribute name="olderThan" type="xsd:string"/>
     <xsd:attribute name="dateFormatMark" type="xsd:string"/>
     <xsd:attribute name="timePartition" type="xsd:string"/>
     <xsd:attribute name="useIndexOnly" type="xsd:boolean"/>
@@ -349,7 +359,7 @@
       <xsd:element ref="manage" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="startup" type="xsd:string"/>
-    <xsd:attribute name="recheckAfter" type="xsd:string" />
+    <xsd:attribute name="recheckAfter" type="xsd:string"/>
     <xsd:attribute name="rescan" type="xsd:token"/>
     <xsd:attribute name="trigger" type="xsd:token"/>
     <xsd:attribute name="deleteAfter" type="xsd:string"/>
@@ -370,7 +380,7 @@
     <xsd:attribute name="param" type="xsd:string"/>
   </xsd:complexType>
 
-   <xsd:simpleType name="protoChoices">
+  <xsd:simpleType name="protoChoices">
     <xsd:union memberTypes="xsd:token">
       <xsd:simpleType>
         <xsd:restriction base="xsd:token">
@@ -427,14 +437,14 @@
       <xsd:element name="groupNamer" minOccurs="0" maxOccurs="1"/>
 
       <xsd:element name="pdsHash" minOccurs="0" maxOccurs="unbounded">
-         <xsd:complexType>
-           <xsd:sequence>
-             <xsd:element name="useGenType" minOccurs="0" maxOccurs="1"/>
-             <xsd:element name="useTableVersion" minOccurs="0" maxOccurs="1"/>
-             <xsd:element name="mergeIntv" minOccurs="0" maxOccurs="1"/>
-           </xsd:sequence>
-         </xsd:complexType>
-       </xsd:element>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="useGenType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="useTableVersion" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="mergeIntv" minOccurs="0" maxOccurs="1"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
 
       <xsd:element name="intvFilter" minOccurs="0" maxOccurs="unbounded">
         <xsd:complexType>
@@ -451,6 +461,19 @@
         </xsd:complexType>
       </xsd:element>
 
+      <xsd:element name="filter" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="include" minOccurs="0" maxOccurs="unbounded">
+              <xsd:complexType>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                <xsd:attribute name="value" type="xsd:string" use="required"/>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
       <xsd:element name="timeUnitConvert" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="from" type="xsd:int" use="required"/>
@@ -458,29 +481,29 @@
         </xsd:complexType>
       </xsd:element>
 
-        <xsd:element name="latestNamer" minOccurs="0" maxOccurs="1">
-            <xsd:complexType>
-                <xsd:attribute name="name" type="xsd:string" use="required"/>
-            </xsd:complexType>
-        </xsd:element>
+      <xsd:element name="latestNamer" minOccurs="0" maxOccurs="1">
+        <xsd:complexType>
+          <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+      </xsd:element>
 
-        <xsd:element name="bestNamer" minOccurs="0" maxOccurs="1">
-            <xsd:complexType>
-                <xsd:attribute name="name" type="xsd:string" use="required"/>
-            </xsd:complexType>
-        </xsd:element>
+      <xsd:element name="bestNamer" minOccurs="0" maxOccurs="1">
+        <xsd:complexType>
+          <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+      </xsd:element>
 
-        <xsd:element name="filesSort" minOccurs="0" maxOccurs="1">
-            <xsd:complexType>
-                <xsd:choice>
-                    <xsd:element name="lexigraphicByName">
-                        <xsd:complexType>
-                            <xsd:attribute name="increasing" type="xsd:boolean"/>
-                        </xsd:complexType>
-                    </xsd:element>
-                </xsd:choice>
-            </xsd:complexType>
-        </xsd:element>
+      <xsd:element name="filesSort" minOccurs="0" maxOccurs="1">
+        <xsd:complexType>
+          <xsd:choice>
+            <xsd:element name="lexigraphicByName">
+              <xsd:complexType>
+                <xsd:attribute name="increasing" type="xsd:boolean"/>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:choice>
+        </xsd:complexType>
+      </xsd:element>
     </xsd:sequence>
 
     <xsd:attribute name="datasetTypes" type="gribDatasetTypes"/>
@@ -488,16 +511,16 @@
   </xsd:complexType>
 
   <xsd:simpleType name="gribDatasetTypes">
-     <xsd:union memberTypes="xsd:token">
-       <xsd:simpleType>
-         <xsd:restriction base="xsd:token">
-           <xsd:enumeration value="Best"/>
-           <xsd:enumeration value="Files"/>
-           <xsd:enumeration value="LatestFile"/>
-         </xsd:restriction>
-       </xsd:simpleType>
-     </xsd:union>
-   </xsd:simpleType>
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="Best"/>
+          <xsd:enumeration value="Files"/>
+          <xsd:enumeration value="LatestFile"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
 
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
   <!-- DatasetFmrc element DEPRECATED - use featureCollection -->
@@ -511,7 +534,7 @@
             <xsd:element ref="addTimeCoverage" minOccurs="0"/>
           </xsd:sequence>
           <xsd:attribute name="path" type="xsd:string" use="required"/>
-          <xsd:attribute name="runsOnly" type="xsd:boolean" />
+          <xsd:attribute name="runsOnly" type="xsd:boolean"/>
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
@@ -522,7 +545,7 @@
       <xsd:attribute name="location" type="xsd:string" use="required"/>
       <xsd:attribute name="suffix" type="xsd:string"/>
       <xsd:attribute name="fmrcDefinition" type="xsd:string" use="required"/>
-      <xsd:attribute name="olderThan" type="xsd:string" />
+      <xsd:attribute name="olderThan" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -556,8 +579,8 @@
   <!-- name/value pair -->
   <xsd:element name="property">
     <xsd:complexType>
-      <xsd:attribute name="name" type="xsd:string" use="required" />
-      <xsd:attribute name="value" type="xsd:string" use="required" />
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="value" type="xsd:string" use="required"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -662,10 +685,10 @@
   <!-- date and time-->
   <xsd:complexType name="timeCoverageType">
     <xsd:sequence>
-      <xsd:choice minOccurs="2" maxOccurs="3" >
-          <xsd:element name="start" type="dateTypeFormatted"/>
-          <xsd:element name="end" type="dateTypeFormatted"/>
-          <xsd:element name="duration" type="duration"/>
+      <xsd:choice minOccurs="2" maxOccurs="3">
+        <xsd:element name="start" type="dateTypeFormatted"/>
+        <xsd:element name="end" type="dateTypeFormatted"/>
+        <xsd:element name="duration" type="duration"/>
       </xsd:choice>
 
       <xsd:element name="resolution" type="duration" minOccurs="0"/>
@@ -676,7 +699,8 @@
   <xsd:complexType name="dateTypeFormatted">
     <xsd:simpleContent>
       <xsd:extension base="dateType">
-        <xsd:attribute name="format" type="xsd:string"/> <!-- follow java.text.SimpleDateFormat -->
+        <xsd:attribute name="format" type="xsd:string"/>
+        <!-- follow java.text.SimpleDateFormat -->
         <xsd:attribute name="type" type="dateEnumTypes"/>
       </xsd:extension>
     </xsd:simpleContent>
@@ -904,7 +928,8 @@
         <xsd:restriction base="xsd:token">
           <!-- client/server -->
           <xsd:enumeration value="ADDE"/>
-          <xsd:enumeration value="DODS"/>  <!-- same as OpenDAP -->
+          <xsd:enumeration value="DODS"/>
+          <!-- same as OpenDAP -->
           <xsd:enumeration value="OpenDAP"/>
           <xsd:enumeration value="OpenDAP-G"/>
 
