@@ -1043,34 +1043,35 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private NetcdfFile openDap4ByReflection(String location, ucar.nc2.util.CancelTask cancelTask)
           throws IOException {
     Constructor con = null;
-    Method openmethod = null;
-    Class factoryclass = null;
+    Constructor constructormethod = null;
+    Class dap4class = null;
     NetcdfFile file = null;
     try {
-      factoryclass = NetcdfDataset.class.getClassLoader().loadClass("opuls.client.DapNetcdfFileFactory");
-      openmethod = factoryclass.getMethod("open",
-              String.class,
-              ucar.nc2.util.CancelTask.class);
-      file = (NetcdfFile) openmethod.invoke(null, location, cancelTask);
-      return file;
+        dap4class = NetcdfDataset.class.getClassLoader().loadClass("opuls.client.DapNetcdfFile");
+        constructormethod = dap4class.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
+        file = (NetcdfFile) constructormethod.newInstance(location, cancelTask);
+        return file;
     } catch (ClassNotFoundException e) {
-      String msg = "DapNetcdfFileFactory is not on class path or is incorrect version";
+      String msg = "DapNetcdfFile is not on class path or is incorrect version";
       log.error(msg);
       throw new IOException(msg);
     } catch (NoSuchMethodException e) {
-      String msg = "DapNetcdfFileFactory.open is not defined";
+        String msg = "DapNetcdfFileFactory constructor not found";
+        log.error(msg);
+        throw new IOException(msg);} catch (InstantiationException e) {
+      String msg = "DapNetcdfFileFactory constructor cannot be invoked";
       log.error(msg);
       throw new IOException(msg);
     } catch (IllegalAccessException iace) {
-      String msg = "DapNetcdfFileFactory.open cannot be invoked";
+      String msg = "DapNetcdfFileFactory constructor cannot be invoked";
       log.error(msg);
       throw new IOException(msg, iace);
     } catch (IllegalArgumentException iare) {
-      String msg = "DapNetcdfFileFactory.open: illegal argument";
+      String msg = "DapNetcdfFileFactory constructor: illegal argument";
       log.error(msg);
       throw new IOException(msg, iare);
     } catch (InvocationTargetException ite) {
-      String msg = "DapNetcdfFileFactory.open failed: "
+      String msg = "DapNetcdfFileFactory constructor failed: "
               + ite.getCause().getMessage();
       log.error(msg);
       throw new IOException(msg, ite);
