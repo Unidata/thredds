@@ -565,14 +565,14 @@ public abstract class Grib1Gds {
           the southern pole moved along the (previously rotated) Greenwich meridian.
     (7) For rotated grids, the vertical coordinate parameters start at octet 43 instead of 33.
     (8) The stretching is defined by three parameters:
-      (a) The latitude in degrees (measured in the model coordinate system) of the “pole of stretching”;
-      (b) The longitude in degrees (measured in the model coordinate system) of the “pole of stretching”;
+      (a) The latitude in degrees (measured in the model coordinate system) of the pole of stretching;
+      (b) The longitude in degrees (measured in the model coordinate system) of the pole of stretching;
       (c) The stretching factor C.
       The stretching is defined by representing data uniformly in a coordinate system with longitude λ and latitude θ1, where:
         (1 – C2) + (1 + C2) sin θ
         θ1 = sin–1
         (1 + C2) + (1 – C2) sin θ
-      and λ and θ are longitude and latitude in a coordinate system in which the “pole of stretching” is the northern pole. C = 1
+      and λ and θ are longitude and latitude in a coordinate system in which the pole of stretching is the northern pole. C = 1
       gives uniform resolution, while C > 1 gives enhanced resolution around the pole of stretching.
     (9) For stretched grids, the vertical coordinate parameters start at octet 43 instead of 33.
     (10) For stretched and rotated latitude/longitude grids, the vertical coordinate parameters start at octet 53.

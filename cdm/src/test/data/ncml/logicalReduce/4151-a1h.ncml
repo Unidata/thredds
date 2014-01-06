@@ -2,7 +2,7 @@
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="dods://geoport.whoi.edu/thredds/dodsC/ECOHAB_I/4151-a1h.cdf">
   <attribute name="featureType" value="timeSeries" />
   <attribute name="Conventions" value="CF-1.6" />
-  <attribute name="history2" value="USe NcML to munge into DSG timeSeries " />
+  <attribute name="history2" value="Use NcML to munge into DSG timeSeries H.4.3" />
   
   <variable name='site' type='String' >
     <attribute name='standard_name' value='station_id' />
