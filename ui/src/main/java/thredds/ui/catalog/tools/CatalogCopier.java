@@ -1,6 +1,9 @@
 package thredds.ui.catalog.tools;
 
-import thredds.catalog.*;
+import thredds.catalog.InvAccess;
+import thredds.catalog.InvCatalogRef;
+import thredds.catalog.InvDataset;
+import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.ui.catalog.CatalogChooser;
 import ucar.nc2.ui.widget.FileManager;
@@ -10,12 +13,9 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.ComboBox;
 
 import javax.swing.*;
-import javax.swing.event.EventListenerList;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -29,8 +29,6 @@ import java.util.regex.Pattern;
  */
 public class CatalogCopier extends JPanel {
   private final static String FRAME_SIZE = "FrameSize";
-
-  private EventListenerList listenerList = new EventListenerList();
 
   private CatalogChooser catalogChooser;
   private TextHistoryPane resultText;
@@ -202,35 +200,5 @@ public class CatalogCopier extends JPanel {
     catalogChooser.save();
     filterCB.save();
     prefs.putInt("splitPos", splitV.getDividerLocation());
-  }
-
-  private void firePropertyChangeEvent(PropertyChangeEvent event) {
-    // Process the listeners last to first
-    Object[] listeners = listenerList.getListenerList();
-    for (int i = listeners.length-2; i>=0; i-=2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener)listeners[i+1]).propertyChange(event);
-      }
-    }
-  }
-
-  /**
-   * Add a PropertyChangeEvent Listener. Throws a PropertyChangeEvent:
-   * <ul>
-   * <li>  propertyName = "Dataset" or "File", getNewValue() = InvDataset chosen.
-   * <li>  propertyName = "Datasets", getNewValue() = InvDataset[] chosen. This can only happen if
-   *  you have set doResolve = true, and the resolved dataset is a list of datasets.
-   * <li>  propertyName = "InvAccess" getNewValue() = InvAccess chosen.
-   * </ul>
-   */
-  public void addPropertyChangeListener( PropertyChangeListener l) {
-    listenerList.add(PropertyChangeListener.class, l);
-  }
-
-  /**
-   * Remove a PropertyChangeEvent Listener.
-   */
-  public void removePropertyChangeListener( PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
   }
 }

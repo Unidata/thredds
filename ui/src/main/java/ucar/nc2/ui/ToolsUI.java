@@ -33,66 +33,73 @@
 
 package ucar.nc2.ui;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.MController;
+import thredds.inventory.bdb.MetadataManager;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordSysBuilder;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasetInfo;
+import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.grid.CoverageDataset;
+import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.geotiff.GeoTiff;
+import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
+import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.ui.coverage.CoverageDisplay;
-import ucar.nc2.ui.coverage.CoverageTable;
-import ucar.nc2.ui.grid.GeoGridTable;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.net.HTTPSession;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.grib2.table.WmoCodeTable;
+import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.ui.coverage.CoverageDisplay;
+import ucar.nc2.ui.coverage.CoverageTable;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
-import ucar.nc2.*;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.ncml.Aggregation;
-import ucar.nc2.dataset.*;
-
-import ucar.nc2.geotiff.GeoTiff;
-import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.ProgressMonitor;
-import ucar.nc2.util.*;
-import ucar.nc2.util.xml.RuntimeConfigParser;
-import ucar.nc2.units.*;
-
+import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
-import ucar.nc2.ui.util.*;
-
+import ucar.nc2.ui.util.Resource;
+import ucar.nc2.ui.util.SocketMessage;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.ProgressMonitor;
+import ucar.nc2.units.*;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.DebugFlags;
+import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.IO;
+import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.net.HTTPSession;
+import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
-import ucar.util.prefs.ui.*;
+import ucar.util.prefs.ui.ComboBox;
+import ucar.util.prefs.ui.Debug;
 
-import thredds.inventory.MController;
-import thredds.inventory.bdb.MetadataManager;
-
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-
-import javax.swing.*;
-import javax.swing.event.*;
-
-import org.springframework.context.*;
-import org.springframework.context.support.*;
 
 /**
  * Netcdf Tools user interface.
@@ -5959,6 +5966,17 @@ public class ToolsUI extends JPanel {
   static boolean isDiskCacheInit = false;
 
   public static void main(String args[]) {
+    try {
+      // Switch to Nimbus Look and Feel, if it's available.
+      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+        if ("Nimbus".equals(info.getName())) {
+          UIManager.setLookAndFeel(info.getClassName());
+          break;
+        }
+      }
+    } catch (Exception e) {  // TODO: In Java 7, replace this with multi-catch of specific exceptions.
+      log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
+    }
 
     // get a splash screen up right away
     final SplashScreen splash = new SplashScreen();

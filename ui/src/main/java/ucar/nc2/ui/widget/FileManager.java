@@ -34,17 +34,16 @@ package ucar.nc2.ui.widget;
 
 import ucar.util.prefs.PreferencesExt;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-
-import javax.swing.*;
-import javax.swing.filechooser.*;
+import java.util.ArrayList;
 
 
 /**
@@ -122,7 +121,7 @@ public class FileManager {
 
     File defaultDirectory = findDefaultDirectory(defaultDirs);
     try {
-        chooser = new javax.swing.JFileChooser(defaultDirectory);
+      chooser = new ImprovedFileChooser(defaultDirectory);
 
     } catch (SecurityException se) {
       System.out.println("FileManager SecurityException " + se);

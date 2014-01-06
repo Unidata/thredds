@@ -32,27 +32,30 @@
  */
 package ucar.nc2.ui.point;
 
-import ucar.nc2.ui.geoloc.RubberbandRectangleHandles;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.geoloc.*;
 import ucar.nc2.ui.util.Renderer;
-import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentDialog;
+import ucar.nc2.ui.widget.PopupManager;
+import ucar.nc2.ui.widget.RangeDateSelector;
 import ucar.nc2.units.DateRange;
-
-import ucar.unidata.geoloc.*;
-import ucar.util.prefs.ui.*;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.Station;
+import ucar.util.prefs.ui.Field;
+import ucar.util.prefs.ui.PrefPanel;
 
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.*;
-import javax.swing.border.EtchedBorder;
-import javax.swing.event.EventListenerList;
 
 
 /**
@@ -105,7 +108,6 @@ public class StationRegionDateChooser extends NPController {
   private Field.Double minLonField, maxLonField, minLatField, maxLatField;
 
   // events
-  private EventListenerList listenerList = new EventListenerList();
   private ActionSourceListener actionSource;
 
   // local caches
@@ -341,24 +343,6 @@ public class StationRegionDateChooser extends NPController {
   }
 
   /**
-   * Add a PropertyChangeListener. Throws a PropertyChangeEvent:
-   * <ul>
-   * <li>propertyName = "Station", getNewValue() = Station
-   * <li>propertyName =  "GeoRegion", getNewValue() = ProjectionRect
-   * </ul>
-   */
-  public void addPropertyChangeListener(PropertyChangeListener l) {
-    listenerList.add(PropertyChangeListener.class, l);
-  }
-
-  /**
-   * Remove a PropertyChangeEvent Listener.
-   */
-  public void removePropertyChangeListener(PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
-  }
-
-  /**
    * Add an action to the toolbar.
    *
    * @param act add this action
@@ -367,23 +351,15 @@ public class StationRegionDateChooser extends NPController {
     BAMutil.addActionToContainer(toolPanel, act);
   }
 
-  // Notify all listeners that have registered interest for
-  // notification on this event type.  The event instance
-  // is lazily created using the parameters passed into
-  // the fire method.
-  // see addPropertyChangeListener for list of valid arguments
+  /**
+   * Fires a PropertyChangeEvent:
+   * <ul>
+   * <li>propertyName = "Station", getNewValue() = Station
+   * <li>propertyName =  "GeoRegion", getNewValue() = ProjectionRect
+   * </ul>
+   */
   private void firePropertyChangeEvent(Object newValue, String propertyName) {
-    PropertyChangeEvent event = null;
-    Object[] listeners = listenerList.getListenerList();
-    // Process the listeners last to first
-    for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        if (event == null) // Lazily create the event:
-          event = new PropertyChangeEvent(this, propertyName, null, newValue);
-        // send event
-        ((PropertyChangeListener) listeners[i + 1]).propertyChange(event);
-      }
-    }
+    firePropertyChange(propertyName, null, newValue);
   }
 
   public void addActionValueListener(ActionValueListener l) {

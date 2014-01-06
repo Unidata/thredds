@@ -33,31 +33,32 @@
 
 package ucar.nc2.ui;
 
+import ucar.ma2.Array;
 import ucar.nc2.*;
-
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.Nc4ChunkingStrategyImpl;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
-import ucar.ma2.Array;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.util.*;
-import java.io.*;
-import java.util.List;
+import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.util.prefs.ui.Debug;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * A Swing widget to view the content of a netcdf dataset.
@@ -103,7 +104,9 @@ public class DatasetViewer extends JPanel {
     datasetTree = new DatasetTreeView();
     datasetTree.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent e) {
-        setSelected((Variable) e.getNewValue());
+        if (e.getPropertyName().equals("Selection")) {
+          setSelected((Variable) e.getNewValue());
+        }
       }
     });
 

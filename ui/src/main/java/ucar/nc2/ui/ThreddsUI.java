@@ -32,27 +32,27 @@
  */
 package ucar.nc2.ui;
 
-import thredds.ui.catalog.*;
 import thredds.catalog.*;
-
+import thredds.ui.catalog.CatalogChooser;
+import thredds.ui.catalog.ThreddsDatasetChooser;
 import thredds.ui.catalog.query.QueryChooser;
 import thredds.ui.catalog.tools.CatalogCopier;
 import thredds.ui.catalog.tools.CatalogEnhancer;
 import thredds.ui.catalog.tools.DLCrawler;
 import thredds.ui.catalog.tools.TDServerConfigurator;
 import ucar.nc2.ui.widget.*;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
 import ucar.nc2.util.IO;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.Debug;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 
 /**
  * This is the THREDDS User Interface for nj22 ToolsUI.
@@ -311,33 +311,15 @@ public class ThreddsUI extends JPanel {
   }
 
   /**
-   * Add a PropertyChangeEvent Listener. Throws a PropertyChangeEvent:
+   * Fires a PropertyChangeEvent:
    * <ul>
    * <li>  propertyName = "Dataset" or "File", getNewValue() = InvDataset chosen.
    * <li>  propertyName = "Datasets", getNewValue() = InvDataset[] chosen. This can only happen if
    * you have set doResolve = true, and the resolved dataset is a list of datasets.
    * </ul>
    */
-  public void addPropertyChangeListener(PropertyChangeListener l) {
-    listenerList.add(PropertyChangeListener.class, l);
-  }
-
-  /**
-   * Remove a PropertyChangeEvent Listener.
-   */
-  public void removePropertyChangeListener(PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
-  }
-
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
-
-    // Process the listeners last to first
-    Object[] listeners = listenerList.getListenerList();
-    for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener) listeners[i + 1]).propertyChange(event);
-      }
-    }
+    firePropertyChange(event.getPropertyName(), event.getOldValue(), event.getNewValue());
   }
 
   public void setDataset(String location) {
