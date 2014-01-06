@@ -9,35 +9,38 @@
 <body>
 <h1>GRIB Feature Collections</h1>
 <hr/>
-<p>GRIB datasets are collections of GRIB records, which consist of gridded data typically from numeric model output. Because of the complexity of how GRIB data
-  is written and stored, the TDS has developed specialized handling of GRIB datasets, as of version 4.3, called <em><strong>GRIB Feature
-    Collections</strong></em>. Version 4.3 is a complete rewrite of the GRIB IOSP, table handling, indexing, and server functionality. One can expect
-  significant differences from earlier versions of the TDS in variable naming, as well as time and spatial coordinate handling. Previous versions are no longer
-  supported, and it is strongly recommended that users switch ASAP to version 4.3 or greater. </p>
-
-<p>Some of the new capabilities in version 4.3 are:</p>
-<ul>
-  <li>The user need only specify a collection of GRIB-1 or GRIB-2 files, and the software turns them into a dataset.</li>
-  <li>New indexing scheme allows fast access and scalability to very large datasets.</li>
-  <li>Multiple horizontal domains are supported and placed into separate groups.</li>
-  <li>Interval time coordinates are fully supported.</li>
-  <li>Collection level datasets are automatically created. These correspond to the FMRC <em>best</em> dataset.</li>
-  <li>All individual files are also made available.</li>
-</ul>
-<p>Some of the new capabilities in version 4.4 are:</p>
-<ul>
-  <li>Collections in the millions of files are now feasible. Java 7 nio package is used to efficiently scan directories. </li>
-  <li>Updating of colletions is significantly different than in version 4.3, in order to support very large collections.</li>
-  <li>GribCollections keep two time coordinates - reference time (aka run time) and valid time (aka forecast time).</li>
-  <li>PartitionCollections can be built on top of GribCollections that can show the equivilent of FMRC <em>best</em> dataset.</li>
-  <li>PartitionCollections allow filtering on time interval coordinates.</li>
-</ul>
+<h3>Background: version 4.3</h3>
+<blockquote>
+  <p>GRIB datasets are collections of GRIB records, which consist of gridded data typically from numeric model output. Because of the complexity of how GRIB data
+    is written and stored, the TDS has developed specialized handling of GRIB datasets, as of version 4.3, called <em><strong>GRIB Feature
+    Collections</strong></em>. Version 4.3 is a complete rewrite of the GRIB IOSP, table handling, indexing, and server functionality. </p>
+  <p>Some of the new capabilities in version 4.3 are:</p>
+  <ul>
+    <li>The user need only specify a collection of GRIB-1 or GRIB-2 files, and the software turns them into a dataset.</li>
+    <li>New indexing scheme allows fast access and scalability to very large datasets.</li>
+    <li>Multiple horizontal domains are supported and placed into separate groups.</li>
+    <li>Interval time coordinates are fully supported.</li>
+    <li>All individual files are also made available.</li>
+  </ul>
+</blockquote>
+<h3>Version 4.4</h3>
+<blockquote>
+  <p>The GRIB Collections framework has been completely rewritten in CDM version 4.4, in order to handle large collections efficiently. </p>
+  <p>Some of the new capabilities in version 4.4 are:</p>
+  <ul>
+    <li>Collections in the millions of files are now feasible. Java 7 nio package is used to efficiently scan directories. </li>
+    <li>Updating of collections is significantly different than in version 4.3, in order to support very large collections.</li>
+    <li>GribCollections keep two time coordinates - reference time (aka run time) and forecast time (aka valid time), corresponding to FMRC <em>TwoD</em> datasets.</li>
+    <li>PartitionCollections can be built on top of GribCollections that can show the equivilent of FMRC <em>best</em> dataset.</li>
+    <li>PartitionCollections allow filtering on time interval coordinates.</li>
+  </ul>
+</blockquote>
 <p>Implementation notes:</p>
 <ul>
   <li>For each grib file, a <em>grib index</em> is written in the same directory, named <strong>&lt;grib filename&gt;.gbx9</strong>. Once written, this never
     has to be rewritten.
   </li>
-  <li>For each grib file, a <em>cdm index</em> may be written in the same directory, named <strong>&lt;grib filename&gt;.ncx</strong>2 This occasionally has to be
+  <li>For each grib file, a <em>cdm index</em> may be written in the same directory, named <strong>&lt;grib filename&gt;.ncx2</strong> This occasionally has to be
     rewritten when new CDM versions are released, or if you modify your grib configuration.  </li>
   <li>For each collection, a <em>grib collection index</em> is written in the <em>collection root directory, </em>named <strong>&lt;collection
     name&gt;.ncx2</strong>. This must be rewritten if any of the collection files change.
@@ -50,7 +53,7 @@
 </ul>
 <hr/>
 <h2>Example 1:</h2>
-<pre>1) &lt;featureCollection name=&quot;GFS-Puerto_Rico_191km&quot; featureType=&quot;GRIB&quot; path=&quot;fmrc/NCEP/GFS/Puerto_Rico_191km&quot;&gt;
+<pre>1) &lt;featureCollection name=&quot;GFS-Puerto_Rico_191km&quot; featureType=&quot;GRIB1&quot; path=&quot;fmrc/NCEP/GFS/Puerto_Rico_191km&quot;&gt;
 2)   &lt;metadata inherited=&quot;true&quot;&gt;
 3)     &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;
        &lt;documentation type=&quot;summary&quot;&gt;NCEP GFS Model : AWIPS 205 (L) Grid. National - Puerto Rico (polar stereographic).
@@ -59,14 +62,14 @@
      &lt;/metadata&gt;
 4)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$&quot;&gt;
 5)   &lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
-6)   &lt;gribConfig datasetTypes=&quot;Best Latest Files&quot; /&gt;
+6)   &lt;gribConfig datasetTypes=&quot;TwoD Latest Files&quot; /&gt;
    &lt;/featureCollection&gt;</pre>
 <ol>
   <li>A featureCollection must have a <em>name</em> and a <em>path</em> (do <strong>not</strong> set an <em>ID</em> attribute<em>)</em>. The
     <em>featureType</em> attribute is set to <em>GRIB</em>. Its best to avaoid the words <em>collection</em> and <em>files</em> in the name.
-  </li>
+  Note that the <strong>featureType</strong> attribute must now equal <em>GRIB1</em> or <em>GRIB2</em>, not plain <em>GRIB</em></li>
   <li>A featureCollection is a InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
-  <li>The collection must consist of either GRIB-1 or GRIB-2 files. You <strong>must</strong> set the dataFormat element to indicate which.</li>
+  <li>The collection must consist of either GRIB-1 or GRIB-2 files. You no longer need set the dataFormat element to indicate which, as it is specified in the featureType.</li>
   <li>The <a href="CollectionSpecification.html">collection specification</a> defines the collection of files that are in this dataset.</li>
   <li>The collection of files change, and this <em>update</em> element says to rescan it on TDS startup and every 15 minutes, as well as allow manual triggers
     for updating.

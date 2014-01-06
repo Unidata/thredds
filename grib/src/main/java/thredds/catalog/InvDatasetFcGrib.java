@@ -37,7 +37,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.inventory.partition.FilePartition;
-import thredds.inventory.partition.PartitionManager;
 import thredds.inventory.partition.TimePartitionCollectionManager;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -56,7 +55,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Implement FeatureCollection GRIB - a collection of Grib1 or Grib2 files that are served as Grids.
@@ -285,100 +283,49 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (parent != null)
       top.transferMetadata(parent, true); // make all inherited metadata local
     String tpath = getPath()+"/"+COLLECTION;
-    top.setID(tpath);
+    //top.setID(tpath);
 
     GribCollection gc = localState.gribCollection;
-    List<GribCollection.GroupHcs> groups = new ArrayList<>(gc.getGroups());
-    Collections.sort(groups);
-    boolean isSingleGroup = (groups.size() == 1);
 
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
     tmi.addVariableMapLink(makeMetadataLink(tpath, VARIABLES));
-    tmi.setGeospatialCoverage(extractGeospatial(groups));
-    tmi.setTimeCoverage(extractCalendarDateRange(groups));
     tmi.setServiceName(virtualService.getName());
 
-    if (isGribCollection || isFilePartition) { // are these identical ??
+    if (isGribCollection) {
+      List<GribCollection.GroupHcs> groups = new ArrayList<>(gc.getGroups());
+      tmi.setGeospatialCoverage(extractGeospatial(groups));
+      tmi.setTimeCoverage(extractCalendarDateRange(groups));
+      Collections.sort(groups);
+      makeDatasetsFromGroups(top, groups);
 
-      for (GribCollection.GroupHcs group : groups) {
-        InvDatasetImpl ds = isSingleGroup ? top : new InvDatasetImpl(this, group.getDescription());
+    } else if (isFilePartition || isDirectoryPartition || isOtherPartition) { // is a time partition
 
-        String groupId = isSingleGroup ? null : group.getId();
-        String dpath =  isSingleGroup ? getPath() : getPath() + "/" + groupId;
-
-        if (!isSingleGroup) {
-          ds.setID(dpath);
-          top.addDataset(ds);
-        }
-
-        ds.tmi.setGeospatialCoverage(extractGeospatial(group));
-        ds.tmi.setTimeCoverage(group.getCalendarDateRange());
-
-        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
-          InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
-          String path = dpath + "/" + TWOD_DATASET;
-          twoD.setUrlPath(path);
-          twoD.setID(path);
-          twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-          ds.addDataset(twoD);
-        }
-
-        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
-          InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
-          String path = dpath + "/" + BEST_DATASET;
-          best.setUrlPath(path);
-          best.setID(path);
-          best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-          ds.addDataset(best);
-        }
-
-        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
-          String name = isSingleGroup ? FILES : groupId + "/" + FILES;
-          InvCatalogRef filesCat = new InvCatalogRef(this, FILES, getCatalogHref(name));
-          filesCat.finish();
-          ds.addDataset(filesCat);
-        }
-
+      if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
+        InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
+        String path = getPath() + "/" + TWOD_DATASET;
+        twoD.setUrlPath(path);
+        twoD.setID(path);
+        twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+        top.addDataset(twoD);
       }
 
-    } else if (isDirectoryPartition || isOtherPartition) { // is a time partition
+      if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
+        InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
+        String path = getPath() + "/" + BEST_DATASET;
+        best.setUrlPath(path);
+        best.setID(path);
+        best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+        top.addDataset(best);
+      }
 
-      if (isSingleGroup) {
-        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
-          InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
-          String path = getPath() + "/" + TWOD_DATASET;
-          twoD.setUrlPath(path);
-          twoD.setID(path);
-          twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-          top.addDataset(twoD);
-        }
-
-        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
-          InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
-          String path = getPath() + "/" + BEST_DATASET;
-          best.setUrlPath(path);
-          best.setID(path);
-          best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-          top.addDataset(best);
-        }
-
-        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile)) {
-          InvDatasetImpl ds2 = new InvDatasetImpl(this, getLatestFileName());
-          ds2.setUrlPath(FILES+"/"+LATEST_DATASET_CATALOG);
-          ds2.setID(FILES+"/"+LATEST_DATASET_CATALOG);
-          ds2.setServiceName(LATEST_SERVICE);
-          ds2.finish();
-          top.addDataset(ds2);
-        }
-
-      } else {
-
-        if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
-          String dname =  getPath() + "/" + BEST_DATASET;
-          InvCatalogRef ds = new InvCatalogRef(this, getBestDatasetName(), getCatalogHref(dname));
-          top.addDataset(ds);
-        }
-      } // multiple groups
+      if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile)) {
+        InvDatasetImpl ds2 = new InvDatasetImpl(this, getLatestFileName());
+        ds2.setUrlPath(FILES+"/"+LATEST_DATASET_CATALOG);
+        ds2.setID(FILES+"/"+LATEST_DATASET_CATALOG);
+        ds2.setServiceName(LATEST_SERVICE);
+        ds2.finish();
+        top.addDataset(ds2);
+      }
 
       PartitionCollection pc =  (PartitionCollection) localState.gribCollection;
       for (PartitionCollection.Partition dc : pc.getPartitionsSorted()) {
@@ -387,10 +334,57 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         top.addDataset(ds);
       }
 
-    }
+    } // isDirectoryPartition || isOtherPartition
 
     top.finish();
     localState.top = top;
+  }
+
+  private void makeDatasetsFromGroups(InvDatasetImpl parent, List<GribCollection.GroupHcs> groups) {
+    Collections.sort(groups);
+    boolean isSingleGroup = (groups.size() == 1);
+
+    for (GribCollection.GroupHcs group : groups) {
+      InvDatasetImpl ds = isSingleGroup ? parent : new InvDatasetImpl(this, group.getDescription());
+
+      String groupId = isSingleGroup ? null : group.getId();
+      String dpath =  isSingleGroup ? getPath() : getPath() + "/" + groupId;
+
+      if (!isSingleGroup) {
+        ds.setID(dpath);
+        parent.addDataset(ds);
+      }
+
+      ds.tmi.setGeospatialCoverage(extractGeospatial(group));
+      ds.tmi.setTimeCoverage(group.getCalendarDateRange());
+
+      if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
+        InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
+        String path = dpath + "/" + TWOD_DATASET;
+        twoD.setUrlPath(path);
+        twoD.setID(path);
+        twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+        ds.addDataset(twoD);
+      }
+
+      if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
+        InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
+        String path = dpath + "/" + BEST_DATASET;
+        best.setUrlPath(path);
+        best.setID(path);
+        best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+        ds.addDataset(best);
+      }
+
+      if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
+        String name = isSingleGroup ? FILES : groupId + "/" + FILES;
+        InvCatalogRef filesCat = new InvCatalogRef(this, FILES, getCatalogHref(name));
+        filesCat.finish();
+        ds.addDataset(filesCat);
+      }
+
+    }
+
   }
 
   /* file datasets of the partition catalog are InvCatalogRef pointing to "FileCatalogs"

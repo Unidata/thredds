@@ -657,6 +657,265 @@ message Variable {
 <ul>
   <li>need to keep persistant Object cache.</li>
 </ul>
+<hr/>
+<h3>01/04/2014</h3>
+<h3>GribCollections, version 2</h3>
+<pre>&lt;featureCollection name=&quot;GFS-CONUS_191km&quot; featureType=&quot;GRIB2&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/CONUS_191km&quot;&gt;
+  &lt;metadata inherited=&quot;true&quot;&gt;
+   &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;
+  &lt;/metadata&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/GFS_CONUS_191km_#yyyyMMdd_HHmm#.grib1&quot; olderThan=&quot;5 min&quot;/&gt;
+  &lt;tdm startup=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+&lt;/featureCollection&gt;
+</pre>
+<h3>File Partition, no groups
+</h3>
+<table width="1348" border="1">
+  <tr>
+    <th width="88" scope="col">dataset</th>
+    <th width="220" scope="col">url</th>
+    <th width="43" scope="col">type</th>
+    <th width="813" scope="col">example</th>
+    <th width="150" scope="col">NetCDF Object</th>
+  </tr>
+  <tr>
+    <td>overall</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>TwoD</td>
+    <td>cat?<em>dataset</em>=path/<em>TwoD </em></td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/NCEP/DGEX/CONUS_12km/TwoD</td>
+    <td>collection.ncx2</td>
+  </tr>
+  <tr>
+    <td>Best</td>
+    <td>cat?<em>dataset</em>=path/<em>Best</em></td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/NCEP/DGEX/CONUS_12km/Best</td>
+    <td>collection.ncx2</td>
+  </tr>
+  <tr>
+    <td>latest</td>
+    <td>path<em>/files/<em>latest.xml</em></em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>files catalog</td>
+    <td>path<em>/files/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>fcat?<em>dataset</em>=path/<em>files</em>/filepath</td>
+    <td>dataset</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20131204_1800.grib2/catalog.html</td>
+    <td>file.ncx</td>
+  </tr>
+</table>
+<h3>Grib Collection, with groups</h3>
+<table width="1348" border="1">
+  <tr>
+    <th width="117" scope="col">dataset</th>
+    <th width="279" scope="col">url</th>
+    <th width="73" scope="col">type</th>
+    <th width="534" scope="col">example</th>
+    <th width="213" scope="col">NetCDF Object</th>
+  </tr>
+  <tr>
+    <td>overall</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/carlosMoraga/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/carlosMoraga/collection</td>
+    <td>none</td>
+  </tr>
+  <tr>
+    <td>group best</td>
+    <td>cat?<em>dataset</em>=path/group/<em>best</em></td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/carlosMoraga/domain1/best</td>
+    <td>collection(group).ncx</td>
+  </tr>
+  <tr>
+    <td>group files catalog</td>
+    <td>path<em>/group/files/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/carlosMoraga/domain1/files/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>fcat?<em>dataset</em>=path/group/<em>files</em>/filepath</td>
+    <td>dataset</td>
+    <td>fcat?dataset=grib/carlosMoraga/files/ECMWF_GNERA_d0001.20121001</td>
+    <td>file.ncx</td>
+  </tr>
+  <tr>
+    <td>latest file catalog</td>
+    <td>path<em>/</em>group<em>/files/<em>latest.xml</em></em></td>
+    <td>catalog</td>
+    <td><p>http://localhost:8080/thredds/catalog/grib/carlosMoraga/domain1/files/latest.html</p></td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h3>partition collection</h3>
+<p>path -&gt; path/partitionName</p>
+<table width="1466" border="1">
+  <tr>
+    <th width="161" scope="col">dataset</th>
+    <th width="417" scope="col">url</th>
+    <th width="73" scope="col">type</th>
+    <th width="627" scope="col">example</th>
+    <th width="154" scope="col">NetCDF Object</th>
+  </tr>
+  <tr>
+    <td>overall</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/NCEP/GFS/Global_0p5deg/collection</td>
+    <td>none</td>
+  </tr>
+  <tr>
+    <td>best overall</td>
+    <td>cat?<em>dataset</em>=path/<em>best </em></td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/NCEP/GFS/Global_0p5deg/best</td>
+    <td>collectionName.ncx</td>
+  </tr>
+  <tr>
+    <td>latest overall file</td>
+    <td>path<em>/files/<em>latest.xml</em></em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>partition catalog</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/</em>partitionName<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/20120518/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>best in partition</td>
+    <td>pcat?<em>dataset</em>=path/partitionName/<em>best</em></td>
+    <td>dataset</td>
+    <td>pcat?dataset=grib/NCEP/GFS/Global_0p5deg/20120518/best</td>
+    <td>partitionName.ncx</td>
+  </tr>
+  <tr>
+    <td>partition files catalog</td>
+    <td>path/partitionName<em>/files/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/20120518/files/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>pfcat?<em>dataset</em>=path/<em>files</em>/filepath</td>
+    <td>dataset</td>
+    <td>pfcat?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20120518_0000.grib2</td>
+    <td>file.ncx</td>
+  </tr>
+</table>
+<h3>time partition with groups</h3>
+<p>path -&gt; path/partition/group ??</p>
+<table width="1567" border="1">
+  <tr>
+    <th width="200" scope="col">dataset</th>
+    <th width="378" scope="col">url</th>
+    <th width="73" scope="col">type</th>
+    <th width="627" scope="col">example</th>
+    <th width="255" scope="col">NetCDF Object</th>
+  </tr>
+  <tr>
+    <td>overall</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCDC/CFSR/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/NCDC/CFSR/collection</td>
+    <td>none</td>
+  </tr>
+  <tr>
+    <td>best catalog</td>
+    <td>path/<em>best/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCDC/CFSR/grib/NCDC/CFSR/best/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>group best</td>
+    <td>bcat?<em>dataset</em>=path/group/<em>best </em></td>
+    <td>dataset</td>
+    <td>bcat?dataset=grib/NCDC/CFSR/FLX-GaussianT382/best</td>
+    <td>collectionName(group).ncx</td>
+  </tr>
+  <tr>
+    <td>latest file in group</td>
+    <td>path<em>/files/<em>latest.xml</em></em></td>
+    <td>catalog</td>
+    <td>NOT DONE</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>partition catalog</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/</em>partitionName<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCDC/CFSR/200808/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>best in partition, group</td>
+    <td>pcat?<em>dataset</em>=path/partitionName/group/<em>best</em></td>
+    <td>dataset</td>
+    <td>pcat?dataset=grib/NCDC/CFSR/200808/FLX-GaussianT382/best</td>
+    <td>partitionName(group).ncx</td>
+  </tr>
+  <tr>
+    <td>partition, group files catalog</td>
+    <td>path/partitionName/group<em>/files/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT382/files/catalog.html</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>pgfcat?<em>dataset</em>=path/<em>files</em>/filepath</td>
+    <td>dataset</td>
+    <td>pgfcat?dataset=grib/NCDC/CFSR/files/200808/dlwsfc.l.gdas.200808.grb2</td>
+    <td>file.ncx</td>
+  </tr>
+</table>
+<p></p>
+<p>&nbsp;</p>
 <p></p>
 </body>
 </html>

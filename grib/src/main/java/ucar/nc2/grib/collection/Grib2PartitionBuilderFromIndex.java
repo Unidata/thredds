@@ -24,7 +24,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
 
     // read in the index, open raf and leave open in the GribCollection
   static public GribCollection createTimePartitionFromIndex(String name, File directory, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
-    File idxFile = ucar.nc2.grib.GribCollection.getIndexFile(name, directory);
+    File idxFile = ucar.nc2.grib.collection.GribCollection.getIndexFile(name, directory);
     RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "r");
     return createTimePartitionFromIndex(name, directory, raf, config, logger);
   }
