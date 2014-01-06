@@ -33,12 +33,9 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.auth.AuthenticationException;
-import org.apache.commons.httpclient.auth.MalformedChallengeException;
+import org.apache.http.Header;
+import org.apache.http.HttpRequest;
+import org.apache.http.auth.*;
 
 public class HTTPSSLScheme implements AuthScheme
 {
@@ -56,9 +53,8 @@ getSchemeName()
     return "SSL";
 }
 
-
 public void
-processChallenge(String url)
+processChallenge(Header header)
     throws MalformedChallengeException
 {
 }
@@ -75,13 +71,6 @@ getRealm()
     return AuthScope.ANY_REALM;
 }
     
-@Deprecated
-public String
-getID()
-{
-    return null;
-}
-    
 public boolean
 isConnectionBased()
 {
@@ -93,17 +82,10 @@ isComplete()
 {
     return true;
 }
-    
+
 @Deprecated
-public String
-authenticate(Credentials credentials, String url, String url1)
-    throws AuthenticationException
-{
-    return null;
-}
-    
-public String
-authenticate(Credentials credentials, HttpMethod httpMethod)
+public Header
+authenticate(Credentials credentials, HttpRequest request)
     throws AuthenticationException
 {
     return null;

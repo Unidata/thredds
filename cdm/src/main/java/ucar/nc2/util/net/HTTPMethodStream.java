@@ -108,7 +108,7 @@ class HTTPMethodStream extends FilterInputStream
             consumed += skip(available);
             }
             if (consumed > 0) {
-                log.warn("HTTPMethodStream: unconsumed data");
+                log.debug("HTTPMethodStream: unconsumed data");
             }
         } catch (IOException ioe) {/*ignore*/};
       }

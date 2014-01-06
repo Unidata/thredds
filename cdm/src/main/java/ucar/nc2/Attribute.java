@@ -269,7 +269,7 @@ public class Attribute extends CDMNode {
     }
 
     return true;
-  }
+  }  
 
   /**
    * Override Object.hashCode() to implement equals.

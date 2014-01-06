@@ -33,14 +33,12 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.http.auth.*;
+import org.apache.http.client.CredentialsProvider;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.security.Principal;
 
 
 //////////////////////////////////////////////////
@@ -61,12 +59,37 @@ public class HTTPBasicProvider implements CredentialsProvider, Credentials, Seri
 
     // Credentials Provider Interface
     public Credentials
-    getCredentials(AuthScheme authscheme, String host, int port, boolean isproxy)
-	throws CredentialsNotAvailableException
+    getCredentials(AuthScope scope) //AuthScheme authscheme, String host, int port, boolean isproxy)
     {
-	UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
-	return creds;
+	    UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
+	    return creds;
     }
+
+    public void
+    setCredentials(AuthScope authscope, Credentials credentials)
+    {
+
+    }
+
+    public void
+    clear()
+    {
+
+    }
+
+    // Credentials Interface
+    public Principal
+    getUserPrincipal()
+    {
+        return null;
+    }
+
+    public String
+    getPassword()
+    {
+        return null;
+    }
+
 
     // Serializable Interface
     private void writeObject(java.io.ObjectOutputStream oos)

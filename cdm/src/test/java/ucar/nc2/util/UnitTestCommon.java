@@ -34,6 +34,8 @@
 package ucar.nc2.util;
 
 import junit.framework.TestCase;
+import org.apache.http.*;
+import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.test.Diff;
@@ -44,12 +46,19 @@ public class UnitTestCommon extends TestCase
 {
     static public boolean debug = false;
 
-    static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
+    static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnitTestCommon.class);
 
     // Look for these to verify we have found the thredds root
     static final String[] SUBROOTS = new String[]{"cdm", "tds", "opendap"};
 
     static public final String threddsRoot = locateThreddsRoot();
+
+    static {
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+        System.setProperty(
+                "org.apache.commons.logging.simplelog.log.org.apache.http",
+                "debug");
+    }
 
     // Walk around the directory structure to locate
     // the path to a given directory.
@@ -64,20 +73,20 @@ public class UnitTestCommon extends TestCase
         // clean up the path
         path = path.replace('\\', '/'); // only use forward slash
         assert (path != null);
-        if(path.endsWith("/")) path = path.substring(0, path.length() - 1);
+        if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
 
-        while(path != null) {
+        while (path != null) {
             boolean allfound = true;
-            for(String dirname : SUBROOTS) {
+            for (String dirname : SUBROOTS) {
                 // look for dirname in current directory
                 String s = path + "/" + dirname;
                 File tmp = new File(s);
-                if(!tmp.exists()) {
+                if (!tmp.exists()) {
                     allfound = false;
                     break;
                 }
             }
-            if(allfound)
+            if (allfound)
                 return path; // presumably the thredds root
             int index = path.lastIndexOf('/');
             path = path.substring(0, index);
@@ -85,15 +94,81 @@ public class UnitTestCommon extends TestCase
         return null;
     }
 
+    // Warning: state not saved across multiple execute() requests.
+    static public class InterceptRequest implements HttpRequestInterceptor
+    {
+        HttpRequest request = null;
+        HttpContext context = null;
+
+        synchronized public void process(HttpRequest request, HttpContext context)
+                throws HttpException, IOException
+        {
+            this.request = request;
+            this.context = context;
+        }
+
+        synchronized public HttpRequest getRequest()
+        {
+            return this.request;
+        }
+
+        synchronized public HttpContext getContext()
+        {
+            return this.context;
+        }
+
+        synchronized public Header[] getHeaders(String key)
+        {
+            Header[] hdrs = this.request.getHeaders(key);
+            if(hdrs == null) hdrs = new Header[0];
+            return hdrs;
+        }
+
+    }
+
+    // Warning: state not saved across multiple execute() responses.
+    static public class InterceptResponse implements HttpResponseInterceptor
+    {
+        HttpResponse response = null;
+        HttpContext context = null;
+
+        synchronized public void process(HttpResponse response, HttpContext context)
+                throws HttpException, IOException
+        {
+            this.response = response;
+            this.context = context;
+        }
+
+        synchronized public HttpResponse getResponse()
+        {
+            return this.response;
+        }
+
+        synchronized public HttpContext getContext()
+        {
+            return this.context;
+        }
+
+        synchronized public Header[] getHeaders(String key)
+        {
+            Header[] hdrs = this.response.getHeaders(key);
+            if(hdrs == null) hdrs = new Header[0];
+            return hdrs;
+        }
+
+    }
+
+    //////////////////////////////////////////////////
+
     public void
     clearDir(File dir, boolean clearsubdirs)
-        throws Exception
+            throws Exception
     {
         // wipe out the dir contents
-        if(!dir.exists()) return;
-        for(File f : dir.listFiles()) {
-            if(f.isDirectory()) {
-                if(clearsubdirs)
+        if (!dir.exists()) return;
+        for (File f : dir.listFiles()) {
+            if (f.isDirectory()) {
+                if (clearsubdirs)
                     clearDir(f, true); // clear subdirs
                 else
                     throw new Exception("InnerClass directory encountered: " + f.getAbsolutePath());
@@ -135,18 +210,19 @@ public class UnitTestCommon extends TestCase
             // Diff the two print results
             Diff diff = new Diff(tag);
             StringWriter sw = new StringWriter();
-            boolean pass = !diff.doDiff(baseline,s,sw);
-            return (pass?null:sw.toString());
+            boolean pass = !diff.doDiff(baseline, s, sw);
+            return (pass ? null : sw.toString());
         } catch (Exception e) {
-            System.err.println("UnitTest: Diff failure: "+e);
+            System.err.println("UnitTest: Diff failure: " + e);
             return null;
         }
 
     }
 
-  // suppress warning message
-  public void testFakerooni() {
-    assert true;
-  }
+    // suppress warning message
+    public void testFakerooni()
+    {
+        assert true;
+    }
 }
 

@@ -33,9 +33,8 @@
 
 package ucar.unidata.io.http;
 
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
-import org.apache.commons.httpclient.Header;
+import ucar.nc2.util.net.*;
+import org.apache.http.Header;
 import ucar.unidata.util.Urlencoded;
 
 import java.io.FileNotFoundException;
@@ -77,13 +76,13 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (debugLeaks)
       allFiles.add(location);
 
-    session = new HTTPSession(url);
+    session = HTTPFactory.newSession(url);
 
     boolean needtest = true;
 
     HTTPMethod method = null;
     try {
-      method = HTTPMethod.Head(session);
+      method = HTTPFactory.Head(session);
 
       doConnect(method);
 
@@ -137,7 +136,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   private boolean rangeOk(String url) {
     HTTPMethod method = null;
     try {
-      method = HTTPMethod.Get(session,url);
+      method = HTTPFactory.Get(session,url);
       method.setRequestHeader("Range", "bytes=" + 0 + "-" + 1);
       doConnect(method);
 
@@ -204,7 +203,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     HTTPMethod method = null;
     try {
-      method = HTTPMethod.Get(session);
+      method = HTTPFactory.Get(session);
       method.setFollowRedirects(true);
       method.setRequestHeader("Range", "bytes=" + pos + "-" + end);
       doConnect(method);

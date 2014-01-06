@@ -38,7 +38,8 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.io.*;
 
-import org.apache.commons.httpclient.auth.*;
+import org.apache.http.auth.*;
+import org.apache.http.client.CredentialsProvider;
 
 import javax.crypto.*;
 import javax.crypto.spec.*;

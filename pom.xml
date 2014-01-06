@@ -417,16 +417,21 @@
 
       <!-- client -->
       <dependency>
-        <groupId>commons-httpclient</groupId>
-        <artifactId>commons-httpclient</artifactId>
-        <version>${commons-httpclient.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>  <!-- replace with jcl-over-slf4j -->
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${org.apache.httpcomponents.httpclient.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>${org.apache.httpcomponents.httpcore.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpmime</artifactId>
+        <version>${org.apache.httpcomponents.httpmime.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache-core</artifactId>
@@ -453,9 +458,9 @@
         <version>${com.sleepycat.version}</version>
       </dependency>
       <dependency>
-      	<groupId>com.sun.jna</groupId>
+	<groupId>net.java.dev.jna</groupId>
       	<artifactId>jna</artifactId>
-      	<version>3.0.9</version>
+      	<version>4.0.0</version>
       </dependency>
       <dependency>
         <groupId>joda-time</groupId>
@@ -886,7 +891,9 @@
     <com.sleepycat.version>4.0.92</com.sleepycat.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
-    <commons-httpclient.version>3.1</commons-httpclient.version>
+    <org.apache.httpcomponents.httpcore.version>4.2.5</org.apache.httpcomponents.httpcore.version>
+    <org.apache.httpcomponents.httpclient.version>4.2.6</org.apache.httpcomponents.httpclient.version>
+    <org.apache.httpcomponents.httpmime.version>4.2.6</org.apache.httpcomponents.httpmime.version>
     <commons-io.version>2.4</commons-io.version>
     <derby.version>10.9.1.0</derby.version>
     <javax.activation.version>1.1.1</javax.activation.version>
