@@ -61,8 +61,8 @@ public abstract class TableUtils {
         @Override public void tableChanged(TableModelEvent e) {
             table.tableChanged(e);  // table MUST be notified first.
 
-            // Do not cache the value of doFullScan; we need to reevaluate each time because the table model could
-            // have changed.
+            // Do not cache the value of doFullScan; we need to reevaluate each time because the number of rows in
+            // the table could have changed.
             boolean doFullScan = table.getRowCount() <= fullScanCutoff;
             TableUtils.resizeColumnWidths(table, doFullScan);
         }

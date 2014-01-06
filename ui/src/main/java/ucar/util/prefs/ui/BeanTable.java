@@ -99,6 +99,8 @@ public class BeanTable extends JPanel {
   public BeanTable(Class bc, PreferencesExt pstore, String header, String tooltip, BeanInfo info) {
     this.beanClass = bc;
     this.store = pstore;
+
+    beans = (store != null) ? (ArrayList<Object>) store.getBean("beanList", new ArrayList()) : new ArrayList<Object>();
     model = new TableBeanModelInfo(info);
     init(header, tooltip);
   }
