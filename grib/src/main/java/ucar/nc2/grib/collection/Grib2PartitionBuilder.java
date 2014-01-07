@@ -475,7 +475,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
           CoordinateTimeIntv timeBest = (CoordinateTimeIntv) groupB.coords.get(timeIdx);
           vip.time2runtime = makeTime2RuntimeMap(runOffset, time2d, timeBest, ((PartitionCollection.VariableIndexPartitioned) vi2d).twot);
         }
-        vip.coordIndex = vip.coordIndex.subList(1, vip.coordIndex.size()); // remove runtime co9ordinate - always first one
+        vip.coordIndex = vip.coordIndex.subList(1, vip.coordIndex.size()); // remove runtime coordinate - always first one
       }
 
     } // loop over groups
@@ -534,7 +534,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
           Integer bestVal = (int) (runOffset + val);
           Integer bestValIdx = map.get(bestVal);
           if (bestValIdx == null) throw new IllegalStateException();
-          result[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
+          result[bestValIdx] = runIdx+1; // use this partition; later ones override; 1-based so 0 = missing
         }
 
         timeIdx++;
@@ -728,7 +728,7 @@ public class Grib2PartitionBuilder extends Grib2CollectionBuilder {
     repeated Parameter gparams = 102;      // not used yet
   }
    */
-  private GribCollectionProto.Group writeGroupProto(PartitionCollection pc, GribCollection.GroupHcs g) throws IOException {
+  private GribCollectionProto.Group writeGroupProto(PartitionCollection pc2, GribCollection.GroupHcs g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     // dont store gds directly, use GdsIndex

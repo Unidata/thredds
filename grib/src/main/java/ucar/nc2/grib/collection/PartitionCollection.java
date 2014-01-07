@@ -3,16 +3,12 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
-import thredds.inventory.partition.PartitionManager;
-import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateTwoTimer;
-import ucar.sparr.SparseArray;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -68,57 +64,6 @@ public class PartitionCollection extends GribCollection {
 
   //////////////////////////////////////////////////////////////////////
 
-  public class Dataset {
-    List<GroupHcs> groups;
-    // List<GribCollection.HorizCoordSys> gdsList;
-    final PartitionCollectionProto.Dataset.Type type;
-
-    public Dataset(PartitionCollectionProto.Dataset.Type type) {
-      this.type = type;
-      groups = new ArrayList<>();
-    }
-
-    Dataset(Dataset from) {
-      this.type = from.type;
-      groups = new ArrayList<>(from.groups.size());
-    }
-
-    public GroupHcs addGroupCopy(GroupHcs from) {
-      GroupHcs g = new GroupHcs(from);
-      groups.add(g);
-      return g;
-    }
-
-    public List<GroupHcs> getGroups() {
-      return groups;
-    }
-
-    public String getType() {
-      return type.toString();
-    }
-
-    public GroupHcs getGroup(int index) {
-      return groups.get(index);
-    }
-
-    public GroupHcs findGroupById(String id) {
-      for (GroupHcs g : getGroups()) {
-        if (g.getId().equals(id))
-          return g;
-      }
-      return null;
-    }
-
-    public int findGroupIdxById(String id) {
-      for (int i = 0; i < groups.size(); i++) {
-        GroupHcs g = groups.get(i);
-        if (g.getId().equals(id)) return i;
-      }
-      return -1;
-    }
-
-  }
-
   class PartitionForVariable {
     int partno, groupno, varno, flag;
     public int ndups, nrecords, missing;
@@ -127,8 +72,6 @@ public class PartitionCollection extends GribCollection {
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
     public List<PartitionForVariable> partList; // must not change order
-    public CoordinateTwoTimer twot;
-    public int[] time2runtime;
 
     VariableIndexPartitioned(GroupHcs g, VariableIndex other, int nparts) {
       super(g, other);
@@ -193,8 +136,9 @@ public class PartitionCollection extends GribCollection {
 
       Partition p = getPartitions().get(partno);
       try (GribCollection gc = p.getGribCollection()) { // ensure that its read in
+        Dataset ds = gc.getDataset2D(); // always references the twoD dataset
         // the group and variable index may vary across partitions
-        GribCollection.GroupHcs g = gc.groups.get(partVar.groupno);
+        GribCollection.GroupHcs g = ds.groups.get(partVar.groupno);
         GribCollection.VariableIndex vindex = g.variList.get(partVar.varno);
         vindex.readRecords();
         return vindex;
@@ -342,17 +286,7 @@ public class PartitionCollection extends GribCollection {
   protected final org.slf4j.Logger logger;
   protected Map<String, Partition> partitionMap = new TreeMap<>();
   protected List<Partition> partitions;
-  public List<Dataset> datasets;   // 2D, best, 0hour etc
-  public List<HorizCoordSys> gdsList;  // factored out of the groups
-  public List<HorizCoordSys> horizCS; // one for each gds
-
-  public HorizCoordSys getHorizCS(int index) {
-    return horizCS.get(index);
-  }
-
-  public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride) {
-    horizCS.add(new HorizCoordSys(hcs, rawGds, gdsHash, nameOverride));
-  }
+  // public List<HorizCoordSys> gdsList;  // factored out of the groups
 
   protected PartitionCollection(String name, File directory, FeatureCollectionConfig.GribConfig config, boolean isGrib1, org.slf4j.Logger logger) {
     super(name, directory, config, isGrib1);
@@ -371,32 +305,6 @@ public class PartitionCollection extends GribCollection {
       datasets.add (new Dataset(fromDset));
     }
   } */
-
-  protected void finish() {
-    Set<HorizCoordSys> gdsSet = new HashSet<>();
-    for (Dataset ds : datasets) {
-      for (GroupHcs hcs : ds.getGroups())
-        gdsSet.add(hcs.horizCoordSys);
-    }
-
-    gdsList = new ArrayList<>();
-    for (HorizCoordSys hcs : gdsSet)
-      gdsList.add(hcs);
-  }
-
-  public int findIndex(HorizCoordSys hcs) {
-    return gdsList.indexOf(hcs);
-  }
-
-  public List<Dataset> getDatasets() {
-    return datasets;
-  }
-
-  public Dataset makeDataset(PartitionCollectionProto.Dataset.Type type) {
-    Dataset result = new Dataset(type);
-    datasets.add(result);
-    return result;
-  }
 
   /**
    * Use partition names as the filenames

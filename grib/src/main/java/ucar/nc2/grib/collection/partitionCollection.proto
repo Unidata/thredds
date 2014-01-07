@@ -19,38 +19,10 @@ message PartitionVariable {
 
 extend Variable {
   repeated PartitionVariable partition = 100;
-  repeated Parameter vparams = 101;    // not used yet
-  repeated uint32 invCount = 102;      // for Coordinate TwoTimer, only 2D vars
-  repeated uint32 time2runtime = 103;  // time index to runtime index, only 1D vars
-}
-
-message Gds {
-  optional bytes gds = 1;             // all variables in the group use the same GDS
-  optional sint32 gdsHash = 2 [default = 0];
-  optional string nameOverride = 3;  // only when user overrides default name
-}
-
-message Parameter {
-  required string name = 1;
-  repeated double data = 2;
-  optional string sdata = 3; // used for string data
 }
 
 extend Group {
-  required uint32 gdsIndex = 100;       // index into GribCollection.gds array
-  repeated uint32 run2part = 101;       // runtime index to partition index
-  repeated Parameter gparams = 102;      // not used yet
-}
-
-message Dataset {
-    enum Type {
-      TwoD = 0;
-      Best = 1;
-      Analysis = 2;
-    }
-
-  required Type type = 1;
-  repeated Group groups = 2;
+  repeated uint32 run2part = 100;       // runtime index to partition index
 }
 
 message Partition {
@@ -61,10 +33,7 @@ message Partition {
 }
 
 extend GribCollection {
-  repeated Gds gds = 100;               // all gds are stored here and shared among datasets
-  repeated Dataset dataset = 101;
-  repeated Partition partitions = 102;
-  repeated Parameter pparams = 103;      // not used yet
+  repeated Partition partitions = 100;
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java

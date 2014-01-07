@@ -348,6 +348,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return groups;
   }
 
+  // for ui debugging
   public Grib2Customizer getCustomizer() {
     return tables;
   }
@@ -417,6 +418,26 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
       /*
       message GribCollection {
+        required string name = 1;         // must be unique - index filename is name.ncx
+        required string topDir = 2;       // filenames are reletive to this
+        repeated MFile mfiles = 3;        // list of grib MFiles
+        repeated Dataset dataset = 4;
+        repeated Gds gds = 5;             // unique Gds, shared amongst datasets
+
+        required int32 center = 6;      // these 4 fields are to get a GribTable object
+        required int32 subcenter = 7;
+        required int32 master = 8;
+        required int32 local = 9;       // grib1 table Version
+
+        optional int32 genProcessType = 10;
+        optional int32 genProcessId = 11;
+        optional int32 backProcessId = 12;
+
+        repeated Parameter params = 20;      // not used yet
+
+        extensions 100 to 199;
+      }
+      message GribCollection {
         required string name = 1;       // must be unique - index filename is name.ncx
         required string topDir = 2;   // filenames are reletive to this
         repeated MFile mfiles = 3;    // list of grib MFiles
@@ -447,8 +468,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         indexBuilder.addMfiles(b.build());
       }
 
-      for (Group g : groups)
-        indexBuilder.addGroups(writeGroupProto(g));
+      // twoD
+      indexBuilder.addDataset(writeDatasetProto(GribCollectionProto.Dataset.Type.TwoD, groups));
 
       // LOOK what about just storing first ??
       Grib2SectionIdentification ids = first.getId();
@@ -517,7 +538,63 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return b.build();
   }
 
+    /*
+  message Gds {
+    optional bytes gds = 1;             // all variables in the group use the same GDS
+    optional sint32 gdsHash = 2 [default = 0];
+    optional string nameOverride = 3;  // only when user overrides default name
+  }
+   */
+  private GribCollectionProto.Gds writeGdsProto(GribCollection.HorizCoordSys hcs) throws IOException {
+    GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();
+
+    b.setGds(ByteString.copyFrom(hcs.getRawGds()));
+    b.setGdsHash(hcs.getGdsHash());
+    if (hcs.getNameOverride() != null)
+      b.setNameOverride(hcs.getNameOverride());
+
+    return b.build();
+  }
+
   /*
+  message Dataset {
+    required Type type = 1;
+    repeated Group groups = 2;
+  }
+   */
+  private GribCollectionProto.Dataset writeDatasetProto(GribCollection.Dataset ds) throws IOException {
+    GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
+
+    b.setType(ds.type);
+
+    for (GribCollection.GroupHcs group : ds.groups)
+      b.addGroups(writeGroupProto(group));
+
+    return b.build();
+  }
+
+  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionProto.Dataset.Type type, List<Group> groups) throws IOException {
+    GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
+
+    b.setType(type);
+
+    for (Group group : groups)
+      b.addGroups(writeGroupProto(group));
+
+    return b.build();
+  }
+
+  /*
+  message Group {
+    required uint32 gdsIndex = 1;       // index into GribCollection.gds array
+    repeated Variable variables = 2;    // list of variables
+    repeated Coord coords = 3;          // list of coordinates
+    repeated int32 fileno = 4;          // the component files that are in this group, index into gc.mfiles
+
+    repeated Parameter params = 20;      // not used yet
+    extensions 100 to 199;
+  }
+
 message Group {
   optional bytes gds = 1;             // all variables in the group use the same GDS
   optional sint32 gdsHash = 2 [default = 0];
@@ -534,10 +611,7 @@ message Group {
   protected GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    // LOOK predefinedGds ??
-    b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
-    b.setGdsHash(g.gdsHash);
-    // LOOK nameOverride ??
+    b.setGdsIndex(gc.findHorizCS(g.horizCoordSys));
 
     for (Grib2Rectilyser.VariableBag vbag : g.rect.getGribvars()) {
       b.addVariables(writeVariableProto(vbag));
@@ -568,6 +642,29 @@ message Group {
   }
 
   /*
+
+  message Variable {
+     required uint32 discipline = 1;
+     required bytes pds = 2;          // raw pds
+     required fixed32 cdmHash = 3;
+
+     required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
+     required uint32 recordsLen = 5;  // size of SparseArray message for this Variable
+
+     repeated uint32 coordIdx = 6;    // indexes into Group.coords
+
+     // optionally keep stats
+     optional float density = 7;
+     optional uint32 ndups = 8;
+     optional uint32 nrecords = 9;
+     optional uint32 missing = 10;
+
+     repeated uint32 invCount = 15;      // for Coordinate TwoTimer, only 2D vars
+     repeated uint32 time2runtime = 16;  // time index to runtime index, only 1D vars
+     repeated Parameter params = 20;    // not used yet
+
+     extensions 100 to 199;
+   }
 message Variable {
   required uint32 discipline = 1;
   required bytes pds = 2;
@@ -608,6 +705,19 @@ message Variable {
       b.setNrecords(sa.countNotMissing());
       b.setMissing(sa.countMissing());
     }
+
+    if (vp.twot != null) { // only for 2D
+      List<Integer> invCountList = new ArrayList<>(vp.twot.getCount().length);
+      for (int count : vp.twot.getCount()) invCountList.add(count);
+      b.setExtension(PartitionCollectionProto.invCount, invCountList);
+    }
+
+    if (vp.time2runtime != null) { // only for 1D
+      List<Integer> list = new ArrayList<>(vp.time2runtime.length);
+      for (int idx : vp.time2runtime) list.add(idx);
+      b.setExtension(PartitionCollectionProto.time2Runtime, list);
+    }
+
 
     return b.build();
   }
