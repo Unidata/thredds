@@ -33,10 +33,8 @@
 
 package thredds.ui.monitor;
 
-import ucar.nc2.util.net.HTTPException;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.nc2.util.net.*;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.*;
 import javax.swing.*;
@@ -69,7 +67,7 @@ public class TdsDownloader {
     this.type = type;
 
     HTTPSession.setGlobalUserAgent("TdsMonitor");
-    session = new HTTPSession(config.getServerPrefix());
+    session = HTTPFactory.newSession(config.getServerPrefix());
 
     localDir = LogLocalManager.getDirectory(config.server, type.toString());
     if (!localDir.exists() && !localDir.mkdirs()) {

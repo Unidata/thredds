@@ -33,8 +33,7 @@
 
 package thredds.ui.catalog;
 
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.nc2.util.net.*;
 import thredds.catalog.*;
 import ucar.nc2.ui.widget.*;
 
@@ -166,8 +165,8 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
       HTTPSession client = null;
       HTTPMethod m = null;
       try {
-        client = new HTTPSession(catalogName);
-        m = HTTPMethod.Get(client);
+        client = HTTPFactory.newSession(catalogName);
+        m = HTTPFactory.Get(client);
 
         int statusCode = m.execute();
 

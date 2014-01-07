@@ -33,16 +33,13 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.http.Header;
 
 import java.io.*;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
-import java.util.Formatter;
 
+import org.apache.http.client.CredentialsProvider;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;
 
@@ -106,9 +103,9 @@ public class HttpClientManager
         HTTPSession useSession = session;
         try {
             if(useSession == null)
-                useSession = new HTTPSession();
-            HTTPMethod m = HTTPMethod.Get(useSession);
-            m.execute(urlencoded);
+                useSession = HTTPFactory.newSession();
+            HTTPMethod m = HTTPFactory.Get(useSession,urlencoded);
+            m.execute();
             return m.getResponseAsString();
         } finally {
             if((session == null) && (useSession != null))
@@ -130,12 +127,12 @@ public class HttpClientManager
 
         try {
 
-            session = new HTTPSession();
-            HTTPMethod m = HTTPMethod.Put(session);
+            session = HTTPFactory.newSession(urlencoded);
+            HTTPMethod m = HTTPFactory.Put(session);
 
             m.setRequestContentAsString(content);
 
-            m.execute(urlencoded);
+            m.execute();
 
             int resultCode = m.getStatusCode();
 
@@ -169,13 +166,13 @@ public class HttpClientManager
         HTTPSession useSession = session;
         try {
             if(useSession == null)
-                useSession = new HTTPSession();
+                useSession = HTTPFactory.newSession(urlencoded);
 
-            HTTPMethod m = HTTPMethod.Get(useSession);
+            HTTPMethod m = HTTPFactory.Get(useSession);
             m.setFollowRedirects(true);
             m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
-            int status = m.execute(urlencoded);
+            int status = m.execute();
             if(status != 200) {
                 throw new RuntimeException("failed status = " + status);
             }
@@ -232,12 +229,12 @@ public class HttpClientManager
         HTTPSession useSession = session;
         try {
             if(useSession == null)
-                useSession = new HTTPSession();
+                useSession = HTTPFactory.newSession(urlencoded);
 
-            HTTPMethod m = HTTPMethod.Get(useSession);
+            HTTPMethod m = HTTPFactory.Get(useSession);
             m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
-            int status = m.execute(urlencoded);
+            int status = m.execute();
 
             if(status != 200) {
                 throw new RuntimeException("failed status = " + status);
@@ -286,13 +283,13 @@ public class HttpClientManager
 
         try {
             if(useSession == null)
-                useSession = new HTTPSession();
+                useSession = HTTPFactory.newSession(urlencoded);
 
-            HTTPMethod m = HTTPMethod.Get(useSession);
+            HTTPMethod m = HTTPFactory.Get(useSession);
             m.setRequestHeader("Accept-Encoding", "gzip,deflate");
             m.setRequestHeader("Range", "bytes=" + start + "-" + end);
 
-            int status = m.execute(urlencoded);
+            int status = m.execute();
             if((status != 200) && (status != 206)) {
                 throw new RuntimeException("failed status = " + status);
             }
@@ -327,7 +324,8 @@ public class HttpClientManager
         return nbytes;
     }
 
-    static public void showHttpRequestInfo(Formatter f, HttpMethodBase m)
+    /* todo:
+    static public void showHttpRequestInfo(Formatter f, HttpRequestBase m)
     {
         f.format("HttpClient request %s %s %n", m.getName(), m.getPath());
         f.format("   do Authentication=%s%n", m.getDoAuthentication());
@@ -349,7 +347,7 @@ public class HttpClientManager
         f.format("%n");
     }
 
-    static public void showHttpResponseInfo(Formatter f, HttpMethodBase m)
+    static public void showHttpResponseInfo(Formatter f, HttpRequest m)
     {
         f.format("HttpClient response status = %s%n", m.getStatusLine());
         f.format("Reponse Headers = %n");
@@ -357,7 +355,7 @@ public class HttpClientManager
         for(int i = 0;i < heads.length;i++)
             f.format("  %s", heads[i]);
         f.format("%n");
-    }
+    }  */
 
     /*
     public static void main(String[] args) throws IOException
@@ -365,7 +363,7 @@ public class HttpClientManager
         HTTPSession.setGlobalUserAgent("TestUserAgent123global");
         HttpClientManager.getContentAsString(null, "http://motherlode.ucar.edu:9080/thredds/catalog.html");
 
-        HTTPSession sess = new HTTPSession("http://motherlode.ucar.edu:9080/thredds/catalog.html");
+        HTTPSession sess = HTTPFactory.newSession("http://motherlode.ucar.edu:9080/thredds/catalog.html");
         sess.setUserAgent("TestUserAgent123session");
         HttpClientManager.getContentAsString(sess, "http://motherlode.ucar.edu:9080/thredds/catalog.html");
 

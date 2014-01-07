@@ -81,11 +81,11 @@ public class TestState extends UnitTestCommon
         throws Exception
     {
 
-        HTTPSession session = new HTTPSession(SESSIONURL);
+        HTTPSession session = HTTPFactory.newSession(SESSIONURL);
         assertFalse(session.isClosed());
 
         // Check state transitions for open and execute
-        HTTPMethod method = HTTPMethod.Get(session, TESTSOURCE1);
+        HTTPMethod method = HTTPFactory.Get(session, TESTSOURCE1);
         assertFalse(method.isClosed());
         int methodcount = session.getMethodcount();
         assertTrue(methodcount == 1);
@@ -101,7 +101,7 @@ public class TestState extends UnitTestCommon
         assertTrue(methodcount == 0);
 
         // Check that method close forcibly closes streams
-        method = HTTPMethod.Get(session, TESTSOURCE1);
+        method = HTTPFactory.Get(session, TESTSOURCE1);
         methodcount = session.getMethodcount();
         assertTrue(methodcount == 1);
         method.execute();
@@ -113,7 +113,7 @@ public class TestState extends UnitTestCommon
 
         // Check that session close closes methods and streams
         // and transitively until stream close
-        method = HTTPMethod.Get(session);
+        method = HTTPFactory.Get(session);
         methodcount = session.getMethodcount();
         assertTrue(methodcount == 1);
         method.execute();
@@ -126,37 +126,25 @@ public class TestState extends UnitTestCommon
         assertTrue(session.isClosed());
 
         // Test Local session
-        method = HTTPMethod.Get();
+        method = HTTPFactory.Get(TESTSOURCE1);
         assertTrue(method.isSessionLocal());
         session = method.getSession();
         methodcount = session.getMethodcount();
         assertTrue(methodcount == 1);
-        method.execute(TESTSOURCE1);
-        String body = method.getResponseAsString();
-        stream = (HTTPMethodStream) method.getResponseBodyAsStream();
-        byte[] bbody = readbinaryfile(stream);
-        method.close();
-        assertTrue(stream.isClosed());
-        assertFalse(method.hasStreamOpen());
+        method.execute();
+        String body = method.getResponseAsString();// will close stream
+        try {
+            stream = (HTTPMethodStream) method.getResponseBodyAsStream();
+            readbinaryfile(stream);
+            System.err.println("Stream not closed.");
+            assertFalse(stream.isClosed());
+        } catch (Exception e) {
+            assertFalse(method.hasStreamOpen());
+        }
         assertTrue(method.isClosed());
         methodcount = session.getMethodcount();
         assertTrue(methodcount == 0);
         assertTrue(session.isClosed());
-
-        // Finally, do a content comparison
-        String s = new String(bbody,UTF8);
-        if(verbose) {
-            System.err.println("Body as String:\n"+body);
-            System.err.println("Body as Bytes:\n"+s);
-        }
-
-        String compare = compare("TestState",body,s);
-        if(compare != null) {
-            System.out.println(compare);
-            pass = false;
-        } else
-            pass = true;
-        assertTrue(pass);
     }
 
     static public byte[]

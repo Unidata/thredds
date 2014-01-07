@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.net.HTTPFactory;
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
 
@@ -83,7 +84,7 @@ public class TestEncoding {
     HTTPSession session = null;
     try {
       session = new HTTPSession(endpoint);
-      HTTPMethod method = HTTPMethod.Get(session);
+      HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
       assert (statusCode == 200) : statusCode;

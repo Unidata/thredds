@@ -1,8 +1,9 @@
 package thredds.tds;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.params.AllClientPNames;
 import ucar.nc2.util.IO;
 
 import java.io.IOException;
@@ -51,16 +52,19 @@ public class MakeHttpRequestCallable implements Callable<MakeHttpRequestResult>
   void send() throws IOException
   {
 
-    HttpMethod method = null;
+    HttpGet method = null;
     try {
-      method = new GetMethod( reqUrl );
+      method = new HttpGet( reqUrl );
 
-      method.setFollowRedirects( true );
-      result.setStatusCode( httpClient.executeMethod( method ));
+      method.getParams().setParameter(AllClientPNames.HANDLE_REDIRECTS,true);
+      HttpResponse response = httpClient.execute(method);
+      result.setStatusCode(response.getStatusLine().getStatusCode());
 
-      InputStream is = method.getResponseBodyAsStream();
+      InputStream is = response.getEntity().getContent();
+//versus      InputStream is = method.getResponseBodyAsStream();
       if ( is != null )
-        result.setBytesRead( IO.copy2null( method.getResponseBodyAsStream(), 10 * 1000 )); // read data and throw away
+        result.setBytesRead( IO.copy2null(is, 10 * 1000 )); // read data and throw away
+//versus	result.setBytesRead( IO.copy2null( method.getResponseBodyAsStream(), 10 * 1000 )); // read data and throw away
     } finally {
       if ( method != null )
         method.releaseConnection();

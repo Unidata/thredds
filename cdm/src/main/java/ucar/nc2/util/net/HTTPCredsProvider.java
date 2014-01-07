@@ -33,18 +33,20 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.http.auth.*;
+import org.apache.http.client.CredentialsProvider;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.security.Principal;
 
 
-//////////////////////////////////////////////////
-// Provide a non-interactive CredentialsProvider to hold
-// an arbitrary credentials object provided by the user.
+/**
+Provide a non-interactive CredentialsProvider to hold
+an arbitrary credentials object provided by the user.
+This is used in the case when the credentials (not the provider)
+are fixed. (see e.g. HTTPSession.setGlobalCredentials).
+*/
 
 public class HTTPCredsProvider implements CredentialsProvider, Credentials, Serializable
 {
@@ -52,20 +54,44 @@ public class HTTPCredsProvider implements CredentialsProvider, Credentials, Seri
 
     public HTTPCredsProvider(Credentials creds)
     {
-	this.creds = creds;
+        this.creds = creds;
     }
 
     // Credentials Provider Interface
     public Credentials
-    getCredentials(AuthScheme authscheme, String host, int port, boolean isproxy)
-	throws CredentialsNotAvailableException
+    getCredentials(AuthScope scope) //AuthScheme authscheme, String host, int port, boolean isproxy)
     {
-	return creds;
+        return creds;
+    }
+
+    public void
+    setCredentials(AuthScope authscope, Credentials credentials)
+    {
+
+    }
+
+    public void
+    clear()
+    {
+
+    }
+
+    // Credentials Interface
+    public Principal
+    getUserPrincipal()
+    {
+        return null;
+    }
+
+    public String
+    getPassword()
+    {
+        return null;
     }
 
     // Serializable Interface
     private void writeObject(java.io.ObjectOutputStream oos)
-	throws IOException
+        throws IOException
     {
         boolean isser = (this.creds instanceof Serializable);
         oos.writeObject(isser);
@@ -77,19 +103,19 @@ public class HTTPCredsProvider implements CredentialsProvider, Credentials, Seri
     }
 
     private void readObject(java.io.ObjectInputStream ois)
-	throws IOException, ClassNotFoundException
+        throws IOException, ClassNotFoundException
     {
         // serializing the credentials is a bit tricky
         // since it might not support the serializable interface.
-        boolean isser = (Boolean)ois.readObject();
+        boolean isser = (Boolean) ois.readObject();
         Object o = ois.readObject();
         if(isser)
-            this.creds = (Credentials)o;
+            this.creds = (Credentials) o;
         else {
             try {
-                this.creds = (Credentials)((Class)o).newInstance();
+                this.creds = (Credentials) ((Class) o).newInstance();
             } catch (Exception e) {
-                throw new ClassNotFoundException("HTTPCredsProvider: Cannot create Credentials instance",e);
+                throw new ClassNotFoundException("HTTPCredsProvider: Cannot create Credentials instance", e);
             }
         }
     }

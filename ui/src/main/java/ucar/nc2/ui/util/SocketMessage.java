@@ -32,8 +32,7 @@
  */
 package ucar.nc2.ui.util;
 
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.nc2.util.net.*;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.ListenerManager;
@@ -205,8 +204,8 @@ public class SocketMessage {
       String url = "http://localhost:8080/thredds/test/it" // + EscapeStrings.escapeOGC("yabba/bad[0]/good")
                +"?"+EscapeStrings.escapeOGC("quuery[1]");
       System.out.printf("send '%s'%n", url);
-      HTTPSession session = new HTTPSession(url);
-      HTTPMethod method = HTTPMethod.Head(session);
+      HTTPSession session = HTTPFactory.newSession(url);
+      HTTPMethod method = HTTPFactory.Head(session);
       method.execute();
       int status = method.getStatusCode();
       System.out.printf("%d%n", status);

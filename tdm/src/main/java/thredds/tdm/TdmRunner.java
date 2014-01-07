@@ -32,11 +32,9 @@
 
 package thredds.tdm;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.http.auth.*;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.logging.log4j.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -133,12 +131,15 @@ public class TdmRunner {
 
     servers = new ArrayList<Server>(serverNames.length);
     for (String name : serverNames) {
-      HTTPSession session = new HTTPSession(name);
+      HTTPSession session = HTTPFactory.newSession(name);
       session.setCredentialsProvider(new CredentialsProvider() {
-        public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
+        public Credentials getCredentials(AuthScope scope) //AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
+        {
           //System.out.printf("getCredentials called %s %s%n", user, pass);
           return new UsernamePasswordCredentials(user, pass);
         }
+        public void setCredentials(AuthScope scope, Credentials creds) {}
+        public void clear() {}
       });
       session.setUserAgent("tdmRunner");
       servers.add(new Server(name, session));
@@ -261,7 +262,7 @@ public class TdmRunner {
         logger.debug("send trigger to {}", url);
         HTTPMethod m = null;
         try {
-          m = HTTPMethod.Get(server.session, url);
+          m = HTTPFactory.Get(server.session, url);
           int status = m.execute();
           String statuss = m.getResponseAsString();
           f.format(" trigger %s status = %d (%s)%n", url, status, statuss);
@@ -524,3 +525,6 @@ public class TdmRunner {
 
 
 }
+
+
+

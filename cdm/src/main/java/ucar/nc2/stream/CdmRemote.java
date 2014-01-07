@@ -32,10 +32,8 @@
  */
 package ucar.nc2.stream;
 
-import ucar.nc2.util.net.HTTPException;
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
-import org.apache.commons.httpclient.Header;
+import ucar.nc2.util.net.*;
+import org.apache.http.Header;
 
 import ucar.ma2.*;
 import ucar.nc2.Structure;
@@ -83,7 +81,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static synchronized void initHttpClient() {
     if (httpClient != null) return;
     try {
-      httpClient = new HTTPSession();
+      httpClient = HTTPFactory.newSession();
     } catch (HTTPException he) {
       httpClient = null;
     }
@@ -110,13 +108,13 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
     remoteURI = temp;
 
-    httpClient = new HTTPSession(remoteURI);
+    httpClient = HTTPFactory.newSession(remoteURI);
 
     // get the header
     HTTPMethod method = null;
     try {
       String url = remoteURI + "?req=header";
-      method = HTTPMethod.Get(httpClient,url);
+      method = HTTPFactory.Get(httpClient, url);
       method.setFollowRedirects(true);
       if (showRequest) System.out.printf("CdmRemote request %s %n", url);
       int statusCode = method.execute();
@@ -179,7 +177,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     HTTPMethod method = null;
     try {
-      method = HTTPMethod.Get(httpClient,sbuff.toString());
+      method = HTTPFactory.Get(httpClient, sbuff.toString());
       int statusCode = method.execute();
 
       if (statusCode == 404)
@@ -244,8 +242,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     try {
 
       try {
-        session = new HTTPSession(sbuff.toString());
-        method = HTTPMethod.Get(session);
+        session = HTTPFactory.newSession(sbuff.toString());
+        method = HTTPFactory.Get(session);
         statusCode = method.execute();
       } catch (HTTPException he) {
         throw new IOException(he);
@@ -290,7 +288,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     try {
       // get the header
       String url = remoteURI + "?req=header";
-      method = HTTPMethod.Get(httpClient,url);
+      method = HTTPFactory.Get(httpClient, url);
       if (showRequest) System.out.printf("CdmRemote request %s %n", url);
       int statusCode = method.execute();
 
@@ -316,7 +314,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " url=" + sbuff);
 
       try {
-        method = HTTPMethod.Get(httpClient,sbuff.toString());
+        method = HTTPFactory.Get(httpClient, sbuff.toString());
         int statusCode = method.execute();
 
         if (statusCode == 404)

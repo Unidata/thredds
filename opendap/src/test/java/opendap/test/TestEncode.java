@@ -34,9 +34,10 @@
 package opendap.test;
 
 import junit.framework.TestCase;
+import org.apache.http.HttpRequest;
 import ucar.nc2.util.EscapeStrings;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.methods.GetMethod;
+import ucar.nc2.util.net.HTTPFactory;
+import ucar.nc2.util.net.HTTPMethod;
 
 public class TestEncode extends TestCase {
   final String TITLE = "URL Encode Tests";
@@ -56,7 +57,7 @@ public void testURLEncode() throws Exception {
     for (char c : " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".toCharArray()) {
       String url = "http://localhost:8080/thredds/" + c;
       try {
-        HttpMethodBase cmd = new GetMethod(url);
+        HTTPMethod cmd = HTTPFactory.Get(url);
         legal += c;
       } catch (Exception e) {
         //System.err.printf("fail: c=|%c|\t%s\n", c, e.toString());
@@ -74,7 +75,7 @@ public void testURLEncode() throws Exception {
     for (char c : " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".toCharArray()) {
       String url = "http://localhost:8080/thredds/?" + c;
       try {
-        HttpMethodBase cmd = new GetMethod(url);
+        HTTPMethod cmd = HTTPFactory.Get(url);
         legal += c;
       } catch (Exception e) {
         //System.err.printf("fail: c=|%c|\t%s\n", c, e.toString());

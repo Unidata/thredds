@@ -442,10 +442,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
           if (len > 0)
             list.add(new Range(d.getShortName(), 0, len - 1));
           else if (len == 0)
-            list.add(Range.EMPTY); // LOOK empty not named
+            list.add( Range.EMPTY); // LOOK empty not named
           else {
             assert d.isVariableLength();
-            list.add(Range.VLEN); // LOOK vlen not named
+            list.add( Range.VLEN); // LOOK vlen not named
           }
         }
         shapeAsSection = new Section(list).makeImmutable();
@@ -591,7 +591,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   protected NetcdfFile getNetcdfFile() {
     return ncfile;
   }
-
+   
   //////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -1148,6 +1148,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader {
   /**
    * Override Object.hashCode() to implement equals.
    */
+  @Override
   public int hashCode() {
       if (hashCode == 0) {
         int result = 17;

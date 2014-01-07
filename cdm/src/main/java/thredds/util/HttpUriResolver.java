@@ -32,10 +32,8 @@
  */
 package thredds.util;
 
-import ucar.nc2.util.net.HTTPException;
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
-import org.apache.commons.httpclient.Header;
+import ucar.nc2.util.net.*;
+import org.apache.http.Header;
 
 import java.io.*;
 import java.net.URI;
@@ -167,12 +165,21 @@ public class HttpUriResolver {
     return is;
   }
 
-  private HTTPMethod getHttpResponse(URI uri) throws IOException, HTTPException {
-    HTTPMethod method = HTTPMethod.Get(uri.toString());
-    method.getSession().setConnectionTimeout(this.connectionTimeout);
-    method.getSession().setSoTimeout(this.socketTimeout);
-    method.setFollowRedirects(this.followRedirects);
-    method.setRequestHeader("Accept-Encoding", this.contentEncoding);
+  private HTTPMethod getHttpResponse( URI uri )
+          throws IOException, HTTPException
+  {
+    HTTPMethod method = HTTPFactory.Get(uri.toString());
+    method.getSession().setConnectionTimeout( this.connectionTimeout );
+    method.getSession().setSoTimeout( this.socketTimeout );
+    method.setFollowRedirects( this.followRedirects );
+    method.setRequestHeader( "Accept-Encoding", this.contentEncoding );
+
+   method.execute();
+    int statusCode = method.getStatusCode();
+    if ( statusCode == 200 || statusCode == 201 )
+    {
+      return method;
+    }
 
     method.execute();
     return method;
