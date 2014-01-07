@@ -103,6 +103,10 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency> <!-- berkely db analog -->
+      <artifactId>je</artifactId>
+      <groupId>com.sleepycat</groupId>
+    </dependency>
   </dependencies>
 
 
