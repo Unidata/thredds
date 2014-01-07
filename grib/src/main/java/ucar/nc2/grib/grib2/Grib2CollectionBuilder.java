@@ -295,6 +295,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     byte[] rawGds = p.getGds().toByteArray();
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
     Grib2Gds gds = gdss.getGDS();
+    gds.setCenter(gc.center);
     int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
     group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash);
 
