@@ -498,43 +498,25 @@ public class BeanTable extends JPanel {
    * Restore state from PreferencesExt
    */
   protected void restoreState() {
-    if (store == null)
+    if (store == null) {
       return;
-
-    // restore column widths and order
-    // tricky if cols have been added or deleted
-
-    // process in the stored order
-    ArrayList pcols = (ArrayList) store.getBean("propertyCol", new ArrayList());
-    TableColumnModel tcm = jtable.getColumnModel();
-    int count = 0;
-    for (Object pcol1 : pcols) {
-      PropertyCol pcol = (PropertyCol) pcol1;
-
-      int idx = model.getPropertyIndex(pcol.getName());
-      if (idx >= 0) {  // still exists
-        if (debugStore) System.out.println(count + "  has " + pcol.getName());
-        TableColumn tc = tcm.getColumn(count++);
-        tc.setModelIndex(idx);
-        tc.setPreferredWidth(pcol.getWidth());
-        tc.setHeaderValue(pcol.getName());
-        tc.setIdentifier(pcol.getName());
-
-      } else { //  property was deleted
-        if (debugStore) System.out.println(count + "  col deleted " + pcol.getName());
-      }
     }
 
-    // see if there are any new properties that have been added
-    if (model.getColumnCount() > count) {
-      for (int col = 0; col < model.getColumnCount(); col++) {
-        if (!model.wasUsed(col)) {
-          TableColumn tc = tcm.getColumn(count++);
-          tc.setModelIndex(col);
-          tc.setHeaderValue(model.getColumnName(col));
-          tc.setIdentifier(model.getColumnName(col));
-          if (debugStore) System.out.println(count + "  added " + model.getColumnName(col));
-        }
+    ArrayList propColObjs = (ArrayList) store.getBean("propertyCol", new ArrayList());
+    TableColumnModel tableColumnModel = jtable.getColumnModel();
+    int newViewIndex = 0;
+
+    for (Object propColObj : propColObjs) {
+      PropertyCol propCol = (PropertyCol) propColObj;
+      int currentViewIndex = tableColumnModel.getColumnIndex(propCol.getName());
+
+      if (currentViewIndex >= 0) {  // There is a column in the table with the same name as propCol.
+        TableColumn tableColumn = tableColumnModel.getColumn(currentViewIndex);
+        tableColumn.setPreferredWidth(propCol.getWidth());
+
+        tableColumnModel.moveColumn(currentViewIndex, newViewIndex);
+        assert tableColumnModel.getColumn(newViewIndex) == tableColumn : "tableColumn wasn't successfully moved.";
+        ++newViewIndex;
       }
     }
   }
@@ -602,7 +584,6 @@ public class BeanTable extends JPanel {
    */
   protected class TableBeanModel extends AbstractTableModel {
     protected List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
-    protected boolean[] used;
 
     protected TableBeanModel() {
 
@@ -698,8 +679,6 @@ public class BeanTable extends JPanel {
           System.out.println("  " + displayName + " " + name + " " + type.getName() + " " + rm + " " + wm + " " + pd.isPreferred());
         }
       }
-
-      used = new boolean[properties.size()];
     }
 
     public void setProperty(String propertyName, String displayName, String toolTipText) {
@@ -830,19 +809,6 @@ public class BeanTable extends JPanel {
       else return null;
     }
 
-
-    // return model index with this property name, return -1 if not exists
-    protected int getPropertyIndex(String wantName) {
-      for (int i = 0; i < properties.size(); i++) {
-        String name = properties.get(i).getName();
-        if (name.equals(wantName)) {
-          used[i] = true;
-          return i;
-        }
-      }
-      return -1;
-    }
-
     // return PropertyDescriptor with this property name, return null if not exists
     protected PropertyDescriptor getProperty(String wantName) {
       for (PropertyDescriptor property : properties) {
@@ -855,10 +821,6 @@ public class BeanTable extends JPanel {
     // return PropertyDescriptor
     protected PropertyDescriptor getProperty(int idx) {
       return properties.get(idx);
-    }
-
-    protected boolean wasUsed(int col) {
-      return used[col];
     }
 
     private ArrayList<String> editP = null;
@@ -898,7 +860,6 @@ public class BeanTable extends JPanel {
           properties.add(pd);
         }
       }
-      used = new boolean[properties.size()];
     }
   }
 
