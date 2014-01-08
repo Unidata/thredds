@@ -162,10 +162,22 @@ public abstract class TableUtils {
     ///////////////////////////////////// Test ResizeColumnWidthsListener /////////////////////////////////////
 
     public static void main(String[] args) {
+        try {
+            // Switch to Nimbus Look and Feel, if it's available.
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {  // TODO: In Java 7, replace this with multi-catch of specific exceptions.
+            e.printStackTrace();
+        }
+
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                int numRows = 1000000;
+                int numRows = 4;
                 int numCols = 4;
 
                 DefaultTableModel model = new DefaultTableModel(numRows, 0);
@@ -185,8 +197,15 @@ public abstract class TableUtils {
                 buttonPanel.add(moveButton,  BorderLayout.CENTER);
                 buttonPanel.add(plusButton,  BorderLayout.EAST);
 
+                final JScrollPane scrollPane = new JScrollPane(table);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+                JButton cornerButton = new JButton(new TableAppearanceAction(table));
+                cornerButton.setHideActionText(true);
+                scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
+
                 JFrame frame = new JFrame("Test ResizeColumnWidthsListener");
-                frame.add(new JScrollPane(table), BorderLayout.CENTER);
+                frame.add(scrollPane, BorderLayout.CENTER);
                 frame.add(buttonPanel, BorderLayout.SOUTH);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.pack();

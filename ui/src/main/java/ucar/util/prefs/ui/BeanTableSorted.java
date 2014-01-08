@@ -91,14 +91,10 @@ public class BeanTableSorted extends BeanTable {
     jtable.setModel(sortedModel);
     sortedModel.setTableHeader(jtable.getTableHeader());
 
-    // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
-    ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
-
     // Left-align every cell, including header cells.
+    // Even though we already installed the alignment decorators in the super-constructor, we need to reinstall them
+    // here because a new TableColumnModel was created above.
     TableUtils.alignTable(jtable, SwingConstants.LEADING);
-
-    // Set the preferred column widths so that they're just big enough to display all contents without truncation.
-    jtable.getModel().addTableModelListener(new TableUtils.ResizeColumnWidthsListener(jtable));
 
     restoreState();
   }

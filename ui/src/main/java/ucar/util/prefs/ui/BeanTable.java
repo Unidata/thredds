@@ -33,6 +33,8 @@
 
 package ucar.util.prefs.ui;
 
+import ucar.nc2.ui.table.TableUtils;
+import ucar.nc2.ui.table.TableAppearanceAction;
 import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -166,7 +168,6 @@ public class BeanTable extends JPanel {
   private void init(String header, String tooltip) {
     jtable = new JTable(model);
     //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
-    jtable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
     jtable.setDefaultRenderer(java.util.Date.class, new DateRenderer());
 
     ToolTipManager.sharedInstance().registerComponent(jtable);
@@ -185,9 +186,22 @@ public class BeanTable extends JPanel {
     jtable.setDefaultEditor(String.class, new DefaultCellEditor(new JTextField()));
     jtable.setDefaultEditor(Boolean.class, new DefaultCellEditor(new JCheckBox()));
 
+    // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
+    ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
+
+    // Left-align every cell, including header cells.
+    TableUtils.alignTable(jtable, SwingConstants.LEADING);
+
     // UI
     setLayout(new BorderLayout());
+
     scrollPane = new JScrollPane(jtable);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+    JButton cornerButton = new JButton(new TableAppearanceAction(jtable));
+    cornerButton.setHideActionText(true);
+    scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
+
     add(scrollPane, BorderLayout.CENTER);
 
     if (header != null) {
