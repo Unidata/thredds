@@ -39,7 +39,7 @@ opendap/src/test/data/test.*.*
 # OS generated files 
 .DS_Store*
 ehthumbs.db
-Icon?
+Icon
 Thumbs.db
 *.swp
 *.*~
