@@ -195,12 +195,13 @@ public class BeanTable extends JPanel {
     // UI
     setLayout(new BorderLayout());
 
-    scrollPane = new JScrollPane(jtable);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
     JButton cornerButton = new JButton(new TableAppearanceAction(jtable));
     cornerButton.setHideActionText(true);
+    cornerButton.setContentAreaFilled(false);
+
+    scrollPane = new JScrollPane(jtable);
     scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
     add(scrollPane, BorderLayout.CENTER);
 

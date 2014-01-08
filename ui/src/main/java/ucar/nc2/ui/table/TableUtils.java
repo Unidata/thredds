@@ -197,12 +197,13 @@ public abstract class TableUtils {
                 buttonPanel.add(moveButton,  BorderLayout.CENTER);
                 buttonPanel.add(plusButton,  BorderLayout.EAST);
 
-                final JScrollPane scrollPane = new JScrollPane(table);
-                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
                 JButton cornerButton = new JButton(new TableAppearanceAction(table));
                 cornerButton.setHideActionText(true);
+                cornerButton.setContentAreaFilled(false);
+
+                final JScrollPane scrollPane = new JScrollPane(table);
                 scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
                 JFrame frame = new JFrame("Test ResizeColumnWidthsListener");
                 frame.add(scrollPane, BorderLayout.CENTER);

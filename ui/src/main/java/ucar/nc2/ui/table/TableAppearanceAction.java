@@ -2,6 +2,8 @@ package ucar.nc2.ui.table;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.ui.util.Resource;
+import ucar.nc2.ui.widget.BAMutil;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,7 +23,7 @@ public class TableAppearanceAction extends AbstractAction {
         this.table = table;
 
         putValue(NAME, "Table appearance");
-        putValue(SMALL_ICON, UIManager.getIcon("OptionPane.questionIcon"));
+        putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "TableAppearance.png", true));
         putValue(SHORT_DESCRIPTION, "Configure the appearance of the table.");
 
         this.popupMenu = new JPopupMenu(getValue(NAME).toString());
