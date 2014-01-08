@@ -285,7 +285,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     if (config != null) pdsConvert = config.pdsHash;
 
     // place each record into its group
-    // LOOK maybe also put into unique variable Bags
     int totalRecords = 0;
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
       while (iter.hasNext()) {
@@ -307,7 +306,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           System.out.printf("Open %d %s number of records = %d (%d) %n", fileno, mfile.getPath(), n, totalRecords);
         }
 
-        for (Grib2Record gr : index.getRecords()) { // LOOK we are using entire Grib2Record - memory limitations
+        for (Grib2Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
           if (this.tables == null) {
             Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
             this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
@@ -468,10 +467,14 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         indexBuilder.addMfiles(b.build());
       }
 
+       //gds
+      for (Group g : groups)
+        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), null));
+
       // twoD
       indexBuilder.addDataset(writeDatasetProto(GribCollectionProto.Dataset.Type.TwoD, groups));
 
-      // LOOK what about just storing first ??
+      // what about just storing first ??
       Grib2SectionIdentification ids = first.getId();
       indexBuilder.setCenter(ids.getCenter_id());
       indexBuilder.setSubcenter(ids.getSubcenter_id());
@@ -538,6 +541,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return b.build();
   }
 
+
+  protected GribCollectionProto.Gds writeGdsProto(GribCollection.HorizCoordSys hcs) throws IOException {
+    return writeGdsProto(hcs.getGdsHash(), hcs.getRawGds(), hcs.getNameOverride());
+  }
+
     /*
   message Gds {
     optional bytes gds = 1;             // all variables in the group use the same GDS
@@ -545,13 +553,13 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     optional string nameOverride = 3;  // only when user overrides default name
   }
    */
-  private GribCollectionProto.Gds writeGdsProto(GribCollection.HorizCoordSys hcs) throws IOException {
+  protected GribCollectionProto.Gds writeGdsProto(int gdsHash, byte[] rawGds, String nameOverride) throws IOException {
     GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();
 
-    b.setGds(ByteString.copyFrom(hcs.getRawGds()));
-    b.setGdsHash(hcs.getGdsHash());
-    if (hcs.getNameOverride() != null)
-      b.setNameOverride(hcs.getNameOverride());
+    b.setGds(ByteString.copyFrom(rawGds));
+    b.setGdsHash(gdsHash);
+    if (nameOverride != null)
+      b.setNameOverride(nameOverride);
 
     return b.build();
   }
@@ -562,7 +570,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     repeated Group groups = 2;
   }
    */
-  private GribCollectionProto.Dataset writeDatasetProto(GribCollection.Dataset ds) throws IOException {
+  /*private GribCollectionProto.Dataset writeDatasetProto(GribCollection.Dataset ds) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
     b.setType(ds.type);
@@ -571,15 +579,16 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       b.addGroups(writeGroupProto(group));
 
     return b.build();
-  }
+  } */
 
   private GribCollectionProto.Dataset writeDatasetProto(GribCollectionProto.Dataset.Type type, List<Group> groups) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
     b.setType(type);
 
+    int count = 0 ;
     for (Group group : groups)
-      b.addGroups(writeGroupProto(group));
+      b.addGroups(writeGroupProto(group, count++));
 
     return b.build();
   }
@@ -594,24 +603,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     repeated Parameter params = 20;      // not used yet
     extensions 100 to 199;
   }
-
-message Group {
-  optional bytes gds = 1;             // all variables in the group use the same GDS
-  optional sint32 gdsHash = 2 [default = 0];
-  optional string nameOverride = 3;         // only when user overrides default name
-
-  repeated Variable variables = 4;    // list of variables
-  repeated Coord coords = 5;          // list of coordinates
-  repeated int32 fileno = 7;          // the component files that are in this group, index into gc.files
-
-  extensions 100 to 199;
-}
-}
    */
-  protected GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
+  protected GribCollectionProto.Group writeGroupProto(Group g, int groupIndex) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGdsIndex(gc.findHorizCS(g.horizCoordSys));
+    b.setGdsIndex(groupIndex); // index into gds list
 
     for (Grib2Rectilyser.VariableBag vbag : g.rect.getGribvars()) {
       b.addVariables(writeVariableProto(vbag));
@@ -642,7 +638,6 @@ message Group {
   }
 
   /*
-
   message Variable {
      required uint32 discipline = 1;
      required bytes pds = 2;          // raw pds
@@ -665,24 +660,7 @@ message Group {
 
      extensions 100 to 199;
    }
-message Variable {
-  required uint32 discipline = 1;
-  required bytes pds = 2;
-  required fixed32 cdmHash = 3;
 
-  required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
-  required uint32 recordsLen = 5;  // size of SparseArray message for this Variable (could be in stream instead)
-
-  repeated uint32 coordIdx = 6;    // index into Group.coords
-
-  // optionally keep stats
-  optional float density = 7;
-  optional uint32 ndups = 8;
-  optional uint32 nrecords = 9;
-  optional uint32 missing = 10;
-
-  extensions 100 to 199;
-}
    */
   private GribCollectionProto.Variable writeVariableProto(Grib2Rectilyser.VariableBag vb) throws IOException {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
@@ -706,7 +684,8 @@ message Variable {
       b.setMissing(sa.countMissing());
     }
 
-    if (vp.twot != null) { // only for 2D
+    // LOOK
+    /* if (vp.twot != null) { // only for 2D
       List<Integer> invCountList = new ArrayList<>(vp.twot.getCount().length);
       for (int count : vp.twot.getCount()) invCountList.add(count);
       b.setExtension(PartitionCollectionProto.invCount, invCountList);
@@ -716,8 +695,7 @@ message Variable {
       List<Integer> list = new ArrayList<>(vp.time2runtime.length);
       for (int idx : vp.time2runtime) list.add(idx);
       b.setExtension(PartitionCollectionProto.time2Runtime, list);
-    }
-
+    } */
 
     return b.build();
   }

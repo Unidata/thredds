@@ -201,6 +201,18 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     return datasets;
   }
 
+  public GribCollection.Dataset getDataset2D() {
+    for (GribCollection.Dataset ds : datasets)
+      if (ds.type == GribCollectionProto.Dataset.Type.TwoD) return ds;
+    return null;
+  }
+
+  public GribCollection.Dataset findDataset(String name) {
+    for (GribCollection.Dataset ds : datasets)
+      if (ds.type.toString().equals(name)) return ds;
+    return null;
+  }
+
   public Dataset makeDataset(GribCollectionProto.Dataset.Type type) {
     Dataset result = new Dataset(type);
     datasets.add(result);
@@ -212,14 +224,14 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   }
 
   protected void makeHorizCS() {
-    Set<HorizCoordSys> gdsSet = new HashSet<>();
+    Map<Integer, HorizCoordSys> gdsMap = new HashMap<>();
     for (Dataset ds : datasets) {
       for (GroupHcs hcs : ds.getGroups())
-        gdsSet.add(hcs.horizCoordSys);
+        gdsMap.put(hcs.getGdsHash(), hcs.horizCoordSys);
     }
 
     horizCS = new ArrayList<>();
-    for (HorizCoordSys hcs : gdsSet)
+    for (HorizCoordSys hcs : gdsMap.values())
       horizCS.add(hcs);
   }
 
@@ -346,11 +358,13 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   /////////////////////////////////////////////
 
   // stuff for InvDatasetFcGrib
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename,
+       FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     return null;
   }
 
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename,
+            FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     return null;
   }
 
@@ -451,8 +465,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
        return groups;
      }
 
-     public String getType() {
-       return type.toString();
+     public GribCollectionProto.Dataset.Type getType() {
+       return type;
      }
 
      public GroupHcs getGroup(int index) {
@@ -548,10 +562,11 @@ public class GribCollection implements FileCacheable, AutoCloseable {
   // this class should be immutable, because it escapes
   public class GroupHcs implements Comparable<GroupHcs> {
     HorizCoordSys horizCoordSys;
-    public List<VariableIndex> variList;   // GribCollection.VariableIndex
+    public List<VariableIndex> variList;
     public List<Coordinate> coords;
     public int[] filenose;
     private Map<Integer, GribCollection.VariableIndex> varMap;
+
     // partitions only
     public List<Integer> run2part;   // runtimeCoord.length; which partition to use for runtime i
 

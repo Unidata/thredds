@@ -54,9 +54,11 @@ public class Grib2Collection extends GribCollection {
     super(name, directory, dcm, false);
   }
 
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
+  @Override
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
                                                          Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    GroupHcs want = findGroupById(groupName);
+    Dataset ds = findDataset(datasetName);
+    GroupHcs want = ds.findGroupById(groupName);
     if (want == null) return null;
 
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
@@ -76,9 +78,11 @@ public class Grib2Collection extends GribCollection {
     }
   }
 
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
+  @Override
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig,
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
-    GroupHcs want = findGroupById(groupName);
+    Dataset ds = findDataset(datasetName);
+    GroupHcs want = ds.findGroupById(groupName);
     if (want == null) return null;
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf

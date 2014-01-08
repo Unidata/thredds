@@ -293,7 +293,6 @@ public class PartitionCollection extends GribCollection {
     this.logger = logger;
     this.partitions = new ArrayList<>();
     this.datasets = new ArrayList<>();
-    this.horizCS = new ArrayList<>();
   }
 
   /* protected void set(PartitionCollection from) {

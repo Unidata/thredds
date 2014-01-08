@@ -302,6 +302,7 @@ public class Grib2Iosp extends GribIosp {
     this.owned = true;
   }
 
+  // LOOK more likely we will set an indicidual dataset
   public Grib2Iosp(GribCollection gc) {
     this.gribCollection = gc;
     this.owned = true;
@@ -311,68 +312,65 @@ public class Grib2Iosp extends GribIosp {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
 
-    // check if its a plain ole GRIB2 data file
-    boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
-    if (isGribFile) {
-      this.gribCollection = GribCdmIndex2.makeGribCollectionFromDataFile(false, raf, gribConfig, CollectionUpdateType.test, null, logger);
-      cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
-
-      // close the data file, the ncx2 raf file is managed by gribCollection
-      raf.close();
-      this.raf = null;
-    }
-
     if (gHcs != null) { // just use the one group that was set in the constructor
       this.gribCollection = gHcs.getGribCollection();
       if (this.gribCollection instanceof Grib2Partition) {
         isPartitioned = true;
         gribPartition = (Grib2Partition) gribCollection;
       }
+      // cust needs to be set before addGroup
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
-      addGroup(ncfile, gHcs, false);
+      addGroup(ncfile, ncfile.getRootGroup(), gHcs, false);
 
-    } else if (gribCollection != null) { // use gribCollection set in the constructor or opened as a data file
+    } else if (gribCollection == null) { // may have been set in the constructor
+      // check if its a plain ole GRIB2 data file
+      boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
+      if (isGribFile) {
+        this.gribCollection = GribCdmIndex2.makeGribCollectionFromDataFile(false, raf, gribConfig, CollectionUpdateType.test, null, logger);
+        // close the data file, the ncx2 raf file is managed by gribCollection
+        raf.close();
+        this.raf = null;
+
+      } else {  // check its an ncx2 file
+        this.gribCollection = GribCdmIndex2.makeGribCollectionFromIndexFile(raf, gribConfig, CollectionUpdateType.test, null, logger);
+      }
+
+      if (gribCollection == null) {
+        throw new IllegalStateException("Not a GRIB2 data file or ncx2 file");
+      }
+
       if (this.gribCollection instanceof Grib2Partition) {
         isPartitioned = true;
         gribPartition = (Grib2Partition) gribCollection;
       }
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
-      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
-      Collections.sort(groups);
-      boolean useGroups = groups.size() > 1;
-      for (GribCollection.GroupHcs g : groups)
-        addGroup(ncfile, g, useGroups);
+      for (GribCollection.Dataset ds : gribCollection.getDatasets()) {
+        Group datasetGroup = new Group(ncfile, null, ds.getType().toString());
+        List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
+        Collections.sort(groups);
+        boolean useGroups = groups.size() > 1;
+        for (GribCollection.GroupHcs g : groups)
+          addGroup(ncfile, datasetGroup, g, useGroups);
+      }
 
-    } else {
-      this.gribCollection = GribCdmIndex2.makeGribCollectionFromIndexFile(raf, gribConfig, CollectionUpdateType.test, null, logger);
-      if (gribCollection == null)
-        throw new IllegalStateException("Not a GRIB2 data file or ncx2 file");
+  /*           Group g = new Group(ncfile, null, ds.getType());
+            ncfile.addGroup(null, g);
 
-      cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+            List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
+            boolean useGroups = groups.size() > 1;
 
-      if (gribCollection instanceof PartitionCollection) {
-        isPartitioned = true;
-        gribPartition = (PartitionCollection) gribCollection;
+            for (GribCollection.GroupHcs gh : groups) {
+              Group gn;
+              if (useGroups) {
+                gn = new Group(ncfile, g, gh.getId());
+                g.addGroup(gn);
+              } else
+                gn = g;
 
-        for (PartitionCollection.Dataset ds : gribPartition.getDatasets()) {
-          Group g = new Group(ncfile, null, ds.getType());
-          ncfile.addGroup(null, g);
-
-          List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
-          boolean useGroups = groups.size() > 1;
-
-          for (GribCollection.GroupHcs gh : groups) {
-            Group gn;
-            if (useGroups) {
-              gn = new Group(ncfile, g, gh.getId());
-              g.addGroup(gn);
-            } else
-              gn = g;
-
-            makeGroup(ncfile, gn, gh, ds.getType().equals("TwoD"));
+              makeGroup(ncfile, gn, gh, ds.getType().equals("TwoD"));
+            }
           }
-        }
 
       } else {
         List<GribCollection.GroupHcs> groups = new ArrayList<>(gribCollection.getGroups());
@@ -380,9 +378,7 @@ public class Grib2Iosp extends GribIosp {
         boolean useGroups = groups.size() > 1;
         for (GribCollection.GroupHcs g : groups)
           addGroup(ncfile, g, useGroups);
-      }
-
-
+      }  */
     }
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
@@ -411,20 +407,20 @@ public class Grib2Iosp extends GribIosp {
         ncfile.addAttribute(null, new Attribute(p));
   }
 
-  private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {
+  private void addGroup(NetcdfFile ncfile, Group parent, GribCollection.GroupHcs gHcs, boolean useGroups) {
 
     Group g;
     if (useGroups) {
-      g = new Group(ncfile, null, gHcs.getId());
+      g = new Group(ncfile, parent, gHcs.getId());
       g.addAttribute(new Attribute(CDM.LONG_NAME, gHcs.getDescription()));
       try {
-        ncfile.addGroup(null, g);
+        ncfile.addGroup(parent, g);
       } catch (Exception e) {
         logger.warn("Duplicate Group - skipping");
         return;
       }
     } else {
-      g = ncfile.getRootGroup();
+      g = parent;
     }
 
     makeGroup(ncfile, g, gHcs, true);

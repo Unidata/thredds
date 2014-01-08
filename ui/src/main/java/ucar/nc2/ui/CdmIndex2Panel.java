@@ -305,16 +305,11 @@ public class CdmIndex2Panel extends JPanel {
 
     List<GroupBean> groups = new ArrayList<GroupBean>();
 
-    if (gc instanceof PartitionCollection) {
-      PartitionCollection pc = (PartitionCollection) gc;
-      for (PartitionCollection.Dataset ds : pc.getDatasets())
-        for (GribCollection.GroupHcs g : ds.getGroups())
-          groups.add(new GroupBean(g, ds.getType()));
+    PartitionCollection pc = (PartitionCollection) gc;
+    for (PartitionCollection.Dataset ds : pc.getDatasets())
+      for (GribCollection.GroupHcs g : ds.getGroups())
+        groups.add(new GroupBean(g, ds.getType().toString()));
 
-    } else {
-      for (GribCollection.GroupHcs g : gc.getGroups())
-        groups.add(new GroupBean(g, "gc"));
-    }
     groupTable.setBeans(groups);
     groupTable.setHeader(indexFile.toString());
     gcFiles = gc.getFiles();

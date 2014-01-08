@@ -70,14 +70,6 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
   @Override
   protected boolean readExtensions(GribCollectionProto.GribCollection proto) {
 
-    List<ucar.nc2.grib.collection.PartitionCollectionProto.Gds> gdsList = proto.getExtension(PartitionCollectionProto.gds);
-    for (ucar.nc2.grib.collection.PartitionCollectionProto.Gds gdsProto : gdsList)
-      makeGds(gdsProto);
-
-    List<ucar.nc2.grib.collection.PartitionCollectionProto.Dataset> dsList = proto.getExtension(PartitionCollectionProto.dataset);
-    for (ucar.nc2.grib.collection.PartitionCollectionProto.Dataset dsProto : dsList)
-      makeDataset(dsProto);
-
     List<ucar.nc2.grib.collection.PartitionCollectionProto.Partition> partList = proto.getExtension(PartitionCollectionProto.partitions);
     for (ucar.nc2.grib.collection.PartitionCollectionProto.Partition partProto : partList)
       makePartition(partProto);
@@ -85,63 +77,17 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
     return partList.size() > 0;
   }
 
-      /*
-  message Gds {
-    optional bytes gds = 1;             // all variables in the group use the same GDS
-    optional sint32 gdsHash = 2 [default = 0];
-    optional string nameOverride = 3;         // only when user overrides default name
-  }
-   */
-  private void makeGds(PartitionCollectionProto.Gds p) {
-    byte[] rawGds = p.getGds().toByteArray();
-    Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
-    Grib2Gds gds = gdss.getGDS();
-    int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
-    String nameOverride = p.getNameOverride();
-    pc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, nameOverride);
-  }
-
-    /*
-  message Dataset {
-      enum Type {
-        TwoD = 0;
-        Best = 1;
-        Analysis = 2;
-      }
-
-    required Type type = 1;
-    repeated Group groups = 2;      // separate group for each GDS
-  }
-   */
-  private PartitionCollection.Dataset makeDataset(PartitionCollectionProto.Dataset p) {
-
-    PartitionCollection.Dataset ds = pc.makeDataset(p.getType());
-
-    ds.groups = new ArrayList<>(p.getGroupsCount());
-    for (int i = 0; i < p.getGroupsCount(); i++)
-      ds.groups.add( readGroup( p.getGroups(i)));
-    ds.groups = Collections.unmodifiableList(ds.groups);
-
-    return ds;
-  }
-
   /*
   extend Group {
-    required uint32 gdsIndex = 100;       // index into TimePartition.gds
     repeated uint32 run2part = 101;       // partitions only: run index to partition index map
     repeated Parameter gparams = 102;      // not used yet
   }
    */
-  private GribCollection.GroupHcs readGroup(GribCollectionProto.Group p) {
+  protected GribCollection.GroupHcs readGroup(GribCollectionProto.Group p) {
 
-    GribCollection.GroupHcs group = pc.makeGroup();
-
-    super.readGroup(p, group);
+    GribCollection.GroupHcs group = super.readGroup(p);
 
     // extensions
-    int gdsIndex = p.getExtension(PartitionCollectionProto.gdsIndex);
-    group.horizCoordSys = pc.getHorizCS(gdsIndex);
-
     group.run2part = p.getExtension(PartitionCollectionProto.run2Part);
 
     return group;
@@ -168,27 +114,6 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
               pv.getNrecords(), pv.getMissing(), pv.getDensity());
     }
 
-    Coordinate runtime = vip.getCoordinate(Coordinate.Type.runtime);
-    Coordinate time = vip.getCoordinate(Coordinate.Type.time);
-    if (time == null) time = vip.getCoordinate(Coordinate.Type.timeIntv);
-
-    // 2d only
-    List<Integer> invCountList = proto.getExtension(PartitionCollectionProto.invCount);
-    if (invCountList.size() > 0) {
-      vip.twot = new CoordinateTwoTimer(invCountList);
-      vip.twot.setSize(runtime.getSize(), time.getSize());
-    }
-
-    // 1d only
-    List<Integer> time2runList = proto.getExtension(PartitionCollectionProto.time2Runtime);
-    if (time2runList.size() > 0) {
-      vip.time2runtime = new int[time2runList.size()];
-      int count = 0;
-      for (int idx : time2runList) vip.time2runtime[count++] = idx;
-    }
-
-
-
     return vip;
   }
 
@@ -205,49 +130,5 @@ message Partition {
     return pc.addPartition(proto.getName(), proto.getFilename(),
             proto.getLastModified(), proto.getDirectory());
   }
-
-
-    /*
-
-   gc.horizCS = new ArrayList<>(proto.getGdsCount());
-  for (int i = 0; i < proto.getGdsCount(); i++)
-    readGds(proto.getGds(i));
-  gc.horizCS = Collections.unmodifiableList(gc.horizCS);
-
-  gc.datasets = new ArrayList<>(proto.getDatasetCount());
-  for (int i = 0; i < proto.getDatasetCount(); i++)
-    readDataset(proto.getDataset(i));
-  gc.datasets = Collections.unmodifiableList(gc.datasets);
-
-  if (!readPartitions(proto, proto.getTopDir())) {
-    logger.warn("Grib2CollectionBuilderFromIndex {}: has no partitions, force recreate ", gc.getName());
-    return false;
-  }
-
-  protected TimeCoordUnion readTimePartition(GribCollectionProto.TimeCoordUnion pc, int timeIndex) {
-    int[] partition = new int[pc.getPartitionCount()];
-    int[] index = new int[pc.getPartitionCount()];  // better be the same
-    for (int i = 0; i < pc.getPartitionCount(); i++) {
-      partition[i] = pc.getPartition(i);
-      index[i] = pc.getIndex(i);
-    }
-
-    if (pc.getBoundCount() > 0) {  // its an interval
-      List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
-      for (int i = 0; i < pc.getValuesCount(); i++)
-        coords.add(new TimeCoord.Tinv((int) pc.getValues(i), (int) pc.getBound(i)));
-      TimeCoordUnion tc =  new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
-      tc.setIndex( timeIndex);
-      return tc;
-
-    } else {
-      List<Integer> coords = new ArrayList<Integer>(pc.getValuesCount());
-      for (float value : pc.getValuesList())
-        coords.add((int) value);
-      TimeCoordUnion tc = new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
-      tc.setIndex( timeIndex);
-      return tc;
-    }
-  } */
 
 }

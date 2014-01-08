@@ -6,6 +6,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * Description
@@ -21,8 +22,11 @@ public class Grib2Partition extends PartitionCollection implements AutoCloseable
 
   // LOOK - needs time partition collection iosp or something
   @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
-    GroupHcs want = findGroupById(groupName);
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String datasetName, String groupName, String filename,
+          FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+    Dataset ds = findDataset(datasetName);
+    if (ds == null) return null;
+    GroupHcs want = ds.findGroupById(groupName);
     if (want == null) return null;
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(want);
@@ -31,8 +35,11 @@ public class Grib2Partition extends PartitionCollection implements AutoCloseable
   }
 
   @Override
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig, org.slf4j.Logger logger) throws IOException {
-    GroupHcs want = findGroupById(groupName);
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(String datasetName, String groupName, String filename,
+          FeatureCollectionConfig.GribConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+    Dataset ds = findDataset(datasetName);
+    if (ds == null) return null;
+    GroupHcs want = ds.findGroupById(groupName);
     if (want == null) return null;
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(want);
