@@ -42,6 +42,8 @@ import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.NativeLongByReference;
 
 import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * JNA access to Netcdf-4 C Library, using JNI to shared C library.
@@ -107,6 +109,13 @@ public interface Nc4prototypes extends Library {
     //public int p; /* Length of VL data (in base type units) */
     //public NativeLong len; /* Length of VL data (in base type units) */
     public Pointer p;    /* Pointer to VL data */
+    protected List getFieldOrder()
+    {
+	List fields = new ArrayList();
+	fields.add("len");
+	fields.add("p");
+	return fields;
+    }
   }
 
   // library

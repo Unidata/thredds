@@ -46,14 +46,16 @@ import java.io.*;
 import opendap.dap.parsers.*;
 
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 
+import opendap.dap.parsers.ParseException;
+import org.apache.http.cookie.Cookie;
 import ucar.nc2.util.EscapeStrings;
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.*;
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
+import org.apache.http.*;
+import org.apache.http.auth.*;
+import ucar.nc2.util.net.*;
 
 /**
  * Rewritten 1/15/07 jcaron to use HttpCLient library instead of jdk UrlConnection class.
@@ -235,17 +237,16 @@ public final String URL() {
  * @param command   execute this command on the input stream
  * @throws IOException    if an IO exception occurred.
  * @throws DAP2Exception  if the DODS server returned an error.
- * @throws ParseException is cant parse the return
  */
-private void openConnection(String urlString, Command command) throws IOException, DAP2Exception, ParseException {
+private void openConnection(String urlString, Command command) throws IOException, DAP2Exception {
   HTTPMethod method = null;
   InputStream is = null;
 
   HTTPSession _session = null;
 
   try {
-    _session = new HTTPSession(urlString);
-    method = HTTPMethod.Get(_session);
+    _session = HTTPFactory.newSession(urlString);
+    method = HTTPFactory.Get(_session);
 
     if (acceptCompress)
       method.setRequestHeader("Accept-Encoding", "deflate,gzip");
@@ -259,15 +260,15 @@ private void openConnection(String urlString, Command command) throws IOExceptio
     // debug
     // if (debugHeaders) ucar.nc2.util.net.HttpClientManager.showHttpRequestInfo(f, method);
 
-    if (statusCode == HTTPSession.SC_NOT_FOUND) {
+    if (statusCode == HttpStatus.SC_NOT_FOUND) {
       throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText()+": "+urlString);
     }
 
-    if (statusCode == HTTPSession.SC_UNAUTHORIZED) {
+    if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
       throw new InvalidCredentialsException(method.getStatusText());
     }
 
-    if (statusCode != HTTPSession.SC_OK) {
+    if (statusCode != HttpStatus.SC_OK) {
       throw new DAP2Exception("Method failed:" + method.getStatusText() + " on URL= " + urlString);
     }
 
@@ -459,13 +460,11 @@ private void checkHeaders(HTTPMethod method) {
   if (debugHeaders)
     DAPNode.log.debug("OpenConnection Headers for " + method.getPath());
 
-      Cookie[] cookies = HTTPSession.getGlobalCookies();
+      List<Cookie> cookies = HTTPSession.getGlobalCookies();
 
-      if (cookies.length > 0) {
+      if (cookies.size() > 0) {
         if (debugHeaders) DAPNode.log.debug("Cookies= ");
-
-        for (int i = 0; i < cookies.length; i++) {
-          Cookie cooky = cookies[i];
+        for(Cookie cooky: cookies) {
           if (debugHeaders) DAPNode.log.debug("  " + cooky);
           if (cooky.getName().equalsIgnoreCase("jsessionid"))
             hasSession = true;
@@ -474,7 +473,7 @@ private void checkHeaders(HTTPMethod method) {
 }
 
 private interface Command {
-  void process(InputStream is) throws DAP2Exception, ParseException, IOException;
+  void process(InputStream is) throws DAP2Exception, IOException;
 }
 
 /**
@@ -486,11 +485,10 @@ private interface Command {
  * @throws MalformedURLException if the URL given to the
  *                               constructor has an error
  * @throws IOException           if an error connecting to the remote server
- * @throws ParseException        if the DAS parser returned an error
  * @throws DASException          on an error constructing the DAS
  * @throws DAP2Exception         if an error returned by the remote server
  */
-public DAS getDAS() throws IOException, ParseException, DAP2Exception {
+public DAS getDAS() throws IOException, DAP2Exception {
   DASCommand command = new DASCommand();
   if (filePath != null) { // url was file:
     File daspath = new File(filePath + ".das");
@@ -514,7 +512,7 @@ public DAS getDAS() throws IOException, ParseException, DAP2Exception {
 private class DASCommand implements Command {
   DAS das = new DAS();
 
-  public void process(InputStream is) throws ParseException, DAP2Exception
+  public void process(InputStream is) throws DAP2Exception, ParseException
   {
     das.parse(is);
   }

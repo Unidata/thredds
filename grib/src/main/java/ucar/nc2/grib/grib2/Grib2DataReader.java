@@ -628,10 +628,31 @@ public class Grib2DataReader {
     }
   }
 
+  /*
+
+   Flag table 3.4 – Scanning mode
+       Bit No. Value Meaning
+ 128    1 0 Points of first row or column scan in the +i (+x) direction
+          1 Points of first row or column scan in the –i (–x) direction
+ 64     2 0 Points of first row or column scan in the –j (–y) direction
+          1 Points of first row or column scan in the +j (+y) direction
+ 32     3 0 Adjacent points in i (x) direction are consecutive
+          1 Adjacent points in j (y) direction is consecutive
+ 16     4 0 All rows scan in the same direction
+          1 Adjacent rows scans in the opposite direction
+        5–8 Reserved
+        Notes:
+        (1) i direction: west to east along a parallel or left to right along an x-axis.
+        (2) j direction: south to north along a meridian, or bottom to top along a y-axis.
+        (3) If bit number 4 is set, the first row scan is as defined by previous flags.
+   */
+
   // Rearrange the data array using the scanning mode.
-  // LOOK ight be wrong when a quasi regular (thin) grid ??
+  // LOOK: not handling scanMode generally
+  // LOOK It appears that this handles x but noy y (!); ?? Probably correcting for it in the y coordinate, eg Dy
+  // LOOK might be wrong for a quasi regular (thin) grid ??
   private void scanningModeCheck(float[] data, int scanMode, int Xlength) {
-    // Mode  0 +x, -y, adjacent x, adjacent rows same dir
+    // Mode  0  +x, -y, adjacent x, adjacent rows same dir
     // Mode  64 +x, +y, adjacent x, adjacent rows same dir
     if ((scanMode == 0) || (scanMode == 64))
       return;

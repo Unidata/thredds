@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import ucar.nc2.util.Indent;
+import java.util.List;
 
 /**
  * Define a superclass for all the CDM node classes: Group, Dimension, etc.

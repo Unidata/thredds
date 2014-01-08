@@ -33,8 +33,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
+import ucar.nc2.util.net.*;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.widget.BAMutil;
@@ -61,7 +60,7 @@ import java.util.zip.ZipEntry;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.apache.commons.httpclient.Header;
+import org.apache.http.Header;
 
 /**
  * View WMS datasets
@@ -203,8 +202,8 @@ public class WmsViewer extends JPanel {
     HTTPSession session = null;
     HTTPMethod method = null;
     try {
-      session = new HTTPSession(url);
-      method = HTTPMethod.Get(session);
+      session = HTTPFactory.newSession(url);
+      method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
@@ -286,8 +285,8 @@ public class WmsViewer extends JPanel {
     HTTPSession session = null;
     HTTPMethod method = null;
     try {
-      session = new HTTPSession(url);
-      method = HTTPMethod.Get(session);
+      session = HTTPFactory.newSession(url);
+      method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");

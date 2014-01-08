@@ -68,9 +68,27 @@
     </dependency>
 
     <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpmime</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpmime</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
@@ -249,13 +267,20 @@
   <!--     Repositories. This is where Maven looks for dependencies. The  -->
   <!--     Maven repository is implicit and doesn't need to be specified. -->
   <!-- ================================================================== -->
-  <!-- repositories>
+  <repositories>
+    <!-- Needed for com.sleepycat.je -->
+    <repository>
+      <id>Oracle</id>
+      <name>Oracle Maven repository</name>
+      <url>http://download.oracle.com/maven</url>
+    </repository>
+<!--
     <repository>
       <id>geotoolkit</id>
       <name>Geotk repository</name>
       <url>http://maven.geotoolkit.org</url>
-    </repository>      
-  </repositories-->
+    </repository>      -->
+  </repositories>
 
 
   <!-- ===========================================================

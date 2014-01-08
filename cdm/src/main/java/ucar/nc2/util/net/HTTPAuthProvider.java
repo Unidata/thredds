@@ -33,15 +33,12 @@
 
 package ucar.nc2.util.net;
 
-import java.io.IOException;
-import java.io.NotSerializableException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Set;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.client.CredentialsProvider;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.auth.*;
+import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * HTTPAuthProvider contains the necessary information to support a given
@@ -54,138 +51,142 @@ import org.apache.commons.httpclient.auth.*;
  * store implementing the HttpParams Interface.  The contents of the pair
  * store depends on the particular auth scheme (HTTP Basic, ESG Keystore,
  * etc.)
- *
+ * <p/>
  * HTTPAuthProvider implements the CredentialsProvider interface.
  */
 
 public class HTTPAuthProvider implements Serializable, CredentialsProvider
 {
-static final int MAX_RETRIES = 3;
+    static final int MAX_RETRIES = 3;
 
 //////////////////////////////////////////////////
 // Predefined keys (Used local to the package)
 
-static final String PRINCIPAL = "ucar.nc2.principal";
-static final String URI = "ucar.nc2.url";
-static final String CREDENTIALSPROVIDER = "ucar.nc2.credentialsprovider";
-static final String KEYSTOREPATH = "ucar.nc2.keystore";
-static final String KEYSTOREPASSWORD = "ucar.nc2.keystorepassword";
-static final String TRUSTSTOREPATH = "ucar.nc2.truststore";
-static final String TRUSTSTOREPASSWORD = "ucar.nc2.truststorepassword";
-static final String CREDENTIALS = "ucar.nc2.credentials";
-static final String AUTHSTRING = "ucar.nc2.authstring";
-static String SCHEME = "ucar.nc2.scheme";
-static String PASSWORD = "ucar.nc2.password";
-static String USER = "ucar.nc2.user";
-static public final String WWW_AUTH_RESP = "Authorization";   // from HttpMethodDirector
-static public final String PROXY_AUTH_RESP = "Proxy-Authorization"; // from HttpMethodDirector
+    static final String PRINCIPAL = "ucar.nc2.principal";
+    static final String URI = "ucar.nc2.url";
+    static final String CREDENTIALSPROVIDER = "ucar.nc2.credentialsprovider";
+    static final String KEYSTOREPATH = "ucar.nc2.keystore";
+    static final String KEYSTOREPASSWORD = "ucar.nc2.keystorepassword";
+    static final String TRUSTSTOREPATH = "ucar.nc2.truststore";
+    static final String TRUSTSTOREPASSWORD = "ucar.nc2.truststorepassword";
+    static final String CREDENTIALS = "ucar.nc2.credentials";
+    static final String AUTHSTRING = "ucar.nc2.authstring";
+    static String SCHEME = "ucar.nc2.scheme";
+    static String PASSWORD = "ucar.nc2.password";
+    static String USER = "ucar.nc2.user";
+    static public final String WWW_AUTH_RESP = "Authorization";   // from HttpMethodDirector
+    static public final String PROXY_AUTH_RESP = "Proxy-Authorization"; // from HttpMethodDirector
 
-static private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(HTTPAuthProvider.class);
+    static private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(HTTPAuthProvider.class);
 
 //////////////////////////////////////////////////
 // Instance variables
 
-String url = null;
-HTTPMethod method = null;
-int retryCount;
+    String url = null;
+    HTTPMethod method = null;
+    int retryCount;
 
 //////////////////////////////////////////////////
 // Constructor(s)
 
-public HTTPAuthProvider(String url, HTTPMethod method)
-{
-    this.url = url;
-    this.method = method;
-    this.retryCount = MAX_RETRIES;
-}
-
-//////////////////////////////////////////////////
-// Credentials Provider Interface
-
-public Credentials
-getCredentials(AuthScheme authscheme,
-               String host,
-               int port,
-	       boolean isproxy)
-    throws CredentialsNotAvailableException
-{
-    // There appears to be a bug in HttpMethodDirector such that
-    // as long as bad credentials are provided, it will keep on
-    // calling the credentials provider.  We fix by checking for
-    // retry in same way as HttpMethodDirector.processWWWAuthChallenge.
-    // After MAX_RETRIES, we force retries to stop.
-    AuthState authstate = method.getMethod().getHostAuthState();
-    if(retryCount == 0 && authstate.isAuthAttempted() && authscheme.isComplete()) {
-        return null; // Stop the retry.
-    }
-    retryCount--;
-
-    // Figure out what scheme is being used
-    HTTPAuthScheme scheme;
-    Credentials credentials = null;
-
-    scheme = HTTPAuthScheme.schemeForName(authscheme.getSchemeName());
-
-    if(scheme == null) {
-        LOG.error("HTTPAuthProvider: unsupported scheme: "+authscheme.getSchemeName());
-        //throw new CredentialsNotAvailableException();
-        return null;
+    public HTTPAuthProvider(String url, HTTPMethod method)
+    {
+        this.url = url;
+        this.method = method;
+        this.retryCount = MAX_RETRIES;
     }
 
-    // search for matching authstore entries
-    HTTPAuthStore.Entry[] matches = HTTPAuthStore.search(new HTTPAuthStore.Entry(scheme,url,null));
-    if(matches.length == 0)  {
-        LOG.debug("HTTPAuthProvider: no match for ("+scheme+","+url+")");
-        //throw new CredentialsNotAvailableException();
-        return null;
+    //////////////////////////////////////////////////
+    // Credentials Provider Interface
+
+    public Credentials
+    getCredentials(AuthScope scope)//AuthScheme authscheme,String host,int port,boolean isproxy)
+    {
+        // There appears to be a bug in HttpMethodDirector such that
+        // as long as bad credentials are provided, it will keep on
+        // calling the credentials provider.  We fix by checking for
+        // retry in same way as HttpMethodDirector.processWWWAuthChallenge.
+        // After MAX_RETRIES, we force retries to stop.
+        //todo: AuthState authstate = method.getMethod().getHostAuthState();
+        //if(retryCount == 0 && authstate.isAuthAttempted() && authscheme.isComplete()) {
+        //    return null; // Stop the retry.
+        //}
+        //retryCount--;
+
+        // Figure out what scheme is being used
+        HTTPAuthScheme scheme;
+        Credentials credentials = null;
+
+        scheme = HTTPAuthScheme.schemeForName(scope.getScheme());
+
+        if(scheme == null) {
+            LOG.error("HTTPAuthProvider: unsupported scheme: " + scope.getScheme());
+            //throw new CredentialsNotAvailableException();
+            return null;
+        }
+
+        // search for matching authstore entries
+        HTTPAuthStore.Entry[] matches = HTTPAuthStore.search(new HTTPAuthStore.Entry(scheme, url, null));
+        if(matches.length == 0) {
+            LOG.debug("HTTPAuthProvider: no match for (" + scheme + "," + url + ")");
+            //throw new CredentialsNotAvailableException();
+            return null;
+        }
+
+        HTTPAuthStore.Entry entry = matches[0];
+        LOG.debug("HTTPAuthProvider: AuthStore row: " + entry.toString());
+        CredentialsProvider provider = entry.creds;
+
+        if(provider == null) {
+            LOG.debug("HTTPAuthProvider: no credentials provider provided");
+            //throw new CredentialsNotAvailableException();
+            return null;
+        }
+
+        // invoke the (real) credentials provider
+        // Use the incoming parameters
+        credentials = provider.getCredentials(scope);
+        if(credentials == null) {
+            LOG.debug("HTTPAuthProvider: cannot obtain credentials");
+            //throw new CredentialsNotAvailableException();
+            return null;
+        }
+
+        return credentials;
     }
 
-    HTTPAuthStore.Entry entry = matches[0];
-    LOG.debug("HTTPAuthProvider: AuthStore row: "+entry.toString());
-    CredentialsProvider provider = entry.creds;
-
-    if(provider == null) {
-        LOG.debug("HTTPAuthProvider: no credentials provider provided");
-        //throw new CredentialsNotAvailableException();
-        return null;
+    public void setCredentials(AuthScope scope, Credentials creds)
+    {
     }
 
-    // invoke the (real) credentials provider
-    // Use the incoming parameters
-    credentials = provider.getCredentials(authscheme,host,port,isproxy);
-    if(credentials == null) {
-        LOG.debug("HTTPAuthProvider: cannot obtain credentials");
-        //throw new CredentialsNotAvailableException();
-        return null;
+    public void clear()
+    {
     }
-
-    return credentials;
-}
 
 ///////////////////////////////////////////////////
 // toString
 
-public String
-toString()
-{
-    return "HTTPAuthProvider("+url+")";
-}
+    public String
+    toString()
+    {
+        return "HTTPAuthProvider(" + url + ")";
+    }
 
 ///////////////////////////////////////////////////
 // (De-)Serialization support
 
-private void writeObject(java.io.ObjectOutputStream ostream)
+    private void writeObject(java.io.ObjectOutputStream ostream)
         throws IOException
-{
-    ostream.writeObject(url);
-}
+    {
+        ostream.writeObject(url);
+    }
 
-private void readObject(java.io.ObjectInputStream istream)
-    throws IOException, ClassNotFoundException
-{
-    url = (String)istream.readObject();
-}
+    private void readObject(java.io.ObjectInputStream istream)
+        throws IOException, ClassNotFoundException
+    {
+        url = (String) istream.readObject();
+    }
 
-    
+
 }//HTTPAuthProvider
 

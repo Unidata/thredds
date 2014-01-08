@@ -33,13 +33,11 @@
 
 package ucar.nc2.ui.widget;
 
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
-import org.apache.commons.httpclient.Header;
+import ucar.nc2.util.net.*;
+import org.apache.http.Header;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.XMLStore;
+import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
 import java.awt.*;
@@ -55,7 +53,7 @@ import javax.swing.*;
 
 /**
  * A text widget to dump a web URL.
- * Uses java.net.HttpURLConnection or org.apache.commons.httpclient.
+ * Uses java.net.HttpURLConnection or org.apache.http.
  *
  * @author John Caron
  * @see UrlAuthenticatorDialog
@@ -277,15 +275,15 @@ public class URLDumpPane extends TextHistoryPane {
               */
 
       //urlString = URLnaming.escapeQuery(urlString);
-      httpclient = new HTTPSession(urlString);
+      httpclient = HTTPFactory.newSession(urlString);
       if (cmd == Command.GET)
-          m = HTTPMethod.Get(httpclient);
+          m = HTTPFactory.Get(httpclient);
       else if (cmd == Command.HEAD)
-          m = HTTPMethod.Head(httpclient);
+          m = HTTPFactory.Head(httpclient);
       else if (cmd == Command.OPTIONS)
-          m = HTTPMethod.Options(httpclient);
+          m = HTTPFactory.Options(httpclient);
       else if (cmd == Command.PUT) {
-          m = HTTPMethod.Put(httpclient);
+          m = HTTPFactory.Put(httpclient);
         m.setRequestContentAsString(ta.getText());
       }
 
@@ -349,9 +347,7 @@ public class URLDumpPane extends TextHistoryPane {
         appendLine(contents);
 
       } else if (cmd == Command.OPTIONS)
-        printEnum("AllowedMethods = ", m.getAllowedMethods());
-
-      printHeaders("Response Footers = ", m.getResponseFooters());
+        printSet("AllowedMethods = ", m.getAllowedMethods());
 
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
@@ -372,11 +368,10 @@ public class URLDumpPane extends TextHistoryPane {
     }
   }
 
-  private void printEnum(String title, Enumeration en) {
+  private void printSet(String title, Set<String> en) {
     appendLine(title);
-    while (en.hasMoreElements()) {
-      Object o = en.nextElement();
-      append("  " + o.toString());
+    for(String s: en) {
+      append("  " + s);
     }
     appendLine("");
   }

@@ -37,6 +37,7 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
@@ -102,6 +103,7 @@ public abstract class Grib2Gds {
   protected final byte[] data;
 
   public int template;
+  public int center;
   public float earthRadius, majorAxis, minorAxis; // in meters
   public int scanMode;
   public int earthShape;
@@ -126,7 +128,6 @@ public abstract class Grib2Gds {
   protected void finish() {
     if (isThin()) readNptsInLine();
   }
-
 
   public abstract GdsHorizCoordSys makeHorizCoordSys();
 
@@ -160,6 +161,10 @@ public abstract class Grib2Gds {
     return data;
   }
 
+  // hack to fix eumetsat GDS
+  public void setCenter(int center) {
+    this.center = center;
+  }
 
   public boolean isLatLon() {
     return false;
@@ -1126,7 +1131,6 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
    (6) The horizontal and vertical angular resolutions of the sensor (Rx and Ry), needed for navigation equation, can be calculated from the following:
         Rx = 2 * Arcsin (106 )/Nr)/ dx
         Ry = 2 * Arcsin (106 )/Nr)/ dy
-
   */
   public static class SpaceViewPerspective extends Grib2Gds {
     public float LaP, LoP, dX, dY, Xp, Yp, orient, Nr, Xo, Yo;
@@ -1234,15 +1238,15 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
 
       // per Simon Eliot 1/18/2010, there is a bug in Eumetsat grib files,
       // we need to "correct for ellipsoidal earth"
-      // (Note we should check who the originating center is
-      // "Originating_center" = "EUMETSAT Operation Centre" in the GRIB id (section 1))
-      // although AFAIK, eumetsat is only one using this projection.
-      if (dY < 2100) {
-        dX = 1207;
-        dY = 1203;
-      } else {
-        dX = 3622;
-        dY = 3610;
+      // "Originating_center" = 254 "EUMETSAT Operation Centre" in the GRIB id (section 1))
+      if (center == 254) {
+        if (dY < 2100) {
+          dX = 1207;
+          dY = 1203;
+        } else {
+          dX = 3622;
+          dY = 3610;
+        }
       }
 
       // CFAC = 2^16 / {[2 * arcsine (10^6 / Nr)] / dx }
@@ -1252,14 +1256,37 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
 
       getEarth(); // fix units if needed
 
-      // use km, so scale by the earth radius
+       // use km, so scale by the earth radius
       double scale_factor = (Nr - 1) * majorAxis / 1000; // this sets the units of the projection x,y coords in km
       double scale_x = scale_factor; // LOOK fake neg need scan value
       double scale_y = -scale_factor; // LOOK fake neg need scan value
+
       double startx = scale_factor * (1 - Xp) / cfac;
-      double starty = scale_factor * (Yp - getNy()) / lfac;
       double incrx = scale_factor / cfac;
-      double incry = scale_factor / lfac;
+
+
+      /*
+      // scanMode
+      boolean xscanPositive = (scanMode & GribNumbers.bitmask[0]) == 0;  // 0 Points of first row or column scan in the +i (+x) direction
+
+      double startx, incrx;
+      if (xscanPositive) {
+        incrx =  -scale_factor / cfac;
+        startx = (scale_factor * (1 - Xp) / cfac) - incrx * (getNx()-1);
+      } else {
+        startx = scale_factor * (1 - Xp) / cfac;
+        incrx = scale_factor / cfac;
+      }  */
+
+      boolean yscanPositive = GribUtils.scanModeYisPositive(scanMode);
+      double starty, incry;
+      if (yscanPositive) {
+        starty = scale_factor * (Yp - getNy()) / lfac;
+        incry = (scale_factor / lfac);
+      } else {
+        incry = -(scale_factor / lfac);
+        starty = scale_factor * (Yp - getNy()) / lfac - incry * (getNy()-1);
+      }
 
       MSGnavigation proj = new MSGnavigation(LaP, LoP, majorAxis, minorAxis, Nr * majorAxis, scale_x, scale_y);
       return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, startx, incrx, starty, incry,

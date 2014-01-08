@@ -31,12 +31,12 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.tds;
+package ucar.nc2.thredds.server;
 
-import ucar.nc2.util.net.HTTPException;
-import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPSession;
+import sun.net.www.http.HttpClient;
+import ucar.nc2.util.net.*;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.EscapeStrings;
 
 import java.io.BufferedReader;
@@ -135,8 +135,8 @@ public class ReadTdsLogs {
         String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
         String urlencoded = server + unescapedForm;
         // String urlencoded = server + URLnaming.escapeQuery(unescapedForm);
-        httpClient = new HTTPSession(urlencoded);
-        method = HTTPMethod.Get(httpClient);  // escape the query part
+        httpClient = HTTPFactory.newSession(urlencoded);
+        method = HTTPFactory.Get(httpClient);  // escape the query part
         //out2.format("send %s %n", method.getPath());
         statusCode = method.execute();
 
@@ -203,8 +203,8 @@ public class ReadTdsLogs {
       HTTPSession httpClient = null;
       HTTPMethod method = null;
       try {
-        httpClient = new HTTPSession(serverLive + itask.log.path);
-        method = HTTPMethod.Get(httpClient);
+        httpClient = HTTPFactory.newSession(serverLive + itask.log.path);
+        method = HTTPFactory.Get(httpClient);
         out2.format("send %s %n", method.getPath());
 
         int statusCode = method.execute();

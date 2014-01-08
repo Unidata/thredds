@@ -33,14 +33,12 @@
 
 package thredds.ui.monitor;
 
-import ucar.nc2.util.net.HTTPException;
-import ucar.nc2.util.net.HTTPSession;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.http.client.CredentialsProvider;
+import ucar.nc2.util.net.*;
 import thredds.logs.LogReader;
 import thredds.logs.LogCategorizer;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.ui.Debug;
 import ucar.util.prefs.PreferencesExt;
@@ -74,7 +72,7 @@ public class TdsMonitor extends JPanel {
   private static PreferencesExt prefs;
   private static XMLStore store;
 
-  private PreferencesExt mainPrefs;
+  private ucar.util.prefs.PreferencesExt mainPrefs;
   private JTabbedPane tabbedPane;
   private ManagePanel managePanel;
   private AccessLogPanel accessLogPanel;
@@ -88,7 +86,7 @@ public class TdsMonitor extends JPanel {
   //private HTTPSession session;
   // private CredentialsProvider provider;
 
-  public TdsMonitor(PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
+  public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
@@ -228,7 +226,7 @@ public class TdsMonitor extends JPanel {
               File localDir = LogLocalManager.getDirectory(data.server, "");
               localDir.mkdirs();
               File file = new File(localDir, "roots.txt");
-              HTTPSession session = new HTTPSession(urls);
+              HTTPSession session = HTTPFactory.newSession(urls);
               // session.setCredentialsProvider(provider);
               session.setUserAgent("TdsMonitor");
               HttpClientManager.copyUrlContentsToFile(session, urls, file);
@@ -566,8 +564,8 @@ public class TdsMonitor extends JPanel {
 
     // prefs storage
     try {
-      String prefStore = XMLStore.makeStandardFilename(".unidata", "TdsMonitor.xml");
-      store = XMLStore.createFromFile(prefStore, null);
+      String prefStore = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "TdsMonitor.xml");
+      store = ucar.util.prefs.XMLStore.createFromFile(prefStore, null);
       prefs = store.getPreferences();
       Debug.setStore(prefs.node("Debug"));
     } catch (IOException e) {

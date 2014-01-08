@@ -8,7 +8,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -47,7 +46,7 @@ public class Grib2ReportPanel extends ReportPanel {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
   public static enum Report {
-    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord,
+    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsSummary, pdsSummary, idProblems, timeCoord,
     rename, renameCheck, copyCompress
   }
 
@@ -91,8 +90,8 @@ public class Grib2ReportPanel extends ReportPanel {
         case drsSummary:
           doDrsSummary(f, dcm, useIndex, eachFile, extra);
           break;
-        case gdsTemplate:
-          doGdsTemplate(f, dcm, useIndex);
+        case gdsSummary:
+          doGdsTemplate(f, dcm, eachFile);
           break;
         case pdsSummary:
           doPdsSummary(f, dcm, useIndex);
@@ -847,32 +846,47 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doGdsTemplate(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doGdsTemplate(Formatter f, CollectionManager dcm, boolean eachFile) throws IOException {
     f.format("Show Unique GDS Templates%n");
 
-    Map<Integer, Integer> drsSet = new HashMap<Integer, Integer>();
+    Counter template = new Counter("  template");
+    Counter proj = new Counter("  proj");
+    Counter scanMode = new Counter("  scanMode");
+
     for (MFile mfile : dcm.getFiles()) {
+      if (eachFile) {
+        template.reset();
+        scanMode.reset();
+      }
+
       f.format(" %s%n", mfile.getPath());
-      doGdsTemplate(f, mfile, drsSet);
+      doGdsTemplate(f, mfile, template, proj, scanMode);
+
+      if (eachFile) {
+        template.show(f);
+        scanMode.show(f);
+        f.format("%n");
+      }
+
     }
 
-    for (int template : drsSet.keySet()) {
-      int count = drsSet.get(template);
-      f.format("%nGDS template = %d count = %d%n", template, count);
+    if (!eachFile) {
+      template.show(f);
+      scanMode.show(f);
     }
   }
 
-  private void doGdsTemplate(Formatter f, MFile mf, Map<Integer, Integer> gdsSet) throws IOException {
+  private void doGdsTemplate(Formatter f, MFile mf, Counter templateC, Counter projC, Counter scanModeC) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
-    for (Grib2SectionGridDefinition gds : index.getGds()) {
-      int template = gds.getGDSTemplateNumber();
-      Integer count = gdsSet.get(template);
-      if (count == null)
-        gdsSet.put(template, 1);
-      else
-        gdsSet.put(template, count + 1);
+    for (Grib2SectionGridDefinition gdss : index.getGds()) {
+      int template = gdss.getGDSTemplateNumber();
+      templateC.count(template);
+
+      Grib2Gds gds = gdss.getGDS();
+      projC.count(gds.earthShape);
+      scanModeC.count(gds.scanMode);
     }
   }
 

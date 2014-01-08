@@ -172,7 +172,7 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
 
   /**
    * Rearrange the data array using the scanning mode.
-   *
+   * LOOK: not handling scanMode generally
    * Flag/Code table 8 – Scanning mode
     Bit   No. Value Meaning
       1   0   Points scan in +i direction

@@ -33,6 +33,8 @@
 
 package ucar.nc2.util.net;
 
+import org.apache.http.client.params.AuthPolicy;
+
 /**
  * HTTPAuthScheme defines an enum about the currently supported schemes.
  */
@@ -44,6 +46,9 @@ public enum HTTPAuthScheme
     SSL("SSL"),
     NTLM("NTLM"),
     ANY("ANY");
+
+    // Define parameter names
+    static public final String PROVIDER  = "HTTP.provider";
 
     // Define the associated standard name
     private final String name;
@@ -68,11 +73,11 @@ public enum HTTPAuthScheme
     static public HTTPAuthScheme fromAuthScope(String scheme)
     {
 	if(scheme == null) return null;
-	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.BASIC))
+	if(scheme.equals(AuthPolicy.BASIC))
 	    return BASIC;
-	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.DIGEST))
+	if(scheme.equals(AuthPolicy.DIGEST))
 	    return DIGEST;
-	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.NTLM))
+	if(scheme.equals(AuthPolicy.NTLM))
 	    return NTLM;
 	return null;
     }

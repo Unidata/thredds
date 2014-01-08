@@ -33,13 +33,12 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.http.auth.*;
+import org.apache.http.client.CredentialsProvider;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.security.Principal;
 
 /**
  * Provide an HTTP SSL CredentialsProvider
@@ -82,13 +81,34 @@ public class HTTPSSLProvider implements CredentialsProvider, Credentials, Serial
     // Credentials Provider Interface is abused
 
     public Credentials
-    getCredentials(AuthScheme authscheme,
-                   String host,
-                   int port,
-	           boolean isproxy)
-        throws CredentialsNotAvailableException
+    getCredentials(AuthScope scope) //AuthScheme authscheme,String host,int port,boolean isproxy)
     {
-	return (Credentials) this;
+	    return (Credentials) this;
+    }
+
+    public void
+    setCredentials(AuthScope scope, Credentials creds)
+    {
+
+    }
+
+    public void
+    clear()
+    {
+
+    }
+
+    // Credentials Interface
+    public Principal
+    getUserPrincipal()
+    {
+        return null;
+    }
+
+    public String
+    getPassword()
+    {
+       return null;
     }
 
 

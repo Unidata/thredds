@@ -33,7 +33,6 @@
 
 package ucar.nc2.jni.netcdf;
 
-import com.sun.jna.MyPointer;
 import thredds.catalog.DataFormatType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -858,7 +857,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
           case Nc4prototypes.NC_STRING:
             lval = bbuff.getLong(pos);
-            Pointer p = new MyPointer(lval);
+            Pointer p = new Pointer(lval);
             String strval = p.getString(0, false);
             fld.data.setObject(i, strval);
             if (debugCompoundAtt) System.out.println("result= " + strval);
@@ -1646,7 +1645,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         String[] result = new String[size];
         for (int i = 0; i < size; i++) {
           long addr = bb.getLong(pos);
-          Pointer p = new MyPointer(addr);
+          Pointer p = new Pointer(addr);
           result[i] = p.getString(0, false);
         }
         int index = asbb.addObjectToHeap(result);
@@ -1716,7 +1715,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     Array array = null;
     int n = (int) bbuff.getLong(pos); // Note that this does not increment the buffer position
     long addr = bbuff.getLong(pos + 8); // LOOK: this assumes 64 bit pointers
-    Pointer p = new MyPointer(addr);
+    Pointer p = new Pointer(addr);
     Object data = null;
     switch (dt) {
       case BOOLEAN: /*byte[]*/
