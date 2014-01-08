@@ -34,6 +34,7 @@
 package ucar.nc2.util.net;
 
 import org.apache.http.Header;
+import org.apache.http.entity.StringEntity;
 
 import java.io.*;
 import java.util.zip.InflaterInputStream;
@@ -130,8 +131,7 @@ public class HttpClientManager
             session = HTTPFactory.newSession(urlencoded);
             HTTPMethod m = HTTPFactory.Put(session);
 
-            m.setRequestContentAsString(content);
-
+            m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
             m.execute();
 
             int resultCode = m.getStatusCode();

@@ -46,10 +46,12 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.SyncBasicHttpParams;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.entity.StringEntity;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.*;
 
@@ -487,9 +489,12 @@ public class HTTPSession
     static public int
     putUrlAsString(String content, String url) throws HTTPException
     {
-        HTTPSession session = HTTPFactory.newSession(url);
-        HTTPMethod m = HTTPFactory.Put(session);
-        m.setRequestContentAsString(content);
+        HTTPMethod m = HTTPFactory.Put(url);
+	try {
+            m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
+	} catch (UnsupportedEncodingException uee) {
+	    throw new HTTPException(uee);
+        }
         int status = m.execute();
         m.close();
         return status;

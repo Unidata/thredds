@@ -166,17 +166,17 @@ public class HTTPMethod
     //////////////////////////////////////////////////
     // Instance fields
 
-    HTTPSession session = null;
-    boolean localsession = false;
-    String legalurl = null;
-    List<Header> headers = new ArrayList<Header>();
-    HttpContext context = null;
-    HttpEntity content = null;
-    HTTPSession.Methods methodclass = null;
-    HTTPMethodStream methodstream = null; // wrapper for strm
-    boolean closed = false;
-    HttpRequestBase request = null;
-    HttpResponse response = null;
+    protected HTTPSession session = null;
+    protected boolean localsession = false;
+    protected String legalurl = null;
+    protected List<Header> headers = new ArrayList<Header>();
+    protected HttpContext context = null;
+    protected HttpEntity content = null;
+    protected HTTPSession.Methods methodclass = null;
+    protected HTTPMethodStream methodstream = null; // wrapper for strm
+    protected boolean closed = false;
+    protected HttpRequestBase request = null;
+    protected HttpResponse response = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -219,7 +219,7 @@ public class HTTPMethod
         this.methodclass = m;
     }
 
-    HttpRequestBase
+    protected HttpRequestBase
     createRequest()
             throws HTTPException
     {
@@ -252,7 +252,7 @@ public class HTTPMethod
         return method;
     }
 
-    void setcontent(HttpRequestBase request)
+    protected void setcontent(HttpRequestBase request)
     {
         switch (this.methodclass) {
         case Put:
@@ -320,7 +320,7 @@ public class HTTPMethod
         }
     }
 
-    void
+    protected void
     configure(HttpRequestBase request)
             throws HTTPException
     {
@@ -558,12 +558,9 @@ public class HTTPMethod
         }
     }
 
-    public void setRequestContentAsString(String content) throws HTTPException
+    public void setRequestContent(HttpEntity content)
     {
-        try {
-            this.content = new StringEntity(content, "application/text", "UTF-8");
-        } catch (UnsupportedEncodingException ue) {
-        }
+        this.content = content;
     }
 
     //todo:
@@ -661,7 +658,7 @@ public class HTTPMethod
      *
      * @return
      */
-    boolean sessionCompatible(String other)
+    protected boolean sessionCompatible(String other)
     {
         // Remove any trailing constraint
         String sessionurl = HTTPSession.getCanonicalURL(this.session.getURL());
