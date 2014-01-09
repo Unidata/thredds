@@ -305,8 +305,7 @@ public class CdmIndex2Panel extends JPanel {
 
     List<GroupBean> groups = new ArrayList<GroupBean>();
 
-    PartitionCollection pc = (PartitionCollection) gc;
-    for (PartitionCollection.Dataset ds : pc.getDatasets())
+    for (PartitionCollection.Dataset ds : gc.getDatasets())
       for (GribCollection.GroupHcs g : ds.getGroups())
         groups.add(new GroupBean(g, ds.getType().toString()));
 
@@ -375,6 +374,7 @@ public class CdmIndex2Panel extends JPanel {
   public class GroupBean {
     GribCollection.GroupHcs group;
     String type;
+    float density, avgDensity;
 
     public GroupBean() {
     }
@@ -382,6 +382,18 @@ public class CdmIndex2Panel extends JPanel {
     public GroupBean(GribCollection.GroupHcs g, String type) {
       this.group = g;
       this.type = type;
+
+      int total = 0;
+      int nrecords = 0;
+      avgDensity = 0;
+      for (GribCollection.VariableIndex vi : group.variList) {
+        vi.calcTotalSize();
+        total += vi.totalSize;
+        nrecords += vi.nrecords;
+        avgDensity += vi.density;
+      }
+      avgDensity /= group.variList.size();
+      density = (total == 0) ? 0 : ((float) nrecords) / total;
     }
 
     public String getGroupId() {
@@ -409,7 +421,15 @@ public class CdmIndex2Panel extends JPanel {
       return group.variList.size();
     }
 
-    public String getDescription() {
+    public float getAvgDensity() {
+      return avgDensity;
+    }
+
+    public float getDensity() {
+      return density;
+    }
+
+   public String getDescription() {
       return group.getDescription();
     }
 
@@ -489,7 +509,6 @@ public class CdmIndex2Panel extends JPanel {
     public VarBean(GribCollection.VariableIndex v, GribCollection.GroupHcs group) {
       this.v = v;
       this.group = group;
-      v.calcTotalSize();
     }
 
     public int getNRecords() {

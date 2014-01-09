@@ -469,6 +469,10 @@ public class GribCollection implements FileCacheable, AutoCloseable {
        return type;
      }
 
+    public boolean isTwoD() {
+      return type == GribCollectionProto.Dataset.Type.TwoD;
+    }
+
      public GroupHcs getGroup(int index) {
        return groups.get(index);
      }
@@ -535,6 +539,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     }
 
     private String makeId() {
+      if (nameOverride != null) return nameOverride;
+
       // default id
       String base = hcs.makeId();
       // ensure uniqueness
@@ -591,9 +597,9 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       return vi;
     }
 
-   public GribCollection getGribCollection() {
-      return GribCollection.this;
-    }
+    public GribCollection getGribCollection() {
+       return GribCollection.this;
+     }
 
     // unique name for Group
     public String getId() {
@@ -697,8 +703,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
     public List<Integer> coordIndex;   // indexes into group.coords
 
     //public int partTimeCoordIdx; // partition time coordinate index
-    public CoordinateTwoTimer twot;
-    public int[] time2runtime;
+    public CoordinateTwoTimer twot;  // twoD
+    public int[] time2runtime;       // oneD
 
     // derived from pds
     public int category, parameter, levelType, intvType, ensDerivedType, probType;
@@ -769,6 +775,8 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       this.probabilityName = other.probabilityName;
       this.probType = other.probType;
       this.genProcessType = other.genProcessType;
+
+      this.time2runtime = other.time2runtime;
     }
 
     public List<Coordinate> getCoordinates() {
@@ -852,7 +860,12 @@ public class GribCollection implements FileCacheable, AutoCloseable {
       sb.append(", recordsLen=").append(recordsLen);
       sb.append(", group=").append(group.getId());
       //sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
-      sb.append('}');
+      sb.append("}\n");
+      if (time2runtime == null ) sb.append("time2runtime is null");
+      else {
+        sb.append("time2runtime=");
+        for (int idx : time2runtime) sb.append(idx).append(",");
+      }
       return sb.toString();
     }
 

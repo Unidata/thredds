@@ -190,7 +190,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilder {
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
     Grib2Gds gds = gdss.getGDS();
     int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
-    String nameOverride = p.getNameOverride();
+    String nameOverride = p.hasNameOverride() ? p.getNameOverride() : null;
     gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, nameOverride);
   }
 
@@ -412,6 +412,8 @@ message Variable {
     // 2d only
     List<Integer> invCountList = pv.getInvCountList();
     if (invCountList.size() > 0) {
+      if (time == null || runtime == null)
+        System.out.println("HEY");
       result.twot = new CoordinateTwoTimer(invCountList);
       result.twot.setSize(runtime.getSize(), time.getSize());
     }

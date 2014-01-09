@@ -240,7 +240,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     public int gdsHash; // may have been modified
     public Grib2Rectilyser rect;
     public List<Grib2Record> records = new ArrayList<>();
-    // public String nameOverride;
+    public String nameOverride;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
     private Group(Grib2SectionGridDefinition gdss, int gdsHash) {
@@ -338,6 +338,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       g.rect.make(config, Collections.unmodifiableList(allFiles), stats, errlog);
       if (errlog != null) errlog.format(" Group hash=%d %s", g.gdsHash, stats.show());
       statsAll.add(stats);
+
+      // look for group name overrides
+      if (config != null && config.gdsNamer != null)
+        g.nameOverride = config.gdsNamer.get(g.gdsHash);
     }
 
     // debugging and validation
@@ -469,7 +473,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
        //gds
       for (Group g : groups)
-        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), null));
+        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride));
 
       // twoD
       indexBuilder.addDataset(writeDatasetProto(GribCollectionProto.Dataset.Type.TwoD, groups));

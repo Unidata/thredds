@@ -109,7 +109,7 @@ public abstract class AbstractGisFeature implements GisFeature {
         ProjectionPoint pt = displayProject.latLonToProj(workL);
 
         if (showPts) {
-          System.out.println("getProjectedShape 1 " + xx[i] + " " + yy[i] + " === " + pt.getX() + " " + pt.getY());
+          System.out.println("AbstractGisFeature getProjectedShape 1 " + xx[i] + " " + yy[i] + " === " + pt.getX() + " " + pt.getY());
           if (displayProject.crossSeam(pt, lastW)) System.out.println("***cross seam");
         }
 
@@ -163,7 +163,7 @@ public abstract class AbstractGisFeature implements GisFeature {
         ProjectionPoint pt2 = displayProject.latLonToProj(llpt);
 
         if (showPts) {
-          System.out.println("getProjectedShape 2 " + xx[i] + " " + yy[i] + " === " + pt2.getX() + " " + pt2.getY());
+          System.out.println("AbstractGisFeature getProjectedShape 2 " + xx[i] + " " + yy[i] + " === " + pt2.getX() + " " + pt2.getY());
           if (displayProject.crossSeam(pt2, lastW)) System.out.println("***cross seam");
         }
 

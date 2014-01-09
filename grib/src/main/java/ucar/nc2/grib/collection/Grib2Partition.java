@@ -29,7 +29,7 @@ public class Grib2Partition extends PartitionCollection implements AutoCloseable
     GroupHcs want = ds.findGroupById(groupName);
     if (want == null) return null;
 
-    ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(want);
+    ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(want, ds.isTwoD());
     NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     return new NetcdfDataset(ncfile);
   }
@@ -42,7 +42,7 @@ public class Grib2Partition extends PartitionCollection implements AutoCloseable
     GroupHcs want = ds.findGroupById(groupName);
     if (want == null) return null;
 
-    ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(want);
+    ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(want, ds.isTwoD());
     NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??

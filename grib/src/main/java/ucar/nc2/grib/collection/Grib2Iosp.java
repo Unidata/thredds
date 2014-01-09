@@ -269,6 +269,7 @@ public class Grib2Iosp extends GribIosp {
   private GribCollection gribCollection;
   private Grib2Customizer cust;
   private GribCollection.GroupHcs gHcs;
+  private boolean isTwoD;
   private boolean isPartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
 
@@ -297,9 +298,10 @@ public class Grib2Iosp extends GribIosp {
   public Grib2Iosp() {
   }
 
-  public Grib2Iosp(GribCollection.GroupHcs gHcs) {
+  public Grib2Iosp(GribCollection.GroupHcs gHcs, boolean isTwoD) {
     this.gHcs = gHcs;
     this.owned = true;
+    this.isTwoD = isTwoD;
   }
 
   // LOOK more likely we will set an indicidual dataset
@@ -320,7 +322,7 @@ public class Grib2Iosp extends GribIosp {
       }
       // cust needs to be set before addGroup
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
-      addGroup(ncfile, ncfile.getRootGroup(), gHcs, false);
+      addGroup(ncfile, ncfile.getRootGroup(), gHcs, isTwoD, false);
 
     } else if (gribCollection == null) { // may have been set in the constructor
       // check if its a plain ole GRIB2 data file
@@ -347,11 +349,13 @@ public class Grib2Iosp extends GribIosp {
 
       for (GribCollection.Dataset ds : gribCollection.getDatasets()) {
         Group datasetGroup = new Group(ncfile, null, ds.getType().toString());
+        ncfile.addGroup(null, datasetGroup);
+
         List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
         Collections.sort(groups);
         boolean useGroups = groups.size() > 1;
         for (GribCollection.GroupHcs g : groups)
-          addGroup(ncfile, datasetGroup, g, useGroups);
+          addGroup(ncfile, datasetGroup, g, ds.isTwoD(), useGroups);
       }
 
   /*           Group g = new Group(ncfile, null, ds.getType());
@@ -407,7 +411,7 @@ public class Grib2Iosp extends GribIosp {
         ncfile.addAttribute(null, new Attribute(p));
   }
 
-  private void addGroup(NetcdfFile ncfile, Group parent, GribCollection.GroupHcs gHcs, boolean useGroups) {
+  private void addGroup(NetcdfFile ncfile, Group parent, GribCollection.GroupHcs gHcs, boolean is2D, boolean useGroups) {
 
     Group g;
     if (useGroups) {
@@ -423,7 +427,7 @@ public class Grib2Iosp extends GribIosp {
       g = parent;
     }
 
-    makeGroup(ncfile, g, gHcs, true);
+    makeGroup(ncfile, g, gHcs, is2D);
   }
 
   private void makeGroup(NetcdfFile ncfile, Group g, GribCollection.GroupHcs gHcs, boolean is2Dtime) {

@@ -291,16 +291,19 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     tmi.addVariableMapLink(makeMetadataLink(tpath, VARIABLES));
     tmi.setServiceName(virtualService.getName());
 
+    boolean isSingleGroup = true;
     for (GribCollection.Dataset ds : gc.getDatasets()) {
       if (ds.getType() == GribCollectionProto.Dataset.Type.TwoD) {
         List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
         tmi.setGeospatialCoverage(extractGeospatial(groups)); // set extent from twoD dataset for all
+        isSingleGroup = ds.getGroups().size() == 1;
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
           InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
           String path = getPath() + "/" + TWOD_DATASET;
           twoD.setUrlPath(path);
           //twoD.setID(path);
+          twoD.tmi.addDocumentation("summary", "Two time dimensions: reference and forecast; full access to all GRIB records");
           twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
           twoD.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           top.addDataset(twoD);
@@ -317,6 +320,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
           String path = getPath() + "/" + BEST_DATASET;
           best.setUrlPath(path);
+          best.tmi.addDocumentation("summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time");
           best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
           best.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           top.addDataset(best);
@@ -328,12 +332,21 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     }
 
-    if (!isGribCollection) {
+    if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile)) {
+      InvDatasetImpl ds = new InvDatasetImpl(this, getLatestFileName());
+      ds.setUrlPath(FILES + "/" + LATEST_DATASET_CATALOG);
+      // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
+      ds.setServiceName(LATEST_SERVICE);
+      ds.finish();
+      top.addDataset(ds);
+      this.addService(InvService.latest);
+    }
+
+    if (isFilePartition) {
       PartitionCollection pc =  (PartitionCollection) localState.gribCollection;
-      for (PartitionCollection.Partition dc : pc.getPartitionsSorted()) {
-        String dname = dc.getName();
-        InvCatalogRef ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
-        top.addDataset(ds);
+      for (PartitionCollection.Partition partition : pc.getPartitionsSorted()) {
+        InvDatasetImpl partDs = makeDatasetsFromPartition(this, partition, isSingleGroup);
+        top.addDataset(partDs);
       }
 
     }
@@ -404,6 +417,26 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     }
 
+  }
+
+  private InvDatasetImpl makeDatasetsFromPartition(InvDatasetImpl parent, PartitionCollection.Partition partition, boolean isSingleGroup) {
+    InvDatasetImpl result;
+    String dname = partition.getName();
+
+    if (isSingleGroup) {
+      result = new InvDatasetImpl(parent, dname);
+
+    } else {
+      result = new InvCatalogRef(parent, dname, getCatalogHref(dname));
+    }
+
+    String dpath =  getPath() + "/files/" + dname;
+    result.setID(dpath);
+    result.setUrlPath(dpath);
+
+    //result.tmi.setGeospatialCoverage(extractGeospatial(group));
+    //result.tmi.setTimeCoverage(group.getCalendarDateRange());
+    return result;
   }
 
   /* file datasets of the partition catalog are InvCatalogRef pointing to "FileCatalogs"
@@ -516,11 +549,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
     InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), catURI);
 
-    mainCatalog.addDataset(((StateGrib)localState).top);
-    mainCatalog.addService(InvService.latest);  // in case its needed
+    if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile))
+      mainCatalog.addService(InvService.latest);
+    mainCatalog.addDataset(((StateGrib) localState).top);
     mainCatalog.addService(virtualService);
-    // top.getLocalMetadataInheritable().setServiceName(virtualService.getName());  //??
     mainCatalog.finish();
+
     return mainCatalog;
   }
 
@@ -608,13 +642,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   // this catalog lists the individual files comprising a grib collection.
   // cant use InvDatasetScan because we might have multiple hcs
-/*  private InvCatalogImpl makeCatalogFiles(GribCollection gc, GribCollection.GroupHcs group, URI catURI, State localState, boolean isTimePartition) throws IOException {
+ /* private InvCatalogImpl makeCatalogFiles(GribCollection gc, GribCollection.GroupHcs group, URI catURI, State localState, boolean isTimePartition) throws IOException {
     boolean isSingleGroup = gc.getGroups().size() == 1;
     List<String> filenames = isSingleGroup ? gc.getFilenames() : group.getFilenames();
 
     boolean addLatest = (!isTimePartition && gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.LatestFile));
     return makeCatalogFiles(catURI, localState, filenames, addLatest);
-  }   */
+  } */
 
 /*  @Override
   public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) {
@@ -805,7 +839,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   /* possible forms of path:
 
     regular, single group:
-      1. dataset (BEST, TWOD)              ??
+      1. dataset (BEST, TWOD)
 
      regular, multiple group:
       2. dataset/groupName
@@ -832,10 +866,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return new DatasetParse(null, paths[0], g.getId());
     }
 
-   /* if (paths.length >= 2  && paths[0].equals(FILES))
+    if (paths.length >= 2  && paths[0].equals(FILES))
         return new DatasetParse(matchPath.substring(paths[0].length()));  // case 7
 
-    if (isGribCollection || isFilePartition) {
+    /* if (isGribCollection || isFilePartition) {
       boolean isBest = paths[0].equals(BEST_DATASET) || paths[0].equals(COLLECTION);
       String groupName = isBest ? localState.gribCollection.getGroup(0).getId() : paths[0];
       return new DatasetParse(null, groupName); // case 1 and 2
