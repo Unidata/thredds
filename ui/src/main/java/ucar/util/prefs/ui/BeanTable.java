@@ -542,6 +542,7 @@ public class BeanTable extends JPanel {
   static public class PropertyCol {
     private String name;
     private int width;
+    private boolean shown = true;
 
     public PropertyCol() {
     }
@@ -560,6 +561,14 @@ public class BeanTable extends JPanel {
 
     public void setWidth(int width) {
       this.width = width;
+    }
+
+    public boolean isShown() {
+      return shown;
+    }
+
+    public void setShown(boolean shown) {
+      this.shown = shown;
     }
   }
 

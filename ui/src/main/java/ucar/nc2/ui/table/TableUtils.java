@@ -186,11 +186,12 @@ public abstract class TableUtils {
                 }
 
                 JTable table = new JTable(model);
+                table.getColumnModel().setColumnSelectionAllowed(true);
                 model.addTableModelListener(new ResizeColumnWidthsListener(table));
 
-                JButton minusButton = new JButton(new MinusAction(model));
-                JButton moveButton  = new JButton(new MoveAction(table.getColumnModel()));
-                JButton plusButton  = new JButton(new PlusAction(model));
+                JButton minusButton = new JButton(new RemoveAction(table));
+                JButton moveButton  = new JButton(new MoveAction(table));
+                JButton plusButton  = new JButton(new AddAction(table));
 
                 JPanel buttonPanel = new JPanel();
                 buttonPanel.add(minusButton, BorderLayout.WEST);
@@ -215,12 +216,12 @@ public abstract class TableUtils {
         });
     }
 
-    public static class MinusAction extends AbstractAction {
+    public static class RemoveAction extends AbstractAction {
         private final DefaultTableModel model;
 
-        public MinusAction(DefaultTableModel model) {
+        public RemoveAction(JTable table) {
             super("-");
-            this.model = model;
+            this.model = (DefaultTableModel) table.getModel();
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -233,9 +234,9 @@ public abstract class TableUtils {
     public static class MoveAction extends AbstractAction {
         private final TableColumnModel columnModel;
 
-        public MoveAction(TableColumnModel columnModel) {
+        public MoveAction(JTable table) {
             super("Move");
-            this.columnModel = columnModel;
+            this.columnModel = table.getColumnModel();
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -246,12 +247,12 @@ public abstract class TableUtils {
         }
     }
 
-    public static class PlusAction extends AbstractAction {
+    public static class AddAction extends AbstractAction {
         private final DefaultTableModel model;
 
-        public PlusAction(DefaultTableModel model) {
+        public AddAction(JTable table) {
             super("+");
-            this.model = model;
+            this.model = (DefaultTableModel) table.getModel();
         }
 
         public void actionPerformed(ActionEvent e) {

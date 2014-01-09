@@ -6,7 +6,9 @@ import ucar.nc2.ui.util.Resource;
 import ucar.nc2.ui.widget.BAMutil;
 
 import javax.swing.*;
+import javax.swing.table.TableColumn;
 import java.awt.event.ActionEvent;
+import java.util.Enumeration;
 
 /**
  * Displays a popup menu containing several options to configure the appearance of a JTable.
@@ -28,6 +30,15 @@ public class TableAppearanceAction extends AbstractAction {
 
         this.popupMenu = new JPopupMenu(getValue(NAME).toString());
         popupMenu.add(new ResizeColumnWidthsAction());
+        popupMenu.addSeparator();
+
+        Enumeration<TableColumn> tableColumns = table.getColumnModel().getColumns();
+        while (tableColumns.hasMoreElements()) {
+            TableColumn tableColumn = tableColumns.nextElement();
+            ShowColumnAction showColumnAction = new ShowColumnAction(tableColumn);
+            JCheckBoxMenuItem showColumnMenuItem = new JCheckBoxMenuItem(showColumnAction);
+            popupMenu.add(showColumnMenuItem);
+        }
     }
 
     @Override public void actionPerformed(ActionEvent e) {
@@ -43,7 +54,7 @@ public class TableAppearanceAction extends AbstractAction {
 
 
     private class ResizeColumnWidthsAction extends AbstractAction {
-        public ResizeColumnWidthsAction() {
+        private ResizeColumnWidthsAction() {
             putValue(NAME, "Resize column widths");
             putValue(SHORT_DESCRIPTION,
                     "Resize widths of the columns so that they're big enough to display all of their contents.");
@@ -51,6 +62,34 @@ public class TableAppearanceAction extends AbstractAction {
 
         @Override public void actionPerformed(ActionEvent e) {
             TableUtils.resizeColumnWidths(table, true);
+        }
+    }
+
+    private class ShowColumnAction extends AbstractAction {
+        private final TableColumn column;
+
+        private ShowColumnAction(TableColumn column) {
+            this.column = column;
+            putValue(NAME, column.getHeaderValue().toString());
+            putValue(SHORT_DESCRIPTION, "Check to show this column; uncheck to hide it.");
+
+            // The JCheckBoxMenuItem will read this property to set its initial selected state.
+            // In addition, it will write *to* this property when selection events occur.
+            putValue(SELECTED_KEY, isShown());
+        }
+
+        @Override public void actionPerformed(ActionEvent e) {
+            boolean isSelected = (Boolean) getValue(SELECTED_KEY);
+
+            if (isSelected) {
+                table.addColumn(column);
+            } else {
+                table.getColumnModel().removeColumn(column);
+            }
+        }
+
+        private boolean isShown() {
+            return table.getColumnModel().getColumnIndex(column.getHeaderValue()) >= 0;
         }
     }
 }
