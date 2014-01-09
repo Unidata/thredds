@@ -112,6 +112,7 @@ public class TdsMonitor extends JPanel {
 
     CredentialsProvider provider = new UrlAuthenticatorDialog(null);
     HTTPSession.setGlobalCredentialsProvider(provider);
+    HTTPSession.setGlobalUserAgent("TdsMonitor");
   }
 
   public void exit() {

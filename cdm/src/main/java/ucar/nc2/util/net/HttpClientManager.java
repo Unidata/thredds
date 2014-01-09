@@ -155,20 +155,18 @@ public class HttpClientManager
 
     //////////////////////
 
-    static public String getUrlContentsAsString(String urlencoded, int maxKbytes)
-    {
+    static public String getUrlContentsAsString(String urlencoded, int maxKbytes) throws IOException {
         return getUrlContentsAsString(null,urlencoded,maxKbytes);
     }
 
     @Deprecated
-    static public String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes)
-    {
+    static public String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes) throws IOException {
         HTTPSession useSession = session;
         try {
             if(useSession == null)
                 useSession = HTTPFactory.newSession(urlencoded);
 
-            HTTPMethod m = HTTPFactory.Get(useSession);
+            HTTPMethod m = HTTPFactory.Get(useSession,urlencoded);
             m.setFollowRedirects(true);
             m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
@@ -199,10 +197,6 @@ public class HttpClientManager
                 return new String(body, charset);
             }
 
-        } catch (Exception e) {
-            if(debug) e.printStackTrace();
-            return null;
-
         } finally {
             if((session == null) && (useSession != null))
                 useSession.close();
@@ -217,31 +211,31 @@ public class HttpClientManager
     }
 
     static public void copyUrlContentsToFile(String urlencoded, File file)
-        throws HTTPException
+        throws IOException
     {
         copyUrlContentsToFile(null,urlencoded,file);
     }
 
     @Deprecated
     static public void copyUrlContentsToFile(HTTPSession session, String urlencoded, File file)
-        throws HTTPException
+            throws IOException
     {
         HTTPSession useSession = session;
         try {
             if(useSession == null)
                 useSession = HTTPFactory.newSession(urlencoded);
 
-            HTTPMethod m = HTTPFactory.Get(useSession);
+            HTTPMethod m = HTTPFactory.Get(useSession, urlencoded);
             m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
             int status = m.execute();
 
             if(status != 200) {
-                throw new RuntimeException("failed status = " + status);
+                throw new IOException("failed status = " + status);
             }
 
             String charset = m.getResponseCharSet();
-            if(charset == null) charset = "UTF-8";
+            if (charset == null) charset = "UTF-8";
 
             // check for deflate and gzip compression
             Header h = m.getResponseHeader("content-encoding");
@@ -259,9 +253,6 @@ public class HttpClientManager
                 IO.writeToFile(m.getResponseAsStream(), file.getPath());
             }
 
-        } catch (Exception e) {
-            if(debug) e.printStackTrace();
-
         } finally {
             if((session == null) && (useSession != null))
                 useSession.close();
@@ -269,14 +260,14 @@ public class HttpClientManager
     }
 
     static public long appendUrlContentsToFile(String urlencoded, File file, long start, long end)
-        throws HTTPException
+        throws IOException
     {
         return appendUrlContentsToFile(null,urlencoded,file,start,end);
     }
 
     @Deprecated
     static public long appendUrlContentsToFile(HTTPSession session, String urlencoded, File file, long start, long end)
-        throws HTTPException
+        throws IOException
     {
         HTTPSession useSession = session;
         long nbytes = 0;
@@ -285,7 +276,7 @@ public class HttpClientManager
             if(useSession == null)
                 useSession = HTTPFactory.newSession(urlencoded);
 
-            HTTPMethod m = HTTPFactory.Get(useSession);
+            HTTPMethod m = HTTPFactory.Get(useSession, urlencoded);
             m.setRequestHeader("Accept-Encoding", "gzip,deflate");
             m.setRequestHeader("Range", "bytes=" + start + "-" + end);
 
@@ -312,9 +303,6 @@ public class HttpClientManager
             } else {
                 nbytes = IO.appendToFile(m.getResponseAsStream(), file.getPath());
             }
-
-        } catch (Exception e) {
-            if(debug) e.printStackTrace();
 
         } finally {
             if((session == null) && (useSession != null))

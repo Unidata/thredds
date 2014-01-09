@@ -1575,7 +1575,7 @@ public class ToolsUI extends JPanel {
 
     void setSelectedItem(Object item) {
       eventOK = false;
-      cb.setSelectedItem(item);
+      cb.addItem(item);
       eventOK = true;
     }
   }

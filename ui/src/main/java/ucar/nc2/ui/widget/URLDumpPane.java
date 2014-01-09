@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui.widget;
 
+import org.apache.http.entity.StringEntity;
 import ucar.nc2.util.net.*;
 import org.apache.http.Header;
 import ucar.nc2.util.IO;
@@ -284,7 +285,7 @@ public class URLDumpPane extends TextHistoryPane {
           m = HTTPFactory.Options(httpclient);
       else if (cmd == Command.PUT) {
           m = HTTPFactory.Put(httpclient);
-        m.setRequestContentAsString(ta.getText());
+          m.setRequestContent(new StringEntity(ta.getText())); // was  setRequestContentAsString(ta.getText());
       }
 
       m.setRequestHeader("Accept-Encoding", "gzip,deflate");
