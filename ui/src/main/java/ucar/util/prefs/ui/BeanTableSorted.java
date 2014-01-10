@@ -94,7 +94,7 @@ public class BeanTableSorted extends BeanTable {
     // Left-align every cell, including header cells.
     // Even though we already installed the alignment decorators in the super-constructor, we need to reinstall them
     // here because a new TableColumnModel was created above.
-    TableUtils.alignTable(jtable, SwingConstants.LEADING);
+    TableUtils.installAligners(jtable, SwingConstants.LEADING);
 
     restoreState();
   }

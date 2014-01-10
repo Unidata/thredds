@@ -2,6 +2,7 @@ package ucar.nc2.ui.widget;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.ui.table.ColumnWidthsResizer;
 import ucar.nc2.ui.table.TableUtils;
 import ucar.nc2.ui.util.SwingUtils;
 
@@ -70,7 +71,10 @@ public class ImprovedFileChooser extends JFileChooser {
         detailsTable.addPropertyChangeListener(new AlignTableListener(detailsTable, SwingConstants.LEADING));
 
         // Set the preferred column widths so that they're just big enough to display all contents without truncation.
-        detailsTable.getModel().addTableModelListener(new TableUtils.ResizeColumnWidthsListener(detailsTable));
+        ColumnWidthsResizer.resize(detailsTable);
+        ColumnWidthsResizer resizer = new ColumnWidthsResizer(detailsTable);
+        detailsTable.getModel().addTableModelListener(resizer);
+        detailsTable.getColumnModel().addColumnModelListener(resizer);
 
         // It's quite likely that the total width of the table is NOT EQUAL to the sum of the preferred column widths
         // that our TableModelListener calculated. In that case, resize all of the columns an equal percentage.
@@ -125,7 +129,7 @@ public class ImprovedFileChooser extends JFileChooser {
             this.table = table;
             this.alignment = alignment;
 
-            TableUtils.alignTable(table, alignment);  // Initial installation of alignment decorators.
+            TableUtils.installAligners(table, alignment);  // Initial installation of alignment decorators.
         }
 
         /*
@@ -136,7 +140,7 @@ public class ImprovedFileChooser extends JFileChooser {
          */
         @Override public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getPropertyName().equals("columnModel")) {
-                TableUtils.alignTable(table, alignment);  // Reinstallation of alignment decorators.
+                TableUtils.installAligners(table, alignment);  // Reinstallation of alignment decorators.
             }
         }
     }

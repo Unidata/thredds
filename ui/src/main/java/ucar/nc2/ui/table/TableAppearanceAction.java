@@ -19,37 +19,50 @@ public class TableAppearanceAction extends AbstractAction {
     private static final Logger logger = LoggerFactory.getLogger(TableAppearanceAction.class);
 
     private final JTable table;
-    private final JPopupMenu popupMenu;
+    private final HidableTableColumnModel hidableTableColumnModel;
 
     public TableAppearanceAction(JTable table) {
+        if (!(table.getColumnModel() instanceof HidableTableColumnModel)) {
+            throw new IllegalArgumentException(
+                    "table's TableColumnModel must be an instance of HidableTableColumnModel.");
+        }
+
         this.table = table;
+        this.hidableTableColumnModel = (HidableTableColumnModel) table.getColumnModel();
 
         putValue(NAME, "Table appearance");
         putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "TableAppearance.png", true));
         putValue(SHORT_DESCRIPTION, "Configure the appearance of the table.");
-
-        this.popupMenu = new JPopupMenu(getValue(NAME).toString());
-        popupMenu.add(new ResizeColumnWidthsAction());
-        popupMenu.addSeparator();
-
-        Enumeration<TableColumn> tableColumns = table.getColumnModel().getColumns();
-        while (tableColumns.hasMoreElements()) {
-            TableColumn tableColumn = tableColumns.nextElement();
-            ShowColumnAction showColumnAction = new ShowColumnAction(tableColumn);
-            JCheckBoxMenuItem showColumnMenuItem = new JCheckBoxMenuItem(showColumnAction);
-            popupMenu.add(showColumnMenuItem);
-        }
     }
 
     @Override public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JComponent) {
             JComponent invoker = (JComponent) e.getSource();
-            popupMenu.show(invoker, invoker.getWidth() / 2, invoker.getHeight() / 2);
+
+            // We must rebuild the popup menu each time this method is called, because columns may have been moved
+            // since last time.
+            buildPopupMenu().show(invoker, invoker.getWidth() / 2, invoker.getHeight() / 2);
         } else {
             // Without a proper invoker, the popup menu does not disappear when an item is selected or it loses focus.
             // It just stays visible forever.
             logger.error(String.format("JPopupMenu requires a JComponent invoker, but was %s", e.getSource()));
         }
+    }
+
+    private JPopupMenu buildPopupMenu() {
+        JPopupMenu popupMenu = new JPopupMenu(getValue(NAME).toString());
+        popupMenu.add(new ResizeColumnWidthsAction());
+        popupMenu.addSeparator();
+
+        Enumeration<TableColumn> allTableColumns = hidableTableColumnModel.getColumns(false);
+        while (allTableColumns.hasMoreElements()) {
+            TableColumn tableColumn = allTableColumns.nextElement();
+            ColumnVisibilityAction columnVisibilityAction = new ColumnVisibilityAction(tableColumn);
+            JCheckBoxMenuItem columnVisibilityMenuItem = new JCheckBoxMenuItem(columnVisibilityAction);
+            popupMenu.add(columnVisibilityMenuItem);
+        }
+
+        return popupMenu;
     }
 
 
@@ -61,35 +74,26 @@ public class TableAppearanceAction extends AbstractAction {
         }
 
         @Override public void actionPerformed(ActionEvent e) {
-            TableUtils.resizeColumnWidths(table, true);
+            ColumnWidthsResizer.resize(table);
         }
     }
 
-    private class ShowColumnAction extends AbstractAction {
+    private class ColumnVisibilityAction extends AbstractAction {
         private final TableColumn column;
 
-        private ShowColumnAction(TableColumn column) {
+        private ColumnVisibilityAction(TableColumn column) {
             this.column = column;
             putValue(NAME, column.getHeaderValue().toString());
             putValue(SHORT_DESCRIPTION, "Check to show this column; uncheck to hide it.");
 
             // The JCheckBoxMenuItem will read this property to set its initial selected state.
             // In addition, it will write *to* this property when selection events occur.
-            putValue(SELECTED_KEY, isShown());
+            putValue(SELECTED_KEY, hidableTableColumnModel.isColumnVisible(column));
         }
 
         @Override public void actionPerformed(ActionEvent e) {
             boolean isSelected = (Boolean) getValue(SELECTED_KEY);
-
-            if (isSelected) {
-                table.addColumn(column);
-            } else {
-                table.getColumnModel().removeColumn(column);
-            }
-        }
-
-        private boolean isShown() {
-            return table.getColumnModel().getColumnIndex(column.getHeaderValue()) >= 0;
+            hidableTableColumnModel.setColumnVisible(column, isSelected);
         }
     }
 }

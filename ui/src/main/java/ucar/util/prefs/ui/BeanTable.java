@@ -33,14 +33,14 @@
 
 package ucar.util.prefs.ui;
 
-import ucar.nc2.ui.table.TableUtils;
+import ucar.nc2.ui.table.HidableTableColumnModel;
 import ucar.nc2.ui.table.TableAppearanceAction;
+import ucar.nc2.ui.table.TableUtils;
 import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -166,7 +166,9 @@ public class BeanTable extends JPanel {
   }
 
   private void init(String header, String tooltip) {
-    jtable = new JTable(model);
+    TableColumnModel tcm = new HidableTableColumnModel(model);
+    jtable = new JTable(model, tcm);
+
     //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
     jtable.setDefaultRenderer(java.util.Date.class, new DateRenderer());
 
@@ -174,13 +176,12 @@ public class BeanTable extends JPanel {
 
     restoreState();
 
-    //  set the header renderers
-    TableColumnModel tcm = jtable.getColumnModel();
-    for (int i = 0; i < jtable.getColumnCount(); i++) {
-      TableColumn tc = tcm.getColumn(i);
-      int model_idx = tc.getModelIndex();
-      tc.setHeaderRenderer(new HeaderRenderer(model_idx));
-    }
+//    //  set the header renderers
+//    for (int i = 0; i < jtable.getColumnCount(); i++) {
+//      TableColumn tc = tcm.getColumn(i);
+//      int model_idx = tc.getModelIndex();
+//      tc.setHeaderRenderer(new HeaderRenderer(model_idx));
+//    }
 
     // editor/renderers
     jtable.setDefaultEditor(String.class, new DefaultCellEditor(new JTextField()));
@@ -190,7 +191,7 @@ public class BeanTable extends JPanel {
     ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
 
     // Left-align every cell, including header cells.
-    TableUtils.alignTable(jtable, SwingConstants.LEADING);
+    TableUtils.installAligners(jtable, SwingConstants.LEADING);
 
     // UI
     setLayout(new BorderLayout());
@@ -888,36 +889,36 @@ public class BeanTable extends JPanel {
   }
 
 
-  protected class HeaderRenderer implements TableCellRenderer {
-    protected int modelIdx;
-    protected JPanel compPanel;
-    protected JLabel headerLabel;
-
-    protected HeaderRenderer(int modelIdx) {
-      this.modelIdx = modelIdx;
-
-      java.beans.PropertyDescriptor pd = model.getProperty(modelIdx);
-      headerLabel = new JLabel(pd.getDisplayName());
-
-      compPanel = new JPanel(new BorderLayout());
-      compPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
-      compPanel.add(headerLabel, BorderLayout.CENTER);
-
-      compPanel.setToolTipText(pd.getShortDescription());
-      ToolTipManager.sharedInstance().registerComponent(compPanel);
-
-      // store the label for calls to BeanTable.setProperty()
-      pd.setValue("Header", headerLabel);
-      pd.setValue("ToolTipComp", compPanel);
-    }
-
-    public Component getTableCellRendererComponent(JTable table, Object value,
-                                                   boolean isSelected, boolean hasFocus, int row, int column) {
-      //System.out.println("BeanTable.getTableCellRendererComponent "+compPanel.getToolTipText());
-      return compPanel;
-    }
-
-  }
+//  protected class HeaderRenderer implements TableCellRenderer {
+//    protected int modelIdx;
+//    protected JPanel compPanel;
+//    protected JLabel headerLabel;
+//
+//    protected HeaderRenderer(int modelIdx) {
+//      this.modelIdx = modelIdx;
+//
+//      java.beans.PropertyDescriptor pd = model.getProperty(modelIdx);
+//      headerLabel = new JLabel(pd.getDisplayName());
+//
+//      compPanel = new JPanel(new BorderLayout());
+//      compPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
+//      compPanel.add(headerLabel, BorderLayout.CENTER);
+//
+//      compPanel.setToolTipText(pd.getShortDescription());
+//      ToolTipManager.sharedInstance().registerComponent(compPanel);
+//
+//      // store the label for calls to BeanTable.setProperty()
+//      pd.setValue("Header", headerLabel);
+//      pd.setValue("ToolTipComp", compPanel);
+//    }
+//
+//    public Component getTableCellRendererComponent(JTable table, Object value,
+//                                                   boolean isSelected, boolean hasFocus, int row, int column) {
+//      //System.out.println("BeanTable.getTableCellRendererComponent "+compPanel.getToolTipText());
+//      return compPanel;
+//    }
+//
+//  }
 
 
   // testing

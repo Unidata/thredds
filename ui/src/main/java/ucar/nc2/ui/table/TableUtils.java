@@ -1,8 +1,6 @@
 package ucar.nc2.ui.table;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,110 +11,7 @@ import java.awt.event.ActionEvent;
  * @author cwardgar
  */
 public abstract class TableUtils {
-    /**
-     * A listener that sets the preferred widths of a JTable's columns such that they're just big enough to display all
-     * of their contents without truncation.
-     */
-    public static class ResizeColumnWidthsListener implements TableModelListener {
-        /**
-         * The default maximum number of table rows for which a full scan will be performed. If a table has more rows
-         * than this, only a partial scan will be done.
-         */
-        public static final int DEFAULT_FULL_SCAN_CUTOFF = 10000;
-
-        private final JTable table;
-        private final int fullScanCutoff;
-
-        /**
-         * Creates a listener that resizes {@code table}'s column widths when its data changes.
-         * <p>
-         * If {@code table.getRowCount() <= }{@link #DEFAULT_FULL_SCAN_CUTOFF}, a full scan will be performed. That is,
-         * every row will be examined to determine the <b>optimal</b> column widths. Otherwise, a partial scan will be
-         * performed. That is, only the header and the first, middle, and last rows will be examined to determine the
-         * <b>approximate</b> column widths.
-         * <p>
-         * <b>Important:</b> This constructor <i>removes</i> {@code table} as a listener of its own {@link TableModel}.
-         * However, all events are <i>forwarded</i> to {@code table} in {@link #tableChanged}. This ensures that
-         * {@code table} gets notified of events before {@code this}, which normally can't be guaranteed.
-         *
-         * @param table  a table.
-         * @see <a href="http://goo.gl/RH9thw">Swing in a better world: Listeners</a>
-         */
-        public ResizeColumnWidthsListener(JTable table) {
-            this(table, DEFAULT_FULL_SCAN_CUTOFF);
-        }
-
-        public ResizeColumnWidthsListener(JTable table, int fullScanCutoff) {
-            this.table = table;
-            this.fullScanCutoff = fullScanCutoff;
-
-            // Remove table as a listener. That way, we can control when it gets notified of events.
-            table.getModel().removeTableModelListener(table);
-
-            // Perform initial resize.
-            boolean doFullScan = table.getRowCount() <= fullScanCutoff;
-            TableUtils.resizeColumnWidths(table, doFullScan);
-        }
-
-        @Override public void tableChanged(TableModelEvent e) {
-            table.tableChanged(e);  // table MUST be notified first.
-
-            // Do not cache the value of doFullScan; we need to reevaluate each time because the number of rows in
-            // the table could have changed.
-            boolean doFullScan = table.getRowCount() <= fullScanCutoff;
-            TableUtils.resizeColumnWidths(table, doFullScan);
-        }
-    }
-
-    public static void resizeColumnWidths(JTable table, boolean doFullScan) {
-        for (int col = 0; col < table.getColumnCount(); ++col) {
-            int maxWidth = 0;
-
-            // Get header width.
-            TableColumn column = table.getColumnModel().getColumn(col);
-            TableCellRenderer headerRenderer = column.getHeaderRenderer();
-
-            if (headerRenderer == null) {
-                headerRenderer = table.getTableHeader().getDefaultRenderer();
-            }
-
-            Object headerValue = column.getHeaderValue();
-            Component headerRendererComp =
-                    headerRenderer.getTableCellRendererComponent(table, headerValue, false, false, 0, col);
-
-            maxWidth = Math.max(maxWidth, headerRendererComp.getPreferredSize().width);
-
-
-            // Get cell widths.
-            if (doFullScan) {
-                for (int row = 0; row < table.getRowCount(); ++row) {
-                    maxWidth = Math.max(maxWidth, getCellWidth(table, row, col));
-                }
-            } else {
-                maxWidth = Math.max(maxWidth, getCellWidth(table, 0,                       col));
-                maxWidth = Math.max(maxWidth, getCellWidth(table, table.getRowCount() / 2, col));
-                maxWidth = Math.max(maxWidth, getCellWidth(table, table.getRowCount() - 1, col));
-            }
-
-            // For some reason, the calculation above gives a value that is 1 pixel too small.
-            // Maybe that's because of the cell divider line?
-            ++maxWidth;
-
-            column.setPreferredWidth(maxWidth);
-        }
-    }
-
-    private static int getCellWidth(JTable table, int row, int col) {
-        TableCellRenderer cellRenderer = table.getCellRenderer(row, col);
-        Object value = table.getValueAt(row, col);
-
-        Component cellRendererComp =
-                cellRenderer.getTableCellRendererComponent(table, value, false, false, row, col);
-        return cellRendererComp.getPreferredSize().width;
-    }
-
-
-    public static void alignTable(JTable table, int alignment) {
+    public static void installAligners(JTable table, int alignment) {
         // We don't want to set up completely new cell renderers: rather, we want to use the existing ones but just
         // change their alignment.
         for (int iCol = 0; iCol < table.getColumnCount(); ++iCol) {
@@ -177,26 +72,22 @@ public abstract class TableUtils {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                int numRows = 4;
-                int numCols = 4;
+                int numRows = 6;
+                int numCols = 6;
 
-                DefaultTableModel model = new DefaultTableModel(numRows, 0);
-                for (int col = 0; col < numCols; ++col) {
-                    addColumn(model);
-                }
+                TableModel model = createTableModel(numRows, numCols);
+                TableColumnModel tcm = new HidableTableColumnModel(model);
+                JTable table = new JTable(model, tcm);
 
-                JTable table = new JTable(model);
-                table.getColumnModel().setColumnSelectionAllowed(true);
-                model.addTableModelListener(new ResizeColumnWidthsListener(table));
+                ColumnWidthsResizer.resize(table);
+                ColumnWidthsResizer resizer = new ColumnWidthsResizer(table);
+                table.getModel().addTableModelListener(resizer);
+                table.getColumnModel().addColumnModelListener(resizer);
 
-                JButton minusButton = new JButton(new RemoveAction(table));
-                JButton moveButton  = new JButton(new MoveAction(table));
-                JButton plusButton  = new JButton(new AddAction(table));
+                JButton newModelButton = new JButton(new NewModelAction(table));
 
                 JPanel buttonPanel = new JPanel();
-                buttonPanel.add(minusButton, BorderLayout.WEST);
-                buttonPanel.add(moveButton,  BorderLayout.CENTER);
-                buttonPanel.add(plusButton,  BorderLayout.EAST);
+                buttonPanel.add(newModelButton,  BorderLayout.CENTER);
 
                 JButton cornerButton = new JButton(new TableAppearanceAction(table));
                 cornerButton.setHideActionText(true);
@@ -209,66 +100,40 @@ public abstract class TableUtils {
                 JFrame frame = new JFrame("Test ResizeColumnWidthsListener");
                 frame.add(scrollPane, BorderLayout.CENTER);
                 frame.add(buttonPanel, BorderLayout.SOUTH);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
                 frame.pack();
                 frame.setVisible(true);
             }
         });
     }
 
-    public static class RemoveAction extends AbstractAction {
-        private final DefaultTableModel model;
+    public static class NewModelAction extends AbstractAction {
+        private final JTable table;
 
-        public RemoveAction(JTable table) {
-            super("-");
-            this.model = (DefaultTableModel) table.getModel();
+        public NewModelAction(JTable table) {
+            super("New model");
+            this.table = table;
         }
 
         public void actionPerformed(ActionEvent e) {
-            if (model.getColumnCount() > 0) {
-                model.setColumnCount(model.getColumnCount() - 1);
-            }
+            table.setModel(createTableModel(table.getModel().getRowCount(), table.getModel().getColumnCount()));
+//            ((DefaultTableModel) table.getModel()).setColumnCount(table.getModel().getColumnCount() - 1);
         }
     }
 
-    public static class MoveAction extends AbstractAction {
-        private final TableColumnModel columnModel;
-
-        public MoveAction(JTable table) {
-            super("Move");
-            this.columnModel = table.getColumnModel();
+    private static TableModel createTableModel(int numRows, int numCols) {
+        DefaultTableModel model = new DefaultTableModel(numRows, 0);
+        for (int col = 0; col < numCols; ++col) {
+            Object columnName = Integer.toString(model.getColumnCount());
+            Object[] columnData = genColumnData(model);
+            model.addColumn(columnName, columnData);
         }
-
-        public void actionPerformed(ActionEvent e) {
-            if (columnModel.getColumnCount() > 0) {
-                columnModel.moveColumn(0, columnModel.getColumnCount() - 1);
-
-            }
-        }
-    }
-
-    public static class AddAction extends AbstractAction {
-        private final DefaultTableModel model;
-
-        public AddAction(JTable table) {
-            super("+");
-            this.model = (DefaultTableModel) table.getModel();
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            addColumn(model);
-        }
-    }
-
-    private static void addColumn(DefaultTableModel model) {
-        Object columnName = Integer.toString(model.getColumnCount());
-        Object[] columnData = genColumnData(model);
-        model.addColumn(columnName, columnData);
+        return model;
     }
 
     private static Object[] genColumnData(TableModel model) {
         Object[] data = new Object[model.getRowCount()];
-        int cellValLen = (model.getColumnCount() + 1) * 8;
+        int cellValLen = 10;
         String cellVal = genString(cellValLen);
 
         for (int row = 0; row < model.getRowCount(); ++row) {

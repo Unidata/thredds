@@ -40,6 +40,9 @@ import ucar.nc2.Variable;
 import ucar.nc2.dt.PointObsDatatype;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ui.table.ColumnWidthsResizer;
+import ucar.nc2.ui.table.HidableTableColumnModel;
+import ucar.nc2.ui.table.TableAppearanceAction;
 import ucar.nc2.ui.table.TableUtils;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -216,10 +219,13 @@ public class StructureTable extends JPanel {
     ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
 
     // Left-align every cell, including header cells.
-    TableUtils.alignTable(jtable, SwingConstants.LEADING);
+    TableUtils.installAligners(jtable, SwingConstants.LEADING);
 
     // Set the preferred column widths so that they're just big enough to display all contents without truncation.
-    jtable.getModel().addTableModelListener(new TableUtils.ResizeColumnWidthsListener(jtable));
+    ColumnWidthsResizer.resize(jtable);  // Perform initial resize.
+    ColumnWidthsResizer resizer = new ColumnWidthsResizer(jtable);
+    jtable.getModel().addTableModelListener(resizer);
+    jtable.getColumnModel().addColumnModelListener(resizer);
 
     // Don't resize the columns to fit the available space. We do this because there may be a LOT of columns, and
     // auto-resize would cause them to be squished together to the point of uselessness. For an example, see
@@ -268,7 +274,16 @@ public class StructureTable extends JPanel {
 
     //JScrollPane sp =  new JScrollPane(jtable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     removeAll();
-    add(new JScrollPane(jtable), BorderLayout.CENTER);
+
+    JButton cornerButton = new JButton(new TableAppearanceAction(jtable));
+    cornerButton.setHideActionText(true);
+    cornerButton.setContentAreaFilled(false);
+
+    JScrollPane scrollPane = new JScrollPane(jtable);
+    scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+    add(scrollPane, BorderLayout.CENTER);
 
     revalidate();
 
@@ -980,7 +995,9 @@ public class StructureTable extends JPanel {
 
   private JTable setModel(TableModel m) {
     sortedModel = new TableSorter(m);
-    MyJTable jtable = new MyJTable(sortedModel);
+    TableColumnModel tcm = new HidableTableColumnModel(sortedModel);
+    MyJTable jtable = new MyJTable(sortedModel, tcm);
+
     sortedModel.setTableHeader(jtable.getTableHeader());
     return jtable;
   }
@@ -999,6 +1016,10 @@ public class StructureTable extends JPanel {
 
     MyJTable(TableModel m) {
       super(m);
+    }
+
+    MyJTable(TableModel m, TableColumnModel tcm) {
+      super(m, tcm);
     }
 
     protected JTableHeader createDefaultTableHeader() {
