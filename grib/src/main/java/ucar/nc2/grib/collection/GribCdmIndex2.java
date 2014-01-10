@@ -64,14 +64,13 @@ public class GribCdmIndex2 implements IndexReader {
     return GribCollectionType.none;
   }
 
-    // open GribCollection. caller must close
+    // open GribCollection from an existing index file. caller must close
   static public GribCollection openCdmIndex(String indexFile, FeatureCollectionConfig.GribConfig config, Logger logger) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
 
     File f = new File(indexFile);
     int pos = f.getName().lastIndexOf(".");
     String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName(); // remove ".ncx2"
-
 
     try {
       GribCollectionType type = getType(raf);
@@ -96,42 +95,57 @@ public class GribCdmIndex2 implements IndexReader {
    * Rewrite all the collection indices for all the directories in a directory partition recursively
    *
    * @param config  FeatureCollectionConfig
-   * @param dirPath directory path
+   * @param forceCollection       always, test, nocheck, never
+   * @param forceChildren         always, test, nocheck, never
+   * @param logger                use this logger
    * @throws IOException
    */
-  static public void rewriteIndexesPartitionAll(FeatureCollectionConfig config, Path dirPath) throws IOException {
-    GribCdmIndex indexReader = new GribCdmIndex();
-    DirectoryPartition dpart = new DirectoryPartition(config, dirPath, indexReader, logger);
-    rewriteIndexesPartitionRecurse(dpart, config);
+  static public boolean updateDirectoryCollection(FeatureCollectionConfig config,
+                                               CollectionUpdateType forceCollection,
+                                               CollectionUpdateType forceChildren,
+                                               Logger logger) throws IOException {
+    int pos = config.spec.lastIndexOf("/");
+    Path dirPath = Paths.get(config.spec.substring(0,pos));
+
+    // LOOK need to use the config.spec file filter
+    DirectoryPartition dpart = new DirectoryPartition(config, dirPath, new GribCdmIndex(), logger);
+    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+
+    return updateDirectoryCollectionRecurse(dpart, forceCollection, forceChildren, config);
   }
 
-  static private void rewriteIndexesPartitionRecurse(DirectoryPartition dpart, FeatureCollectionConfig config) throws IOException {
-    dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+  static private boolean updateDirectoryCollectionRecurse(DirectoryPartition dpart,
+                                                     CollectionUpdateType forceCollection,
+                                                     CollectionUpdateType forceChildren,
+                                                     FeatureCollectionConfig config) throws IOException {
 
     // do its children
     for (MCollection part : dpart.makePartitions()) {
       if (part.isPartition()) {
-        rewriteIndexesPartitionRecurse((DirectoryPartition) part, config);
+        updateDirectoryCollectionRecurse((DirectoryPartition) part, forceCollection, forceChildren, config);
 
       } else {
         Path partPath = Paths.get(part.getRoot());
-        rewriteIndexesFilesAndCollection(config, partPath);
+        updateLeafDirectoryCollection(config, forceCollection, forceChildren, partPath);
       }
     }
 
-    // do this partition
-    try (Grib2Partition tp = Grib2PartitionBuilder.factory(dpart, CollectionUpdateType.always, CollectionUpdateType.never, null, logger)) {
+    // do this partition; we just did children so never update them
+    try (Grib2Partition tp = Grib2PartitionBuilder.factory(dpart, forceCollection, CollectionUpdateType.never, null, logger)) {
     }
   }
 
   /**
-   * Rewrite all the grib indices in a directory, and the collection index for that directory
+   * Update all the grib indices in one directory, and the collection index for that directory
    *
    * @param config  FeatureCollectionConfig
    * @param dirPath directory path
    * @throws IOException
    */
-  static public void rewriteIndexesFilesAndCollection(final FeatureCollectionConfig config, Path dirPath) throws IOException {
+  static private void updateLeafDirectoryCollection(final FeatureCollectionConfig config,
+                                                       CollectionUpdateType forceCollection,
+                                                       CollectionUpdateType forceChildren,
+                                                       Path dirPath) throws IOException {
     long start = System.currentTimeMillis();
     String what;
     final Formatter errlog = new Formatter();
@@ -170,7 +184,7 @@ public class GribCdmIndex2 implements IndexReader {
     // redo collection index
     DirectoryCollection dpart = new DirectoryCollection(config.name, dirPath, logger);
     dpart.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
-    try (GribCollection gcNew = makeGribCollectionFromMCollection(false, dpart, CollectionUpdateType.always, errlog, logger)) {
+    try (GribCollection gcNew = makeGribCollectionFromMCollection(false, dpart, forceCollection, errlog, logger)) {
     }
 
     long took = System.currentTimeMillis() - start;
@@ -178,54 +192,8 @@ public class GribCdmIndex2 implements IndexReader {
   }
 
   /**
-   * File Partition: each File is a GribCollection, and the collection of all files in the directory is a PartitionCollection.
-   * Rewrite the PartitionCollection and optionally its children
-   *
-   * @param config                FeatureCollectionConfig
-   * @param forceCollection       always, test, nocheck, never
-   * @param forceChildren         always, test, nocheck, never
-   * @return true if partition was rewritten
-   * @throws IOException
-   */
-  static public boolean rewriteFilePartition(final FeatureCollectionConfig config,
-                                            final CollectionUpdateType forceCollection,
-                                            final CollectionUpdateType forceChildren,
-                                            final Logger logger) throws IOException {
-    long start = System.currentTimeMillis();
-
-    final Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
-    Path rootPath = Paths.get(specp.getRootDir());
-
-    FilePartition partition = new FilePartition(config.name, rootPath, logger);
-    partition.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
-
-    // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if advantage
-    if (forceChildren != CollectionUpdateType.never) {
-      partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
-        public void consume(MFile mfile) {
-          try (GribCollection gcNested =
-                       Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, forceChildren, config.gribConfig, errlog, logger)) {
-          } catch (IOException e) {
-            logger.error("rewriteIndexesFilesAndCollection", e);
-          }
-        }
-      });
-    }
-
-    // redo partition index if needed
-    boolean recreated = Grib2PartitionBuilder.recreateIfNeeded(partition, forceCollection, CollectionUpdateType.never, errlog, logger);
-
-    long took = System.currentTimeMillis() - start;
-    String collectionName = partition.getCollectionName();
-    if (recreated) logger.info("RewriteFilePartition {} took {} msecs", collectionName, took);
-
-    return recreated;
-  }
-
-  /**
    * Directory Collection: the collection of all files in the directory is a DirectoryCollection.
-   * Rewrite the DirectoryCollection
+   * Rewrite the DirectoryCollection in one Directory
    *
    * @param config       FeatureCollectionConfig
    * @param forceCollection       always, test, nocheck, never
@@ -269,7 +237,54 @@ public class GribCdmIndex2 implements IndexReader {
 
 
 
+  /**
+   * File Partition: each File is a GribCollection, and the collection of all files in the directory is a PartitionCollection.
+   * Rewrite the PartitionCollection and optionally its children
+   *
+   * @param config                FeatureCollectionConfig
+   * @param forceCollection       always, test, nocheck, never
+   * @param forceChildren         always, test, nocheck, never
+   * @return true if partition was rewritten
+   * @throws IOException
+   */
+  static public boolean updateFilePartition(final FeatureCollectionConfig config,
+                                            final CollectionUpdateType forceCollection,
+                                            final CollectionUpdateType forceChildren,
+                                            final Logger logger) throws IOException {
+    long start = System.currentTimeMillis();
+
+    final Formatter errlog = new Formatter();
+    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+    Path rootPath = Paths.get(specp.getRootDir());
+
+    FilePartition partition = new FilePartition(config.name, rootPath, logger);
+    partition.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+
+    // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if advantage
+    if (forceChildren != CollectionUpdateType.never) {
+      partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
+        public void consume(MFile mfile) {
+          try (GribCollection gcNested =
+                       Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, forceChildren, config.gribConfig, errlog, logger)) {
+          } catch (IOException e) {
+            logger.error("rewriteIndexesFilesAndCollection", e);
+          }
+        }
+      });
+    }
+
+    // redo partition index if needed
+    boolean recreated = Grib2PartitionBuilder.recreateIfNeeded(partition, forceCollection, CollectionUpdateType.never, errlog, logger);
+
+    long took = System.currentTimeMillis() - start;
+    String collectionName = partition.getCollectionName();
+    if (recreated) logger.info("RewriteFilePartition {} took {} msecs", collectionName, took);
+
+    return recreated;
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////
+  // Used by IOSPs
 
   /**
    * Create a grib collection from a single grib1 or grib2 file.
@@ -353,7 +368,7 @@ public class GribCdmIndex2 implements IndexReader {
    * @throws IOException on io error
    */
   static public GribCollection makeGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType force,
-                                       Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                Formatter errlog, org.slf4j.Logger logger) throws IOException {
     /* if (isGrib1) {
       if (dcm.isPartition())
         if (force == CollectionUpdateType.never) {  // not actually needed, as Grib2TimePartitionBuilder.factory will eventually call  Grib2TimePartitionBuilderFromIndex

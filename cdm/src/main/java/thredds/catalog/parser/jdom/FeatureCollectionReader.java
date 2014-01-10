@@ -116,11 +116,9 @@ public class FeatureCollectionReader {
 
     // tds and update elements
     Element tdmElem = featureCollectionElement.getChild( "tdm", InvCatalogFactory10.defNS );
-    if (tdmElem != null)
-      config.tdmConfig = readUpdateElement( tdmElem);
+    config.tdmConfig = readUpdateElement( tdmElem);
     Element updateElem = featureCollectionElement.getChild( "update", InvCatalogFactory10.defNS );
-    if (updateElem != null)
-      config.updateConfig = readUpdateElement( updateElem);
+    config.updateConfig = readUpdateElement( updateElem);
 
     // protoDataset element
     Element protoElem = featureCollectionElement.getChild( "protoDataset", InvCatalogFactory10.defNS );
@@ -172,13 +170,16 @@ public class FeatureCollectionReader {
   }
 
   static private FeatureCollectionConfig.UpdateConfig readUpdateElement(Element updateElem) {
+    if (updateElem == null) return new FeatureCollectionConfig.UpdateConfig(); // default
+
     String startup = updateElem.getAttributeValue("startup");
+    String rewrite = updateElem.getAttributeValue("rewrite");
     String recheckAfter = updateElem.getAttributeValue("recheckAfter");
     String rescan = updateElem.getAttributeValue("rescan");
     String trigger = updateElem.getAttributeValue("trigger");
     String deleteAfter = updateElem.getAttributeValue("deleteAfter");
 
-    return new FeatureCollectionConfig.UpdateConfig(startup, recheckAfter, rescan, trigger, deleteAfter);
+    return new FeatureCollectionConfig.UpdateConfig(startup, rewrite, recheckAfter, rescan, trigger, deleteAfter);
   }
 
 }

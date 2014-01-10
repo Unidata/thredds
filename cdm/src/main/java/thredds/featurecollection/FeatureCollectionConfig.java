@@ -153,43 +153,54 @@ public class FeatureCollectionConfig {
 
   // finished reading - do anything needed
   public void finish() {
-    if (tdmConfig != null && updateConfig != null)
-      updateConfig.recheckAfter = null; // not allowed with tdm.
+    if (tdmConfig.updateType != CollectionUpdateType.never) {
+      // if tdm is working, tds is not allowed to update
+      updateConfig.updateType = CollectionUpdateType.never;
+
+    } else if (!updateConfig.userDefined) {
+      // if tdm is not working, default tds is to update on startup
+      updateConfig.updateType = CollectionUpdateType.test;
+    }
   }
 
   // <update startup="nocheck" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
-    public String recheckAfter;
+    public String recheckAfter;       // LOOK remove ??
     public String rescan;
-    public boolean triggerOk;
-    public boolean startup;
-    public CollectionUpdateType updateType = CollectionUpdateType.nocheck;
+    public boolean triggerOk = true;
+    public boolean userDefined = false;
+    public CollectionUpdateType updateType = CollectionUpdateType.never;
     public String deleteAfter = null; // not implemented yet
 
     public UpdateConfig() { // defaults
     }
 
-    public UpdateConfig(String startupS, String recheckAfter, String rescan, String triggerS, String deleteAfter) {
+    public UpdateConfig(String startupS, String rewriteS, String recheckAfter, String rescan, String triggerS, String deleteAfter) {
       this.rescan = rescan; // may be null
       if (recheckAfter != null) this.recheckAfter = recheckAfter; // in case it was set in collection element
       if (rescan != null) this.recheckAfter = null;               // both not allowed
       this.deleteAfter = deleteAfter; // may be null
-      if (startupS != null) {
-        startupS = startupS.toLowerCase();
-        if (startupS.equalsIgnoreCase("true"))
+      if (triggerS != null)
+        this.triggerOk = triggerS.equalsIgnoreCase("allow");
+
+      // rewrite superceeds startup
+      if (rewriteS == null) rewriteS = startupS;
+      if (rewriteS != null) {
+        rewriteS = rewriteS.toLowerCase();
+        if (rewriteS.equalsIgnoreCase("true"))
           this.updateType = CollectionUpdateType.test;
         else
           this.updateType = CollectionUpdateType.valueOf(startupS);
-        startup = (this.updateType != null);
+
+        // user has placed an update/tdm element in the catalog
+        userDefined = true;
       }
-      if (triggerS != null)
-        this.triggerOk = triggerS.equalsIgnoreCase("allow");
     }
 
     @Override
     public String toString() {
       return "UpdateConfig{" +
-              "startup=" + startup +
+              "userDefined=" + userDefined +
               ", recheckAfter='" + recheckAfter + '\'' +
               ", rescan='" + rescan + '\'' +
               ", triggerOk=" + triggerOk +

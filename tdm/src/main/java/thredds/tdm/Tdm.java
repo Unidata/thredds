@@ -135,11 +135,11 @@ public class Tdm {
 
   public void setServerNames(String[] serverNames) throws HTTPException {
     if (serverNames == null) {
-      servers = new ArrayList<Server>(); // empty list
+      servers = new ArrayList<>(); // empty list
       return;
     }
 
-    servers = new ArrayList<Server>(serverNames.length);
+    servers = new ArrayList<>(serverNames.length);
     for (String name : serverNames) {
       HTTPSession session = new HTTPSession(name);
       session.setCredentialsProvider(new CredentialsProvider() {
@@ -298,9 +298,10 @@ public class Tdm {
 
         } else {
           if (config.timePartition.equalsIgnoreCase("file"))
-            changed = GribCdmIndex2.rewriteFilePartition(config, config.tdmConfig.updateType, config.tdmConfig.updateType, logger);
+            changed = GribCdmIndex2.updateFilePartition(config, config.tdmConfig.updateType, config.tdmConfig.updateType, logger);
+
           else if (config.timePartition.equalsIgnoreCase("directory"))
-            changed = GribCdmIndex2.rewriteDirectoryCollection(config, config.tdmConfig.updateType, CollectionUpdateType.never, logger);
+            changed = GribCdmIndex2.updateDirectoryCollection(config, config.tdmConfig.updateType, config.tdmConfig.updateType, logger);
         }
 
         // delete any files first

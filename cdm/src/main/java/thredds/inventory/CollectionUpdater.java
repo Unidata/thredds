@@ -166,7 +166,7 @@ public enum CollectionUpdater {
       return;
     }
 
-    if (updateConfig.startup) {
+    if (updateConfig.updateType != CollectionUpdateType.never) {
       Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
       SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
               .withIdentity(jobName, "startup")

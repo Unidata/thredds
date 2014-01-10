@@ -349,17 +349,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return null;
     }
 
-
-  }
-
-  protected FeatureCollectionConfig.UpdateConfig readUpdateElement(Element updateElem) {
-    String startup = updateElem.getAttributeValue("startup");
-    String recheckAfter = updateElem.getAttributeValue("recheckAfter");
-    String rescan = updateElem.getAttributeValue("rescan");
-    String trigger = updateElem.getAttributeValue("trigger");
-    String deleteAfter = updateElem.getAttributeValue("deleteAfter");
-
-    return new FeatureCollectionConfig.UpdateConfig(startup, recheckAfter, rescan, trigger, deleteAfter);
   }
 
       // read a dataset scan element
