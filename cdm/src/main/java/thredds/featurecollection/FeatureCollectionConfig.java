@@ -157,14 +157,14 @@ public class FeatureCollectionConfig {
       updateConfig.recheckAfter = null; // not allowed with tdm.
   }
 
-  // <update startup="true" rescan="cron expr" trigger="allow" append="true"/>
+  // <update startup="nocheck" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
     public String recheckAfter;
     public String rescan;
     public boolean triggerOk;
     public boolean startup;
     public CollectionUpdateType updateType = CollectionUpdateType.nocheck;
-    public String deleteAfter = null;
+    public String deleteAfter = null; // not implemented yet
 
     public UpdateConfig() { // defaults
     }
@@ -193,7 +193,7 @@ public class FeatureCollectionConfig {
               ", recheckAfter='" + recheckAfter + '\'' +
               ", rescan='" + rescan + '\'' +
               ", triggerOk=" + triggerOk +
-              ", deleteAfter=" + deleteAfter +
+              ", updateType=" + updateType +
               '}';
     }
   }
@@ -333,7 +333,7 @@ public class FeatureCollectionConfig {
   }
 
   static private Set<GribDatasetType> defaultGribDatasetTypes =
-          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.Best, GribDatasetType.Files));
+          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Files, GribDatasetType.LatestFile));
 
   static public class GribConfig {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
@@ -343,7 +343,7 @@ public class FeatureCollectionConfig {
     public String lookupTablePath, paramTablePath;         // user defined tables
     public String latestNamer, bestNamer;
     public Element paramTable;
-    public Boolean filesSortIncreasing = true;
+    public Boolean filesSortIncreasing = false;
     public GribIntvFilter intvFilter;
 
     private TimeUnitConverterHash tuc;

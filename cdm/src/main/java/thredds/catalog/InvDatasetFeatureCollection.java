@@ -170,7 +170,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected InvService orgService, virtualService;
   protected InvService cdmrService;  // LOOK why do we need to specify this seperately ??
   protected org.slf4j.Logger logger;
-  protected String latestFileName = "Latest File";
 
   // from the config catalog
   protected final String path;
@@ -193,9 +192,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
 
     this.config = config;
-    if (config.gribConfig.latestNamer != null) {
-      this.latestFileName = config.gribConfig.latestNamer;
-    }
 
     String collectionName = CollectionAbstract.cleanName(config.name != null ? config.name : name);
     config.name = collectionName;
@@ -327,7 +323,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   public String getLatestFileName() {
-    return latestFileName;
+    if (config.gribConfig.latestNamer != null) {
+      return config.gribConfig.latestNamer;
+    } else {
+      return "Latest "+name+" File";
+    }
   }
 
   public String getTopDirectoryLocation() {

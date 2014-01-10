@@ -32,7 +32,6 @@
       corresponding hashcodes. If you confirm that they are, in fact, the same GDS, then you can fix this problem, for example:</p>
     <pre>&lt;gribConfig&gt;
    &lt;gdsHash from=&quot;1450218978&quot; to=&quot;1450192070&quot;/&gt;
-
 &lt;/gribConfig&gt;</pre>
     <p>This changes those variables using GDS hashcode =&quot;1450218978&quot; to use &quot;1450192070&quot;, which then eliminates the spurious group in the
       resulting ncx file. Note that for this to work, you must first delete the ncx2 file so it will get recreated when the file is read. After that, you can
@@ -67,6 +66,11 @@
  &lt;/pdsHash&gt;</pre>
 </blockquote>
 <p>6) timeUnitConvert: Not available yet</p>
+<p>filter</p>
+<pre> &lt;filter&gt;
+    &lt;include name=&quot;&quot; value=&quot;&quot;/&gt;
+ &lt;/filter&gt;</pre>
+<pre>&lt;parameter name=&quot;CoordSys&quot; value=&quot;dense&quot; /&gt;</pre>
 <h2>Configuration of the PartitionCollection</h2>
 <blockquote>
   <h3>intvFilter: Time Interval filters</h3>

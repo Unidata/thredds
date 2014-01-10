@@ -40,7 +40,7 @@
 
   <loggers>
 
-    <logger name="thredds.tdm" level="info" additivity="false">
+    <logger name="thredds.tdm" level="debug" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>
@@ -50,7 +50,7 @@
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder" level="debug" additivity="false">
+    <logger name="ucar.nc2.grib.collection" level="debug" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>
     </logger>

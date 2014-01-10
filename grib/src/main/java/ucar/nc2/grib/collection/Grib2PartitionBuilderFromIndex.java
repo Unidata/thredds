@@ -1,16 +1,10 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.nc2.grib.grib2.Grib2Gds;
-import ucar.nc2.grib.grib2.Grib2SectionGridDefinition;
-import ucar.sparr.Coordinate;
-import ucar.sparr.CoordinateTwoTimer;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

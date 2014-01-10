@@ -101,6 +101,8 @@ public class Tdm {
     private Server(String name, HTTPSession session) {
       this.name = name;
       this.session = session;
+      System.out.printf("Server added %s%n", name);
+      log.info("Server added "+name);
     }
   }
 
@@ -142,7 +144,6 @@ public class Tdm {
       HTTPSession session = new HTTPSession(name);
       session.setCredentialsProvider(new CredentialsProvider() {
         public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-          //System.out.printf("getCredentials called %s %s%n", user, pass);
           return new UsernamePasswordCredentials(user, pass);
         }
       });
@@ -334,7 +335,7 @@ public class Tdm {
     private void sendTriggers(String path, Formatter f) {
       for (Server server : servers) {
         String url = server.name + path;
-        logger.debug("send trigger to {}", url);
+        logger.info("send trigger to {}", url);
         HTTPMethod m = null;
         try {
           m = HTTPMethod.Get(server.session, url);

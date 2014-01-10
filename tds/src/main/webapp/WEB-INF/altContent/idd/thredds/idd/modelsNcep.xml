@@ -179,7 +179,42 @@
 
     </dataset>
 
-i
+    <dataset name="Global Forecast System (GFS)">
+
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Global Forecast System Model, previously called AVN/MRF (Medium Range Forecast)</documentation>
+        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/avintro.htm"
+                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
+        <documentation xlink:href="http://www.nco.ncep.noaa.gov/pmb/products/gfs/"
+                       xlink:title="NCEP Model Notes"/>
+      </metadata>
+
+      <featureCollection name="GFS-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_0p5deg">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 230 (G) Grid. Global Lat/Lon grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours from 96 to 180 hours (4
+            to 7.5 days).
+            Horizontal= 361 by 720 points, resolution 0.5 degree, Lat/Lon projection.
+            Vertical= 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
+            layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/.*grib2$"
+                    dateFormatMark="#GFS_Global_0p5deg_#yyyyMMdd_HHmm"
+                    timePartition="1 day"
+                    olderThan="5 min"/>
+        <update startup="nocheck" trigger="allow"/>
+        <tdm startup="true" rescan="0 8,23,38,53 * * * ? *" trigger="allow"/>
+        <gribConfig datasetTypes="Best LatestFile Files">
+          <latestNamer name="Latest NCEP GFS Global 0.5 degree"/>
+          <bestNamer name="Best NCEP GFS Global 0.5 degree Time Series"/>
+          <filesSort>
+            <lexigraphicByName increasing="false"/>
+          </filesSort>
+        </gribConfig>
+      </featureCollection>
+
       <featureCollection name="GFS-Global_onedeg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_onedeg">
         <metadata inherited="true">
           <documentation type="summary">NCEP GFS Model : AWIPS 229 (F) Grid. Global Lat/Lon grid.
@@ -751,87 +786,6 @@ i
           <intvFilter excludeZero="true"/>
           <latestNamer name="Latest NCEP NAM FireWX Nest"/>
           <bestNamer name="Best NCEP NAM FireWX Nest Time Series"/>
-          <filesSort>
-            <lexigraphicByName increasing="false"/>
-          </filesSort>
-        </gribConfig>
-      </featureCollection>
-
-    </dataset>
-
-    <dataset name="National Digital Forecast Database (NDFD)">
-      <metadata inherited="true">
-        <documentation type="summary">National Digital Forecast Database (NDFD): US National Weather Service gridded
-          forecasts of sensible weather elements.
-        </documentation>
-        <documentation xlink:href="http://www.weather.gov/ndfd/" xlink:title="NWS/NDFD Website"/>
-        <documentation xlink:href="http://www.nws.noaa.gov/ndfd/definitions.htm"
-                       xlink:title="NDFD parameter descriptions"/>
-      </metadata>
-
-      <featureCollection name="NDFD-CONUS_5km" featureType="GRIB" harvest="true" path="grib/NCEP/NDFD/CONUS_5km">
-        <metadata inherited="true">
-          <documentation type="summary">
-            CONUS, 1073 by 689 points, resolution 5 km. Results from 12Z and 18Z run. Forecasts every 6 hours from 90 to
-            180 hours.
-          </documentation>
-        </metadata>
-
-        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/.*grib2$"
-                    dateFormatMark="#NDFD_CONUS_5km_#yyyyMMdd_HHmm"
-                    olderThan="5 min"/>
-        <update startup="nocheck" trigger="allow"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-        <gribConfig datasetTypes="Best LatestFile Files">
-          <latestNamer name="Latest NWS National Digital Forecast Database CONUS 5km"/>
-          <bestNamer name="Best NWS National Digital Forecast Database CONUS 5km Time Series"/>
-          <filesSort>
-            <lexigraphicByName increasing="false"/>
-          </filesSort>
-        </gribConfig>
-
-      </featureCollection>
-
-      <featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/NDFD/CONUS_5km_conduit">
-        <metadata inherited="true">
-          <documentation type="summary">
-            CONUS, 1073 by 689 points, resolution 5 km. Models are run hourly. Forecasts every 3 hours from 2 to 74
-            hours and
-            every 6 hours from 74 to 170.
-          </documentation>
-        </metadata>
-
-        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/conduit/CONUS_5km/.*grib2$"
-                    dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm"
-                    olderThan="5 min"/>
-        <update startup="nocheck" trigger="allow"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-        <gribConfig datasetTypes="Best LatestFile Files">
-          <gdsHash from="-2121584860" to="28944332"/>
-          <latestNamer name="Latest NWS National Digital Forecast Database CONUS 5km (CONDUIT)"/>
-          <bestNamer name="Best NWS National Digital Forecast Database CONUS 5km (CONDUIT) Time Series"/>
-          <filesSort>
-            <lexigraphicByName increasing="false"/>
-          </filesSort>
-        </gribConfig>
-      </featureCollection>
-
-      <featureCollection name="NDFD-CONUS-Fireweather" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/NDFD/CONUS/Fireweather">
-        <metadata inherited="true">
-          <documentation type="summary">??
-          </documentation>
-        </metadata>
-
-        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/Fireweather/CONUS/.*grib2$"
-                    dateFormatMark="#NDFD_Fireweather_CONUS_#yyyyMMdd_HHmm"
-                    olderThan="5 min"/>
-        <update startup="nocheck" trigger="allow"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-        <gribConfig datasetTypes="Best LatestFile Files">
-          <latestNamer name="Latest NWS National Digital Forecast Database Fire Weather 5km"/>
-          <bestNamer name="Best NWS National Digital Forecast Database Fire Weather 5km Time Series"/>
           <filesSort>
             <lexigraphicByName increasing="false"/>
           </filesSort>

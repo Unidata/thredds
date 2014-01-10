@@ -76,9 +76,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final String COLLECTION = "collection";
   static private final String BEST_DATASET = "Best";
   static private final String TWOD_DATASET = "TwoD";
-  static private final String twoDDatasetNameDefault = "Two Time (Forecast / Reference Time) Dataset";
-  static private final String bestDatasetNameDefault = "Best Estimate Dataset";
-  static private final String zeroHourDatasetNameDefault = "Zero hour (Analysis) Dataset";
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -110,8 +107,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private final boolean isDirectoryPartition;
   private final boolean isOtherPartition;
 
-  private final String bestDatasetName;
-
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, path, fcType, config);
     this.gribConfig = config.gribConfig;
@@ -142,12 +137,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
 
     tmi.setDataType(FeatureType.GRID); // override GRIB
-
-    if (config.gribConfig != null && config.gribConfig.bestNamer != null) {
-      this.bestDatasetName = config.gribConfig.bestNamer;
-    } else {
-      this.bestDatasetName = bestDatasetNameDefault;
-    }
 
     state = new StateGrib(null);
     finish();
@@ -299,7 +288,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         isSingleGroup = ds.getGroups().size() == 1;
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
-          InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
+          InvDatasetImpl twoD = new InvDatasetImpl(this, getDatasetNameTwoD());
           String path = getPath() + "/" + TWOD_DATASET;
           twoD.setUrlPath(path);
           //twoD.setID(path);
@@ -317,7 +306,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           List<GribCollection.GroupHcs> groups = new ArrayList<>(ds.getGroups());
-          InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
+          InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest());
           String path = getPath() + "/" + BEST_DATASET;
           best.setUrlPath(path);
           best.tmi.addDocumentation("summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time");
@@ -783,12 +772,16 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  protected String getBestDatasetName() {
-    return bestDatasetName;
+  protected String getDatasetNameBest() {
+    if (config.gribConfig != null && config.gribConfig.bestNamer != null) {
+      return config.gribConfig.bestNamer;
+    } else {
+      return "Best "+name +" Time Series";
+    }
   }
 
-  protected String getTwodDatasetName() {
-    return "TwoD Dataset";
+  protected String getDatasetNameTwoD() {
+    return "Full Collection (Reference / Forecast Time) Dataset";
   }
 
   @Override

@@ -412,8 +412,6 @@ message Variable {
     // 2d only
     List<Integer> invCountList = pv.getInvCountList();
     if (invCountList.size() > 0) {
-      if (time == null || runtime == null)
-        System.out.println("HEY");
       result.twot = new CoordinateTwoTimer(invCountList);
       result.twot.setSize(runtime.getSize(), time.getSize());
     }
