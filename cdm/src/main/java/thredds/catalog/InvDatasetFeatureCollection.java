@@ -338,8 +338,8 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return config;
   }
 
-  public CollectionManager getDatasetCollectionManager() {
-    return (datasetCollection instanceof CollectionManager) ? (CollectionManager) datasetCollection : null;
+  public MCollection getDatasetCollectionManager() {
+    return datasetCollection;
   }
 
   public Logger getLogger() {

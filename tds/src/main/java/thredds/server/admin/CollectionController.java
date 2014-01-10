@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.catalog.InvDatasetFeatureCollection;
-import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionUpdateType;
-import thredds.inventory.CollectionUpdater;
-import thredds.inventory.MFile;
+import thredds.inventory.*;
 import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
@@ -148,7 +145,6 @@ public class CollectionController  {
     PrintWriter pw = res.getWriter();
 
     // find the collection
-    String collectName = req.getParameter(COLLECTION);
     CollectionUpdateType type = null;
     if (path.equals("/"+COLLECTION+"/"+TRIGGER)) {
       String triggerType = req.getParameter(TRIGGER);
@@ -161,6 +157,7 @@ public class CollectionController  {
       }
     }
 
+    String collectName = req.getParameter(COLLECTION);
     InvDatasetFeatureCollection fc = DataRootHandler.getInstance().getFeatureCollection(collectName);
     if (fc == null) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -169,8 +166,7 @@ public class CollectionController  {
       return null;
     }
 
-    CollectionManager dcm = fc.getDatasetCollectionManager();
-    pw.printf("<h3>Collection Name %s</h3>%n", dcm.getCollectionName());
+    pw.printf("<h3>Collection Name %s</h3>%n", collectName);
 
     if (type != null) {
       if (!fc.getConfig().isTrigggerOk()) {
@@ -180,11 +176,13 @@ public class CollectionController  {
         return null;
       }
 
-      CollectionUpdater.INSTANCE.triggerUpdate(dcm.getCollectionName(), type);
+      CollectionUpdater.INSTANCE.triggerUpdate(collectName, type);
       pw.printf(" TRIGGER SENT%n");
 
     } else {
-      showFiles(pw, dcm);
+      MCollection dcm = fc.getDatasetCollectionManager();
+      if (dcm != null)
+        showFiles(pw, dcm);
       String ename = StringUtil2.escape(fc.getName(), "");
       String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + ename;
       pw.printf("<p/><a href='%s'>Trigger rescan for %s</a>%n", url, fc.getName());
@@ -194,14 +192,18 @@ public class CollectionController  {
     return null;
   }
 
-  private void showFiles(PrintWriter pw, CollectionManager dcm) {
-    boolean unscanned = dcm.getLastScanned() == 0;
-    if (unscanned) {
-      pw.printf("%n<pre>Not Yet Scanned%n");
-      return;
+  private void showFiles(PrintWriter pw, MCollection dcm) {
+    if (dcm instanceof CollectionManager) {
+      CollectionManager cm = (CollectionManager) dcm;
+      boolean unscanned = cm.getLastScanned() == 0;
+      if (unscanned) {
+        pw.printf("%n<pre>Not Yet Scanned%n");
+        return;
+      }
+
+      pw.printf("%n<pre>Last Scanned %-20s%n", CalendarDateFormatter.toDateTimeString(new Date(cm.getLastScanned())));
     }
 
-    pw.printf("%n<pre>Last Scanned %-20s%n", CalendarDateFormatter.toDateTimeString(new Date(dcm.getLastScanned())));
     pw.printf("%n%-100s %-20s %9.3s %s%n", "Path", "Last Modified", "MB", "Aux");
     try {
       for (MFile mfile : dcm.getFilesSorted())

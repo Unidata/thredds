@@ -417,7 +417,7 @@ public class TdmRunner {
     if (showOnly) {
       List<String> result = new ArrayList<String>();
       for (InvDatasetFeatureCollection fc : fcList) {
-        CollectionManager dcm = fc.getDatasetCollectionManager();
+        MCollection dcm = fc.getDatasetCollectionManager();
         result.add(dcm.getRoot());
       }
       Collections.sort(result);
@@ -429,12 +429,15 @@ public class TdmRunner {
     }
 
     for (InvDatasetFeatureCollection fc : fcList) {
-      CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
+      MCollection dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
       FeatureCollectionConfig fcConfig = fc.getConfig();
       if (fcConfig != null && fcConfig.gribConfig != null && fcConfig.gribConfig.gdsHash != null)
         dcm.putAuxInfo("gdsHash", fcConfig.gribConfig.gdsHash); // sneak in extra config info
 
-      dcm.addEventListener(new Listener(fc, dcm)); // now wired for events
+      if (dcm instanceof CollectionManager) {
+        CollectionManager cm = (CollectionManager) dcm;
+        cm.addEventListener(new Listener(fc, cm)); // now wired for events
+      }
       // dcm.removeEventListener(fc); // not needed
       // CollectionUpdater.INSTANCE.scheduleTasks( CollectionUpdater.FROM.tdm, fc.getConfig(), dcm); // already done in finish() method
     }
@@ -443,7 +446,7 @@ public class TdmRunner {
     Formatter f = new Formatter();
     f.format("Feature Collections found:%n");
     for (InvDatasetFeatureCollection fc : fcList) {
-      CollectionManager dcm = fc.getDatasetCollectionManager();
+      MCollection dcm = fc.getDatasetCollectionManager();
       f.format("  %s == %s%n%s%n%n", fc, fc.getClass().getName(), dcm);
     }
     System.out.printf("%s%n", f.toString());
