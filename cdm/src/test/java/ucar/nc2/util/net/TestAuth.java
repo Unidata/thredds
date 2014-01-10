@@ -186,11 +186,11 @@ public class TestAuth extends UnitTestCommon
     }
 
     static AuthDataBasic[] basictests = {
-                new AuthDataBasic("http://thredds-test.ucar.edu/thredds/dodsC/restrict/testData.nc.html",
-                        "tiggeUser", "tigge", MUSTPASS),
-                new AuthDataBasic("http://thredds-test.ucar.edu/thredds/dodsC/restrict/testData.nc.html",
-                        "", "", MUSTFAIL)
-        };
+        new AuthDataBasic("http://thredds-test.ucar.edu/thredds/dodsC/restrict/testData.nc.html",
+            "tiggeUser", "tigge", MUSTPASS),
+       // new AuthDataBasic("http://thredds-test.ucar.edu/thredds/dodsC/restrict/testData.nc.html",
+        //    "", "", MUSTFAIL)
+    };
 
     @Test
     public void
@@ -209,6 +209,14 @@ public class TestAuth extends UnitTestCommon
             System.out.printf("\tlocal provider: status code = %d\n", status);
             System.out.flush();
             pass = (status == 200 || status == 404); // non-existence is ok
+            // repeat to test for credentials caching
+            if(false) {
+            method = HTTPFactory.Get(session);
+            status = method.execute();
+            System.out.printf("\tlocal provider: status code = %d\n", status);
+            System.out.flush();
+            pass = (status == 200 || status == 404); // non-existence is ok
+            }
             String msg;
             if(data.xfail) {
                 msg = pass ? "Local test failed to fail (xfail)" : "Local test passed (xfail)";
