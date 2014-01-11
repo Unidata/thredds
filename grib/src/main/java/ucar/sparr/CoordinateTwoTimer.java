@@ -48,6 +48,8 @@ public class CoordinateTwoTimer {
 
   public int getCount(int runIdx, int timeIdx) {
     int idx = runIdx * ntimes + timeIdx;
+    if (idx < 0 || idx >= count.length)
+      System.out.println("HEY");
     return count[idx];
   }
 

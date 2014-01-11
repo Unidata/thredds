@@ -166,21 +166,20 @@ public enum CollectionUpdater {
       return;
     }
 
-    if (updateConfig.updateType != CollectionUpdateType.never) {
-      Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
-      SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
-              .withIdentity(jobName, "startup")
-              .startAt(runTime)
-              .forJob(updateJob)
-              .build();
+    // startup always runs
+    Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
+    SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
+            .withIdentity(jobName, "startup")
+            .startAt(runTime)
+            .forJob(updateJob)
+            .build();
 
-      try {
-    	   scheduler.scheduleJob(startupTrigger);
-        if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.updateType.toString(), config.name, runTime);
-      } catch (SchedulerException e) {
-        if (logger != null)logger.error("cronExecutor failed to schedule startup Job for " + config, e);
-        return;
-      }
+    try {
+       scheduler.scheduleJob(startupTrigger);
+      if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.updateType.toString(), config.name, runTime);
+    } catch (SchedulerException e) {
+      if (logger != null)logger.error("cronExecutor failed to schedule startup Job for " + config, e);
+      return;
     }
 
     if (updateConfig.rescan != null) {

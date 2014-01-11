@@ -198,7 +198,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     this.logger = loggerFactory.getLogger("fc." + collectionName); // seperate log file for each feature collection (!!)
 
     Formatter errlog = new Formatter();
-    if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
+    if (config.spec.startsWith(MFileCollectionManager.CATALOG)) { // LOOK CHANGE THIS
       datasetCollection = new CollectionManagerCatalog(collectionName, config.spec, null, errlog);
     } else {
       datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
@@ -214,13 +214,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // LOOK maybe not best design to start tasks from here
   // LOOK we want to get notified of events, but no longer initiate changes.
   protected void finishConstruction() {
-    if (datasetCollection instanceof CollectionUpdateListener)
-      CollectionUpdater.INSTANCE.scheduleTasks(config, (CollectionUpdateListener) datasetCollection, logger); // see if any background tasks are needed
-
-/*     if ((datasetCollection instanceof CollectionManager)) {
-      CollectionManager cm = (CollectionManager) datasetCollection;
-      cm.addEventListener(this); // now wired for events
-    }  */
+    CollectionUpdater.INSTANCE.scheduleTasks(config, this, logger);
   }
 
   public String getCollectionName() {

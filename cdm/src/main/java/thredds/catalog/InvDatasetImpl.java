@@ -78,7 +78,7 @@ public class InvDatasetImpl extends InvDataset {
   protected ThreddsMetadata tm = new ThreddsMetadata(false); // all local metadata kept here. This may include
   // inheritable InvMetadata
   protected ThreddsMetadata tmi = new ThreddsMetadata(true); // local inheritable metadata (canonicalization)
-  protected ThreddsMetadata tmi6 = new ThreddsMetadata(true); // local catalog 0.6 inheritable metadata
+  //protected ThreddsMetadata tmi6 = new ThreddsMetadata(true); // local catalog 0.6 inheritable metadata
   protected org.jdom2.Element ncmlElement;
 
   // validation
@@ -142,7 +142,7 @@ public class InvDatasetImpl extends InvDataset {
     canonicalize(); // canonicalize thredds metadata
     transfer2PublicMetadata(tm, true); // add local metadata
     transfer2PublicMetadata(tmi, true); // add local inherited metadata
-    transfer2PublicMetadata(tmi6, true); // add local inherited metadata (cat 6 only)
+    //transfer2PublicMetadata(tmi6, true); // add local inherited metadata (cat 6 only)
     transferInheritable2PublicMetadata((InvDatasetImpl) getParent()); // add inheritable metadata from parents
 
     // build the expanded access list
@@ -1437,8 +1437,8 @@ public class InvDatasetImpl extends InvDataset {
     buff.append(tm.dump(n + 4)).append("\n");
     buff.append(indent(n)).append("Thredds Metadata Inherited\n");
     buff.append(tmi.dump(n + 4)).append("\n");
-    buff.append(indent(n)).append("Thredds Metadata Cat6\n");
-    buff.append(tmi6.dump(n + 4)).append("\n");
+    //buff.append(indent(n)).append("Thredds Metadata Cat6\n");
+    //buff.append(tmi6.dump(n + 4)).append("\n");
 
     if (datasets.size() > 0) {
       String indent = indent(n + 2);

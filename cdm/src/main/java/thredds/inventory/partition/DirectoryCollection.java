@@ -56,7 +56,7 @@ import java.util.*;
  * @since 11/16/13
  */
 public class DirectoryCollection extends CollectionAbstract {
-  static public final String NCX_SUFFIX = ".ncx";
+  static public final String NCX_SUFFIX = ".ncx2";
 
   /**
    * Create standard name = topCollectionName + last directory
@@ -101,6 +101,21 @@ public class DirectoryCollection extends CollectionAbstract {
     this.collectionName = makeCollectionName(collectionName, topDir);
   }
 
+  public Path getIndexPath() {
+    return DirectoryCollection.makeCollectionIndexPath(topCollection, topDir);
+  }
+
+  public boolean isLeafDirectory() throws IOException {
+    int countDir=0, countFile=0, count =0;
+    try (CloseableIterator<MFile> iter = getFileIterator()) {
+      while (iter.hasNext() && count++ < 100) {
+        MFile file = iter.next();
+        if (file.isDirectory()) countDir++; else countFile++;
+      }
+    }
+    return countFile > countDir;
+  }
+
   @Override
   public String getRoot() {
     return topDir.toString();
@@ -135,8 +150,10 @@ public class DirectoryCollection extends CollectionAbstract {
   private class MFileIterator implements CloseableIterator<MFile> {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
+    int count = 0;
 
     MFileIterator(Path dir, DirectoryStream.Filter<Path> filter) throws IOException {
+      if (debug) System.out.printf(" DirectoryCollection.MFileIterator %s ", topDir);
       if (filter != null)
         dirStream = Files.newDirectoryStream(dir, filter);
       else
@@ -146,6 +163,8 @@ public class DirectoryCollection extends CollectionAbstract {
     }
 
     public boolean hasNext() {
+      if (debug && count % 100 == 0) System.out.printf("%d ", count);
+      count++;
       return dirStreamIterator.hasNext();
     }
 
@@ -164,6 +183,7 @@ public class DirectoryCollection extends CollectionAbstract {
     // better alternative is for caller to send in callback (Visitor pattern)
     // then we could use the try-with-resource
     public void close() throws IOException {
+      if (debug) System.out.printf("%n");
       dirStream.close();
     }
   }
@@ -179,16 +199,20 @@ public class DirectoryCollection extends CollectionAbstract {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-
+  private static final boolean debug = true;
   // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure it closes. like++
   public void iterateOverMFileCollection(Visitor visit) throws IOException {
+    if (debug) System.out.printf("DirectoryCollection.iterateOverMFileCollection %s ", topDir);
+    int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(topDir, new MyFilter())) {
       for (Path p : ds) {
         BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
         if (!attr.isDirectory())
           visit.consume(new MFileOS7(p));
+        if (debug) System.out.printf("%d ", count++);
       }
     }
+    if (debug) System.out.printf("%d%n ", count);
   }
 
   public interface Visitor {

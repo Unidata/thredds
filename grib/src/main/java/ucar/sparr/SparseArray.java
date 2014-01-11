@@ -54,13 +54,13 @@ public class SparseArray<T> {
   }
 
   public void add(T thing, Formatter info, int... index) {
-    content.add(thing);
+    content.add(thing);            // add the thing at end of list, idx = size-1
     int where = calcIndex(index);
     if (track[where] > 0) {
       ndups++;  // LOOK here is where we need to decide how to handle duplicates
       if (info != null) info.format(" duplicate %s%n     with %s%n%n", thing, content.get(track[where]-1));
     }
-    track[where] = content.size();  // 1-based so that 0 = missing
+    track[where] = content.size();  // 1-based so that 0 = missing, so content at where = content.get(track[where]-1)
   }
 
   public T fetch(int[] index) {
@@ -113,7 +113,13 @@ public class SparseArray<T> {
   }
 
   public T getContent(int idx) {
-    return content.get(idx);
+    if (idx >= track.length)
+      System.out.println("HEY");
+    int contentIdx = track[idx]-1;
+    if (contentIdx<0) return null; // missing
+    if (contentIdx >= content.size())
+      System.out.println("HEY");
+    return content.get(contentIdx);
   }
 
   public void setContent(List<T> content) {

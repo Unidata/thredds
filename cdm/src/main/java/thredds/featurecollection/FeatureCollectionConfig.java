@@ -190,7 +190,7 @@ public class FeatureCollectionConfig {
         if (rewriteS.equalsIgnoreCase("true"))
           this.updateType = CollectionUpdateType.test;
         else
-          this.updateType = CollectionUpdateType.valueOf(startupS);
+          this.updateType = CollectionUpdateType.valueOf(rewriteS);
 
         // user has placed an update/tdm element in the catalog
         userDefined = true;

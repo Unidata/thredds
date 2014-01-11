@@ -115,8 +115,9 @@ public class DirectoryBuilder {
         partitionStatus = isPartition ? PartitionStatus.isPartition : PartitionStatus.isGribCollection;
 
       } else { // no index file
-        scanForChildren();
-        if (children.size() > 0) partitionStatus = PartitionStatus.isPartition;
+        // temporary - just to scan 100 fikes in the directory
+        DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null);
+        partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isGribCollection : PartitionStatus.isPartition;
       }
     }
 
@@ -189,7 +190,7 @@ public class DirectoryBuilder {
    * Scan for subdirectories, make each into a DirectoryBuilder and add as a child
    */
   private void scanForChildren() {
-    if (debug) System.out.printf("DirectoryPartitionBuilder.scanForChildren %s%n", dir);
+    if (debug) System.out.printf("DirectoryBuilder.scanForChildren %s ", dir);
 
     int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir)) {
@@ -204,6 +205,7 @@ public class DirectoryBuilder {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    if (debug) System.out.printf("%d%n", count);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

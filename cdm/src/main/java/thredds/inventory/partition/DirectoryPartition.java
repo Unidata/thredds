@@ -39,6 +39,10 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     return topCollection;
   }
 
+  public Path getIndexPath() {
+    return DirectoryCollection.makeCollectionIndexPath(topCollection, topDir);
+  }
+
   @Override
   public Iterable<MCollection> makePartitions() throws IOException {
 

@@ -422,6 +422,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String dpath =  getPath() + "/files/" + dname;
     result.setID(dpath);
     result.setUrlPath(dpath);
+    result.setServiceName(orgService.getName());
 
     //result.tmi.setGeospatialCoverage(extractGeospatial(group));
     //result.tmi.setTimeCoverage(group.getCalendarDateRange());

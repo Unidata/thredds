@@ -206,6 +206,7 @@ public class CdmIndex2Panel extends JPanel {
 
   public void showInfo(Formatter f) {
     if (gc == null) return;
+    f.format("Class %s%n", gc.getClass().getName());
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
       f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());

@@ -99,6 +99,16 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     return builder.gc;
   }
 
+    // recreate if partition doesnt exist or is out of date (depends on force). return true if it was recreated
+  static public boolean recreateIfNeeded(MCollection dcm, CollectionUpdateType force,
+                                         Formatter errlog, org.slf4j.Logger logger) throws IOException {
+    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm, logger);
+    boolean recreated = builder.readOrCreateIndex(force, errlog);
+    builder.gc.close();
+    return recreated;
+  }
+
+
   /* read in the index, index raf already open
   static public GribCollection createFromIndex(String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config, org.slf4j.Logger logger) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(name, directory, config, logger);
@@ -174,7 +184,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     this.gc = new Grib2Collection(this.name, this.directory, config);
   }
 
-  private void readOrCreateIndex(CollectionUpdateType ff, Formatter errlog) throws IOException {
+  private boolean readOrCreateIndex(CollectionUpdateType ff, Formatter errlog) throws IOException {
 
     // force new index or test for new index needed
     boolean force = ((ff == CollectionUpdateType.always) || (ff == CollectionUpdateType.test && needsUpdate()));
@@ -196,7 +206,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       RandomAccessFile indexRaf = new RandomAccessFile(idx.getPath(), "r");
       gc.setIndexRaf(indexRaf);
       readIndex(indexRaf);
+      return true;
     }
+    return false;
   }
 
   public boolean needsUpdate() throws IOException {
