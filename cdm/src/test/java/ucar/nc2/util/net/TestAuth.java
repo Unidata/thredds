@@ -41,6 +41,7 @@ import ucar.nc2.util.UnitTestCommon;
 
 import java.io.*;
 import java.util.List;
+import java.util.Map;
 
 public class TestAuth extends UnitTestCommon
 {
@@ -351,27 +352,33 @@ public class TestAuth extends UnitTestCommon
         System.out.println("*** Testing: HTTPAuthStore (de-)serialization");
 
         boolean ok = true;
-        CredentialsProvider creds1 = new BasicProvider("p1", "pwd");
-        CredentialsProvider creds2 = new HTTPSSLProvider("keystore", "keystorepwd");
-        CredentialsProvider creds3 = new BasicProvider("p3", "pwd3");
+        CredentialsProvider credp1 = new BasicProvider("p1", "pwd");
+        CredentialsProvider credp2 = new HTTPSSLProvider("keystore", "keystorepwd");
+        CredentialsProvider credp3 = new BasicProvider("p3", "pwd3");
+        Credentials cred1 = new UsernamePasswordCredentials("u1","pwd1");
+        Credentials cred2 = new UsernamePasswordCredentials("u2","pwd2");
 
         // Add some entries to HTTPAuthStore
         HTTPAuthStore.clear();
         HTTPAuthStore.insert(new HTTPAuthStore.Entry(
             HTTPAuthScheme.BASIC,
             "http://ceda.ac.uk/dap/neodc/casix/seawifs_plankton/data/monthly/PSC_monthly_1998.nc.dds",
-            creds1)
+            credp1)
         );
         HTTPAuthStore.insert(new HTTPAuthStore.Entry(
             HTTPAuthScheme.SSL,
             "http://ceda.ac.uk",
-            creds2)
+            credp2)
         );
         HTTPAuthStore.insert(new HTTPAuthStore.Entry(
             HTTPAuthScheme.BASIC,
             "http://ceda.ac.uk",
-            creds3)
+            credp3)
         );
+
+        // Add some entries to cache
+        HTTPAuthStore.setCredentials("http://x1",cred1);
+        HTTPAuthStore.setCredentials("http://x2",cred2);
 
         // Remove any old file
         File target1 = new File(TestLocal.temporaryDataDir + "serial1");
@@ -380,9 +387,10 @@ public class TestAuth extends UnitTestCommon
         // serialize out
         OutputStream ostream = new FileOutputStream(target1);
         HTTPAuthStore.serialize(ostream, "password1");
-        // Read in
+        // Read in auth store
         InputStream istream = new FileInputStream(target1);
-        List<HTTPAuthStore.Entry> entries = HTTPAuthStore.getDeserializedEntries(istream, "password1");
+        ObjectInputStream ois = HTTPAuthStore.openobjectstream(istream, "password1");
+        List<HTTPAuthStore.Entry> entries = HTTPAuthStore.getDeserializedEntries(ois);
 
         // compare
         List<HTTPAuthStore.Entry> rows = HTTPAuthStore.getAllRows();
@@ -406,6 +414,14 @@ public class TestAuth extends UnitTestCommon
             }
         }
         assertTrue("test(De-)Serialize", ok);
+
+        // Read in cache
+        Map<String,Credentials> readcache = HTTPAuthStore.getDeserializedCache(ois);
+        Map<String,Credentials> cache = HTTPAuthStore.getCache();
+        assertTrue("cache size mismatch",cache.size() == readcache.size());
+        // compare (not that we cannot actually test credentials for equality, so test keys).
+        for(String key: cache.keySet())
+            assertTrue("missing key:"+key, readcache.get(key) != null);
     }
 
 

@@ -574,110 +574,6 @@ class HTTPAuthStore implements Serializable
         if(nreaders == 0) notify(); //only affects writers
     }
 
-    ///////////////////////////////////////////////////
-    // Print functions
-
-    static public void
-    print(PrintStream p)
-        throws IOException
-    {
-        print(new PrintWriter(p, true));
-    }
-
-    static public void
-    print(PrintWriter p)
-        throws IOException
-    {
-        List<Entry> elist = getAllRows();
-        for(int i = 0;i < elist.size();i++) {
-            Entry e = elist.get(i);
-            p.printf("[%02d] %s\n", e.toString());
-        }
-    }
-
-    ///////////////////////////////////////////////////
-    // Seriablizable interface
-    // Encrypted (De-)Serialize
-
-    static public void
-    serialize(OutputStream ostream, String password)
-        throws HTTPException
-    {
-        try {
-
-            // Create Key
-            byte key[] = password.getBytes();
-            DESKeySpec desKeySpec = new DESKeySpec(key);
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
-            SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
-
-            // Create Cipher
-            Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
-
-            // Create crypto stream
-            BufferedOutputStream bos = new BufferedOutputStream(ostream);
-            CipherOutputStream cos = new CipherOutputStream(bos, desCipher);
-            ObjectOutputStream oos = new ObjectOutputStream(cos);
-
-            oos.writeInt(getAllRows().size());
-
-            for(Entry e : rows) {
-                oos.writeObject(e);
-            }
-
-            oos.flush();
-            oos.close();
-
-        } catch (Exception e) {
-            throw new HTTPException(e);
-        }
-
-    }
-
-    static public void
-    deserialize(InputStream istream, String password)
-        throws HTTPException
-    {
-        List<Entry> entries = getDeserializedEntries(istream, password);
-        for(Entry e : entries) {
-            insert(e);
-        }
-    }
-
-    static public List<Entry>
-    getDeserializedEntries(InputStream istream, String password)
-        throws HTTPException
-    {
-        try {
-
-            // Create Key
-            byte key[] = password.getBytes();
-            DESKeySpec desKeySpec = new DESKeySpec(key);
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
-            SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
-
-            // Create Cipher
-            Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            desCipher.init(Cipher.DECRYPT_MODE, secretKey);
-
-            // Create crypto stream
-            BufferedInputStream bis = new BufferedInputStream(istream);
-            CipherInputStream cis = new CipherInputStream(bis, desCipher);
-            ObjectInputStream ois = new ObjectInputStream(cis);
-
-            List<Entry> entries = new ArrayList<Entry>();
-            int count = ois.readInt();
-            for(int i = 0;i < count;i++) {
-                Entry e = (Entry) ois.readObject();
-                entries.add(e);
-            }
-            return entries;
-        } catch (Exception e) {
-            throw new HTTPException(e);
-        }
-    }
-
     //////////////////////////////////////////////////
     // Credentials cache
 
@@ -719,6 +615,170 @@ class HTTPAuthStore implements Serializable
     clearCredentialsCache()
     {
         cache.clear();
+    }
+
+    static public Map<String,Credentials>// for testing
+    getCache()
+    {
+        return cache;
+    }
+
+    ///////////////////////////////////////////////////
+    // Print functions
+
+    static public void
+    print(PrintStream p)
+        throws IOException
+    {
+        print(new PrintWriter(p, true));
+    }
+
+    static public void
+    print(PrintWriter p)
+        throws IOException
+    {
+        List<Entry> elist = getAllRows();
+        for(int i = 0;i < elist.size();i++) {
+            Entry e = elist.get(i);
+            p.printf("[%02d] %s\n", e.toString());
+        }
+    }
+
+    ///////////////////////////////////////////////////
+    // Seriablizable interface
+    // Encrypted (De-)Serialize
+
+    static public void
+    serialize(OutputStream ostream, String password)
+        throws HTTPException
+    {
+        try {
+
+            // Create Key
+            byte deskey[] = password.getBytes();
+            DESKeySpec desKeySpec = new DESKeySpec(deskey);
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+            SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
+
+            // Create Cipher
+            Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+            // Create crypto stream
+            BufferedOutputStream bos = new BufferedOutputStream(ostream);
+            CipherOutputStream cos = new CipherOutputStream(bos, desCipher);
+            ObjectOutputStream oos = new ObjectOutputStream(cos);
+
+            oos.writeInt(getAllRows().size());
+
+            for(Entry e : rows) {
+                oos.writeObject(e);
+            }
+
+            oos.writeInt(cache.size());
+
+            // append the credentials cache
+            for(String key : cache.keySet()) {
+                Credentials creds = cache.get(key);
+                oos.writeObject(key);
+                oos.writeObject(creds);
+            }
+
+            oos.flush();
+            oos.close();
+
+        } catch (Exception e) {
+            throw new HTTPException(e);
+        }
+
+    }
+
+    static public void
+    deserialize(InputStream istream, String password)
+        throws HTTPException
+    {
+        ObjectInputStream ois = null;
+        try {
+            ois = openobjectstream(istream, password);
+            List<Entry> entries = getDeserializedEntries(ois);
+            for(Entry e : entries) {
+                insert(e);
+            }
+            Map<String, Credentials> cache = getDeserializedCache(ois);
+            for(String key : cache.keySet()) {
+                Credentials creds = cache.get(key);
+                setCredentials(key, creds);
+            }
+        } finally {
+            if(ois != null) try {
+                ois.close();
+            } catch (IOException e) {/*ignore*/}
+        }
+    }
+
+    static public ObjectInputStream  // public to allow testing
+    openobjectstream(InputStream istream, String password)
+        throws HTTPException
+    {
+        try {
+            // Create Key
+            byte key[] = password.getBytes();
+            DESKeySpec desKeySpec = new DESKeySpec(key);
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+            SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
+
+            // Create Cipher
+            Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            desCipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+            // Create crypto stream
+            BufferedInputStream bis = new BufferedInputStream(istream);
+            CipherInputStream cis = new CipherInputStream(bis, desCipher);
+            ObjectInputStream ois = new ObjectInputStream(cis);
+            return ois;
+        } catch (Exception e) {
+            throw new HTTPException(e);
+        }
+    }
+
+    static public List<Entry>    // public to allow testing
+    getDeserializedEntries(ObjectInputStream ois)
+        throws HTTPException
+    {
+        try {
+            List<Entry> entries = new ArrayList<Entry>();
+            int count = ois.readInt();
+            for(int i = 0;i < count;i++) {
+                Entry e = (Entry) ois.readObject();
+                entries.add(e);
+            }
+            return entries;
+        } catch (Exception e) {
+            throw new HTTPException(e);
+        }
+    }
+
+    static public Map<String, Credentials>      // public to allow testing
+    getDeserializedCache(ObjectInputStream ois)
+        throws HTTPException
+    {
+        try {
+            Map<String, Credentials> cache = new HashMap<String, Credentials>();
+
+            int count = ois.readInt();
+            for(int i = 0;i < count;i++) {
+                String s = (String) ois.readObject();
+                if(s == null || s.length() == 0)
+                    break;
+                Credentials cred = (Credentials) ois.readObject();
+                if(cred == null) break;
+
+                cache.put(s, cred);
+            }
+            return cache;
+        } catch (Exception e) {
+            throw new HTTPException(e);
+        }
     }
 
 }
