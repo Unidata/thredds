@@ -19,7 +19,6 @@ public class TableAppearanceAction extends AbstractAction {
     private static final Logger logger = LoggerFactory.getLogger(TableAppearanceAction.class);
 
     private final JTable table;
-    private final HidableTableColumnModel hidableTableColumnModel;
 
     public TableAppearanceAction(JTable table) {
         if (!(table.getColumnModel() instanceof HidableTableColumnModel)) {
@@ -28,7 +27,6 @@ public class TableAppearanceAction extends AbstractAction {
         }
 
         this.table = table;
-        this.hidableTableColumnModel = (HidableTableColumnModel) table.getColumnModel();
 
         putValue(NAME, "Table appearance");
         putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "TableAppearance.png", true));
@@ -54,7 +52,7 @@ public class TableAppearanceAction extends AbstractAction {
         popupMenu.add(new ResizeColumnWidthsAction());
         popupMenu.addSeparator();
 
-        Enumeration<TableColumn> allTableColumns = hidableTableColumnModel.getColumns(false);
+        Enumeration<TableColumn> allTableColumns = getTableColumnModel().getColumns(false);
         while (allTableColumns.hasMoreElements()) {
             TableColumn tableColumn = allTableColumns.nextElement();
             ColumnVisibilityAction columnVisibilityAction = new ColumnVisibilityAction(tableColumn);
@@ -63,6 +61,11 @@ public class TableAppearanceAction extends AbstractAction {
         }
 
         return popupMenu;
+    }
+
+    // We can't cache the table model because a new one may be installed.
+    private HidableTableColumnModel getTableColumnModel() {
+        return (HidableTableColumnModel) table.getColumnModel();
     }
 
 
@@ -88,12 +91,12 @@ public class TableAppearanceAction extends AbstractAction {
 
             // The JCheckBoxMenuItem will read this property to set its initial selected state.
             // In addition, it will write *to* this property when selection events occur.
-            putValue(SELECTED_KEY, hidableTableColumnModel.isColumnVisible(column));
+            putValue(SELECTED_KEY, getTableColumnModel().isColumnVisible(column));
         }
 
         @Override public void actionPerformed(ActionEvent e) {
             boolean isSelected = (Boolean) getValue(SELECTED_KEY);
-            hidableTableColumnModel.setColumnVisible(column, isSelected);
+            getTableColumnModel().setColumnVisible(column, isSelected);
         }
     }
 }

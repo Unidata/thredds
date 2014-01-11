@@ -33,7 +33,7 @@
 
 package ucar.util.prefs.ui;
 
-import ucar.nc2.ui.table.TableUtils;
+import ucar.nc2.ui.table.TableAligner;
 import ucar.util.prefs.PreferencesExt;
 
 import javax.swing.*;
@@ -94,7 +94,8 @@ public class BeanTableSorted extends BeanTable {
     // Left-align every cell, including header cells.
     // Even though we already installed the alignment decorators in the super-constructor, we need to reinstall them
     // here because a new TableColumnModel was created above.
-    TableUtils.installAligners(jtable, SwingConstants.LEADING);
+    TableAligner aligner = new TableAligner(jtable, SwingConstants.LEADING);
+    jtable.getColumnModel().addColumnModelListener(aligner);
 
     restoreState();
   }

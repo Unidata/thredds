@@ -34,8 +34,8 @@
 package ucar.util.prefs.ui;
 
 import ucar.nc2.ui.table.HidableTableColumnModel;
+import ucar.nc2.ui.table.TableAligner;
 import ucar.nc2.ui.table.TableAppearanceAction;
-import ucar.nc2.ui.table.TableUtils;
 import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -187,23 +187,27 @@ public class BeanTable extends JPanel {
     jtable.setDefaultEditor(String.class, new DefaultCellEditor(new JTextField()));
     jtable.setDefaultEditor(Boolean.class, new DefaultCellEditor(new JCheckBox()));
 
+
     // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
     ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
 
     // Left-align every cell, including header cells.
-    TableUtils.installAligners(jtable, SwingConstants.LEADING);
+    TableAligner aligner = new TableAligner(jtable, SwingConstants.LEADING);
+    jtable.getColumnModel().addColumnModelListener(aligner);
 
-    // UI
-    setLayout(new BorderLayout());
-
+    // Create a button that will popup a menu containing options to configure the appearance of the table.
     JButton cornerButton = new JButton(new TableAppearanceAction(jtable));
     cornerButton.setHideActionText(true);
     cornerButton.setContentAreaFilled(false);
 
-    scrollPane = new JScrollPane(jtable);
+    // Install the button in the upper-right corner of the table's scroll pane.
+    final JScrollPane scrollPane = new JScrollPane(jtable);
     scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+
+    // UI
+    setLayout(new BorderLayout());
     add(scrollPane, BorderLayout.CENTER);
 
     if (header != null) {

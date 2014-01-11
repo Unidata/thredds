@@ -40,10 +40,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dt.PointObsDatatype;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ui.table.ColumnWidthsResizer;
-import ucar.nc2.ui.table.HidableTableColumnModel;
-import ucar.nc2.ui.table.TableAppearanceAction;
-import ucar.nc2.ui.table.TableUtils;
+import ucar.nc2.ui.table.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.HashMapLRU;
@@ -218,14 +215,14 @@ public class StructureTable extends JPanel {
     // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
     ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
 
-    // Left-align every cell, including header cells.
-    TableUtils.installAligners(jtable, SwingConstants.LEADING);
-
-    // Set the preferred column widths so that they're just big enough to display all contents without truncation.
-    ColumnWidthsResizer.resize(jtable);  // Perform initial resize.
+    // Set the preferred column widths so that they're big enough to display all data without truncation.
     ColumnWidthsResizer resizer = new ColumnWidthsResizer(jtable);
     jtable.getModel().addTableModelListener(resizer);
     jtable.getColumnModel().addColumnModelListener(resizer);
+
+    // Left-align every cell, including header cells.
+    TableAligner aligner = new TableAligner(jtable, SwingConstants.LEADING);
+    jtable.getColumnModel().addColumnModelListener(aligner);
 
     // Don't resize the columns to fit the available space. We do this because there may be a LOT of columns, and
     // auto-resize would cause them to be squished together to the point of uselessness. For an example, see
@@ -275,10 +272,12 @@ public class StructureTable extends JPanel {
     //JScrollPane sp =  new JScrollPane(jtable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     removeAll();
 
+    // Create a button that will popup a menu containing options to configure the appearance of the table.
     JButton cornerButton = new JButton(new TableAppearanceAction(jtable));
     cornerButton.setHideActionText(true);
     cornerButton.setContentAreaFilled(false);
 
+    // Install the button in the upper-right corner of the table's scroll pane.
     JScrollPane scrollPane = new JScrollPane(jtable);
     scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);

@@ -3,7 +3,7 @@ package ucar.nc2.ui.widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.ui.table.ColumnWidthsResizer;
-import ucar.nc2.ui.table.TableUtils;
+import ucar.nc2.ui.table.TableAligner;
 import ucar.nc2.ui.util.SwingUtils;
 
 import javax.swing.*;
@@ -67,14 +67,19 @@ public class ImprovedFileChooser extends JFileChooser {
             return;
         }
 
-        // Left-align every cell, including header cells.
-        detailsTable.addPropertyChangeListener(new AlignTableListener(detailsTable, SwingConstants.LEADING));
-
-        // Set the preferred column widths so that they're just big enough to display all contents without truncation.
-        ColumnWidthsResizer.resize(detailsTable);
+        // Set the preferred column widths so that they're big enough to display all data without truncation.
         ColumnWidthsResizer resizer = new ColumnWidthsResizer(detailsTable);
         detailsTable.getModel().addTableModelListener(resizer);
         detailsTable.getColumnModel().addColumnModelListener(resizer);
+
+        // Left-align every cell, including header cells.
+        TableAligner aligner = new TableAligner(detailsTable, SwingConstants.LEADING);
+        detailsTable.getColumnModel().addColumnModelListener(aligner);
+
+        // Every time the directory is changed in a JFileChooser dialog, a new TableColumnModel is created.
+        // This is bad, because it discards the alignment decorators that we installed on the old model.
+        // So, we 're going to listen for the creation of new TableColumnModels so that we can reinstall the decorators.
+        detailsTable.addPropertyChangeListener(new NewColumnModelListener(detailsTable, SwingConstants.LEADING));
 
         // It's quite likely that the total width of the table is NOT EQUAL to the sum of the preferred column widths
         // that our TableModelListener calculated. In that case, resize all of the columns an equal percentage.
@@ -121,26 +126,20 @@ public class ImprovedFileChooser extends JFileChooser {
     }
 
 
-    private static class AlignTableListener implements PropertyChangeListener {
+    private static class NewColumnModelListener implements PropertyChangeListener {
         private final JTable table;
         private final int alignment;
 
-        private AlignTableListener(JTable table, int alignment) {
+        private NewColumnModelListener(JTable table, int alignment) {
             this.table = table;
             this.alignment = alignment;
-
-            TableUtils.installAligners(table, alignment);  // Initial installation of alignment decorators.
         }
 
-        /*
-         * Every time the directory is changed in a JFileChooser dialog, a new TableColumnModel is created.
-         * This is bad, because it discards the alignment decorators that we installed on the old model.
-         * So, we're going to listen for the creation of new TableColumnModels so that we can reinstall the decorators.
-         * See http://goo.gl/M6TU9I
-         */
         @Override public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getPropertyName().equals("columnModel")) {
-                TableUtils.installAligners(table, alignment);  // Reinstallation of alignment decorators.
+                // Left-align every cell, including header cells.
+                TableAligner aligner = new TableAligner(table, alignment);
+                table.getColumnModel().addColumnModelListener(aligner);
             }
         }
     }

@@ -7,13 +7,10 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 
 /**
- * A listener that sets the preferred widths of a JTable's columns such that they're just big enough to display all
- * of their contents without truncation. Expected usage:
+ * A listener that sets the preferred widths of a {@link JTable}'s columns such that they're just big enough to display
+ * all of their contents without truncation. Expected usage:
  * <pre>
  * JTable table = new JTable(...);
- * ColumnWidthsResizer.resize(table);  // Perform initial resize. Optional.
- *
- * // Create listener for subsequent resizes in response to table events.
  * ColumnWidthsResizer listener = new ColumnWidthsResizer(table);
  * table.getModel().addTableModelListener(listener);  // Respond to row and data changes.
  * table.getColumnModel().addColumnModelListener(listener);  // Respond to column changes.
@@ -22,16 +19,6 @@ import java.awt.*;
 public class ColumnWidthsResizer implements TableModelListener, TableColumnModelListener {
     private final JTable table;
     private final int fullScanCutoff;
-
-    public static void main(String[] args) {
-        JTable table = new JTable();
-        ColumnWidthsResizer.resize(table, true);  // Perform initial resize. Optional.
-
-        // Create listener for subsequent resizes in response to table events.
-        ColumnWidthsResizer listener = new ColumnWidthsResizer(table);
-        table.getModel().addTableModelListener(listener);         // Respond to row and data changes.
-        table.getColumnModel().addColumnModelListener(listener);  // Respond to column changes.
-    }
 
     /**
      * Creates a listener that resizes {@code table}'s column widths when its data and/or structure changes.
@@ -57,17 +44,24 @@ public class ColumnWidthsResizer implements TableModelListener, TableColumnModel
     public ColumnWidthsResizer(JTable table, int fullScanCutoff) {
         this.table = table;
         this.fullScanCutoff = fullScanCutoff;
+        ColumnWidthsResizer.resize(table);  // Perform initial resize.
     }
 
     //////////////////////////////////////////////// TableModelListener ////////////////////////////////////////////////
 
     @Override public void tableChanged(TableModelEvent e) {
-        // Do not respond to changes in the number of columns here, only row and data changes.
-        if (e.getFirstRow() != TableModelEvent.HEADER_ROW) {  // Fired when the number of columns changes.
-            // Do not cache the value of doFullScan; we need to reevaluate each time because the number of rows in
-            // the table could have changed.
-            boolean doFullScan = table.getRowCount() <= fullScanCutoff;
+        if (e.getFirstRow() == TableModelEvent.HEADER_ROW) {
+            return;  // Do not respond to changes in the number of columns here, only row and data changes.
+        }
+
+        // Do not cache the value of doFullScan; we need to reevaluate each time because the number of rows in
+        // the table could have changed.
+        boolean doFullScan = table.getRowCount() <= fullScanCutoff;
+
+        if (e.getColumn() == TableModelEvent.ALL_COLUMNS) {
             resize(table, doFullScan);  // Resize all columns.
+        } else {
+            resize(table, e.getColumn(), doFullScan);  // Resize only the affected column.
         }
     }
 
